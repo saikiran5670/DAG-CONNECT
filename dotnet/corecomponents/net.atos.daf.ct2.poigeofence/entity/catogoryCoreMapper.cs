@@ -45,5 +45,21 @@ namespace net.atos.daf.ct2.poigeofence.entity
 
 
         }
+
+        public string MapType(string Type)
+        {
+            var ctype = string.Empty;
+            switch (Type)
+            {
+                case "SUBCATEGORY":
+                    ctype = "S";
+                    break;
+                case "PARENTCATEGORY":
+                    ctype = "P";
+                    break;
+            }
+            return ctype;
+
+        }
     }
 }

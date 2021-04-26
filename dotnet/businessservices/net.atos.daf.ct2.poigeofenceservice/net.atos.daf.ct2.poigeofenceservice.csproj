@@ -5,15 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Protos\poi.proto" />
+    <None Remove="Protos\group.proto" />
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\group.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\poi.proto" GrpcServices="Server" />
     <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Server" />-->
-	  <Protobuf Include="Protos\geofence.proto" GrpcServices="Server" />
-	  <Protobuf Include="Protos\category.proto" GrpcServices="Server" />
+	<Protobuf Include="Protos\geofence.proto" GrpcServices="Server" />
+	<Protobuf Include="Protos\category.proto" GrpcServices="Server" />
 	  
   </ItemGroup>
 

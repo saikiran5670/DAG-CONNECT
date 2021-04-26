@@ -35,21 +35,30 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 var icon_ID = await InsertIcons(category);
 
-                var parameter = new DynamicParameters();
-                var insertCategory  = @"INSERT INTO master.category(
+                var isexist = CheckCategoryIsexist(category.Name);
+                if (!isexist)
+                {
+
+                    var parameter = new DynamicParameters();
+                    var insertCategory = @"INSERT INTO master.category(
                                    organization_id, name, icon_id, type, parent_id, state, created_at, created_by)
                                   values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@created_at,@created_by) RETURNING id";
 
-                parameter.Add("@organization_id", category.Organization_Id);
-                parameter.Add("@name", category.Name);
-                parameter.Add("@icon_id", icon_ID);
-                parameter.Add("@type", category.Type);
-                parameter.Add("@parent_id", category.Parent_Id);
-                parameter.Add("@state", category.State);
-                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@created_by", category.Created_By);
-                var id = await _dataAccess.ExecuteScalarAsync<int>(insertCategory, parameter);
-                category.Id = id;
+                    parameter.Add("@organization_id", category.Organization_Id);
+                    parameter.Add("@name", category.Name);
+                    parameter.Add("@icon_id", icon_ID);
+                    parameter.Add("@type", category.Type);
+                    parameter.Add("@parent_id", category.Parent_Id);
+                    parameter.Add("@state", category.State);
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@created_by", category.Created_By);
+                    var id = await _dataAccess.ExecuteScalarAsync<int>(insertCategory, parameter);
+                    category.Id = id;
+                }
+                else
+                {
+                    category.Id = -1;//to check either code exists or not
+                }
             }
             catch (Exception ex)
             {
@@ -70,7 +79,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@ID", categoryId);
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
-                return true;
+                if (id > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
                
             }
             catch (Exception ex)
@@ -132,7 +148,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        public async Task<List<Category>> GetCategory(CategoryFilter categoryFilter)
+        public Task<IEnumerable<Category>> GetCategoryType(string Type)
+        
+        {
+            CategoryFilter categoryFilter = new CategoryFilter();
+            categoryFilter.Type = Type.ToUpper();
+            if (categoryFilter.Type.Length > 1)
+            {
+                categoryFilter.Type= _catogoryCoreMapper.MapType(categoryFilter.Type);
+            }
+            var categories = GetCategory(categoryFilter);
+            return categories;
+        }
+
+        public async Task<IEnumerable<Category>> GetCategory(CategoryFilter categoryFilter)
         {
             try
             {
@@ -162,6 +191,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@Name", categoryFilter.CategoryName);
                         getQuery = getQuery + " and name= @Name ";
                     }
+                    parameter.Add("@State", "A");
+                    getQuery = getQuery + " and state= @State ";
 
                     getQuery = getQuery + " ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
@@ -256,5 +287,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+       
     }
 }

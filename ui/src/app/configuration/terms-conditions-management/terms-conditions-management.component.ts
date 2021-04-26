@@ -124,9 +124,12 @@ export class TermsConditionsManagementComponent implements OnInit {
       if(data){
         let msg= this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded ? this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded : "Terms and Conditions file successfully uploaded";
         this.successMsgBlink(msg);
+        this.filelist= [];
+        this.uploadTermsConditionsFormGroup.controls.uploadFile.setValue("");
       }
     }, (error) => {
       this.uploadFileErrorCode = error.status;
+      this.filelist= [];
     });   
     
   }
@@ -153,17 +156,18 @@ export class TermsConditionsManagementComponent implements OnInit {
       const reader = new FileReader();
       reader.readAsDataURL(event.target.files[i]);
       reader.onload = () => {
-          let fileSelected= reader.result.toString();
-          let filename= 
+        let fileSelected= reader.result.toString();
+          if(fileSelected.length > 5) //By default value in  fileSelected variable is "data:". Hence minlength is 5
+        {
+          this.pdfEmptyMsg = false;
           this.filelist.push({"fileName": (this.uploadTermsConditionsFormGroup.controls.uploadFile.value._fileNames).replace(".pdf", ""), "description": fileSelected.split(",")[1]})
+        } 
+        else{
+          this.pdfEmptyMsg = true;
+        } 
       };  
     }
-    // if(this.filelist.length > 0){
-    //   this.pdfEmptyMsg = false;
-    // } 
-    // else{
-    //   this.pdfEmptyMsg = true;
-    // }        
+           
   }   
 
   onClose(){

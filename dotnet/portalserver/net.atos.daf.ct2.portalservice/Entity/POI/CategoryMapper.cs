@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf;
-using net.atos.daf.ct2.poigeofenceservice;
+using net.atos.daf.ct2.poigeofences;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +48,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
 
             var Requests = new CategoryDeleteRequest();
             Requests.Id = request.Id;
+            return Requests;
+        }
+
+        public CategoryGetRequest MapCategoryType(GetCategoryTypes request)
+        {
+
+            var Requests = new CategoryGetRequest();
+            Requests.Type = request.Type;
             return Requests;
         }
     }

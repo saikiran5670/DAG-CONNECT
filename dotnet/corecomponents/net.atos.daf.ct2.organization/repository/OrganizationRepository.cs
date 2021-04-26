@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type,case when name is null then 'Unknown' else name end as name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in 
+                var query = @"SELECT id, org_id, type,coalesce(name, '(' || org_id || ')') as name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in 
                 FROM master.organization where id=@Id and state='A'";
                 parameter.Add("@Id", organizationId);
                 IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
@@ -947,8 +947,8 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type,case when name is null then 'Unknown' else name end as name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in
-	                        FROM master.organization org where  org.state='A'";
+                var query = @"SELECT id, org_id, type,coalesce(name, '(' || org_id || ')') as name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in
+	                        FROM master.organization org where org.state='A'";
                 if (organizationId > 0)
                 {
                     parameter.Add("@id", organizationId);
@@ -1062,7 +1062,7 @@ namespace net.atos.daf.ct2.organization.repository
                 List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
                 var parameter = new DynamicParameters();
                 parameter.Add("@state", 'A');
-                strquery = @"SELECT id,case when name is null then 'Unknown' else name end as name FROM master.organization where state=@state";
+                strquery = @"SELECT id, coalesce(name, '(' || org_id || ')') as name FROM master.organization where state=@state";
                 switch (level)
                 {
                     case 10:

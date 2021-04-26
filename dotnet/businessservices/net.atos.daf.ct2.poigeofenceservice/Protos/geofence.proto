@@ -1,6 +1,5 @@
 
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.geofenceservice";
 
@@ -8,8 +7,10 @@ package geofence;
 
 service GeofenceService{
 rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
-rpc CreateGeofence (GeofenceRequest) returns (GeofenceResponse);
+rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
 rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
+rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
+rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 }
 
 enum Responcecode{
@@ -39,9 +40,9 @@ message GeofenceRequest{
     string City=8;
     string Country=9;
     string Zipcode=10;
-    float Latitude=11;
-    float Longitude=12;
-    float Distance=13;
+    double Latitude=11;
+    double Longitude=12;
+    double Distance=13;
     string State=14;
     int32 TripId = 15;
     int32 CreatedBy = 16;
@@ -51,30 +52,16 @@ message NodeRequest{
     int32 Id =1;
     int32 LandmarkId = 2;
     int32 SeqNo = 3;
-    float Latitude =4;
-    float Longitude =5;
+    double Latitude =4;
+    double Longitude =5;
     string State=6;
     int32 CreatedBy = 7;
 }
 
 message GeofenceResponse{
-    int32 Id =1;
-    google.protobuf.Int32Value OrganizationId=2;
-    int32 CategoryId = 3;
-    int32 SubCategoryId = 4;
-    string Name =5;
-    string Type=6;
-    string Address=7;
-    string City=8;
-    string Country=9;
-    string Zipcode=10;
-    float Latitude=11;
-    float Longitude=12;
-    float Distance=13;
-    string State=14;
-    repeated NodeRequest NodeRequest=15;
-    Responcecode Code=16;
-    string message = 17;
+   GeofenceRequest GeofenceRequest =1;
+    Responcecode Code=2;
+    string message = 3;
 }
 
 message GeofenceEntityRequest{
@@ -94,4 +81,38 @@ message GeofenceEntityResponce{
     string subCategoryName=3;
     int32 geofenceId=4;
 
+}
+
+message CircularGeofenceRequest{
+   repeated GeofenceRequest GeofenceRequest =1;
+}
+
+message CircularGeofenceResponse{
+   repeated GeofenceRequest GeofenceRequest =1;
+    Responcecode Code=2;
+    string message = 3;
+}
+
+ message IdRequest {
+  int32 organizationId = 1;
+  int32 geofenceId=2;
+}
+message GetGeofenceResponse{
+    int32 Id =1;
+    int32 OrganizationId=2;
+    string CategoryName = 3;
+    string SubCategoryName = 4;
+    string GeofenceName =5;
+    string Address=6;
+    string City=7;
+    string Country=8;
+    string Zipcode=9;
+    double Latitude=10;
+    double Longitude=11;
+    double Distance=12;
+    string State=13;
+    int32 CreatedBy=14;
+    int32 ModifiedBy=15;
+    int64 CreatedAt=16;
+    int64 ModifiedAt=17;    
 }

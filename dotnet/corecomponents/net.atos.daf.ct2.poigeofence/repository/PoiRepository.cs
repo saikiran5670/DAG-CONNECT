@@ -24,16 +24,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty;
                 query = @"select 
-                           l.id
-                           ,l.name
+                            l.id as GlobalPOIId
+                           ,l.name as POIName
                            ,l.latitude
                            ,l.longitude
                            ,c.name as category
+						   ,l.category_id as CategoryId
+						   ,l.sub_category_id as SubCategoryId
                            ,l.city from MASTER.LANDMARK l
                      LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
-                     WHERE l.organization_id=@organization_id";
+                     WHERE l.organization_id is null";
+
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", null);
                 if (objPOIEntityRequest.CategoryId > 0)
                 {
                     parameter.Add("@category_id", objPOIEntityRequest.CategoryId);
@@ -61,28 +63,31 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 List<POI> pois = new List<POI>();
                 string query = string.Empty;
-                query = @"SELECT id, 
-                            organization_id,
-                            category_id,
-                            sub_category_id, 
-                            name,
-                            address,
-                            city,
-                            country,
-                            zipcode,
-                            type,
-                            latitude,
-                            longitude,
-                            distance,
-                            trip_id,
-                            state,
-                            created_at,
-                            created_by,
-                            modified_at,
-                            modified_by
+                query = @"SELECT l.id, 
+                            l.organization_id,
+                            l.category_id,
+                            c.name,                            
+                            l.sub_category_id, 
+                            s.name,
+                            l.name,
+                            l.address,
+                            l.city,
+                            l.country,
+                            l.zipcode,
+                            l.type,
+                            l.latitude,
+                            l.longitude,
+                            l.distance,
+                            l.trip_id,
+                            l.state,
+                            l.created_at,
+                            l.created_by,
+                            l.modified_at,
+                            l.modified_by
                             FROM master.landmark l
                             LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
-                            WHERE 1=1 ";
+                            LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
+                            WHERE 1=1 and l.state in ('A','I') ";
 
                 if (poiFilter.Id > 0)
                 {
@@ -129,7 +134,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@zipcode", poiFilter.Zipcode.ToLower());
                     query = query + " and LOWER(l.zipcode) = @zipcode ";
                 }
-                if (!string.IsNullOrEmpty(poiFilter.Type) && poiFilter.Type.ToUpper()!="NONE")
+                if (!string.IsNullOrEmpty(poiFilter.Type) && poiFilter.Type.ToUpper() != "NONE")
                 {
                     parameter.Add("@type", MapLandmarkTypeToChar(poiFilter.Type));
                     query = query + " and l.type = @type";
@@ -139,7 +144,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@state", MapLandmarkStateToChar(poiFilter.State));
                     query = query + " and l.state = @state";
                 }
-                if (poiFilter.Latitude>0)
+                if (poiFilter.Latitude > 0)
                 {
                     parameter.Add("@latitude", poiFilter.Latitude);
                     query = query + " and l.latitude = @latitude ";
@@ -177,8 +182,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                var parameterduplicate = new DynamicParameters();
+                parameterduplicate.Add("@name", poi.Name);
+                var queryduplicate = @"SELECT id FROM master.landmark where name=@name";
+                int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+
+                if (poiexist > 0)
+                {
+                    poi.Id = 0;
+                    return poi;
+                }
+
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", poi.OrganizationId!=null ? poi.OrganizationId : 0);
+                parameter.Add("@organization_id", poi.OrganizationId != null ? poi.OrganizationId : 0);
                 parameter.Add("@category_id", poi.CategoryId);
                 parameter.Add("@sub_category_id", poi.SubCategoryId);
                 parameter.Add("@name", poi.Name);
@@ -207,11 +223,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             return poi;
         }
-        public async Task<bool> UpdatePOI(POI poi)
+        public async Task<POI> UpdatePOI(POI poi)
         {
-            bool result = false;
             try
             {
+                var parameterduplicate = new DynamicParameters();
+                parameterduplicate.Add("@name", poi.Name);
+                var queryduplicate = @"SELECT id FROM master.landmark where name=@name";
+                int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+
+                if (poiexist > 0)
+                {
+                    poi.Id = -1;// POI is already exist with same name.
+                    return poi;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", poi.OrganizationId != null ? poi.OrganizationId : 0);
                 parameter.Add("@category_id", poi.CategoryId);
@@ -222,8 +247,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@country", poi.Country);
                 parameter.Add("@zipcode", poi.Zipcode);
                 parameter.Add("@type", MapLandmarkTypeToChar(poi.Type));
-                parameter.Add("@latitude", poi.Latitude);
-                parameter.Add("@longitude", poi.Longitude);
+                parameter.Add("@state", Convert.ToChar(poi.State));
+                //parameter.Add("@latitude", poi.Latitude);
+                //parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
                 parameter.Add("@trip_id", poi.TripId);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
@@ -239,8 +265,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 		                                country=@country, 
 		                                zipcode=@zipcode, 
 		                                [type]=@type, 
-		                                latitude=@latitude, 
-		                                longitude=@longitude, 
+		                                //latitude=@latitude, 
+		                                //longitude=@longitude, 
 		                                distance@distance, 
 		                                trip_id=@trip_id, 
 		                                state=@state,
@@ -250,15 +276,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (id > 0)
-                    result = true;
+                    poi.Id = id;
                 else
-                    result = false;
+                    poi.Id = 0;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return await Task.FromResult(result);
+            return await Task.FromResult(poi);
         }
         public async Task<bool> DeletePOI(int poiId)
         {
@@ -288,7 +314,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Id = record.id;
             poi.OrganizationId = !string.IsNullOrEmpty(record.Organization_Id) ? record.Organization_Id : 0;
             poi.CategoryId = !string.IsNullOrEmpty(record.category_id) ? record.category_id : 0;
+            poi.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
             poi.SubCategoryId = !string.IsNullOrEmpty(record.sub_category_id) ? record.sub_category_id : 0;
+            poi.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
             poi.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             poi.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
             poi.City = !string.IsNullOrEmpty(record.city) ? record.city : string.Empty;
@@ -308,7 +336,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
         public string MapCharToLandmarkState(string state)
         {
-            string landmarktype =string.Empty;
+            string landmarktype = string.Empty;
             switch (state)
             {
                 case "A":
@@ -325,7 +353,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
         public string MapCharToLandmarkType(string type)
         {
-            string  ptype = string.Empty;
+            string ptype = string.Empty;
             switch (type)
             {
                 case "N":

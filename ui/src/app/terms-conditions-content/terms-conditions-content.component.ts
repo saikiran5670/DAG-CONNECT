@@ -34,10 +34,12 @@ export class TermsConditionsContentComponent implements OnInit {
       }  
       this.translationService.getUserAcceptedTC(objData1).subscribe((response)=>{
         let activeTC = response.filter(resp => resp.state === "A")
-        this.fileURL = this.getFileURL(activeTC[0].description);
-        this.termsConditionsHistoryFormGroup.patchValue({
-          tcVersions: activeTC[0].versionno
-        });
+        if(activeTC.length != 0){
+          this.fileURL = this.getFileURL(activeTC[0].description);
+          this.termsConditionsHistoryFormGroup.patchValue({
+            tcVersions: activeTC[0].versionno
+          });
+        }
       });
     }, (error) => {
 
