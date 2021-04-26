@@ -144,6 +144,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@state", MapLandmarkStateToChar(poiFilter.State));
                     query = query + " and l.state = @state";
                 }
+                if (string.IsNullOrEmpty(poiFilter.State) || poiFilter.State.ToUpper() == "NONE")
+                {
+                    //parameter.Add("@state", MapLandmarkStateToChar(poiFilter.State));
+                    query = query + " and l.state in ('A','I')";
+                }
                 if (poiFilter.Latitude > 0)
                 {
                     parameter.Add("@latitude", poiFilter.Latitude);
