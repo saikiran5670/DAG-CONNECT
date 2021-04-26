@@ -1,38 +1,40 @@
-import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit } from '@angular/core';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-landmarks',
   templateUrl: './landmarks.component.html',
   styleUrls: ['./landmarks.component.less']
 })
-export class LandmarksComponent implements OnInit {
-  adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
-  showLoadingIndicator: any = false;
-  displayedColumns = ['All', 'Icon', 'Name', 'Category', 'Sub-Category', 'Address', 'Actions'];
-  displayedColumns1 = ['All', 'Name', 'Category', 'Sub-Category', 'Actions'];
-  dataSource: any;
-  initData: any = [];
-  data: any = [];
-  actionType: any;
-  createEditViewPoiFlag: boolean = false;
-  poiFlag: boolean = true;
-  groupFlag: boolean = false;
-  categoryFlag: boolean = false;
-  corridorFlag: boolean = false;
-  mapFlag: boolean = false;
-  selectedIndex : number = 0;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  selectedOrgRelations = new SelectionModel(true, []);
-  
-  constructor() { }
 
-  ngOnInit(): void {
-  
+export class LandmarksComponent implements OnInit {
+  localStLanguage: any;
+  accountOrganizationId: any;
+  translationData: any = {};
+  selectedIndex: number = 0;
+
+  constructor(private translationService: TranslationService) { }
+
+  ngOnInit() {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    let translationObj = {
+      id: 0,
+      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 18 //-- for landmark
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+      this.processTranslation(data);
+    });
+  }
+
+  processTranslation(transData: any) {
+    this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
+    //console.log("process translationData:: ", this.translationData)
   }
 
 }

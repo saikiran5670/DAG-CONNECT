@@ -8,6 +8,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.repository;
+using net.atos.daf.ct2.poigeofenceservice.Services;
 using net.atos.daf.ct2.poigeofenservice;
 
 namespace net.atos.daf.ct2.poigeofenceservice
@@ -35,7 +36,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }));
 
 
-            string connectionString = Configuration.GetConnectionString("ConnectionString");
+            string connectionString = Configuration.GetConnectionString("ConnectionString");        
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
@@ -46,6 +47,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IGeofenceManager, GeofenceManager>();
             services.AddTransient<IGeofenceRepository, GeofenceRepository>();
+            services.AddTransient<ILandmarkGroupManager, LandmarkGroupManager>();
+            services.AddTransient<ILandmarkgroupRepository, LandmarkgroupRepository>();
 
         }
 
@@ -70,6 +73,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 endpoints.MapGrpcService<CategoryManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
                 endpoints.MapGrpcService<GeofenceManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
+                endpoints.MapGrpcService<GroupManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>

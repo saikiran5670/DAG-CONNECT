@@ -23,10 +23,5 @@ namespace net.atos.daf.ct2.poigeofence.entity
 
     }
 
-    //public class CategoryList
-    //{
-    //    public List<Category> Categories { get; set; }
-    //    public List<SubCategory> SubCategories { get; set; }
-
-    //}
+    
 }

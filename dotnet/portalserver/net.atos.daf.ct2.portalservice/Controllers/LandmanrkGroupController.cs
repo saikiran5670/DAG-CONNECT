@@ -40,6 +40,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 GroupAddRequest objgroup = new GroupAddRequest();
                 objgroup.OrganizationId = request.OrganizationId;
                 objgroup.Name = request.Name;
+                objgroup.Description = request.Description;
                 objgroup.CreatedBy = request.CreatedBy;
                 objgroup.State  = request.State;                
                
@@ -87,8 +88,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("Add Group.");
                 GroupUpdateRequest objgroup = new GroupUpdateRequest();
                 objgroup.Id = request.Id;                
-                objgroup.Name = request.Name;               
-
+                objgroup.Name = request.Name;
+                objgroup.Description = request.Description;
                 foreach (var item in request.Poilist)
                 {
                     PoiId pOI = new PoiId();
@@ -200,7 +201,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, "Error in landmark group delete");
+                return StatusCode(500, "Error in landmark group get");
             }
         }
     }

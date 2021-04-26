@@ -11,13 +11,16 @@ rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
 rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
 rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
+rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
 }
 
-enum Responcecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
 }
 
 message DeleteRequest{
@@ -25,7 +28,7 @@ message DeleteRequest{
    int32 organization_id=2;
 }
 message GeofenceDeleteResponse {
-  Responcecode Code=1;
+  Responsecode Code=1;
   string Message = 2;  
 }
 
@@ -47,6 +50,7 @@ message GeofenceRequest{
     int32 TripId = 15;
     int32 CreatedBy = 16;
     repeated NodeRequest NodeRequest=17;
+    bool Exists=18;
 }
 message NodeRequest{
     int32 Id =1;
@@ -60,7 +64,7 @@ message NodeRequest{
 
 message GeofenceResponse{
    GeofenceRequest GeofenceRequest =1;
-    Responcecode Code=2;
+    Responsecode Code=2;
     string message = 3;
 }
 
@@ -73,7 +77,7 @@ message GeofenceEntityRequest{
 
 message GeofenceEntityResponceList  {
   repeated GeofenceEntityResponce GeofenceList = 1;
-  Responcecode code = 2;
+  Responsecode code = 2;
 }
 message GeofenceEntityResponce{
     string geofenceName = 1;
@@ -89,7 +93,7 @@ message CircularGeofenceRequest{
 
 message CircularGeofenceResponse{
    repeated GeofenceRequest GeofenceRequest =1;
-    Responcecode Code=2;
+    Responsecode Code=2;
     string message = 3;
 }
 
@@ -115,4 +119,20 @@ message GetGeofenceResponse{
     int32 ModifiedBy=15;
     int64 CreatedAt=16;
     int64 ModifiedAt=17;    
+}
+
+message GeofencePolygonUpdateRequest{
+ int32 Id =1;
+ google.protobuf.Int32Value OrganizationId=2;
+ int32 CategoryId = 3;
+ int32 SubCategoryId = 4;
+ string Name =5;
+ bool Exists=6;
+ int32 ModifiedBy = 7;
+}
+
+message GeofencePolygonUpdateResponce{
+    GeofencePolygonUpdateRequest GeofencePolygonUpdateRequest=1;
+    Responsecode Code=2;
+    string message = 3;
 }

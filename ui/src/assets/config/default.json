@@ -11,6 +11,7 @@
       "driverRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/driver",
       "packageRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/package",
       "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization",
-      "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe"
+      "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe",
+      "landmarkRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe"
     }
 }

@@ -1,21 +1,20 @@
 <div class="bgtrans">
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class="button1">
-        <div fxLayout="row" class='areaWidth'>
-          <button mat-flat-button color="primary" [matMenuTriggerFor]="belowMenu">
-            <mat-icon>add_circle_outline</mat-icon> New Landmark
-          </button>
-          <mat-menu #belowMenu="matMenu" yPosition="below">
-            <button mat-menu-item (click)="createEditView()">New POI</button>
-            <button mat-menu-item >New Geofence</button>
-          </mat-menu>
-        </div>
-      </div>
-
 <!-- <app-common-map *ngIf="mapFlag"></app-common-map> -->
 <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>POI (19)</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+      <div fxLayout="row" class='areaWidth'>
+        <button mat-flat-button color="primary" [matMenuTriggerFor]="belowMenu">
+          <mat-icon>add_circle_outline</mat-icon> New Landmark
+        </button>
+        <mat-menu #belowMenu="matMenu" yPosition="below">
+          <button mat-menu-item (click)="createEditView()">New POI</button>
+          <button mat-menu-item >New Geofence</button>
+        </mat-menu>
+      </div>
     </div>
   </div>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -39,7 +38,7 @@
     </div>
     <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
       <button mat-flat-button color="warn">
-        <mat-icon>deleteIcon</mat-icon> Delete
+        <mat-icon>deleteicon</mat-icon> Delete
       </button>
     </div>
   </div>
@@ -138,7 +137,7 @@
   </div>
   <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
     <button mat-flat-button color="warn">
-      <mat-icon>deleteIcon</mat-icon> Delete
+      <mat-icon>deleteicon</mat-icon> Delete
     </button>
   </div>
 </div>

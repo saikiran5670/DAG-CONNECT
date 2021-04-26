@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
@@ -48,6 +49,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                    response.Message = "Category Name is " + obj.Name + " already exists ";
                    response.Code = Responcecode.Conflict;
+                   response.CategoryID = result.Id;
                     
                 }
                 else if (result != null && result.Id >0)
@@ -88,6 +90,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     response.Message = "Edit successfully";
                     response.Code = Responcecode.Success;
+                    response.CategoryID = result.Id;
                 }
                 else
                 {
@@ -117,6 +120,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responcecode.Success;
+                    
                 }
                else
                 {
@@ -145,17 +149,21 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     var Data = new GetCategoryType();
                     Data.Id = item.Id;
-                    //Data.OrganizationId = item.Organization_Id;
                     Data.Name = item.Name;
-                    //Data.IconId = item.Icon_Id;
-                   // Data.Type = item.Type;
-                    //Data.ParentId = item.Parent_Id;
-                    //Data.State = item.State;
-                    //Data.CreatedAt = item.Created_At;
-                    //Data.CreatedBy = item.Created_By;
-                    //Data.ModifiedAt = item.Modified_At;
-                    //Data.ModifiedBy = item.Modified_By;
                     response.Categories.Add(Data);
+                }
+
+                _logger.Info("GetCategoryType service called.");
+
+                if (result != null)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Get Category Type Details";
+                }
+                else
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "Resource Not Found ";
                 }
                 return await Task.FromResult(response);
 
@@ -166,6 +174,52 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             return await Task.FromResult(response);
         }
+
+        public async override Task<GetResponse> GetCategoryDetails(GetRequest request, ServerCallContext context)
+        {
+            GetResponse response = new GetResponse();
+            try
+            {
+                var categoryListDetails = _categoryManager.GetCategoryDetails().Result;
+
+                foreach (var item in categoryListDetails)
+                {
+                    var catdetails = new categoryDetails();
+                    catdetails.ParentCategoryId = item.Parent_id;
+                    catdetails.SubCategoryId = item.Subcategory_id;
+                    catdetails.IconName = item.IconName == null ? "" : item.IconName; 
+                    if (item.Icon != null)
+                    {
+                        catdetails.Icon = ByteString.CopyFrom(item.Icon);
+                    }
+                    catdetails.ParentCategoryName = item.ParentCategory == null ? "" : item.ParentCategory;
+                    catdetails.SubCategoryName = item.SubCategory == null ? "" : item.SubCategory;
+                    catdetails.NoOfPOI = item.No_of_POI;
+                    catdetails.NoOfGeofence = item.No_of_Geofence;
+                    response.Categories.Add(catdetails);
+
+                }
+                _logger.Info("GetCategoryDetails service called.");
+
+                if (categoryListDetails != null)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Get Category Type Details";
+                }
+                else
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "Resource Not Found ";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
+
         // END - Category
     }
 }
