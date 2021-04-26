@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.organization.repository
                               a.id,
                               o.id ,
                               o.org_id ,
-                              case when o.name is null then 'Unknown' else o.name end as name ,                             
+                              coalesce(o.name, '(' || o.org_id || ')') as name,                             
                               o.city ,                             
                               o.street ,
                               o.street_number ,
@@ -1138,7 +1138,9 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", OrganizationID);
-                var query = @"Select distinct om.owner_org_id id,o.name from master.organization o
+                var query = @"Select distinct om.owner_org_id id,
+                                coalesce(o.name, '(' || o.org_id || ')') as name
+                                from master.organization o
                                left join master.orgrelationshipmapping om on om.target_org_id=o.id
                                 where o.id=@id and o.state='A'";
                 return await dataAccess.QueryAsync<Organization>(query, parameter);
