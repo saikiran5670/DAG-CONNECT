@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { OrganizationService } from 'src/app/services/organization.service';
 
 declare var H: any;
 
@@ -20,7 +21,7 @@ export class CommonMapComponent implements OnInit {
   @ViewChild("map")
   public mapElement: ElementRef;
 
-  public constructor() {
+  public constructor(private organizationService: OrganizationService) {
     this.query = "starbucks";
       this.platform = new H.service.Platform({
           "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -36,43 +37,65 @@ export class CommonMapComponent implements OnInit {
 
   public ngAfterViewInit() {
     let defaultLayers = this.platform.createDefaultLayers();
-    let map = new H.Map(
-        this.mapElement.nativeElement,
-        defaultLayers.vector.normal.map,
-        {
-            zoom: 10,
-            // center: { lat: 37.7397, lng: -121.4252 }
-            center: { lat : this.lat, lng: this.lng }
-        }
-    );
-    this.search = new H.places.Search(this.platform.getPlacesService());
-    // this.search = new H.places.Search(this.platform.getPlacesService()); 
-    let behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+//Step 2: initialize a map - this map is centered over Europe
+ let map = new H.Map(this.mapElement.nativeElement,
+  defaultLayers.vector.normal.map,{
+  center: {lat:50, lng:5},
+  zoom: 4,
+  pixelRatio: window.devicePixelRatio || 1
+});
+// add a resize listener to make sure that the map occupies the whole container
+window.addEventListener('resize', () => map.getViewPort().resize());
+
+//Step 3: make the map interactive
+// MapEvents enables the event system
+// Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+// Create the default UI components
+var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+// Now use the map as required...
+// window.onload = function () {
+ this.addMarkersToMap(map)
+// }
+
+this.setUpClickListener(map);
+
 }
 
-public places(query: string) {
-  this.map.removeObjects(this.map.getObjects());
-  this.search.request({ "q": query, "at": this.lat + "," + this.lng }, {}, data => {
-      for(let i = 0; i < data.results.items.length; i++) {
-          this.dropMarker({ "lat": data.results.items[i].position[0], "lng": data.results.items[i].position[1] }, data.results.items[i]);
-      }
-  }, error => {
-      console.error(error);
-  });
+ setUpClickListener(map) {
+  // obtain the coordinates and display in console.
+  map.addEventListener('tap', function (evt) {
+    var coord = map.screenToGeo(evt.currentPointer.viewportX,
+            evt.currentPointer.viewportY);
+            // let x = Math.abs(coord.lat.toFixed(4)) + ((coord.lat > 0) ? 'N' : 'S');
+            // let y = Math.abs(coord.lng.toFixed(4)) + ((coord.lng > 0) ? 'E' : 'W')
+            let x = Math.abs(coord.lat.toFixed(4));
+            let y = Math.abs(coord.lng.toFixed(4));
+            console.log("latitude=" +x);
+            console.log("longi=" +y);
+            let locations = new H.map.Marker({lat:x, lng:y});
+            map.addObject(locations);
+
+    });
 }
 
-private dropMarker(coordinates: any, data: any) {
-  let marker = new H.map.Marker(coordinates);
-  marker.setData("<p>" + data.title + "<br>" + data.vicinity + "</p>");
-  marker.addEventListener('tap', event => {
-      let bubble =  new H.ui.InfoBubble(event.target.getPosition(), {
-          content: event.target.getData()
-      });
-      this.ui.addBubble(bubble);
-  }, false);
-  this.map.addObject(marker);
-}
+ addMarkersToMap(map) {
+    // var parisMarker = new H.map.Marker({lat:48.8567, lng:2.3508});
+    // map.addObject(parisMarker);
 
+    var romeMarker = new H.map.Marker({lat:41.9, lng: 12.5});
+    map.addObject(romeMarker);
+
+    var berlinMarker = new H.map.Marker({lat:52.5166, lng:13.3833});
+    map.addObject(berlinMarker);
+
+    var madridMarker = new H.map.Marker({lat:40.4, lng: -3.6833});
+    map.addObject(madridMarker);
+
+    var londonMarker = new H.map.Marker({lat:51.5008, lng:-0.1224});
+    map.addObject(londonMarker);
+}
 
 }
