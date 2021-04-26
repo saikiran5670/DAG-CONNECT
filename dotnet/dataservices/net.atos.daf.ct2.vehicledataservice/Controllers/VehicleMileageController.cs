@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle")]
-    [Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
+    //[Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
     public class VehicleMileageController:ControllerBase
     {
         private readonly ILogger<VehicleMileageController> logger;        
@@ -66,47 +66,34 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                         return StatusCode(400, string.Empty); 
                     }
 
-                  List<net.atos.daf.ct2.vehicle.entity.Vehicles> vehiclelist = await vehicleManager.GetVehicleMileage(since,isNumeric);
-                  List<Entity.VehiclesCSV> vehiclescsvList=new List<Entity.VehiclesCSV>();
-                  VehicleMileageResponse vehicleMileageResponse=new VehicleMileageResponse();
-                  vehicleMileageResponse.Vehicles =new List<Entity.Vehicles>();
-                    if (vehiclelist.Count > 0)
-                    {
-                        foreach (var item in vehiclelist)
-                        {
-                            if (contentType == "text/csv")
-                            {
-                                Entity.VehiclesCSV vehiclesCSV = new Entity.VehiclesCSV();
-                                vehiclesCSV.EvtDateTime = item.EvtDateTime.ToString();
-                                vehiclesCSV.VIN = item.VIN;
-                                vehiclesCSV.TachoMileage = item.TachoMileage;
-                                vehiclesCSV.RealMileage = item.RealMileage;
-                                vehiclesCSV.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
-                                vehiclescsvList.Add(vehiclesCSV);
-                            }
-                            else
-                            {
-                                Entity.Vehicles vehiclesobj = new Entity.Vehicles();
-                                vehiclesobj.EvtDateTime = item.EvtDateTime.ToString();
-                                vehiclesobj.VIN = item.VIN;
-                                vehiclesobj.TachoMileage = item.TachoMileage;
-                                vehiclesobj.GPSMileage = item.GPSMileage;
-                                vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
-                                vehicleMileageResponse.Vehicles.Add(vehiclesobj);
-                            }
-                        }
-                    }
-                    else 
+                    VehicleMileage vehiclemileage = new VehicleMileage();
+                    vehiclemileage= await vehicleManager.GetVehicleMileage(since,isNumeric, contentType);
+
+                 
+                    if (vehiclemileage==null)
                     {
                         return StatusCode(404, string.Empty);
-                    }
-                  if(contentType=="text/csv")
-                  {                        
-                     return new VehicleMileageCSVResult(vehiclescsvList); //, "mileagedata.csv"
+                    } 
+
+                    if (contentType=="text/csv")
+                    {                        
+                     return new VehicleMileageCSVResult(vehiclemileage.VehiclesCSV); //, "mileagedata.csv"
                     }
                   else
                   {
-                      vehicleMileageResponse.RequestTimestamp=currentdatetime;
+                        VehicleMileageResponse vehicleMileageResponse = new VehicleMileageResponse();
+                        vehicleMileageResponse.Vehicles = new List<Entity.Vehicles>();
+                        foreach (var item in vehiclemileage.Vehicles)
+                        {
+                            Entity.Vehicles vehiclesobj = new Entity.Vehicles();                           
+                            vehiclesobj.EvtDateTime = item.EvtDateTime.ToString();
+                            vehiclesobj.VIN = item.VIN;
+                            vehiclesobj.TachoMileage = item.TachoMileage;
+                            vehiclesobj.GPSMileage = item.GPSMileage;
+                            vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
+                            vehicleMileageResponse.Vehicles.Add(vehiclesobj);
+                        }
+                      vehiclemileage.RequestTimestamp=currentdatetime;
                       return Ok(vehicleMileageResponse);
                   }
                 }

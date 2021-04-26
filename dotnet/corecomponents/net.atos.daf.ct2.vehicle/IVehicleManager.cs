@@ -28,8 +28,8 @@ namespace net.atos.daf.ct2.vehicle
         //  Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
         // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
 
-         #region Vehicle Mileage Data
-          Task<List<Vehicles>> GetVehicleMileage(string since,bool isnumeric);            
+        #region Vehicle Mileage Data
+        Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype);            
          #endregion
 
     }
