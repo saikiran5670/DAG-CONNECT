@@ -77,8 +77,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public POI ToPOIEntity(net.atos.daf.ct2.poiservice.POIRequest poiRequest)
         {
             POI poi = new POI();
-            poi.Id = Convert.ToInt32(poiRequest.Id);
-            poi.OrganizationId = Convert.ToInt32(poiRequest.OrganizationId);
+            poi.Id = poiRequest.Id;
+            poi.OrganizationId = poiRequest.OrganizationId !=null ? poiRequest.OrganizationId:0;
             poi.CategoryId = poiRequest.CategoryId;
             poi.SubCategoryId = poiRequest.SubCategoryId;
             poi.Name = poiRequest.Name;
@@ -94,11 +94,11 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.CreatedBy = poiRequest.CreatedBy;
             return poi;
         }
-        public net.atos.daf.ct2.poiservice.POIData ToPOIRequest(POI poiEntity)
+        public net.atos.daf.ct2.poiservice.POIData ToPOIResponseData(POI poiEntity)
         {
             net.atos.daf.ct2.poiservice.POIData poi = new net.atos.daf.ct2.poiservice.POIData();
-            poi.Id = Convert.ToInt32(poiEntity.Id);
-            poi.OrganizationId = Convert.ToInt32(poiEntity.OrganizationId);
+            poi.Id = poiEntity.Id;
+            poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0 ;
             poi.CategoryId = poiEntity.CategoryId;
             poi.CategoryName = poiEntity.CategoryName;
             poi.SubCategoryId = poiEntity.SubCategoryId;
