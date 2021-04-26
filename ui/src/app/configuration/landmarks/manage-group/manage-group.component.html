@@ -12,7 +12,8 @@
         <mat-card class='mat-elevation-z'>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGroups || 'Groups' }}</span>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGroups || 'Groups' }}
+                        ({{ dataSource.filteredData.length }})</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -33,7 +34,7 @@
                         </div>
                         <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                             <button mat-flat-button color="primary" (click)="newUserRole()">
-                            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewUserRole || 'New Account Role'}}
+                            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewGroup || 'New Group'}}
                             </button>
                         </div>
                     </div>
@@ -74,7 +75,7 @@
                                 <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
                                     <mat-icon>create</mat-icon>
                                 </button>
-                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="deleteUserRole(row)" matTooltip="Delete">
+                                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="deleteLandmarkGroup(row)" matTooltip="Delete">
                                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                                 </button>
                             </mat-cell>

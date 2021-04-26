@@ -55,8 +55,8 @@ namespace net.atos.daf.ct2.poigeofence.test
                 Distance = 12,
                 Latitude = 51.07,
                 Longitude = 57.07,
-                Name = "Poi Test",
-                State = "M",
+                Name = "Poi Test1",
+                State = "A",
                 // ModifiedAt =,
                 //  ModifiedBy =,
                 OrganizationId = 100,
@@ -79,24 +79,26 @@ namespace net.atos.daf.ct2.poigeofence.test
         public void UpdatePoiTest()
         {
 
-            var ObjPoi= new POI()
+            var ObjPoi = new POI()
             {
-                Id=26,
-                Address = "Atos Syntel Pune",
-                CategoryId = 1,
+                Id = 26,
+                Address = "Pune",
+                CategoryId = 10,
                 City = "Pune",
                 Country = "India",
-                Distance = 22,               
-                Name = "Update Poi Test",
-                State = "M",               
-                ModifiedBy =1,
-                OrganizationId = 1,
-                SubCategoryId = 2,
-                TripId = 2,
-                Type = "V",
+                Distance = 12.00,
+                Latitude = 51.07,
+                Longitude = 57.07,
+                Name = "Poi Update Test12",
+                State = "Active",
+                // ModifiedAt =,
+                ModifiedBy = 1,
+                OrganizationId = 100,
+                SubCategoryId = 8,
+                TripId = 10,
+                Type = "POI",
                 Zipcode = "411057",
-               
-
+                  
             };
             var resultPackage = _iPoiManager.UpdatePOI(ObjPoi).Result;
             Assert.IsNotNull(resultPackage);
@@ -108,17 +110,17 @@ namespace net.atos.daf.ct2.poigeofence.test
         [TestMethod]
         public void GetPoiTest()
         {
-           var poiFilter = new POI() { State = "Maharastra" };
+            var poiFilter = new POI() { CategoryId=10, SubCategoryId=8 };
             var result = _iPoiManager.GetAllPOI(poiFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
-        }    
-        
+        }
+
 
         [TestMethod]
         public void DeletePoi()
         {
-            var result = _iPoiManager.DeletePOI(2).Result;
+            var result = _iPoiManager.DeletePOI(6).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result);
         }

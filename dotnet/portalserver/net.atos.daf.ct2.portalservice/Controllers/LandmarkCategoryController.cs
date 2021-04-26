@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.portalservice.Entity.POI;
 using System;
 using net.atos.daf.ct2.poigeofences;
+using log4net;
+using System.Reflection;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -17,11 +20,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly CategoryService.CategoryServiceClient _categoryServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly CategoryMapper _categoryMapper;
+        private ILog _logger;
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient, AuditHelper auditHelper)
         {
             _categoryServiceClient = categoryServiceClient;
             _auditHelper = auditHelper;
             _categoryMapper = new CategoryMapper();
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
 
@@ -44,10 +49,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "Icon Details is required ");
                 }
-                var Request = _categoryMapper.MapCategory(request);
-                var data = await _categoryServiceClient.AddCategoryAsync(Request);
+                var MapRequest = _categoryMapper.MapCategory(request);
+                var data = await _categoryServiceClient.AddCategoryAsync(MapRequest);
                 if (data != null && data.Code == Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                           "Category service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "AddCategory method in Category controller", data.CategoryID, data.CategoryID, JsonConvert.SerializeObject(request),
+                                            Request);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responcecode.Conflict)
@@ -63,7 +72,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                //_logger.Error(null, ex);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "AddCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -79,10 +93,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Category id is required.");
                 }
-                var Request = _categoryMapper.MapCategoryforEdit(request);
-                var data = await _categoryServiceClient.EditCategoryAsync(Request);
+                var MapRequest = _categoryMapper.MapCategoryforEdit(request);
+                var data = await _categoryServiceClient.EditCategoryAsync(MapRequest);
                 if (data != null && data.Code == Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                          "Category service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                          "EditCategory method in Category controller", data.CategoryID, data.CategoryID, JsonConvert.SerializeObject(request),
+                                           Request);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responcecode.NotFound)
@@ -98,7 +116,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                //_logger.Error(null, ex);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "EditCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -114,10 +136,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Category id is required.");
                 }
-                var Request = _categoryMapper.MapCategoryforDelete(request);
-                var data = await _categoryServiceClient.DeleteCategoryAsync(Request);
+                var MapRequest = _categoryMapper.MapCategoryforDelete(request);
+                var data = await _categoryServiceClient.DeleteCategoryAsync(MapRequest);
                 if (data != null && data.Code == Responcecode.Success)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                         "DeleteCategory method in Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responcecode.NotFound)
@@ -133,7 +159,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                //_logger.Error(null, ex);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "DeleteCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -148,13 +178,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The category type is not valid. It should be of single character");
                 }
-                var Request = _categoryMapper.MapCategoryType(request);
-                var data = await _categoryServiceClient.GetCategoryTypeAsync(Request);
+                var MapRequest = _categoryMapper.MapCategoryType(request);
+                var data = await _categoryServiceClient.GetCategoryTypeAsync(MapRequest);
 
                 if (data != null && data.Code == Responcecode.Success)
                 {
                     if (data.Categories != null && data.Categories.Count > 0)
                     {
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                        "Category service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "GetCategoryType method in Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                         Request);
                         return Ok(data);
                     }
                     else
@@ -171,25 +205,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                //_logger.Error(null, ex);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "GetCategoryType method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
         [HttpGet]
         [Route("getcategoryDetails")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetCategoryDetails([FromQuery] GetRequest Request)
+        public async Task<IActionResult> GetCategoryDetails([FromQuery] GetRequest request)
         {
             try
             {
-                    var response = await _categoryServiceClient.GetCategoryDetailsAsync(Request);
+                    var response = await _categoryServiceClient.GetCategoryDetailsAsync(request);
 
 
                     if (response != null)
                     {
                         if (response.Categories != null && response.Categories.Count > 0)
                         {
-                            return Ok(response);
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                        "Category service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "GetCategoryDetails method in Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                         Request);
+                        return Ok(response);
                         }
                         else
                         {
@@ -204,6 +246,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "GetCategoryDetails method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }

@@ -9,6 +9,7 @@ using net.atos.daf.ct2.poiservice;
 using Newtonsoft.Json;
 using log4net;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -123,7 +124,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
         [HttpPut]
         [Route("update")]
         public async Task<IActionResult> UpdatePOI(POI request)
@@ -218,7 +218,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
         [HttpGet]
         [Route("downloadpoiforexcel")]
         public async Task<IActionResult> DownLoadPOIForExcel([FromQuery] int OrganizationId)
@@ -253,5 +252,46 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
+        [HttpGet]
+        [Route("get")]
+        public async Task<IActionResult> GetPOIs([FromQuery] POIFilter poiFilter)
+        {
+            try
+            {
+                _logger.Info("GetPOIs method in POI API called.");
+                POIRequest poiRequest = new POIRequest();
+                poiRequest.Id = poiFilter.Id;
+                poiRequest.OrganizationId = poiFilter.OrganizationId;
+                poiRequest.CategoryId = poiFilter.CategoryId;
+                poiRequest.SubCategoryId = poiFilter.SubCategoryId;
+                var data = await _poiServiceClient.GetAllPOIAsync(poiRequest);
+                if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
+                {
+                    if (data.POIList != null && data.POIList.Count > 0)
+                    {
+                        List<net.atos.daf.ct2.portalservice.Entity.POI.POIResponse> list = new List<net.atos.daf.ct2.portalservice.Entity.POI.POIResponse>();
+                        foreach (var item in data.POIList)
+                        {
+                            list.Add(_mapper.ToPOIEntity(item));    
+                        }
+                        return Ok(list);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "POI details are not found");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
     }
 }
+
