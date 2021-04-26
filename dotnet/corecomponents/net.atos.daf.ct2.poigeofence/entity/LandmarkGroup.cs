@@ -17,6 +17,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int created_by { get; set; }
         public long modified_at { get; set; }
         public int modified_by { get; set; }
+        public int poiCount { get; set; }
+        public int geofenceCount { get; set; }
         public List<POI> poilist { get; set; }
     }
 

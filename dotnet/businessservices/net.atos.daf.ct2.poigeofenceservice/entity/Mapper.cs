@@ -92,6 +92,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.Distance = Convert.ToDouble(poiRequest.Distance);
             poi.State = poiRequest.State;
             poi.CreatedBy = poiRequest.CreatedBy;
+            poi.CreatedAt = poiRequest.CreatedAt;
             return poi;
         }
         public net.atos.daf.ct2.poiservice.POIData ToPOIResponseData(POI poiEntity)

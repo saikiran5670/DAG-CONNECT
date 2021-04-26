@@ -11,6 +11,7 @@ rpc AddCategory (CategoryAddRequest) returns (CategoryAddResponse);
 rpc EditCategory (CategoryEditRequest) returns (CategoryEditResponse);
 rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
 rpc GetCategoryType (CategoryGetRequest) returns (CategoryGetResponse);
+rpc GetCategoryDetails (GetRequest) returns (GetResponse);
     }
 
 
@@ -40,6 +41,7 @@ message CategoryAddResponse
 {
   Responcecode Code=1;
   string Message = 2;  
+  int32 CategoryID =3;
 }
 
 message CategoryEditRequest
@@ -54,7 +56,8 @@ message CategoryEditRequest
 message CategoryEditResponse
 {
   Responcecode Code=1;
-  string Message = 2;  
+  string Message = 2; 
+   int32 CategoryID =3;
 }
 
 message CategoryDeleteRequest
@@ -65,6 +68,7 @@ message CategoryDeleteResponse
 {
   Responcecode Code=1;
   string Message = 2;  
+  int32 CategoryID =3;
 }
 message CategoryGetRequest
 {
@@ -96,4 +100,29 @@ message category{
       int32 Created_By =9;
       int64 Modified_At= 10;
       int32 Modified_By =11;
+}
+
+message GetRequest
+{
+
+}
+message GetResponse{
+
+repeated categoryDetails categories =1;
+  Responcecode Code=2;
+  string Message = 3; 
+
+}
+
+message categoryDetails
+{
+int32 ParentCategoryId =1;
+int32 SubCategoryId =2;
+string IconName =3;
+bytes Icon =4;
+string ParentCategoryName =5;
+string SubCategoryName =6;
+int32 No_Of_POI =7;
+int32 No_Of_Geofence =8;
+
 }

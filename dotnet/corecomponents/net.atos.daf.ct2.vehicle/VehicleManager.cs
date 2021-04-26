@@ -5,7 +5,7 @@ using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
 using  net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
-
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -231,7 +231,82 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+        #region Vehicle Mileage Data
+        public async Task<VehicleMileage> GetVehicleMileage(string since,bool isnumeric,string contenttype)
+        {            
+            try
+            {
+                long startDate = 0;
+                long endDate = 0;
 
+                if (string.IsNullOrEmpty(since) || since == "yesterday")
+                {
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(DateTime.Today.AddDays(-1)));
+
+                }
+                else if (since == "today")
+                {
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(DateTime.Now));
+                }
+                else if (isnumeric)
+                {
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(Convert.ToDateTime(since)));
+                }
+                IEnumerable<dtoVehicleMileage> vehiclemileageList= await vehicleRepository.GetVehicleMileage(startDate, endDate);
+                
+                VehicleMileage vehicleMileage = new VehicleMileage();
+                vehicleMileage.Vehicles = new List<Vehicles>();
+                vehicleMileage.VehiclesCSV = new List<VehiclesCSV>();
+                string sTimezone = "UTC";
+                string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
+
+                if (vehiclemileageList!=null)
+                {
+                    foreach (var item in vehiclemileageList)
+                    {
+                        if (contenttype == "text/csv")
+                        {
+                            VehiclesCSV vehiclesCSV = new VehiclesCSV();
+                            vehiclesCSV.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat); 
+                            vehiclesCSV.VIN = item.vin;
+                            vehiclesCSV.TachoMileage = item.odo_distance;
+                            vehiclesCSV.RealMileage = item.real_distance;
+                            vehiclesCSV.RealMileageAlgorithmVersion = "1.2";
+                            vehicleMileage.VehiclesCSV.Add(vehiclesCSV); 
+                        }
+                        else
+                        {
+                            Vehicles vehiclesobj = new Vehicles();
+                            vehiclesobj.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat); ;
+                            vehiclesobj.VIN = item.vin;
+                            vehiclesobj.TachoMileage = item.odo_distance;
+                            vehiclesobj.GPSMileage = item.real_distance;
+                            vehiclesobj.RealMileageAlgorithmVersion = "1.2";
+                            vehicleMileage.Vehicles.Add(vehiclesobj);
+                        }
+                    }
+                }
+                return vehicleMileage;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static DateTime GetStartOfDay(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, 0);
+        }
+        public static DateTime GetEndOfDay(DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59, 999);
+        }
+
+        #endregion
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try

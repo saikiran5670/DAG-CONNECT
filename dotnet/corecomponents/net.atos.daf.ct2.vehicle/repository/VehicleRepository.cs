@@ -982,7 +982,6 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
 
-
         #region Vehicle Data Interface Methods
 
         public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
@@ -1721,7 +1720,76 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #endregion
 
+
+        #region Vehicle Mileage Data
+        public async Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate)
+        {            
+            try
+            {
+                var QueryStatement = @"select 
+                                         id                                       
+                                        ,modified_at 
+                                        ,evt_timestamp
+                                        ,odo_mileage
+                                        ,odo_distance
+                                        ,real_distance
+                                        ,vin
+                                        from mileage.vehiclemileage  
+                                        where";
+
+                var parameter = new DynamicParameters();
+              
+                parameter.Add("@start_at", startDate);
+                parameter.Add("@end_at", endDate);
+                QueryStatement = QueryStatement + " modified_at >= @start_at AND modified_at <= @end_at";
+               
+                IEnumerable<dtoVehicleMileage> mileageData = await DataMartdataAccess.QueryAsync<dtoVehicleMileage>(QueryStatement, parameter);
+                
+                //List<Vehicles> vehiclesList = new List<Vehicles>();
+                //foreach (dynamic record in mileageData)
+                //{                                   
+                //    vehiclesList.Add(MapMileage(record));
+                //}
+                return mileageData;
+            }
+            catch (Exception ex)
+            {                
+                throw ex;
+            }
+        }
+
+        //public async Task<string> GetVehicleVin(int vehicle_id)
+        //{
+        //    try
+        //    {
+        //       string vin = await DataMartdataAccess.QuerySingleAsync<string>("select coalesce((select vin FROM master.vehicle where id=@id))", new { id = vehicle_id });
+        //       return vin;
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        //private Vehicles MapMileage(dynamic record)
+        //{
+        //    string sTimezone = "UTC";
+        //    string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";          
+           
+        //    Vehicles vehicles=new Vehicles();
+        //    vehicles.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.evt_timestamp, sTimezone, targetdateformat); 
+        //    vehicles.VIN =record.vin;
+        //    vehicles.TachoMileage =record.odo_distance;
+        //    vehicles.GPSMileage =record.real_distance;
+        //    vehicles.RealMileage =record.real_distance;
+        //    vehicles.RealMileageAlgorithmVersion ="1.2";
+        //    return vehicles;
+        //}
+
        
+
+        #endregion
+
     }
 }
 
