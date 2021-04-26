@@ -4,7 +4,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
-import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-manage-category',
@@ -20,7 +19,7 @@ export class ManageCategoryComponent implements OnInit {
   accountOrganizationId: any;
   createViewEditStatus: boolean = false;
 
-  constructor(private translationService: TranslationService) { }
+  constructor() { }
   
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));

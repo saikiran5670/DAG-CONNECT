@@ -4,22 +4,21 @@ import { ConfigurationComponent } from './configuration.component';
 import { AlertsComponent } from './alerts/alerts.component';
 import { LandmarksComponent } from './landmarks/landmarks.component';
 import { VehicleManagementComponent } from './vehicle-management/vehicle-management.component';
-import { VehicleGroupManagementComponent } from './vehicle-group-management/vehicle-group-management.component';
 import { DriverManagementComponent } from '../admin/driver-management/driver-management.component';
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
+import { ReportSchedulerComponent } from "./report-scheduler/report-scheduler.component";
 
 const routes: Routes = [
   {
     path: "", component: ConfigurationComponent, children:[
-      { path: "alerts", component: LandmarksComponent },
+      { path: "alerts", component: AlertsComponent },
       { path: "landmarks", component: LandmarksComponent },
-      { path: "reportscheduler", component: LandmarksComponent },
+      { path: "reportscheduler", component: ReportSchedulerComponent },
       { path: "drivermanagement", component: DriverManagementComponent },
       { path: "vehiclemanagement", component: VehicleManagementComponent },
       { path: "termsandcondition", component: TermsConditionsManagementComponent },
       { path: "dtctranslation", component: DtcTranslationComponent }
-      // { path: "vehiclegroupmanagement", component: VehicleGroupManagementComponent }
     ]
   }
 ];
