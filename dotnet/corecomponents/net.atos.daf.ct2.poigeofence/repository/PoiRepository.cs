@@ -247,10 +247,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (poi.OrganizationId > 0)
                 {
                     parameterduplicate.Add("@organization_id", poi.OrganizationId);
-                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and type = 'P' and name=@name and id<>@id and organization_id=@organization_id;";
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and type = 'P' and name=@name and id <> @id and organization_id=@organization_id;";
                 }
                 else
-                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and type = 'P' and name=@name and id<>@id;";
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and type = 'P' and name=@name and id <> @id;";
 
                 int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
@@ -262,52 +262,52 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 var parameter = new DynamicParameters();
                 string query = @"Update master.landmark
-                                SET 	organization_id=@organization_id ";
+                                SET organization_id=@organization_id ";
 
                 if (poi.CategoryId > 0)
                 {
                     parameter.Add("@category_id", poi.CategoryId);
-                    query = query + ", l.category_id= @category_id ";
+                    query = query + ", category_id=@category_id ";
                 }
                 if (poi.SubCategoryId > 0)
                 {
-                    parameter.Add("@sub_category_id ", poi.CategoryId);
-                    query = query + ", l.sub_category_id= @sub_category_id ";
+                    parameter.Add("@sub_category_id", poi.SubCategoryId);
+                    query = query + ", sub_category_id=@sub_category_id ";
                 }
                 if (!string.IsNullOrEmpty(poi.Name))
                 {
                     parameter.Add("@name", poi.Name);
-                    query = query + ", l.name= @name ";
+                    query = query + ",name=@name ";
                 }
                 if (!string.IsNullOrEmpty(poi.Address))
                 {
                     parameter.Add("@address", poi.Address);
-                    query = query + ", l.address= @address ";
+                    query = query + ", address=@address ";
                 }
                 if (!string.IsNullOrEmpty(poi.City))
                 {
                     parameter.Add("@city", poi.City);
-                    query = query + ", l.city= @city ";
+                    query = query + ", city=@city ";
                 }
                 if (!string.IsNullOrEmpty(poi.Country))
                 {
                     parameter.Add("@country", poi.Country);
-                    query = query + ", l.country = @country ";
+                    query = query + ", country=@country ";
                 }
                 if (!string.IsNullOrEmpty(poi.Zipcode))
                 {
                     parameter.Add("@zipcode", poi.Zipcode);
-                    query = query + ", l.zipcode= @zipcode ";
+                    query = query + ", zipcode=@zipcode ";
                 }
                 if (!string.IsNullOrEmpty(poi.Type) && poi.Type.ToUpper() != "NONE")
                 {
                     parameter.Add("@type", MapLandmarkTypeToChar(poi.Type));
-                    query = query + ", l.type = @type ";
+                    query = query + ", type=@type ";
                 }
                 if (!string.IsNullOrEmpty(poi.State) && poi.State.ToUpper() != "NONE")
                 {
                     parameter.Add("@state", MapLandmarkStateToChar(poi.State));
-                    query = query + ", l.state = @state ";
+                    query = query + ", state=@state ";
                 }
                 //if (poi.Latitude > 0)
                 //{
@@ -327,13 +327,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (poi.ModifiedBy > 0)
                 {
                     parameter.Add("@modified_by", poi.ModifiedBy);
-                    query = query + ", l.modified_by= @modified_by ";
+                    query = query + ", modified_by=@modified_by ";
                 }
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                query = query + ", l.modified_at= @modified_at ";
+                query = query + ", modified_at=@modified_at ";
 
                 parameter.Add("@id", poi.Id);
-                query = query + " where l.id= @id; RETURNING id";
+                query = query + " where id=@id RETURNING id";
+
+                parameter.Add("@organization_id", poi.OrganizationId);
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (id > 0)
@@ -384,9 +386,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Country = !string.IsNullOrEmpty(record.country) ? record.country : string.Empty;
             poi.Zipcode = !string.IsNullOrEmpty(record.zipcode) ? record.zipcode : string.Empty;
             poi.Type = MapCharToLandmarkState(record.type);
-            poi.Latitude = record.latitude!=null? record.latitude:0;
-            poi.Longitude = record.longitude!=null ? record.longitude:0;
-            poi.Distance = record.distance!=null ? record.distance:0;
+            poi.Latitude = Convert.ToDouble(record.latitude);
+            poi.Longitude = Convert.ToDouble(record.longitude);
+            poi.Distance = Convert.ToDouble(record.distance);
             poi.TripId = record.trip_id!=null ? record.trip_id : 0;
             poi.CreatedAt = record.created_at!=null ? record.created_at:0;
             poi.State = MapCharToLandmarkState(record.state);

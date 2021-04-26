@@ -41,12 +41,12 @@ namespace net.atos.daf.ct2.geofenceservice
                 if (result)
                 {
                     response.Message = "Deleted";
-                    response.Code = Responcecode.Success;
+                    response.Code = Responsecode.Success;
                 }
                 if (!result)
                 {
                     response.Message = "Not Deleted";
-                    response.Code = Responcecode.Failed;
+                    response.Code = Responsecode.Failed;
                 }
 
             }
@@ -57,7 +57,6 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             return await Task.FromResult(response);
         }
-
         public override async Task<GeofenceResponse> CreatePolygonGeofence(GeofenceRequest request, ServerCallContext context)
         {
             GeofenceResponse response = new GeofenceResponse();
@@ -65,12 +64,28 @@ namespace net.atos.daf.ct2.geofenceservice
             {
                 _logger.Info("Create Geofence.");
                 Geofence geofence = new Geofence();
+                response.GeofenceRequest = new GeofenceRequest();
                 geofence = _mapper.ToGeofenceEntity(request);
                 geofence = await _geofenceManager.CreatePolygonGeofence(geofence);
+                // check for exists
+                response.GeofenceRequest.Exists = false;
+                if (geofence.Exists)
+                {
+                    response.GeofenceRequest.Exists = true;
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
+                    return response;
+                }
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Message = "Geofence created with id:- " + geofence.Id,
-                    Code = Responcecode.Success,
+                    Code = Responsecode.Success,
                     GeofenceRequest = _mapper.ToGeofenceRequest(geofence)
                 });
             }
@@ -79,7 +94,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new GeofenceResponse
                 {
-                    Code = Responcecode.Failed,
+                    Code = Responsecode.Failed,
                     Message = "Geofence Creation Faile due to - " + ex.Message,
                 });
             }
@@ -102,7 +117,7 @@ namespace net.atos.daf.ct2.geofenceservice
                         response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
                     }
                 }
-                response.Code = Responcecode.Success;
+                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -111,41 +126,6 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             return await Task.FromResult(response);
         }
-
-        public override async Task<GetGeofenceResponse> GetGeofenceByGeofenceID(IdRequest request, ServerCallContext context)
-        {
-            GetGeofenceResponse response = new GetGeofenceResponse();
-            try
-            {
-                _logger.Info("Get GetGeofenceByGeofenceID .");
-                var result = await _geofenceManager.GetGeofenceByGeofenceID(request.OrganizationId, request.GeofenceId);
-                foreach (net.atos.daf.ct2.poigeofence.entity.Geofence entity in result)
-                {
-                    response.GeofenceName = entity.Name;
-                    response.OrganizationId = entity.OrganizationId;
-                    response.CategoryName = entity.CategoryName;
-                    response.SubCategoryName = entity.SubCategoryName;
-                    response.Address = entity.Address;
-                    response.City = entity.City;
-                    response.Country = entity.Country;
-                    response.Distance = entity.Distance;
-                    response.Latitude = entity.Latitude;
-                    response.Longitude = entity.Longitude;
-                    response.ModifiedAt = entity.ModifiedAt;
-                    response.ModifiedBy = entity.ModifiedBy;
-                    response.CreatedAt = entity.CreatedAt;
-                    response.CreatedBy = entity.CreatedBy;
-                    response.Zipcode = entity.Zipcode;
-                }
-                return await Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(null, ex);
-            }
-            return await Task.FromResult(response);
-        }
-
         public override async Task<CircularGeofenceResponse> CreateCircularGeofence(CircularGeofenceRequest request, ServerCallContext context)
         {
             CircularGeofenceResponse response = new CircularGeofenceResponse();
@@ -158,12 +138,13 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
                 geofence = await _geofenceManager.CreateCircularGeofence(geofence);
+          
                 foreach (var item in geofence)
                 {
                     response.GeofenceRequest.Add(_mapper.ToGeofenceRequest(item));
                 }
                 response.Message = "Circular Geofence created with selected POI";
-                response.Code = Responcecode.Success;
+                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -171,8 +152,45 @@ namespace net.atos.daf.ct2.geofenceservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new CircularGeofenceResponse
                 {
-                    Code = Responcecode.Failed,
+                    Code = Responsecode.Failed,
                     Message = "Circular Geofence Creation Failed due to - " + ex.Message,
+                });
+            }
+        }
+
+        public override async Task<GeofencePolygonUpdateResponce> UpdatePolygonGeofence(GeofencePolygonUpdateRequest request, ServerCallContext context)
+        {
+            GeofencePolygonUpdateResponce response = new GeofencePolygonUpdateResponce();
+            try
+            {
+                _logger.Info("Update Geofence.");
+                Geofence geofence = new Geofence();
+                response.GeofencePolygonUpdateRequest = new GeofencePolygonUpdateRequest();
+                geofence = _mapper.ToGeofenceUpdateEntity(request);
+                geofence = await _geofenceManager.CreatePolygonGeofence(geofence);
+                // check for exists
+                response.GeofencePolygonUpdateRequest.Exists = false;
+                if (geofence.Exists)
+                {
+                    response.GeofencePolygonUpdateRequest.Exists = true;
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
+                return await Task.FromResult(new GeofencePolygonUpdateResponce
+                {
+                    Message = "Geofence created with id:- " + geofence.Id,
+                    Code = Responsecode.Success,
+                    GeofencePolygonUpdateRequest = _mapper.ToGeofenceUpdateRequest(geofence)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GeofencePolygonUpdateResponce
+                {
+                    Code = Responsecode.Failed,
+                    Message = "Geofence Creation Failed due to - " + ex.Message,
                 });
             }
         }
