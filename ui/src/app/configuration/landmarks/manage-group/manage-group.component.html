@@ -52,7 +52,10 @@
                         </ng-container> -->
                         <ng-container matColumnDef="name">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name'}}</mat-header-cell>
-                            <mat-cell *matCellDef="let row" matTooltip="{{ row.name }}"><span class="text-truncate">{{row.name}}</span> </mat-cell>
+                            <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
+                                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.name}}</span> </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="poiCount">
                             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPOI || 'POI'}}
