@@ -8,7 +8,6 @@ using System.Linq;
 using net.atos.daf.ct2.group;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.vehicle.test
 {
@@ -179,26 +178,6 @@ namespace net.atos.daf.ct2.vehicle.test
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
-
-        #region Vehicle Mileage
-        [TestCategory("Unit-Test-Case")]
-        [Description("Test for Get Vehicle Mileage Data ")]
-        [TestMethod]
-        public async Task UnT_vehicle_VehicleManager_GetVehicleMileage()
-        {
-            long lsince = 1619419546008;
-            string sTimezone = "America/New_York";
-            string targetdateformat = "MM/DD/YYYY";
-            string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(lsince, sTimezone, targetdateformat);            
-            string since = converteddatetime;
-            long todayutctime= UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            long yesterdayutctime = UTCHandling.GetUTCFromDateTime(DateTime.Today.AddDays(-1));
-            bool isnumeric = true;
-            var results = await _vehicleRepository.GetVehicleMileage(since, isnumeric);
-            Assert.IsNotNull(results);
-            Assert.IsTrue(results != null);
-        }
-        #endregion
 
         //[TestCategory("Unit-Test-Case")]
         //[Description("Test for create vehicle group and vehicle details")]

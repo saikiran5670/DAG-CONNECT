@@ -3,7 +3,5 @@
     public static class AccessPolicies
     {
         public const string MainAccessPolicy = "api.vehicle-data";
-        public const string MainMileageAccessPolicy = "api.vehicle-mileage";
     }
-   
 }

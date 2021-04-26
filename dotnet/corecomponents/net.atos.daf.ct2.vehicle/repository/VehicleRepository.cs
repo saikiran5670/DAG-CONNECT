@@ -982,6 +982,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
 
+
         #region Vehicle Data Interface Methods
 
         public async Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty)
@@ -1720,102 +1721,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #endregion
 
-
-        #region Vehicle Mileage Data
-        public async Task<List<Vehicles>> GetVehicleMileage(string since,bool isnumeric)
-        {            
-            try
-            {
-                var QueryStatement = @"select 
-                                         id                                       
-                                        ,modified_at 
-                                        ,evt_timestamp
-                                        ,odo_mileage
-                                        ,odo_distance
-                                        ,real_distance
-                                        ,vin
-                                        from mileage.vehiclemileage  
-                                        where";
-
-                var parameter = new DynamicParameters();
-
-                long startDate=0;
-                long endDate=0;
-                
-                 if(string.IsNullOrEmpty(since) || since=="yesterday")
-                 {
-                    startDate= UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
-                    endDate= UTCHandling.GetUTCFromDateTime(GetEndOfDay(DateTime.Today.AddDays(-1)));
-                   
-                 }
-                 else if(since=="today")
-                 {
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
-                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(DateTime.Now));
-                }
-                else if(isnumeric)                 
-                {
-                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
-                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(Convert.ToDateTime(since)));
-                }
-                parameter.Add("@start_at", startDate);
-                parameter.Add("@end_at", endDate);
-                QueryStatement = QueryStatement + " modified_at >= @start_at AND modified_at <= @end_at";
-               
-                dynamic mileageData = await DataMartdataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
-                
-                List<Vehicles> vehiclesList = new List<Vehicles>();
-                foreach (dynamic record in mileageData)
-                {                                   
-                    vehiclesList.Add(MapMileage(record));
-                }
-                return vehiclesList;
-            }
-            catch (Exception ex)
-            {                
-                throw ex;
-            }
-        }
-
-        public async Task<string> GetVehicleVin(int vehicle_id)
-        {
-            try
-            {
-               string vin = await DataMartdataAccess.QuerySingleAsync<string>("select coalesce((select vin FROM master.vehicle where id=@id))", new { id = vehicle_id });
-               return vin;
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        private Vehicles MapMileage(dynamic record)
-        {
-            string sTimezone = "UTC";
-            string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";          
-           
-            Vehicles vehicles=new Vehicles();
-            vehicles.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.evt_timestamp, sTimezone, targetdateformat); 
-            vehicles.VIN =record.vin;
-            vehicles.TachoMileage =record.odo_distance;
-            vehicles.GPSMileage =record.real_distance;
-            vehicles.RealMileage =record.real_distance;
-            vehicles.RealMileageAlgorithmVersion ="1.2";
-            return vehicles;
-        }
-
-        public static DateTime GetStartOfDay(DateTime dateTime)
-        {           
-            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, 0); 
-        }
-        public static DateTime GetEndOfDay(DateTime dateTime)
-        {
-            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 23, 59, 59, 999);
-        }
-
-        #endregion
-
+       
     }
 }
 
