@@ -45,7 +45,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             Task<VehicleDataMart> CreateAndUpdateVehicleInDataMart(VehicleDataMart vehicledatamart);
 
             #region Vehicle Mileage Data
-            Task<List<Vehicles>> GetVehicleMileage(string since,bool isnumeric);            
+            Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate);
+        
             #endregion
 
         // Task<bool> SetConnectionStatus(char Status);

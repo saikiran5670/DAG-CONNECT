@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.vehicle.test
             long todayutctime= UTCHandling.GetUTCFromDateTime(DateTime.Now);
             long yesterdayutctime = UTCHandling.GetUTCFromDateTime(DateTime.Today.AddDays(-1));
             bool isnumeric = true;
-            var results = await _vehicleRepository.GetVehicleMileage(since, isnumeric);
+            var results = await _vehicleRepository.GetVehicleMileage(todayutctime, yesterdayutctime);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }

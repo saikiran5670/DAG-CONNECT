@@ -15,12 +15,32 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poiRequest.OrganizationId = poi.OrganizationId;
             poiRequest.CategoryId = poi.CategoryId;
             poiRequest.Name = poi.Name;
-            poiRequest.Type = poi.Type;
+            //poiRequest.Type = poi.Type;
             poiRequest.Address = poi.Address;
             poiRequest.City = poi.City;
             poiRequest.Country = poi.Country;
             poiRequest.Zipcode = poi.Zipcode;
             return poiRequest;
+        }
+        public net.atos.daf.ct2.portalservice.Entity.POI.POIResponse ToPOIEntity(POIData poiResponseData)
+        {
+            net.atos.daf.ct2.portalservice.Entity.POI.POIResponse poi = new net.atos.daf.ct2.portalservice.Entity.POI.POIResponse();
+            poi.Id = poiResponseData.Id;
+            poi.OrganizationId = poiResponseData.OrganizationId != null ? poiResponseData.OrganizationId.Value : 0;
+            poi.CategoryId = poiResponseData.CategoryId;
+            poi.SubCategoryId = poiResponseData.SubCategoryId;
+            poi.Name = poiResponseData.Name;
+            //poi.Type = poiResponseData.Type;
+            poi.Address = poiResponseData.Address;
+            poi.City = poiResponseData.City;
+            poi.Country = poiResponseData.Country;
+            poi.Zipcode = poiResponseData.Zipcode;
+            poi.Latitude = Convert.ToDouble(poiResponseData.Latitude);
+            poi.Longitude = Convert.ToDouble(poiResponseData.Longitude);
+            poi.Distance = Convert.ToDouble(poiResponseData.Distance);
+            poi.State = poiResponseData.State;
+            poi.CreatedAt = poiResponseData.CreatedAt;
+            return poi;
         }
     }
 }

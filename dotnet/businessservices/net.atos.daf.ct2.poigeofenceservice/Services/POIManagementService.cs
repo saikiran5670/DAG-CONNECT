@@ -93,6 +93,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 _logger.Info("Create POI.");
                 POI poi = new POI();
+                request.Type = "POI";
+                request.State= "Active";
                 poi = _mapper.ToPOIEntity(request);
                 poi = await _poiManager.CreatePOI(poi);
                 if (poi.Id > 0)
@@ -138,6 +140,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 _logger.Info("Update POI.");
                 POI poi = new POI();
+                request.Type = "POI";
                 poi = _mapper.ToPOIEntity(request);
                 poi = await _poiManager.UpdatePOI(poi);
                 if (poi.Id>0)

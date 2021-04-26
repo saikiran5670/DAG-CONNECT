@@ -64,26 +64,26 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 List<POI> pois = new List<POI>();
                 string query = string.Empty;
                 query = @"SELECT l.id, 
-                            l.organization_id,
-                            l.category_id,
-                            c.name,                            
-                            l.sub_category_id, 
-                            s.name,
-                            l.name,
-                            l.address,
-                            l.city,
-                            l.country,
-                            l.zipcode,
-                            l.type,
-                            l.latitude,
-                            l.longitude,
-                            l.distance,
-                            l.trip_id,
-                            l.state,
-                            l.created_at,
-                            l.created_by,
-                            l.modified_at,
-                            l.modified_by
+                            l.organization_id as organizationid,
+                            l.category_id as categoryid,
+                            c.name as categoryname,                            
+                            l.sub_category_id as subcategoryid, 
+                            s.name as subcategoryname,
+                            l.name as name,
+                            l.address as address,
+                            l.city as city,
+                            l.country as country,
+                            l.zipcode as zipcode,
+                            l.type as type,
+                            l.latitude as latitude,
+                            l.longitude as longitude,
+                            l.distance as distance,
+                            l.trip_id as tripid,
+                            l.state as state,
+                            l.created_at as createdat,
+                            l.created_by as createdby,
+                            l.modified_at as modifiedat,
+                            l.modified_by as modifiedby
                             FROM master.landmark l
                             LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
                             LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
@@ -194,10 +194,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (poi.OrganizationId > 0)
                 {
                     parameterduplicate.Add("@organization_id", poi.OrganizationId);
-                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name and organization_id=@organization_id;";
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and organization_id=@organization_id;";
                 }
                 else
-                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name;";
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
                 
                 int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
@@ -333,7 +333,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 query = query + ", modified_at=@modified_at ";
 
                 parameter.Add("@id", poi.Id);
-                query = query + " where id=@id RETURNING id";
+                query = query + " where id=@id and type = 'P' RETURNING id";
 
                 parameter.Add("@organization_id", poi.OrganizationId);
 
@@ -356,7 +356,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", poiId);
-                var query = @"update master.landmark set state='D' where id=@id";
+                var query = @"update master.landmark set state='D' where id=@id and type = 'P' ";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
@@ -375,10 +375,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             POI poi = new POI();
             poi.Id = record.id;
-            poi.OrganizationId = !string.IsNullOrEmpty(record.Organization_Id) ? record.Organization_Id : 0;
-            poi.CategoryId = record.category_id !=null ? record.category_id:0;
+            poi.OrganizationId = record.organizationid != null ? record.organizationid : 0;
+            poi.CategoryId = record.categoryid != null ? record.categoryid : 0;
             poi.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
-            poi.SubCategoryId = record.sub_category_id != null  ? record.sub_category_id :0;
+            poi.SubCategoryId = record.subcategoryid != null ? record.subcategoryid : 0;
             poi.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
             poi.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             poi.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
@@ -389,12 +389,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Latitude = Convert.ToDouble(record.latitude);
             poi.Longitude = Convert.ToDouble(record.longitude);
             poi.Distance = Convert.ToDouble(record.distance);
-            poi.TripId = record.trip_id!=null ? record.trip_id : 0;
-            poi.CreatedAt = record.created_at!=null ? record.created_at:0;
+            poi.TripId = record.tripid != null ? record.tripid : 0;
+            poi.CreatedAt = record.createdat != null ? record.createdat : 0;
             poi.State = MapCharToLandmarkState(record.state);
-            poi.CreatedBy = record.created_by !=null ? record.created_by:0;
-            poi.ModifiedAt = record.modified_at !=null ? record.modified_at:0;
-            poi.ModifiedBy = record.modified_by!=null? record.modified_by:0;
+            poi.CreatedBy = record.createdby != null ? record.createdby : 0;
+            poi.ModifiedAt = record.modifiedat != null ? record.modifiedat : 0;
+            poi.ModifiedBy = record.modifiedby != null ? record.modifiedby : 0;
             return poi;
         }
         public string MapCharToLandmarkState(string state)

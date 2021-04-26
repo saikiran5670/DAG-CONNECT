@@ -3,7 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.vehicledataservice.Entity;
+using net.atos.daf.ct2.vehicle.entity;
+//using net.atos.daf.ct2.vehicledataservice.Entity;
 namespace net.atos.daf.ct2.vehicledataservice.Common
 {
     public class VehicleMileageCSVResult : ContentResult

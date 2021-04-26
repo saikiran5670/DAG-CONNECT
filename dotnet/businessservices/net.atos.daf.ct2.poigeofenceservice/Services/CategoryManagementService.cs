@@ -49,6 +49,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                    response.Message = "Category Name is " + obj.Name + " already exists ";
                    response.Code = Responcecode.Conflict;
+                   response.CategoryID = result.Id;
                     
                 }
                 else if (result != null && result.Id >0)
@@ -89,6 +90,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     response.Message = "Edit successfully";
                     response.Code = Responcecode.Success;
+                    response.CategoryID = result.Id;
                 }
                 else
                 {
@@ -118,6 +120,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responcecode.Success;
+                    
                 }
                else
                 {
@@ -146,17 +149,21 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     var Data = new GetCategoryType();
                     Data.Id = item.Id;
-                    //Data.OrganizationId = item.Organization_Id;
                     Data.Name = item.Name;
-                    //Data.IconId = item.Icon_Id;
-                   // Data.Type = item.Type;
-                    //Data.ParentId = item.Parent_Id;
-                    //Data.State = item.State;
-                    //Data.CreatedAt = item.Created_At;
-                    //Data.CreatedBy = item.Created_By;
-                    //Data.ModifiedAt = item.Modified_At;
-                    //Data.ModifiedBy = item.Modified_By;
                     response.Categories.Add(Data);
+                }
+
+                _logger.Info("GetCategoryType service called.");
+
+                if (result != null)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Get Category Type Details";
+                }
+                else
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "Resource Not Found ";
                 }
                 return await Task.FromResult(response);
 
@@ -178,8 +185,8 @@ namespace net.atos.daf.ct2.poigeofenservice
                 foreach (var item in categoryListDetails)
                 {
                     var catdetails = new categoryDetails();
-                    catdetails.ParentCategoryId = item.parent_id;
-                    catdetails.SubCategoryId = item.subcategory_id;
+                    catdetails.ParentCategoryId = item.Parent_id;
+                    catdetails.SubCategoryId = item.Subcategory_id;
                     catdetails.IconName = item.IconName == null ? "" : item.IconName; 
                     if (item.Icon != null)
                     {
@@ -191,6 +198,18 @@ namespace net.atos.daf.ct2.poigeofenservice
                     catdetails.NoOfGeofence = item.No_of_Geofence;
                     response.Categories.Add(catdetails);
 
+                }
+                _logger.Info("GetCategoryDetails service called.");
+
+                if (categoryListDetails != null)
+                {
+                    response.Code = Responcecode.Success;
+                    response.Message = "Get Category Type Details";
+                }
+                else
+                {
+                    response.Code = Responcecode.Failed;
+                    response.Message = "Resource Not Found ";
                 }
                 return await Task.FromResult(response);
             }

@@ -74,36 +74,63 @@ export class ManageGroupComponent implements OnInit {
     this.landmarkService.getLandmarkGroups(objData).subscribe((data: any) => {
       this.hideloader();
       this.initData = data["groups"];
-      if(this.initData && this.initData.length > 0){
-        this.initData = this.getNewTagData(this.initData); 
-      } 
-      setTimeout(()=>{
-        this.dataSource = new MatTableDataSource(this.initData);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      });
+      this.updateDatasource(this.initData);
     }, (error) => {
+      this.prepareMockData();
       //console.log(error)
       this.hideloader();
     });
   }
 
+  updateDatasource(data){
+    if(data && data.length > 0){
+      this.initData = this.getNewTagData(data); 
+    } 
+    setTimeout(()=>{
+      this.dataSource = new MatTableDataSource(this.initData);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+  }
+
+  prepareMockData(){
+    this.initData = [{
+      name: 'Group-1', 
+      poiCount: 4, 
+      geofenceCount: 5,
+      createdAt: new Date().getTime()
+    },
+    {
+      name: 'Group-2', 
+      poiCount: 0, 
+      geofenceCount: 8,
+      createdAt: new Date().getTime()
+    }];
+    this.updateDatasource(this.initData);
+  }
+
+
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
     data.forEach(row => {
-      let createdDate = new Date(row.createdAt).getTime();
-      let nextDate = createdDate + 86400000;
-      if(currentDate > createdDate && currentDate < nextDate){
-        row.newTag = true;
+      if(row.createdAt){
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate >= createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
       }
       else{
         row.newTag = false;
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
-    newTrueData.sort((userobj1,userobj2) => userobj2.createdAt - userobj1.createdAt);
+    newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
     let newFalseData = data.filter(item => item.newTag == false);
-    Array.prototype.push.apply(newTrueData,newFalseData); 
+    Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;
   }
 
@@ -134,6 +161,18 @@ export class ManageGroupComponent implements OnInit {
         });
     }
    });
+  }
+
+  newLandmarkGroup(){
+
+  }
+
+  viewlandmarkGroup(row){
+
+  }
+
+  editLandmarkGroup(row){
+
   }
 
   getDeletMsg(groupName: any){

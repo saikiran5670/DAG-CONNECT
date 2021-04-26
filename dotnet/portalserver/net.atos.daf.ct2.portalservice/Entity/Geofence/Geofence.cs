@@ -55,4 +55,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public int TripId { get; set; }
         public int CreatedBy { get; set; }
     }
+
+    public class GeofenceUpdateEntity
+    {
+        public int Id { get; set; }
+        public int CategoryId { get; set; }
+        public int SubCategoryId { get; set; }
+        [Required]
+        public string Name { get; set; }
+        public int ModifiedBy { get; set; }
+    }
 }
