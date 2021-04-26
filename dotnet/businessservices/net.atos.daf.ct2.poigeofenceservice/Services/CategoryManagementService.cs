@@ -126,28 +126,28 @@ namespace net.atos.daf.ct2.poigeofenservice
             return await Task.FromResult(response);
         }
 
-        public override async Task<CategoryGetResponse> GetCategory(CategoryGetRequest request, ServerCallContext context)
+        public override async Task<CategoryGetResponse> GetCategoryType(CategoryGetRequest request, ServerCallContext context)
         {
             CategoryGetResponse response = new CategoryGetResponse();
             try
             {
                 _logger.Info("Get Category .");
 
-                var result = await _categoryManager.GetCategory();
+                var result = await _categoryManager.GetCategory(request.Type);
                 foreach (var item in result)
                 {
-                    var Data = new category();
+                    var Data = new GetCategoryType();
                     Data.Id = item.Id;
-                    Data.OrganizationId = item.Organization_Id;
+                    //Data.OrganizationId = item.Organization_Id;
                     Data.Name = item.Name;
                     //Data.IconId = item.Icon_Id;
-                    Data.Type = item.Type;
-                    Data.ParentId = item.Parent_Id;
-                    Data.State = item.State;
-                    Data.CreatedAt = item.Created_At;
-                    Data.CreatedBy = item.Created_By;
-                    Data.ModifiedAt = item.Modified_At;
-                    Data.ModifiedBy = item.Modified_By;
+                   // Data.Type = item.Type;
+                    //Data.ParentId = item.Parent_Id;
+                    //Data.State = item.State;
+                    //Data.CreatedAt = item.Created_At;
+                    //Data.CreatedBy = item.Created_By;
+                    //Data.ModifiedAt = item.Modified_At;
+                    //Data.ModifiedBy = item.Modified_By;
                     response.Categories.Add(Data);
                 }
                 return await Task.FromResult(response);

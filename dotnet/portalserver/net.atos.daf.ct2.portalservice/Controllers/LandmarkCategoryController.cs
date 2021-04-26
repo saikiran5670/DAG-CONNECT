@@ -105,6 +105,45 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpGet]
+        [Route("getcategoryType")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCategoryType([FromQuery]GetCategoryTypes request)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(request.Type) && request.Type.Length > 1)
+                {
+                    return StatusCode(400, "The category type is not valid. It should be of single character");
+                }
+                var Request = _categoryMapper.MapCategoryType(request);
+                var data = await _categoryServiceClient.GetCategoryTypeAsync(Request);
+
+                if (data != null && data.Code == Responcecode.Success)
+                {
+                    if (data.Categories != null && data.Categories.Count > 0)
+                    {
+                        return Ok(data);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Category type details are not found.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                //_logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
 
     }
 }

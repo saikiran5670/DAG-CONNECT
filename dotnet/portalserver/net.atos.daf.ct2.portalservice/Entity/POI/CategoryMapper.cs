@@ -50,5 +50,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             Requests.Id = request.Id;
             return Requests;
         }
+
+        public CategoryGetRequest MapCategoryType(GetCategoryTypes request)
+        {
+
+            var Requests = new CategoryGetRequest();
+            Requests.Type = request.Type;
+            return Requests;
+        }
     }
 }

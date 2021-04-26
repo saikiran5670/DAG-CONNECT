@@ -132,7 +132,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        public async Task<List<Category>> GetCategory(CategoryFilter categoryFilter)
+        public Task<IEnumerable<Category>> GetCategoryType(string Type)
+        
+        {
+            CategoryFilter categoryFilter = new CategoryFilter();
+            categoryFilter.Type = Type.ToUpper();
+            if (categoryFilter.Type.Length > 1)
+            {
+                categoryFilter.Type= _catogoryCoreMapper.MapType(categoryFilter.Type);
+            }
+            var categories = GetCategory(categoryFilter);
+            return categories;
+        }
+
+        public async Task<IEnumerable<Category>> GetCategory(CategoryFilter categoryFilter)
         {
             try
             {
@@ -162,6 +175,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@Name", categoryFilter.CategoryName);
                         getQuery = getQuery + " and name= @Name ";
                     }
+                    parameter.Add("@State", "A");
+                    getQuery = getQuery + " and state= @State ";
 
                     getQuery = getQuery + " ORDER BY id ASC; ";
                     dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
@@ -256,5 +271,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+       
     }
 }
