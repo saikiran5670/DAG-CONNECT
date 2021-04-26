@@ -24,8 +24,12 @@ export class ManageCategoryComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   categoryList: any = [];
   subCategoryList: any = [];
+  categoryTitleVisible: boolean = false;
+  displayMessage: any = '';
+  actionType: any;
+  selectedRowData: any = [];
 
-  constructor() { }
+  constructor(private dialogService: ConfirmDialogService) { }
   
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -94,7 +98,8 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onNewCategory(){
-
+    this.actionType = 'create';
+    this.createViewEditStatus = true;
   }
 
   applyFilter(filterValue: string) {
@@ -109,11 +114,41 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   editViewCategory(rowData: any, type: any){
-
+    this.actionType = type;
+    this.selectedRowData = rowData;
+    this.createViewEditStatus = true;
   }
 
   deleteCategory(rowData: any){
+    const options = {
+      title: this.translationData.lblDeleteGroup || 'Delete',
+      message: this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?",
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: this.translationData.lblDelete || 'Delete'
+    };
+    let name = rowData.category;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+      if(res) {
+        this.successMsgBlink(this.getDeletMsg(name));
+        this.loadLandmarkCategoryData();
+      }
+     });
+  }
 
+  getDeletMsg(categoryName: any){
+    if(this.translationData.lblLandmarkCategoryDelete)
+      return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
+    else
+      return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+  }
+
+  successMsgBlink(msg: any){
+    this.categoryTitleVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {  
+      this.categoryTitleVisible = false;
+    }, 5000);
   }
 
   onPOIClick(rowData: any){
@@ -130,5 +165,9 @@ export class ManageCategoryComponent implements OnInit {
 
   onSubCategoryChange(){
 
+  }
+
+  onClose(){
+    this.categoryTitleVisible = false;
   }
 }
