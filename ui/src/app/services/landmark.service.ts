@@ -50,4 +50,15 @@ export class LandmarkService {
        .get<any[]>(`${this.landmarkServiceUrl}/group/get?Organizationid=${data.organizationid}`,headers)
        .pipe(catchError(this.handleError));
    }
+
+   deleteLandmarkGroup(groupId: number): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    let data = { groupId: groupId };
+   return this.httpClient
+      .post<any>(`${this.landmarkServiceUrl}/group/delete?GroupId=${groupId}`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
 }
