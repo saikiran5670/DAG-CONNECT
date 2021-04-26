@@ -46,10 +46,11 @@ namespace net.atos.daf.ct2.featureactivationservice
         {
             services.AddControllers();
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            services.AddSingleton(dataAccess);
+            services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
+            {
+                return new PgSQLDataAccess(connectionString);
+            });
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
-            services.AddSingleton(dataAccess);
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();

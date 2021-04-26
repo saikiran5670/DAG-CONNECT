@@ -7,8 +7,9 @@ package geofence;
 
 service GeofenceService{
 rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
-rpc CreateGeofence (GeofenceRequest) returns (GeofenceResponse);
+rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
 rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
+rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
 }
 
 enum Responcecode{
@@ -57,23 +58,9 @@ message NodeRequest{
 }
 
 message GeofenceResponse{
-    int32 Id =1;
-    google.protobuf.Int32Value OrganizationId=2;
-    int32 CategoryId = 3;
-    int32 SubCategoryId = 4;
-    string Name =5;
-    string Type=6;
-    string Address=7;
-    string City=8;
-    string Country=9;
-    string Zipcode=10;
-    double Latitude=11;
-    double Longitude=12;
-    double Distance=13;
-    string State=14;
-    repeated NodeRequest NodeRequest=15;
-    Responcecode Code=16;
-    string message = 17;
+   GeofenceRequest GeofenceRequest =1;
+    Responcecode Code=2;
+    string message = 3;
 }
 
 message GeofenceEntityRequest{
@@ -93,4 +80,14 @@ message GeofenceEntityResponce{
     string subCategoryName=3;
     int32 geofenceId=4;
 
+}
+
+message CircularGeofenceRequest{
+   repeated GeofenceRequest GeofenceRequest =1;
+}
+
+message CircularGeofenceResponse{
+   repeated GeofenceRequest GeofenceRequest =1;
+    Responcecode Code=2;
+    string message = 3;
 }
