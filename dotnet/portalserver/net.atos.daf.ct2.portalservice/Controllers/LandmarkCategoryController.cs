@@ -175,7 +175,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpGet]
+        [Route("getcategoryDetails")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCategoryDetails([FromQuery] GetRequest Request)
+        {
+            try
+            {
+                    var response = await _categoryServiceClient.GetCategoryDetailsAsync(Request);
 
+
+                    if (response != null)
+                    {
+                        if (response.Categories != null && response.Categories.Count > 0)
+                        {
+                            return Ok(response);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "Category details are not found.");
+                        }
+                    }
+                    else
+                    {
+                        return StatusCode(500, response.Message);
+                    }
+               
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
 
     }
 }
