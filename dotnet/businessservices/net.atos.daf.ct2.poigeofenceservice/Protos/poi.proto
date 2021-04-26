@@ -35,12 +35,13 @@ message POIEntityRequest{
     int32 SubCategoryId = 2;
 }
 enum Responsecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
 }
-
 
 message POIRequest{
     int32 Id =1;
