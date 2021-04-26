@@ -25,14 +25,27 @@ namespace net.atos.daf.ct2.poigeofence
             return await _landmarkgroupRepository.UpdateGroup(landmarkgroup);
         }
 
-        public async Task<int> DeleteGroup(int groupid)
+        public async Task<int> DeleteGroup(int groupid, int modifiedby)
         {
-            return await _landmarkgroupRepository.DeleteGroup(groupid);
+            return await _landmarkgroupRepository.DeleteGroup(groupid,modifiedby);
         }
-
-        public async Task<int> GetlandmarkGroup(int organizationid, int groupid)
+        // Task<IEnumerable<LandmarkgroupRef>> GetlandmarkGroupref(int groupid)
+        public async Task<IEnumerable<LandmarkGroup>> GetlandmarkGroup(int organizationid, int groupid)
         {
-            return await _landmarkgroupRepository.GetlandmarkGroup(organizationid,groupid);
+            var groups = await _landmarkgroupRepository.GetlandmarkGroup(organizationid,groupid);
+            foreach (var item in groups)
+            {
+                var groupref = await _landmarkgroupRepository.GetlandmarkGroupref(item.id);
+                item.poilist = new List<POI>();                
+                foreach (var pois in groupref)
+                {
+                    POI pOI = new POI();
+                    pOI.Id = pois.ref_id;
+                    pOI.Type = pois.type.ToString();
+                    item.poilist.Add(pOI);
+                }
+            }
+            return groups;
         }
     }
 }
