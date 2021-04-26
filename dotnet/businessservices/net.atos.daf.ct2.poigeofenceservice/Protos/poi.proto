@@ -65,16 +65,18 @@ message POIData{
     google.protobuf.Int32Value OrganizationId=2;
     int32 CategoryId = 3;
     int32 SubCategoryId = 4;
-    string Name =5;
-    string Type=6;
-    string Address=7;
-    string City=8;
-    string Country=9;
-    string Zipcode=10;
-    double Latitude=11;
-    double Longitude=12;
-    double Distance=13;
-    string State=14;
+    string CategoryName = 5;
+    string SubCategoryName = 6;
+    string Name =7;
+    string Type=8;
+    string Address=9;
+    string City=10;
+    string Country=11;
+    string Zipcode=12;
+    double Latitude=13;
+    double Longitude=14;
+    double Distance=15;
+    string State=16;
 }
 message POIResponse{
   POIData POIData = 1;

@@ -133,8 +133,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 _logger.Info("Update POI.");
                 POI poi = new POI();
                 poi = _mapper.ToPOIEntity(request);
-                bool result = await _poiManager.UpdatePOI(poi);
-                if (result)
+                poi = await _poiManager.UpdatePOI(poi);
+                if (poi.Id>0)
                 {
                     response.Message = "POI updated for id:- " + poi.Id;
                     response.Code = Responsecode.Success;
