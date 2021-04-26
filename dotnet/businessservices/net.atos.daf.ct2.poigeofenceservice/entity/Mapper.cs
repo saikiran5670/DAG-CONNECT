@@ -91,7 +91,6 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.Longitude = Convert.ToDouble(poiRequest.Longitude);
             poi.Distance = Convert.ToDouble(poiRequest.Distance);
             poi.State = poiRequest.State;
-            poi.TripId = poiRequest.TripId;
             poi.CreatedBy = poiRequest.CreatedBy;
             return poi;
         }
