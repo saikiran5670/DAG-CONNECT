@@ -46,9 +46,10 @@ namespace net.atos.daf.ct2.authenticationservicerest
             });
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            // Identity configuration
-            services.AddSingleton(dataAccess);
+            services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
+            {
+                return new PgSQLDataAccess(connectionString);
+            });
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
             
             services.AddTransient<IAuditLogRepository,AuditLogRepository>();

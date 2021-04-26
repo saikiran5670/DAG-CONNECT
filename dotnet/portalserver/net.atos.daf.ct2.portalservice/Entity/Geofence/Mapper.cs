@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.Id = geofence.Id;
             geofenceRequest.OrganizationId = geofence.OrganizationId;
             geofenceRequest.CategoryId = geofence.CategoryId;
+            geofenceRequest.SubCategoryId = geofence.SubCategoryId;
             geofenceRequest.Name = geofence.Name;
             geofenceRequest.Type = geofence.Type;
             geofenceRequest.Address = geofence.Address;
@@ -40,9 +41,28 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             nodeRequest.SeqNo = nodes.SeqNo;
             nodeRequest.Latitude = nodes.Latitude;
             nodeRequest.Longitude = nodes.Longitude;
-           
-
             return nodeRequest;
+        }
+
+        public GeofenceRequest ToCircularGeofenceRequest(CircularGeofence geofence)
+        {
+            GeofenceRequest geofenceRequest = new GeofenceRequest();
+            geofenceRequest.Id = geofence.Id;
+            geofenceRequest.OrganizationId = geofence.OrganizationId;
+            geofenceRequest.CategoryId = geofence.CategoryId;
+            geofenceRequest.SubCategoryId = geofence.SubCategoryId;
+            geofenceRequest.Name = geofence.Name;
+            geofenceRequest.Type = geofence.Type;
+            geofenceRequest.Address = geofence.Address;
+            geofenceRequest.City = geofence.City;
+            geofenceRequest.Country = geofence.Country;
+            geofenceRequest.Zipcode = geofence.Zipcode;
+            geofenceRequest.Latitude = geofence.Latitude;
+            geofenceRequest.Longitude = geofence.Longitude;
+            geofenceRequest.Distance = geofence.Distance;
+            geofenceRequest.TripId = geofence.TripId;
+            geofenceRequest.CreatedBy = geofence.CreatedBy;
+            return geofenceRequest;
         }
     }
 }

@@ -32,15 +32,31 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.IconName))
+                {
+                    return StatusCode(401, "invalid Category Name: The Category or Icon Name is Empty.");
+                }
+                if (request.Organization_Id <=0)
+                {
+                    return StatusCode(401, "invalid Organization_Id Please Enter Valid Organization ID.");
+                }
+                if (string.IsNullOrEmpty(request.IconName) || request.icon.Length <=0)
+                {
+                    return StatusCode(401, "Icon Details is required ");
+                }
                 var Request = _categoryMapper.MapCategory(request);
                 var data = await _categoryServiceClient.AddCategoryAsync(Request);
-                if (data != null)
+                if (data != null && data.Code == Responcecode.Success)
                 {
                     return Ok(data);
                 }
+                else if (data != null && data.Code == Responcecode.Conflict)
+                {
+                    return StatusCode(404, data.Message);
+                }
                 else
                 {
-                    return StatusCode(404, string.Empty);
+                    return StatusCode(500, data.Message);
                 }
 
             }
@@ -59,15 +75,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (request.Id <= 0)
+                {
+                    return StatusCode(400, "Category id is required.");
+                }
                 var Request = _categoryMapper.MapCategoryforEdit(request);
                 var data = await _categoryServiceClient.EditCategoryAsync(Request);
-                if (data != null)
+                if (data != null && data.Code == Responcecode.Success)
                 {
                     return Ok(data);
                 }
+                else if (data != null && data.Code == Responcecode.NotFound)
+                {
+                    return StatusCode(404, data.Message);
+                }
                 else
                 {
-                    return StatusCode(404, string.Empty);
+                    return StatusCode(500, data.Message);
                 }
 
             }
@@ -86,15 +110,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (request.Id <= 0)
+                {
+                    return StatusCode(400, "Category id is required.");
+                }
                 var Request = _categoryMapper.MapCategoryforDelete(request);
                 var data = await _categoryServiceClient.DeleteCategoryAsync(Request);
-                if (data != null)
+                if (data != null && data.Code == Responcecode.Success)
                 {
                     return Ok(data);
                 }
+                else if (data != null && data.Code == Responcecode.NotFound)
+                {
+                    return StatusCode(404, data.Message);
+                }
                 else
                 {
-                    return StatusCode(404, string.Empty);
+                    return StatusCode(500, data.Message);
                 }
 
             }

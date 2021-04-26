@@ -95,5 +95,59 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.CreatedBy = poiRequest.CreatedBy;
             return poi;
         }
+
+        public net.atos.daf.ct2.geofenceservice.GeofenceRequest ToGeofenceRequest(Geofence geofenceRequest)
+        {
+            GeofenceRequest geofence = new GeofenceRequest();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            if (!string.IsNullOrEmpty(geofenceRequest.Type))
+            {
+                char type = Convert.ToChar(geofenceRequest.Type);
+                if (type == 'C' || type == 'c')
+                {
+                    geofence.Type = ((char)LandmarkType.CircularGeofence).ToString();
+                }
+                else
+                {
+                    geofence.Type = ((char)LandmarkType.PolygonGeofence).ToString();
+                }
+            }
+            geofence.Address = geofenceRequest.Address;
+            geofence.City = geofenceRequest.City;
+            geofence.Country = geofenceRequest.Country;
+            geofence.Zipcode = geofenceRequest.Zipcode;
+            geofence.Latitude = geofenceRequest.Latitude;
+            geofence.Longitude = geofenceRequest.Longitude;
+            geofence.Distance = geofenceRequest.Distance;
+            //geofence.State = Convert.ToChar(geofenceRequest.State);
+            geofence.TripId = geofenceRequest.TripId;
+            //geofence.NodeRequest = new List<NodeRequest>();
+            foreach (var item in geofenceRequest.Nodes)
+            {
+                if (item != null)
+                {
+                    geofence.NodeRequest.Add(ToNodesRequest(item));
+                }
+            }
+            geofence.CreatedBy = geofenceRequest.CreatedBy;
+            return geofence;
+        }
+
+        public NodeRequest ToNodesRequest(Nodes nodeRequest)
+        {
+            NodeRequest nodes = new NodeRequest();
+            if (nodeRequest.Id > 0)
+                nodes.Id = Convert.ToInt32(nodeRequest.Id);
+            nodes.LandmarkId = nodeRequest.LandmarkId;
+            nodes.SeqNo = nodeRequest.SeqNo;
+            nodes.Latitude = nodeRequest.Latitude;
+            nodes.Longitude = nodeRequest.Longitude;
+            nodes.State = nodeRequest.State;
+            return nodes;
+        }
     }
 }

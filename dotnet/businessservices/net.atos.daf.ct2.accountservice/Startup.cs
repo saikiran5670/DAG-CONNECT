@@ -46,11 +46,15 @@ namespace net.atos.daf.ct2.accountservice
             }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            IDataMartDataAccess dataMartdataAccess = new PgSQLDataMartDataAccess(DataMartconnectionString);
-            services.AddSingleton(dataMartdataAccess);
-            services.AddSingleton(dataAccess);
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");            
+            services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
+            {
+                return new PgSQLDataAccess(connectionString);
+            });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+            });
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
 
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();

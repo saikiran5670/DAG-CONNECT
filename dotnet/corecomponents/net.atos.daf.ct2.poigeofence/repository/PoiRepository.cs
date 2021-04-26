@@ -224,8 +224,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@country", poi.Country);
                 parameter.Add("@zipcode", poi.Zipcode);
                 parameter.Add("@type", MapLandmarkTypeToChar(poi.Type));
-                parameter.Add("@latitude", poi.Latitude);
-                parameter.Add("@longitude", poi.Longitude);
+                parameter.Add("@state", Convert.ToChar(poi.State));
+                //parameter.Add("@latitude", poi.Latitude);
+                //parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
                 parameter.Add("@trip_id", poi.TripId);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
@@ -240,9 +241,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 		                                city=@city, 
 		                                country=@country, 
 		                                zipcode=@zipcode, 
-		                                [type]=@type, 
-		                                latitude=@latitude, 
-		                                longitude=@longitude, 
+		                                type=@type, 
+		                                
 		                                distance@distance, 
 		                                trip_id=@trip_id, 
 		                                state=@state,
@@ -392,7 +392,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     ptype = 'U';
                     break;
             }
-            return ptype;
+            return  ptype;
         }
     }
 }
