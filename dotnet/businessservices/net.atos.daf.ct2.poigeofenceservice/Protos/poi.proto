@@ -60,6 +60,7 @@ message POIRequest{
     string State=14;
     int32 TripId = 15;
     int32 CreatedBy = 16;
+    int32 CreatedAt = 17;
 }
 message POIData{
     int32 Id =1;
