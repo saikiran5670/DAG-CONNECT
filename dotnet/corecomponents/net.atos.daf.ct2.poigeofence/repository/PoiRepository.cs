@@ -379,9 +379,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Country = !string.IsNullOrEmpty(record.country) ? record.country : string.Empty;
             poi.Zipcode = !string.IsNullOrEmpty(record.zipcode) ? record.zipcode : string.Empty;
             poi.Type = MapCharToLandmarkState(record.type);
-            poi.Latitude = !string.IsNullOrEmpty(record.latitude) ? record.latitude : 0;
-            poi.Longitude = !string.IsNullOrEmpty(record.longitude) ? record.longitude : 0;
-            poi.Distance = !string.IsNullOrEmpty(record.distance) ? record.distance : 0;
+            poi.Latitude = record.latitude;
+            poi.Longitude = record.longitude;
+            poi.Distance = record.distance;
             poi.TripId = record.trip_id;
             poi.CreatedAt = record.created_at;
             poi.State = MapCharToLandmarkState(record.state);
