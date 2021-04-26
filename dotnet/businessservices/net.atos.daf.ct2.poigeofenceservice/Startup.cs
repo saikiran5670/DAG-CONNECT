@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }));
 
 
-            string connectionString = Configuration.GetConnectionString("ConnectionString");
+            string connectionString = Configuration.GetConnectionString("ConnectionString");        
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
