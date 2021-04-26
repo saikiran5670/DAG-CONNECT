@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@organization_id", landmarkgroup.organization_id);
                 parameter.Add("@name", landmarkgroup.name);
                 //parameter.Add("@icon_id", landmarkgroup.icon_id);
-                parameter.Add("@state", landmarkgroup.state);
+                parameter.Add("@state", "A");
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@created_by", landmarkgroup.created_by);
 
@@ -220,7 +220,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             obj.id = record.id;
             obj.landmark_group_id = record.landmark_group_id;
             obj.ref_id = record.ref_id;
-            obj.type = (LandmarkType)(char)record.type;
+            obj.type = (LandmarkType)Convert.ToChar(record.type);
             return obj;
         }
 

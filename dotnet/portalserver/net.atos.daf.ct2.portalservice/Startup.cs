@@ -61,6 +61,7 @@ namespace net.atos.daf.ct2.portalservice
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
             var poigeofenceservice= Configuration["ServiceConfiguration:poigeofenceService"];
+
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
@@ -182,6 +183,10 @@ namespace net.atos.daf.ct2.portalservice
                 o.Address = new Uri(poigeofenceservice);
             });
             services.AddGrpcClient<POIService.POIServiceClient>(o =>
+            {
+                o.Address = new Uri(poigeofenceservice);
+            });
+            services.AddGrpcClient<GroupService.GroupServiceClient>(o =>
             {
                 o.Address = new Uri(poigeofenceservice);
             });
