@@ -79,6 +79,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The POI name is required.");
                 }
                 var poiRequest = new POIRequest();
+                request.State= "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.CreatePOIAsync(poiRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);

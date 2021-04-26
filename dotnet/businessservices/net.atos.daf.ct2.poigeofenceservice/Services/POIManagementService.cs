@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 _logger.Info("Create POI.");
                 POI poi = new POI();
                 request.Type = "POI";
-                request.State= "Active";
+                request.State = "Active";
                 poi = _mapper.ToPOIEntity(request);
                 poi = await _poiManager.CreatePOI(poi);
                 if (poi.Id > 0)

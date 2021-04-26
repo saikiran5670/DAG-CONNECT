@@ -356,7 +356,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", poiId);
-                var query = @"update master.landmark set state='D' where id=@id and type = 'P' ";
+                var query = @"update master.landmark set state='D' where id=@id and type = 'P' RETURNING id";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;

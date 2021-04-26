@@ -20,6 +20,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poiRequest.City = poi.City;
             poiRequest.Country = poi.Country;
             poiRequest.Zipcode = poi.Zipcode;
+            poiRequest.Latitude = poi.Latitude;
+            poiRequest.Longitude = poi.Longitude;
+            poiRequest.State = poi.State;
             return poiRequest;
         }
         public net.atos.daf.ct2.portalservice.Entity.POI.POIResponse ToPOIEntity(POIData poiResponseData)
