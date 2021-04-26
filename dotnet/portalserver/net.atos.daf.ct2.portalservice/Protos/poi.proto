@@ -11,7 +11,7 @@ rpc GetAllPOI (POIRequest) returns (POIResponseList);
 rpc CreatePOI (POIRequest) returns (POIResponse);
 rpc UpdatePOI (POIRequest) returns (POIResponse);
 rpc DeletePOI (POIRequest) returns (POIResponse);
-
+rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
     }
 
 message POIEntityResponse{
@@ -86,4 +86,8 @@ message POIResponseList  {
   repeated POIData POIList = 1;
   Responsecode code = 2;
   string message = 3;
+}
+
+message DownloadPOIRequest{
+    int32 OrganizationId = 1;
 }

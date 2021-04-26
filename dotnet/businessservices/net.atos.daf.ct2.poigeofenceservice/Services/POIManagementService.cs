@@ -191,7 +191,6 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 POI obj = new POI();
                 obj.OrganizationId = request.OrganizationId;
                 var result = await _poiManager.GetAllPOI(obj);
-                _logger.Info("GetAllPOI method in POI service called.");
                 foreach (var item in result)
                 {
                     POIData objPOIData = new POIData();
@@ -206,7 +205,10 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objPOIData.Country = item.Country == null ? string.Empty : item.Country;
                     objPOIResponseList.POIList.Add(objPOIData);
                 }
-                return objPOIResponseList;
+                objPOIResponseList.Message = "POI data for Excel retrieved";
+                objPOIResponseList.Code = Responsecode.Success;
+                _logger.Info("DownloadPOIForExcel method in POIManagement service called.");
+                return await Task.FromResult(objPOIResponseList);
             }
             catch (Exception ex)
             {

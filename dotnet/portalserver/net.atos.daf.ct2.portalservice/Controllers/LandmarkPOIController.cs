@@ -31,11 +31,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _mapper = new Entity.POI.Mapper();
         }
 
-
-      
         [HttpGet]
         [Route("getallglobalpoi")]
-        [AllowAnonymous]
         public async Task<IActionResult> getallglobalpoi([FromQuery] net.atos.daf.ct2.portalservice.Entity.POI.POIEntityRequest request)
         {
             try
@@ -66,7 +63,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
         [HttpPost]
@@ -219,6 +216,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("downloadpoiforexcel")]
+        public async Task<IActionResult> DownLoadPOIForExcel([FromQuery] int OrganizationId)
+        {
+            try
+            {
+                _logger.Info("DownLoadPOIForExcel method in POI API called.");
+                net.atos.daf.ct2.poiservice.DownloadPOIRequest objPOIEntityRequest = new net.atos.daf.ct2.poiservice.DownloadPOIRequest();
+                objPOIEntityRequest.OrganizationId = OrganizationId;
+                var data = await _poiServiceClient.DownloadPOIForExcelAsync(objPOIEntityRequest);
+                if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
+                {
+                    if (data.POIList != null && data.POIList.Count > 0)
+                    {
+                        return Ok(data.POIList);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "POI details for Excel download are not found");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
     }
