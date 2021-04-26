@@ -32,8 +32,8 @@ namespace net.atos.daf.ct2.poigeofence.test
         public void GetAllGobalPOI()
         {
             POIEntityRequest objPOIEntityRequest = new POIEntityRequest();
-            objPOIEntityRequest.CategoryId = 4;
-            //objPOIEntityRequest.SubCategoryId = 5;
+            objPOIEntityRequest.CategoryId = 10;
+            objPOIEntityRequest.SubCategoryId = 8;
 
             var resultGlobalPOIList = _iPoiManager.GetAllGobalPOI(objPOIEntityRequest).Result;
             Assert.IsNotNull(resultGlobalPOIList);
