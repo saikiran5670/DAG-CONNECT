@@ -14,9 +14,19 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce ToGeofenceList(net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce request)
         {
             net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce objResponse = new net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce();
-            objResponse.CategoryName = request.category;
-            objResponse.SubCategoryName = request.subCategory;
-            objResponse.GeofenceName = request.geofenceName;
+            if (request.category!=null)
+            {
+                objResponse.CategoryName = request.category;
+            }
+            if (request.subCategory!=null)
+            {
+                objResponse.SubCategoryName = request.subCategory;
+            }
+            if (request.geofenceName!=null)
+            {
+                objResponse.GeofenceName = request.geofenceName;
+            }
+            
             objResponse.GeofenceId = request.geofenceID;
             return objResponse;
         }
@@ -180,6 +190,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.CategoryId = geofenceRequest.CategoryId;
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
+            geofence.ModifiedBy = geofenceRequest.ModifiedBy;
             return geofence;
         }
 
@@ -191,6 +202,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.CategoryId = geofenceRequest.CategoryId;
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
+            geofence.ModifiedBy = geofenceRequest.ModifiedBy;
             return geofence;
         }
     }

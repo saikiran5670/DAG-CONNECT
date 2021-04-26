@@ -126,6 +126,46 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             return await Task.FromResult(response);
         }
+        public override async Task<GetGeofenceResponse> GetGeofenceByGeofenceID(IdRequest request, ServerCallContext context)
+        {
+            GetGeofenceResponse response = new GetGeofenceResponse();
+            try
+            {
+                _logger.Info("Get GetGeofenceByGeofenceID .");
+                var result = await _geofenceManager.GetGeofenceByGeofenceID(request.OrganizationId, request.GeofenceId);
+                foreach (net.atos.daf.ct2.poigeofence.entity.Geofence entity in result)
+                {
+                    response.GeofenceName = entity.Name;
+                    response.Id = entity.Id;
+                    response.OrganizationId = entity.OrganizationId;
+                    if (entity.CategoryName != null)
+                    {
+                        response.CategoryName = entity.CategoryName;
+                    }
+                    if (entity.SubCategoryName != null)
+                    {
+                        response.SubCategoryName = entity.SubCategoryName;
+                    }
+                    response.Address = entity.Address;
+                    response.City = entity.City;
+                    response.Country = entity.Country;
+                    response.Distance = entity.Distance;
+                    response.Latitude = entity.Latitude;
+                    response.Longitude = entity.Longitude;
+                    response.ModifiedAt = entity.ModifiedAt;
+                    response.ModifiedBy = entity.ModifiedBy;
+                    response.CreatedAt = entity.CreatedAt;
+                    response.CreatedBy = entity.CreatedBy;
+                    response.Zipcode = entity.Zipcode;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
         public override async Task<CircularGeofenceResponse> CreateCircularGeofence(CircularGeofenceRequest request, ServerCallContext context)
         {
             CircularGeofenceResponse response = new CircularGeofenceResponse();
@@ -167,7 +207,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 Geofence geofence = new Geofence();
                 response.GeofencePolygonUpdateRequest = new GeofencePolygonUpdateRequest();
                 geofence = _mapper.ToGeofenceUpdateEntity(request);
-                geofence = await _geofenceManager.CreatePolygonGeofence(geofence);
+                geofence = await _geofenceManager.UpdatePolygonGeofence(geofence);
                 // check for exists
                 response.GeofencePolygonUpdateRequest.Exists = false;
                 if (geofence.Exists)

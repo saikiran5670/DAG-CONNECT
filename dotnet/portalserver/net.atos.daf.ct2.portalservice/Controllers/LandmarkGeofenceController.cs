@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpPost]
         [Route("updatepolygongeofence")]
-        public async Task<IActionResult> UpdatePolygonGeofence(Geofence request)
+        public async Task<IActionResult> UpdatePolygonGeofence(GeofenceUpdateEntity request)
         {
             try
             {
@@ -279,7 +279,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                 "Update  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
