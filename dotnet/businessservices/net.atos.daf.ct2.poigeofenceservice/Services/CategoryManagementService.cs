@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
@@ -166,6 +167,40 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             return await Task.FromResult(response);
         }
+
+        public async override Task<GetResponse> GetCategoryDetails(GetRequest request, ServerCallContext context)
+        {
+            GetResponse response = new GetResponse();
+            try
+            {
+                var categoryListDetails = _categoryManager.GetCategoryDetails().Result;
+
+                foreach (var item in categoryListDetails)
+                {
+                    var catdetails = new categoryDetails();
+                    catdetails.ParentCategoryId = item.parent_id;
+                    catdetails.SubCategoryId = item.subcategory_id;
+                    catdetails.IconName = item.IconName == null ? "" : item.IconName; 
+                    if (item.Icon != null)
+                    {
+                        catdetails.Icon = ByteString.CopyFrom(item.Icon);
+                    }
+                    catdetails.ParentCategoryName = item.ParentCategory == null ? "" : item.ParentCategory;
+                    catdetails.SubCategoryName = item.SubCategory == null ? "" : item.SubCategory;
+                    catdetails.NoOfPOI = item.No_of_POI;
+                    catdetails.NoOfGeofence = item.No_of_Geofence;
+                    response.Categories.Add(catdetails);
+
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
+
         // END - Category
     }
 }

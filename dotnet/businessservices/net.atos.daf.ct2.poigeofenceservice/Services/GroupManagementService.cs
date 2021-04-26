@@ -158,19 +158,10 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         obj.Id = item.id;
                         obj.OrganizationId = item.organization_id;
                         obj.Name = item.name;
-                        obj.Description = item.description is null ? "" : item.description;
-                        obj.CreatedBy = item.created_by;
-                        obj.State = item.state;
                         obj.CreatedAt = item.created_at;
-                        obj.ModifiedAt = item.modified_at;
-                        obj.ModifiedBy = item.modified_by;                        
-                        foreach (var pois in item.poilist)
-                        {
-                            PoiId pOI = new PoiId();
-                            pOI.Poiid = pois.Id;
-                            pOI.Type = pois.Type;
-                            obj.PoiIds.Add(pOI);
-                        }
+                        obj.ModifiedAt = item.modified_at;                        
+                        obj.PoiCount = item.poiCount;
+                        obj.GeofenceCount = item.geofenceCount;
                         response.Groups.Add(obj);
                     }
                     response.Message = "Get success";
