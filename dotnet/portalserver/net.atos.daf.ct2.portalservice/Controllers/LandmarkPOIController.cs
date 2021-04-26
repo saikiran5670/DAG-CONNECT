@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The POI name is required.");
                 }
-                var poiRequest = new POIRequest();
+                var poiRequest = new POIRequest();                
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.UpdatePOIAsync(poiRequest);
 
@@ -264,6 +264,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 poiRequest.OrganizationId = poiFilter.OrganizationId;
                 poiRequest.CategoryId = poiFilter.CategoryId;
                 poiRequest.SubCategoryId = poiFilter.SubCategoryId;
+                poiRequest.Type = "POI";
                 var data = await _poiServiceClient.GetAllPOIAsync(poiRequest);
                 if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
                 {

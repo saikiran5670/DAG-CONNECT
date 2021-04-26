@@ -33,7 +33,7 @@
                         </mat-menu>
                         </div>
                         <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                            <button mat-flat-button color="primary" (click)="newUserRole()">
+                            <button mat-flat-button color="primary" (click)="newLandmarkGroup()">
                             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewGroup || 'New Group'}}
                             </button>
                         </div>
@@ -69,10 +69,10 @@
                         <ng-container matColumnDef="action">
                             <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
-                                <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewUserRole(row)">
+                                <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewlandmarkGroup(row)">
                                     <mat-icon>visibility</mat-icon>
                                 </button>
-                                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn'  mat-flat-button (click)="editUserRole(row, 'edit')" matTooltip="Edit">
+                                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn'  mat-flat-button (click)="editLandmarkGroup(row)" matTooltip="Edit">
                                     <mat-icon>create</mat-icon>
                                 </button>
                                 <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn'  mat-flat-button (click)="deleteLandmarkGroup(row)" matTooltip="Delete">
@@ -90,7 +90,7 @@
             <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
         </mat-card>
     </div>
-    <div *ngIf='editFlag'>
+    <!-- <div *ngIf='editFlag'>
         <app-edit-user-role-details [translationData]='translationData' [viewFlag]='viewFlag' [duplicateFlag]='duplicateFlag' [createStatus]='createStatus' [title]='titleText' [roleData]='initData' [gridData]='rowsData' (backToPage)='editData($event)'></app-edit-user-role-details>
-    </div>
+    </div> -->
 </div>

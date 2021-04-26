@@ -253,34 +253,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);
                 parameter.Add("@name", geofence.Name);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@modified_by", geofence.CreatedBy);
+                parameter.Add("@modified_by", geofence.ModifiedBy);
+                parameter.Add("@id", geofence.Id);
                 string query = @"UPDATE master.landmark
 	                                SET category_id=@category_id
 	                                   ,sub_category_id=@sub_category_id
 	                                   ,name=@name
 	                                   ,modified_at=@modified_at
-	                                   ,modified_by=@
+	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
-                //if (geofence.Id > 0)
-                //{
-                //    foreach (var item in geofence.Nodes)
-                //    {
-                //        var nodeparameter = new DynamicParameters();
-                //        nodeparameter.Add("@landmark_id", geofence.Id);
-                //        nodeparameter.Add("@seq_no", item.SeqNo);
-                //        nodeparameter.Add("@latitude", item.Latitude);
-                //        nodeparameter.Add("@longitude", item.Longitude);
-                //        nodeparameter.Add("@state", "A");
-                //        nodeparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                //        nodeparameter.Add("@created_by", geofence.CreatedBy);
-                //        string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by)
-	               //                 VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by) RETURNING id";
-                //        var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
-                //    }
-                //}
             }
             catch (Exception ex)
             {
