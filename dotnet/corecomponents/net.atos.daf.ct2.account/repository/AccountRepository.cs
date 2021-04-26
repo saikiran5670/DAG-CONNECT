@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", account.Id);
-               // parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
+                // parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
@@ -407,7 +407,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 throw ex;
-            }            
+            }
         }
 
         public async Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyForAccount)
@@ -465,19 +465,19 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var parameter = new DynamicParameters();                
+                var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
 
                 string query =
                     @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin,is_reminder_sent as IsReminderSent from master.passwordpolicy where account_id = @account_id";
 
-                return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);                
+                return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-        }        
+        }
 
         public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)
         {
@@ -492,7 +492,7 @@ namespace net.atos.daf.ct2.account
 
                 var accountPreferenceId = await dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
 
-                if(!accountPreferenceId.HasValue)
+                if (!accountPreferenceId.HasValue)
                 {
                     string orgQuery = string.Empty;
                     int? orgPreferenceId = null;
@@ -1205,7 +1205,7 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select o.id, coalesce(o.name, '(' || o.org_id || ')') as name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id = @account_id";
+                    query = @"select o.id,case when o.name is null then 'Unknown' else o.name end as name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
                     IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
                     keyValueList = result.ToList();
                 }
