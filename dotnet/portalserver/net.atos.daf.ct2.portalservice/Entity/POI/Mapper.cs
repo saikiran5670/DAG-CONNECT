@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poiRequest.OrganizationId = poi.OrganizationId;
             poiRequest.CategoryId = poi.CategoryId;
             poiRequest.Name = poi.Name;
-            poiRequest.Type = poi.Type;
+            //poiRequest.Type = poi.Type;
             poiRequest.Address = poi.Address;
             poiRequest.City = poi.City;
             poiRequest.Country = poi.Country;
