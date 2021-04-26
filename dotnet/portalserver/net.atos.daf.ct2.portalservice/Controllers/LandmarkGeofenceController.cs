@@ -49,14 +49,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.GeofenceResponse geofenceResponse = await _GeofenceServiceClient.CreatePolygonGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed
-                     && geofenceResponse.Message == "There is an error creating Geofence.")
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating Geofence.");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Conflict)
                 {
-                    return StatusCode(409, geofenceResponse.Message);
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
                 {
@@ -69,7 +68,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
 
             }
@@ -172,14 +171,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.GeofencePolygonUpdateResponce geofenceResponse = await _GeofenceServiceClient.UpdatePolygonGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed
-                     && geofenceResponse.Message == "There is an error creating Geofence.")
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating Geofence.");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Conflict)
                 {
-                    return StatusCode(409, geofenceResponse.Message);
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
                 {
@@ -192,7 +190,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode((int)geofenceResponse.Code, "Geofence Response is null");
                 }
 
             }

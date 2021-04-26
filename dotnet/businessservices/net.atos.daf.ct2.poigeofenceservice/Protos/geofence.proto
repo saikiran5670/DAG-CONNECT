@@ -13,11 +13,12 @@ rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceRe
 rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
 }
 
-enum Responcecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+enum Responsecode{
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError=500;
 }
 
 message DeleteRequest{

@@ -76,6 +76,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.Code = Responcecode.Conflict;
                     return response;
                 }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responcecode.NotFound;
+                    return response;
+                }
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Message = "Geofence created with id:- " + geofence.Id,
