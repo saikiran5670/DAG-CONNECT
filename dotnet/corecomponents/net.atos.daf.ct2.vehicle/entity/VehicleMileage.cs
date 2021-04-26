@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace net.atos.daf.ct2.vehicle.entity
 {
     public class VehicleMileage
     {
-        public long RequestTimestamp { get; set; }
+        public long RequestTimestamp { get; set; }        
         public List<VehiclesCSV> VehiclesCSV { get; set; }
         public List<Vehicles> Vehicles { get; set; } 
     }
