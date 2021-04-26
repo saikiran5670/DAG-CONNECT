@@ -335,6 +335,7 @@ export class LoginComponent implements OnInit {
 
   onForgetPassword() {
     this.forgotPwdFlag = true;
+    this.invalidUserMsg= false;
   }
 
   onBackToLogin() {
