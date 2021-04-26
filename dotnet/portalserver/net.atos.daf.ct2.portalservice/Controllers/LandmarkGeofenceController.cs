@@ -49,15 +49,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.GeofenceResponse geofenceResponse = await _GeofenceServiceClient.CreatePolygonGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed)
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed)
                 {
                     return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
-                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Conflict)
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
                 {
                     return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
-                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -108,16 +108,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.CircularGeofenceResponse geofenceResponse = await _GeofenceServiceClient.CreateCircularGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed
                      && geofenceResponse.Message == "There is an error creating Geofence.")
                 {
                     return StatusCode(500, "There is an error creating Geofence.");
                 }
-                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Conflict)
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
                 {
                     return StatusCode(409, geofenceResponse.Message);
                 }
-                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -252,15 +252,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.GeofencePolygonUpdateResponce geofenceResponse = await _GeofenceServiceClient.UpdatePolygonGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed)
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed)
                 {
                     return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
-                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Conflict)
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
                 {
                     return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
-                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,

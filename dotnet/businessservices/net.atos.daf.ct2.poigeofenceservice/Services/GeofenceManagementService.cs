@@ -41,12 +41,12 @@ namespace net.atos.daf.ct2.geofenceservice
                 if (result)
                 {
                     response.Message = "Deleted";
-                    response.Code = Responcecode.Success;
+                    response.Code = Responsecode.Success;
                 }
                 if (!result)
                 {
                     response.Message = "Not Deleted";
-                    response.Code = Responcecode.Failed;
+                    response.Code = Responsecode.Failed;
                 }
 
             }
@@ -73,19 +73,19 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     response.GeofenceRequest.Exists = true;
                     response.Message = "Duplicate Geofence Name";
-                    response.Code = Responcecode.Conflict;
+                    response.Code = Responsecode.Conflict;
                     return response;
                 }
                 if (geofence == null)
                 {
                     response.Message = "Geofence Response is null";
-                    response.Code = Responcecode.NotFound;
+                    response.Code = Responsecode.NotFound;
                     return response;
                 }
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Message = "Geofence created with id:- " + geofence.Id,
-                    Code = Responcecode.Success,
+                    Code = Responsecode.Success,
                     GeofenceRequest = _mapper.ToGeofenceRequest(geofence)
                 });
             }
@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new GeofenceResponse
                 {
-                    Code = Responcecode.Failed,
+                    Code = Responsecode.Failed,
                     Message = "Geofence Creation Faile due to - " + ex.Message,
                 });
             }
@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.geofenceservice
                         response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
                     }
                 }
-                response.Code = Responcecode.Success;
+                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.GeofenceRequest.Add(_mapper.ToGeofenceRequest(item));
                 }
                 response.Message = "Circular Geofence created with selected POI";
-                response.Code = Responcecode.Success;
+                response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new CircularGeofenceResponse
                 {
-                    Code = Responcecode.Failed,
+                    Code = Responsecode.Failed,
                     Message = "Circular Geofence Creation Failed due to - " + ex.Message,
                 });
             }
@@ -174,13 +174,13 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     response.GeofencePolygonUpdateRequest.Exists = true;
                     response.Message = "Duplicate Geofence Name";
-                    response.Code = Responcecode.Conflict;
+                    response.Code = Responsecode.Conflict;
                     return response;
                 }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
                     Message = "Geofence created with id:- " + geofence.Id,
-                    Code = Responcecode.Success,
+                    Code = Responsecode.Success,
                     GeofencePolygonUpdateRequest = _mapper.ToGeofenceUpdateRequest(geofence)
                 });
             }
@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
-                    Code = Responcecode.Failed,
+                    Code = Responsecode.Failed,
                     Message = "Geofence Creation Failed due to - " + ex.Message,
                 });
             }

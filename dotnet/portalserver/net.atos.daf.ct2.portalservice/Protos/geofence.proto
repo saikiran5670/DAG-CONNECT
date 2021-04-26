@@ -15,6 +15,7 @@ rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygo
 }
 
 enum Responsecode{
+  None = 0;
   Success = 200;
   Failed = 400;
   Conflict = 409;
@@ -27,7 +28,7 @@ message DeleteRequest{
    int32 organization_id=2;
 }
 message GeofenceDeleteResponse {
-  Responcecode Code=1;
+  Responsecode Code=1;
   string Message = 2;  
 }
 
@@ -62,7 +63,7 @@ message NodeRequest{
 
 message GeofenceResponse{
    GeofenceRequest GeofenceRequest =1;
-    Responcecode Code=2;
+    Responsecode Code=2;
     string message = 3;
 }
 
@@ -75,7 +76,7 @@ message GeofenceEntityRequest{
 
 message GeofenceEntityResponceList  {
   repeated GeofenceEntityResponce GeofenceList = 1;
-  Responcecode code = 2;
+  Responsecode code = 2;
 }
 message GeofenceEntityResponce{
     string geofenceName = 1;
@@ -91,7 +92,7 @@ message CircularGeofenceRequest{
 
 message CircularGeofenceResponse{
    repeated GeofenceRequest GeofenceRequest =1;
-    Responcecode Code=2;
+    Responsecode Code=2;
     string message = 3;
 }
 
@@ -118,7 +119,6 @@ message GetGeofenceResponse{
     int64 CreatedAt=16;
     int64 ModifiedAt=17;    
 }
-}
 
 message GeofencePolygonUpdateRequest{
  int32 Id =1;
@@ -131,6 +131,6 @@ message GeofencePolygonUpdateRequest{
 
 message GeofencePolygonUpdateResponce{
     GeofencePolygonUpdateRequest GeofencePolygonUpdateRequest=1;
-    Responcecode Code=2;
+    Responsecode Code=2;
     string message = 3;
 }
