@@ -44,7 +44,7 @@ variables:
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.translationservice/appsettings.json'
+    targetFiles: 'dotnet/commonservices/net.atos.daf.ct2.translationservice/appsettings.Production.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -57,7 +57,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/commonservices/net.atos.daf.ct2.translationservice/appsettings.json
+      cat dotnet/commonservices/net.atos.daf.ct2.translationservice/appsettings.Production.json
 
 - task: replacetokens@3
   inputs:
