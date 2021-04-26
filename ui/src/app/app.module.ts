@@ -24,6 +24,7 @@ import { SubscriptionService } from './services/subscription.service';
 import { AppInterceptor } from './interceptor/app.interceptor';
 import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-error.interceptor';
 import { ErrorComponent } from './error/error.component';
+import { LandmarkService } from './services/landmark.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -66,7 +67,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     DriverService,
     FeatureService,
     PackageService,
-    SubscriptionService
+    SubscriptionService,
+    LandmarkService
   ],
   bootstrap: [AppComponent],
 })
