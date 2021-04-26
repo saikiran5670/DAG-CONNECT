@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int id { get; set; }
         public int organization_id { get; set; }
         public string name { get; set; }
+        public string description { get; set; }
         public int icon_id { get; set; }
         public string state { get; set; }
         public long created_at { get; set; }

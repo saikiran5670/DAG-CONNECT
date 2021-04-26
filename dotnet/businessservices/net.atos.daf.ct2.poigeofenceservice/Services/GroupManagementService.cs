@@ -34,6 +34,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 LandmarkGroup obj = new LandmarkGroup();
                 obj.organization_id = request.OrganizationId;
                 obj.name = request.Name;
+                obj.description = request.Description;
+
                 obj.created_by = request.CreatedBy;
                 obj.state = request.State;
                 obj.created_by = request.CreatedBy;
@@ -77,6 +79,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 LandmarkGroup obj = new LandmarkGroup();
                 obj.id = request.Id;
                 obj.name = request.Name;
+                obj.description = request.Description;
                 obj.modified_by = request.ModifiedBy;
                 obj.poilist = new List<POI>();
                 foreach (var item in request.PoiIds)
@@ -155,6 +158,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         obj.Id = item.id;
                         obj.OrganizationId = item.organization_id;
                         obj.Name = item.name;
+                        obj.Description = item.description;
                         obj.CreatedBy = item.created_by;
                         obj.State = item.state;
                         obj.CreatedAt = item.created_at;

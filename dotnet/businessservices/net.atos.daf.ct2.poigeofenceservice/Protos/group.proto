@@ -27,6 +27,7 @@ message GroupAddRequest
       int32 Id =1;
       int32 Organization_Id =2;
       string Name =3;
+      string description = 4;
       string Type =5;
       int32 Parent_Id =6;
       string State=7;
@@ -51,6 +52,7 @@ message GroupUpdateRequest
 {
       int32 Id =1;
       string Name =2;
+      string description = 4;
       int32 Modified_By =5;
       repeated PoiId PoiIds  =12;
 
@@ -87,6 +89,7 @@ message Group{
 
      int32 Id =1;
       int32 Organization_Id =2;
+      string description = 4;
       string Name =3;
       string Type =5;
       string State=7;
