@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         obj.Id = item.id;
                         obj.OrganizationId = item.organization_id;
                         obj.Name = item.name;
-                        obj.Description = item.description;
+                        obj.Description = item.description is null ? "" : item.description;
                         obj.CreatedBy = item.created_by;
                         obj.State = item.state;
                         obj.CreatedAt = item.created_at;

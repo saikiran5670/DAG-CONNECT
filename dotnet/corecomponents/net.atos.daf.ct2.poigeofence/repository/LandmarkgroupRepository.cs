@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                
 
-                string query = @"SELECT id, organization_id, name, icon_id, state, created_at
+                string query = @"SELECT id, organization_id, name, icon_id, state, created_at,description,modified_at,created_by,modified_by
                                   from master.landmarkgroup
 	                              where state != 'D'";
 

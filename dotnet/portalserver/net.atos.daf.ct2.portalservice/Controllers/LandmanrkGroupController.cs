@@ -201,7 +201,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return StatusCode(500, "Error in landmark group delete");
+                return StatusCode(500, "Error in landmark group get");
             }
         }
     }
