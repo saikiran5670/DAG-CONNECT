@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.accountservice
                         {
                             acctOrganization = new AccountIdentityOrg();
                             acctOrganization.Id = accOrg.Id;
-                            acctOrganization.Name = string.IsNullOrEmpty(accOrg.Name)? "Unknown": accOrg.Name;
+                            acctOrganization.Name = accOrg.Name;
                             response.AccOrganization.Add(acctOrganization);
                         }
                     }

@@ -38,8 +38,10 @@ namespace net.atos.daf.ct2.subscriptionservice
                     .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
             }));
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            services.AddSingleton(dataAccess);
+            services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
+            {
+                return new PgSQLDataAccess(connectionString);
+            });
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
         }
