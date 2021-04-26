@@ -33,4 +33,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
     {
         public int Id { get; set; }
     }
+
+    public class GetCategoryTypes
+    {
+        public string Type { get; set; }
+    }
 }

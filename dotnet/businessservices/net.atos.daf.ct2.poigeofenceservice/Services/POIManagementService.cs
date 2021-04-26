@@ -28,24 +28,26 @@ namespace net.atos.daf.ct2.poigeofenceservice
             try
             {
                 POIEntityResponseList objPOIEntityResponseList = new POIEntityResponseList();
-                net.atos.daf.ct2.poiservice.POIEntityResponse objPOIEntityResponse = new net.atos.daf.ct2.poiservice.POIEntityResponse();
                 net.atos.daf.ct2.poigeofence.entity.POIEntityRequest obj = new poigeofence.entity.POIEntityRequest();
                 obj.CategoryId = request.CategoryId;
                 obj.SubCategoryId = request.SubCategoryId;
                 var data = await _poiManager.GetAllGobalPOI(obj);
-                _logger.Info("GetAllPOI method in POI service called.");
                 foreach (var item in data)
                 {
+                    net.atos.daf.ct2.poiservice.POIEntityResponse objPOIEntityResponse = new net.atos.daf.ct2.poiservice.POIEntityResponse();
                     objPOIEntityResponse.Category = item.Category == null ? string.Empty : item.Category;
                     objPOIEntityResponse.City = item.City == null ? string.Empty : item.City;
                     objPOIEntityResponse.Latitude = item.Latitude;
                     objPOIEntityResponse.Longitude = item.Longitude;
                     objPOIEntityResponse.POIName = item.POIName == null ? string.Empty : item.POIName;
+                    objPOIEntityResponse.GlobalPOIId = item.GlobalPOIId;
+                    objPOIEntityResponse.CategoryId = item.CategoryId;
+                    objPOIEntityResponse.SubCategoryId = item.SubCategoryId;
                     objPOIEntityResponseList.POIList.Add(objPOIEntityResponse);
                 }
-                objPOIEntityResponseList.Message = "POI data retrieved";
+                objPOIEntityResponseList.Message = "GlobalPOI data retrieved";
                 objPOIEntityResponseList.Code = Responsecode.Success;
-                _logger.Info("GetAllGobalPOI method in POI service called.");
+                _logger.Info("GetAllGobalPOI method in POIManagement service called.");
                 return await Task.FromResult(objPOIEntityResponseList);
             }
             catch (Exception ex)

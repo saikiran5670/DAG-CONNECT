@@ -20,6 +20,9 @@ message POIEntityResponse{
     double Longitude=3;
     string Category = 4;
     string City = 5;
+    int32 GlobalPOIId = 6;
+    int32 CategoryId =7;
+    int32 SubCategoryId =8;
 }
 message POIEntityResponseList  {
   repeated POIEntityResponse POIList = 1;
