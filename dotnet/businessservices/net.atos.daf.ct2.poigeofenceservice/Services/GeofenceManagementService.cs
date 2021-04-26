@@ -65,8 +65,18 @@ namespace net.atos.daf.ct2.geofenceservice
             {
                 _logger.Info("Create Geofence.");
                 Geofence geofence = new Geofence();
+                response.GeofenceRequest = new GeofenceRequest();
                 geofence = _mapper.ToGeofenceEntity(request);
                 geofence = await _geofenceManager.CreatePolygonGeofence(geofence);
+                // check for exists
+                response.GeofenceRequest.Exists = false;
+                if (geofence.Exists)
+                {
+                    response.GeofenceRequest.Exists = true;
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responcecode.Conflict;
+                    return response;
+                }
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Message = "Geofence created with id:- " + geofence.Id,
@@ -121,6 +131,7 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
                 geofence = await _geofenceManager.CreateCircularGeofence(geofence);
+          
                 foreach (var item in geofence)
                 {
                     response.GeofenceRequest.Add(_mapper.ToGeofenceRequest(item));

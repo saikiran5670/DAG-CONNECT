@@ -28,6 +28,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                geofence = await Exists(geofence);
+
+                // duplicate Geofence
+                if (geofence.Exists)
+                {
+                    return geofence;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", geofence.OrganizationId);
                 parameter.Add("@category_id", geofence.CategoryId);
@@ -254,6 +261,49 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var query = @"delete from master.nodes where landmark_id = @id";
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task<Geofence> Exists(Geofence geofenceRequest)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<Geofence> groupList = new List<Geofence>();
+                var query = @"select id from master.landmark where 1=1 ";
+                if (geofenceRequest != null)
+                {
+
+                    // id
+                    if (Convert.ToInt32(geofenceRequest.Id) > 0)
+                    {
+                        parameter.Add("@id", geofenceRequest.Id);
+                        query = query + " and id!=@id";
+                    }
+                    // name
+                    if (!string.IsNullOrEmpty(geofenceRequest.Name))
+                    {
+                        parameter.Add("@name", geofenceRequest.Name);
+                        query = query + " and name=@name";
+                    }
+                    // organization id filter
+                    if (geofenceRequest.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", geofenceRequest.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                }
+                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (groupid > 0)
+                {
+                    geofenceRequest.Exists = true;
+                    geofenceRequest.Id = groupid;
+                }
+                return geofenceRequest;
             }
             catch (Exception ex)
             {

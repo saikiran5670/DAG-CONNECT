@@ -26,5 +26,6 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public List<Nodes> Nodes { get; set; }
+        public bool Exists { get; set; }
     }
 }

@@ -46,6 +46,7 @@ message GeofenceRequest{
     int32 TripId = 15;
     int32 CreatedBy = 16;
     repeated NodeRequest NodeRequest=17;
+    bool Exists=18;
 }
 message NodeRequest{
     int32 Id =1;
