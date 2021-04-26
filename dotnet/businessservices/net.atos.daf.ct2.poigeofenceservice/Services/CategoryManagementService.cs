@@ -6,6 +6,7 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.poigeofenceservice.Entity;
 
@@ -43,7 +44,13 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.icon = request.Icon.ToByteArray();
 
                 var result = await _categoryManager.AddCategory(obj);
-                if (result != null)
+                if (result.Id == -1)
+                {
+                   response.Message = "Category Name is " + obj.Name + " already exists ";
+                   response.Code = Responcecode.Conflict;
+                    
+                }
+                else if (result != null && result.Id >0)
                 {
                     response.Message = "Added successfully";
                     response.Code = Responcecode.Success;
@@ -77,15 +84,15 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.Modified_By = request.ModifiedBy;
 
                 var result = await _categoryManager.EditCategory(obj);
-                if (result != null)
+                if (result != null && result.Id >=0)
                 {
                     response.Message = "Edit successfully";
                     response.Code = Responcecode.Success;
                 }
                 else
                 {
-                    response.Message = "Edit category Fail";
-                    response.Code = Responcecode.Failed;
+                    response.Message = "Category Not Found";
+                    response.Code = Responcecode.NotFound;
                 }
 
             }
@@ -106,16 +113,17 @@ namespace net.atos.daf.ct2.poigeofenservice
                
 
                 var result = await _categoryManager.DeleteCategory(request.Id);
-                if (result )
+                if (result)
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responcecode.Success;
                 }
-                if (!result)
+               else
                 {
-                    response.Message = "Delete category Fail";
-                    response.Code = Responcecode.Failed;
+                    response.Message = "Category Not Found";
+                    response.Code = Responcecode.NotFound;
                 }
+                return await Task.FromResult(response);
 
             }
             catch (Exception ex)
@@ -125,28 +133,28 @@ namespace net.atos.daf.ct2.poigeofenservice
             return await Task.FromResult(response);
         }
 
-        public override async Task<CategoryGetResponse> GetCategory(CategoryGetRequest request, ServerCallContext context)
+        public override async Task<CategoryGetResponse> GetCategoryType(CategoryGetRequest request, ServerCallContext context)
         {
             CategoryGetResponse response = new CategoryGetResponse();
             try
             {
                 _logger.Info("Get Category .");
 
-                var result = await _categoryManager.GetCategory();
+                var result = await _categoryManager.GetCategory(request.Type);
                 foreach (var item in result)
                 {
-                    var Data = new category();
+                    var Data = new GetCategoryType();
                     Data.Id = item.Id;
-                    Data.OrganizationId = item.Organization_Id;
+                    //Data.OrganizationId = item.Organization_Id;
                     Data.Name = item.Name;
                     //Data.IconId = item.Icon_Id;
-                    Data.Type = item.Type;
-                    Data.ParentId = item.Parent_Id;
-                    Data.State = item.State;
-                    Data.CreatedAt = item.Created_At;
-                    Data.CreatedBy = item.Created_By;
-                    Data.ModifiedAt = item.Modified_At;
-                    Data.ModifiedBy = item.Modified_By;
+                   // Data.Type = item.Type;
+                    //Data.ParentId = item.Parent_Id;
+                    //Data.State = item.State;
+                    //Data.CreatedAt = item.Created_At;
+                    //Data.CreatedBy = item.Created_By;
+                    //Data.ModifiedAt = item.Modified_At;
+                    //Data.ModifiedBy = item.Modified_By;
                     response.Categories.Add(Data);
                 }
                 return await Task.FromResult(response);

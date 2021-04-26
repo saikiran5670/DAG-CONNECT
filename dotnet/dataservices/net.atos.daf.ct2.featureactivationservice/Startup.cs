@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "customer-data";
+        private readonly string swaggerBasePath = "featureactivation-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -46,10 +46,11 @@ namespace net.atos.daf.ct2.featureactivationservice
         {
             services.AddControllers();
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            services.AddSingleton(dataAccess);
+            services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
+            {
+                return new PgSQLDataAccess(connectionString);
+            });
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
-            services.AddSingleton(dataAccess);
             services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
@@ -91,7 +92,7 @@ namespace net.atos.daf.ct2.featureactivationservice
             //});
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Feature Activation Data Service", Version = "v1" });
             });
         }
 

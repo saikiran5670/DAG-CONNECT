@@ -24,6 +24,8 @@ using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.identitysession.repository;
 using net.atos.daf.ct2.identitysession;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.translation;
 
 namespace TCUProvisioning
 {    
@@ -307,9 +309,12 @@ namespace TCUProvisioning
 
             IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
             net.atos.daf.ct2.identity.IAccountManager iaccountManager = new net.atos.daf.ct2.identity.AccountManager(setting);
-          
+
+            TranslationRepository translationRepository = new TranslationRepository(dataacess);
+            ITranslationManager translationManager = new TranslationManager(translationRepository);
+
             IAccountRepository accountrepo = new AccountRepository(dataacess);
-            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, audit, iaccountManager, config);
+            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, audit, iaccountManager, config, translationManager);
 
             OrganizationRepository orgRepo = new OrganizationRepository(dataacess, vehicleManager, groupManager, accManager, subscriptionManager, accountSessionManager, accountTokenManager);
             OrganizationManager org = new OrganizationManager(orgRepo,audit);

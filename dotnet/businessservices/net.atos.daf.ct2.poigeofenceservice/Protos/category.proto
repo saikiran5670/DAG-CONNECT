@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
-option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
+option csharp_namespace = "net.atos.daf.ct2.poigeofences";
 
 package poigeofences;
 
@@ -10,7 +10,7 @@ service CategoryService{
 rpc AddCategory (CategoryAddRequest) returns (CategoryAddResponse);
 rpc EditCategory (CategoryEditRequest) returns (CategoryEditResponse);
 rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
-rpc GetCategory (CategoryGetRequest) returns (CategoryGetResponse);
+rpc GetCategoryType (CategoryGetRequest) returns (CategoryGetResponse);
     }
 
 
@@ -68,13 +68,19 @@ message CategoryDeleteResponse
 }
 message CategoryGetRequest
 {
-repeated category categories =1;
+ string type= 1;
 }
 message CategoryGetResponse
 {
-repeated category categories =1;
+repeated GetCategoryType categories =1;
   Responcecode Code=2;
   string Message = 3;  
+}
+
+message GetCategoryType
+{
+ int32 Id =1;
+ string Name =2;
 }
 
 message category{

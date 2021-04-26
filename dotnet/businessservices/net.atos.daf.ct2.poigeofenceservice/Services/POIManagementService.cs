@@ -7,15 +7,14 @@ using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofenceservice.entity;
-
+using net.atos.daf.ct2.poiservice;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
-    public class POIManagementService : POIGeOfenceService.POIGeOfenceServiceBase
+    public class POIManagementService : POIService.POIServiceBase
     {
         private ILog _logger;
         private readonly IPoiManager _poiManager;
-        private readonly IGeofenceManager geofenceManager;
         private readonly Mapper _mapper;
         public POIManagementService(IPoiManager poiManager)
         {
@@ -24,29 +23,31 @@ namespace net.atos.daf.ct2.poigeofenceservice
             _mapper = new Mapper();
         }
 
-        public override async Task<POIEntityResponseList> GetAllGobalPOI(POIEntityRequest request, ServerCallContext context)
+        public override async Task<POIEntityResponseList> GetAllGobalPOI(net.atos.daf.ct2.poiservice.POIEntityRequest request, ServerCallContext context)
         {
             try
             {
                 POIEntityResponseList objPOIEntityResponseList = new POIEntityResponseList();
-                POIEntityResponse objPOIEntityResponse = new POIEntityResponse();
                 net.atos.daf.ct2.poigeofence.entity.POIEntityRequest obj = new poigeofence.entity.POIEntityRequest();
                 obj.CategoryId = request.CategoryId;
                 obj.SubCategoryId = request.SubCategoryId;
                 var data = await _poiManager.GetAllGobalPOI(obj);
-                _logger.Info("GetAllPOI method in POI service called.");
                 foreach (var item in data)
                 {
+                    net.atos.daf.ct2.poiservice.POIEntityResponse objPOIEntityResponse = new net.atos.daf.ct2.poiservice.POIEntityResponse();
                     objPOIEntityResponse.Category = item.Category == null ? string.Empty : item.Category;
                     objPOIEntityResponse.City = item.City == null ? string.Empty : item.City;
                     objPOIEntityResponse.Latitude = item.Latitude;
                     objPOIEntityResponse.Longitude = item.Longitude;
                     objPOIEntityResponse.POIName = item.POIName == null ? string.Empty : item.POIName;
+                    objPOIEntityResponse.GlobalPOIId = item.GlobalPOIId;
+                    objPOIEntityResponse.CategoryId = item.CategoryId;
+                    objPOIEntityResponse.SubCategoryId = item.SubCategoryId;
                     objPOIEntityResponseList.POIList.Add(objPOIEntityResponse);
                 }
-                objPOIEntityResponseList.Message = "POI data retrieved";
-                objPOIEntityResponseList.Code = ResponseCode.Success;
-                _logger.Info("GetAllGobalPOI method in POI service called.");
+                objPOIEntityResponseList.Message = "GlobalPOI data retrieved";
+                objPOIEntityResponseList.Code = Responsecode.Success;
+                _logger.Info("GetAllGobalPOI method in POIManagement service called.");
                 return await Task.FromResult(objPOIEntityResponseList);
             }
             catch (Exception ex)
@@ -54,9 +55,163 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new POIEntityResponseList
                 {
-                    Code = ResponseCode.Failed,
+                    Code = Responsecode.Failed,
                     Message = $"Exception while retrieving data from GetAllGobalPOI : {ex.Message}"
                 });
+            }
+        }
+        public override async Task<POIResponseList> GetAllPOI(POIRequest request, ServerCallContext context)
+        {
+            try
+            {
+                POIResponseList objPOIEntityResponseList = new POIResponseList();
+                POIResponse objPOIEntityResponse = new POIResponse();
+                POI obj = new POI();
+                obj.Type = "POI";
+                obj.OrganizationId = request.OrganizationId;
+                var result = await _poiManager.GetAllPOI(obj);
+                _logger.Info("GetAllPOI method in POI service called.");
+                //foreach (var item in result)
+                //{
+                //    objPOIEntityResponse.Category = item.category == null ? string.Empty : item.category;
+                //    objPOIEntityResponse.City = item.City == null ? string.Empty : item.city;
+                //    objPOIEntityResponse.Latitude = item.latitude;
+                //    objPOIEntityResponse.Longitude = item.longitude;
+                //    objPOIEntityResponse.PoiName = item.poiName == null ? string.Empty : item.poiName;
+                //    objPOIEntityResponseList.POIList.Add(objPOIEntityResponse);
+                //}
+                return objPOIEntityResponseList;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                throw ex;
+            }
+        }
+        public override async Task<POIResponse> CreatePOI(POIRequest request, ServerCallContext context)
+        {
+            POIResponse response = new POIResponse();
+            try
+            {
+                _logger.Info("Create POI.");
+                POI poi = new POI();
+                poi = _mapper.ToPOIEntity(request);
+                poi = await _poiManager.CreatePOI(poi);
+                if (poi.Id > 0)
+                {
+                    return await Task.FromResult(new POIResponse
+                    {
+                        Message = "POI is created with id:- " + poi.Id,
+                        Code = Responsecode.Success
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new POIResponse
+                    {
+                        Message = "POI Creation Failed",
+                        Code = Responsecode.Failed
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new POIResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "POI Creation Failed due to - " + ex.Message,
+                });
+            }
+        }
+        public override async Task<POIResponse> UpdatePOI(POIRequest request, ServerCallContext context)
+        {
+            POIResponse response = new POIResponse();
+            try
+            {
+                _logger.Info("Update POI.");
+                POI poi = new POI();
+                poi = _mapper.ToPOIEntity(request);
+                poi = await _poiManager.UpdatePOI(poi);
+                if (poi.Id>0)
+                {
+                    response.Message = "POI updated for id:- " + poi.Id;
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = "POI is not created";
+                    response.Code = Responsecode.Failed;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new POIResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "POI Creation Failed due to - " + ex.Message,
+                });
+            }
+            return response;
+        }
+        public override async Task<POIResponse> DeletePOI(POIRequest request, ServerCallContext context)
+        {
+            POIResponse response = new POIResponse();
+            try
+            {
+                _logger.Info("Delete POI.");
+                
+                bool result = await _poiManager.DeletePOI(request.Id);
+                if (result)
+                {
+                    response.Message = "Deleted";
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = "Not Deleted";
+                    response.Code = Responsecode.Failed;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                //response.Message = "Not Deleted";
+            }
+            return await Task.FromResult(response);
+        }
+
+        public override async Task<POIResponseList> DownloadPOIForExcel(DownloadPOIRequest request, ServerCallContext context)
+        {
+            try
+            {
+                POIResponseList objPOIResponseList = new POIResponseList();
+                POI obj = new POI();
+                obj.OrganizationId = request.OrganizationId;
+                var result = await _poiManager.GetAllPOI(obj);
+                _logger.Info("GetAllPOI method in POI service called.");
+                foreach (var item in result)
+                {
+                    POIData objPOIData = new POIData();
+                    objPOIData.Name = item.Name == null ? string.Empty : item.Name;
+                    objPOIData.Latitude = item.Latitude;
+                    objPOIData.Longitude = item.Longitude;
+                    objPOIData.CategoryName = item.CategoryName == null ? string.Empty : item.CategoryName;
+                    objPOIData.SubCategoryName = item.SubCategoryName == null ? string.Empty : item.SubCategoryName;
+                    objPOIData.Address = item.Address == null ? string.Empty : item.Address;
+                    objPOIData.Zipcode = item.Zipcode == null ? string.Empty : item.Zipcode;
+                    objPOIData.City = item.City == null ? string.Empty : item.City;
+                    objPOIData.Country = item.Country == null ? string.Empty : item.Country;
+                    objPOIResponseList.POIList.Add(objPOIData);
+                }
+                return objPOIResponseList;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                throw ex;
             }
         }
     }

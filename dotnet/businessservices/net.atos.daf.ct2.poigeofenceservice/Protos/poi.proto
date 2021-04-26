@@ -1,24 +1,32 @@
 
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
-option csharp_namespace = "net.atos.daf.ct2.poigeofenceservice";
+import "google/protobuf/wrappers.proto";
+option csharp_namespace = "net.atos.daf.ct2.poiservice";
 
-package POIGeOfence;
+package poiservice;
 
-service POIGeOfenceService{
+service POIService{
 rpc GetAllGobalPOI (POIEntityRequest) returns (POIEntityResponseList);
+rpc GetAllPOI (POIRequest) returns (POIResponseList);
+rpc CreatePOI (POIRequest) returns (POIResponse);
+rpc UpdatePOI (POIRequest) returns (POIResponse);
+rpc DeletePOI (POIRequest) returns (POIResponse);
+rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
     }
 
 message POIEntityResponse{
-     string POIName = 1;
+    string POIName = 1;
     double Latitude =2;
     double Longitude=3;
     string Category = 4;
     string City = 5;
+    int32 GlobalPOIId = 6;
+    int32 CategoryId =7;
+    int32 SubCategoryId =8;
 }
 message POIEntityResponseList  {
   repeated POIEntityResponse POIList = 1;
-  ResponseCode Code = 2;
+  Responsecode Code = 2;
   string Message = 3;
 }
 
@@ -26,9 +34,63 @@ message POIEntityRequest{
     int32 CategoryId = 1;
     int32 SubCategoryId = 2;
 }
-enum ResponseCode{
+enum Responsecode{
   Success = 0;
   Failed = 1;
   Conflict = 2;
   NotFound = 3;
+}
+
+
+message POIRequest{
+    int32 Id =1;
+    google.protobuf.Int32Value OrganizationId=2;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string Name =5;
+    string Type=6;
+    string Address=7;
+    string City=8;
+    string Country=9;
+    string Zipcode=10;
+    double Latitude=11;
+    double Longitude=12;
+    double Distance=13;
+    string State=14;
+    int32 TripId = 15;
+    int32 CreatedBy = 16;
+}
+message POIData{
+    int32 Id =1;
+    google.protobuf.Int32Value OrganizationId=2;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string CategoryName = 5;
+    string SubCategoryName = 6;
+    string Name =7;
+    string Type=8;
+    string Address=9;
+    string City=10;
+    string Country=11;
+    string Zipcode=12;
+    double Latitude=13;
+    double Longitude=14;
+    double Distance=15;
+    string State=16;
+    int32 CreatedBy=17;
+    int64 CreatedAt=18;
+}
+message POIResponse{
+  POIData POIData = 1;
+  Responsecode code = 2;
+  string message = 3;
+}
+
+message POIResponseList  {
+  repeated POIData POIList = 1;
+  Responsecode code = 2;
+  string message = 3;
+}
+message DownloadPOIRequest{
+    int32 OrganizationId = 1;
 }

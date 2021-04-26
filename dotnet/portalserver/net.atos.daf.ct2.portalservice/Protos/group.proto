@@ -1,0 +1,98 @@
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.geofenceservice";
+
+package groupservice;
+
+service GroupService{
+
+rpc Create (GroupAddRequest) returns (GroupAddResponse);
+rpc Update (GroupUpdateRequest) returns (GroupUpdateResponse);
+rpc Delete (GroupDeleteRequest) returns (GroupDeleteResponse);
+rpc Get (GroupGetRequest) returns (GroupGetResponse);
+    }
+
+
+enum Responcecodes{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}
+
+
+message GroupAddRequest
+{
+      int32 Id =1;
+      int32 Organization_Id =2;
+      string Name =3;
+      string Type =5;
+      int32 Parent_Id =6;
+      string State=7;
+      int32 Created_By =9;
+      int32 Modified_By =11;
+      repeated PoiId PoiIds  =12;
+}
+
+message PoiId
+{
+    int32 poiid = 1;
+    string type = 2;
+}
+
+message GroupAddResponse
+{
+   Responcecodes Code=1;
+   string Message = 2;  
+}
+
+message GroupUpdateRequest
+{
+      int32 Id =1;
+      string Name =2;
+      int32 Modified_By =5;
+      repeated PoiId PoiIds  =12;
+
+}
+message GroupUpdateResponse
+{
+  Responcecodes Code=1;
+  string Message = 2;  
+}
+
+message GroupDeleteRequest
+{
+      int32 Id =1;
+      int32 Modifiedby =2;
+}
+message GroupDeleteResponse
+{
+  Responcecodes Code=1;
+  string Message = 2;  
+}
+message GroupGetRequest
+{
+int32 OrganizationsId=1;
+int32 GroupId=2;
+}
+message GroupGetResponse
+{
+repeated Group Groups =1;
+  Responcecodes Code=2;
+  string Message = 3;  
+}
+
+message Group{
+
+     int32 Id =1;
+      int32 Organization_Id =2;
+      string Name =3;
+      string Type =5;
+      string State=7;
+      int64 Created_At =8;
+      int32 Created_By =9;
+      int64 Modified_At= 10;
+      int32 Modified_By =11;
+      repeated PoiId PoiIds  =12;
+}

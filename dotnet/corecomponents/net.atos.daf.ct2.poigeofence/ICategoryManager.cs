@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.poigeofence
         Task<Category> AddCategory(Category category);
         Task<Category> EditCategory(Category category);
         Task<bool> DeleteCategory(int ID);
-        Task<IEnumerable<Category>> GetCategory();
+        Task<IEnumerable<Category>> GetCategory( string type);
     }
 }

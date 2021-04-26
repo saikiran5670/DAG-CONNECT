@@ -9,9 +9,9 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int Id { get; set; }
         public int LandmarkId { get; set; }
         public int SeqNo { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
-        public char State { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public string State { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }

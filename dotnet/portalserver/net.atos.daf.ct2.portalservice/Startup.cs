@@ -30,7 +30,9 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscriptionservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using net.atos.daf.ct2.poigeofenceservice;
+using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.poigeofences;
+using net.atos.daf.ct2.poiservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -59,6 +61,7 @@ namespace net.atos.daf.ct2.portalservice
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
             var poigeofenceservice= Configuration["ServiceConfiguration:poigeofenceService"];
+
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
@@ -163,7 +166,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(auditservice);
             });
-            services.AddGrpcClient<PoiGeofenceService.PoiGeofenceServiceClient>(o =>
+            services.AddGrpcClient<CategoryService.CategoryServiceClient>(o =>
             {
                 o.Address = new Uri(poigeofenceservice);
             });
@@ -174,6 +177,18 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<SubscribeGRPCService.SubscribeGRPCServiceClient>(o =>
             {
                 o.Address = new Uri(subscriptionservice);
+            });
+            services.AddGrpcClient<GeofenceService.GeofenceServiceClient>(o =>
+            {
+                o.Address = new Uri(poigeofenceservice);
+            });
+            services.AddGrpcClient<POIService.POIServiceClient>(o =>
+            {
+                o.Address = new Uri(poigeofenceservice);
+            });
+            services.AddGrpcClient<GroupService.GroupServiceClient>(o =>
+            {
+                o.Address = new Uri(poigeofenceservice);
             });
             services.AddSwaggerGen(c =>
             {

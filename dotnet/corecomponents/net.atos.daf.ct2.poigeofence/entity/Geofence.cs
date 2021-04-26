@@ -11,15 +11,17 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int CategoryId { get; set; }
         public int SubCategoryId { get; set; }
         public string Name { get; set; }
-        public char Type { get; set; }
+        public string CategoryName { get; set; }
+        public string SubCategoryName { get; set; }
+        public string Type { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
         public string Zipcode { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
-        public decimal Distance { get; set; }
-        public char State { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Distance { get; set; }
+        public string State { get; set; }
         public int TripId { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
