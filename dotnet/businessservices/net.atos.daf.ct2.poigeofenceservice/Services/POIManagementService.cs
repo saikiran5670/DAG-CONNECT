@@ -145,6 +145,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 poi = await _poiManager.UpdatePOI(poi);
                 if (poi.Id>0)
                 {
+                    response.POIData = _mapper.ToPOIResponseData(poi);
                     response.Message = "POI updated for id:- " + poi.Id;
                     response.Code = Responsecode.Success;
                 }
