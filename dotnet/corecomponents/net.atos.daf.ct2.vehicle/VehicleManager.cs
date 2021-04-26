@@ -231,7 +231,20 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+        #region Vehicle Mileage Data
+        public async Task<List<Vehicles>> GetVehicleMileage(string since,bool isnumeric)
+        {            
+            try
+            {
+                return await vehicleRepository.GetVehicleMileage(since,isnumeric);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
 
+        #endregion
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try
