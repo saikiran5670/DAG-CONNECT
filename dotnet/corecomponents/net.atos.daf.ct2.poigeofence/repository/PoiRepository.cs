@@ -182,9 +182,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                string queryduplicate = string.Empty;
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@name", poi.Name);
-                var queryduplicate = @"SELECT id FROM master.landmark where name=@name";
+
+                if (poi.OrganizationId > 0)
+                {
+                    parameterduplicate.Add("@organization_id", poi.OrganizationId);
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name and organization_id=@organization_id;";
+                }
+                else
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name;";
+                
                 int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
                 if (poiexist > 0)
@@ -227,9 +236,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                string queryduplicate = string.Empty;
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@name", poi.Name);
-                var queryduplicate = @"SELECT id FROM master.landmark where name=@name";
+                if (poi.OrganizationId > 0)
+                {
+                    parameterduplicate.Add("@organization_id", poi.OrganizationId);
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name and organization_id=@organization_id;";
+                }
+                else
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name;";
+
                 int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
                 if (poiexist > 0)
@@ -272,11 +289,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
 		                                state=@state,
                                         modified_at=@modified_at,
                                         modified_by=@modified_by
-		                                ) RETURNING id;";
+		                                where id = @Id; RETURNING id;";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (id > 0)
-                    poi.Id = id;
+                    poi.Id = id; 
                 else
                     poi.Id = 0;
             }

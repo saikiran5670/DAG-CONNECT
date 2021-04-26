@@ -77,6 +77,8 @@ message POIData{
     double Longitude=14;
     double Distance=15;
     string State=16;
+    int32 CreatedBy=17;
+    int64 CreatedAt=18;
 }
 message POIResponse{
   POIData POIData = 1;
