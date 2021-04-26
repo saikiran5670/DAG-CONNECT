@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 var parameter = new DynamicParameters();
                 var query = @"SELECT
-                              a.id,
+                              a.id preferenceId,
                               o.id ,
                               o.org_id ,
                               coalesce(o.name, '(' || o.org_id || ')') as name,                             
@@ -264,12 +264,12 @@ namespace net.atos.daf.ct2.organization.repository
                               o.driver_default_opt_in ,
                               c.name currency,
                               t.name timezone ,
-                              tf.name timeformat,                            
+                              tf.name timeformat,
                               df.name DateFormatType,
                               l.name LanguageName,
                               u.name unit
                             FROM master.organization o
-                            left join  master.accountpreference a on o.id=a.id
+                            left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
                             left join  master.timezone t on t.id=a.timezone_id
                             left join  master.timeformat tf on tf.id=a.time_format_id
