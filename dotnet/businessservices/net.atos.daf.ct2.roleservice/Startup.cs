@@ -41,8 +41,10 @@ namespace net.atos.daf.ct2.roleservice
             }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
-            services.AddSingleton(dataAccess); 
+            services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
+            {
+                return new PgSQLDataAccess(connectionString);
+            });
             services.AddTransient<IRoleManagement,RoleManagement>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IFeatureManager,FeatureManager>();
