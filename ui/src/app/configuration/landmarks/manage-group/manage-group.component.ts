@@ -136,6 +136,18 @@ export class ManageGroupComponent implements OnInit {
    });
   }
 
+  newLandmarkGroup(){
+
+  }
+
+  viewlandmarkGroup(row){
+
+  }
+
+  editLandmarkGroup(row){
+
+  }
+
   getDeletMsg(groupName: any){
     if(this.translationData.lblUserRoleDelete)
       return this.translationData.lblLandmarkGroupDelete.replace('$', groupName);
