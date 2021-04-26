@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>221878fb-5d2b-4a35-9cb3-25bf740e4b1e</UserSecretsId>
@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Protos\geofence.proto" />
+    <None Remove="Protos\group.proto" />
     <None Remove="Protos\package.proto" />
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +29,7 @@
   <ItemGroup>
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\geofence.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\group.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client" />
@@ -40,6 +42,7 @@
     <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />-->
 	<Protobuf Include="Protos\category.proto" GrpcServices="Client" />
 	<Protobuf Include="Protos\poi.proto" GrpcServices="Client" />
+	  <Protobuf Include="Protos\group.proto" GrpcServices="Client" />
 	  
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.CreatePOI(poi);
         }
-        public async Task<bool> UpdatePOI(POI poi)
+        public async Task<POI> UpdatePOI(POI poi)
         {
             return await _poiRepository.UpdatePOI(poi);
         }

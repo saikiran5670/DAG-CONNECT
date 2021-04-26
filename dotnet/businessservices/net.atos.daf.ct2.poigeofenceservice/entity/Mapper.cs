@@ -91,11 +91,32 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.Longitude = Convert.ToDouble(poiRequest.Longitude);
             poi.Distance = Convert.ToDouble(poiRequest.Distance);
             poi.State = poiRequest.State;
-            poi.TripId = poiRequest.TripId;
             poi.CreatedBy = poiRequest.CreatedBy;
             return poi;
         }
-
+        public net.atos.daf.ct2.poiservice.POIData ToPOIRequest(POI poiEntity)
+        {
+            net.atos.daf.ct2.poiservice.POIData poi = new net.atos.daf.ct2.poiservice.POIData();
+            poi.Id = Convert.ToInt32(poiEntity.Id);
+            poi.OrganizationId = Convert.ToInt32(poiEntity.OrganizationId);
+            poi.CategoryId = poiEntity.CategoryId;
+            poi.CategoryName = poiEntity.CategoryName;
+            poi.SubCategoryId = poiEntity.SubCategoryId;
+            poi.SubCategoryName = poiEntity.SubCategoryName;
+            poi.Name = poiEntity.Name;
+            poi.Type = poiEntity.Type;
+            poi.Address = poiEntity.Address;
+            poi.City = poiEntity.City;
+            poi.Country = poiEntity.Country;
+            poi.Zipcode = poiEntity.Zipcode;
+            poi.Latitude = poiEntity.Latitude;
+            poi.Longitude = poiEntity.Longitude;
+            poi.Distance = poiEntity.Distance;
+            poi.State = poiEntity.State;
+            poi.CreatedBy = poiEntity.CreatedBy;
+            poi.CreatedAt = poiEntity.CreatedAt;
+            return poi;
+        }
         public net.atos.daf.ct2.geofenceservice.GeofenceRequest ToGeofenceRequest(Geofence geofenceRequest)
         {
             GeofenceRequest geofence = new GeofenceRequest();

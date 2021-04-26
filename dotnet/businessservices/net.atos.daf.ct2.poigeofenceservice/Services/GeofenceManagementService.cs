@@ -110,9 +110,12 @@ namespace net.atos.daf.ct2.geofenceservice
                 objGeofenceRequest.category_id = request.CategoryId;
                 objGeofenceRequest.sub_category_id = request.SubCategoryId;
                 var result = await _geofenceManager.GetAllGeofence(objGeofenceRequest);
-                foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                if (result != null)
                 {
-                    response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
+                    foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                    {
+                        response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
+                    }
                 }
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);

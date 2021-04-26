@@ -34,6 +34,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 LandmarkGroup obj = new LandmarkGroup();
                 obj.organization_id = request.OrganizationId;
                 obj.name = request.Name;
+                obj.description = request.Description;
+
                 obj.created_by = request.CreatedBy;
                 obj.state = request.State;
                 obj.created_by = request.CreatedBy;
@@ -48,7 +50,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.CreateGroup(obj);
                 if (result != null)
                 {
-                    response.Message = "Added successfully";
+                    response.Message = "Group Added : " + result.id.ToString();
                     response.Code = Responcecodes.Success;
                 }
                 else
@@ -62,6 +64,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Error(null, ex);
                 //response.Message = "Not Deleted";
+                response.Message = ex.ToString();
+                response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
         }
@@ -75,6 +79,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 LandmarkGroup obj = new LandmarkGroup();
                 obj.id = request.Id;
                 obj.name = request.Name;
+                obj.description = request.Description;
                 obj.modified_by = request.ModifiedBy;
                 obj.poilist = new List<POI>();
                 foreach (var item in request.PoiIds)
@@ -88,7 +93,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.UpdateGroup(obj);
                 if (result != null)
                 {
-                    response.Message = "Updated successfully";
+                    response.Message = "Updated successfully : " + result.id.ToString(); 
                     response.Code = Responcecodes.Success;
                 }
                 else
@@ -102,6 +107,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Error(null, ex);
                 //response.Message = "Not Deleted";
+                response.Message = ex.ToString();
+                response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
         }
@@ -116,7 +123,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.DeleteGroup(request.Id,request.Modifiedby);
                 if (result > 0)
                 {
-                    response.Message = "Deleted successfully";
+                    response.Message = "Deleted successfully : " + result.ToString(); 
                     response.Code = Responcecodes.Success;
                 }
                 else
@@ -130,6 +137,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Error(null, ex);
                 //response.Message = "Not Deleted";
+                response.Message = ex.ToString();
+                response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
         }
@@ -140,11 +149,31 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             try
             {
                 _logger.Info("Get Group.");
-                LandmarkGroup obj = new LandmarkGroup();
                 var result = await _landmarkGroupManager.GetlandmarkGroup(request.OrganizationsId, request.GroupId);
                 if (result != null)
                 {
-                    response.Message = "Get successfully";
+                    foreach (var item in result)
+                    {
+                        Group obj = new Group();
+                        obj.Id = item.id;
+                        obj.OrganizationId = item.organization_id;
+                        obj.Name = item.name;
+                        obj.Description = item.description;
+                        obj.CreatedBy = item.created_by;
+                        obj.State = item.state;
+                        obj.CreatedAt = item.created_at;
+                        obj.ModifiedAt = item.modified_at;
+                        obj.ModifiedBy = item.modified_by;                        
+                        foreach (var pois in item.poilist)
+                        {
+                            PoiId pOI = new PoiId();
+                            pOI.Poiid = pois.Id;
+                            pOI.Type = pois.Type;
+                            obj.PoiIds.Add(pOI);
+                        }
+                        response.Groups.Add(obj);
+                    }
+                    response.Message = "Get success";
                     response.Code = Responcecodes.Success;
                 }
                 else
@@ -157,7 +186,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                //response.Message = "Not Deleted";
+                response.Message = ex.ToString();
+                response.Code = Responcecodes.Failed;
             }
             return await Task.FromResult(response);
         }

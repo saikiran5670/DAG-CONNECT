@@ -44,7 +44,7 @@ variables:
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/portalserver/net.atos.daf.ct2.portalservice/appsettings.json'
+    targetFiles: 'dotnet/portalserver/net.atos.daf.ct2.portalservice/appsettings.Production.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -57,7 +57,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/portalserver/net.atos.daf.ct2.portalservice/appsettings.json
+      cat dotnet/portalserver/net.atos.daf.ct2.portalservice/appsettings.Production.json
 
 - task: replacetokens@3
   inputs:
