@@ -154,6 +154,69 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("updatepolygongeofence")]
+        public async Task<IActionResult> UpdatePolygonGeofence(Geofence request)
+        {
+            try
+            {
+                // _logger.Info("Update method in vehicle API called.");
+
+                // Validation 
+                if (string.IsNullOrEmpty(request.Name))
+                {
+                    return StatusCode(400, "The Geofence name is required.");
+                }
+                var geofenceRequest = new geofenceservice.GeofencePolygonUpdateRequest();
+                geofenceRequest = _mapper.ToGeofenceUpdateRequest(request);
+                geofenceservice.GeofencePolygonUpdateResponce geofenceResponse = await _GeofenceServiceClient.UpdatePolygonGeofenceAsync(geofenceRequest);
+                ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
+
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Failed
+                     && geofenceResponse.Message == "There is an error creating Geofence.")
+                {
+                    return StatusCode(500, "There is an error creating Geofence.");
+                }
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Conflict)
+                {
+                    return StatusCode(409, geofenceResponse.Message);
+                }
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "Update polygon method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                   Request);
+
+                    return Ok(geofenceResponse);
+                }
+                else
+                {
+                    return StatusCode(404, "Geofence Response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                  Request);
+                //_logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         #endregion
 
     }

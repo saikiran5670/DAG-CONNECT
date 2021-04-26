@@ -9,6 +9,7 @@ service GeofenceService{
 rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
 rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
+rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
 }
 
 enum Responcecode{
@@ -68,6 +69,21 @@ message CircularGeofenceRequest{
 
 message CircularGeofenceResponse{
    repeated GeofenceRequest GeofenceRequest =1;
+    Responcecode Code=2;
+    string message = 3;
+}
+
+message GeofencePolygonUpdateRequest{
+ int32 Id =1;
+ google.protobuf.Int32Value OrganizationId=2;
+ int32 CategoryId = 3;
+ int32 SubCategoryId = 4;
+ string Name =5;
+ bool Exists=6;
+}
+
+message GeofencePolygonUpdateResponce{
+    GeofencePolygonUpdateRequest GeofencePolygonUpdateRequest=1;
     Responcecode Code=2;
     string message = 3;
 }

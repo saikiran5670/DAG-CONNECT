@@ -57,7 +57,6 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             return await Task.FromResult(response);
         }
-
         public override async Task<GeofenceResponse> CreatePolygonGeofence(GeofenceRequest request, ServerCallContext context)
         {
             GeofenceResponse response = new GeofenceResponse();
@@ -118,7 +117,6 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             return await Task.FromResult(response);
         }
-
         public override async Task<CircularGeofenceResponse> CreateCircularGeofence(CircularGeofenceRequest request, ServerCallContext context)
         {
             CircularGeofenceResponse response = new CircularGeofenceResponse();
@@ -147,6 +145,43 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     Code = Responcecode.Failed,
                     Message = "Circular Geofence Creation Failed due to - " + ex.Message,
+                });
+            }
+        }
+
+        public override async Task<GeofencePolygonUpdateResponce> UpdatePolygonGeofence(GeofencePolygonUpdateRequest request, ServerCallContext context)
+        {
+            GeofencePolygonUpdateResponce response = new GeofencePolygonUpdateResponce();
+            try
+            {
+                _logger.Info("Update Geofence.");
+                Geofence geofence = new Geofence();
+                response.GeofencePolygonUpdateRequest = new GeofencePolygonUpdateRequest();
+                geofence = _mapper.ToGeofenceUpdateEntity(request);
+                geofence = await _geofenceManager.CreatePolygonGeofence(geofence);
+                // check for exists
+                response.GeofencePolygonUpdateRequest.Exists = false;
+                if (geofence.Exists)
+                {
+                    response.GeofencePolygonUpdateRequest.Exists = true;
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responcecode.Conflict;
+                    return response;
+                }
+                return await Task.FromResult(new GeofencePolygonUpdateResponce
+                {
+                    Message = "Geofence created with id:- " + geofence.Id,
+                    Code = Responcecode.Success,
+                    GeofencePolygonUpdateRequest = _mapper.ToGeofenceUpdateRequest(geofence)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GeofencePolygonUpdateResponce
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Geofence Creation Failed due to - " + ex.Message,
                 });
             }
         }
