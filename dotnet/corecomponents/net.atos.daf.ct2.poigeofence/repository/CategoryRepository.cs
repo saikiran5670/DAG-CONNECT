@@ -292,12 +292,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 getQuery = @"with result As
                             (
-                            select pcat.id as parent_id, pcat.name as Pcategory,scat.id as subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon
+                            select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon
                             from master.category pcat
                             left join master.category scat on pcat.id = scat.parent_id
                             where pcat.type ='P'
                             ) 
-                            select r.parent_id ,r.Pcategory As ParentCategory,r.subcategory_id,r.Scategory As SubCategory ,
+                            select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
                             (select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') ) as No_of_Geofence,
                             (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
                             r.Parent_category_Icon As IconName,

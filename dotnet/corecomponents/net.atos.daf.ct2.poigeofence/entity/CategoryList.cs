@@ -7,8 +7,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class CategoryList
     {
        
-            public int parent_id { get; set; }
-            public int subcategory_id { get; set; }
+            public int Parent_id { get; set; }
+            public int Subcategory_id { get; set; }
             public string IconName { get; set; }
             public byte[] Icon { get; set; }
             public string ParentCategory { get; set; }
