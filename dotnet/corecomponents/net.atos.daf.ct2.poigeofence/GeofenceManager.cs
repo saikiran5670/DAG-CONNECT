@@ -35,5 +35,9 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await geofenceRepository.UpdatePolygonGeofence(geofence);
         }
+        public async Task<IEnumerable<Geofence>> GetGeofenceByGeofenceID(int organizationId, int geofenceId)
+        {
+            return await geofenceRepository.GetGeofenceByGeofenceID(organizationId, geofenceId);
+        }
     }
 }

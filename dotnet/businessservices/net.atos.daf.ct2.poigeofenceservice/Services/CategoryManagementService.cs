@@ -44,7 +44,13 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.icon = request.Icon.ToByteArray();
 
                 var result = await _categoryManager.AddCategory(obj);
-                if (result != null)
+                if (result.Id == -1)
+                {
+                   response.Message = "Category Name is " + obj.Name + " already exists ";
+                   response.Code = Responcecode.Conflict;
+                    
+                }
+                else if (result != null && result.Id >0)
                 {
                     response.Message = "Added successfully";
                     response.Code = Responcecode.Success;
@@ -78,15 +84,15 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.Modified_By = request.ModifiedBy;
 
                 var result = await _categoryManager.EditCategory(obj);
-                if (result != null)
+                if (result != null && result.Id >=0)
                 {
                     response.Message = "Edit successfully";
                     response.Code = Responcecode.Success;
                 }
                 else
                 {
-                    response.Message = "Edit category Fail";
-                    response.Code = Responcecode.Failed;
+                    response.Message = "Category Not Found";
+                    response.Code = Responcecode.NotFound;
                 }
 
             }
@@ -107,16 +113,17 @@ namespace net.atos.daf.ct2.poigeofenservice
                
 
                 var result = await _categoryManager.DeleteCategory(request.Id);
-                if (result )
+                if (result)
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responcecode.Success;
                 }
-                if (!result)
+               else
                 {
-                    response.Message = "Delete category Fail";
-                    response.Code = Responcecode.Failed;
+                    response.Message = "Category Not Found";
+                    response.Code = Responcecode.NotFound;
                 }
+                return await Task.FromResult(response);
 
             }
             catch (Exception ex)

@@ -95,11 +95,48 @@ namespace net.atos.daf.ct2.geofenceservice
                 objGeofenceRequest.category_id = request.CategoryId;
                 objGeofenceRequest.sub_category_id = request.SubCategoryId;
                 var result = await _geofenceManager.GetAllGeofence(objGeofenceRequest);
-                foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                if (result != null)
                 {
-                    response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
+                    foreach (net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce entity in result)
+                    {
+                        response.GeofenceList.Add(_mapper.ToGeofenceList(entity));
+                    }
                 }
                 response.Code = Responcecode.Success;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
+
+        public override async Task<GetGeofenceResponse> GetGeofenceByGeofenceID(IdRequest request, ServerCallContext context)
+        {
+            GetGeofenceResponse response = new GetGeofenceResponse();
+            try
+            {
+                _logger.Info("Get GetGeofenceByGeofenceID .");
+                var result = await _geofenceManager.GetGeofenceByGeofenceID(request.OrganizationId, request.GeofenceId);
+                foreach (net.atos.daf.ct2.poigeofence.entity.Geofence entity in result)
+                {
+                    response.GeofenceName = entity.Name;
+                    response.OrganizationId = entity.OrganizationId;
+                    response.CategoryName = entity.CategoryName;
+                    response.SubCategoryName = entity.SubCategoryName;
+                    response.Address = entity.Address;
+                    response.City = entity.City;
+                    response.Country = entity.Country;
+                    response.Distance = entity.Distance;
+                    response.Latitude = entity.Latitude;
+                    response.Longitude = entity.Longitude;
+                    response.ModifiedAt = entity.ModifiedAt;
+                    response.ModifiedBy = entity.ModifiedBy;
+                    response.CreatedAt = entity.CreatedAt;
+                    response.CreatedBy = entity.CreatedBy;
+                    response.Zipcode = entity.Zipcode;
+                }
                 return await Task.FromResult(response);
             }
             catch (Exception ex)

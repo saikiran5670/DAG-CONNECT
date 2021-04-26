@@ -10,6 +10,7 @@ rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
 rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
 rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
+rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 }
 
 enum Responcecode{
@@ -90,4 +91,28 @@ message CircularGeofenceResponse{
    repeated GeofenceRequest GeofenceRequest =1;
     Responcecode Code=2;
     string message = 3;
+}
+
+ message IdRequest {
+  int32 organizationId = 1;
+  int32 geofenceId=2;
+}
+message GetGeofenceResponse{
+    int32 Id =1;
+    int32 OrganizationId=2;
+    string CategoryName = 3;
+    string SubCategoryName = 4;
+    string GeofenceName =5;
+    string Address=6;
+    string City=7;
+    string Country=8;
+    string Zipcode=9;
+    double Latitude=10;
+    double Longitude=11;
+    double Distance=12;
+    string State=13;
+    int32 CreatedBy=14;
+    int32 ModifiedBy=15;
+    int64 CreatedAt=16;
+    int64 ModifiedAt=17;    
 }
