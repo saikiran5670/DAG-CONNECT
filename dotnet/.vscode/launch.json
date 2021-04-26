@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/businessservices/net.atos.daf.ct2.driverservice/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.driverservice.dll",
+            "program": "${workspaceFolder}/dataservices/net.atos.daf.ct2.vehicledataservice/bin/Debug/netcoreapp3.1/net.atos.daf.ct2.vehicledataservice.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/businessservices/net.atos.daf.ct2.driverservice",
+            "cwd": "${workspaceFolder}/dataservices/net.atos.daf.ct2.vehicledataservice",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

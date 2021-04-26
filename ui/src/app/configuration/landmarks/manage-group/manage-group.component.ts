@@ -19,7 +19,6 @@ import { LandmarkService } from 'src/app/services/landmark.service';
 })
 export class ManageGroupComponent implements OnInit {
 
-  dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
@@ -28,6 +27,7 @@ export class ManageGroupComponent implements OnInit {
   duplicateFlag: boolean = false;
   viewFlag: boolean = false;
   initData: any = [];
+  dataSource = new MatTableDataSource(this.initData);
   rowsData: any;
   createStatus: boolean;
   titleText: string;
@@ -35,7 +35,6 @@ export class ManageGroupComponent implements OnInit {
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;
-  isGlobal: boolean;
   localStLanguage: any;
   showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
@@ -116,11 +115,32 @@ export class ManageGroupComponent implements OnInit {
 
   }
 
-  getDeletMsg(roleName: any){
+  deleteLandmarkGroup(row){
+    const options = {
+      title: this.translationData.lblDeleteGroup || 'Delete Group',
+      message: this.translationData.lblAreyousureyouwanttodeletecategory || "Are you sure you want to delete '$' category?",
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: this.translationData.lblDelete || 'Delete'
+    };
+    let name = row.name;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.landmarkService
+        .deleteLandmarkGroup(row.id)
+        .subscribe((d) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadInitData();
+        });
+    }
+   });
+  }
+
+  getDeletMsg(groupName: any){
     if(this.translationData.lblUserRoleDelete)
-      return this.translationData.lblUserRoleDelete.replace('$', roleName);
+      return this.translationData.lblLandmarkGroupDelete.replace('$', groupName);
     else
-      return ("Account role '$' was successfully deleted").replace('$', roleName);
+      return ("Landmark group '$' was successfully deleted").replace('$', groupName);
   }
 
   successMsgBlink(msg: any){
