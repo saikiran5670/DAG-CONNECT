@@ -65,14 +65,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             return geofenceRequest;
         }
 
-        public GeofencePolygonUpdateRequest ToGeofenceUpdateRequest(Geofence geofence)
+        public GeofencePolygonUpdateRequest ToGeofenceUpdateRequest(GeofenceUpdateEntity geofence)
         {
             GeofencePolygonUpdateRequest geofenceRequest = new GeofencePolygonUpdateRequest();
             geofenceRequest.Id = geofence.Id;
-            geofenceRequest.OrganizationId = geofence.OrganizationId;
             geofenceRequest.CategoryId = geofence.CategoryId;
             geofenceRequest.SubCategoryId = geofence.SubCategoryId;
             geofenceRequest.Name = geofence.Name;
+            geofenceRequest.ModifiedBy = geofence.ModifiedBy;
             return geofenceRequest;
         }
     }

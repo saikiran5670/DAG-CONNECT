@@ -179,6 +179,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.CategoryId = geofenceRequest.CategoryId;
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
+            geofence.ModifiedBy = geofenceRequest.ModifiedBy;
             return geofence;
         }
 
@@ -190,6 +191,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.CategoryId = geofenceRequest.CategoryId;
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
+            geofence.ModifiedBy = geofenceRequest.ModifiedBy;
             return geofence;
         }
     }

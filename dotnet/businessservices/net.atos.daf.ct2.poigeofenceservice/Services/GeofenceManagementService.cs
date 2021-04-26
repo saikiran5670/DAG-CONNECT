@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 Geofence geofence = new Geofence();
                 response.GeofencePolygonUpdateRequest = new GeofencePolygonUpdateRequest();
                 geofence = _mapper.ToGeofenceUpdateEntity(request);
-                geofence = await _geofenceManager.CreatePolygonGeofence(geofence);
+                geofence = await _geofenceManager.UpdatePolygonGeofence(geofence);
                 // check for exists
                 response.GeofencePolygonUpdateRequest.Exists = false;
                 if (geofence.Exists)
