@@ -32,5 +32,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _categoryRepository.GetCategoryType(Type);
         }
+
+        public async Task<IEnumerable<CategoryList>> GetCategoryDetails()
+        {
+            return await _categoryRepository.GetCategoryDetails();
+        }
     }
 }

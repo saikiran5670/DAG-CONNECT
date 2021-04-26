@@ -10,12 +10,15 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int id { get; set; }
         public int organization_id { get; set; }
         public string name { get; set; }
+        public string description { get; set; }
         public int icon_id { get; set; }
         public string state { get; set; }
         public long created_at { get; set; }
         public int created_by { get; set; }
         public long modified_at { get; set; }
         public int modified_by { get; set; }
+        public int poiCount { get; set; }
+        public int geofenceCount { get; set; }
         public List<POI> poilist { get; set; }
     }
 
