@@ -194,10 +194,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (poi.OrganizationId > 0)
                 {
                     parameterduplicate.Add("@organization_id", poi.OrganizationId);
-                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name and organization_id=@organization_id;";
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and organization_id=@organization_id;";
                 }
                 else
-                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and name=@name;";
+                    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
                 
                 int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
@@ -333,7 +333,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 query = query + ", modified_at=@modified_at ";
 
                 parameter.Add("@id", poi.Id);
-                query = query + " where id=@id RETURNING id";
+                query = query + " where id=@id and type = 'P' RETURNING id";
 
                 parameter.Add("@organization_id", poi.OrganizationId);
 
@@ -356,7 +356,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", poiId);
-                var query = @"update master.landmark set state='D' where id=@id";
+                var query = @"update master.landmark set state='D' where id=@id and type = 'P' ";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
