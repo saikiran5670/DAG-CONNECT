@@ -11,13 +11,15 @@ rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
 rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
 rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
+rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
 }
 
-enum Responcecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+enum Responsecode{
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError=500;
 }
 
 message DeleteRequest{
@@ -115,4 +117,20 @@ message GetGeofenceResponse{
     int32 ModifiedBy=15;
     int64 CreatedAt=16;
     int64 ModifiedAt=17;    
+}
+}
+
+message GeofencePolygonUpdateRequest{
+ int32 Id =1;
+ google.protobuf.Int32Value OrganizationId=2;
+ int32 CategoryId = 3;
+ int32 SubCategoryId = 4;
+ string Name =5;
+ bool Exists=6;
+}
+
+message GeofencePolygonUpdateResponce{
+    GeofencePolygonUpdateRequest GeofencePolygonUpdateRequest=1;
+    Responcecode Code=2;
+    string message = 3;
 }

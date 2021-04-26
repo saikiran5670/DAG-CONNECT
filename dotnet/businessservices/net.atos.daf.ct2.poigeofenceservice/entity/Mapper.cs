@@ -171,5 +171,26 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             return nodes;
         }
 
+        public Geofence ToGeofenceUpdateEntity(GeofencePolygonUpdateRequest geofenceRequest)
+        {
+            Geofence geofence = new Geofence();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            return geofence;
+        }
+
+        public GeofencePolygonUpdateRequest ToGeofenceUpdateRequest(Geofence geofenceRequest)
+        {
+            GeofencePolygonUpdateRequest geofence = new GeofencePolygonUpdateRequest();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            return geofence;
+        }
     }
 }
