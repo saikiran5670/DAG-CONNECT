@@ -101,8 +101,9 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 {
                     return await Task.FromResult(new POIResponse
                     {
+                        POIData = _mapper.ToPOIResponseData(poi),
                         Message = "POI is created with id:- " + poi.Id,
-                        Code = Responsecode.Success
+                        Code = Responsecode.Success,
                     });
                 }
                 else if (poi.Id == - 1)

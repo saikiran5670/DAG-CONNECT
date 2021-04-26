@@ -14,6 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poiRequest.Id = poi.Id;
             poiRequest.OrganizationId = poi.OrganizationId;
             poiRequest.CategoryId = poi.CategoryId;
+            poiRequest.SubCategoryId = poi.SubCategoryId;
             poiRequest.Name = poi.Name;
             //poiRequest.Type = poi.Type;
             poiRequest.Address = poi.Address;
@@ -40,7 +41,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poi.Zipcode = poiResponseData.Zipcode;
             poi.Latitude = Convert.ToDouble(poiResponseData.Latitude);
             poi.Longitude = Convert.ToDouble(poiResponseData.Longitude);
-            poi.Distance = Convert.ToDouble(poiResponseData.Distance);
+            //poi.Distance = Convert.ToDouble(poiResponseData.Distance);
             poi.State = poiResponseData.State;
             poi.CreatedAt = poiResponseData.CreatedAt;
             return poi;

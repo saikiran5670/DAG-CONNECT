@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public string Zipcode { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public double Distance { get; set; }
+        //public double Distance { get; set; }
         public string State { get; set; }
         //public int TripId { get; set; }
         public long CreatedAt { get; set; }

@@ -203,7 +203,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 if (poiexist > 0)
                 {
-                    poi.Id = 0;
+                    poi.Id = -1;// POI is already exist with same name.
                     return poi;
                 }
 
