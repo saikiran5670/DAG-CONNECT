@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     return await Task.FromResult(new POIResponse
                     {
                         Message = "Duplicate POI name "+ poi.Name ,
-                        Code = Responsecode.Failed
+                        Code = Responsecode.Conflict
                     });
                 }
                 else
@@ -150,7 +150,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     return await Task.FromResult(new POIResponse
                     {
                         Message = "Duplicate POI name " + poi.Name,
-                        Code = Responsecode.Failed
+                        Code = Responsecode.Conflict
                     });
                 }
                 else

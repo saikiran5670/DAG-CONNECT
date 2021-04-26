@@ -20,6 +20,7 @@ import { ManagePoiGeofenceComponent } from './landmarks/manage-poi-geofence/mana
 import { ManageGroupComponent } from './landmarks/manage-group/manage-group.component';
 import { ManageCategoryComponent } from './landmarks/manage-category/manage-category.component';
 import { ManageCorridorComponent } from './landmarks/manage-corridor/manage-corridor.component';
+import { CreateEditViewPoiComponent } from './landmarks/manage-poi-geofence/create-edit-view-poi/create-edit-view-poi.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { ManageCorridorComponent } from './landmarks/manage-corridor/manage-corr
     ManagePoiGeofenceComponent,
     ManageGroupComponent,
     ManageCategoryComponent,
-    ManageCorridorComponent
+    ManageCorridorComponent,
+    CreateEditViewPoiComponent
   ],
   imports: [
     CommonModule,
