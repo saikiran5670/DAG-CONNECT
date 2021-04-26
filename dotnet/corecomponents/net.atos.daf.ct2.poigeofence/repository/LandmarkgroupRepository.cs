@@ -161,11 +161,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var parameter = new DynamicParameters();
-               
 
-                string query = @"SELECT id, organization_id, name, icon_id, state, created_at,description,modified_at,created_by,modified_by
-                                  from master.landmarkgroup
-	                              where state != 'D'";
+
+                string query = @"SELECT                     
+                                    lg.name,
+                                    count(case when lgr.type in ('O','C') then 1 end) as geofenceCount, 
+                                    count(case when lgr.type in ('P') then 1 end) as poiCount,
+                                    lg.created_at,
+                                    lg.modified_at
+                                    FROM master.landmarkgroup lg                   
+                                    LEFT JOIN MASTER.landmarkgroupref lgr on lgr.landmark_group_id = lg.id 
+                                    LEFT JOIN MASTER.landmark lm on lm.id = lgr.ref_id
+                                    WHERE 1=1 and lm.state in ('A','I')    ";    
+                                    
 
                 if (organizationid > 0)
                 {
@@ -177,6 +185,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@id", groupid);
                     query = query + " and id=@id";
                 }
+
+                query = query + " group by lg.name,lgr.landmark_group_id,lg.created_at,lg.modified_at; ";
                 IEnumerable <LandmarkGroup>  groups= await dataAccess.QueryAsync<LandmarkGroup>(query, parameter);
 
 

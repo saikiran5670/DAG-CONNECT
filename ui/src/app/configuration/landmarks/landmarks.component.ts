@@ -10,7 +10,7 @@ import { TranslationService } from '../../services/translation.service';
 export class LandmarksComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
-  translationData: any;
+  translationData: any = {};
   selectedIndex: number = 0;
 
   constructor(private translationService: TranslationService) { }
