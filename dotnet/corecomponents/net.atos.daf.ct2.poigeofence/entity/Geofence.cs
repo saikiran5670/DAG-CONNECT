@@ -11,6 +11,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int CategoryId { get; set; }
         public int SubCategoryId { get; set; }
         public string Name { get; set; }
+        public string CategoryName { get; set; }
+        public string SubCategoryName { get; set; }
         public string Type { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
@@ -26,5 +28,6 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public List<Nodes> Nodes { get; set; }
+        public bool Exists { get; set; }
     }
 }

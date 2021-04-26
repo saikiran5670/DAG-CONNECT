@@ -374,15 +374,22 @@ export class AccountService {
   }
 
   createpassword(data: any): Observable<any[]> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .post<any[]>(
-        `${this.accountServiceUrl}/createpassword`, data, headers
-      )
-      .pipe(catchError(this.handleError));
+    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    // let headerObj = this.generateHeader();
+    // const headers = {
+    //   headers: new HttpHeaders({ headerObj }),
+    // };
+    // return this.httpClient
+    //   .post<any[]>(
+    //     `${this.accountServiceUrl}/createpassword`, data, headers
+    //   )
+    //   .pipe(catchError(this.handleError));
+
+    return this.httpClient.post<any[]>(
+      `${this.accountServiceUrl}/createpassword`, 
+       data , 
+      { headers, responseType: 'text' as 'json'}
+    ).pipe(catchError(this.handleError));
   }
 
   getMenuFeatures(data): Observable<any[]> {

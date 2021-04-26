@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.poigeofence
         Task<List<POIEntityResponse>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest);
         Task<List<POI>> GetAllPOI(POI poi);
         Task<POI> CreatePOI(POI poi);
-        Task<bool> UpdatePOI(POI poi);
+        Task<POI> UpdatePOI(POI poi);
         Task<bool> DeletePOI(int poiId);
     }
 }

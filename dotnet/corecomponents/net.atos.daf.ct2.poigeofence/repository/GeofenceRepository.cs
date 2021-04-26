@@ -28,6 +28,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                geofence = await Exists(geofence);
+
+                // duplicate Geofence
+                if (geofence.Exists)
+                {
+                    return geofence;
+                }
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", geofence.OrganizationId);
                 parameter.Add("@category_id", geofence.CategoryId);
@@ -120,38 +127,76 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = string.Empty;
                 query = @"select L.id,
                                  L.name, 
-                                 case when C.type='p' then C.name end category,
-                                 case when C.type='s' then C.name end subcategory 
+                                 case when C.type='p' then C.name end categoryName,
+                                 case when C.type='s' then C.name end subcategoryName 
                                  from master.landmark L
 	                             left join master.category C on L.category_id=C.id
-	                             where 1=1 and state='A'";
+	                             where L.state='A'";
                 var parameter = new DynamicParameters();
                 if (geofenceEntityRequest.organization_id > 0)
                 {
                     parameter.Add("@organization_id", geofenceEntityRequest.organization_id);
-                    query = $"{query} and l.organization_id=@organization_id ";
+                    query = $"{query} and L.organization_id=@organization_id ";
 
                     if (geofenceEntityRequest.category_id > 0)
                     {
                         parameter.Add("@category_id", geofenceEntityRequest.category_id);
-                        query = $"{query} and l.category_id=@category_id";
+                        query = $"{query} and L.category_id=@category_id";
                     }
 
                     if (geofenceEntityRequest.sub_category_id > 0)
                     {
                         parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
-                        query = $"{query} and l.sub_category_id=@sub_category_id";
+                        query = $"{query} and L.sub_category_id=@sub_category_id";
                     }
                     return await dataAccess.QueryAsync<GeofenceEntityResponce>(query, parameter);
                 }
                 //Handel Null Exception
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
             }
             return null;
         }
 
+        public async Task<IEnumerable<Geofence>> GetGeofenceByGeofenceID(int organizationId, int geofenceId)
+        {
+            log.Info("Get GetAllGeofence method called in repository");
+            GeofenceEntityRequest geofenceEntityRequestList = new GeofenceEntityRequest();
+            try
+            {
+                string query = string.Empty;
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@Id", geofenceId);
+                query = @"select L.id,
+                                 L.name, 
+                                 case when C.type='p' then C.name end categoryName,
+                                 case when C.type='s' then C.name end subcategoryName,
+                                 L.address,
+                                 L.city,
+                                 L.country,
+                                 L.zipcode,
+                                 L.latitude,
+                                 L.longitude,
+                                 L.distance,
+                                 L.created_at,
+                                 L.created_by,
+                                 L.modified_at,
+                                 L.modified_by
+                                 from master.landmark L
+	                             left join master.category C on L.category_id=C.id
+	                             where L.id=@Id and L.organization_id=@organization_id and L.state='A'";
+
+                return await dataAccess.QueryAsync<Geofence>(query, parameter);
+            }
+            catch (System.Exception ex)
+            {
+                log.Info("GetGeofenceByGeofenceID  method in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
         public async Task<List<Geofence>> CreateCircularGeofence(List<Geofence> geofence)
         {
             try
@@ -195,47 +240,47 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                geofence = await Exists(geofence);
+
+                // duplicate Geofence
+                if (geofence.Exists)
+                {
+                    return geofence;
+                }
+
                 var parameter = new DynamicParameters();
                 parameter.Add("@category_id", geofence.CategoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);
                 parameter.Add("@name", geofence.Name);
-                if (geofence.Nodes.Count() > 0)
-                {
-                    parameter.Add("@latitude", geofence.Nodes[0].Latitude);
-                    parameter.Add("@longitude", geofence.Nodes[0].Longitude);
-                }
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@modified_by", geofence.CreatedBy);
                 string query = @"UPDATE master.landmark
 	                                SET category_id=@category_id
 	                                   ,sub_category_id=@sub_category_id
 	                                   ,name=@name
-	                                   ,latitude=@latitude
-	                                   ,longitude=@longitude
-	                                   ,distance=@distance
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@
 	                                WHERE id=@id
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
-                if (geofence.Id > 0)
-                {
-                    foreach (var item in geofence.Nodes)
-                    {
-                        var nodeparameter = new DynamicParameters();
-                        nodeparameter.Add("@landmark_id", geofence.Id);
-                        nodeparameter.Add("@seq_no", item.SeqNo);
-                        nodeparameter.Add("@latitude", item.Latitude);
-                        nodeparameter.Add("@longitude", item.Longitude);
-                        nodeparameter.Add("@state", "A");
-                        nodeparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        nodeparameter.Add("@created_by", geofence.CreatedBy);
-                        string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by)
-	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by) RETURNING id";
-                        var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
-                    }
-                }
+                //if (geofence.Id > 0)
+                //{
+                //    foreach (var item in geofence.Nodes)
+                //    {
+                //        var nodeparameter = new DynamicParameters();
+                //        nodeparameter.Add("@landmark_id", geofence.Id);
+                //        nodeparameter.Add("@seq_no", item.SeqNo);
+                //        nodeparameter.Add("@latitude", item.Latitude);
+                //        nodeparameter.Add("@longitude", item.Longitude);
+                //        nodeparameter.Add("@state", "A");
+                //        nodeparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                //        nodeparameter.Add("@created_by", geofence.CreatedBy);
+                //        string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by)
+	               //                 VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by) RETURNING id";
+                //        var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -245,15 +290,58 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
 
 
-        private async Task<bool> RemoveExistingNodes(int landmarkId)
+        //private async Task<bool> RemoveExistingNodes(int landmarkId)
+        //{
+        //    try
+        //    {
+        //        var parameter = new DynamicParameters();
+        //        parameter.Add("@id", landmarkId);
+        //        var query = @"delete from master.nodes where landmark_id = @id";
+        //        var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        private async Task<Geofence> Exists(Geofence geofenceRequest)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@id", landmarkId);
-                var query = @"delete from master.nodes where landmark_id = @id";
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                return true;
+                List<Geofence> groupList = new List<Geofence>();
+                var query = @"select id from master.landmark where 1=1 ";
+                if (geofenceRequest != null)
+                {
+
+                    // id
+                    if (Convert.ToInt32(geofenceRequest.Id) > 0)
+                    {
+                        parameter.Add("@id", geofenceRequest.Id);
+                        query = query + " and id!=@id";
+                    }
+                    // name
+                    if (!string.IsNullOrEmpty(geofenceRequest.Name))
+                    {
+                        parameter.Add("@name", geofenceRequest.Name);
+                        query = query + " and name=@name";
+                    }
+                    // organization id filter
+                    if (geofenceRequest.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", geofenceRequest.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                }
+                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (groupid > 0)
+                {
+                    geofenceRequest.Exists = true;
+                    geofenceRequest.Id = groupid;
+                }
+                return geofenceRequest;
             }
             catch (Exception ex)
             {

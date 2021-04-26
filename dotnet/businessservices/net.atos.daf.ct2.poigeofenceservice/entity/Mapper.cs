@@ -77,8 +77,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public POI ToPOIEntity(net.atos.daf.ct2.poiservice.POIRequest poiRequest)
         {
             POI poi = new POI();
-            poi.Id = Convert.ToInt32(poiRequest.Id);
-            poi.OrganizationId = Convert.ToInt32(poiRequest.OrganizationId);
+            poi.Id = poiRequest.Id;
+            poi.OrganizationId = poiRequest.OrganizationId !=null ? poiRequest.OrganizationId:0;
             poi.CategoryId = poiRequest.CategoryId;
             poi.SubCategoryId = poiRequest.SubCategoryId;
             poi.Name = poiRequest.Name;
@@ -91,11 +91,32 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.Longitude = Convert.ToDouble(poiRequest.Longitude);
             poi.Distance = Convert.ToDouble(poiRequest.Distance);
             poi.State = poiRequest.State;
-            poi.TripId = poiRequest.TripId;
             poi.CreatedBy = poiRequest.CreatedBy;
             return poi;
         }
-
+        public net.atos.daf.ct2.poiservice.POIData ToPOIResponseData(POI poiEntity)
+        {
+            net.atos.daf.ct2.poiservice.POIData poi = new net.atos.daf.ct2.poiservice.POIData();
+            poi.Id = poiEntity.Id;
+            poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0 ;
+            poi.CategoryId = poiEntity.CategoryId;
+            poi.CategoryName = poiEntity.CategoryName;
+            poi.SubCategoryId = poiEntity.SubCategoryId;
+            poi.SubCategoryName = poiEntity.SubCategoryName;
+            poi.Name = poiEntity.Name;
+            poi.Type = poiEntity.Type;
+            poi.Address = poiEntity.Address;
+            poi.City = poiEntity.City;
+            poi.Country = poiEntity.Country;
+            poi.Zipcode = poiEntity.Zipcode;
+            poi.Latitude = poiEntity.Latitude;
+            poi.Longitude = poiEntity.Longitude;
+            poi.Distance = poiEntity.Distance;
+            poi.State = poiEntity.State;
+            poi.CreatedBy = poiEntity.CreatedBy;
+            poi.CreatedAt = poiEntity.CreatedAt;
+            return poi;
+        }
         public net.atos.daf.ct2.geofenceservice.GeofenceRequest ToGeofenceRequest(Geofence geofenceRequest)
         {
             GeofenceRequest geofence = new GeofenceRequest();
@@ -148,6 +169,28 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
             return nodes;
+        }
+
+        public Geofence ToGeofenceUpdateEntity(GeofencePolygonUpdateRequest geofenceRequest)
+        {
+            Geofence geofence = new Geofence();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            return geofence;
+        }
+
+        public GeofencePolygonUpdateRequest ToGeofenceUpdateRequest(Geofence geofenceRequest)
+        {
+            GeofencePolygonUpdateRequest geofence = new GeofencePolygonUpdateRequest();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            return geofence;
         }
     }
 }

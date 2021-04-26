@@ -1,0 +1,31 @@
+<div class='bgtrans'>
+    <mat-card class='mat-elevation-z' *ngIf='!createViewEditStatus'>
+        <div class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCategories ||
+                'Categories' }} -
+                ({{ dataSource.filteredData.length }})</span>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                <input matInput (keyup)="applyFilter($event.target.value)"
+                  placeholder="{{ translationData.lblSearch || 'Search' }}">
+                <span matPrefix>
+                  <mat-icon>search</mat-icon>
+                </span>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <div fxLayout="row" class='areaWidth'>
+                      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                        <button mat-flat-button color="primary" (click)="onNewCategory()">
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCategory || 'New Category' }}
+                        </button>
+                      </div>
+                </div>
+              </div>
+          </div>
+    </mat-card>
+</div>

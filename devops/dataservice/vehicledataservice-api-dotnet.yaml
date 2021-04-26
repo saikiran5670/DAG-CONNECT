@@ -44,7 +44,7 @@ pool: $(PRIVATEAGENT)
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.json'
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.Production.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -57,7 +57,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.json
+      cat dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.Production.json
 
 
 - task: replacetokens@3

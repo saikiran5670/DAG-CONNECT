@@ -39,7 +39,7 @@ export class CustomValidators {
       var upper = /[A-Z]/,
         lower = /[a-z]/,
         number = /[0-9]/,
-        special = /[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/;
+        special = /[ !"#$%&'()*+,\-/:;<=>?@[\\\]^_`{|}~]/;
 
       if (!special.test(NEW_PASSWORD.value)) {
         NEW_PASSWORD.setErrors({ specialCharRequired: true });

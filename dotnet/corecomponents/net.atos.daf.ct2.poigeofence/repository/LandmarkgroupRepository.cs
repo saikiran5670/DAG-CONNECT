@@ -27,13 +27,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", landmarkgroup.organization_id);
                 parameter.Add("@name", landmarkgroup.name);
+                parameter.Add("@description", landmarkgroup.description);
                 //parameter.Add("@icon_id", landmarkgroup.icon_id);
-                parameter.Add("@state", landmarkgroup.state);
+                parameter.Add("@state", "A");
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@created_by", landmarkgroup.created_by);
 
-                string query = @"insert into master.landmarkgroup(organization_id, name,  state, created_at, created_by)
-	                              VALUES (@organization_id, @name,  @state, @created_at, @created_by) RETURNING id";
+                string query = @"insert into master.landmarkgroup(organization_id, name,description,  state, created_at, created_by)
+	                              VALUES (@organization_id, @name,@description,  @state, @created_at, @created_by) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                 foreach (var item in landmarkgroup.poilist)
@@ -84,10 +85,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@id", landmarkgroup.id);
                
                 parameter.Add("@name", landmarkgroup.name);
+                parameter.Add("@description", landmarkgroup.description); 
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@modified_by", landmarkgroup.modified_by);
 
-                string query = @"update master.landmarkgroup set  name=@name, modified_at=@modified_at, modified_by = @modified_by
+                string query = @"update master.landmarkgroup set  name=@name,description=@description, modified_at=@modified_at, modified_by = @modified_by
 	                              where id=@id RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 var deletegroupref = this.DeleteGroupref(landmarkgroup.id);
@@ -161,9 +163,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                
 
-                string query = @"SELECT id, organization_id, name, icon_id, state, created_at
+                string query = @"SELECT id, organization_id, name, icon_id, state, created_at,description,modified_at,created_by,modified_by
                                   from master.landmarkgroup
-	                              where 1=1";
+	                              where state != 'D'";
 
                 if (organizationid > 0)
                 {
@@ -220,7 +222,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             obj.id = record.id;
             obj.landmark_group_id = record.landmark_group_id;
             obj.ref_id = record.ref_id;
-            obj.type = (LandmarkType)(char)record.type;
+            obj.type = (LandmarkType)Convert.ToChar(record.type);
             return obj;
         }
 

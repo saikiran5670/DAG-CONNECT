@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landmarkservice-grpc
+spec:
+  selector:
+    matchLabels:
+      run: landmarkservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: landmarkservice-grpc
+    spec:
+      containers:
+      - name: landmarkservice-grpc
+        image: dafdev017756.azurecr.io/landmarkservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: landmarkservice
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: landmarkservice-grpc
