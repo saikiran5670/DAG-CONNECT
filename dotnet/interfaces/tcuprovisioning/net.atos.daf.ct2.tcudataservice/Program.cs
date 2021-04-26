@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.tcudataservice
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
-            IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettingsDevelopment.json", optional: true, reloadOnChange: true).Build();
+            IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
 
             TCUProvisioningDataProcess tcuProvisioningDataProcess = new TCUProvisioningDataProcess(log, config);
             await tcuProvisioningDataProcess.ReadTcuProvisioningData();
