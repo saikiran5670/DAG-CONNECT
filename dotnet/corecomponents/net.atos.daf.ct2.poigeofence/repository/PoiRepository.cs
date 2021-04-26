@@ -330,9 +330,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             POI poi = new POI();
             poi.Id = record.id;
             poi.OrganizationId = !string.IsNullOrEmpty(record.Organization_Id) ? record.Organization_Id : 0;
-            poi.CategoryId = !string.IsNullOrEmpty(record.category_id) ? record.category_id : 0;
+            poi.CategoryId = record.category_id;
             poi.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
-            poi.SubCategoryId = !string.IsNullOrEmpty(record.sub_category_id) ? record.sub_category_id : 0;
+            poi.SubCategoryId = record.sub_category_id;
             poi.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
             poi.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             poi.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
@@ -343,12 +343,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Latitude = !string.IsNullOrEmpty(record.latitude) ? record.latitude : 0;
             poi.Longitude = !string.IsNullOrEmpty(record.longitude) ? record.longitude : 0;
             poi.Distance = !string.IsNullOrEmpty(record.distance) ? record.distance : 0;
-            poi.TripId = !string.IsNullOrEmpty(record.trip_id) ? record.trip_id : 0;
-            poi.CreatedAt = !string.IsNullOrEmpty(record.created_at) ? record.created_at : string.Empty;
+            poi.TripId = record.trip_id;
+            poi.CreatedAt = record.created_at;
             poi.State = MapCharToLandmarkState(record.state);
-            poi.CreatedBy = !string.IsNullOrEmpty(record.created_by) ? record.created_by : 0;
-            poi.ModifiedAt = !string.IsNullOrEmpty(record.modified_at) ? record.modified_at : string.Empty;
-            poi.ModifiedBy = !string.IsNullOrEmpty(record.modified_by) ? record.modified_by : 0;
+            poi.CreatedBy = record.created_by;
+            poi.ModifiedAt = record.modified_at;
+            poi.ModifiedBy = record.modified_by;
             return poi;
         }
         public string MapCharToLandmarkState(string state)
