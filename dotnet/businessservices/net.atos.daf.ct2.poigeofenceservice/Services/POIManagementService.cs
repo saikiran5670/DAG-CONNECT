@@ -182,5 +182,37 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             return await Task.FromResult(response);
         }
+
+        public override async Task<POIResponseList> DownloadPOIForExcel(DownloadPOIRequest request, ServerCallContext context)
+        {
+            try
+            {
+                POIResponseList objPOIResponseList = new POIResponseList();
+                POI obj = new POI();
+                obj.OrganizationId = request.OrganizationId;
+                var result = await _poiManager.GetAllPOI(obj);
+                _logger.Info("GetAllPOI method in POI service called.");
+                foreach (var item in result)
+                {
+                    POIData objPOIData = new POIData();
+                    objPOIData.Name = item.Name == null ? string.Empty : item.Name;
+                    objPOIData.Latitude = item.Latitude;
+                    objPOIData.Longitude = item.Longitude;
+                    objPOIData.CategoryName = item.CategoryName == null ? string.Empty : item.CategoryName;
+                    objPOIData.SubCategoryName = item.SubCategoryName == null ? string.Empty : item.SubCategoryName;
+                    objPOIData.Address = item.Address == null ? string.Empty : item.Address;
+                    objPOIData.Zipcode = item.Zipcode == null ? string.Empty : item.Zipcode;
+                    objPOIData.City = item.City == null ? string.Empty : item.City;
+                    objPOIData.Country = item.Country == null ? string.Empty : item.Country;
+                    objPOIResponseList.POIList.Add(objPOIData);
+                }
+                return objPOIResponseList;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                throw ex;
+            }
+        }
     }
 }
