@@ -9,6 +9,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Audit
     {
         public enum Event_type
         {
+            BULK = 'B',
             LOGIN = 'L',
             CREATE = 'C',
             UPDATE = 'U',

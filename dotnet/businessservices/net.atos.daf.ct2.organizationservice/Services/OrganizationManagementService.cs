@@ -658,5 +658,26 @@ namespace net.atos.daf.ct2.organizationservice
             }
             return await Task.FromResult(response);            
         }
+
+        public override async Task<LevelResponse> GetLevelByRoleId(LevelByRoleRequest request, ServerCallContext context)
+        {
+            _logger.Info("GetLevelByRoleId method Called.");
+            LevelResponse objLevelResponse = new LevelResponse();
+            int level = await organizationtmanager.GetLevelByRoleId(request.OrgId,request.RoleId);
+            if (level > 0)
+            {
+                objLevelResponse.Level = level;
+                objLevelResponse.Code = Responcecode.Success;
+                objLevelResponse.Message = "Restrived Level";
+            }
+            else
+            {
+                objLevelResponse.Level = level;
+                objLevelResponse.Code = Responcecode.NotFound;
+                objLevelResponse.Message = "Level Not found";
+            }
+            return await Task.FromResult(objLevelResponse);
+
+        }
     }
 }

@@ -75,5 +75,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.ModifiedBy = geofence.ModifiedBy;
             return geofenceRequest;
         }
+
+        public GeofenceCircularUpdateRequest ToCircularGeofenceUpdateRequest(GeofenceUpdateEntity geofence)
+        {
+            GeofenceCircularUpdateRequest geofenceRequest = new GeofenceCircularUpdateRequest();
+            geofenceRequest.Id = geofence.Id;
+            geofenceRequest.CategoryId = geofence.CategoryId;
+            geofenceRequest.SubCategoryId = geofence.SubCategoryId;
+            geofenceRequest.Name = geofence.Name;
+            geofenceRequest.ModifiedBy = geofence.ModifiedBy;
+            return geofenceRequest;
+        }
     }
 }
