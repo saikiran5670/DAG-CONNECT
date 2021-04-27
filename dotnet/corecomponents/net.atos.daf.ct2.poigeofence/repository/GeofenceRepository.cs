@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.ENUM;
 using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
@@ -14,18 +15,21 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public class GeofenceRepository : IGeofenceRepository
     {
         private readonly IDataAccess dataAccess;
+        private readonly ICategoryRepository _categoryRepository;
         private static readonly log4net.ILog log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public GeofenceRepository(IDataAccess _dataAccess)
+        public GeofenceRepository(IDataAccess _dataAccess, ICategoryRepository categoryRepository)
         {
             dataAccess = _dataAccess;
+            _categoryRepository = categoryRepository;
         }
 
         #region Geofence
 
-        public async Task<Geofence> CreatePolygonGeofence(Geofence geofence)
+        public async Task<Geofence> CreatePolygonGeofence(Geofence geofence, bool IsBulkImport = false)
         {
+            int categoryId = 0;
             try
             {
                 geofence = await Exists(geofence);
@@ -35,12 +39,23 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     return geofence;
                 }
+
+                if (IsBulkImport)
+                {
+                    var OrganizationId = geofence.Id;
+                    if (OrganizationId > 0)
+                    {
+                        categoryId = await GetCategoryId(OrganizationId, categoryId);
+                    }
+                    throw new Exception("Organization Id is not available.");
+                }
                 var parameter = new DynamicParameters();
                 if (geofence.OrganizationId > 0)
                     parameter.Add("@organization_id", geofence.OrganizationId);
                 else
                     parameter.Add("@organization_id", null);
-                parameter.Add("@category_id", geofence.CategoryId);
+
+                parameter.Add("@category_id", geofence.CategoryId > 0 ? geofence.CategoryId : categoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);
                 parameter.Add("@name", geofence.Name);
                 parameter.Add("@address", geofence.Address);
@@ -102,17 +117,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return geofence;
         }
 
-        public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
+        public async Task<bool> DeleteGeofence(GeofenceDeleteEntity objGeofenceDeleteEntity)
         {
             log.Info("Delete geofenceIds method called in repository");
             try
             {
-                if (geofenceIds.Count > 0)
+                if (objGeofenceDeleteEntity.GeofenceId.Count > 0)
                 {
-                    foreach (var item in geofenceIds)
+                    foreach (var item in objGeofenceDeleteEntity.GeofenceId)
                     {
                         var parameter = new DynamicParameters();
-                        parameter.Add("@organization_id", organizationID);
+                        parameter.Add("@organization_id", objGeofenceDeleteEntity.OrganizationId);
                         parameter.Add("@id", item);
                         var queryLandmark = @"update master.landmark set state='D' where id=@id and organization_id=@organization_id";
                         await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
@@ -127,7 +142,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete geofenceIds method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                // throw ex;
+                return false;
             }
         }
 
@@ -212,10 +228,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw ex;
             }
         }
-        public async Task<List<Geofence>> CreateCircularGeofence(List<Geofence> geofence)
+        public async Task<List<Geofence>> CreateCircularGeofence(List<Geofence> geofence, bool IsBulkImport = false)
         {
+            int categoryId = 0;
             try
             {
+                if(IsBulkImport)
+                {
+                    var OrganizationId = geofence.Where(w => w.OrganizationId > 0).FirstOrDefault().Id;
+                    if (OrganizationId > 0)
+                    {
+                        categoryId = await GetCategoryId(OrganizationId, categoryId);
+                    }
+                    throw new Exception("Organization Id is not available.");
+                }
                 Geofence geofence1 = new Geofence();
                 geofence1 = await Exists(geofence.FirstOrDefault());
                 // duplicate Geofence
@@ -228,6 +254,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     try
                     {
                         var parameter = new DynamicParameters();
+                        
+                        parameter.Add("@category_id", item.CategoryId > 0 ? item.CategoryId  : categoryId);
                         if (item.OrganizationId > 0)
                             parameter.Add("@organization_id", item.OrganizationId);
                         else
@@ -268,6 +296,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
 
             return geofence;
+        }
+
+        private async Task<int> GetCategoryId(int OrganizationId, int categoryId)
+        {
+            var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { OrganizationId = OrganizationId , Type = ((char)CategoryType.Category).ToString() });
+            categoryId = categoryList.FirstOrDefault().Id;
+            if (!(categoryId > 0))
+            {
+                var taskId = await _categoryRepository.AddCategory(new Category { Name = "BulkImport", Organization_Id = OrganizationId, Type = ((char)CategoryType.Category).ToString() });
+                return taskId.Id;
+            }
+
+            return categoryId;
         }
 
         public async Task<Geofence> UpdatePolygonGeofence(Geofence geofence)

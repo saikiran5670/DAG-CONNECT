@@ -170,4 +170,23 @@ export class ManageCategoryComponent implements OnInit {
   onClose(){
     this.categoryTitleVisible = false;
   }
+
+  onBackToPage(objData: any) {
+    this.createViewEditStatus = objData.stepFlag;
+    if(objData.successMsg && objData.successMsg != ''){
+      this.showSuccessMessage(objData.successMsg);
+    }
+    if(objData.gridData){
+      this.initData = objData.gridData;
+    }
+    this.onUpdateDataSource(this.initData);
+  }
+
+  showSuccessMessage(msg: any){
+    this.displayMessage = msg;
+    this.categoryTitleVisible = true;
+    setTimeout(() => {
+      this.categoryTitleVisible = false;
+    }, 5000);
+  }
 }
