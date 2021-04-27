@@ -51,6 +51,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public string Zipcode { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        [Required]
         public double Distance { get; set; }
         public int TripId { get; set; }
         public int CreatedBy { get; set; }
