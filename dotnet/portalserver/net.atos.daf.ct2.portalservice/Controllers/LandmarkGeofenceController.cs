@@ -215,11 +215,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GetGeofenceResponse response = new GetGeofenceResponse();
             IdRequest idRequest = new IdRequest();
             try
-            {
-                if (request.OrganizationId<1)
-                {
-                    return StatusCode(400, "Bad request");
-                }
+            {               
                 if (request.GeofenceId < 1)
                 {
                     return StatusCode(400, "Bad request");
@@ -228,8 +224,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetGeofenceByGeofenceID  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
                  Request);
-               
-                idRequest.OrganizationId = request.OrganizationId;
+                if (request.OrganizationId>0)
+                {
+                    idRequest.OrganizationId = request.OrganizationId;
+                }                
                 idRequest.GeofenceId = request.GeofenceId;
 
                 var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);                
@@ -263,8 +261,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {              
                 GeofenceEntityRequest objGeofenceRequest = new GeofenceEntityRequest();
-                if (request.OrganizationId > 0)
-                {
                     objGeofenceRequest.OrganizationId = request.OrganizationId;
                     objGeofenceRequest.CategoryId = request.CategoryId;
                     objGeofenceRequest.SubCategoryId = request.SubCategoryId;
@@ -275,12 +271,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      Request);
 
                     var result = await _GeofenceServiceClient.GetAllGeofenceAsync(objGeofenceRequest);
-                    return Ok(result);
-                }
-                else
-                {
-                    return StatusCode(400, "Bad request");
-                }
+                    return Ok(result);               
             }
             catch (Exception ex)
             {
