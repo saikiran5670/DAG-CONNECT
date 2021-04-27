@@ -58,12 +58,15 @@
           <div *ngIf='initData.length > 0'>
             <mat-table matTableExporter [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="icon">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIcon || 'Icon'}}
+                <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon'}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row"> 
                   <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                   <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                  <span [ngClass]="{ 'marginLeft-14': row.newTag }"><mat-icon>place</mat-icon></span>
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">
+                    <!-- <mat-icon>place</mat-icon> -->
+                    <img matTooltip={{row.iconName}} [src]='row.imageUrl' alt='' width='20px' height='20px'>
+                  </span>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="parentCategoryName">
@@ -74,7 +77,7 @@
               <ng-container matColumnDef="subCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubCategory || 'Sub-Category'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subCategoryName ? row.subCategoryName : '-' }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="noOfPOI">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofPOI || 'Number of POI'}}
