@@ -12,6 +12,8 @@
       "packageRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/package",
       "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization",
       "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe",
-      "landmarkGroupRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/landmarkgroup"
+      "landmarkGroupRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/landmarkgroup",
+      "poiRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poi",
+      "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence"
     }
 }

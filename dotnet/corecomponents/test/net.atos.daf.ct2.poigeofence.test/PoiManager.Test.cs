@@ -4,6 +4,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.repository;
 using net.atos.daf.ct2.poigeofence.entity;
 using System;
+using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.poigeofence.test
 {
@@ -121,6 +122,21 @@ namespace net.atos.daf.ct2.poigeofence.test
         public void DeletePoi()
         {
             var result = _iPoiManager.DeletePOI(6).Result;
+            Console.WriteLine(result);
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void DeletePois()
+        {
+            List<int> ids = new List<int>();
+            ids.Add(6);
+            ids.Add(13);
+            ids.Add(20);
+            ids.Add(21);
+            ids.Add(22);
+            ids.Add(26);
+            var result = _iPoiManager.DeletePOI(ids).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result);
         }

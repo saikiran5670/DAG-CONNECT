@@ -24,6 +24,7 @@ import { CreateEditViewPoiComponent } from './landmarks/manage-poi-geofence/crea
 import { ReportSchedulerComponent } from './report-scheduler/report-scheduler.component';
 import { CreateEditViewCategoryComponent } from './landmarks/manage-category/create-edit-view-category/create-edit-view-category.component';
 import { CreateEditViewGroupComponent } from './landmarks/manage-group/create-edit-view-group/create-edit-view-group.component';
+import { CreateEditViewGeofenceComponent } from './landmarks/manage-poi-geofence/create-edit-view-geofence/create-edit-view-geofence.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { CreateEditViewGroupComponent } from './landmarks/manage-group/create-ed
     CreateEditViewPoiComponent,
     ReportSchedulerComponent,
     CreateEditViewCategoryComponent,
-    CreateEditViewGroupComponent
+    CreateEditViewGroupComponent,
+    CreateEditViewGeofenceComponent
   ],
   imports: [
     CommonModule,
