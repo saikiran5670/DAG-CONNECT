@@ -39,5 +39,9 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await geofenceRepository.GetGeofenceByGeofenceID(organizationId, geofenceId);
         }
+        public async Task<List<Geofence>> BulkImportGeofence(List<Geofence> geofences)
+        {
+            return await geofenceRepository.BulkImportGeofence(geofences);
+        }
     }
 }

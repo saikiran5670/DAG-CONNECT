@@ -12,6 +12,7 @@ rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
 rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
+rpc BulkImportGeofence (BulkGeofenceRequest) returns (GeofenceResponse);
 }
 
 enum Responsecode{
@@ -88,6 +89,10 @@ message GeofenceEntityResponce{
 }
 
 message CircularGeofenceRequest{
+   repeated GeofenceRequest GeofenceRequest =1;
+}
+
+message BulkGeofenceRequest{
    repeated GeofenceRequest GeofenceRequest =1;
 }
 
