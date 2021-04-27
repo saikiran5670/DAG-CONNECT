@@ -235,7 +235,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
-                    Message = "Geofence created with id:- " + geofence.Id,
+                    Message = "Geofence updated with id:- " + geofence.Id,
                     Code = Responsecode.Success,
                     GeofencePolygonUpdateRequest = _mapper.ToGeofenceUpdateRequest(geofence)
                 });
@@ -304,7 +304,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 return await Task.FromResult(new GeofenceCircularUpdateResponce
                 {
-                    Message = "Geofence created with id:- " + geofence.Id,
+                    Message = "Geofence updated with id:- " + geofence.Id,
                     Code = Responsecode.Success,
                     GeofenceCircularUpdateRequest = _mapper.ToCircularGeofenceUpdateRequest(geofence)
                 });
