@@ -94,5 +94,17 @@ message Group{
       int64 Created_At =8;
       int64 Modified_At= 10;
       int32 poiCount=13;
-      int32 geofenceCount=14;
+      int32 geofenceCount=14;     
+      repeated Landmarkdetails landmarks=15;
+}
+
+message Landmarkdetails
+{
+      string categoryname =15;
+      string subcategoryname = 16;
+      string landmarkname = 17;
+      string address = 18;
+      bytes Icon =3;
+      string type = 4;
+      int32 landmarkid = 5;
 }

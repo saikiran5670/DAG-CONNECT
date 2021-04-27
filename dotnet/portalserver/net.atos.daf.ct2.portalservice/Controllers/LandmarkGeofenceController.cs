@@ -9,6 +9,9 @@ using net.atos.daf.ct2.portalservice.Entity.Geofence;
 using net.atos.daf.ct2.geofenceservice;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -17,6 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class LandmarkGeofenceController : ControllerBase
     {
+        private ILog _logger;
         private readonly GeofenceService.GeofenceServiceClient _GeofenceServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.Geofence.Mapper _mapper;
@@ -27,6 +31,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _GeofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.Geofence.Mapper();
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         #region Geofence
@@ -37,7 +42,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                // _logger.Info("Update method in vehicle API called.");
+                 _logger.Info("CreatePolygonGeofence method in Geofence API called.");
 
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
@@ -78,7 +83,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
-                //_logger.Error(null, ex);
+                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -97,6 +102,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("createcircularofence")]
         public async Task<IActionResult> CreateCircularGeofence(List<CircularGeofence> request)
         {
+            _logger.Info("CreateCircularGeofence method in Geofence API called.");
             try
             {
                 var geofenceRequest = new geofenceservice.CircularGeofenceRequest();
@@ -108,14 +114,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.CircularGeofenceResponse geofenceResponse = await _GeofenceServiceClient.CreateCircularGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed
-                     && geofenceResponse.Message == "There is an error creating Geofence.")
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating Geofence.");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
                 {
-                    return StatusCode(409, geofenceResponse.Message);
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
                 {
@@ -128,7 +133,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
 
             }
@@ -138,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request[0].Id, request[0].Id, JsonConvert.SerializeObject(request),
                   Request);
-                //_logger.Error(null, ex);
+                _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -171,11 +176,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                      "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                      "DeleteGeofence  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                      Request);
-
-                    objDeleteRequest.OrganizationId = request.OrganizationId;
+                      Request);                    
                     objDeleteRequest.GeofenceId.Add(lstGeofenceId);
-
+                    objDeleteRequest.OrganizationId = request.OrganizationId;
                     objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
                     return Ok(objGeofenceDeleteResponse);
                 }
@@ -212,11 +215,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GetGeofenceResponse response = new GetGeofenceResponse();
             IdRequest idRequest = new IdRequest();
             try
-            {
-                if (request.OrganizationId<1)
-                {
-                    return StatusCode(400, "Bad request");
-                }
+            {               
                 if (request.GeofenceId < 1)
                 {
                     return StatusCode(400, "Bad request");
@@ -225,8 +224,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetGeofenceByGeofenceID  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
                  Request);
-               
-                idRequest.OrganizationId = request.OrganizationId;
+                if (request.OrganizationId>0)
+                {
+                    idRequest.OrganizationId = request.OrganizationId;
+                }                
                 idRequest.GeofenceId = request.GeofenceId;
 
                 var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);                
@@ -260,8 +261,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {              
                 GeofenceEntityRequest objGeofenceRequest = new GeofenceEntityRequest();
-                if (request.OrganizationId > 0)
-                {
                     objGeofenceRequest.OrganizationId = request.OrganizationId;
                     objGeofenceRequest.CategoryId = request.CategoryId;
                     objGeofenceRequest.SubCategoryId = request.SubCategoryId;
@@ -272,12 +271,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      Request);
 
                     var result = await _GeofenceServiceClient.GetAllGeofenceAsync(objGeofenceRequest);
-                    return Ok(result);
-                }
-                else
-                {
-                    return StatusCode(400, "Bad request");
-                }
+                    return Ok(result);               
             }
             catch (Exception ex)
             {
@@ -298,13 +292,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
           
         }
-        [HttpPost]
+        
+        [HttpPut]
         [Route("updatepolygongeofence")]
         public async Task<IActionResult> UpdatePolygonGeofence(GeofenceUpdateEntity request)
         {
             try
             {
-                // _logger.Info("Update method in vehicle API called.");
+                 _logger.Info("UpdatePolygonGeofence method in geofence API called.");
 
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
@@ -345,7 +340,103 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
+                _logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("BulkImportGeofence")]
+        public async Task<IActionResult> BulkImportGeofence(List<Geofence> requests)
+        {
+            try
+            {
+                var bulkGeofenceRequest = new geofenceservice.BulkGeofenceRequest();
+                foreach (var request in requests)
+                    bulkGeofenceRequest.GeofenceRequest.Add(_mapper.ToGeofenceRequest(request));
+                var response = await _GeofenceServiceClient.BulkImportGeofenceAsync(bulkGeofenceRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.BULK, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"BulkImportGeofence method Failed", 1, 2, JsonConvert.SerializeObject(requests),
+                  Request);
                 //_logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist, then contact DAF support team.");
+            }
+
+
+        }
+
+        [HttpPut]
+        [Route("updatecirculargeofence")]
+        public async Task<IActionResult> UpdateCircularGeofence(GeofenceUpdateEntity request)
+        {
+            try
+            {
+                 _logger.Info("UpdateCircularGeofence method in Geofence API called.");
+                // Validation 
+                if (string.IsNullOrEmpty(request.Name))
+                {
+                    return StatusCode(400, "The Geofence name is required.");
+                }
+                var geofenceRequest = new geofenceservice.GeofenceCircularUpdateRequest();
+                geofenceRequest = _mapper.ToCircularGeofenceUpdateRequest(request);
+                geofenceservice.GeofenceCircularUpdateResponce geofenceResponse = await _GeofenceServiceClient.UpdateCircularGeofenceAsync(geofenceRequest);
+                ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
+
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed)
+                {
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
+                }
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
+                {
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
+                }
+                else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "Update Circular method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                   Request);
+
+                    return Ok(geofenceResponse);
+                }
+                else
+                {
+                    return StatusCode((int)geofenceResponse.Code, "Geofence Response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Update  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                  Request);
+                _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {

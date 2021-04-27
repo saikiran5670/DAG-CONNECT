@@ -34,10 +34,22 @@ service OrganizationService {
   rpc AllowChaining (ChainingRequest) returns (ChainingResponse); 
   rpc GetOrgRelationshipMapping (OrgRelationshipMappingGetRequest) returns (OrgRelationshipGetResponse);
   rpc GetAllOrganizations (OrganizationByID) returns (OrganizationprimaryFieldsListResponse);
+  rpc GetLevelByRoleId (LevelByRoleRequest) returns (LevelResponse);
 }
 
 message OrganizationprimaryFieldsListResponse{
  repeated OrganizationprimaryFieldsResponse organizationList = 1;
+}
+
+message LevelResponse{
+ int32 Level = 1;
+  Responcecode Code=2;
+ string Message = 3;
+}
+
+message LevelByRoleRequest{
+ int32 orgId = 1;
+ int32 roleId = 2;
 }
 
 message OrganizationByID{
