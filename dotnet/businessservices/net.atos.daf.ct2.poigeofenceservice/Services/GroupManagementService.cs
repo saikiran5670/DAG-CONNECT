@@ -47,17 +47,28 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                     pOI.Type = item.Type;
                     obj.poilist.Add(pOI);
                 }
-                var result = await _landmarkGroupManager.CreateGroup(obj);
-                if (result != null)
+                //Check if group allready exists
+                var groupid = await _landmarkGroupManager.Exists(obj);
+                if (groupid > 0)
                 {
-                    response.Message = "Group Added : " + result.id.ToString();
-                    response.Code = Responcecodes.Success;
+                    response.Message = "Group name allready exists";
+                    response.Code = Responcecodes.Conflict;
                 }
                 else
                 {
-                    response.Message = "Add group fail";
-                    response.Code = Responcecodes.Failed;
+                    var result = await _landmarkGroupManager.CreateGroup(obj);
+                    if (result != null)
+                    {
+                        response.Message = "Group Added : " + result.id.ToString();
+                        response.Code = Responcecodes.Success;
+                    }
+                    else
+                    {
+                        response.Message = "Add group fail";
+                        response.Code = Responcecodes.Failed;
+                    }
                 }
+                
 
             }
             catch (Exception ex)
@@ -90,17 +101,28 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
 
                     obj.poilist.Add(pOI);
                 }
-                var result = await _landmarkGroupManager.UpdateGroup(obj);
-                if (result != null)
+                //Check if group allready exists
+                var groupid = await _landmarkGroupManager.Exists(obj);
+                if (groupid > 0)
                 {
-                    response.Message = "Updated successfully : " + result.id.ToString(); 
-                    response.Code = Responcecodes.Success;
+                    response.Message = "Group name allready exists";
+                    response.Code = Responcecodes.Conflict;
                 }
                 else
                 {
-                    response.Message = "Update group fail";
-                    response.Code = Responcecodes.Failed;
+                    var result = await _landmarkGroupManager.UpdateGroup(obj);
+                    if (result != null)
+                    {
+                        response.Message = "Updated successfully : " + result.id.ToString();
+                        response.Code = Responcecodes.Success;
+                    }
+                    else
+                    {
+                        response.Message = "Update group fail";
+                        response.Code = Responcecodes.Failed;
+                    }
                 }
+                
 
             }
             catch (Exception ex)

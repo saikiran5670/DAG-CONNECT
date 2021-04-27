@@ -125,10 +125,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 
                 return id;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
 
@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
 
@@ -163,7 +163,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
 
 
-                string query = @"SELECT                     
+                string query = @"SELECT 
+                                    lg.id,
                                     lg.name,
                                     lg.organization_id,
                                     count(case when lgr.type in ('O','C') then 1 end) as geofenceCount, 
@@ -173,13 +174,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                     FROM master.landmarkgroup lg                   
                                     LEFT JOIN MASTER.landmarkgroupref lgr on lgr.landmark_group_id = lg.id 
                                     LEFT JOIN MASTER.landmark lm on lm.id = lgr.ref_id
-                                    WHERE 1=1 and lm.state in ('A','I')    ";    
+                                    WHERE 1=1 and lg.state in ('A','I')    ";    
                                     
 
                 if (organizationid > 0)
                 {
                     parameter.Add("@organization_id", organizationid);
-                    query = query + " and organization_id=@organization_id";
+                    query = query + " and lg.organization_id=@organization_id";
                 }
                 else if (groupid > 1)
                 {
@@ -187,7 +188,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     query = query + " and id=@id";
                 }
 
-                query = query + " group by lg.name,lgr.landmark_group_id,lg.organization_id,lg.created_at,lg.modified_at; ";
+                query = query + " group by lg.name,lgr.landmark_group_id,lg.organization_id,lg.created_at,lg.modified_at,lg.id; ";
                 IEnumerable <LandmarkGroup>  groups= await dataAccess.QueryAsync<LandmarkGroup>(query, parameter);
 
 
@@ -196,7 +197,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception Ex)
             {
 
-                throw;
+                throw Ex;
             }
         }
 
@@ -235,6 +236,42 @@ namespace net.atos.daf.ct2.poigeofence.repository
             obj.ref_id = record.ref_id;
             obj.type = (LandmarkType)Convert.ToChar(record.type);
             return obj;
+        }
+
+        public async Task<int> Exists(LandmarkGroup landmarkgroup)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                List<Geofence> groupList = new List<Geofence>();
+                var query = @"select id from master.landmarkgroup where 1=1 ";
+               
+                    if (Convert.ToInt32(landmarkgroup.id) > 0)
+                    {
+                        parameter.Add("@id", landmarkgroup.id);
+                        query = query + " and id!=@id";
+                    }
+                    // name
+                    if (!string.IsNullOrEmpty(landmarkgroup.name))
+                    {
+                        parameter.Add("@name", landmarkgroup.name);
+                        query = query + " and name=@name";
+                    }
+                    // organization id filter
+                    if (landmarkgroup.organization_id > 0)
+                    {
+                        parameter.Add("@organization_id", landmarkgroup.organization_id);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                
+                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+               
+                return groupid;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 

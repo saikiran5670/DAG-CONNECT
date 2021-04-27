@@ -53,9 +53,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 var result = await _groupServiceclient.CreateAsync(objgroup);
                 
-                if (result != null && result.Code == Responcecodes.Failed)
+                if (result != null && result.Code == Responcecodes.Conflict)
                 {
-                    return StatusCode(409, result.Message);
+                    return StatusCode(400, result.Message);
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
@@ -85,7 +85,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             //GroupAddRequest objgroup = new GroupAddRequest();
             try
             {
-                _logger.Info("Add Group.");
+                if (request.Id == 0)
+                {
+                    return StatusCode(400, "Group ID is required");
+                }
+                if (request.Poilist.Count < 1 )
+                {
+                    return StatusCode(400, "POI List is required.");
+                }
+                _logger.Info("Update Group.");
+
                 GroupUpdateRequest objgroup = new GroupUpdateRequest();
                 objgroup.Id = request.Id;                
                 objgroup.Name = request.Name;
@@ -98,7 +107,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     objgroup.PoiIds.Add(pOI);
                 }
                 var result = await _groupServiceclient.UpdateAsync(objgroup);
-
+                if (result != null && result.Code == Responcecodes.Conflict)
+                {
+                    return StatusCode(400, result.Message);
+                }
                 if (result != null && result.Code == Responcecodes.Failed)
                 {
                     return StatusCode(409, result.Message);
@@ -132,7 +144,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             //GroupAddRequest objgroup = new GroupAddRequest();
             try
             {
+                if (GroupId ==0)
+                {
+                    return StatusCode(400, "Group ID is required");
+                }
                 _logger.Info("Add Group.");
+
                 GroupDeleteRequest objgroup = new GroupDeleteRequest();
                 objgroup.Id = GroupId;
                 objgroup.Modifiedby = modifiedby;
@@ -173,6 +190,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             //GroupAddRequest objgroup = new GroupAddRequest();
             try
             {
+                if (groupid == 0 && organizationid == 0)
+                {
+                    return StatusCode(400, "Group or organization id is required");
+                }
                 GroupGetRequest objgroup = new GroupGetRequest();
                 objgroup.GroupId = groupid;
                 objgroup.OrganizationsId = organizationid;
