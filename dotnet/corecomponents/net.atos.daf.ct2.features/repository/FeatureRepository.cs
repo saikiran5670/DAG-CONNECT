@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.features.repository
 	                                FROM master.feature f 
 									Left join translation.translation t
                                     on f.Key = t.name and t.code=@Code
-                                    where f.state ='A'";
+                                    where f.state IN ('A', 'I')";
                if (Featuretype != '0')
                 {
                     parameter.Add("@type", Featuretype);
