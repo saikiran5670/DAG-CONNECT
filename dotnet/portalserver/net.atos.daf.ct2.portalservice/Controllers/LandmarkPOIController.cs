@@ -371,6 +371,68 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             return Result;
         }
+
+
+
+        [HttpPost]
+        [Route("uploadexcel")]
+        public async Task<IActionResult> UploadExcel(List<POI> request)
+        {
+            try
+            {
+                // Validation 
+                if (request.Count <= 0)
+                {
+                    return StatusCode(400, "poi data is required.");
+                }
+                var poiUploadRequest =_mapper.ToUploadRequest(request);
+              
+                var poiUploadResponse = await _poiServiceClient.UploadPOIExcelAsync(poiUploadRequest);
+               
+
+                if (poiUploadResponse != null && poiUploadResponse.Code == Responsecode.Failed)
+                {
+                    return StatusCode(500, "There is an error creating poi.");
+                }
+                else if (poiUploadResponse != null && poiUploadResponse.Code == Responsecode.Conflict)
+                {
+                    return StatusCode(409, poiUploadResponse.Message);
+                }
+                else if (poiUploadResponse != null && poiUploadResponse.Code == Responsecode.Success)
+                {
+                    //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    //"POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    //"Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                    //Request);
+                    return Ok(poiUploadResponse);
+                }
+                else
+                {
+                    return StatusCode(404, "POI Response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                // "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                // "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                //  Request);
+                _logger.Error(null, ex);
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                {
+                    return StatusCode(400, "The foreign key violation in one of dependant data.");
+                }               
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+
+
     }
 }
 

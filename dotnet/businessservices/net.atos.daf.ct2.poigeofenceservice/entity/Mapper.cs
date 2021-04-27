@@ -243,7 +243,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 City = x.City,
                 Country = x.Country,
                 Zipcode = x.Zipcode,
-                Type = x.Type,
+                Type = "POI",
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
                 Distance = x.Distance,
