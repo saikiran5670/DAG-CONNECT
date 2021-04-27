@@ -174,6 +174,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                  L.name, 
                                  case when C.type='P' then C.name end categoryName,
                                  case when C.type='S' then C.name end subcategoryName,
+                                 L.state State,
                                  L.address,
                                  L.city,
                                  L.country,

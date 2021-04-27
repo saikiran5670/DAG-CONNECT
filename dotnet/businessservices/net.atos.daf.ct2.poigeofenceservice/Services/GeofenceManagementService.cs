@@ -149,6 +149,7 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.Address = entity.Address;
                     response.City = entity.City;
                     response.Country = entity.Country;
+                    response.State = entity.State;
                     response.Distance = entity.Distance;
                     response.Latitude = entity.Latitude;
                     response.Longitude = entity.Longitude;
