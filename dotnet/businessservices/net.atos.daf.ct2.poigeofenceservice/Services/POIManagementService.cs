@@ -35,22 +35,22 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 foreach (var item in data)
                 {
                     net.atos.daf.ct2.poiservice.POIData objPOI = new net.atos.daf.ct2.poiservice.POIData();
-                    objPOI.Id = item.Id;
-                    objPOI.OrganizationId = item.OrganizationId;
-                    objPOI.CategoryId = item.CategoryId;
-                    objPOI.SubCategoryId = item.SubCategoryId;
+                    //objPOI.Id = item.Id;
+                    //objPOI.OrganizationId = item.OrganizationId;
+                    //objPOI.CategoryId = item.CategoryId;
+                    //objPOI.SubCategoryId = item.SubCategoryId;
                     objPOI.Name = item.Name;// == null ? string.Empty : item.Name;
                     objPOI.Address = item.Address;// == null ? string.Empty : item.Name;
                     objPOI.City = item.City;
                     objPOI.CategoryName = item.CategoryName;
-                    objPOI.Country = item.Country;
-                    objPOI.Zipcode = item.Zipcode;
+                    //objPOI.Country = item.Country;
+                    //objPOI.Zipcode = item.Zipcode;
                     objPOI.Latitude = item.Latitude;
                     objPOI.Longitude = item.Longitude;
-                    objPOI.Distance = item.Distance;
-                    objPOI.State = item.State;
-                    objPOI.CreatedAt = item.CreatedAt;
-                    objPOI.CreatedBy = item.CreatedBy;
+                    //objPOI.Distance = item.Distance;
+                    //objPOI.State = item.State;
+                    //objPOI.CreatedAt = item.CreatedAt;
+                    //objPOI.CreatedBy = item.CreatedBy;
                     objPOIResponseList.POIList.Add(objPOI);
                 }
                 objPOIResponseList.Message = "GlobalPOI data retrieved";

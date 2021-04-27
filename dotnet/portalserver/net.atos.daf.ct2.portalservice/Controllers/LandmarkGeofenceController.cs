@@ -9,6 +9,7 @@ using net.atos.daf.ct2.portalservice.Entity.Geofence;
 using net.atos.daf.ct2.geofenceservice;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -373,8 +374,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Create  method in Geofence controller", 1, 2, JsonConvert.SerializeObject(requests),
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.BULK, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"BulkImportGeofence method Failed", 1, 2, JsonConvert.SerializeObject(requests),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
@@ -387,7 +388,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist then contact DAF support team.");
+                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist, then contact DAF support team.");
             }
 
 
