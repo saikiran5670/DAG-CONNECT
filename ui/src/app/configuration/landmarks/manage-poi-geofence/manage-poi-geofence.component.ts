@@ -4,7 +4,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
-
+import { POIService } from '../../../services/poi.service';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -32,7 +34,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
 
   constructor( 
-    private dialogService: ConfirmDialogService
+    private dialogService: ConfirmDialogService, 
+    private poiService : POIService
     ) {
     
    }
@@ -169,4 +172,25 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }, 100);
   }
 
+  
+
+  public exportAsExcelFile(): void {
+    let json: any[], excelFileName: string = 'POIData';
+    this.poiService.downloadPOIForExcel().subscribe((poiData)=>{
+        
+    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(poiData);
+    const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
+    const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, excelFileName);
+    })
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const EXCEL_EXTENSION = '.xlsx';
+    const data: Blob = new Blob([buffer], {
+      type: EXCEL_TYPE
+    });
+    FileSaver.saveAs(data, fileName + '_exported'+ EXCEL_EXTENSION);
+  }
 }

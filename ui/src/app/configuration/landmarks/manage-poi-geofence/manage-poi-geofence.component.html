@@ -5,6 +5,12 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>POI (19)</span>
     </div>
+    <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="exportAsExcelFile()">Excel</button>
+      </mat-menu>
+    </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
       <div fxLayout="row" class='areaWidth'>
         <button mat-flat-button color="primary" [matMenuTriggerFor]="belowMenu">
