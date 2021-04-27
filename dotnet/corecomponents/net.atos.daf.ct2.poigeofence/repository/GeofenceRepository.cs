@@ -141,9 +141,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     foreach (var item in objGeofenceDeleteEntity.GeofenceId)
                     {
                         var parameter = new DynamicParameters();
-                        parameter.Add("@organization_id", objGeofenceDeleteEntity.OrganizationId);
                         parameter.Add("@id", item);
-                        var queryLandmark = @"update master.landmark set state='D' where id=@id and organization_id=@organization_id";
+                        var queryLandmark = @"update master.landmark set state='D' where id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
 
                         var queryNodes = @"update master.nodes set state='D' where landmark_id=@id";

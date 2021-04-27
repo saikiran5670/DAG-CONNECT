@@ -170,10 +170,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                      "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                     "DeleteGeofence  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
+                     "DeleteGeofence  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
                       Request);                    
                     objDeleteRequest.GeofenceId.Add(lstGeofenceId);
-                    objDeleteRequest.OrganizationId = request.OrganizationId;
                     objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
                     return Ok(objGeofenceDeleteResponse);
                 }
@@ -186,7 +185,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Delete  method in Geofence controller",Convert.ToInt32(request.GeofenceId),Convert.ToInt32(request.OrganizationId), JsonConvert.SerializeObject(request),
+                 "Delete  method in Geofence controller",Convert.ToInt32(request.GeofenceId),0, JsonConvert.SerializeObject(request),
                   Request);
                
                 //// check for fk violation
