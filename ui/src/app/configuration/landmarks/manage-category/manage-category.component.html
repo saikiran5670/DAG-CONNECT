@@ -110,5 +110,5 @@
           </div>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-card>
-    <app-create-edit-view-category *ngIf='createViewEditStatus' [translationData]='translationData' [actionType]='actionType' [selectedRowData]='selectedRowData'></app-create-edit-view-category>
+    <app-create-edit-view-category *ngIf='createViewEditStatus' [translationData]='translationData' [actionType]='actionType' [selectedRowData]='selectedRowData' (backToPage)='onBackToPage($event)'></app-create-edit-view-category>
 </div>
