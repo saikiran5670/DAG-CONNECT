@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<bool> DeleteCategory(int ID);
         Task<IEnumerable<Category>> GetCategoryType( string Type);
         Task<IEnumerable<CategoryList>> GetCategoryDetails();
+        Task<IEnumerable<Category>> GetCategory(CategoryFilter categoryFilter);
 
     }
 }

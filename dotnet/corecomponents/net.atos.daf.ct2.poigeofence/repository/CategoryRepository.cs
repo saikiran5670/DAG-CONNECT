@@ -191,6 +191,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@Name", categoryFilter.CategoryName);
                         getQuery = getQuery + " and name= @Name ";
                     }
+                    if (categoryFilter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", categoryFilter.OrganizationId);
+                        getQuery = getQuery + " and organization_id=@organization_id ";
+                    }
                     parameter.Add("@State", "A");
                     getQuery = getQuery + " and state= @State ";
 

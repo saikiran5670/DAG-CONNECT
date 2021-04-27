@@ -359,6 +359,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("BulkImportGeofence")]
+        public async Task<IActionResult> BulkImportGeofence(List<Geofence> requests)
+        {
+            try
+            {
+                var bulkGeofenceRequest = new geofenceservice.BulkGeofenceRequest();
+                foreach (var request in requests)
+                    bulkGeofenceRequest.GeofenceRequest.Add(_mapper.ToGeofenceRequest(request));
+                var response = await _GeofenceServiceClient.BulkImportGeofenceAsync(bulkGeofenceRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Create  method in Geofence controller", 1, 2, JsonConvert.SerializeObject(requests),
+                  Request);
+                //_logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist then contact DAF support team.");
+            }
+
+
+        }
         #endregion
     }
 }
