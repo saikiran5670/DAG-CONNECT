@@ -91,8 +91,8 @@
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="action">
-    <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Actions' }} </mat-header-cell>
-    <mat-cell *matCellDef="let row">
+    <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Actions' }} </mat-header-cell>
+    <mat-cell *matCellDef="let row" class="action">
       <button class='actionBtn' mat-flat-button (click)="editViewPackage(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
         <mat-icon>visibility</mat-icon>
       </button>

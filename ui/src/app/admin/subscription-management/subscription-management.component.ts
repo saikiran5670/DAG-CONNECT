@@ -43,6 +43,7 @@ export class SubscriptionManagementComponent implements OnInit {
   translationData: any;
   createEditViewSubscriptionFlag: boolean = false;
   actionType: any;
+  actionBtn:any;  
   // dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogRef: MatDialogRef<UserDetailTableComponent>;
   selectionForSubscription = new SelectionModel(true, []);
@@ -95,7 +96,12 @@ export class SubscriptionManagementComponent implements OnInit {
   exportAsPdf() {
     let DATA = document.getElementById('subscriptionData');
       
-    html2canvas(DATA).then(canvas => {
+    html2canvas( DATA , { onclone: (document) => {
+      this.actionBtn = document.getElementsByClassName('action');
+      for (let obj of this.actionBtn) {
+        obj.style.visibility = 'hidden';  }       
+    }})
+    .then(canvas => {   
         
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;

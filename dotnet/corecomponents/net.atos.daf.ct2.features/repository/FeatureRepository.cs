@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.features.repository
             var features = new List<Feature>();
 
             var QueryStatement = @"SELECT f.id, f.name, 
-                                 f.type, f.state,f.data_attribute_set_id,f.key,r.id as roleid  , r.organization_id                        
+                                 f.type, f.state,f.data_attribute_set_id,f.key,r.id as roleid, r.organization_id                        
                                 FROM master.feature f
 								 join master.featuresetfeature fsf
 								on fsf.feature_id= f.id
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.features.repository
 								on r.feature_set_id = fsf.feature_set_id 
                                 Left join translation.translation t
                                 on f.Key = t.name and t.code=@Code
-                                where f.state= 'A'";
+                                where f.state IN ('A', 'I')";
             
             
             var parameter = new DynamicParameters();
@@ -471,10 +471,9 @@ namespace net.atos.daf.ct2.features.repository
                             parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
                             parameter.Add("@key", feature.Description);
                             parameter.Add("@level", feature.Level);
-                            parameter.Add("@status", (char)feature.FeatureState);
             int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
-	                                                 id, name, type, state, data_attribute_set_id, key,level,status)
-	                                           VALUES (@id, @name, @type, @state, @data_attribute_set_id, @key,@level,@status) RETURNING id", parameter);
+	                                                 id, name, type, state, data_attribute_set_id, key,level)
+	                                           VALUES (@id, @name, @type, @state, @data_attribute_set_id, @key,@level) RETURNING id", parameter);
                                         return resultAddFeatureSet;
         }
 
