@@ -24,9 +24,9 @@ enum Responsecode{
   InternalServerError = 500;
 }
 
-message DeleteRequest{
-   repeated int32 GeofenceId=1;
-   int32 organization_id=2;
+message DeleteRequest{  
+   int32 organization_id=1;
+   repeated int32 GeofenceId=2;
 }
 message GeofenceDeleteResponse {
   Responsecode Code=1;
