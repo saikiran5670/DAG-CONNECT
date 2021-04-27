@@ -70,19 +70,19 @@
           <mat-icon>place</mat-icon>
         </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="Name">
+      <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
         <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
       </ng-container>
-      <ng-container matColumnDef="Category">
+      <ng-container matColumnDef="categoryName">
         <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.category }}</mat-cell>
+        <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
       </ng-container>
-      <ng-container matColumnDef="Sub-Category">
+      <ng-container matColumnDef="subCategoryName">
         <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.subcategory }}</mat-cell>
+        <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
       </ng-container>
-      <ng-container matColumnDef="Address">
+      <ng-container matColumnDef="address">
         <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
         <mat-cell *matCellDef="let row">{{ row.address }}</mat-cell>
       </ng-container>
@@ -100,8 +100,8 @@
           </button>
         </mat-cell>
       </ng-container>
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;">
+      <mat-header-row *matHeaderRowDef="displayedColumnsPoi"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumnsPoi;">
       </mat-row>
     </mat-table>
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
@@ -111,7 +111,8 @@
 </div>
  <!-- for Geofence table -->
  <div *ngIf='!createEditViewGeofenceFlag'>
-<mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
+
+<!-- <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Geofence (18)</span>
@@ -154,11 +155,11 @@
         </mat-checkbox>
         <span style="margin: 5px 0px 0px 5px;">All</span>
       </mat-header-cell>
-      <mat-cell *matCellDef="let row">
+      <mat-cell *matCellDef="let row"> -->
         <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
         <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
         <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span> -->
-        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedpois.toggle(row) : null'
+        <!-- <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedpois.toggle(row) : null'
           [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
         </mat-checkbox>
       </mat-cell>
@@ -189,8 +190,8 @@
         </button>
       </mat-cell>
     </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumns1"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns1;">
+    <mat-header-row *matHeaderRowDef="displayedColumnsGeo"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumnsGeo;">
     </mat-row>
   </mat-table>
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
@@ -198,6 +199,7 @@
 <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-card>
 </div>
+</mat-card> -->
 <app-create-edit-view-poi *ngIf= "createEditViewPoiFlag" (createViewEditPoiEmit)='checkCreationForPoi($event)'[translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' ></app-create-edit-view-poi>
 <app-create-edit-view-geofence *ngIf= "createEditViewGeofenceFlag"  ></app-create-edit-view-geofence>
 </div>

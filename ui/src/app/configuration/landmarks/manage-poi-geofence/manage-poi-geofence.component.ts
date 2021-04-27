@@ -3,6 +3,7 @@ import { Component, EventEmitter,Input, OnInit, Output, ViewChild } from '@angul
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { POIService } from 'src/app/services/poi.service';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
 
 
@@ -15,8 +16,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
   @Input() translationData: any;
-  displayedColumns = ['All', 'Icon', 'Name', 'Category', 'Sub-Category', 'Address', 'Actions'];
-  displayedColumns1 = ['All', 'Name', 'Category', 'Sub-Category', 'Actions'];
+  displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
+  displayedColumnsGeo = ['All', 'Name', 'Category', 'Sub-Category', 'Actions'];
   dataSource: any;
   initData: any = [];
   data: any = [];
@@ -33,7 +34,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
 
   constructor( 
-    private dialogService: ConfirmDialogService
+    private dialogService: ConfirmDialogService,
+    private poiService: POIService,
     ) {
     
    }
@@ -45,11 +47,54 @@ export class ManagePoiGeofenceComponent implements OnInit {
     // this.initData = this.mockData();
     console.log(this.mockData());
     this.hideloader();
-    this.dataSource = new MatTableDataSource(this.initData);
+    this.loadPoiData();
+  }
+
+  loadPoiData(){
+    this.showLoadingIndicator = true;
+    this.poiService.getPois().subscribe((data : any) => {
+      this.initData = data;
+      console.log(this.initData);
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    });
+  }
+
+  updatedTableData(tableData : any) {
+    tableData = this.getNewTagData(tableData);
+    this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  getNewTagData(data: any){
+    let currentDate = new Date().getTime();
+    if(data.length > 0){
+      data.forEach(row => {
+        let createdDate = parseInt(row.createdAt); 
+        let nextDate = createdDate + 86400000;
+        if(currentDate > createdDate && currentDate < nextDate){
+          row.newTag = true;
+        }
+        else{
+          row.newTag = false;
+        }
+      });
+      let newTrueData = data.filter(item => item.newTag == true);
+      newTrueData.sort((userobj1, userobj2) => parseInt(userobj2.createdAt) - parseInt(userobj1.createdAt));
+      let newFalseData = data.filter(item => item.newTag == false);
+      Array.prototype.push.apply(newTrueData, newFalseData); 
+      return newTrueData;
+    }
+    else{
+      return data;
+    }
   }
 
   mockData() {
