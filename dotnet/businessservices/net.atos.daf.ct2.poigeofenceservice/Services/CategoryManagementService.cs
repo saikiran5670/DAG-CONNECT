@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.Type = request.Type;
                 obj.Parent_Id = request.ParentId;
                 obj.State = request.State;
+                obj.Description = request.Description;
                 obj.Created_By = request.CreatedBy;
                 obj.icon = request.Icon.ToByteArray();
 
@@ -84,6 +85,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.Name = request.Name;
                 obj.IconName = request.IconName;
                 obj.icon = request.Icon.ToByteArray();
+                obj.Description = request.Description;
                 obj.Modified_By = request.ModifiedBy;
 
                 var result = await _categoryManager.EditCategory(obj);
@@ -93,10 +95,15 @@ namespace net.atos.daf.ct2.poigeofenservice
                     response.Code = Responcecode.Success;
                     response.CategoryID = result.Id;
                 }
-                else
+                else if (result != null && result.Id == -1)
                 {
                     response.Message = "Category Not Found";
                     response.Code = Responcecode.NotFound;
+                }
+                else if (result != null && result.Id == -2)
+                {
+                    response.Message = "Category Name already exist with the same Name ";
+                    response.Code = Responcecode.Failed;
                 }
 
             }
@@ -189,7 +196,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     var catdetails = new categoryDetails();
                     catdetails.ParentCategoryId = item.Parent_id;
                     catdetails.SubCategoryId = item.Subcategory_id;
-                    catdetails.IconName = item.IconName == null ? "" : item.IconName; 
+                    catdetails.IconId = item.IconId > 0  ? 0 : item.IconId; 
                     if (item.Icon != null)
                     {
                         catdetails.Icon = ByteString.CopyFrom(item.Icon);
@@ -221,6 +228,23 @@ namespace net.atos.daf.ct2.poigeofenservice
             }
             return await Task.FromResult(response);
         }
+
+        public override async Task<DeleteResponse> BulkDeleteCategory(DeleteRequest request, ServerCallContext context)
+        {
+            DeleteResponse response = new DeleteResponse();
+            CategoryID obj = new CategoryID();
+            foreach (var item in request.MultiCategoryID)
+            {
+                obj.ID = item;
+                var result = await _categoryManager.DeleteCategory(obj.ID);
+                
+                response.Message = "Delete successfully";
+                response.Code = Responcecode.Success;
+            }
+            
+            return await Task.FromResult(response);
+        }
+
 
         // END - Category
     }

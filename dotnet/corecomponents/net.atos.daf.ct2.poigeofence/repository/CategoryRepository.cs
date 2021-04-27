@@ -44,8 +44,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                     var parameter = new DynamicParameters();
                     var insertCategory = @"INSERT INTO master.category(
-                                   organization_id, name, icon_id, type, parent_id, state, created_at, created_by)
-                                  values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@created_at,@created_by) RETURNING id";
+                                   organization_id, name, icon_id, type, parent_id, state,description, created_at, created_by)
+                                  values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@description,@created_at,@created_by) RETURNING id";
 
                     parameter.Add("@organization_id", category.Organization_Id);
                     parameter.Add("@name", category.Name);
@@ -53,6 +53,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@type", category.Type);
                     parameter.Add("@parent_id", category.Parent_Id);
                     parameter.Add("@state", category.State);
+                    parameter.Add("@description", category.Description);
                     parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     parameter.Add("@created_by", category.Created_By);
                     var id = await _dataAccess.ExecuteScalarAsync<int>(insertCategory, parameter);
@@ -106,22 +107,32 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var icon_ID = await InsertIcons(category);
                 var isCategoryUpdate = CheckCategoryForUpdate(category.Id);
+                
                 if (isCategoryUpdate)
                 {
+                    var isCategoryNameExist = CheckCategoryNameForUpdate(category.Name);
 
-                    var parameter = new DynamicParameters();
-                    var Insertcategory = @"UPDATE master.category
-                                   SET  name=@name, icon_id=@icon_id,  modified_at=@modified_at, modified_by=@modified_by
+                    if (!isCategoryNameExist)
+                    {
+                        var parameter = new DynamicParameters();
+                        var Insertcategory = @"UPDATE master.category
+                                   SET  name=@name, icon_id=@icon_id, description=@description,  modified_at=@modified_at, modified_by=@modified_by
                                   WHERE id = @ID RETURNING id";
 
-                    parameter.Add("@name", category.Name);
-                    parameter.Add("@icon_id", icon_ID);
-                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                    parameter.Add("@modified_by", category.Modified_By);
-                    parameter.Add("@ID", category.Id);
+                        parameter.Add("@name", category.Name);
+                        parameter.Add("@icon_id", icon_ID);
+                        parameter.Add("@description", category.Description);
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        parameter.Add("@modified_by", category.Modified_By);
+                        parameter.Add("@ID", category.Id);
 
-                    var id = await _dataAccess.ExecuteScalarAsync<int>(Insertcategory, parameter);
-                    category.Id = id;
+                        var id = await _dataAccess.ExecuteScalarAsync<int>(Insertcategory, parameter);
+                        category.Id = id;
+                    }
+                    else
+                    {
+                        category.Id = -2;
+                    }
                 }
                 else
                 {
@@ -133,6 +144,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw ex;
             }
             return category;
+        }
+
+        private bool CheckCategoryNameForUpdate(string categoryName)
+        {
+            CategoryFilter categoryFilter = new CategoryFilter();
+            categoryFilter.CategoryName = categoryName;
+
+            var categories = GetCategory(categoryFilter);
+
+            var codeExistsForUpdate = categories.Result.Where(t => t.Name == categoryName).Count();
+            if (codeExistsForUpdate == 0)
+                return false;
+            else if (codeExistsForUpdate > 0)
+                return true;
+            else
+                return codeExistsForUpdate == 0 ? false : true;
         }
 
         private bool CheckCategoryForUpdate(int id)
@@ -308,8 +335,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
                             (select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') ) as No_of_Geofence,
                             (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
-                            r.Parent_category_Icon As IconName,
-                            (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
+                            r.Parent_category_Icon As IconId,
+                            (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon
                             from result r ";
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 
@@ -323,6 +350,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
 
         }
+
+        
 
 
     }

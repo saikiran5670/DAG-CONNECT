@@ -12,6 +12,7 @@ rpc EditCategory (CategoryEditRequest) returns (CategoryEditResponse);
 rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
 rpc GetCategoryType (CategoryGetRequest) returns (CategoryGetResponse);
 rpc GetCategoryDetails (GetRequest) returns (GetResponse);
+rpc BulkDeleteCategory (DeleteRequest) returns (DeleteResponse);
     }
 
 
@@ -32,9 +33,10 @@ message CategoryAddRequest
       string Type =5;
       int32 Parent_Id =6;
       string State=7;
+      string Description =8;
       int32 Created_By =9;
-      int32 Modified_By =11;
-      bytes Icon =12;
+      int32 Modified_By =10;
+      bytes Icon =11;
 
 }
 message CategoryAddResponse
@@ -51,12 +53,13 @@ message CategoryEditRequest
       bytes Icon =3;
       string Icon_Name =4;
       int32 Modified_By =5;
+      string Description =6;
 
 }
 message CategoryEditResponse
 {
   Responcecode Code=1;
-  string Message = 2; 
+  string Message = 2;  
    int32 CategoryID =3;
 }
 
@@ -118,11 +121,30 @@ message categoryDetails
 {
 int32 ParentCategoryId =1;
 int32 SubCategoryId =2;
-string IconName =3;
+int32 IconId =3;
 bytes Icon =4;
 string ParentCategoryName =5;
 string SubCategoryName =6;
 int32 No_Of_POI =7;
 int32 No_Of_Geofence =8;
+
+}
+
+message DeleteRequest
+{
+ repeated int32 MultiCategoryID = 1;
+}
+
+message IdList
+{
+     int32 CategoryIds = 1;
+}
+
+
+message DeleteResponse
+{
+ Responcecode Code=1;
+  string Message = 2;  
+  repeated IdList DeleteRequestList  =3;
 
 }

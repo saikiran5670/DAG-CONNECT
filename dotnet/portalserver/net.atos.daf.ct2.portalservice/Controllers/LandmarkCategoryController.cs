@@ -9,6 +9,8 @@ using net.atos.daf.ct2.poigeofences;
 using log4net;
 using System.Reflection;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.portalservice.Entity.Category;
+using System.Linq;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -52,6 +54,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (string.IsNullOrEmpty(request.Type) )
                 {
                     return StatusCode(401, "invalid Category Type.");
+                }
+                if (!string.IsNullOrEmpty(request.Type) && request.Type == "S" && request.Parent_Id ==0)
+                {
+                    return StatusCode(401, "Category Required.");
                 }
                 var MapRequest = _categoryMapper.MapCategory(request);
                 var data = await _categoryServiceClient.AddCategoryAsync(MapRequest);
@@ -132,7 +138,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpDelete]
         [Route("deletecategory")]
         
-        public async Task<IActionResult> DeleteCategory(DeleteCategoryRequest request)
+        public async Task<IActionResult> DeleteCategory([FromQuery]DeleteCategoryRequest request)
         {
             try
             {
@@ -257,6 +263,52 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        [HttpPut]
+        [Route("deletebulkcategory")]
+        public async Task<IActionResult> BulkDeleteCategory(DeleteCategory request)
+        {
+            DeleteResponse response = new DeleteResponse();
+            try
+            {
+                _logger.Info("Delete Category .");
+
+                DeleteRequest objlist = new DeleteRequest();
+
+                objlist.MultiCategoryID.Add(request.Ids);
+                
+                 var data = await _categoryServiceClient.BulkDeleteCategoryAsync(objlist);
+
+                if (data != null && data.Code == Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                         "BulkDeleteCategory method in Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                    return Ok(data);
+                }
+                else if (data != null && data.Code == Responcecode.NotFound)
+                {
+                    return StatusCode(404, data.Message);
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
+                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "DeleteCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+           
         }
 
     }
