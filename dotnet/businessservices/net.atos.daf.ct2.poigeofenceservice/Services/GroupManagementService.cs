@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.geofenceservice;
@@ -39,13 +40,13 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 obj.created_by = request.CreatedBy;
                 obj.state = request.State;
                 obj.created_by = request.CreatedBy;
-                obj.poilist = new List<POI>();
+                obj.PoiList = new List<POI>();
                 foreach (var item in request.PoiIds)
                 {                    
                     POI pOI = new POI();
                     pOI.Id = item.Poiid;
                     pOI.Type = item.Type;
-                    obj.poilist.Add(pOI);
+                    obj.PoiList.Add(pOI);
                 }
                 //Check if group allready exists
                 var groupid = await _landmarkGroupManager.Exists(obj);
@@ -92,14 +93,14 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 obj.name = request.Name;
                 obj.description = request.Description;
                 obj.modified_by = request.ModifiedBy;
-                obj.poilist = new List<POI>();
+                obj.PoiList = new List<POI>();
                 foreach (var item in request.PoiIds)
                 {
                     POI pOI = new POI();
                     pOI.Id = item.Poiid;
                     pOI.Type = item.Type;
 
-                    obj.poilist.Add(pOI);
+                    obj.PoiList.Add(pOI);
                 }
                 //Check if group allready exists
                 var groupid = await _landmarkGroupManager.Exists(obj);
@@ -174,16 +175,34 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.GetlandmarkGroup(request.OrganizationsId, request.GroupId);
                 if (result != null)
                 {
+                    
                     foreach (var item in result)
                     {
                         Group obj = new Group();
                         obj.Id = item.id;
                         obj.OrganizationId = item.organization_id;
                         obj.Name = item.name;
+                        obj.Name = item.name;
+                        obj.Description = item.description == null ? "" : item.description;
                         obj.CreatedAt = item.created_at;
                         obj.ModifiedAt = item.modified_at;                        
                         obj.PoiCount = item.poiCount;
                         obj.GeofenceCount = item.geofenceCount;
+                        if (request.GroupId > 0)
+                        {
+                            foreach (var grp in item.PoiList)
+                            {
+                                Landmarkdetails objlandmarkdetails = new Landmarkdetails();
+                                objlandmarkdetails.Landmarkid = grp.Id;
+                                objlandmarkdetails.Landmarkname = grp.Name;
+                                objlandmarkdetails.Categoryname = grp.CategoryName;
+                                objlandmarkdetails.Subcategoryname = grp.SubCategoryName;
+                                objlandmarkdetails.Address = grp.Address;
+                                objlandmarkdetails.Icon = ByteString.CopyFrom(grp.icon);
+                                objlandmarkdetails.Type = grp.Type.ToString();
+                                obj.Landmarks.Add(objlandmarkdetails);
+                            }
+                        }
                         response.Groups.Add(obj);
                     }
                     response.Message = "Get success";
