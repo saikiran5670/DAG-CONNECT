@@ -165,6 +165,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 string query = @"SELECT                     
                                     lg.name,
+                                    lg.organization_id,
                                     count(case when lgr.type in ('O','C') then 1 end) as geofenceCount, 
                                     count(case when lgr.type in ('P') then 1 end) as poiCount,
                                     lg.created_at,
@@ -186,7 +187,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     query = query + " and id=@id";
                 }
 
-                query = query + " group by lg.name,lgr.landmark_group_id,lg.created_at,lg.modified_at; ";
+                query = query + " group by lg.name,lgr.landmark_group_id,lg.organization_id,lg.created_at,lg.modified_at; ";
                 IEnumerable <LandmarkGroup>  groups= await dataAccess.QueryAsync<LandmarkGroup>(query, parameter);
 
 
