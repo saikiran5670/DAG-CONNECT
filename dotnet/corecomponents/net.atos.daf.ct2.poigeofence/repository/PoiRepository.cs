@@ -385,6 +385,29 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
 
 
+        public async Task<bool> DeletePOI(List<int> poiIds)
+        {
+            bool result = false;
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@ids", poiIds);
+                var query = @"update master.landmark set state='D' where  id =any(@ids) and type = 'P' RETURNING id";
+                int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (isdelete > 0)
+                    result = true;
+                else
+                    result = false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+
+
+
         public POI Map(dynamic record)
         {
             POI poi = new POI();

@@ -9,7 +9,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { TranslationService } from 'src/app/services/translation.service';
-import { LandmarkService } from 'src/app/services/landmark.service';
+import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 
 
 @Component({
@@ -37,10 +37,14 @@ export class ManageGroupComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   showLoadingIndicator: any = false;
+  createViewEditStatus: boolean = false;
+  actionType: any = '';
+  selectedRowData: any= [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
 
-  constructor(private translationService: TranslationService, private landmarkService: LandmarkService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
+
+  constructor(private translationService: TranslationService, private landmarkGroupService: LandmarkGroupService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
   }
 
@@ -71,9 +75,11 @@ export class ManageGroupComponent implements OnInit {
         organizationid : this.organizationId,
      };
   
-    this.landmarkService.getLandmarkGroups(objData).subscribe((data: any) => {
+    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((data: any) => {
       this.hideloader();
       this.initData = data["groups"];
+      if(this.initData.length == 0) //temporary change
+        this.prepareMockData();
       this.updateDatasource(this.initData);
     }, (error) => {
       this.prepareMockData();
@@ -153,7 +159,7 @@ export class ManageGroupComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      this.landmarkService
+      this.landmarkGroupService
         .deleteLandmarkGroup(row.id)
         .subscribe((d) => {
           this.successMsgBlink(this.getDeletMsg(name));
@@ -164,15 +170,25 @@ export class ManageGroupComponent implements OnInit {
   }
 
   newLandmarkGroup(){
-
+    this.titleText = this.translationData.lblAddNewGroup || "Add New Group";
+    this.actionType = 'create';
+    this.createViewEditStatus = true;
   }
 
-  viewlandmarkGroup(row){
-
-  }
-
-  editLandmarkGroup(row){
-
+  editViewlandmarkGroup(row: any, actionType: any){
+    this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
+    this.selectedRowData = row;
+    this.actionType = actionType;
+    this.createViewEditStatus = true;
+    // let objData = {
+      
+    // }
+    //   this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
+     //  this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
+    //   this.selectedRowData = usrlist[0];
+    //   this.actionType = actionType;
+    //   this.createViewEditStatus = true;
+    // });
   }
 
   getDeletMsg(groupName: any){
@@ -196,19 +212,15 @@ export class ManageGroupComponent implements OnInit {
     this.dataSource.filter = filterValue;
   }
 
-  getCreateEditMsg(editText: any, name: any){
-    if(editText == 'create'){
-      if(this.translationData.lblUserRoleCreatedSuccessfully)
-        return this.translationData.lblUserRoleCreatedSuccessfully.replace('$', name);
-      else
-        return ("Account Role '$' Created Successfully").replace('$', name);
+  onBackToPage(objData: any) {
+    this.createViewEditStatus = objData.actionFlag;
+    if(objData.successMsg && objData.successMsg != ''){
+      this.successMsgBlink(objData.successMsg);
     }
-    else if(editText == 'edit'){
-      if(this.translationData.lblUserRoledetailssuccessfullyupdated)
-        return this.translationData.lblUserRoledetailssuccessfullyupdated.replace('$', name);
-      else
-        return ("Account Role '$' details successfully updated").replace('$', name);
+    if(objData.gridData){
+      this.initData = objData.gridData;
     }
+    this.updateDatasource(this.initData);
   }
 
   onClose(){

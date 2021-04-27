@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -37,7 +38,10 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                bool result = await _geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
+                objGeofenceDeleteEntity.OrganizationId = request.OrganizationId;
+                objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
+                bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
                 {
                     response.Message = "Deleted";
@@ -149,6 +153,7 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.Address = entity.Address;
                     response.City = entity.City;
                     response.Country = entity.Country;
+                    response.State = entity.State;
                     response.Distance = entity.Distance;
                     response.Latitude = entity.Latitude;
                     response.Longitude = entity.Longitude;
@@ -178,7 +183,13 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
                 geofence = await _geofenceManager.CreateCircularGeofence(geofence);
-          
+                if (geofence[0].Exists)
+                {
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
+
                 foreach (var item in geofence)
                 {
                     response.GeofenceRequest.Add(_mapper.ToGeofenceRequest(item));
@@ -217,6 +228,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.Code = Responsecode.Conflict;
                     return response;
                 }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
+                    return response;
+                }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
                     Message = "Geofence created with id:- " + geofence.Id,
@@ -235,6 +252,29 @@ namespace net.atos.daf.ct2.geofenceservice
             }
         }
 
+        public override async Task<GeofenceResponse> BulkImportGeofence(BulkGeofenceRequest requests, ServerCallContext context)
+        {
+            try
+            {
+                var geofence = new List<Geofence>();
+                foreach (var item in requests.GeofenceRequest)
+                    geofence.Add(_mapper.ToGeofenceEntity(item));
+
+                var geofenceList = await _geofenceManager.BulkImportGeofence(geofence);
+                var failCount = geofenceList.Where(w => w.IsFailed).Count();
+                return await Task.FromResult(new GeofenceResponse
+                {
+                    Code = Responsecode.Success,
+                    Message = failCount > 0 ? $"Bulk Geofence imported with failed count : {failCount}."
+                                                                                : $"Bulk Geofence imported successfuly.",
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                throw ex;                
+            }
+        }
         #endregion
     }
 }

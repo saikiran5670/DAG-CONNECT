@@ -1101,7 +1101,7 @@ namespace net.atos.daf.ct2.organization.repository
             }
         }
 
-        async Task<int> GetLevelByRoleId(int orgId, int roleId)
+     public async Task<int> GetLevelByRoleId(int orgId, int roleId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@id", roleId);

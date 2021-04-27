@@ -29,5 +29,12 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int ModifiedBy { get; set; }
         public List<Nodes> Nodes { get; set; }
         public bool Exists { get; set; }
+        public string Message { get; set; }
+        public bool IsFailed { get; set; }
+    }
+    public class GeofenceDeleteEntity
+    {       
+        public List<int> GeofenceId { get; set; }
+        public int OrganizationId { get; set; }
     }
 }

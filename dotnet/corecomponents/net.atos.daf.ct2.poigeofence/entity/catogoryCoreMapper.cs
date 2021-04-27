@@ -54,8 +54,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
                 case "SUBCATEGORY":
                     ctype = "S";
                     break;
-                case "PARENTCATEGORY":
-                    ctype = "P";
+                case "CATEGORY":
+                    ctype = "C";
                     break;
             }
             return ctype;

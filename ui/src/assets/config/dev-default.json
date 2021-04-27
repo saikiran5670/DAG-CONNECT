@@ -12,6 +12,8 @@
     "packageRESTServiceURL": "https://api.dev1.ct2.atos.net/package",
     "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/organization",
     "subscriptionRESTServiceURL": "https://api.dev1.ct2.atos.net/subscribe",
-    "landmarkRESTServiceURL": "https://api.dev1.ct2.atos.net/landmark"
+    "landmarkGroupRESTServiceURL": "https://api.dev1.ct2.atos.net/landmarkgroup",
+    "poiRESTServiceURL": "https://api.dev1.ct2.atos.net/poi",
+    "landmarkCategoryRESTServiceURL": "https://api.dev1.ct2.atos.net/poigeofence"
   }
 }
