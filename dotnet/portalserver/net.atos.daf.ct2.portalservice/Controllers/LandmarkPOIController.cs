@@ -169,54 +169,54 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [HttpPut]
+        //[HttpDelete]
+        //[Route("delete")]
+        //public async Task<IActionResult> DeletePOI(int Id)
+        //{
+        //    try
+        //    {
+        //        if (Id==0)
+        //        {
+        //            return StatusCode(400, "The POI id is required.");
+        //        }
+        //        var poiRequest = new POIRequest();
+        //        poiRequest.Id = Id;
+        //        poiservice.POIResponse poiResponse = await _poiServiceClient.DeletePOIAsync(poiRequest);
+
+        //        if (poiResponse != null && poiResponse.Code == Responsecode.Failed)
+        //        {
+        //            return StatusCode(500, "There is an error deleting poi.");
+        //        }
+        //        else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
+        //        {
+        //            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+        //            "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+        //            "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
+        //            Request);
+        //            return Ok("POI has been deleted" + Id);
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(404, "POI Response is null");
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+        //         "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+        //         "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
+        //          Request);
+        //        // check for fk violation
+        //        if (ex.Message.Contains(SocketException))
+        //        {
+        //            return StatusCode(500, "Internal Server Error.(02)");
+        //        }
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
+        [HttpDelete]
         [Route("delete")]
-        public async Task<IActionResult> DeletePOI(int Id)
-        {
-            try
-            {
-                if (Id==0)
-                {
-                    return StatusCode(400, "The POI id is required.");
-                }
-                var poiRequest = new POIRequest();
-                poiRequest.Id = Id;
-                poiservice.POIResponse poiResponse = await _poiServiceClient.DeletePOIAsync(poiRequest);
-
-                if (poiResponse != null && poiResponse.Code == Responsecode.Failed)
-                {
-                    return StatusCode(500, "There is an error deleting poi.");
-                }
-                else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
-                {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
-                    "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
-                    Request);
-                    return Ok("POI has been deleted" + Id);
-                }
-                else
-                {
-                    return StatusCode(404, "POI Response is null");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
-                 "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
-                  Request);
-                // check for fk violation
-                if (ex.Message.Contains(SocketException))
-                {
-                    return StatusCode(500, "Internal Server Error.(02)");
-                }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
-        [HttpPut]
-        [Route("deletemultiple")]
         public async Task<IActionResult> DeletePOIBulk(List<int> ids)
         {
             try
