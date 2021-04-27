@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 else
                     queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
-                
+
                 int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
                 if (poiexist > 0)
@@ -406,6 +406,71 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return result;
         }
 
+        public async Task<UploadPOIExcel> UploadPOI(UploadPOIExcel uploadPOIExcel)
+        {
+            uploadPOIExcel.PoiExistingList = new List<POI>();
+            uploadPOIExcel.PoiUploadedList = new List<POI>();
+            try
+            {
+               
+                foreach (var poi in uploadPOIExcel.PoiExcelList)
+                {
+                    string queryduplicate = string.Empty;
+                    var parameterduplicate = new DynamicParameters();
+                    parameterduplicate.Add("@name", poi.Name);
+
+                    if (poi.OrganizationId > 0)
+                    {
+                        parameterduplicate.Add("@organization_id", poi.OrganizationId);
+                        queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and organization_id=@organization_id;";
+                    }
+                    else
+                        queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
+
+                    int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+
+                    if (poiexist > 0)
+                    {
+                        poi.Id = -1;// POI is already exist with same name.
+                                    // return poi;
+                        uploadPOIExcel.PoiExistingList.Add(poi);
+                    }
+                    else
+                    {
+
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@organization_id", poi.OrganizationId != null ? poi.OrganizationId : 0);
+                        parameter.Add("@category_id", poi.CategoryId);
+                        parameter.Add("@sub_category_id", poi.SubCategoryId);
+                        parameter.Add("@name", poi.Name);
+                        parameter.Add("@address", poi.Address);
+                        parameter.Add("@city", poi.City);
+                        parameter.Add("@country", poi.Country);
+                        parameter.Add("@zipcode", poi.Zipcode);
+                        parameter.Add("@type", MapLandmarkTypeToChar(poi.Type));
+                        parameter.Add("@latitude", poi.Latitude);
+                        parameter.Add("@longitude", poi.Longitude);
+                        parameter.Add("@distance", poi.Distance);
+                        parameter.Add("@trip_id", poi.TripId);
+                        parameter.Add("@state", 'A');
+                        parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        parameter.Add("@created_by", poi.CreatedBy);
+
+                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+
+                        var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        poi.Id = id;
+                        uploadPOIExcel.PoiUploadedList.Add(poi);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return uploadPOIExcel;
+        }
 
 
         public POI Map(dynamic record)

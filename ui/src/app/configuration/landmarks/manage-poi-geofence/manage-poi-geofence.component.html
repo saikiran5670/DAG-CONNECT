@@ -1,4 +1,4 @@
-<div class="bgtrans">
+<div>
 <!-- <app-common-map *ngIf="mapFlag"></app-common-map> -->
 <div *ngIf='!createEditViewGeofenceFlag'>
 <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
@@ -118,7 +118,8 @@
  <!-- for Geofence table -->
  <div *ngIf='!createEditViewGeofenceFlag'>
 
-<!-- <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
+  
+ <!--<mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Geofence (18)</span>
@@ -143,6 +144,12 @@
       </mat-select>
     </mat-form-field>
   </div>
+  <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+      <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="exportGeofenceAsExcelFile()">Excel</button>
+      </mat-menu>
+    </div>
   <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
     <button mat-flat-button color="warn">
       <mat-icon>deleteicon</mat-icon> Delete
@@ -151,7 +158,7 @@
 </div>
 <div *ngIf='initData.length == 0'>No Record Found</div>
 <div *ngIf='initData.length > 0'>
-  <mat-table [dataSource]="dataSource" class="table-items" matSort>
+  <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort>
     <ng-container matColumnDef="All">
       <mat-header-cell *matHeaderCellDef>
         <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'

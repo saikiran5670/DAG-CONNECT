@@ -9,6 +9,7 @@ using net.atos.daf.ct2.portalservice.Entity.Geofence;
 using net.atos.daf.ct2.geofenceservice;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -209,11 +210,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GetGeofenceResponse response = new GetGeofenceResponse();
             IdRequest idRequest = new IdRequest();
             try
-            {
-                if (request.OrganizationId<1)
-                {
-                    return StatusCode(400, "Bad request");
-                }
+            {               
                 if (request.GeofenceId < 1)
                 {
                     return StatusCode(400, "Bad request");
@@ -222,8 +219,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetGeofenceByGeofenceID  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
                  Request);
-               
-                idRequest.OrganizationId = request.OrganizationId;
+                if (request.OrganizationId>0)
+                {
+                    idRequest.OrganizationId = request.OrganizationId;
+                }                
                 idRequest.GeofenceId = request.GeofenceId;
 
                 var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);                
@@ -257,8 +256,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {              
                 GeofenceEntityRequest objGeofenceRequest = new GeofenceEntityRequest();
-                if (request.OrganizationId > 0)
-                {
                     objGeofenceRequest.OrganizationId = request.OrganizationId;
                     objGeofenceRequest.CategoryId = request.CategoryId;
                     objGeofenceRequest.SubCategoryId = request.SubCategoryId;
@@ -269,12 +266,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                      Request);
 
                     var result = await _GeofenceServiceClient.GetAllGeofenceAsync(objGeofenceRequest);
-                    return Ok(result);
-                }
-                else
-                {
-                    return StatusCode(400, "Bad request");
-                }
+                    return Ok(result);               
             }
             catch (Exception ex)
             {
@@ -372,8 +364,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Create  method in Geofence controller", 1, 2, JsonConvert.SerializeObject(requests),
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.BULK, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"BulkImportGeofence method Failed", 1, 2, JsonConvert.SerializeObject(requests),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
@@ -386,7 +378,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist then contact DAF support team.");
+                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist, then contact DAF support team.");
             }
 
 

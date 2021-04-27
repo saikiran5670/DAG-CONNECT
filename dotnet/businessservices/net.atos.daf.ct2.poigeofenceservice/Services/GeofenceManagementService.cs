@@ -265,7 +265,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Code = Responsecode.Success,
-                    Message = failCount > 0 ? $"Bulk Geofence imported partially with fail count {failCount}."
+                    Message = failCount > 0 ? $"Bulk Geofence imported with failed count : {failCount}."
                                                                                 : $"Bulk Geofence imported successfuly.",
                 });
             }

@@ -7,6 +7,7 @@ import { POIService } from 'src/app/services/poi.service';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
+import { MatTableExporterDirective } from 'mat-table-exporter';
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -17,6 +18,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
   @Input() translationData: any;
+ // @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
   displayedColumnsGeo = ['All', 'Name', 'Category', 'Sub-Category', 'Actions'];
   dataSource: any;
@@ -242,4 +244,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
     FileSaver.saveAs(data, fileName + '_exported'+ EXCEL_EXTENSION);
   }
+
+  // exportGeofenceAsExcelFile(){
+  //   this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
+
+  // }
 }
