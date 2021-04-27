@@ -1,8 +1,9 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
 
 
 @Component({
@@ -13,11 +14,15 @@ import { MatTableDataSource } from '@angular/material/table';
 export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
+  @Input() translationData: any;
   displayedColumns = ['All', 'Icon', 'Name', 'Category', 'Sub-Category', 'Address', 'Actions'];
   displayedColumns1 = ['All', 'Name', 'Category', 'Sub-Category', 'Actions'];
   dataSource: any;
   initData: any = [];
   data: any = [];
+  selectedElementData: any;
+  titleVisible : boolean = false;
+  poiCreatedMsg : any = '';
   actionType: any;
   createEditViewPoiFlag: boolean = false;
   mapFlag: boolean = false;
@@ -25,7 +30,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   selectedpois = new SelectionModel(true, []);
 
-  constructor() { }
+  constructor( 
+    private dialogService: ConfirmDialogService
+    ) {
+    
+   }
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
@@ -72,17 +81,51 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.actionType = 'create';
     console.log("createEditView() method called");
   }
+
+  editViewPoi(rowData: any, type: any){
+    this.actionType = type;
+    this.selectedElementData = rowData;
+    this.createEditViewPoiFlag = true;
+  }
+
+  successMsgBlink(msg: any){
+    this.titleVisible = true;
+    this.poiCreatedMsg = msg;
+    setTimeout(() => {  
+      this.titleVisible = false;
+    }, 5000);
+  }
+
   checkCreationForPoi(item: any){
-    // this.createEditViewPackageFlag = !this.createEditViewPackageFlag;
-    // this.createEditViewPoiFlag = item.stepFlag;
-    // if(item.successMsg) {
-    //   this.successMsgBlink(item.successMsg);
-    // }
-    // if(item.tableData) {
-    //   this.initData = item.tableData;
-    // }
-    // this.updatedTableData(this.initData);
-    console.log("chiled compo called");
+    this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
+    this.createEditViewPoiFlag = item.stepFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+    if(item.tableData) {
+      this.initData = item.tableData;
+    }
+    this.mockData;
+  }
+
+  deletePoi(rowData: any){
+    let packageId = rowData.id;
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    this.dialogService.DeleteModelOpen(options, rowData.code);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      // this.packageService.deletePackage(packageId).subscribe((data) => {
+      //   this.openSnackBar('Item delete', 'dismiss');
+      //   this.loadPackageData();
+      // })
+      //   this.successMsgBlink(this.getDeletMsg(rowData.code));
+      }
+    });
   }
 
   hideloader() {

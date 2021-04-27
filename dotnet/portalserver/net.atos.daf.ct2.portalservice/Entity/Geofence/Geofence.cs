@@ -66,4 +66,21 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public string Name { get; set; }
         public int ModifiedBy { get; set; }
     }
+
+    public class GeofenceEntity
+    {        
+        public int OrganizationId { get; set; }
+        public int CategoryId { get; set; }
+        public int SubCategoryId { get; set; }       
+    }
+    public class GeofencebyIDEntity
+    {
+        public int OrganizationId { get; set; }
+        public int GeofenceId { get; set; }       
+    }
+    public class GeofenceDeleteEntity
+    {
+        public int OrganizationId { get; set; }
+        public List<int> GeofenceId { get; set; }
+    }
 }
