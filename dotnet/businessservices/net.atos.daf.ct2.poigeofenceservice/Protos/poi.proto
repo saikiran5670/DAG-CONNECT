@@ -11,9 +11,22 @@ rpc GetAllPOI (POIRequest) returns (POIResponseList);
 rpc CreatePOI (POIRequest) returns (POIResponse);
 rpc UpdatePOI (POIRequest) returns (POIResponse);
 rpc DeletePOI (POIRequest) returns (POIResponse);
+rpc DeletePOIBulk (POIDeleteBulkRequest) returns (POIResponse);
 rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
+rpc UploadPOIExcel (POIUploadRequest) returns (POIUploadResponse);
     }
 
+ message POIUploadRequest{
+   repeated POIRequest POIList = 1;
+}
+
+message POIUploadResponse  {
+  repeated POIRequest POIExcelList = 1;
+  repeated POIRequest PoiUploadedList = 2;
+  repeated POIRequest PoiDuplicateList = 3;
+  Responsecode code = 4;
+  string message = 5;
+}
 message POIEntityRequest{
     int32 CategoryId = 1;
     int32 SubCategoryId = 2;
@@ -79,4 +92,7 @@ message POIResponseList  {
 }
 message DownloadPOIRequest{
     int32 OrganizationId = 1;
+}
+message POIDeleteBulkRequest {
+  repeated int32 Id= 1;
 }

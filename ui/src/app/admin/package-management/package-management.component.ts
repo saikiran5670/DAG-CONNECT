@@ -36,6 +36,7 @@ export class PackageManagementComponent implements OnInit {
   translationData: any;
   dataSource: any;
   actionType: any;
+  actionBtn:any;  
   initData: any = [];
   accountOrganizationId: any = 0;
   localStLanguage: any;
@@ -167,7 +168,12 @@ export class PackageManagementComponent implements OnInit {
   exportAsPdf() {
     let DATA = document.getElementById('packageData');
       
-    html2canvas(DATA).then(canvas => {
+    html2canvas( DATA , { onclone: (document) => {
+      this.actionBtn = document.getElementsByClassName('action');
+      for (let obj of this.actionBtn) {
+        obj.style.visibility = 'hidden';  }       
+    }})
+    .then(canvas => {  
         
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;

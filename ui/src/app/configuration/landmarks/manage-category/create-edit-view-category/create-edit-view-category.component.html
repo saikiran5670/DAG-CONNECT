@@ -38,7 +38,7 @@
                   </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.category ? selectedRowData.category : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
                 </div>
             </div>
           </div>
@@ -57,7 +57,7 @@
                   </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.category ? selectedRowData.category : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ selectedCategoryType ? selectedCategoryType : '--' }}</span>
                 </div>
             </div>
           </div>
@@ -100,13 +100,15 @@
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class='full-width'>
               <mat-select formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
-              <mat-option *ngFor="let rer of parentCategoryList" [value]="rer.name">
+              <mat-option *ngFor="let rer of parentCategoryList" [value]="rer.id">
                 {{ rer.name }}
               </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div *ngIf="actionType == 'view'"></div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+          </div>
           <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left"></div>
         </div>
       </div>
@@ -130,7 +132,7 @@
           </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
+            <span style='font-weight: 500!important;'>{{ selectedRowData.categoryDescription ? selectedRowData.categoryDescription : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left"></div>

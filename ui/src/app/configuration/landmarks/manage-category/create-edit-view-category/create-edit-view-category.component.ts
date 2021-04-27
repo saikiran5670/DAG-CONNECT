@@ -15,13 +15,13 @@ export class CreateEditViewCategoryComponent implements OnInit {
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
+  @Input() parentCategoryList: any;
   breadcumMsg: any = '';
   categoryForm: FormGroup;
   accountOrganizationId: any;
   readonly maxSize = 104857600;
   imageEmptyMsg: boolean = false;
   selectedCategoryType: any = '';
-  parentCategoryList: any = [];
   file: any;
   arrayBuffer: any;
 
@@ -45,14 +45,20 @@ export class CreateEditViewCategoryComponent implements OnInit {
         CustomValidators.specialCharValidationForNameWithoutRequired('categoryDescription')
       ]
     });
-    this.parentCategoryList = [{
-      name: 'p1'
-    },
-    {
-      name: 'p2'
-    }]
     this.selectedCategoryType = 'category';
     this.breadcumMsg = this.getBreadcum();
+    if(this.actionType == 'edit'){
+      this.setDefaultValues();
+    }
+  }
+
+  setDefaultValues(){
+    this.selectedCategoryType = 'category';
+    this.categoryForm.get('categoryName').setValue(this.selectedRowData.parentCategoryName);
+    this.categoryForm.get('categoryDescription').setValue(this.selectedRowData.categoryDescription);
+    this.categoryForm.get('categoryType').setValue(this.selectedCategoryType);
+    this.categoryForm.get('parentCategory').setValue(this.selectedRowData.parentCategoryId);
+    //this.categoryForm.get('uploadFile').setValue(this.selectedRowData.icon);
   }
   
   getBreadcum() {
@@ -98,6 +104,9 @@ export class CreateEditViewCategoryComponent implements OnInit {
 
   onCategoryChange(event: any){
     this.selectedCategoryType = event.value;
+    if(this.selectedCategoryType == 'subcategory'){
+      this.categoryForm.get('parentCategory').setValue(this.parentCategoryList[0].id);
+    }
   }
 
   onParentCategoryChange(){
@@ -105,7 +114,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
   }
 
   onReset(){
-
+    this.setDefaultValues();
   }
 
   onCreateUpdate(){

@@ -28,16 +28,26 @@ export class POIService {
     return getHeaderObj;
   }
 
-  getPois(): Observable<any[]> {
+  getPois(id : any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.PoiServiceUrl}/get`,headers)
+      .get<any[]>(`${this.PoiServiceUrl}/get?OrganizationId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
+  downloadPOIForExcel(): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    let orgId = localStorage.getItem('accountOrganizationId');
+    return this.httpClient
+      .get<any[]>(`${this.PoiServiceUrl}/downloadpoiforexcel?OrganizationId=${orgId}`,headers)
+      .pipe(catchError(this.handleError));
+  }
 //   createPoi(data): Observable<any> {
 //     let headerObj = this.generateHeader();
 //     const headers = {

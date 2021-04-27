@@ -15,5 +15,6 @@ namespace net.atos.daf.ct2.poigeofence
         Task<Geofence> UpdatePolygonGeofence(Geofence geofence);
         Task<IEnumerable<Geofence>> GetGeofenceByGeofenceID(int organizationId, int geofenceId);
         Task<List<Geofence>> BulkImportGeofence(List<Geofence> requests);
+        Task<Geofence> UpdateCircularGeofence(Geofence geofence);
     }
 }

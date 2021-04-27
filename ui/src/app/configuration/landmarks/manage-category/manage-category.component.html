@@ -1,4 +1,4 @@
-<div class='margin-top-lg'>
+<div>
   <div *ngIf='categoryTitleVisible' fxLayout="row" fxLayoutAlign="center center"
         style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
@@ -38,7 +38,7 @@
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
                 <mat-select [disabled]='initData.length == 0' (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-                <mat-option *ngFor="let rer of categoryList" [value]="rer.name">
+                <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                     {{ rer.name }}
                 </mat-option>
                 </mat-select>
@@ -47,7 +47,7 @@
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
               <mat-select [disabled]='initData.length == 0' (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-              <mat-option *ngFor="let rer of subCategoryList" [value]="rer.name">
+              <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
               </mat-select>
@@ -58,35 +58,38 @@
           <div *ngIf='initData.length > 0'>
             <mat-table matTableExporter [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="icon">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIcon || 'Icon'}}
+                <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon'}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row"> 
-                  <span *ngIf="!row.newTag" class='newTagIcon marginLeft-24'></span>
-                  <span *ngIf="!row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                  <span [ngClass]="{ 'marginLeft-14': !row.newTag }"><mat-icon>place</mat-icon></span>
+                  <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                  <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }">
+                    <!-- <mat-icon>place</mat-icon> -->
+                    <img matTooltip={{row.iconName}} [src]='row.imageUrl' alt='' width='20px' height='20px'>
+                  </span>
                 </mat-cell>
               </ng-container>
-              <ng-container matColumnDef="category">
+              <ng-container matColumnDef="parentCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.category }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.parentCategoryName }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="subCategory">
+              <ng-container matColumnDef="subCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubCategory || 'Sub-Category'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subCategory }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subCategoryName ? row.subCategoryName : '-' }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="poi">
+              <ng-container matColumnDef="noOfPOI">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofPOI || 'Number of POI'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" matTooltip={{row.poi}}><span [ngClass]="row.poi !=0 ? 'row-hover' : '' "
-                    (click)="row.poi != 0 ? onPOIClick(row) : ''">{{ (row.poi < 10) ? '0' : '' }}{{ row.poi }}</span></mat-cell>
+                <mat-cell *matCellDef="let row" matTooltip={{row.noOfPOI}}><span [ngClass]="row.noOfPOI != 0 ? 'row-hover' : '' "
+                    (click)="row.noOfPOI != 0 ? onPOIClick(row) : ''">{{ (row.noOfPOI < 10) ? '0' : '' }}{{ row.noOfPOI }}</span></mat-cell>
               </ng-container>
-              <ng-container matColumnDef="geofence">
+              <ng-container matColumnDef="noOfGeofence">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofGeofence || 'Number of Geofence'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" matTooltip={{row.geofence}}><span [ngClass]="row.geofence !=0 ? 'row-hover' : '' "
-                    (click)="row.geofence != 0 ? onGeofenceClick(row) : ''">{{ (row.geofence < 10) ? '0' : '' }}{{ row.geofence }}</span></mat-cell>
+                <mat-cell *matCellDef="let row" matTooltip={{row.noOfGeofence}}><span [ngClass]="row.noOfGeofence != 0 ? 'row-hover' : '' "
+                    (click)="row.noOfGeofence != 0 ? onGeofenceClick(row) : ''">{{ (row.noOfGeofence < 10) ? '0' : '' }}{{ row.noOfGeofence }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="action">
                 <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action'}}</mat-header-cell>
@@ -110,5 +113,5 @@
           </div>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-card>
-    <app-create-edit-view-category *ngIf='createViewEditStatus' [translationData]='translationData' [actionType]='actionType' [selectedRowData]='selectedRowData' (backToPage)='onBackToPage($event)'></app-create-edit-view-category>
+    <app-create-edit-view-category *ngIf='createViewEditStatus' [translationData]='translationData' [actionType]='actionType' [selectedRowData]='selectedRowData' [parentCategoryList]='categoryList' (backToPage)='onBackToPage($event)'></app-create-edit-view-category>
 </div>

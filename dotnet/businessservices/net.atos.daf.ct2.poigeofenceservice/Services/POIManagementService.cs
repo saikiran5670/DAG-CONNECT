@@ -35,22 +35,22 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 foreach (var item in data)
                 {
                     net.atos.daf.ct2.poiservice.POIData objPOI = new net.atos.daf.ct2.poiservice.POIData();
-                    objPOI.Id = item.Id;
-                    objPOI.OrganizationId = item.OrganizationId;
-                    objPOI.CategoryId = item.CategoryId;
-                    objPOI.SubCategoryId = item.SubCategoryId;
+                    //objPOI.Id = item.Id;
+                    //objPOI.OrganizationId = item.OrganizationId;
+                    //objPOI.CategoryId = item.CategoryId;
+                    //objPOI.SubCategoryId = item.SubCategoryId;
                     objPOI.Name = item.Name;// == null ? string.Empty : item.Name;
                     objPOI.Address = item.Address;// == null ? string.Empty : item.Name;
                     objPOI.City = item.City;
                     objPOI.CategoryName = item.CategoryName;
-                    objPOI.Country = item.Country;
-                    objPOI.Zipcode = item.Zipcode;
+                    //objPOI.Country = item.Country;
+                    //objPOI.Zipcode = item.Zipcode;
                     objPOI.Latitude = item.Latitude;
                     objPOI.Longitude = item.Longitude;
-                    objPOI.Distance = item.Distance;
-                    objPOI.State = item.State;
-                    objPOI.CreatedAt = item.CreatedAt;
-                    objPOI.CreatedBy = item.CreatedBy;
+                    //objPOI.Distance = item.Distance;
+                    //objPOI.State = item.State;
+                    //objPOI.CreatedAt = item.CreatedAt;
+                    //objPOI.CreatedBy = item.CreatedBy;
                     objPOIResponseList.POIList.Add(objPOI);
                 }
                 objPOIResponseList.Message = "GlobalPOI data retrieved";
@@ -209,6 +209,37 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             return await Task.FromResult(response);
         }
+        public override async Task<POIResponse> DeletePOIBulk(POIDeleteBulkRequest request, ServerCallContext context)
+        {
+            POIResponse response = new POIResponse();
+            try
+            {
+                _logger.Info("Delete POI.");
+
+                List<int> poiIds = new List<int>();
+                foreach (var item in request.Id)
+                {
+                    poiIds.Add(item);
+                }
+                bool result = await _poiManager.DeletePOI(poiIds);
+                if (result)
+                {
+                    response.Message = "Deleted";
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = "Not Deleted";
+                    response.Code = Responsecode.Failed;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                //response.Message = "Not Deleted";
+            }
+            return await Task.FromResult(response);
+        }
 
         public override async Task<POIResponseList> DownloadPOIForExcel(DownloadPOIRequest request, ServerCallContext context)
         {
@@ -241,6 +272,35 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 _logger.Error(null, ex);
                 throw ex;
+            }
+        }
+
+
+        public override async Task<POIUploadResponse> UploadPOIExcel(POIUploadRequest request, ServerCallContext context)
+        {
+             
+            try
+            {
+                var response = new POIUploadResponse();
+                var poiList = new List<POI>();
+                var uploadPoiData =_mapper.ToUploadPOIRequest(request);
+                var packageUploaded = await _poiManager.UploadPOI(uploadPoiData);
+                response = _mapper.ToPOIUploadResponseData(packageUploaded);
+                response.POIExcelList.Add(request.POIList);
+                response.Code = Responsecode.Success;
+                response.Message = "Poi Uploaded successfully.";
+                _logger.Info("UploadPOIExcel method in POIManagement service called.");
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new POIUploadResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "POI Creation Failed due to - " + ex.Message,
+                });
             }
         }
     }

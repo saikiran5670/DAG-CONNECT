@@ -46,5 +46,34 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poi.CreatedAt = poiResponseData.CreatedAt;
             return poi;
         }
+
+
+        public POIUploadRequest ToUploadRequest(List<POI> poiList)
+        {
+
+            var packageRequest = new POIUploadRequest();
+            packageRequest.POIList.AddRange(poiList.Select(x => new POIRequest()
+            {
+                OrganizationId = x.OrganizationId,
+                CategoryId = x.CategoryId,
+                SubCategoryId = x.SubCategoryId,
+                Name = x.Name,
+                Address = x.Address,
+                City = x.City,
+                Country = x.Country,
+                Zipcode = x.Zipcode,
+              //  Type = x.Type,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+               // Distance = x.Distance,
+              //  TripId = x.TripId,
+                State = x.State,
+                CreatedBy = x.CreatedBy
+            }).ToList());
+            return packageRequest;
+
+        }
+
+
     }
 }
