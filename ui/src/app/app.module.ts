@@ -26,6 +26,7 @@ import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-e
 import { ErrorComponent } from './error/error.component';
 import { LandmarkGroupService } from './services/landmarkGroup.service';
 import { POIService } from './services/poi.service';
+import { LandmarkCategoryService } from './services/landmarkCategory.service';
 
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
@@ -71,7 +72,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     PackageService,
     SubscriptionService,
     LandmarkGroupService,
-    POIService
+    POIService,
+    LandmarkCategoryService
   ],
   bootstrap: [AppComponent],
 })

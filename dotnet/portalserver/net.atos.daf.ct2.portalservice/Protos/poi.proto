@@ -11,9 +11,9 @@ rpc GetAllPOI (POIRequest) returns (POIResponseList);
 rpc CreatePOI (POIRequest) returns (POIResponse);
 rpc UpdatePOI (POIRequest) returns (POIResponse);
 rpc DeletePOI (POIRequest) returns (POIResponse);
+rpc DeletePOIBulk (POIDeleteBulkRequest) returns (POIResponse);
 rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
     }
-
 
 message POIEntityRequest{
     int32 CategoryId = 1;
@@ -80,4 +80,7 @@ message POIResponseList  {
 }
 message DownloadPOIRequest{
     int32 OrganizationId = 1;
+}
+message POIDeleteBulkRequest {
+  repeated int32 Id= 1;
 }

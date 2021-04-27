@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("addcategory")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> AddCategory(AddCategoryRequest request)
         {
             try
@@ -48,6 +48,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (string.IsNullOrEmpty(request.IconName) || request.icon.Length <=0)
                 {
                     return StatusCode(401, "Icon Details is required ");
+                }
+                if (string.IsNullOrEmpty(request.Type) )
+                {
+                    return StatusCode(401, "invalid Category Type.");
                 }
                 var MapRequest = _categoryMapper.MapCategory(request);
                 var data = await _categoryServiceClient.AddCategoryAsync(MapRequest);
@@ -84,7 +88,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPut]
         [Route("editcategory")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> EditCategory(EditCategoryRequest request)
         {
             try
@@ -127,7 +131,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpDelete]
         [Route("deletecategory")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> DeleteCategory(DeleteCategoryRequest request)
         {
             try
@@ -169,7 +173,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpGet]
         [Route("getcategoryType")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> GetCategoryType([FromQuery]GetCategoryTypes request)
         {
             try
@@ -215,7 +219,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         [HttpGet]
         [Route("getcategoryDetails")]
-        [AllowAnonymous]
+        
         public async Task<IActionResult> GetCategoryDetails([FromQuery] GetRequest request)
         {
             try

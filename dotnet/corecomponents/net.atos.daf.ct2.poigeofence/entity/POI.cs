@@ -28,5 +28,6 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+        public byte[] icon { get; set; }
     }
 }

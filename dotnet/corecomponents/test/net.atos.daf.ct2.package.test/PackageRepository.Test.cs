@@ -44,8 +44,7 @@ namespace net.atos.daf.ct2.package.test
 
             var ObjPackage = new Package()
             {
-                Code = "PKG001",
-                Status = "A",
+                Code = "PKG001",               
                // FeatureSet = new features.entity.FeatureSet() { FeatureSetID = 5 },
                 FeatureSetID = 1,
                 State = "A",
