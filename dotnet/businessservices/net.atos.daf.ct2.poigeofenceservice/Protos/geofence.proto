@@ -13,6 +13,7 @@ rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceRe
 rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
 rpc BulkImportGeofence (BulkGeofenceRequest) returns (GeofenceResponse);
+rpc UpdateCircularGeofence (GeofenceCircularUpdateRequest) returns (GeofenceCircularUpdateResponce);
 }
 
 enum Responsecode{
@@ -138,6 +139,22 @@ message GeofencePolygonUpdateRequest{
 
 message GeofencePolygonUpdateResponce{
     GeofencePolygonUpdateRequest GeofencePolygonUpdateRequest=1;
+    Responsecode Code=2;
+    string message = 3;
+}
+
+message GeofenceCircularUpdateRequest{
+ int32 Id =1;
+ google.protobuf.Int32Value OrganizationId=2;
+ int32 CategoryId = 3;
+ int32 SubCategoryId = 4;
+ string Name =5;
+ bool Exists=6;
+ int32 ModifiedBy = 7;
+}
+
+message GeofenceCircularUpdateResponce{
+    GeofenceCircularUpdateRequest GeofenceCircularUpdateRequest=1;
     Responsecode Code=2;
     string message = 3;
 }

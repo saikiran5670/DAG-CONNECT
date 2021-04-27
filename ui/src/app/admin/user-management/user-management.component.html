@@ -43,7 +43,7 @@
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0' id="accountMgmtData">
-      <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+      <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[4]" >
         <ng-container matColumnDef="firstName">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
@@ -65,8 +65,8 @@
           <mat-cell *matCellDef="let row" matTooltip="{{ row.accountGroupList }}"><span class="text-truncate">{{ row.accountGroups.length > 0 ? row.accountGroupList : '&nbsp; &nbsp; -' }}</span></mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
-          <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="action">
             <button class='actionBtn' mat-flat-button (click)="editViewUser(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
               <mat-icon>visibility</mat-icon>
             </button>

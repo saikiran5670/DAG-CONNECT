@@ -53,7 +53,7 @@
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0' id="subscriptionData">
-        <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+        <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[9]">
             <ng-container matColumnDef="subscriptionId">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrderId || 'Order ID' }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
@@ -94,8 +94,8 @@
                 <mat-cell *matCellDef="let row">{{ row.state == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Expired' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="action">
-                <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+                <mat-cell *matCellDef="let row" class="action">
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
