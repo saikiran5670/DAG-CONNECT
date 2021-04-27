@@ -459,7 +459,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                geofence = await Exists(geofence);
+                geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
 
                 // duplicate Geofence
                 if (geofence.Exists)
