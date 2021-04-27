@@ -1,7 +1,7 @@
 <div class="bgtrans tabs">
   <mat-tab-group [(selectedIndex)]="selectedIndex">
     <mat-tab label="Manage POI and Geofence">
-      <app-manage-poi-geofence></app-manage-poi-geofence>
+      <app-manage-poi-geofence [translationData]='translationData'></app-manage-poi-geofence>
     </mat-tab>
     <mat-tab label="Manage Group">
       <app-manage-group [translationData]='translationData'></app-manage-group>

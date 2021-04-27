@@ -13,7 +13,7 @@ using net.atos.daf.ct2.geofenceservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
-    [Route("landmark/group")]
+    [Route("landmarkgroup")]
     public class LandmanrkGroupController : Controller
     {
         private ILog _logger;

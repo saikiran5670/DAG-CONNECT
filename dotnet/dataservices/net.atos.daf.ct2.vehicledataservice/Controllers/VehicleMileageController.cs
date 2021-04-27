@@ -23,7 +23,7 @@ using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
-    [Route("vehicle-data")]
+    [Route("vehicle")]
     [Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
     public class VehicleMileageController:ControllerBase
     {
@@ -69,8 +69,8 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     VehicleMileage vehiclemileage = new VehicleMileage();
                     vehiclemileage= await vehicleManager.GetVehicleMileage(since,isNumeric, contentType);
 
-                 
-                    if (vehiclemileage==null)
+
+                    if (vehiclemileage.Vehicles.Count == 0 && vehiclemileage.VehiclesCSV.Count == 0)
                     {
                         return StatusCode(404, string.Empty);
                     } 
