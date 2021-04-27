@@ -5,7 +5,7 @@
       <app-manage-poi-geofence *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-poi-geofence>
     </mat-tab>
     <mat-tab label="Manage Group">
-      <app-manage-group *ngIf="selectedIndex == 1" [translationData]='translationData'></app-manage-group>
+      <app-manage-group *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-group>
     </mat-tab>
     <mat-tab label="Manage Category">
       <app-manage-category *ngIf="selectedIndex == 2" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-category>
