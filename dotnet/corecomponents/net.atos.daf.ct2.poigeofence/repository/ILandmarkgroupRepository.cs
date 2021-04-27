@@ -16,5 +16,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<int> DeleteGroup(int groupid,int modifiedby);
 
         Task<List<LandmarkgroupRef>> GetlandmarkGroupref(int groupid);
+
+        Task<int> Exists(LandmarkGroup landmarkgroup);
     }
 }

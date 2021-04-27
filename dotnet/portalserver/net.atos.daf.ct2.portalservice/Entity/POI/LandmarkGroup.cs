@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,8 +8,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
 {
     public class LandmarkGroup
     {
+        [Required]
         public int Id { get; set; }
+        [Required]
         public int OrganizationId { get; set; }
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         public int IconId { get; set; }
@@ -17,6 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+        [Required]
         public List<GroupPois> Poilist { get; set; }
     }
 
