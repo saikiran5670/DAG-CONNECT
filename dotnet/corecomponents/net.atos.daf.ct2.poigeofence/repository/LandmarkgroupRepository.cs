@@ -37,13 +37,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                              VALUES (@organization_id, @name,@description,  @state, @created_at, @created_by) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                foreach (var item in landmarkgroup.poilist)
+                foreach (var item in landmarkgroup.PoiList)
                 {
                     LandmarkgroupRef landmarkgroupRef = new LandmarkgroupRef();
                     landmarkgroupRef.landmark_group_id = id;
                     landmarkgroupRef.ref_id = item.Id;
                     landmarkgroupRef.type = (LandmarkType)Enum.Parse(typeof(LandmarkType), item.Type.ToString());
-                    var refid = AddgroupReference(landmarkgroupRef);
+                    var refid = await AddgroupReference(landmarkgroupRef);
                 }
                 landmarkgroup.id = id;
                 return landmarkgroup;
@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                              where id=@id RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 var deletegroupref = this.DeleteGroupref(landmarkgroup.id);
-                foreach (var item in landmarkgroup.poilist)
+                foreach (var item in landmarkgroup.PoiList)
                 {
                     LandmarkgroupRef landmarkgroupRef = new LandmarkgroupRef();
                     landmarkgroupRef.landmark_group_id = id;
@@ -166,6 +166,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = @"SELECT 
                                     lg.id,
                                     lg.name,
+                                    lg.description,
                                     lg.organization_id,
                                     count(case when lgr.type in ('O','C') then 1 end) as geofenceCount, 
                                     count(case when lgr.type in ('P') then 1 end) as poiCount,
@@ -185,10 +186,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else if (groupid > 1)
                 {
                     parameter.Add("@id", groupid);
-                    query = query + " and id=@id";
+                    query = query + " and lg.id=@id";
                 }
 
-                query = query + " group by lg.name,lgr.landmark_group_id,lg.organization_id,lg.created_at,lg.modified_at,lg.id; ";
+                query = query + " group by lg.name,lgr.landmark_group_id,lg.organization_id,lg.description,lg.created_at,lg.modified_at,lg.id; ";
                 IEnumerable <LandmarkGroup>  groups= await dataAccess.QueryAsync<LandmarkGroup>(query, parameter);
 
 
@@ -207,10 +208,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 List<LandmarkgroupRef> landmarkgroupRefs = new List<LandmarkgroupRef>();
                 var parameter = new DynamicParameters();
-                parameter.Add("@landmark_group_id", groupid);
-
-                string query = @"select id, landmark_group_id, type, ref_id
-	                                FROM master.landmarkgroupref where landmark_group_id = @landmark_group_id";
+                parameter.Add("@groupid", groupid);
+              
+                string query = @"SELECT l.id, 
+                            i.icon,
+                            i.id as iconid,                            
+                            c.name as categoryname,                            
+                            s.name as subcategoryname,
+                            l.name as name,
+                            l.address as address,
+                            l.type as type,
+                            l.state as state
+                            FROM master.landmark l
+                            LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
+                            LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
+							LEFT JOIN master.icon i on c.icon_id = i.id
+                            WHERE 1=1 and l.state in ('A','I') and l.id = any (select ref_id from master.landmarkgroupref where landmark_group_id= @groupid)";
 
                 
                 dynamic groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
@@ -231,10 +244,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
         public LandmarkgroupRef Mapref(dynamic record)
         {
             LandmarkgroupRef obj = new LandmarkgroupRef();
-            obj.id = record.id;
-            obj.landmark_group_id = record.landmark_group_id;
-            obj.ref_id = record.ref_id;
+            obj.landmarkid = record.id;
+            //obj.landmark_group_id = record.landmark_group_id;
+            //obj.ref_id = record.ref_id;
             obj.type = (LandmarkType)Convert.ToChar(record.type);
+            obj.address = record.address;
+            obj.categoryname = record.categoryname;
+            obj.subcategoryname = record.subcategoryname;
+            obj.landmarkname = record.name;
+            obj.icon = record.icon;
             return obj;
         }
 
