@@ -10,11 +10,11 @@ import {
 import { ConfigService } from '@ngx-config/core';
 
 @Injectable()
-export class POIService {
-    PoiServiceUrl: string = '';
+export class GeofenceService {
+    GeofenceServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.PoiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
+    this.GeofenceServiceUrl = config.getSettings("foundationServices").geofenceRESTServiceURL;
   }
 
   generateHeader(){
@@ -28,33 +28,23 @@ export class POIService {
     return getHeaderObj;
   }
 
-  getPois(id : any): Observable<any[]> {
+  getAllGeofences(id: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.PoiServiceUrl}/get?OrganizationId=${id}`,headers)
+      .get<any[]>(`${this.GeofenceServiceUrl}/getallgeofence?OrganizationId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 
-  downloadPOIForExcel(): Observable<any[]> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    let orgId = localStorage.getItem('accountOrganizationId');
-    return this.httpClient
-      .get<any[]>(`${this.PoiServiceUrl}/downloadpoiforexcel?OrganizationId=${orgId}`,headers)
-      .pipe(catchError(this.handleError));
-  }
 //   createPoi(data): Observable<any> {
 //     let headerObj = this.generateHeader();
 //     const headers = {
 //       headers: new HttpHeaders({ headerObj }),
 //     };
 //     return this.httpClient
-//       .post<any>(`${this.PoiServiceUrl}/create`, data, headers)
+//       .post<any>(`${this.GeofenceServiceUrl}/create`, data, headers)
 //       .pipe(catchError(this.handleError));
 //   }
 
@@ -64,18 +54,18 @@ export class POIService {
 //       headers: new HttpHeaders({ headerObj }),
 //     };
 //     return this.httpClient
-//       .put<any>(`${this.PoiServiceUrl}/update`, data, headers)
+//       .put<any>(`${this.GeofenceServiceUrl}/update`, data, headers)
 //       .pipe(catchError(this.handleError));
 //   }
 
-  deletePoi(packageId: number): Observable<void> {
+  deleteGeofence(packageId: number): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     let data = { packageId: packageId };
    return this.httpClient
-      .delete<any>(`${this.PoiServiceUrl}/delete?packageId=${packageId}`, headers)
+      .delete<any>(`${this.GeofenceServiceUrl}/delete?packageId=${packageId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -86,7 +76,7 @@ export class POIService {
 //     };
 //     const importData = {packagesToImport:data}
 //     return this.httpClient
-//       .post<any>(`${this.PoiServiceUrl}/Import`, importData, headers)
+//       .post<any>(`${this.GeofenceServiceUrl}/Import`, importData, headers)
 //       .pipe(catchError(this.handleError));
 //   }
 

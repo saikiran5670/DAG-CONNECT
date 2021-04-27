@@ -8,6 +8,7 @@ import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dia
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { MatTableExporterDirective } from 'mat-table-exporter';
+import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -20,14 +21,18 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Input() translationData: any;
  // @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
-  displayedColumnsGeo = ['All', 'Name', 'Category', 'Sub-Category', 'Actions'];
-  dataSource: any;
+  displayedColumnsGeo = ['All', 'geofenceName', 'categoryName', 'subCategoryName', 'Actions'];
+  poidataSource: any;
+  geofencedataSource: any;
+  accountOrganizationId: any = 0;
+  localStLanguage: any;
   initData: any = [];
   data: any = [];
   selectedElementData: any;
   titleVisible : boolean = false;
   poiCreatedMsg : any = '';
   actionType: any;
+  roleID: any;
   createEditViewPoiFlag: boolean = false;
   createEditViewGeofenceFlag: boolean = false;
   mapFlag: boolean = false;
@@ -39,40 +44,68 @@ export class ManagePoiGeofenceComponent implements OnInit {
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
+    private geofenceService: GeofenceService,
     ) {
     
    }
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     this.mockData();
     this.initData = this.data;
     // this.initData = this.mockData();
     console.log(this.mockData());
     this.hideloader();
     this.loadPoiData();
+    this.loadGeofenceData();
   }
 
   loadPoiData(){
     this.showLoadingIndicator = true;
-    this.poiService.getPois().subscribe((data : any) => {
+    this.poiService.getPois(this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data;
       console.log(this.initData);
       this.hideloader();
-      this.updatedTableData(this.initData);
+      this.updatedPOITableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
-      this.updatedTableData(this.initData);
+      this.updatedPOITableData(this.initData);
     });
   }
 
-  updatedTableData(tableData : any) {
+  updatedPOITableData(tableData : any) {
     tableData = this.getNewTagData(tableData);
-    this.dataSource = new MatTableDataSource(tableData);
+    this.poidataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.poidataSource.paginator = this.paginator;
+      this.poidataSource.sort = this.sort;
+    });
+  }
+
+  loadGeofenceData(){
+    this.showLoadingIndicator = true;
+    this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((data : any) => {
+      this.initData = data["geofenceList"];
+      console.log(this.initData);
+      this.hideloader();
+      this.updatedGeofenceTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
+      this.updatedGeofenceTableData(this.initData);
+    });
+  }
+
+  updatedGeofenceTableData(tableData : any) {
+    tableData = this.getNewTagData(tableData);
+    this.geofencedataSource = new MatTableDataSource(tableData);
+    setTimeout(()=>{
+      this.geofencedataSource.paginator = this.paginator;
+      this.geofencedataSource.sort = this.sort;
     });
   }
 
@@ -192,20 +225,20 @@ export class ManagePoiGeofenceComponent implements OnInit {
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    this.poidataSource.filter = filterValue;
   }
 
   masterToggleForOrgRelationship() {
     this.isAllSelectedForOrgRelationship()
       ? this.selectedpois.clear()
-      : this.dataSource.data.forEach((row) =>
+      : this.poidataSource.data.forEach((row) =>
         this.selectedpois.select(row)
       );
   }
 
   isAllSelectedForOrgRelationship() {
     const numSelected = this.selectedpois.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.poidataSource.data.length;
     return numSelected === numRows;
   }
 
