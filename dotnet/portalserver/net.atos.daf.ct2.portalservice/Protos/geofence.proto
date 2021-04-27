@@ -12,6 +12,7 @@ rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
 rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
+rpc BulkImportGeofence (BulkGeofenceRequest) returns (GeofenceResponse);
 }
 
 enum Responsecode{
@@ -20,7 +21,7 @@ enum Responsecode{
   Failed = 400;
   Conflict = 409;
   NotFound = 404;
-  InternalServerError=500;
+  InternalServerError = 500;
 }
 
 message DeleteRequest{
@@ -50,6 +51,7 @@ message GeofenceRequest{
     int32 TripId = 15;
     int32 CreatedBy = 16;
     repeated NodeRequest NodeRequest=17;
+    bool Exists=18;
 }
 message NodeRequest{
     int32 Id =1;
@@ -87,6 +89,10 @@ message GeofenceEntityResponce{
 }
 
 message CircularGeofenceRequest{
+   repeated GeofenceRequest GeofenceRequest =1;
+}
+
+message BulkGeofenceRequest{
    repeated GeofenceRequest GeofenceRequest =1;
 }
 
