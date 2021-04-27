@@ -111,6 +111,13 @@ jobs:
         goals: clean install
     
     - task: Maven@3
+      displayName: 'Maven java/corecomponents/daf.mileage/pom.xml'
+      inputs:
+        mavenPomFile: java/corecomponents/daf.mileage/pom.xml
+        publishJUnitResults: false
+        goals: clean install
+    
+    - task: Maven@3
       displayName: 'Maven java/corecomponents/net.atos.daf.ct2/pom.xml'
       inputs:
         mavenPomFile: java/corecomponents/net.atos.daf.ct2/pom.xml
