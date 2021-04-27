@@ -41,7 +41,7 @@ public class TripStreamingJob {
 
 		ParameterTool envParams = null;
 		try {
-			logger.info(" In TripStreamingJob  :: ");
+			logger.info(" In TripStreamingJob :: ");
 			ParameterTool params = ParameterTool.fromArgs(args);
 			if (params.get("input") != null)
 				envParams = ParameterTool.fromPropertiesFile(params.get("input"));
