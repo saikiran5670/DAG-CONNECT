@@ -209,6 +209,37 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             return await Task.FromResult(response);
         }
+        public override async Task<POIResponse> DeletePOIBulk(POIDeleteBulkRequest request, ServerCallContext context)
+        {
+            POIResponse response = new POIResponse();
+            try
+            {
+                _logger.Info("Delete POI.");
+
+                List<int> poiIds = new List<int>();
+                foreach (var item in request.Id)
+                {
+                    poiIds.Add(item);
+                }
+                bool result = await _poiManager.DeletePOI(poiIds);
+                if (result)
+                {
+                    response.Message = "Deleted";
+                    response.Code = Responsecode.Success;
+                }
+                else
+                {
+                    response.Message = "Not Deleted";
+                    response.Code = Responsecode.Failed;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                //response.Message = "Not Deleted";
+            }
+            return await Task.FromResult(response);
+        }
 
         public override async Task<POIResponseList> DownloadPOIForExcel(DownloadPOIRequest request, ServerCallContext context)
         {

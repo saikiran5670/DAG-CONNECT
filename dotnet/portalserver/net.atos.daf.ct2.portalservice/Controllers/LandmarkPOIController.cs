@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (poiResponse != null && poiResponse.Code == Responsecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating poi.");
+                    return StatusCode(500, "There is an error updating poi.");
                 }
                 else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
                 {
@@ -151,7 +151,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode(404, "POI Response is null");
                 }
 
             }
@@ -169,36 +169,84 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        [HttpPut]
+        //[HttpDelete]
+        //[Route("delete")]
+        //public async Task<IActionResult> DeletePOI(int Id)
+        //{
+        //    try
+        //    {
+        //        if (Id==0)
+        //        {
+        //            return StatusCode(400, "The POI id is required.");
+        //        }
+        //        var poiRequest = new POIRequest();
+        //        poiRequest.Id = Id;
+        //        poiservice.POIResponse poiResponse = await _poiServiceClient.DeletePOIAsync(poiRequest);
+
+        //        if (poiResponse != null && poiResponse.Code == Responsecode.Failed)
+        //        {
+        //            return StatusCode(500, "There is an error deleting poi.");
+        //        }
+        //        else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
+        //        {
+        //            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+        //            "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+        //            "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
+        //            Request);
+        //            return Ok("POI has been deleted" + Id);
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(404, "POI Response is null");
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+        //         "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+        //         "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
+        //          Request);
+        //        // check for fk violation
+        //        if (ex.Message.Contains(SocketException))
+        //        {
+        //            return StatusCode(500, "Internal Server Error.(02)");
+        //        }
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
+        [HttpDelete]
         [Route("delete")]
-        public async Task<IActionResult> DeletePOI(POI request)
+        public async Task<IActionResult> DeletePOIBulk(List<int> ids)
         {
             try
             {
-                // Validation 
-                if (request.Id==0)
+                if (ids.Count==0)
                 {
                     return StatusCode(400, "The POI id is required.");
                 }
-                var poiRequest = new POIRequest();
-                poiRequest.Id = request.Id;
-                poiservice.POIResponse poiResponse = await _poiServiceClient.DeletePOIAsync(poiRequest);
+                POIDeleteBulkRequest bulkRequest = new POIDeleteBulkRequest();
+                foreach (var item in ids)
+                {
+                    bulkRequest.Id.Add(item);
+                }
+                poiservice.POIResponse poiResponse = await _poiServiceClient.DeletePOIBulkAsync(bulkRequest);
 
                 if (poiResponse != null && poiResponse.Code == Responsecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating poi.");
+                    return StatusCode(500, "There is an error deleting poi.");
                 }
                 else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "Delete method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                    "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                     Request);
-                    return Ok(poiResponse);
+                    return Ok("POI's has been deleted");
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode(404, "POI Response is null");
                 }
 
             }
@@ -206,7 +254,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Delete method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                 "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                   Request);
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))

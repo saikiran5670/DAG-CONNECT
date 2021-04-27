@@ -56,6 +56,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     response.Message = "Added successfully";
                     response.Code = Responcecode.Success;
+                    response.CategoryID = result.Id;
                 }
                 else 
                 {
@@ -120,6 +121,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responcecode.Success;
+                    response.CategoryID = request.Id;
                     
                 }
                else
