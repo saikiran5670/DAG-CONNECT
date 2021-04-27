@@ -23,37 +23,45 @@ namespace net.atos.daf.ct2.poigeofenceservice
             _mapper = new Mapper();
         }
 
-        public override async Task<POIEntityResponseList> GetAllGobalPOI(net.atos.daf.ct2.poiservice.POIEntityRequest request, ServerCallContext context)
+        public override async Task<POIResponseList> GetAllGobalPOI(net.atos.daf.ct2.poiservice.POIEntityRequest request, ServerCallContext context)
         {
             try
             {
-                POIEntityResponseList objPOIEntityResponseList = new POIEntityResponseList();
+                POIResponseList objPOIResponseList = new POIResponseList();
                 net.atos.daf.ct2.poigeofence.entity.POIEntityRequest obj = new poigeofence.entity.POIEntityRequest();
                 obj.CategoryId = request.CategoryId;
                 obj.SubCategoryId = request.SubCategoryId;
                 var data = await _poiManager.GetAllGobalPOI(obj);
                 foreach (var item in data)
                 {
-                    net.atos.daf.ct2.poiservice.POIEntityResponse objPOIEntityResponse = new net.atos.daf.ct2.poiservice.POIEntityResponse();
-                    objPOIEntityResponse.Category = item.Category == null ? string.Empty : item.Category;
-                    objPOIEntityResponse.City = item.City == null ? string.Empty : item.City;
-                    objPOIEntityResponse.Latitude = item.Latitude;
-                    objPOIEntityResponse.Longitude = item.Longitude;
-                    objPOIEntityResponse.POIName = item.POIName == null ? string.Empty : item.POIName;
-                    objPOIEntityResponse.GlobalPOIId = item.GlobalPOIId;
-                    objPOIEntityResponse.CategoryId = item.CategoryId;
-                    objPOIEntityResponse.SubCategoryId = item.SubCategoryId;
-                    objPOIEntityResponseList.POIList.Add(objPOIEntityResponse);
+                    net.atos.daf.ct2.poiservice.POIData objPOI = new net.atos.daf.ct2.poiservice.POIData();
+                    objPOI.Id = item.Id;
+                    objPOI.OrganizationId = item.OrganizationId;
+                    objPOI.CategoryId = item.CategoryId;
+                    objPOI.SubCategoryId = item.SubCategoryId;
+                    objPOI.Name = item.Name;// == null ? string.Empty : item.Name;
+                    objPOI.Address = item.Address;// == null ? string.Empty : item.Name;
+                    objPOI.City = item.City;
+                    objPOI.CategoryName = item.CategoryName;
+                    objPOI.Country = item.Country;
+                    objPOI.Zipcode = item.Zipcode;
+                    objPOI.Latitude = item.Latitude;
+                    objPOI.Longitude = item.Longitude;
+                    objPOI.Distance = item.Distance;
+                    objPOI.State = item.State;
+                    objPOI.CreatedAt = item.CreatedAt;
+                    objPOI.CreatedBy = item.CreatedBy;
+                    objPOIResponseList.POIList.Add(objPOI);
                 }
-                objPOIEntityResponseList.Message = "GlobalPOI data retrieved";
-                objPOIEntityResponseList.Code = Responsecode.Success;
+                objPOIResponseList.Message = "GlobalPOI data retrieved";
+                objPOIResponseList.Code = Responsecode.Success;
                 _logger.Info("GetAllGobalPOI method in POIManagement service called.");
-                return await Task.FromResult(objPOIEntityResponseList);
+                return await Task.FromResult(objPOIResponseList);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new POIEntityResponseList
+                return await Task.FromResult(new POIResponseList
                 {
                     Code = Responsecode.Failed,
                     Message = $"Exception while retrieving data from GetAllGobalPOI : {ex.Message}"
@@ -94,15 +102,16 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 _logger.Info("Create POI.");
                 POI poi = new POI();
                 request.Type = "POI";
-                request.State= "Active";
+                request.State = "Active";
                 poi = _mapper.ToPOIEntity(request);
                 poi = await _poiManager.CreatePOI(poi);
                 if (poi.Id > 0)
                 {
                     return await Task.FromResult(new POIResponse
                     {
+                        POIData = _mapper.ToPOIResponseData(poi),
                         Message = "POI is created with id:- " + poi.Id,
-                        Code = Responsecode.Success
+                        Code = Responsecode.Success,
                     });
                 }
                 else if (poi.Id == - 1)
@@ -145,6 +154,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 poi = await _poiManager.UpdatePOI(poi);
                 if (poi.Id>0)
                 {
+                    response.POIData = _mapper.ToPOIResponseData(poi);
                     response.Message = "POI updated for id:- " + poi.Id;
                     response.Code = Responsecode.Success;
                 }

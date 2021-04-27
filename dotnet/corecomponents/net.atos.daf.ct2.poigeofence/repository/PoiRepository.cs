@@ -17,23 +17,37 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             dataAccess = _dataAccess;
         }
-        public async Task<List<POIEntityResponse>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
+        public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
-            List<POIEntityResponse> objPOIEntityResponceList = new List<POIEntityResponse>();
+            List<POI> objPOIEntityResponceList = new List<POI>();
             try
             {
                 string query = string.Empty;
-                query = @"select 
-                            l.id as GlobalPOIId
-                           ,l.name as POIName
-                           ,l.latitude
-                           ,l.longitude
-                           ,c.name as category
-						   ,l.category_id as CategoryId
-						   ,l.sub_category_id as SubCategoryId
-                           ,l.city from MASTER.LANDMARK l
-                     LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
-                     WHERE l.organization_id is null";
+                query = @"SELECT l.id, 
+                            l.organization_id as organizationid,
+                            l.category_id as categoryid,
+                            c.name as categoryname,                            
+                            l.sub_category_id as subcategoryid, 
+                            s.name as subcategoryname,
+                            l.name as name,
+                            l.address as address,
+                            l.city as city,
+                            l.country as country,
+                            l.zipcode as zipcode,
+                            l.type as type,
+                            l.latitude as latitude,
+                            l.longitude as longitude,
+                            l.distance as distance,
+                            l.trip_id as tripid,
+                            l.state as state,
+                            l.created_at as createdat,
+                            l.created_by as createdby,
+                            l.modified_at as modifiedat,
+                            l.modified_by as modifiedby
+                            FROM master.landmark l
+                            LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
+                            LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
+                            WHERE l.organization_id is null";
 
                 var parameter = new DynamicParameters();
                 if (objPOIEntityRequest.CategoryId > 0)
@@ -48,8 +62,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     query = $"{query} and l.sub_category_id=@sub_category_id";
                 }
 
-                var data = await dataAccess.QueryAsync<POIEntityResponse>(query, parameter);
-                return objPOIEntityResponceList = data.Cast<POIEntityResponse>().ToList();
+                var data = await dataAccess.QueryAsync<POI>(query, parameter);
+                return objPOIEntityResponceList = data.ToList();
             }
             catch (Exception ex)
             {
@@ -203,7 +217,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 if (poiexist > 0)
                 {
-                    poi.Id = 0;
+                    poi.Id = -1;// POI is already exist with same name.
                     return poi;
                 }
 
@@ -356,7 +370,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", poiId);
-                var query = @"update master.landmark set state='D' where id=@id and type = 'P' ";
+                var query = @"update master.landmark set state='D' where id=@id and type = 'P' RETURNING id";
                 int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
