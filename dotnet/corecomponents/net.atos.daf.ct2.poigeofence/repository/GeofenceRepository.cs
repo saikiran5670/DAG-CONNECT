@@ -387,6 +387,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
+                                    and state='A'
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
@@ -501,6 +502,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
+                                    and state='A'
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
