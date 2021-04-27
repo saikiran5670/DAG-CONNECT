@@ -205,5 +205,28 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.ModifiedBy = geofenceRequest.ModifiedBy;
             return geofence;
         }
+
+        public Geofence ToGeofenceUpdateEntity(GeofenceCircularUpdateRequest geofenceRequest)
+        {
+            Geofence geofence = new Geofence();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            geofence.ModifiedBy = geofenceRequest.ModifiedBy;
+            return geofence;
+        }
+        public GeofenceCircularUpdateRequest ToCircularGeofenceUpdateRequest(Geofence geofenceRequest)
+        {
+            GeofenceCircularUpdateRequest geofence = new GeofenceCircularUpdateRequest();
+            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
+            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.CategoryId = geofenceRequest.CategoryId;
+            geofence.SubCategoryId = geofenceRequest.SubCategoryId;
+            geofence.Name = geofenceRequest.Name;
+            geofence.ModifiedBy = geofenceRequest.ModifiedBy;
+            return geofence;
+        }
     }
 }
