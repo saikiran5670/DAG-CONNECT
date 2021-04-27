@@ -314,7 +314,7 @@ namespace net.atos.daf.ct2.features.repository
                                     RETURNING id;";
             var FSparameter = new DynamicParameters();
             FSparameter.Add("@featuresetid", FeatureSetId);
-            FSparameter.Add("@state", 'I');
+            FSparameter.Add("@state", 'D');
             int DeleteFeatureSetId = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, FSparameter);
                 if (DeleteFeatureSetId > 0)
                 {
@@ -679,7 +679,7 @@ namespace net.atos.daf.ct2.features.repository
                 {
                     //int MapDataAttributeSetID = RemoveDataAttributeSetMapping(dataAttributeSetID);
                     int MapDataAttributeSetIDFeature = RemoveDataAttributeSetMappingWithFeature(dataAttributeSetID);
-                    var FSQueryStatement = @"update master.dataattributeset set state='I' where id = @dataAttributeSetID  RETURNING id;";
+                    var FSQueryStatement = @"update master.dataattributeset set state='D' where id = @dataAttributeSetID  RETURNING id;";
                     var parameter = new DynamicParameters();
                     parameter.Add("@dataAttributeSetID", dataAttributeSetID);
                     int DeleteDataAttributeSetId = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
@@ -972,7 +972,7 @@ namespace net.atos.daf.ct2.features.repository
                     var FSQueryStatement = @"update master.feature set state= @state where id=@id  and type= 'D' RETURNING id;";
                     var parameter = new DynamicParameters();
                     parameter.Add("@id", FeatureId);
-                    parameter.Add("@state", 'I');
+                    parameter.Add("@state", 'D');
                     int DeleteDataAttributeSetFeatureID = await dataAccess.ExecuteScalarAsync<int>(FSQueryStatement, parameter);
 
                     //if(DeleteDataAttributeSetFeatureID >0)
