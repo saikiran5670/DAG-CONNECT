@@ -31,6 +31,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public bool Exists { get; set; }
         public string Message { get; set; }
         public bool IsFailed { get; set; }
+        public bool IsAdded { get; set; }
     }
     public class GeofenceDeleteEntity
     {       
