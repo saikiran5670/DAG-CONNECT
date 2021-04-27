@@ -33,5 +33,13 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.DeletePOI(poiId);
         }
+
+        public async Task<bool> DeletePOI(List<int> poiIds)
+        {
+            return await _poiRepository.DeletePOI(poiIds);
+        }
+
+
+      
     }
 }

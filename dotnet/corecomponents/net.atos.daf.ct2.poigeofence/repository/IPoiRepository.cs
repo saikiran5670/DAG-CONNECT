@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<POI> CreatePOI(POI poi);
         Task<POI> UpdatePOI(POI poi);
         Task<bool> DeletePOI(int poiId);
+        Task<bool> DeletePOI(List<int> poiIds);
 
     }
 }
