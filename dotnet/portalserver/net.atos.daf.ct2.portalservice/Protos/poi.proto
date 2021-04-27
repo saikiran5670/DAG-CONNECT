@@ -6,7 +6,7 @@ option csharp_namespace = "net.atos.daf.ct2.poiservice";
 package poiservice;
 
 service POIService{
-rpc GetAllGobalPOI (POIEntityRequest) returns (POIEntityResponseList);
+rpc GetAllGobalPOI (POIEntityRequest) returns (POIResponseList);
 rpc GetAllPOI (POIRequest) returns (POIResponseList);
 rpc CreatePOI (POIRequest) returns (POIResponse);
 rpc UpdatePOI (POIRequest) returns (POIResponse);
@@ -14,21 +14,6 @@ rpc DeletePOI (POIRequest) returns (POIResponse);
 rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
     }
 
-message POIEntityResponse{
-    string POIName = 1;
-    double Latitude =2;
-    double Longitude=3;
-    string Category = 4;
-    string City = 5;
-    int32 GlobalPOIId = 6;
-    int32 CategoryId =7;
-    int32 SubCategoryId =8;
-}
-message POIEntityResponseList  {
-  repeated POIEntityResponse POIList = 1;
-  Responsecode Code = 2;
-  string Message = 3;
-}
 
 message POIEntityRequest{
     int32 CategoryId = 1;

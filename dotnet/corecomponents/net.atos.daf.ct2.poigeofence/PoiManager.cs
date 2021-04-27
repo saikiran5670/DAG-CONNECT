@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.poigeofence
             _poiRepository = poiRepository;
         }
 
-        public async Task<List<POIEntityResponse>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
+        public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
             return await _poiRepository.GetAllGobalPOI(objPOIEntityRequest);
         }

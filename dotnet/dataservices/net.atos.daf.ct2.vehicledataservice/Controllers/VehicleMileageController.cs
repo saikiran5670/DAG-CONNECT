@@ -23,8 +23,8 @@ using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
-    [Route("vehicle")]
-    //[Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
+    [Route("vehicle-data")]
+    [Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
     public class VehicleMileageController:ControllerBase
     {
         private readonly ILogger<VehicleMileageController> logger;        
@@ -79,23 +79,23 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     {                        
                      return new VehicleMileageCSVResult(vehiclemileage.VehiclesCSV); //, "mileagedata.csv"
                     }
-                  else
-                  {
-                        VehicleMileageResponse vehicleMileageResponse = new VehicleMileageResponse();
-                        vehicleMileageResponse.Vehicles = new List<Entity.Vehicles>();
-                        foreach (var item in vehiclemileage.Vehicles)
-                        {
-                            Entity.Vehicles vehiclesobj = new Entity.Vehicles();                           
-                            vehiclesobj.EvtDateTime = item.EvtDateTime.ToString();
-                            vehiclesobj.VIN = item.VIN;
-                            vehiclesobj.TachoMileage = item.TachoMileage;
-                            vehiclesobj.GPSMileage = item.GPSMileage;
-                            vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
-                            vehicleMileageResponse.Vehicles.Add(vehiclesobj);
-                        }
-                      vehiclemileage.RequestTimestamp=currentdatetime;
-                      return Ok(vehicleMileageResponse);
-                  }
+                    else
+                    {
+                          VehicleMileageResponse vehicleMileageResponse = new VehicleMileageResponse();
+                          vehicleMileageResponse.Vehicles = new List<Entity.Vehicles>();
+                          foreach (var item in vehiclemileage.Vehicles)
+                          {
+                              Entity.Vehicles vehiclesobj = new Entity.Vehicles();                           
+                              vehiclesobj.EvtDateTime = item.EvtDateTime.ToString();
+                              vehiclesobj.VIN = item.VIN;
+                              vehiclesobj.TachoMileage = item.TachoMileage;
+                              vehiclesobj.GPSMileage = item.GPSMileage;
+                              vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
+                              vehicleMileageResponse.Vehicles.Add(vehiclesobj);
+                          }
+                        vehiclemileage.RequestTimestamp=currentdatetime;
+                        return Ok(vehicleMileageResponse);
+                    }
                 }
                 else
                 {

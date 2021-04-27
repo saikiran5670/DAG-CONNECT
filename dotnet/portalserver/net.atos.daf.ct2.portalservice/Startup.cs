@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.portalservice
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
-            var poigeofenceservice= Configuration["ServiceConfiguration:poigeofenceService"];
+            var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.portalservice
             });
             services.AddGrpcClient<CategoryService.CategoryServiceClient>(o =>
             {
-                o.Address = new Uri(poigeofenceservice);
+                o.Address = new Uri(landmarkservice);
             });
             services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
             {
@@ -180,15 +180,15 @@ namespace net.atos.daf.ct2.portalservice
             });
             services.AddGrpcClient<GeofenceService.GeofenceServiceClient>(o =>
             {
-                o.Address = new Uri(poigeofenceservice);
+                o.Address = new Uri(landmarkservice);
             });
             services.AddGrpcClient<POIService.POIServiceClient>(o =>
             {
-                o.Address = new Uri(poigeofenceservice);
+                o.Address = new Uri(landmarkservice);
             });
             services.AddGrpcClient<GroupService.GroupServiceClient>(o =>
             {
-                o.Address = new Uri(poigeofenceservice);
+                o.Address = new Uri(landmarkservice);
             });
             services.AddSwaggerGen(c =>
             {

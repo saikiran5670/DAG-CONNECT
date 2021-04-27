@@ -128,10 +128,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 string query = string.Empty;
-                query = @"select L.id,
-                                 L.name, 
-                                 case when C.type='p' then C.name end categoryName,
-                                 case when C.type='s' then C.name end subcategoryName 
+                query = @"select L.id geofenceID,
+                                 L.name geofenceName, 
+                                 case when C.type='P' then C.name end category,
+                                 case when C.type='S' then C.name end subCategory 
                                  from master.landmark L
 	                             left join master.category C on L.category_id=C.id
 	                             where L.state='A'";
@@ -172,10 +172,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", organizationId);
                 parameter.Add("@Id", geofenceId);
-                query = @"select L.id,
+                query = @"select L.id Id,
+                                 L.organization_id OrganizationId,
                                  L.name, 
-                                 case when C.type='p' then C.name end categoryName,
-                                 case when C.type='s' then C.name end subcategoryName,
+                                 case when C.type='P' then C.name end categoryName,
+                                 case when C.type='S' then C.name end subcategoryName,
                                  L.address,
                                  L.city,
                                  L.country,

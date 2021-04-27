@@ -40,5 +40,10 @@ namespace net.atos.daf.ct2.poigeofence
             //}
             return groups;
         }
+
+        public async Task<int> Exists(LandmarkGroup landmarkgroup)
+        {
+            return await _landmarkgroupRepository.Exists(landmarkgroup);
+        }
     }
 }
