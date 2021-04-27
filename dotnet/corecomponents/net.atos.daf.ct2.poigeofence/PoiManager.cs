@@ -38,8 +38,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.DeletePOI(poiIds);
         }
-
-
       
+        public async Task<UploadPOIExcel> UploadPOI(UploadPOIExcel uploadPOIExcel)
+        {
+            return await _poiRepository.UploadPOI(uploadPOIExcel);
+        }
     }
 }
