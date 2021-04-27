@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                               vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
                               vehicleMileageResponse.Vehicles.Add(vehiclesobj);
                           }
-                        vehiclemileage.RequestTimestamp=currentdatetime;
+                        vehicleMileageResponse.RequestTimestamp=currentdatetime;
                         return Ok(vehicleMileageResponse);
                     }
                 }
@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             catch(Exception ex)
             {
                 logger.LogError(ex.Message);
-                return StatusCode(500, string.Empty);
+                return StatusCode(403, string.Empty);
             }
         }
 
