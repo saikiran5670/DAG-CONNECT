@@ -102,17 +102,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return geofence;
         }
 
-        public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
+        public async Task<bool> DeleteGeofence(GeofenceDeleteEntity objGeofenceDeleteEntity)
         {
             log.Info("Delete geofenceIds method called in repository");
             try
             {
-                if (geofenceIds.Count > 0)
+                if (objGeofenceDeleteEntity.GeofenceId.Count > 0)
                 {
-                    foreach (var item in geofenceIds)
+                    foreach (var item in objGeofenceDeleteEntity.GeofenceId)
                     {
                         var parameter = new DynamicParameters();
-                        parameter.Add("@organization_id", organizationID);
+                        parameter.Add("@organization_id", objGeofenceDeleteEntity.OrganizationId);
                         parameter.Add("@id", item);
                         var queryLandmark = @"update master.landmark set state='D' where id=@id and organization_id=@organization_id";
                         await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
@@ -127,7 +127,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete geofenceIds method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                // throw ex;
+                return false;
             }
         }
 
