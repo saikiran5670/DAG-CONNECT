@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             catch(Exception ex)
             {
                 logger.LogError(ex.Message);
-                return StatusCode(403, string.Empty);
+                return StatusCode(500, string.Empty);
             }
         }
 
