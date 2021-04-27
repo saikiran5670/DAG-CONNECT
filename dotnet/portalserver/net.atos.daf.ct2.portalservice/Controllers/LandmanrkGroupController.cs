@@ -65,9 +65,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     //Request);
                     return Ok(result);
                 }
-                else
+                else 
                 {
-                    return StatusCode(404, "Group responce is null");
+                    if (result.Message.Contains(FK_Constraint))
+                    {
+                        return StatusCode(500, FK_Constraint);
+                    }
+                    else
+                    {
+                        return StatusCode(500, "Error in group create");
+                    }
                 }
 
             }
@@ -125,7 +132,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Group responce is null");
+                    if (result.Message.Contains(FK_Constraint))
+                    {
+                        return StatusCode(500, FK_Constraint);
+                    }
+                    else
+                    {
+                        return StatusCode(500, "Error in group create");
+                    }
                 }
 
             }
