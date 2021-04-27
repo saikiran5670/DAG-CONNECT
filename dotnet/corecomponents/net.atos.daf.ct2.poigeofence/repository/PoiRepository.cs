@@ -408,7 +408,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<UploadPOIExcel> UploadPOI(UploadPOIExcel uploadPOIExcel)
         {
-            uploadPOIExcel.PoiExistingList = new List<POI>();
+            uploadPOIExcel.PoiDuplicateList = new List<POI>();
             uploadPOIExcel.PoiUploadedList = new List<POI>();
             try
             {
@@ -433,7 +433,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         poi.Id = -1;// POI is already exist with same name.
                                     // return poi;
-                        uploadPOIExcel.PoiExistingList.Add(poi);
+                        uploadPOIExcel.PoiDuplicateList.Add(poi);
                     }
                     else
                     {
