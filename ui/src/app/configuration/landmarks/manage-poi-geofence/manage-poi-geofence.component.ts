@@ -25,6 +25,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   poiCreatedMsg : any = '';
   actionType: any;
   createEditViewPoiFlag: boolean = false;
+  createEditViewGeofenceFlag: boolean = false;
   mapFlag: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -82,6 +83,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.createEditViewPoiFlag = true;
     this.actionType = 'create';
     console.log("createEditView() method called");
+  }
+
+  onGeofenceSelection() {
+    console.log("--geofence selection--")
+    this.createEditViewGeofenceFlag = true;
   }
 
   editViewPoi(rowData: any, type: any){
