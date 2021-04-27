@@ -72,7 +72,8 @@ export class CreateEditViewGroupComponent implements OnInit {
 
   setDefaultValue(){
     this.landmarkGroupForm.get('landmarkGroupName').setValue(this.selectedRowData.name);
-    this.landmarkGroupForm.get('landmarkGroupDescription').setValue(this.selectedRowData.description);
+    if(this.selectedRowData.description)
+      this.landmarkGroupForm.get('landmarkGroupDescription').setValue(this.selectedRowData.description);
   }
 
   getBreadcum() {
@@ -180,21 +181,21 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   selectPOITableRows(){
-    this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-      if (search.length > 0) {
-        this.selectedPOI.select(row);
-      }
-    });
+    // this.dataSource.data.forEach((row: any) => {
+    //   let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
+    //   if (search.length > 0) {
+    //     this.selectedPOI.select(row);
+    //   }
+    // });
   }
 
   selectGeofenceTableRows(){
-    this.dataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-      if (search.length > 0) {
-        this.selectedPOI.select(row);
-      }
-    });
+    // this.dataSource.data.forEach((row: any) => {
+    //   let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
+    //   if (search.length > 0) {
+    //     this.selectedPOI.select(row);
+    //   }
+    // });
   }
 
   onReset(){ //-- Reset
