@@ -43,14 +43,24 @@
         </mat-select>
       </mat-form-field>
     </div>
+    <div class="areaWidth" fxLayout="column" fxLayoutGap="2px" fxLayoutAlign="left">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-select placeholder="Select Sub-Category">
+          <mat-option>Sub-Category 1</mat-option>
+          <mat-option>
+            Sub-Category 2
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
     <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
       <button mat-flat-button color="warn">
         <mat-icon>deleteicon</mat-icon> Delete
       </button>
     </div>
   </div>
-  <div *ngIf='initData.length == 0'>No Record Found</div>
-  <div *ngIf='initData.length > 0'>
+  <div *ngIf='poiInitData.length == 0'>No Record Found</div>
+  <div *ngIf='poiInitData.length > 0'>
     <mat-table [dataSource]="poidataSource" class="table-items" matSort>
       <ng-container matColumnDef="All">
         <mat-header-cell *matHeaderCellDef>
@@ -143,6 +153,16 @@
       </mat-select>
     </mat-form-field>
   </div>
+  <div class="areaWidth" fxLayout="column" fxLayoutGap="2px" fxLayoutAlign="left">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-select placeholder="Select Sub-Category">
+        <mat-option>Sub-Category 1</mat-option>
+        <mat-option>
+          Sub-Category 2
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
   <!-- <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
       <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
       <mat-menu #menu="matMenu">
@@ -155,8 +175,8 @@
     </button>
   </div>
 </div>
-<div *ngIf='initData.length == 0'>No Record Found</div>
-<div *ngIf='initData.length > 0'>
+<div *ngIf='geoInitData.length == 0'>No Record Found</div>
+<div *ngIf='geoInitData.length > 0'>
   <mat-table matTableExporter [dataSource]="geofencedataSource" class="table-items" matSort>
     <ng-container matColumnDef="All">
       <mat-header-cell *matHeaderCellDef>
@@ -197,7 +217,7 @@
         <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button matTooltip="'Edit'">
           <mat-icon>create</mat-icon>
         </button>
-        <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button matTooltip="Delete">
+        <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteGeofence(row)" matTooltip="Delete">
           <mat-icon class="deleteIcon">delete_outline</mat-icon>
         </button>
       </mat-cell>

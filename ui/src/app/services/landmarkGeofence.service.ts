@@ -38,7 +38,7 @@ export class GeofenceService {
       .pipe(catchError(this.handleError));
   }
 
-//   createPoi(data): Observable<any> {
+//   createGeofence(data): Observable<any> {
 //     let headerObj = this.generateHeader();
 //     const headers = {
 //       headers: new HttpHeaders({ headerObj }),
@@ -48,7 +48,7 @@ export class GeofenceService {
 //       .pipe(catchError(this.handleError));
 //   }
 
-//   updatePoi(data): Observable<any> {
+//   updateGeofence(data): Observable<any> {
 //     let headerObj = this.generateHeader();
 //     const headers = {
 //       headers: new HttpHeaders({ headerObj }),
@@ -58,18 +58,18 @@ export class GeofenceService {
 //       .pipe(catchError(this.handleError));
 //   }
 
-  deleteGeofence(packageId: number): Observable<void> {
+  deleteGeofence(GeofenceId: number): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-    let data = { packageId: packageId };
+    let data = { GeofenceId: GeofenceId };
    return this.httpClient
-      .delete<any>(`${this.GeofenceServiceUrl}/delete?packageId=${packageId}`, headers)
+      .delete<any>(`${this.GeofenceServiceUrl}/deletegeofence?GeofenceId=${GeofenceId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-//   importPoi(data): Observable<any> {
+//   importGeofence(data): Observable<any> {
 //     let headerObj = this.generateHeader();
 //     const headers = {
 //       headers: new HttpHeaders({ headerObj }),
