@@ -110,11 +110,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating Geofence.");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
                 {
-                    return StatusCode(409, geofenceResponse.Message);
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
                 {
@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
 
             }
