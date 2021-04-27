@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public int OrganizationId { get; set; }
         public int CategoryId { get; set; }
         public int SubCategoryId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Geofence name is required")]
         public string Name { get; set; }
         public string Type { get; set; }
         public string Address { get; set; }
@@ -51,7 +51,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public string Zipcode { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Geofence radius is required")]
+        [Range(1, double.MaxValue, ErrorMessage = "Please enter a radius bigger than {1}")]
         public double Distance { get; set; }
         public int TripId { get; set; }
         public int CreatedBy { get; set; }

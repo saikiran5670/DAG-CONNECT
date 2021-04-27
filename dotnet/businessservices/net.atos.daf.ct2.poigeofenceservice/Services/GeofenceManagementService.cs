@@ -180,6 +180,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
                 geofence = await _geofenceManager.CreateCircularGeofence(geofence);
+                if (geofence[0].Exists)
+                {
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
 
                 foreach (var item in geofence)
                 {
