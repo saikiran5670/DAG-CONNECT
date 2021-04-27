@@ -77,6 +77,11 @@ namespace net.atos.daf.ct2.organization
         public async Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID)
         {
             return await organizationRepository.GetAllOrganizations(OrganizationID);
-        }       
+        }
+
+        public async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        {
+            return await organizationRepository.GetLevelByRoleId(orgId, roleId);
+        }
     }
 }
