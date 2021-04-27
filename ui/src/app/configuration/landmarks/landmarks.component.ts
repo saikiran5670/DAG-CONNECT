@@ -12,7 +12,8 @@ export class LandmarksComponent implements OnInit {
   accountOrganizationId: any;
   translationData: any = {};
   selectedIndex: number = 0;
-
+  tabVisibilityStatus: boolean = true;
+  
   constructor(private translationService: TranslationService) { }
 
   ngOnInit() {
@@ -32,6 +33,9 @@ export class LandmarksComponent implements OnInit {
     });
   }
 
+  tabVisibilityHandler(tabVisibility: boolean){
+    this.tabVisibilityStatus = tabVisibility
+  }
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)

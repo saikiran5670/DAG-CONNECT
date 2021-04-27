@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup, Validators } from '@angular/forms';
+import { Form, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/custom.validators';
 import { ElementRef } from '@angular/core';
 import { HereService } from 'src/app/services/here.service';
 import { ViewChild } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 
 declare var H: any;
 
@@ -21,7 +22,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   breadcumMsg: any = ''; 
   @Input() actionType: any;
   poiFormGroup: FormGroup;
-  private _formBuilder: any;
+  form: Form;
   title = 'here-project';
   private platform: any;
   private search: any;
@@ -38,7 +39,7 @@ poiFlag:boolean = true;
   @ViewChild("map")
   public mapElement: ElementRef;
   
-    constructor(private here: HereService) { 
+    constructor(private here: HereService, private _formBuilder: FormBuilder) { 
       this.query = "starbucks";
       this.platform = new H.service.Platform({
           "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -46,16 +47,23 @@ poiFlag:boolean = true;
     }
   
     ngOnInit(): void {
-      // this.poiFormGroup = this._formBuilder.group({
-      //   category: ['', [ Validators.required]],
-      //   sub_category: ['', [ Validators.required]],
-      //   name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]]
-      // },
-      // {
-      //   validator: [
-      //     CustomValidators.specialCharValidationForName('name'),
-      //   ]
-      // });
+      
+      this.poiFormGroup = this._formBuilder.group({
+        name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+        category: ['', [ Validators.required]],
+        sub_category: ['', [ Validators.required]],
+        address: [''],
+        zip: [''],
+        city: [''],
+        country: [''],
+        lattitude: [''],
+        longitude: ['']
+      },
+      {
+        validator: [
+          CustomValidators.specialCharValidationForName('name'),
+        ]
+      });
       this.breadcumMsg = this.getBreadcum(this.actionType);
     }
 
@@ -96,25 +104,32 @@ poiFlag:boolean = true;
    setUpClickListener(map, here, poiFlag) {
     // obtain the coordinates and display
     map.addEventListener('tap', function (evt) {
+      if(poiFlag){
       var coord = map.screenToGeo(evt.currentPointer.viewportX,
-              evt.currentPointer.viewportY);
+              evt.currentPointer.viewportY); 
               let x = Math.abs(coord.lat.toFixed(4));
               let y = Math.abs(coord.lng.toFixed(4));
               console.log("latitude=" +x);
               console.log("longi=" +y);
+            
               let locations = new H.map.Marker({lat:x, lng:y});
+
               map.addObject(locations);
-              this.position = x +","+y;
-      
+             
+              this.position = x +","+y;             
               console.log(this.position);
               if(this.position) {
                 here.getAddressFromLatLng(this.position).then(result => {
                     this.locations = <Array<any>>result;
                     console.log(this.locations[0].Location.Address);
+                    poiFlag = false;
                 }, error => {
                     console.error(error);
                 });
-            }
+               }
+              }
+           
+                   
             
       });
 
