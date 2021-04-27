@@ -38,8 +38,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
-                objGeofenceDeleteEntity.OrganizationId = request.OrganizationId;
+                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();               
                 objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
                 bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
@@ -262,11 +261,13 @@ namespace net.atos.daf.ct2.geofenceservice
 
                 var geofenceList = await _geofenceManager.BulkImportGeofence(geofence);
                 var failCount = geofenceList.Where(w => w.IsFailed).Count();
+                var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false).Count();
+                var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false).Count();
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Code = Responsecode.Success,
-                    Message = failCount > 0 ? $"Bulk Geofence imported with failed count : {failCount}."
-                                                                                : $"Bulk Geofence imported successfuly.",
+                    Message = failCount > 0 ? $"Bulk Geofence imported with newly Added {addedCount} count, Updated {updateCount} count and failed {failCount} count."
+                                                                                : $"Bulk Geofence imported successfuly with newly Added {addedCount} count, Updated {updateCount} count",
                 });
             }
             catch (Exception ex)

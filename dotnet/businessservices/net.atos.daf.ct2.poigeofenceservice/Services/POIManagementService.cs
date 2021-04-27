@@ -274,5 +274,34 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 throw ex;
             }
         }
+
+
+        public override async Task<POIUploadResponse> UploadPOIExcel(POIUploadRequest request, ServerCallContext context)
+        {
+             
+            try
+            {
+                var response = new POIUploadResponse();
+                var poiList = new List<POI>();
+                var uploadPoiData =_mapper.ToUploadPOIRequest(request);
+                var packageUploaded = await _poiManager.UploadPOI(uploadPoiData);
+                response = _mapper.ToPOIUploadResponseData(packageUploaded);
+                response.POIExcelList.Add(request.POIList);
+                response.Code = Responsecode.Success;
+                response.Message = "Poi Uploaded successfully.";
+                _logger.Info("UploadPOIExcel method in POIManagement service called.");
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new POIUploadResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "POI Creation Failed due to - " + ex.Message,
+                });
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
 //using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poiservice;
 
 namespace net.atos.daf.ct2.poigeofenceservice.entity
 {
@@ -14,19 +15,19 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce ToGeofenceList(net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce request)
         {
             net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce objResponse = new net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce();
-            if (request.category!=null)
+            if (request.category != null)
             {
                 objResponse.CategoryName = request.category;
             }
-            if (request.subCategory!=null)
+            if (request.subCategory != null)
             {
                 objResponse.SubCategoryName = request.subCategory;
             }
-            if (request.geofenceName!=null)
+            if (request.geofenceName != null)
             {
                 objResponse.GeofenceName = request.geofenceName;
             }
-            
+
             objResponse.GeofenceId = request.geofenceID;
             return objResponse;
         }
@@ -88,7 +89,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         {
             POI poi = new POI();
             poi.Id = poiRequest.Id;
-            poi.OrganizationId = poiRequest.OrganizationId !=null ? poiRequest.OrganizationId:0;
+            poi.OrganizationId = poiRequest.OrganizationId != null ? poiRequest.OrganizationId : 0;
             poi.CategoryId = poiRequest.CategoryId;
             poi.SubCategoryId = poiRequest.SubCategoryId;
             poi.Name = poiRequest.Name;
@@ -109,7 +110,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         {
             net.atos.daf.ct2.poiservice.POIData poi = new net.atos.daf.ct2.poiservice.POIData();
             poi.Id = poiEntity.Id;
-            poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0 ;
+            poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0;
             poi.CategoryId = poiEntity.CategoryId;
             poi.CategoryName = poiEntity.CategoryName;
             poi.SubCategoryId = poiEntity.SubCategoryId;
@@ -228,5 +229,80 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.ModifiedBy = geofenceRequest.ModifiedBy;
             return geofence;
         }
+
+        public UploadPOIExcel ToUploadPOIRequest(POIUploadRequest poiUploadRequest)
+        {
+            var uploadPoiExcelData = new UploadPOIExcel() { PoiExcelList = new List<POI>() };
+            uploadPoiExcelData.PoiExcelList.AddRange(poiUploadRequest.POIList.Select(x => new POI()
+            {
+                OrganizationId = x.OrganizationId,
+                CategoryId = x.CategoryId,
+                SubCategoryId = x.SubCategoryId,
+                Name = x.Name,
+                Address = x.Address,
+                City = x.City,
+                Country = x.Country,
+                Zipcode = x.Zipcode,
+                Type = "POI",
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                Distance = x.Distance,
+                TripId = x.TripId,
+                State = x.State,
+                CreatedBy = x.CreatedBy
+            }).ToList());
+            return uploadPoiExcelData;
+
+
+        }
+
+        public POIUploadResponse ToPOIUploadResponseData(UploadPOIExcel uploadPOIExcel)
+        {
+            var poiResponse = new POIUploadResponse();
+            poiResponse.PoiDuplicateList.AddRange(uploadPOIExcel.PoiDuplicateList
+                                     .Select(x => new POIRequest()
+                                     {
+                                         Id = x.Id,
+                                         OrganizationId = x.OrganizationId,
+                                         CategoryId = x.CategoryId,
+                                         SubCategoryId = x.SubCategoryId,
+                                         Name = x.Name,
+                                         Address = x.Address,
+                                         City = x.City,
+                                         Country = x.Country,
+                                         Zipcode = x.Zipcode,
+                                         Type = x.Type,
+                                         Latitude = x.Latitude,
+                                         Longitude = x.Longitude,
+                                         Distance = x.Distance,
+                                         TripId = x.TripId,
+                                         State = x.State,
+                                         CreatedBy = x.CreatedBy
+                                     }).ToList());
+            poiResponse.PoiUploadedList.AddRange(uploadPOIExcel.PoiUploadedList
+                                    .Select(x => new POIRequest()
+                                    {
+                                        Id=x.Id,
+                                        OrganizationId = x.OrganizationId,
+                                        CategoryId = x.CategoryId,
+                                        SubCategoryId = x.SubCategoryId,
+                                        Name = x.Name,
+                                        Address = x.Address,
+                                        City = x.City,
+                                        Country = x.Country,
+                                        Zipcode = x.Zipcode,
+                                        Type = x.Type,
+                                        Latitude = x.Latitude,
+                                        Longitude = x.Longitude,
+                                        Distance = x.Distance,
+                                        TripId = x.TripId,
+                                        State = x.State,
+                                        CreatedBy = x.CreatedBy
+                                    }).ToList());
+            return poiResponse;
+        }
+
+
+
     }
 }

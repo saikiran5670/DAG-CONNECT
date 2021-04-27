@@ -41,7 +41,7 @@
     <mat-card-actions fxLayoutAlign="center center" class='no-margin' style="padding: 0px 20px;">
       <div fxLayout="row" fxLayoutAlign="center center" class="areaWidth full-width">
           <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='cancel()'>{{ data.cancelText }}</button>
-          <button (click)="confirm()" class='confirmBtnColor no-margin' mat-raised-button color="primary">{{ data.confirmText }}</button>
+          <button *ngIf="data.confirmText != 'hide-btn'" (click)="confirm()" class='confirmBtnColor no-margin' mat-raised-button color="primary">{{ data.confirmText }}</button>
       </div>
   </mat-card-actions>
   </mat-card>
