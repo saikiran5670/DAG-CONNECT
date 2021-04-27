@@ -64,8 +64,8 @@
                   <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                   <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }">
-                    <!-- <mat-icon>place</mat-icon> -->
-                    <img matTooltip={{row.iconName}} [src]='row.imageUrl' alt='' width='20px' height='20px'>
+                    <mat-icon *ngIf="row.imageUrl && row.imageUrl == ''">place</mat-icon>
+                    <img *ngIf="row.imageUrl && row.imageUrl != ''" matTooltip={{row.iconName}} [src]='row.imageUrl' alt='' width='20px' height='20px'>
                   </span>
                 </mat-cell>
               </ng-container>

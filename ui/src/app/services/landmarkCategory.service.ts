@@ -70,7 +70,7 @@ export class LandmarkCategoryService {
           .pipe(catchError(this.handleError));
     }
 
-    editLandmarkCategory(data: any): Observable<any> {
+    updateLandmarkCategory(data: any): Observable<any> {
         let headerObj = this.generateHeader();
         const headers = {
           headers: new HttpHeaders({ headerObj }),
