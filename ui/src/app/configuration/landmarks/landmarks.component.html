@@ -1,7 +1,8 @@
 <div class="bgtrans tabs">
-  <mat-tab-group [(selectedIndex)]="selectedIndex">
+  <!-- <mat-tab-group [ngStyle]="{'visibility':  tabVisibilityStatus  ? 'visible' : 'hidden' }" [(selectedIndex)]="selectedIndex"> -->
+  <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex">
     <mat-tab label="Manage POI and Geofence">
-      <app-manage-poi-geofence [translationData]='translationData'></app-manage-poi-geofence>
+      <app-manage-poi-geofence (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-poi-geofence>
     </mat-tab>
     <mat-tab label="Manage Group">
       <app-manage-group [translationData]='translationData'></app-manage-group>

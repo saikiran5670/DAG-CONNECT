@@ -38,7 +38,10 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                bool result = await _geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
+                objGeofenceDeleteEntity.OrganizationId = request.OrganizationId;
+                objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
+                bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
                 {
                     response.Message = "Deleted";

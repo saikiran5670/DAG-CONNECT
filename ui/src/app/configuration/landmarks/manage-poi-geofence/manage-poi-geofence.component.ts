@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter,Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -29,6 +29,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectedpois = new SelectionModel(true, []);
+  @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
 
   constructor( 
     private dialogService: ConfirmDialogService
@@ -77,6 +78,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   createEditView() {
+    this.tabVisibility.emit(false);
     this.createEditViewPoiFlag = true;
     this.actionType = 'create';
     console.log("createEditView() method called");

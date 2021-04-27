@@ -12,6 +12,6 @@
       "packageRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/package",
       "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization",
       "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe",
-      "landmarkRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe"
+      "landmarkGroupRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/landmarkgroup"
     }
 }
