@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using log4net;
 using System.Reflection;
 using System.Collections.Generic;
+using net.atos.daf.ct2.organizationservice;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -22,14 +24,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
+        private readonly OrganizationService.OrganizationServiceClient _organizationClient;
+
+        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper)
+        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, OrganizationService.OrganizationServiceClient organizationClient,AuditHelper auditHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.POI.Mapper();
+            _privilegeChecker = new Common.AccountPrivilegeChecker(_organizationClient);
         }
 
         [HttpGet]
@@ -73,13 +78,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                // Validation 
-                
+                bool hasRights = await HasAdminPrivilege(Request);
+                if (request.OrganizationId == 0 && !hasRights)
+                {
+                    return StatusCode(400, "You cannot create global poi.");
+                }
                 var poiRequest = new POIRequest();
                 request.State= "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.CreatePOIAsync(poiRequest);
-                ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
                 if (poiResponse != null && poiResponse.Code == Responsecode.Failed)
                 {
@@ -109,11 +116,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
-                //_logger.Error(null, ex);
-                if (ex.Message.Contains(FK_Constraint))
-                {
-                    return StatusCode(500, "Internal Server Error.(01)");
-                }
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))
                 {
@@ -128,11 +130,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                bool hasRights = await HasAdminPrivilege(Request);
+                if (request.OrganizationId == 0 && !hasRights)
+                {
+                    return StatusCode(400, "You cannot create global poi.");
+                }
+
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
                 {
                     return StatusCode(400, "The POI name is required.");
                 }
+                
                 var poiRequest = new POIRequest();                
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.UpdatePOIAsync(poiRequest);
@@ -338,6 +347,29 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
+        }
+
+        [NonAction]
+        public async Task<bool> HasAdminPrivilege(HttpRequest request)
+        {
+            bool Result = false;
+            try
+            {
+                var headerData = _auditHelper.GetHeaderData(request);
+                int roleid = headerData.roleId;
+                int organizationid = headerData.orgId;
+                //int Accountid = headerData.accountId;
+                int level = await _privilegeChecker.GetLevelByRoleId(organizationid, roleid);
+                if (level == 10 || level == 20)
+                    Result = true;
+                else
+                    Result = false;
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+            }
+            return Result;
         }
     }
 }
