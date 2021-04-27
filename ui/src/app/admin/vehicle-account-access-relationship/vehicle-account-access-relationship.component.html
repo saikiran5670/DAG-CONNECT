@@ -78,7 +78,7 @@
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0' id="vehicleAccessData">
-      <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+      <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[3]">
         <ng-container *ngFor="let disCol of cols; let colIndex = index" matColumnDef="{{ disCol }}">
           <div *ngIf="disCol != 'action' && disCol != 'accessType' && disCol != 'associatedAccount' && disCol != 'associatedVehicle'">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames[colIndex] }}</mat-header-cell>
@@ -102,8 +102,8 @@
             <mat-cell *matCellDef="let element" matTooltip="{{ element.associatedVehicleList }}"><span class="text-truncate">{{ element.associatedData.length > 0 ? element.associatedVehicleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
           </div>
           <div *ngIf="disCol == 'action'">
-            <mat-header-cell *matHeaderCellDef>{{ columnNames[colIndex] }}</mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-header-cell *matHeaderCellDef class="action">{{ columnNames[colIndex] }}</mat-header-cell>
+            <mat-cell *matCellDef="let row" class="action">
               <button class='actionBtn' mat-flat-button (click)="editViewAccessRelationship(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                 <mat-icon>visibility</mat-icon>
               </button>

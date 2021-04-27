@@ -44,7 +44,7 @@
     </div>
     <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
     <div *ngIf='initData.length > 0'  id="featureData">
-      <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter">
+      <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort #exporter="matTableExporter" [hiddenColumns]="[3]">
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDataAttributeSetName || 'Data
             Attribute Set Name' }}</mat-header-cell>
@@ -73,8 +73,8 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="action">
-          <mat-header-cell *matHeaderCellDef> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="action">
             <button class='actionBtn' mat-flat-button (click)="editViewFeature(row, 'view')"
               matTooltip="{{ translationData.lblView || 'View' }}">
               <mat-icon>visibility</mat-icon>
