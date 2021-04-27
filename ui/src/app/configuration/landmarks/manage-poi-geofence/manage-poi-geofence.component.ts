@@ -40,6 +40,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectedpois = new SelectionModel(true, []);
+  selectedgeofences = new SelectionModel(true, []);
   @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
   private _snackBar: any;
 
@@ -259,41 +260,66 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
-  applyFilter(filterValue: string) {
+  poiApplyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.poidataSource.filter = filterValue;
   }
 
-  masterToggleForOrgRelationship() {
-    this.isAllSelectedForOrgRelationship()
+  geoApplyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.geofencedataSource.filter = filterValue;
+  }
+
+  masterToggleForPOI() {
+    this.isAllSelectedForPOI()
       ? this.selectedpois.clear()
       : this.poidataSource.data.forEach((row) =>
         this.selectedpois.select(row)
       );
   }
 
-  isAllSelectedForOrgRelationship() {
+  isAllSelectedForPOI() {
     const numSelected = this.selectedpois.selected.length;
     const numRows = this.poidataSource.data.length;
     return numSelected === numRows;
   }
 
-  checkboxLabelForOrgRelationship(row?: any): string {
+  checkboxLabelForPOI(row?: any): string {
     if (row)
-      return `${this.isAllSelectedForOrgRelationship() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelectedForPOI() ? 'select' : 'deselect'} all`;
     else
       return `${this.selectedpois.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
 
+  masterToggleForGeo() {
+    this.isAllSelectedForGeo()
+      ? this.selectedgeofences.clear()
+      : this.geofencedataSource.data.forEach((row) =>
+        this.selectedgeofences.select(row)
+      );
+  }
+
+  isAllSelectedForGeo() {
+    const numSelected = this.selectedgeofences.selected.length;
+    const numRows = this.geofencedataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForGeo(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForGeo() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedgeofences.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
   pageSizeUpdated(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
-
-  
 
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';

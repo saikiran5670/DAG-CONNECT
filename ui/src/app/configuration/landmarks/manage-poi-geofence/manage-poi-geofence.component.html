@@ -27,7 +27,7 @@
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <mat-form-field appearance="outline">
-        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search ">
+        <input matInput (keyup)="poiApplyFilter($event.target.value)" placeholder="Search ">
         <span matPrefix>
           <mat-icon>search</mat-icon>
         </span>
@@ -64,10 +64,10 @@
     <mat-table [dataSource]="poidataSource" class="table-items" matSort>
       <ng-container matColumnDef="All">
         <mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'
-            [checked]='selectedpois.hasValue() && isAllSelectedForOrgRelationship()'
-            [indeterminate]='selectedpois.hasValue() && !isAllSelectedForOrgRelationship()'
-            [aria-label]='checkboxLabelForOrgRelationship()'>
+          <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
+            [checked]='selectedpois.hasValue() && isAllSelectedForPOI()'
+            [indeterminate]='selectedpois.hasValue() && !isAllSelectedForPOI()'
+            [aria-label]='checkboxLabelForPOI()'>
           </mat-checkbox>
           <span style="margin: 5px 0px 0px 5px;">All</span>
         </mat-header-cell>
@@ -76,7 +76,7 @@
           <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
           <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span> -->
           <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedpois.toggle(row) : null'
-            [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
+            [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
           </mat-checkbox>
         </mat-cell>
       </ng-container>
@@ -137,7 +137,7 @@
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <mat-form-field appearance="outline">
-      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search ">
+      <input matInput (keyup)="geoApplyFilter($event.target.value)" placeholder="Search ">
       <span matPrefix>
         <mat-icon>search</mat-icon>
       </span>
@@ -180,10 +180,10 @@
   <mat-table matTableExporter [dataSource]="geofencedataSource" class="table-items" matSort>
     <ng-container matColumnDef="All">
       <mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)='$event ? masterToggleForOrgRelationship() : null'
-          [checked]='selectedpois.hasValue() && isAllSelectedForOrgRelationship()'
-          [indeterminate]='selectedpois.hasValue() && !isAllSelectedForOrgRelationship()'
-          [aria-label]='checkboxLabelForOrgRelationship()'>
+        <mat-checkbox (change)='$event ? masterToggleForGeo() : null'
+          [checked]='selectedgeofences.hasValue() && isAllSelectedForGeo()'
+          [indeterminate]='selectedgeofences.hasValue() && !isAllSelectedForGeo()'
+          [aria-label]='checkboxLabelForGeo()'>
         </mat-checkbox>
         <span style="margin: 5px 0px 0px 5px;">All</span>
       </mat-header-cell>
@@ -191,8 +191,8 @@
         <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
         <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
         <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
-        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedpois.toggle(row) : null'
-          [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForOrgRelationship(row)' [disabled]="row.endDate != 0">
+        <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedgeofences.toggle(row) : null'
+          [checked]='selectedgeofences.isSelected(row)' [aria-label]='checkboxLabelForGeo(row)'>
         </mat-checkbox>
       </mat-cell>
     </ng-container>
