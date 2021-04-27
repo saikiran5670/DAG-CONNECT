@@ -23,7 +23,7 @@ using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
-    [Route("vehicle-data")]
+    [Route("vehicle")]
     [Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
     public class VehicleMileageController:ControllerBase
     {
