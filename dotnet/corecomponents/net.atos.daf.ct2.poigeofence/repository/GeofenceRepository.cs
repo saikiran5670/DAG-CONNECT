@@ -475,6 +475,42 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+        public async Task<Geofence> UpdateCircularGeofence(Geofence geofence)
+        {
+            try
+            {
+                geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
+
+                // duplicate Geofence
+                if (geofence.Exists)
+                {
+                    return geofence;
+                }
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@category_id", geofence.CategoryId);
+                parameter.Add("@sub_category_id", geofence.SubCategoryId);
+                parameter.Add("@name", geofence.Name);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@modified_by", geofence.ModifiedBy);
+                parameter.Add("@id", geofence.Id);
+                string query = @"UPDATE master.landmark
+	                                SET category_id=@category_id
+	                                   ,sub_category_id=@sub_category_id
+	                                   ,name=@name
+	                                   ,modified_at=@modified_at
+	                                   ,modified_by=@modified_by
+	                                WHERE id=@id
+	                                returning id;";
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                geofence.Id = id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return geofence;
+        }
 
         #endregion
     }
