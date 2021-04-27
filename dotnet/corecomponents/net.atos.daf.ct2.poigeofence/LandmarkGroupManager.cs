@@ -33,11 +33,32 @@ namespace net.atos.daf.ct2.poigeofence
         public async Task<IEnumerable<LandmarkGroup>> GetlandmarkGroup(int organizationid, int groupid)
         {
             var groups = await _landmarkgroupRepository.GetlandmarkGroup(organizationid,groupid);
-            //foreach (var item in groups)
-            //{
-            //    var groupref = await _landmarkgroupRepository.GetlandmarkGroupref(item.id);
+            if (groupid >0)
+            {
+                foreach (var group in groups)
+                {
+                    var groupref = await _landmarkgroupRepository.GetlandmarkGroupref(groupid);
+                    group.PoiList = new List<POI>();
+                    //group.GeofenceList = new List<Geofence>();
+                    foreach (var item in groupref)
+                    {
+                       
+                            POI obj = new POI();
+                            obj.Id = item.landmarkid;
+                            obj.Name = item.landmarkname;
+                            obj.CategoryName = item.categoryname;
+                            obj.SubCategoryName = item.subcategoryname;
+                            obj.Address = item.address;
+                            obj.icon = item.icon;
+                            obj.Type = item.type.ToString();
+                            group.PoiList.Add(obj);
+                                             
+                    }
+                }
                 
-            //}
+                
+            }
+
             return groups;
         }
 

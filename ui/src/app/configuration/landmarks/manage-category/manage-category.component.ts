@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
+import { LandmarkCategoryService } from '../../../services/landmarkCategory.service';
 
 @Component({
   selector: 'app-manage-category',
@@ -19,7 +20,7 @@ export class ManageCategoryComponent implements OnInit {
   accountOrganizationId: any;
   createViewEditStatus: boolean = false;
   showLoadingIndicator: any = false;
-  displayedColumns: string[] = ['icon', 'category', 'subCategory', 'poi', 'geofence', 'action'];
+  displayedColumns: string[] = ['icon', 'parentCategoryName', 'subCategoryName', 'noOfPOI', 'noOfGeofence', 'action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   categoryList: any = [];
@@ -28,8 +29,9 @@ export class ManageCategoryComponent implements OnInit {
   displayMessage: any = '';
   actionType: any;
   selectedRowData: any = [];
+  @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
 
-  constructor(private dialogService: ConfirmDialogService) { }
+  constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService) { }
   
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -39,9 +41,34 @@ export class ManageCategoryComponent implements OnInit {
 
   loadLandmarkCategoryData(){
     this.showLoadingIndicator = true;
-    this.prepareMockData();
-    this.hideloader();
-    this.onUpdateDataSource(this.initData);
+    this.landmarkCategoryService.getLandmarkCategoryType('C').subscribe((parentCategoryData: any) => {
+      this.categoryList = parentCategoryData.categories;
+      this.getSubCategoryData();
+    }, (error) => {
+      this.categoryList = [];
+      this.getSubCategoryData();
+    }); 
+  }
+
+  getSubCategoryData(){
+    this.landmarkCategoryService.getLandmarkCategoryType('S').subscribe((subCategoryData: any) => {
+      this.subCategoryList = subCategoryData.categories;
+      this.getCategoryDetails();
+    }, (error) => {
+      this.subCategoryList = [];
+      this.getCategoryDetails();
+    });
+  }
+
+  getCategoryDetails(){
+    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
+      this.hideloader();
+      this.onUpdateDataSource(categoryData.categories);
+    }, (error) => {
+      this.hideloader();
+      this.initData = [];
+      this.onUpdateDataSource(this.initData);
+    });
   }
 
   onUpdateDataSource(tableData: any) {
@@ -98,6 +125,7 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onNewCategory(){
+    this.tabVisibility.emit(false);
     this.actionType = 'create';
     this.createViewEditStatus = true;
   }
@@ -114,6 +142,7 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   editViewCategory(rowData: any, type: any){
+    this.tabVisibility.emit(false);
     this.actionType = type;
     this.selectedRowData = rowData;
     this.createViewEditStatus = true;
@@ -172,6 +201,7 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onBackToPage(objData: any) {
+    this.tabVisibility.emit(true);
     this.createViewEditStatus = objData.stepFlag;
     if(objData.successMsg && objData.successMsg != ''){
       this.showSuccessMessage(objData.successMsg);

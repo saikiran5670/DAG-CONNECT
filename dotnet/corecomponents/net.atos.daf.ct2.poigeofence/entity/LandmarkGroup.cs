@@ -19,7 +19,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int modified_by { get; set; }
         public int poiCount { get; set; }
         public int geofenceCount { get; set; }
-        public List<POI> poilist { get; set; }
+        public List<POI> PoiList { get; set; }
+        public List<Geofence> GeofenceList { get; set; }
     }
 
     public class LandmarkgroupRef
@@ -28,5 +29,13 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int landmark_group_id { get; set; }
         public LandmarkType type { get; set; }
         public int ref_id { get; set; }
+        public string category { get; set; }
+        public string categoryname { get; set; }
+        public string landmarkname { get; set; }
+        public int landmarkid { get; set; }
+        public string subcategoryname { get; set; }
+        public byte[] icon { get; set; }
+        public string address { get; set; }
+        public int MyProperty { get; set; }
     }
 }

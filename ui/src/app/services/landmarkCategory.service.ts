@@ -60,13 +60,13 @@ export class LandmarkCategoryService {
           .pipe(catchError(this.handleError));
     }
 
-    deleteLandmarkCategory(data: any): Observable<void> {
+    deleteLandmarkCategory(id: any): Observable<void> {
         let headerObj = this.generateHeader();
         const headers = {
           headers: new HttpHeaders({ headerObj }),
         };
         return this.httpClient
-          .delete<void>(`${this.landmarkCategoryServiceUrl}/deletecategory`, headers)
+          .delete<void>(`${this.landmarkCategoryServiceUrl}/deletecategory?id=${id}`, headers)
           .pipe(catchError(this.handleError));
     }
 
