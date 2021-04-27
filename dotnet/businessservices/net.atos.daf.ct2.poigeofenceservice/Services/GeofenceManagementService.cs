@@ -274,6 +274,50 @@ namespace net.atos.daf.ct2.geofenceservice
                 throw ex;                
             }
         }
+
+        public override async Task<GeofenceCircularUpdateResponce> UpdateCircularGeofence(GeofenceCircularUpdateRequest request, ServerCallContext context)
+        {
+            GeofenceCircularUpdateResponce response = new GeofenceCircularUpdateResponce();
+            try
+            {
+                _logger.Info("Update Geofence.");
+                Geofence geofence = new Geofence();
+                response.GeofenceCircularUpdateRequest = new GeofenceCircularUpdateRequest();
+                geofence = _mapper.ToGeofenceUpdateEntity(request);
+                geofence = await _geofenceManager.UpdateCircularGeofence(geofence);
+                // check for exists
+                response.GeofenceCircularUpdateRequest.Exists = false;
+                if (geofence.Exists)
+                {
+                    response.GeofenceCircularUpdateRequest.Exists = true;
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
+                    return response;
+                }
+                return await Task.FromResult(new GeofenceCircularUpdateResponce
+                {
+                    Message = "Geofence created with id:- " + geofence.Id,
+                    Code = Responsecode.Success,
+                    GeofenceCircularUpdateRequest = _mapper.ToCircularGeofenceUpdateRequest(geofence)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GeofenceCircularUpdateResponce
+                {
+                    Code = Responsecode.Failed,
+                    Message = "Geofence Creation Failed due to - " + ex.Message,
+                });
+            }
+        }
+
         #endregion
     }
 }
