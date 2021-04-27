@@ -23,6 +23,7 @@ import { ManageCorridorComponent } from './landmarks/manage-corridor/manage-corr
 import { CreateEditViewPoiComponent } from './landmarks/manage-poi-geofence/create-edit-view-poi/create-edit-view-poi.component';
 import { ReportSchedulerComponent } from './report-scheduler/report-scheduler.component';
 import { CreateEditViewCategoryComponent } from './landmarks/manage-category/create-edit-view-category/create-edit-view-category.component';
+import { CreateEditViewGroupComponent } from './landmarks/manage-group/create-edit-view-group/create-edit-view-group.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { CreateEditViewCategoryComponent } from './landmarks/manage-category/cre
     ManageCorridorComponent,
     CreateEditViewPoiComponent,
     ReportSchedulerComponent,
-    CreateEditViewCategoryComponent
+    CreateEditViewCategoryComponent,
+    CreateEditViewGroupComponent
   ],
   imports: [
     CommonModule,

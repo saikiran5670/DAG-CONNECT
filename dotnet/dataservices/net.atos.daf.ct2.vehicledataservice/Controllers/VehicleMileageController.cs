@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                               vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
                               vehicleMileageResponse.Vehicles.Add(vehiclesobj);
                           }
-                        vehiclemileage.RequestTimestamp=currentdatetime;
+                        vehicleMileageResponse.RequestTimestamp=currentdatetime;
                         return Ok(vehicleMileageResponse);
                     }
                 }

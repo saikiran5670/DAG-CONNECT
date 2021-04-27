@@ -222,6 +222,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.Code = Responsecode.Conflict;
                     return response;
                 }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
+                    return response;
+                }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
                     Message = "Geofence created with id:- " + geofence.Id,

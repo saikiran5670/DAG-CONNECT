@@ -217,12 +217,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                Geofence geofence1 = new Geofence();
+                geofence1 = await Exists(geofence.FirstOrDefault());
+                // duplicate Geofence
+                if (geofence1.Exists)
+                {
+                    return geofence;
+                }
                 foreach (var item in geofence)
                 {
                     try
                     {
                         var parameter = new DynamicParameters();
-                        parameter.Add("@organization_id", item.OrganizationId);
+                        if (item.OrganizationId > 0)
+                            parameter.Add("@organization_id", item.OrganizationId);
+                        else
+                            parameter.Add("@organization_id", null);
                         parameter.Add("@category_id", item.CategoryId);
                         parameter.Add("@sub_category_id", item.SubCategoryId);
                         parameter.Add("@name", item.Name);
@@ -340,7 +350,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 List<Geofence> groupList = new List<Geofence>();
-                var query = @"select id from master.landmark where 1=1 ";
+                var query = @"select id from master.landmark where (type='C' or type='O') and 1=1";
                 if (geofenceRequest != null)
                 {
 
