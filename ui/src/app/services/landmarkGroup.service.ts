@@ -11,11 +11,11 @@ import {
 import { ConfigService } from '@ngx-config/core';
 
 @Injectable()
-export class LandmarkService {
-    landmarkServiceUrl: string = '';
+export class LandmarkGroupService {
+    landmarkGroupServiceUrl: string = '';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
-    this.landmarkServiceUrl = config.getSettings("foundationServices").landmarkRESTServiceURL;
+    this.landmarkGroupServiceUrl = config.getSettings("foundationServices").landmarkGroupRESTServiceURL;
   }
 
   private handleError(errResponse: HttpErrorResponse) {
@@ -47,7 +47,7 @@ export class LandmarkService {
    };
      const options =  { params: new HttpParams(data), headers: headers };
      return this.httpClient
-       .get<any[]>(`${this.landmarkServiceUrl}/group/get?Organizationid=${data.organizationid}`,headers)
+       .get<any[]>(`${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}`,headers)
        .pipe(catchError(this.handleError));
    }
 
@@ -58,7 +58,7 @@ export class LandmarkService {
     };
     let data = { groupId: groupId };
    return this.httpClient
-      .post<any>(`${this.landmarkServiceUrl}/group/delete?GroupId=${groupId}`, data, headers)
+      .post<any>(`${this.landmarkGroupServiceUrl}/delete?GroupId=${groupId}`, data, headers)
       .pipe(catchError(this.handleError));
   }
 }

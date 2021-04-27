@@ -32,7 +32,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-
+                if (category.Type.Length > 1)
+                {
+                    category.Type = _catogoryCoreMapper.MapType(category.Type.ToUpper());
+                }
                 var icon_ID = await InsertIcons(category);
 
                 var isexist = CheckCategoryIsexist(category.Name);
@@ -74,7 +77,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 var Deletecategory = @"update master.category set state='D' 
-                                   WHERE id= @ID ";
+                                   WHERE id= @ID  RETURNING id ";
 
                 parameter.Add("@ID", categoryId);
 
@@ -191,6 +194,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@Name", categoryFilter.CategoryName);
                         getQuery = getQuery + " and name= @Name ";
                     }
+                    if (categoryFilter.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", categoryFilter.OrganizationId);
+                        getQuery = getQuery + " and organization_id=@organization_id ";
+                    }
                     parameter.Add("@State", "A");
                     getQuery = getQuery + " and state= @State ";
 
@@ -295,13 +303,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon
                             from master.category pcat
                             left join master.category scat on pcat.id = scat.parent_id
-                            where pcat.type ='P'
+                            where pcat.type ='C' and pcat.state ='A'
                             ) 
                             select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
                             (select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') ) as No_of_Geofence,
                             (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
                             r.Parent_category_Icon As IconName,
-                            (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon
+                            (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
                             from result r ";
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 

@@ -15,9 +15,9 @@ namespace net.atos.daf.ct2.poigeofence
         {
             geofenceRepository = _geofenceRepository;
         }
-        public async Task<bool> DeleteGeofence(List<int> geofenceIds, int organizationID)
+        public async Task<bool> DeleteGeofence(GeofenceDeleteEntity objGeofenceDeleteEntity)
         {
-            return await geofenceRepository.DeleteGeofence(geofenceIds, organizationID);
+            return await geofenceRepository.DeleteGeofence(objGeofenceDeleteEntity);
         }
         public async Task<Geofence> CreatePolygonGeofence(Geofence geofence)
         {

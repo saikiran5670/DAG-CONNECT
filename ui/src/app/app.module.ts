@@ -24,13 +24,14 @@ import { SubscriptionService } from './services/subscription.service';
 import { AppInterceptor } from './interceptor/app.interceptor';
 import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-error.interceptor';
 import { ErrorComponent } from './error/error.component';
-import { LandmarkService } from './services/landmark.service';
+import { LandmarkGroupService } from './services/landmarkGroup.service';
 import { POIService } from './services/poi.service';
+import { LandmarkCategoryService } from './services/landmarkCategory.service';
 
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
-  return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
+  return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
@@ -70,8 +71,9 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     FeatureService,
     PackageService,
     SubscriptionService,
-    LandmarkService,
-    POIService
+    LandmarkGroupService,
+    POIService,
+    LandmarkCategoryService
   ],
   bootstrap: [AppComponent],
 })

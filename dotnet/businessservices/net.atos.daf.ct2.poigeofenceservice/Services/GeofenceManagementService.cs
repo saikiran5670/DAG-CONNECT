@@ -38,7 +38,10 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                bool result = await _geofenceManager.DeleteGeofence(lstGeofenceId, request.OrganizationId);
+                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
+                objGeofenceDeleteEntity.OrganizationId = request.OrganizationId;
+                objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
+                bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
                 {
                     response.Message = "Deleted";
@@ -180,6 +183,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
                 geofence = await _geofenceManager.CreateCircularGeofence(geofence);
+                if (geofence[0].Exists)
+                {
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
 
                 foreach (var item in geofence)
                 {
@@ -217,6 +226,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     response.GeofencePolygonUpdateRequest.Exists = true;
                     response.Message = "Duplicate Geofence Name";
                     response.Code = Responsecode.Conflict;
+                    return response;
+                }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
                     return response;
                 }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce

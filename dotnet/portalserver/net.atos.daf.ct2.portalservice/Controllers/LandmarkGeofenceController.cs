@@ -108,14 +108,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceservice.CircularGeofenceResponse geofenceResponse = await _GeofenceServiceClient.CreateCircularGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
-                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed
-                     && geofenceResponse.Message == "There is an error creating Geofence.")
+                if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Failed)
                 {
-                    return StatusCode(500, "There is an error creating Geofence.");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Conflict)
                 {
-                    return StatusCode(409, geofenceResponse.Message);
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
                 else if (geofenceResponse != null && geofenceResponse.Code == geofenceservice.Responsecode.Success)
                 {
@@ -128,7 +127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Geofence Response is null");
+                    return StatusCode((int)geofenceResponse.Code, geofenceResponse.Message);
                 }
 
             }
@@ -171,11 +170,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                      "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                      "DeleteGeofence  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                      Request);
-
-                    objDeleteRequest.OrganizationId = request.OrganizationId;
+                      Request);                    
                     objDeleteRequest.GeofenceId.Add(lstGeofenceId);
-
+                    objDeleteRequest.OrganizationId = request.OrganizationId;
                     objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
                     return Ok(objGeofenceDeleteResponse);
                 }
@@ -360,6 +357,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("BulkImportGeofence")]
+        public async Task<IActionResult> BulkImportGeofence(List<Geofence> requests)
+        {
+            try
+            {
+                var bulkGeofenceRequest = new geofenceservice.BulkGeofenceRequest();
+                foreach (var request in requests)
+                    bulkGeofenceRequest.GeofenceRequest.Add(_mapper.ToGeofenceRequest(request));
+                var response = await _GeofenceServiceClient.BulkImportGeofenceAsync(bulkGeofenceRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Create  method in Geofence controller", 1, 2, JsonConvert.SerializeObject(requests),
+                  Request);
+                //_logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist then contact DAF support team.");
+            }
+
+
+        }
         #endregion
     }
 }
