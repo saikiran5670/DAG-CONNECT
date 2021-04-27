@@ -26,6 +26,7 @@ export class VehicleGroupManagementComponent implements OnInit {
   accountOrganizationId: any;
   initData: any = [];
   dataSource: any;
+  actionBtn:any; 
   displayedColumns: any = ['groupName', 'vehicleCount', 'action'];
   showLoadingIndicator: boolean = false;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -255,8 +256,13 @@ export class VehicleGroupManagementComponent implements OnInit {
 exportAsPdf() {
   let DATA = document.getElementById('vehicleGroupMgmtData');
     
-  html2canvas(DATA).then(canvas => {
-      
+  html2canvas( DATA , { onclone: (document) => {
+    this.actionBtn = document.getElementsByClassName('action');
+    for (let obj of this.actionBtn) {
+      obj.style.visibility = 'hidden';  }       
+  }})
+  .then(canvas => {  
+    
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
       

@@ -30,6 +30,7 @@ export class VehicleManagementComponent implements OnInit {
   titleVisible: boolean = false;
   showLoadingIndicator: any = false;
   localStLanguage: any;
+  actionBtn:any; 
   updateViewStatus: boolean = false;
 
   constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService) {
@@ -137,7 +138,12 @@ export class VehicleManagementComponent implements OnInit {
 exportAsPdf() {
   let DATA = document.getElementById('vehicleMgmtData');
     
-  html2canvas(DATA).then(canvas => {
+  html2canvas( DATA , { onclone: (document) => {
+    this.actionBtn = document.getElementsByClassName('action');
+    for (let obj of this.actionBtn) {
+      obj.style.visibility = 'hidden';  }       
+  }})
+  .then(canvas => {  
       
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
