@@ -110,8 +110,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 if (poiFilter.OrganizationId > 0)
                 {
+                    //It will return organization specific geofence along with global geofence 
                     parameter.Add("@organization_id", poiFilter.OrganizationId);
-                    query = query + " and l.organization_id = @organization_id ";
+                    query = query + " and l.organization_id = @organization_id or l.organization_id is null ";
+                }
+                else
+                {
+                    //only return global geofence
+                    query = $"{query} and L.organization_id=null ";
                 }
                 if (poiFilter.CategoryId > 0)
                 {

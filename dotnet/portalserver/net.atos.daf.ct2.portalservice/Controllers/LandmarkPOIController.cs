@@ -28,13 +28,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, OrganizationService.OrganizationServiceClient organizationClient,AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker)
+        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.POI.Mapper();
-            //_privilegeChecker = new Common.AccountPrivilegeChecker(_organizationClient);
             _privilegeChecker = privilegeChecker;
         }
 
@@ -79,10 +78,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege(Request);
-                if (request.OrganizationId == 0 && !hasRights)
+                if (request.OrganizationId == 0)
                 {
-                    return StatusCode(400, "You cannot create global poi.");
+                    bool hasRights = await HasAdminPrivilege(Request);
+                    if (!hasRights)
+                        return StatusCode(400, "You cannot create global poi.");
                 }
                 var poiRequest = new POIRequest();
                 request.State= "Active";
@@ -131,10 +131,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege(Request);
-                if (request.OrganizationId == 0 && !hasRights)
+                
+                if (request.OrganizationId == 0)
                 {
-                    return StatusCode(400, "You cannot create global poi.");
+                    bool hasRights = await HasAdminPrivilege(Request);
+                    if (!hasRights)
+                        return StatusCode(400, "You cannot create global poi.");
                 }
 
                 // Validation 
@@ -354,31 +356,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [NonAction]
-        public async Task<bool> HasAdminPrivilege(HttpRequest request)
-        {
-            bool Result = false;
-            try
-            {
-                var headerData = _auditHelper.GetHeaderData(request);
-                int roleid = headerData.roleId;
-                int organizationid = headerData.orgId;
-                //int Accountid = headerData.accountId;
-                int level = await _privilegeChecker.GetLevelByRoleId(organizationid, roleid);
-                if (level == 10 || level == 20)
-                    Result = true;
-                else
-                    Result = false;
-            }
-            catch (Exception ex)
-            {
-                Result = false;
-            }
-            return Result;
-        }
-
-
-
         [HttpPost]
         [Route("uploadexcel")]
         public async Task<IActionResult> UploadExcel(List<POI> request)
@@ -435,7 +412,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
+        [NonAction]
+        public async Task<bool> HasAdminPrivilege(HttpRequest request)
+        {
+            bool Result = false;
+            try
+            {
+                var headerData = _auditHelper.GetHeaderData(request);
+                int roleid = headerData.roleId;
+                int organizationid = headerData.orgId;
+                //int Accountid = headerData.accountId;
+                int level = await _privilegeChecker.GetLevelByRoleId(organizationid, roleid);
+                if (level == 10 || level == 20)
+                    Result = true;
+                else
+                    Result = false;
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+            }
+            return Result;
+        }
 
 
     }
