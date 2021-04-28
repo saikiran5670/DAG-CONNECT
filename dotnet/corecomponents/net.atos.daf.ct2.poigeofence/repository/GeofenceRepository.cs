@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                         var queryNodes = @"update master.nodes set state='D' where landmark_id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
-                    }                   
+                    }
                 }
                 return true;
             }
@@ -216,8 +216,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
                         query = $"{query} and L.sub_category_id=@sub_category_id";
                     }
-                }  
-                
+                }
+
                 return await dataAccess.QueryAsync<GeofenceEntityResponce>(query, parameter);
             }
             catch (System.Exception ex)
@@ -258,11 +258,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                             left join master.category C on L.category_id=C.id
 	                             where L.id=@Id and L.state='A'";
 
-                if (organizationId>0)
+                if (organizationId > 0)
                 {
                     parameter.Add("@organization_id", organizationId);
                     query = $"{query} and L.organization_id=@organization_id ";
-                }                
+                }
                 return await dataAccess.QueryAsync<Geofence>(query, parameter);
             }
             catch (System.Exception ex)
@@ -299,7 +299,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 if (IsBulkImport)
                 {
-                    var OrganizationId = geofences.Where(w => w.OrganizationId > 0).FirstOrDefault().OrganizationId;
+                    var OrganizationId = geofences.Where(w => w.OrganizationId > 0).FirstOrDefault()?.OrganizationId ?? 0;
                     if (OrganizationId > 0)
                     {
                         categoryId = await GetCategoryId(OrganizationId, categoryId);
@@ -327,6 +327,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     try
                     {
+                        if (IsBulkImport && !(item.Distance > 0))
+                        {
+                            item.IsFailed = true;
+                            item.Message = $"Please enter a radius bigger than zero.";
+                            continue;
+                        }
+
                         var parameter = new DynamicParameters();
 
                         parameter.Add("@category_id", item.CategoryId > 0 ? item.CategoryId : categoryId);
@@ -425,8 +432,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 foreach (var item in geofences.Where(w => w.Type == "O" || w.Type == "o"))
                     geofenceList.Add(await CreatePolygonGeofence(item, true));
-
-
             }
             catch (Exception ex)
             {
@@ -437,11 +442,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         private async Task<int> GetCategoryId(int OrganizationId, int categoryId)
         {
-            var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { OrganizationId = OrganizationId, Type = ((char)CategoryType.Category).ToString() });
+            var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { OrganizationId = OrganizationId, Type = ((char)CategoryType.Category).ToString(), CategoryName = "BulkImportGeofence" });
             categoryId = categoryList.FirstOrDefault()?.Id ?? 0;
             if (!(categoryId > 0))
             {
-                var taskId = await _categoryRepository.AddCategory(new Category { Name = "BulkImport", Organization_Id = OrganizationId, Type = ((char)CategoryType.Category).ToString(), State = ((char)CategoryState.Active).ToString() });
+                var taskId = await _categoryRepository.AddCategory(new Category { Name = "BulkImportGeofence", Organization_Id = OrganizationId, Type = ((char)CategoryType.Category).ToString(), State = ((char)CategoryState.Active).ToString() });
                 return taskId.Id;
             }
 
@@ -534,6 +539,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { State = "A", CategoryID = geofence.CategoryId });
+                var categoryId = categoryList.FirstOrDefault()?.Id ?? 0;
+                if (!(categoryId > 0))
+                {
+                    geofence.IsFailed = true;
+                    geofence.Message = $"Cannot Update, As Category is not active.";
+                    return geofence;
+                }
+
                 var parameter = new DynamicParameters();
                 parameter.Add("@category_id", geofence.CategoryId);
                 if (geofence.SubCategoryId > 0)
@@ -556,9 +570,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                WHERE State = 'A' and type=@type and name=@name and organization_id = @organization_id
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                geofence.Id = id;
-                geofence.IsFailed = false;
-                geofence.IsAdded = false;
+                if (id > 0)
+                {
+                    geofence.Id = id;
+                    geofence.IsFailed = false;
+                    geofence.IsAdded = false;
+                }
+                else
+                {
+                    geofence.IsFailed = true;
+                    geofence.Message = $"Geofence is not active.";
+                }
             }
             catch (Exception ex)
             {

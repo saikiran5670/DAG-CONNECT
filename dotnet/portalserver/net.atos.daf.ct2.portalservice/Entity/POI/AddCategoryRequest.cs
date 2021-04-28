@@ -30,6 +30,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public string Description { get; set; }
         public int Modified_By { get; set; }
         public byte[] icon { get; set; }
+        public int Organization_Id { get; set; }
     }
     public class DeleteCategoryRequest
     {

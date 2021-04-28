@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string Type { get; set; }
         public string  CategoryName { get; set; }
         public string State { get; set; }
-        public int OrganizationId { get; set; }
+        public int? OrganizationId { get; set; }
 
     }
 }

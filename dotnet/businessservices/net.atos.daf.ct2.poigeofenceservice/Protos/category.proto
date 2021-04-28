@@ -16,7 +16,7 @@ rpc BulkDeleteCategory (DeleteRequest) returns (DeleteResponse);
     }
 
 
-enum Responcecode{
+enum Responsecode{
   Success = 0;
   Failed = 1;
   Conflict = 2;
@@ -41,7 +41,7 @@ message CategoryAddRequest
 }
 message CategoryAddResponse
 {
-  Responcecode Code=1;
+  Responsecode Code=1;
   string Message = 2;  
   int32 CategoryID =3;
 }
@@ -54,11 +54,12 @@ message CategoryEditRequest
       string Icon_Name =4;
       int32 Modified_By =5;
       string Description =6;
+      int32 Organization_Id =7;
 
 }
 message CategoryEditResponse
 {
-  Responcecode Code=1;
+  Responsecode Code=1;
   string Message = 2;  
    int32 CategoryID =3;
 }
@@ -69,7 +70,7 @@ message CategoryDeleteRequest
 }
 message CategoryDeleteResponse
 {
-  Responcecode Code=1;
+  Responsecode Code=1;
   string Message = 2;  
   int32 CategoryID =3;
 }
@@ -80,7 +81,7 @@ message CategoryGetRequest
 message CategoryGetResponse
 {
 repeated GetCategoryType categories =1;
-  Responcecode Code=2;
+  Responsecode Code=2;
   string Message = 3;  
 }
 
@@ -112,7 +113,7 @@ message GetRequest
 message GetResponse{
 
 repeated categoryDetails categories =1;
-  Responcecode Code=2;
+  Responsecode Code=2;
   string Message = 3; 
 
 }
@@ -143,7 +144,7 @@ message IdList
 
 message DeleteResponse
 {
- Responcecode Code=1;
+ Responsecode Code=1;
   string Message = 2;  
   repeated IdList DeleteRequestList  =3;
 
