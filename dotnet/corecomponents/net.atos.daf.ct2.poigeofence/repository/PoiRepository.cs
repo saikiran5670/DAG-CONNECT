@@ -349,7 +349,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@id", poi.Id);
                 query = query + " where id=@id and type = 'P' RETURNING id";
 
-                parameter.Add("@organization_id", poi.OrganizationId);
+                //parameter.Add("@organization_id", poi.OrganizationId);
+                parameter.Add("@organization_id", poi.OrganizationId != 0 ? poi.OrganizationId : null);
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (id > 0)
