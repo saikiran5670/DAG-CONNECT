@@ -360,6 +360,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if(requests?.Count() == 0)
+                {
+                    return StatusCode(400, "Bulk import geofence payload is having no items.");
+                }
                 var bulkGeofenceRequest = new geofenceservice.BulkGeofenceRequest();
                 foreach (var request in requests)
                     bulkGeofenceRequest.GeofenceRequest.Add(_mapper.ToGeofenceRequest(request));
@@ -385,8 +389,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 return StatusCode(500, "Unknown: There is error while processing the request. please try again later. If issue persist, then contact DAF support team.");
             }
-
-
         }
 
         [HttpPut]
