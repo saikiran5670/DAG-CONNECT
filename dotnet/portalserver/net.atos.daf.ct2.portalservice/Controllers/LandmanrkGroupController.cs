@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
-                    "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in Group controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                     Request);
                     return Ok(result);
@@ -83,11 +83,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     if (result.Message.Contains(FK_Constraint))
                     {
+                        _logger.Error(result);
                         return StatusCode(500, FK_Constraint);
+                        
                     }
                     else
                     {
+                        _logger.Error(result);
                         return StatusCode(500, "Error in group create");
+                        
                     }
                 }
 
@@ -147,20 +151,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
-                    //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
-                    //"POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    //"Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    //Request);
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                    Request);
                     return Ok(result);
                 }
                 else
                 {
                     if (result.Message.Contains(FK_Constraint))
                     {
+                        _logger.Error(result);
                         return StatusCode(500, FK_Constraint);
                     }
                     else
                     {
+                        _logger.Error(result);
                         return StatusCode(500, "Error in group create");
                     }
                 }
@@ -200,14 +206,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
-                    //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
-                    //"POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    //"Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    //Request);
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "Delete method in POI controller", GroupId, GroupId, JsonConvert.SerializeObject(GroupId),
+                    Request);
                     return Ok(result);
                 }
                 else
                 {
+                    _logger.Error(result);
                     return StatusCode(404, "Group responce is null");
                 }
 
