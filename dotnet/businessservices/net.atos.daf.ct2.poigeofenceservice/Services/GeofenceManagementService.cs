@@ -235,7 +235,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
-                    Message = "Geofence created with id:- " + geofence.Id,
+                    Message = "Geofence updated with id:- " + geofence.Id,
                     Code = Responsecode.Success,
                     GeofencePolygonUpdateRequest = _mapper.ToGeofenceUpdateRequest(geofence)
                 });
@@ -261,11 +261,13 @@ namespace net.atos.daf.ct2.geofenceservice
 
                 var geofenceList = await _geofenceManager.BulkImportGeofence(geofence);
                 var failCount = geofenceList.Where(w => w.IsFailed).Count();
+                var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false).Count();
+                var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false).Count();
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Code = Responsecode.Success,
-                    Message = failCount > 0 ? $"Bulk Geofence imported with failed count : {failCount}."
-                                                                                : $"Bulk Geofence imported successfuly.",
+                    Message = failCount > 0 ? $"Bulk Geofence imported with newly Added {addedCount} count, Updated {updateCount} count and failed {failCount} count."
+                                                                                : $"Bulk Geofence imported successfuly with newly Added {addedCount} count, Updated {updateCount} count",
                 });
             }
             catch (Exception ex)
@@ -302,7 +304,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 return await Task.FromResult(new GeofenceCircularUpdateResponce
                 {
-                    Message = "Geofence created with id:- " + geofence.Id,
+                    Message = "Geofence updated with id:- " + geofence.Id,
                     Code = Responsecode.Success,
                     GeofenceCircularUpdateRequest = _mapper.ToCircularGeofenceUpdateRequest(geofence)
                 });

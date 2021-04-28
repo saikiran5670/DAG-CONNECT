@@ -37,6 +37,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 // duplicate Geofence
                 if (geofence.Exists)
                 {
+                    if (IsBulkImport && geofence.CategoryId > 0)
+                    {
+                        return await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.PolygonGeofence).ToString());
+                    }
+                    else
+                    {
+                        geofence.IsFailed = true;
+                        geofence.Message = "Polygon Geofence already exist in database.";
+                    }
                     return geofence;
                 }
 
@@ -93,7 +102,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
-
+                geofence.IsFailed = false;
+                geofence.IsAdded = true;
                 if (geofence.Id > 0)
                 {
                     foreach (var item in geofence.Nodes)
@@ -113,6 +123,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
                             item.Id = nodeId;
                             item.IsFailed = false;
+                            item.IsAdded = true;
                         }
                         catch (Exception ex)
                         {
@@ -275,8 +286,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         foreach (var geofence in geofences)
                         {
-                            geofence.IsFailed = true;
-                            geofence.Message = "Circular Geofence already exist in database.";
+                            if (geofence.CategoryId > 0)
+                                await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.CircularGeofence).ToString());
+                            else
+                            {
+                                geofence.IsFailed = true;
+                                geofence.Message = "Circular Geofence already exist in database.";
+                            }
                         }
                     }
                     return geofences;
@@ -344,6 +360,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         item.Id = id;
                         item.IsFailed = false;
+                        item.IsAdded = true;
                     }
                     catch (Exception ex)
                     {
@@ -386,6 +403,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
+                                    and state='A'
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
@@ -500,6 +518,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
+                                    and state='A'
 	                                returning id;";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
@@ -507,6 +526,44 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
                 throw ex;
+            }
+            return geofence;
+        }
+
+        public async Task<Geofence> UpdateGeofenceForBulkImport(Geofence geofence, string type)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@category_id", geofence.CategoryId);
+                if (geofence.SubCategoryId > 0)
+                    parameter.Add("@sub_category_id", geofence.SubCategoryId);
+                else
+                    parameter.Add("@sub_category_id", null);
+                parameter.Add("@name", geofence.Name);
+                if (geofence.OrganizationId > 0)
+                    parameter.Add("@organization_id", geofence.OrganizationId);
+                else
+                    parameter.Add("@organization_id", null);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@modified_by", geofence.ModifiedBy);
+                parameter.Add("@type", type);
+                string query = @"UPDATE master.landmark
+	                                SET category_id=@category_id
+	                                   ,sub_category_id=@sub_category_id
+	                                   ,modified_at=@modified_at
+	                                   ,modified_by=@modified_by
+	                                WHERE State = 'A' and type=@type and name=@name and organization_id = @organization_id
+	                                returning id;";
+                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                geofence.Id = id;
+                geofence.IsFailed = false;
+                geofence.IsAdded = false;
+            }
+            catch (Exception ex)
+            {
+                geofence.IsFailed = true;
+                geofence.Message = $"There was an error updateing landmark :- {ex.Message}";
             }
             return geofence;
         }

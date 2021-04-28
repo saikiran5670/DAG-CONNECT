@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
        
             public int Parent_id { get; set; }
             public int Subcategory_id { get; set; }
-            public string IconName { get; set; }
+            public int IconId { get; set; }
             public byte[] Icon { get; set; }
             public string ParentCategory { get; set; }
             public string SubCategory { get; set; }

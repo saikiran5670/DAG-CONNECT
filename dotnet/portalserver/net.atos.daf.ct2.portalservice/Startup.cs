@@ -127,6 +127,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddMemoryCache();
             services.AddControllers();
             services.AddTransient<AuditHelper, AuditHelper>();
+            services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();

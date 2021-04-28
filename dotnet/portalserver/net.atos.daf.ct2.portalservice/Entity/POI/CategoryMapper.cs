@@ -15,11 +15,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             var Requests = new CategoryAddRequest();
             Requests.Id = request.Id;
             Requests.OrganizationId = request.Organization_Id;
-            Requests.Name = request.Name;
+            Requests.Name = !string.IsNullOrEmpty(request.Name) ? request.Name : string.Empty;
             Requests.IconName = request.IconName;
             Requests.Type = request.Type;
             Requests.ParentId = request.Parent_Id;
             Requests.State = request.State;
+            Requests.Description = !string.IsNullOrEmpty(request.Description) ? request.Description : string.Empty;
             Requests.CreatedBy = request.Created_By;
             Requests.ModifiedBy = request.Modified_By;
             Requests.Icon = ByteString.CopyFrom(request.icon);
@@ -34,10 +35,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
 
             var Requests = new CategoryEditRequest();
             Requests.Id = request.Id;
-            Requests.Name = request.Name;
+            Requests.Name = !string.IsNullOrEmpty(request.Name) ? request.Name : string.Empty;
             Requests.IconName = request.IconName;
             Requests.ModifiedBy = request.Modified_By;
             Requests.Icon = ByteString.CopyFrom(request.icon);
+            Requests.Description = !string.IsNullOrEmpty(request.Description) ? request.Description : string.Empty;
 
             return Requests;
 

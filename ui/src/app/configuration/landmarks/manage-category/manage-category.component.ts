@@ -106,7 +106,7 @@ export class ManageCategoryComponent implements OnInit {
         row.newTag = false;
       }
 
-      if(row.icon && row.icon.length > 0){
+      if(row.icon && row.icon != '' && row.icon.length > 0){
         let TYPED_ARRAY = new Uint8Array(row.icon);
         let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
         let base64String = btoa(STRING_CHAR);
@@ -236,6 +236,12 @@ export class ManageCategoryComponent implements OnInit {
     }
     if(objData.gridData){
       this.initData = objData.gridData;
+    }
+    if(objData.categoryList){
+      this.categoryList = objData.categoryList;
+    }
+    if(objData.subCategoryList){
+      this.subCategoryList = objData.subCategoryList;
     }
     this.onUpdateDataSource(this.initData);
   }

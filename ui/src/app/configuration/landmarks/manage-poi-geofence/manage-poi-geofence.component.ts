@@ -26,7 +26,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   geofencedataSource: any;
   accountOrganizationId: any = 0;
   localStLanguage: any;
-  initData: any = [];
+  poiInitData: any = [];
+  geoInitData: any = [];
   data: any = [];
   selectedElementData: any;
   titleVisible : boolean = false;
@@ -39,7 +40,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   selectedpois = new SelectionModel(true, []);
+  selectedgeofences = new SelectionModel(true, []);
   @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
+  private _snackBar: any;
 
   constructor( 
     private dialogService: ConfirmDialogService,
@@ -54,10 +57,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
-    this.mockData();
-    this.initData = this.data;
     // this.initData = this.mockData();
-    console.log(this.mockData());
     this.hideloader();
     this.loadPoiData();
     this.loadGeofenceData();
@@ -66,14 +66,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
   loadPoiData(){
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data : any) => {
-      this.initData = data;
-      console.log(this.initData);
+      this.poiInitData = data;
+      console.log(this.poiInitData);
       this.hideloader();
-      this.updatedPOITableData(this.initData);
+      this.updatedPOITableData(this.poiInitData);
     }, (error) => {
-      this.initData = [];
+      this.poiInitData = [];
       this.hideloader();
-      this.updatedPOITableData(this.initData);
+      this.updatedPOITableData(this.poiInitData);
     });
   }
 
@@ -89,14 +89,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
   loadGeofenceData(){
     this.showLoadingIndicator = true;
     this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((data : any) => {
-      this.initData = data["geofenceList"];
-      console.log(this.initData);
+      this.geoInitData = data["geofenceList"];
+      console.log(this.geoInitData);
       this.hideloader();
-      this.updatedGeofenceTableData(this.initData);
+      this.updatedGeofenceTableData(this.geoInitData);
     }, (error) => {
-      this.initData = [];
+      this.geoInitData = [];
       this.hideloader();
-      this.updatedGeofenceTableData(this.initData);
+      this.updatedGeofenceTableData(this.geoInitData);
     });
   }
 
@@ -133,31 +133,31 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
   }
 
-  mockData() {
-    this.data = [
-      {
-        name: "Global List",
-        category: "Dealers1",
-        subcategory: "Sub-dealer1",
-        address: "American city, Pratt, North"
-      },
-      {
-        name: "Global List",
-        category: "Dealers2",
-        subcategory: "Sub-dealer2",
-        address: "American city, Pratt, North"
-      },
-      {
-        name: "Global List",
-        category: "Dealers3",
-        subcategory: "Sub-dealer3",
-        address: "American city, Pratt, North"
-      }
-    ]
-    return this.data;
-    console.log(this.data);
+  // mockData() {
+  //   this.data = [
+  //     {
+  //       name: "Global List",
+  //       category: "Dealers1",
+  //       subcategory: "Sub-dealer1",
+  //       address: "American city, Pratt, North"
+  //     },
+  //     {
+  //       name: "Global List",
+  //       category: "Dealers2",
+  //       subcategory: "Sub-dealer2",
+  //       address: "American city, Pratt, North"
+  //     },
+  //     {
+  //       name: "Global List",
+  //       category: "Dealers3",
+  //       subcategory: "Sub-dealer3",
+  //       address: "American city, Pratt, North"
+  //     }
+  //   ]
+  //   return this.data;
+  //   console.log(this.data);
 
-  }
+  // }
 
   createEditView() {
     this.tabVisibility.emit(false);
@@ -192,13 +192,13 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.successMsgBlink(item.successMsg);
     }
     if(item.tableData) {
-      this.initData = item.tableData;
+      this.poiInitData = item.tableData;
     }
-    this.mockData;
+    this.loadPoiData;
   }
 
   deletePoi(rowData: any){
-    let packageId = rowData.id;
+    let poiId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
@@ -208,13 +208,51 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.code);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      // this.packageService.deletePackage(packageId).subscribe((data) => {
+      // this.poidataSource.deletePoi(poiId).subscribe((data) => {
       //   this.openSnackBar('Item delete', 'dismiss');
-      //   this.loadPackageData();
+      //   this.loadPoiData();
       // })
       //   this.successMsgBlink(this.getDeletMsg(rowData.code));
       }
     });
+  }
+
+  deleteGeofence(rowData: any){
+    let GeofenceId = rowData.geofenceId;
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    this.dialogService.DeleteModelOpen(options, rowData.geofenceName);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.geofenceService.deleteGeofence(GeofenceId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadGeofenceData();
+        this.loadPoiData();
+      })
+        this.successMsgBlink(this.getDeletMsg(rowData.geofenceName));
+      }
+    });
+  }
+
+  openSnackBar(message: string, action: string) {
+    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
+    snackBarRef.afterDismissed().subscribe(() => {
+      console.log('The snackbar is dismissed');
+    });
+    snackBarRef.onAction().subscribe(() => {
+      console.log('The snackbar action was triggered!');
+    });
+  }
+
+  getDeletMsg(name: any){
+    if(this.translationData.lblGeofencewassuccessfullydeleted)
+      return this.translationData.lblGeofencewassuccessfullydeleted.replace('$', name);
+    else
+      return ("Geofence '$' was successfully deleted").replace('$', name);
   }
 
   hideloader() {
@@ -222,41 +260,66 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = false;
   }
 
-  applyFilter(filterValue: string) {
+  poiApplyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.poidataSource.filter = filterValue;
   }
 
-  masterToggleForOrgRelationship() {
-    this.isAllSelectedForOrgRelationship()
+  geoApplyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.geofencedataSource.filter = filterValue;
+  }
+
+  masterToggleForPOI() {
+    this.isAllSelectedForPOI()
       ? this.selectedpois.clear()
       : this.poidataSource.data.forEach((row) =>
         this.selectedpois.select(row)
       );
   }
 
-  isAllSelectedForOrgRelationship() {
+  isAllSelectedForPOI() {
     const numSelected = this.selectedpois.selected.length;
     const numRows = this.poidataSource.data.length;
     return numSelected === numRows;
   }
 
-  checkboxLabelForOrgRelationship(row?: any): string {
+  checkboxLabelForPOI(row?: any): string {
     if (row)
-      return `${this.isAllSelectedForOrgRelationship() ? 'select' : 'deselect'} all`;
+      return `${this.isAllSelectedForPOI() ? 'select' : 'deselect'} all`;
     else
       return `${this.selectedpois.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
 
+  masterToggleForGeo() {
+    this.isAllSelectedForGeo()
+      ? this.selectedgeofences.clear()
+      : this.geofencedataSource.data.forEach((row) =>
+        this.selectedgeofences.select(row)
+      );
+  }
+
+  isAllSelectedForGeo() {
+    const numSelected = this.selectedgeofences.selected.length;
+    const numRows = this.geofencedataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForGeo(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForGeo() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedgeofences.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
   pageSizeUpdated(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
-
-  
 
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';

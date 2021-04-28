@@ -5,7 +5,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CustomValidators } from 'src/app/shared/custom.validators';
-import { AccountService } from 'src/app/services/account.service';
+import { POIService } from 'src/app/services/poi.service';
+import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 
 
 @Component({
@@ -16,11 +17,12 @@ import { AccountService } from 'src/app/services/account.service';
 export class CreateEditViewGroupComponent implements OnInit {
   OrgId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
-  displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'category', 'subCategory', 'address'];
-  displayedColumnsGeofence: string[] = ['select', 'name', 'category', 'subCategory']
+  displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
+  displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName']
   selectedPOI = new SelectionModel(true, []);
   selectedGeofence = new SelectionModel(true, []);
-  dataSource: any = new MatTableDataSource([]);
+  poiDataSource: any = new MatTableDataSource([]);
+  geofenceDataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @Input() translationData: any;
@@ -31,11 +33,10 @@ export class CreateEditViewGroupComponent implements OnInit {
   duplicateEmailMsg: boolean = false;
   breadcumMsg: any = '';
   landmarkGroupForm: FormGroup;
-  groupTypeList: any = [];
   duplicateGroupMsg: boolean= false;
 
 
-  constructor(private _formBuilder: FormBuilder, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService) { }
 
   ngOnInit() {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -50,16 +51,6 @@ export class CreateEditViewGroupComponent implements OnInit {
       ]
     });
 
-    this.groupTypeList = [
-      {
-        name: this.translationData.lblGroup || 'Group',
-        value: 'G'
-      },
-      {
-        name: this.translationData.lblDynamic || 'Dynamic',
-        value: 'D'
-      }
-    ];
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
@@ -83,101 +74,31 @@ export class CreateEditViewGroupComponent implements OnInit {
     ${(this.actionType == 'edit') ? (this.translationData.lblEditGroupDetails ? this.translationData.lblEditGroupDetails : 'Edit Group Details') : (this.translationData.lblViewGroupDetails ? this.translationData.lblViewGroupDetails : 'View Group Details')}`;
   }
 
-  makeRoleAccountGrpList(initdata: any) {
-    initdata.forEach((element: any, index: any) => {
-      let roleTxt: any = '';
-      let accGrpTxt: any = '';
-      element.roles.forEach(resp => {
-        roleTxt += resp.name + ',';
-      });
-      element.accountGroups.forEach(resp => {
-        accGrpTxt += resp.name + ',';
-      });
-
-      if (roleTxt != '') {
-        roleTxt = roleTxt.slice(0, -1);
-      }
-      if (accGrpTxt != '') {
-        accGrpTxt = accGrpTxt.slice(0, -1);
-      }
-      initdata[index].roleList = roleTxt;
-      initdata[index].accountGroupList = accGrpTxt;
-    });
-    return initdata;
-  }
-
   loadPOIData() {
-    let getUserData: any = {
-      accountId: 0,
-      organizationId: this.OrgId,
-      accountGroupId: 0,
-      vehicleGroupId: 0,
-      roleId: 0,
-      name: ""
-    }
-    this.accountService.getAccountDetails(getUserData).subscribe((usrlist: any) => {
-      let userGridData = this.makeRoleAccountGrpList(usrlist);
-      this.loadPOIGridData(userGridData);
+    this.poiService.getPois(this.OrgId).subscribe((poilist: any) => {
+      let poiGridData = poilist;
+      this.updatePOIDataSource(poiGridData);
+      if(this.actionType == 'view' || this.actionType == 'edit')
+        this.loadPOISelectedData(poiGridData);
     });
   }
 
-  loadPOIGridData(tableData: any){
-    let selectedAccountList: any = [];
+  loadPOISelectedData(tableData: any){
+    let selectedPOIList: any = [];
     if(this.actionType == 'view'){
-      tableData.forEach((row: any) => {
-        let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-        if (search.length > 0) {
-          selectedAccountList.push(row);
-        }
-      });
-      tableData = selectedAccountList;
-      this.displayedColumnsPOI= ['icon', 'name', 'category', 'subCategory', 'address'];
+    //   tableData.forEach((row: any) => {
+    //     let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
+    //     if (search.length > 0) {
+    //       selectedPOIList.push(row);
+    //     }
+    //   });
+      tableData = selectedPOIList;
+      this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName',, 'address'];
+      this.updatePOIDataSource(tableData);
     }
-    this.updateDataSource(tableData);
-    if(this.actionType == 'edit' ){
+    else if(this.actionType == 'edit' ){
       this.selectPOITableRows();
     }
-  }
-
-  loadGeofenceData() {
-    let getUserData: any = {
-      accountId: 0,
-      organizationId: this.OrgId,
-      accountGroupId: 0,
-      vehicleGroupId: 0,
-      roleId: 0,
-      name: ""
-    }
-    this.accountService.getAccountDetails(getUserData).subscribe((usrlist: any) => {
-      let userGridData = this.makeRoleAccountGrpList(usrlist);
-      this.loadGeofenceGridData(userGridData);
-    });
-  }
-
-  loadGeofenceGridData(tableData: any){
-    let selectedAccountList: any = [];
-    if(this.actionType == 'view'){
-      tableData.forEach((row: any) => {
-        let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-        if (search.length > 0) {
-          selectedAccountList.push(row);
-        }
-      });
-      tableData = selectedAccountList;
-      this.displayedColumnsPOI= ['name', 'category', 'subCategory'];
-    }
-    this.updateDataSource(tableData);
-    if(this.actionType == 'edit' ){
-      this.selectGeofenceTableRows();
-    }
-  }
-
-  updateDataSource(tableData: any){
-    this.dataSource = new MatTableDataSource(tableData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
   }
 
   selectPOITableRows(){
@@ -189,6 +110,34 @@ export class CreateEditViewGroupComponent implements OnInit {
     // });
   }
 
+
+  loadGeofenceData() {
+    this.geofenceService.getAllGeofences(this.OrgId).subscribe((geofencelist: any) => {
+      let geofenceGridData = geofencelist.geofenceList;
+      this.updateGeofenceDataSource(geofenceGridData);
+      if(this.actionType == 'view' || this.actionType == 'edit')
+        this.loadGeofenceSelectedData(geofenceGridData);
+    });
+  }
+
+  loadGeofenceSelectedData(tableData: any){
+    let selectedGeofenceList: any = [];
+    if(this.actionType == 'view'){
+    //   tableData.forEach((row: any) => {
+    //     let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
+    //     if (search.length > 0) {
+    //       selectedGeofenceList.push(row);
+    //     }
+    //   });
+      tableData = selectedGeofenceList;
+      this.displayedColumnsGeofence= ['geofenceName', 'categoryName', 'subCategoryName'];
+      this.updateGeofenceDataSource(tableData);
+    }
+    else if(this.actionType == 'edit' ){
+      this.selectGeofenceTableRows();
+    }
+  }
+
   selectGeofenceTableRows(){
     // this.dataSource.data.forEach((row: any) => {
     //   let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
@@ -196,6 +145,22 @@ export class CreateEditViewGroupComponent implements OnInit {
     //     this.selectedPOI.select(row);
     //   }
     // });
+  }
+
+  updatePOIDataSource(tableData: any){
+    this.poiDataSource= new MatTableDataSource(tableData);
+    setTimeout(()=>{
+      this.poiDataSource.paginator = this.paginator;
+      this.poiDataSource.sort = this.sort;
+    });
+  }
+
+  updateGeofenceDataSource(tableData: any){
+    this.geofenceDataSource = new MatTableDataSource(tableData);
+    setTimeout(()=>{
+      this.geofenceDataSource.paginator = this.paginator;
+      this.geofenceDataSource.sort = this.sort;
+    });
   }
 
   onReset(){ //-- Reset
@@ -285,40 +250,46 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   getUserCreatedMessage() {
-    let userName = `${this.landmarkGroupForm.controls.landmarkGroupName.value}`;
+    let groupName = `${this.landmarkGroupForm.controls.landmarkGroupName.value}`;
     if(this.actionType == 'create') {
-      if(this.translationData.lblUserGroupCreatedSuccessfully)
-        return this.translationData.lblUserGroupCreatedSuccessfully.replace('$', userName);
+      if(this.translationData.lblLandmarkGroupCreatedSuccessfully)
+        return this.translationData.lblLandmarkGroupCreatedSuccessfully.replace('$', groupName);
       else
-        return ("Account Group '$' Created Successfully").replace('$', userName);
+        return ("Landmark Group '$' Created Successfully").replace('$', groupName);
     }else if(this.actionType == 'edit') {
-      if (this.translationData.lblUserGroupUpdatedSuccessfully)
-        return this.translationData.lblUserGroupUpdatedSuccessfully.replace('$', userName);
+      if (this.translationData.lblLandmarkGroupUpdatedSuccessfully)
+        return this.translationData.lblLandmarkGroupUpdatedSuccessfully.replace('$', groupName);
       else
-        return ("Account Group '$' Updated Successfully").replace('$', userName);
+        return ("Landmark Group '$' Updated Successfully").replace('$', groupName);
     }
     else{
       return '';
     }
   }
 
-  applyFilter(filterValue: string) {
+  applyFilterForPOI(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    this.poiDataSource.filter = filterValue;
+  }
+
+  applyFilterForGeofence(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.geofenceDataSource.filter = filterValue;
   }
 
   masterToggleForPOI() {
     this.isAllSelectedForPOI()
       ? this.selectedPOI.clear()
-      : this.dataSource.data.forEach((row) =>
+      : this.poiDataSource.data.forEach((row) =>
         this.selectedPOI.select(row)
       );
   }
 
   isAllSelectedForPOI() {
     const numSelected = this.selectedPOI.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.poiDataSource.data.length;
     return numSelected === numRows;
   }
 
@@ -333,14 +304,14 @@ export class CreateEditViewGroupComponent implements OnInit {
   masterToggleForGeofence() {
     this.isAllSelectedForGeofence()
       ? this.selectedGeofence.clear()
-      : this.dataSource.data.forEach((row) =>
+      : this.geofenceDataSource.data.forEach((row) =>
         this.selectedGeofence.select(row)
       );
   }
 
   isAllSelectedForGeofence() {
     const numSelected = this.selectedGeofence.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.geofenceDataSource.data.length;
     return numSelected === numRows;
   }
 
