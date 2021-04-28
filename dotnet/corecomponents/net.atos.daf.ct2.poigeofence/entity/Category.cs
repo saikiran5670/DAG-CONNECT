@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class Category
     {
         public int Id { get; set; }
-        public int Organization_Id { get; set; }
+        public int ? Organization_Id { get; set; }
         public string Name { get; set; }
         public string IconName { get; set; }
         public string Type { get; set; }
@@ -19,9 +19,18 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
         public byte[] icon { get; set; }
+        public string Description { get; set; }
 
 
     }
-
     
+
+    public class CategoryID
+    {
+        public int ID { get; set; }
+    }
+
+   
+
+
 }

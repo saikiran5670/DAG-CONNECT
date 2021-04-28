@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileValidator } from 'ngx-material-file-input';
 import { CustomValidators } from '../../../../shared/custom.validators';
 import * as XLSX from 'xlsx';
+import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service';
 
 @Component({
   selector: 'app-create-edit-view-category',
@@ -24,11 +25,13 @@ export class CreateEditViewCategoryComponent implements OnInit {
   selectedCategoryType: any = '';
   file: any;
   arrayBuffer: any;
+  accountId: any;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private landmarkCategoryService: LandmarkCategoryService) { }
 
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.categoryForm = this._formBuilder.group({
       categoryName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       categoryType: ['', []],
@@ -47,6 +50,18 @@ export class CreateEditViewCategoryComponent implements OnInit {
     });
     this.selectedCategoryType = 'category';
     this.breadcumMsg = this.getBreadcum();
+    if(this.actionType == 'edit'){
+      this.setDefaultValues();
+    }
+  }
+
+  setDefaultValues(){
+    this.selectedCategoryType = 'category';
+    this.categoryForm.get('categoryName').setValue(this.selectedRowData.parentCategoryName);
+    this.categoryForm.get('categoryDescription').setValue(this.selectedRowData.categoryDescription);
+    this.categoryForm.get('categoryType').setValue(this.selectedCategoryType);
+    this.categoryForm.get('parentCategory').setValue(this.selectedRowData.parentCategoryId);
+    //this.categoryForm.get('uploadFile').setValue(this.selectedRowData.icon);
   }
   
   getBreadcum() {
@@ -102,11 +117,91 @@ export class CreateEditViewCategoryComponent implements OnInit {
   }
 
   onReset(){
-
+    this.setDefaultValues();
   }
 
   onCreateUpdate(){
-    this.onCancel();
+    if(this.actionType == 'create'){ //-- create category
+      let createdObj: any = {
+        id: 0,
+        organization_Id: this.accountOrganizationId,
+        name: this.categoryForm.controls.categoryName.value,
+        iconName: "", //-- icon name
+        type: (this.selectedCategoryType == 'category') ? 'C' : 'S',
+        parent_Id: (this.selectedCategoryType == 'category') ? 0 : this.categoryForm.controls.parentCategory.value,
+        state: "A", //-- Active
+        created_At: 0,
+        created_By: this.accountId, //-- login account id
+        modified_At: 0,
+        modified_By: 0,
+        icon: "" //-- base64
+      }
+      this.landmarkCategoryService.addLandmarkCategory(createdObj).subscribe((createdData: any) => {
+        this.loadLandmarkCategoryData();
+      });
+    }else{ //-- update category
+      let updatedObj: any = {
+        id: this.selectedRowData.parentCategoryId,
+        name: this.categoryForm.controls.categoryName.value,
+        iconName: "",
+        modified_By: this.accountId,
+        icon: ""
+      }
+      this.landmarkCategoryService.updateLandmarkCategory(updatedObj).subscribe((updatedData: any) => {
+        this.loadLandmarkCategoryData();
+      });
+    }
+  }
+
+  loadLandmarkCategoryData(){
+    let categoryList: any = [];
+    this.landmarkCategoryService.getLandmarkCategoryType('C').subscribe((parentCategoryData: any) => {
+      categoryList = parentCategoryData.categories;
+      this.getSubCategoryData(categoryList);
+    }, (error) => {
+      categoryList = [];
+      this.getSubCategoryData(categoryList);
+    }); 
+  }
+
+  getSubCategoryData(categoryList: any){
+    let subCategoryList: any = [];
+    this.landmarkCategoryService.getLandmarkCategoryType('S').subscribe((subCategoryData: any) => {
+      subCategoryList = subCategoryData.categories;
+      this.getCategoryDetails(categoryList, subCategoryList);
+    }, (error) => {
+      subCategoryList = [];
+      this.getCategoryDetails(categoryList, subCategoryList);
+    });
+  }
+
+  getCategoryDetails(categoryList: any, subCategoryList: any){
+    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
+      let emitObj = { stepFlag: false, gridData: categoryData.categories, successMsg: this.getCategoryCreatedUpdatedMessage(), categoryList: categoryList, subCategoryList: subCategoryList };
+      this.backToPage.emit(emitObj);
+    }, (error) => {
+      if (error.status == 409) {
+        //-- duplicate category
+      }
+    });
+  }
+
+  getCategoryCreatedUpdatedMessage() {
+    let categoryName = `${this.categoryForm.controls.categoryName.value}`;
+    if(this.actionType == 'create') {
+      if(this.translationData.lblCategoryCreatedSuccessfully)
+        return this.translationData.lblCategoryCreatedSuccessfully.replace('$', categoryName);
+      else
+        return ("New Category '$' Created Successfully").replace('$', categoryName);
+    }else if(this.actionType == 'edit') {
+      if (this.translationData.lblCategoryUpdatedSuccessfully)
+        return this.translationData.lblCategoryUpdatedSuccessfully.replace('$', categoryName);
+      else
+        return ("Category '$' Updated Successfully").replace('$', categoryName);
+    }
+    else{
+      return '';
+    }
   }
 
 }

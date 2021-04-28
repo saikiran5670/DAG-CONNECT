@@ -27,6 +27,8 @@ import { ErrorComponent } from './error/error.component';
 import { LandmarkGroupService } from './services/landmarkGroup.service';
 import { POIService } from './services/poi.service';
 import { LandmarkCategoryService } from './services/landmarkCategory.service';
+import { GeofenceService } from './services/landmarkGeofence.service';
+
 
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
@@ -73,7 +75,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     SubscriptionService,
     LandmarkGroupService,
     POIService,
-    LandmarkCategoryService
+    LandmarkCategoryService,
+    GeofenceService
   ],
   bootstrap: [AppComponent],
 })

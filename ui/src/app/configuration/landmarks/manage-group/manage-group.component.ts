@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -42,7 +42,7 @@ export class ManageGroupComponent implements OnInit {
   selectedRowData: any= [];
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
-
+  @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
 
   constructor(private translationService: TranslationService, private landmarkGroupService: LandmarkGroupService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
     this.defaultTranslation();
@@ -170,12 +170,14 @@ export class ManageGroupComponent implements OnInit {
   }
 
   newLandmarkGroup(){
+    this.tabVisibility.emit(false);
     this.titleText = this.translationData.lblAddNewGroup || "Add New Group";
     this.actionType = 'create';
     this.createViewEditStatus = true;
   }
 
   editViewlandmarkGroup(row: any, actionType: any){
+    this.tabVisibility.emit(false);
     this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
     this.selectedRowData = row;
     this.actionType = actionType;
@@ -213,6 +215,7 @@ export class ManageGroupComponent implements OnInit {
   }
 
   onBackToPage(objData: any) {
+    this.tabVisibility.emit(true);
     this.createViewEditStatus = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
       this.successMsgBlink(objData.successMsg);
