@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<Category> AddCategory(Category category);
         Task<Category> EditCategory(Category category);
         Task<bool> DeleteCategory(int ID);
-        Task<IEnumerable<Category>> GetCategoryType( string Type);
+        Task<IEnumerable<Category>> GetCategoryType( string Type, int OrganizationId);
         Task<IEnumerable<CategoryList>> GetCategoryDetails();
         Task<IEnumerable<Category>> GetCategory(CategoryFilter categoryFilter);
 

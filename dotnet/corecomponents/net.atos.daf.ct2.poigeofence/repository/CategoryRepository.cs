@@ -249,11 +249,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        public Task<IEnumerable<Category>> GetCategoryType(string Type)
+        public Task<IEnumerable<Category>> GetCategoryType(string Type, int OrganizationId)
         
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.Type = Type.ToUpper();
+            categoryFilter.OrganizationId = OrganizationId;
             if (categoryFilter.Type.Length > 1)
             {
                 categoryFilter.Type= _catogoryCoreMapper.MapType(categoryFilter.Type);
@@ -407,9 +408,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 getQuery = @"with result As
                             (
                             select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
-							pcat.description,pcat.created_at
+							pcat.description,pcat.created_at,i.name As Icon_Name
                             from master.category pcat
                             left join master.category scat on pcat.id = scat.parent_id
+								join master.icon i on i.id = pcat.icon_id
                             where pcat.type ='C' and pcat.state ='A'
                             ) 
                             select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
@@ -417,7 +419,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
                             r.Parent_category_Icon As IconId,
                             (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
-							r.description,r.created_at
+							r.description,r.created_at,r.Icon_Name
                             from result r ";
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 

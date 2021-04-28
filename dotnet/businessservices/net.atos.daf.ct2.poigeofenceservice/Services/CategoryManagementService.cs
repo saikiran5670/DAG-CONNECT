@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             {
                 _logger.Info("Get Category .");
 
-                var result = await _categoryManager.GetCategory(request.Type);
+                var result = await _categoryManager.GetCategory(request.Type, request.OrganizationId);
                 foreach (var item in result)
                 {
                     var Data = new GetCategoryType();
@@ -207,6 +207,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     catdetails.NoOfGeofence = item.No_of_Geofence;
                     catdetails.Description = !string.IsNullOrEmpty(item.Description) ? item.Description : string.Empty;
                     catdetails.CreatedAt = item.Created_at;
+                    catdetails.IconName = !string.IsNullOrEmpty(item.Icon_Name) ? item.Icon_Name : string.Empty;
                     response.Categories.Add(catdetails);
 
                 }

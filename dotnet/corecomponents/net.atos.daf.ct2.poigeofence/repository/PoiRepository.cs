@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             FROM master.landmark l
                             LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
                             LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
-                            LEFT JOIN MASTER.icon icon on icon.id = c.icon_id
+                            LEFT JOIN MASTER.icon icon on  c.icon_id=icon.id 
                             WHERE 1=1 and l.state in ('A','I') ";
 
                 if (poiFilter.Id > 0)
@@ -112,14 +112,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 if (poiFilter.OrganizationId > 0)
                 {
-                    //It will return organization specific geofence along with global geofence 
+                    //It will return organization specific geofence along with global poi 
                     parameter.Add("@organization_id", poiFilter.OrganizationId);
                     query = query + " and l.organization_id = @organization_id or l.organization_id is null ";
                 }
                 else
                 {
-                    //only return global geofence
-                    query = $"{query} and L.organization_id=null ";
+                    //only return global poi
+                    query = $"{query} and L.organization_id is null ";
                 }
                 if (poiFilter.CategoryId > 0)
                 {
@@ -128,8 +128,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 if (poiFilter.SubCategoryId > 0)
                 {
-                    parameter.Add("@category_id", poiFilter.CategoryId);
-                    query = query + " and l.category_id= @category_id ";
+                    parameter.Add("@sub_category_id", poiFilter.SubCategoryId);
+                    query = query + " and l.sub_category_id= @sub_category_id ";
                 }
                 if (!string.IsNullOrEmpty(poiFilter.Name))
                 {
