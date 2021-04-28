@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
 //using net.atos.daf.ct2.poigeofence;
@@ -127,6 +128,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.State = poiEntity.State;
             poi.CreatedBy = poiEntity.CreatedBy;
             poi.CreatedAt = poiEntity.CreatedAt;
+            poi.Icon = poiEntity.icon != null ? ByteString.CopyFrom(poiEntity.icon) : ByteString.Empty;
             return poi;
         }
 
@@ -287,7 +289,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poiResponse.PoiUploadedList.AddRange(uploadPOIExcel.PoiUploadedList
                                     .Select(x => new POIRequest()
                                     {
-                                        Id=x.Id,
+                                        Id = x.Id,
                                         OrganizationId = x.OrganizationId,
                                         CategoryId = x.CategoryId,
                                         SubCategoryId = x.SubCategoryId,
