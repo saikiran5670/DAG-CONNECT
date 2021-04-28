@@ -4,7 +4,7 @@
 <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>POI (19)</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>POI ({{poiInitData.length}})</span>
     </div>
     <!-- <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
       <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
@@ -33,25 +33,23 @@
         </span>
       </mat-form-field>
     </div>
-    <div class="areaWidth" fxLayout="column" fxLayoutGap="2px" fxLayoutAlign="left">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-select placeholder="Select Category">
-          <mat-option>Category 1</mat-option>
-          <mat-option>
-            Category 2
-          </mat-option>
+    <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <mat-form-field appearance="outline">
+        <mat-select  (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+        <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+            {{ rer.name }}
+        </mat-option>
         </mat-select>
-      </mat-form-field>
+    </mat-form-field>
     </div>
-    <div class="areaWidth" fxLayout="column" fxLayoutGap="2px" fxLayoutAlign="left">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-select placeholder="Select Sub-Category">
-          <mat-option>Sub-Category 1</mat-option>
-          <mat-option>
-            Sub-Category 2
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <mat-form-field appearance="outline">
+      <mat-select (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+      <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+          {{ rer.name }}
+      </mat-option>
+      </mat-select>
+  </mat-form-field>
     </div>
     <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
       <button mat-flat-button color="warn">
@@ -131,7 +129,7 @@
  <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Geofence (18)</span>
+    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Geofence ({{geoInitData.length}})</span>
   </div>
 </div>
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -143,25 +141,23 @@
       </span>
     </mat-form-field>
   </div>
-  <div class="areaWidth" fxLayout="column" fxLayoutGap="2px" fxLayoutAlign="left">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-select placeholder="Select Category">
-        <mat-option>Category 1</mat-option>
-        <mat-option>
-          Category 2
-        </mat-option>
+  <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <mat-form-field appearance="outline">
+      <mat-select  (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+      <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+          {{ rer.name }}
+      </mat-option>
       </mat-select>
-    </mat-form-field>
+  </mat-form-field>
   </div>
-  <div class="areaWidth" fxLayout="column" fxLayoutGap="2px" fxLayoutAlign="left">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-select placeholder="Select Sub-Category">
-        <mat-option>Sub-Category 1</mat-option>
-        <mat-option>
-          Sub-Category 2
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+  <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+  <mat-form-field appearance="outline">
+    <mat-select (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+    <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+        {{ rer.name }}
+    </mat-option>
+    </mat-select>
+</mat-form-field>
   </div>
   <!-- <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
       <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>

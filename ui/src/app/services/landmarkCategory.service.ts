@@ -66,7 +66,7 @@ export class LandmarkCategoryService {
           headers: new HttpHeaders({ headerObj }),
         };
         return this.httpClient
-          .delete<void>(`${this.landmarkCategoryServiceUrl}/deletecategory?id=${categoryId}`, headers)
+          .delete<void>(`${this.landmarkCategoryServiceUrl}/deletecategory?Id=${categoryId}`, headers)
           .pipe(catchError(this.handleError));
     }
 

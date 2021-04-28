@@ -112,15 +112,15 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.Id = poiEntity.Id;
             poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0;
             poi.CategoryId = poiEntity.CategoryId;
-            poi.CategoryName = !string.IsNullOrEmpty(poiEntity.CategoryName) ? poiEntity.CategoryName : string.Empty;
+            poi.CategoryName = CheckNull(poiEntity.CategoryName);
             poi.SubCategoryId = poiEntity.SubCategoryId;
-            poi.SubCategoryName = !string.IsNullOrEmpty(poiEntity.SubCategoryName) ? poiEntity.SubCategoryName : string.Empty; 
-            poi.Name = poiEntity.Name;
+            poi.SubCategoryName = CheckNull(poiEntity.SubCategoryName);
+            poi.Name = CheckNull(poiEntity.Name);
             poi.Type = poiEntity.Type;
-            poi.Address = poiEntity.Address;
-            poi.City = poiEntity.City;
-            poi.Country = poiEntity.Country;
-            poi.Zipcode = poiEntity.Zipcode;
+            poi.Address = CheckNull(poiEntity.Address);
+            poi.City = CheckNull(poiEntity.City);
+            poi.Country = CheckNull(poiEntity.Country);
+            poi.Zipcode = CheckNull(poiEntity.Zipcode);
             poi.Latitude = poiEntity.Latitude;
             poi.Longitude = poiEntity.Longitude;
             poi.Distance = poiEntity.Distance;
@@ -128,6 +128,11 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.CreatedBy = poiEntity.CreatedBy;
             poi.CreatedAt = poiEntity.CreatedAt;
             return poi;
+        }
+
+        string CheckNull(string param)
+        {
+            return param == null ? string.Empty : param;
         }
         public net.atos.daf.ct2.geofenceservice.GeofenceRequest ToGeofenceRequest(Geofence geofenceRequest)
         {
