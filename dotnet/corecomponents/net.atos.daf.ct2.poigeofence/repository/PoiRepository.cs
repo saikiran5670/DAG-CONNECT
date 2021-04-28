@@ -266,6 +266,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string queryduplicate = string.Empty;
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@name", poi.Name);
+                parameterduplicate.Add("@id", poi.Id);
                 if (poi.OrganizationId > 0)
                 {
                     parameterduplicate.Add("@organization_id", poi.OrganizationId);
