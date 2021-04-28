@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.poigeofence.test
         [TestMethod]
         public void GetPoiTest()
         {
-            var poiFilter = new POI() { CategoryId=10, SubCategoryId=8 };
+            var poiFilter = new POI() {  };
             var result = _iPoiManager.GetAllPOI(poiFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
