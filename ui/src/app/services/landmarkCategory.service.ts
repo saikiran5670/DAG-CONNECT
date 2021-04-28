@@ -12,9 +12,13 @@ import { ConfigService } from '@ngx-config/core';
 @Injectable()
 export class LandmarkCategoryService {
     landmarkCategoryServiceUrl: string = '';
+    poiServiceUrl: string = '';
+    geofenceServiceUrl: string = '';
     
     constructor(private httpClient: HttpClient, private config: ConfigService) {
         this.landmarkCategoryServiceUrl = config.getSettings("foundationServices").landmarkCategoryRESTServiceURL;
+        this.poiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
+        this.geofenceServiceUrl = config.getSettings("foundationServices").geofenceRESTServiceURL;
     }
 
     generateHeader(){
@@ -78,6 +82,36 @@ export class LandmarkCategoryService {
        return this.httpClient
           .put<any>(`${this.landmarkCategoryServiceUrl}/editcategory`, data, headers)
           .pipe(catchError(this.handleError));
+    }
+
+    deleteBulkLandmarkCategory(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .put<any>(`${this.landmarkCategoryServiceUrl}/deletebulkcategory`, data, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    getCategoryPOI(orgId : any, categoryId: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.poiServiceUrl}/get?OrganizationId=${orgId}&CategoryId=${categoryId}`,headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    geCategoryGeofences(orgId: any, categoryId: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.geofenceServiceUrl}/getallgeofence?OrganizationId=${orgId}&CategoryId=${categoryId}`, headers)
+        .pipe(catchError(this.handleError));
     }
 
     private handleError(errResponse: HttpErrorResponse) {
