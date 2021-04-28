@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                    organization_id, name, icon_id, type, parent_id, state,description, created_at, created_by)
                                   values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@description,@created_at,@created_by) RETURNING id";
 
-                    parameter.Add("@organization_id", category.Organization_Id  );
+                    parameter.Add("@organization_id", category.Organization_Id != 0 ? category.Organization_Id : null);
                     parameter.Add("@name", category.Name);
                     parameter.Add("@icon_id", icon_ID);
                     parameter.Add("@type", category.Type);
@@ -148,7 +148,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return category;
         }
 
-        private bool CheckCategoryNameForUpdate(string categoryName, int Organization_Id)
+        private bool CheckCategoryNameForUpdate(string categoryName, int? Organization_Id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryName = categoryName;
@@ -248,7 +248,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        private bool CheckCategoryIsexist(string categoryName, int OrganizationId)
+        private bool CheckCategoryIsexist(string categoryName, int? OrganizationId)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryName = categoryName;
