@@ -41,6 +41,7 @@ export class UserGroupManagementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
   inputText: any;
+  actionBtn:any; 
   translationData: any;
   localStLanguage: any;
   showLoadingIndicator: any = false;
@@ -369,7 +370,12 @@ export class UserGroupManagementComponent implements OnInit {
 exportAsPdf() {
   let DATA = document.getElementById('accountGroupMgmtData');
     
-  html2canvas(DATA).then(canvas => {
+  html2canvas( DATA , { onclone: (document) => {
+    this.actionBtn = document.getElementsByClassName('action');
+    for (let obj of this.actionBtn) {
+      obj.style.visibility = 'hidden';  }       
+  }})
+  .then(canvas => { 
       
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;

@@ -19,9 +19,18 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
         public byte[] icon { get; set; }
+        public string Description { get; set; }
 
 
     }
-
     
+
+    public class CategoryID
+    {
+        public int ID { get; set; }
+    }
+
+   
+
+
 }

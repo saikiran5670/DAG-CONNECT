@@ -35,6 +35,7 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   cols: string[] = ['name','accessType','associatedAccount','action'];
   columnNames: string[] = ['Vehicle Group/Vehicle','Access Type','Account Group/Account','Action'];
   dataSource: any;
+  actionBtn:any; 
   initData: any = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -121,8 +122,12 @@ export class VehicleAccountAccessRelationshipComponent implements OnInit {
   exportAsPdf() {
     let DATA = document.getElementById('vehicleAccessData');
       
-    html2canvas(DATA).then(canvas => {
-        
+    html2canvas( DATA , { onclone: (document) => {
+      this.actionBtn = document.getElementsByClassName('action');
+      for (let obj of this.actionBtn) {
+        obj.style.visibility = 'hidden';  }       
+    }})
+    .then(canvas => {           
         let fileWidth = 208;
         let fileHeight = canvas.height * fileWidth / canvas.width;
         

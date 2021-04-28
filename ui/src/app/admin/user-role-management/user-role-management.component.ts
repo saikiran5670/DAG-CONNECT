@@ -27,6 +27,7 @@ export class UserRoleManagementComponent implements OnInit {
   viewFlag: boolean = false;
   initData: any = [];
   rowsData: any;
+  actionBtn:any;  
   createStatus: boolean;
   titleText: string;
   translationData: any;
@@ -269,8 +270,12 @@ export class UserRoleManagementComponent implements OnInit {
 exportAsPdf() {
   let DATA = document.getElementById('accountRoleData');
     
-  html2canvas(DATA).then(canvas => {
-      
+  html2canvas( DATA , { onclone: (document) => {
+    this.actionBtn = document.getElementsByClassName('action');
+    for (let obj of this.actionBtn) {
+      obj.style.visibility = 'hidden';  }       
+  }})
+  .then(canvas => {         
       let fileWidth = 208;
       let fileHeight = canvas.height * fileWidth / canvas.width;
       

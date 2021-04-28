@@ -28,13 +28,13 @@ export class POIService {
     return getHeaderObj;
   }
 
-  getPois(): Observable<any[]> {
+  getPois(id : any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.PoiServiceUrl}/get`,headers)
+      .get<any[]>(`${this.PoiServiceUrl}/get?OrganizationId=${id}`,headers)
       .pipe(catchError(this.handleError));
   }
 

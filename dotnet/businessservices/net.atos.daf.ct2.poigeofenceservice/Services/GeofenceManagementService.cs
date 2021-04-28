@@ -38,8 +38,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
-                objGeofenceDeleteEntity.OrganizationId = request.OrganizationId;
+                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();               
                 objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
                 bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
@@ -236,7 +235,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 return await Task.FromResult(new GeofencePolygonUpdateResponce
                 {
-                    Message = "Geofence created with id:- " + geofence.Id,
+                    Message = "Geofence updated with id:- " + geofence.Id,
                     Code = Responsecode.Success,
                     GeofencePolygonUpdateRequest = _mapper.ToGeofenceUpdateRequest(geofence)
                 });
@@ -262,11 +261,13 @@ namespace net.atos.daf.ct2.geofenceservice
 
                 var geofenceList = await _geofenceManager.BulkImportGeofence(geofence);
                 var failCount = geofenceList.Where(w => w.IsFailed).Count();
+                var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false).Count();
+                var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false).Count();
                 return await Task.FromResult(new GeofenceResponse
                 {
                     Code = Responsecode.Success,
-                    Message = failCount > 0 ? $"Bulk Geofence imported with failed count : {failCount}."
-                                                                                : $"Bulk Geofence imported successfuly.",
+                    Message = failCount > 0 ? $"Bulk Geofence imported with newly Added {addedCount} count, Updated {updateCount} count and failed {failCount} count."
+                                                                                : $"Bulk Geofence imported successfuly with newly Added {addedCount} count, Updated {updateCount} count",
                 });
             }
             catch (Exception ex)
@@ -275,6 +276,50 @@ namespace net.atos.daf.ct2.geofenceservice
                 throw ex;                
             }
         }
+
+        public override async Task<GeofenceCircularUpdateResponce> UpdateCircularGeofence(GeofenceCircularUpdateRequest request, ServerCallContext context)
+        {
+            GeofenceCircularUpdateResponce response = new GeofenceCircularUpdateResponce();
+            try
+            {
+                _logger.Info("Update Geofence.");
+                Geofence geofence = new Geofence();
+                response.GeofenceCircularUpdateRequest = new GeofenceCircularUpdateRequest();
+                geofence = _mapper.ToGeofenceUpdateEntity(request);
+                geofence = await _geofenceManager.UpdateCircularGeofence(geofence);
+                // check for exists
+                response.GeofenceCircularUpdateRequest.Exists = false;
+                if (geofence.Exists)
+                {
+                    response.GeofenceCircularUpdateRequest.Exists = true;
+                    response.Message = "Duplicate Geofence Name";
+                    response.Code = Responsecode.Conflict;
+                    return response;
+                }
+                if (geofence == null)
+                {
+                    response.Message = "Geofence Response is null";
+                    response.Code = Responsecode.NotFound;
+                    return response;
+                }
+                return await Task.FromResult(new GeofenceCircularUpdateResponce
+                {
+                    Message = "Geofence updated with id:- " + geofence.Id,
+                    Code = Responsecode.Success,
+                    GeofenceCircularUpdateRequest = _mapper.ToCircularGeofenceUpdateRequest(geofence)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GeofenceCircularUpdateResponce
+                {
+                    Code = Responsecode.Failed,
+                    Message = "Geofence Creation Failed due to - " + ex.Message,
+                });
+            }
+        }
+
         #endregion
     }
 }
