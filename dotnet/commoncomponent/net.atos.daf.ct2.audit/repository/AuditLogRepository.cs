@@ -53,9 +53,11 @@ namespace net.atos.daf.ct2.audit.repository
              parameter.Add("@sourceobject_id",  auditTrail.Sourceobject_id);
              parameter.Add("@targetobject_id",  auditTrail.Targetobject_id);
              parameter.Add("@updated_data",  auditTrail.Updated_data);
-             
-            // return dataAccess.QuerySingle<int>("INSERT INTO dafconnectmaster.auditlog (userorgid, eventid, eventperformed, activitydescription, component, eventtime, eventstatus, createddate, createdby) VALUES(@userorgid, @eventid, @eventperformed, @activitydescription, @component, @eventtime, @eventstatus, @createddate, @createdby) RETURNING auditlogid",parameter);
-            return await dataAccess.QuerySingleAsync<int>("INSERT INTO auditlog.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data) RETURNING id", parameter);
+             parameter.Add("@role_id", auditTrail.Role_Id);
+             parameter.Add("@organization_id", auditTrail.Organization_Id);
+
+                // return dataAccess.QuerySingle<int>("INSERT INTO dafconnectmaster.auditlog (userorgid, eventid, eventperformed, activitydescription, component, eventtime, eventstatus, createddate, createdby) VALUES(@userorgid, @eventid, @eventperformed, @activitydescription, @component, @eventtime, @eventstatus, @createddate, @createdby) RETURNING auditlogid",parameter);
+                return await dataAccess.QuerySingleAsync<int>("INSERT INTO auditlog.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data,role_id,organization_id) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data,@role_id,@organization_id) RETURNING id", parameter);
            }
            catch(Exception ex)
            {
