@@ -61,7 +61,8 @@ namespace net.atos.daf.ct2.portalservice.Common
                 logs.SourceobjectId = Sourceobject_id;
                 logs.TargetobjectId = Targetobject_id;
                 logs.UpdatedData = Updated_data;
-
+                logs.RoleID = roleid;
+                logs.OrganizationId = organizationid;
                 AuditResponce auditresponse = await _auditService.AddlogsAsync(logs);
                 
                 return 0;
