@@ -92,7 +92,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI') }}</span>&nbsp;<span>{{ translationData.lblOptional || 'Optional' }}</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI') }}</span>&nbsp;<span>({{ translationData.lblOptional || 'Optional' }})</span></span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -140,7 +140,7 @@
               </ng-container>
               <ng-container matColumnDef="address">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.address }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumnsPOI"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumnsPOI;">
@@ -156,7 +156,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence') }}</span>&nbsp;<span>{{ translationData.lblOptional || 'Optional' }}</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence') }}</span>&nbsp;<span>({{ translationData.lblOptional || 'Optional' }})</span></span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
