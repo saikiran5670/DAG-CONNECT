@@ -446,6 +446,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return Ok(ex);
             }
         }
+
+        [HttpGet]
+        [Route("test2")]
+        public async Task<IActionResult> GetLevelForTest2()
+        {
+            try
+            {
+                return Ok(JsonConvert.SerializeObject(Request.Headers));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex);
+            }
+        }
     }
 }
 
