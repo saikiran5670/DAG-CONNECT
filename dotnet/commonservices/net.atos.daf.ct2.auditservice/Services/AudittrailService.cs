@@ -57,8 +57,9 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Message = request.Message;  
                 logs.Sourceobject_id = request.SourceobjectId;  
                 logs.Targetobject_id = request.TargetobjectId;  
-                logs.Updated_data = request.UpdatedData;     
-                
+                logs.Updated_data = request.UpdatedData;
+                logs.Role_Id = request.RoleID;
+                logs.Organization_Id = request.OrganizationId;
                 int result = _AuditTrail.AddLogs(logs).Result;
 
                 return await Task.FromResult(new AuditResponce

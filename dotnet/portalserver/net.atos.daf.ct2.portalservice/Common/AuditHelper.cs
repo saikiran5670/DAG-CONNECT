@@ -36,6 +36,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                 {
                     headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
                 }
+                else if (Headers.Any(item => item.Key == "Headerobj"))
+                {
+                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
+                }
             }
             return headerObj;
         }
@@ -61,7 +65,8 @@ namespace net.atos.daf.ct2.portalservice.Common
                 logs.SourceobjectId = Sourceobject_id;
                 logs.TargetobjectId = Targetobject_id;
                 logs.UpdatedData = Updated_data;
-
+                logs.RoleID = roleid;
+                logs.OrganizationId = organizationid;
                 AuditResponce auditresponse = await _auditService.AddlogsAsync(logs);
                 
                 return 0;

@@ -26,6 +26,8 @@ message AuditRecord {
     int32 Sourceobject_id =8;
     int32 Targetobject_id =9;
     string Updated_data=10;    
+       int32 RoleID =11;
+    int32 OrganizationId=12;  
 }
 
 message AuditResponce {
