@@ -11,6 +11,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
+import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -44,12 +45,16 @@ export class ManagePoiGeofenceComponent implements OnInit {
   selectedpois = new SelectionModel(true, []);
   selectedgeofences = new SelectionModel(true, []);
   @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
+  categoryList: any = [];
+  subCategoryList: any = [];
   private _snackBar: any;
+  initData: any[];
 
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
+    private landmarkCategoryService: LandmarkCategoryService
     ) {
     
    }
@@ -63,6 +68,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.hideloader();
     this.loadPoiData();
     this.loadGeofenceData();
+    this.loadLandmarkCategoryData();
   }
 
   loadPoiData(){
@@ -133,6 +139,46 @@ export class ManagePoiGeofenceComponent implements OnInit {
     else{
       return data;
     }
+  }
+
+
+  loadLandmarkCategoryData(){
+    this.showLoadingIndicator = true;
+    this.landmarkCategoryService.getLandmarkCategoryType('C').subscribe((parentCategoryData: any) => {
+      this.categoryList = parentCategoryData.categories;
+      this.getSubCategoryData();
+    }, (error) => {
+      this.categoryList = [];
+      this.getSubCategoryData();
+    }); 
+  }
+
+  getSubCategoryData(){
+    this.landmarkCategoryService.getLandmarkCategoryType('S').subscribe((subCategoryData: any) => {
+      this.subCategoryList = subCategoryData.categories;
+      this.getCategoryDetails();
+    }, (error) => {
+      this.subCategoryList = [];
+      this.getCategoryDetails();
+    });
+  }
+
+  getCategoryDetails(){
+    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
+      this.hideloader();
+      //let data = this.createImageData(categoryData.categories);
+    }, (error) => {
+      this.hideloader();
+      this.initData = [];
+    });
+  }
+
+  onCategoryChange(){
+
+  }
+
+  onSubCategoryChange(){
+
   }
 
   // mockData() {
