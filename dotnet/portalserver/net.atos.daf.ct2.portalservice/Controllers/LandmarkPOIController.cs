@@ -436,34 +436,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             return Result;
         }
-
-        [HttpGet]
-        [Route("test")]
-        public async Task<IActionResult> GetLevelForTest()
-        {
-            try
-            {
-                return Ok(JsonConvert.SerializeObject(Request.Headers["Headerobj"]));
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex);
-            }
-        }
-
-        [HttpGet]
-        [Route("test2")]
-        public async Task<IActionResult> GetLevelForTest2()
-        {
-            try
-            {
-                return Ok(JsonConvert.SerializeObject(Request.Headers["headerObj"]));
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex);
-            }
-        }
     }
 }
 
