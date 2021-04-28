@@ -54,10 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid Category Name: The Category or Icon Name is Empty.");
                 }
-                if (request.Organization_Id <= 0)
-                {
-                    return StatusCode(401, "invalid Organization_Id Please Enter Valid Organization ID.");
-                }
+                
                 if (string.IsNullOrEmpty(request.IconName) || request.icon.Length <= 0)
                 {
                     return StatusCode(401, "Icon Details is required ");

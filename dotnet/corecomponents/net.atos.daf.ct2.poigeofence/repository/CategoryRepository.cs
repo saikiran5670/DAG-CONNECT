@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 var icon_ID = await InsertIcons(category);
 
-                var isexist = CheckCategoryIsexist(category.Name);
+                var isexist = CheckCategoryIsexist(category.Name, category.Organization_Id);
                 if (!isexist)
                 {
 
@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                    organization_id, name, icon_id, type, parent_id, state,description, created_at, created_by)
                                   values(@organization_id,@name,@icon_id,@type,@parent_id,@state,@description,@created_at,@created_by) RETURNING id";
 
-                    parameter.Add("@organization_id", category.Organization_Id);
+                    parameter.Add("@organization_id", category.Organization_Id  );
                     parameter.Add("@name", category.Name);
                     parameter.Add("@icon_id", icon_ID);
                     parameter.Add("@type", category.Type);
@@ -66,7 +66,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                log.Info("Add Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(category.Id));
+                log.Error(ex.ToString());
+               // throw ex;
             }
             return category;
         }
@@ -110,7 +112,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 
                 if (isCategoryUpdate)
                 {
-                    var isCategoryNameExist = CheckCategoryNameForUpdate(category.Name);
+                    var isCategoryNameExist = CheckCategoryNameForUpdate(category.Name,category.Organization_Id);
 
                     if (!isCategoryNameExist)
                     {
@@ -146,10 +148,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return category;
         }
 
-        private bool CheckCategoryNameForUpdate(string categoryName)
+        private bool CheckCategoryNameForUpdate(string categoryName, int Organization_Id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryName = categoryName;
+            categoryFilter.OrganizationId = Organization_Id;
 
             var categories = GetCategory(categoryFilter);
 
@@ -245,13 +248,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        private bool CheckCategoryIsexist(string categoryName)
+        private bool CheckCategoryIsexist(string categoryName, int OrganizationId)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
+            categoryFilter.CategoryName = categoryName;
+            categoryFilter.OrganizationId = OrganizationId;
 
             var categories = GetCategory(categoryFilter);
 
-            var nameExistsForInsert = categories.Result.Where(t => t.Name == categoryName).Count();
+            var nameExistsForInsert = categories.Result.Where(t => t.Name == categoryName ).Count();
             if (nameExistsForInsert == 0)
                 return false;
             else if (nameExistsForInsert > 0)
