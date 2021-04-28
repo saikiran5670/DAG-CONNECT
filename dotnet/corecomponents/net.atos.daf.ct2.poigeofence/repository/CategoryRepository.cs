@@ -226,8 +226,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                     if (categoryFilter.OrganizationId > 0)
                     {
+                        //It will return organization specific category/subcategory
                         parameter.Add("@organization_id", categoryFilter.OrganizationId);
-                        getQuery = getQuery + " and organization_id=@organization_id ";
+                        getQuery = getQuery + " and organization_id=@organization_id or organization_id is null ";
+                    }
+                    else
+                    {
+                        //only return global poi
+                        getQuery = getQuery + " and organization_id is null ";
                     }
                     parameter.Add("@State", "A");
                     getQuery = getQuery + " and state= @State ";

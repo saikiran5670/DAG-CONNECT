@@ -1912,6 +1912,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
         #endregion
+
+        [HttpGet]
+        [Route("test")]
+        public async Task<IActionResult> GetLevelForTest()
+        {
+            try
+            {
+                return Ok(JsonConvert.SerializeObject(_userDetails));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex);
+            }
+        }
     }
 
 }
