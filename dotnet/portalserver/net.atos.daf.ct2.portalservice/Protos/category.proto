@@ -77,6 +77,7 @@ message CategoryDeleteResponse
 message CategoryGetRequest
 {
  string type= 1;
+ int32 Organization_Id =2;
 }
 message CategoryGetResponse
 {
@@ -130,6 +131,7 @@ int32 No_Of_POI =7;
 int32 No_Of_Geofence =8;
 string Description =9;
 int64 Created_At =10;
+string Icon_Name =11;
 
 }
 
