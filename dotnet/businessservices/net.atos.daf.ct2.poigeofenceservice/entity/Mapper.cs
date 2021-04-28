@@ -112,9 +112,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.Id = poiEntity.Id;
             poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0;
             poi.CategoryId = poiEntity.CategoryId;
-            poi.CategoryName = poiEntity.CategoryName;
+            poi.CategoryName = !string.IsNullOrEmpty(poiEntity.CategoryName) ? poiEntity.CategoryName : string.Empty;
             poi.SubCategoryId = poiEntity.SubCategoryId;
-            poi.SubCategoryName = poiEntity.SubCategoryName;
+            poi.SubCategoryName = !string.IsNullOrEmpty(poiEntity.SubCategoryName) ? poiEntity.SubCategoryName : string.Empty; 
             poi.Name = poiEntity.Name;
             poi.Type = poiEntity.Type;
             poi.Address = poiEntity.Address;
