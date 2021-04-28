@@ -17,5 +17,7 @@ namespace net.atos.daf.ct2.audit.entity
         public int Sourceobject_id { get; set; }
         public int Targetobject_id { get; set; }
         public string Updated_data { get; set; }
+        public int Role_Id { get; set; }
+        public int Organization_Id { get; set; }
     }
 }

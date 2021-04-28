@@ -7,6 +7,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { POIService } from 'src/app/services/poi.service';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
+import { element } from 'protractor';
+import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 
 
 @Component({
@@ -16,6 +18,7 @@ import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 })
 export class CreateEditViewGroupComponent implements OnInit {
   OrgId: any = 0;
+  accountId: any= 0;
   @Output() backToPage = new EventEmitter<any>();
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName']
@@ -23,23 +26,25 @@ export class CreateEditViewGroupComponent implements OnInit {
   selectedGeofence = new SelectionModel(true, []);
   poiDataSource: any = new MatTableDataSource([]);
   geofenceDataSource: any = new MatTableDataSource([]);
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) poiPaginator: MatPaginator;
+  @ViewChild(MatPaginator) geofencePaginator: MatPaginator;
+  @ViewChild(MatSort) poiSort: MatSort;
+  @ViewChild(MatSort) geofenceSort: MatSort;
   @Input() translationData: any;
   @Input() selectedRowData: any;
   @Input() actionType: any;
   @Input() titleText: any;
-  userCreatedMsg: any = '';
-  duplicateEmailMsg: boolean = false;
+  groupCreatedMsg: any = '';
   breadcumMsg: any = '';
   landmarkGroupForm: FormGroup;
   duplicateGroupMsg: boolean= false;
 
 
-  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService) { }
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService) { }
 
   ngOnInit() {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = parseInt(localStorage.getItem("accountId"));
     this.landmarkGroupForm = this._formBuilder.group({
       landmarkGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       landmarkGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
@@ -86,12 +91,12 @@ export class CreateEditViewGroupComponent implements OnInit {
   loadPOISelectedData(tableData: any){
     let selectedPOIList: any = [];
     if(this.actionType == 'view'){
-    //   tableData.forEach((row: any) => {
-    //     let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-    //     if (search.length > 0) {
-    //       selectedPOIList.push(row);
-    //     }
-    //   });
+      tableData.forEach((row: any) => {
+        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
+        if (search.length > 0) {
+          selectedPOIList.push(row);
+        }
+      });
       tableData = selectedPOIList;
       this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName',, 'address'];
       this.updatePOIDataSource(tableData);
@@ -102,12 +107,12 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   selectPOITableRows(){
-    // this.dataSource.data.forEach((row: any) => {
-    //   let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-    //   if (search.length > 0) {
-    //     this.selectedPOI.select(row);
-    //   }
-    // });
+    this.poiDataSource.data.forEach((row: any) => {
+      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
+      if (search.length > 0) {
+        this.selectedPOI.select(row);
+      }
+    });
   }
 
 
@@ -123,12 +128,12 @@ export class CreateEditViewGroupComponent implements OnInit {
   loadGeofenceSelectedData(tableData: any){
     let selectedGeofenceList: any = [];
     if(this.actionType == 'view'){
-    //   tableData.forEach((row: any) => {
-    //     let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-    //     if (search.length > 0) {
-    //       selectedGeofenceList.push(row);
-    //     }
-    //   });
+      tableData.forEach((row: any) => {
+        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+        if (search.length > 0) {
+          selectedGeofenceList.push(row);
+        }
+      });
       tableData = selectedGeofenceList;
       this.displayedColumnsGeofence= ['geofenceName', 'categoryName', 'subCategoryName'];
       this.updateGeofenceDataSource(tableData);
@@ -139,27 +144,27 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   selectGeofenceTableRows(){
-    // this.dataSource.data.forEach((row: any) => {
-    //   let search = this.selectedRowData.groupRef.filter((item: any) => item.refId == row.id);
-    //   if (search.length > 0) {
-    //     this.selectedPOI.select(row);
-    //   }
-    // });
+    this.geofenceDataSource.data.forEach((row: any) => {
+      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+      if (search.length > 0) {
+        this.selectedGeofence.select(row);
+      }
+    });
   }
 
   updatePOIDataSource(tableData: any){
     this.poiDataSource= new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.poiDataSource.paginator = this.paginator;
-      this.poiDataSource.sort = this.sort;
+      this.poiDataSource.paginator = this.poiPaginator;
+      this.poiDataSource.sort = this.poiSort;
     });
   }
 
   updateGeofenceDataSource(tableData: any){
     this.geofenceDataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.geofenceDataSource.paginator = this.paginator;
-      this.geofenceDataSource.sort = this.sort;
+      this.geofenceDataSource.paginator = this.geofencePaginator;
+      this.geofenceDataSource.sort = this.geofenceSort;
     });
   }
 
@@ -180,76 +185,87 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   onCreateUpdate() {
-    this.duplicateEmailMsg = false;
-    let accountList = [];
+    this.duplicateGroupMsg = false;
+    let landmarkList = [];
     this.selectedPOI.selected.forEach(element => {
-      accountList.push({ "accountGroupId": (this.actionType == 'create' ? 0 : this.selectedRowData.id), "accountId": element.id })
+      landmarkList.push({"id": element.id, type: "P"  })
     });
+    this.selectedGeofence.selected.forEach(element => {
+      landmarkList.push({"id": element.geofenceId, type: element.type ? element.type : "O"  }) //"O" for polygon geofence
+    })
     if(this.actionType == 'create'){ // create
-      // let createAccGrpObj = {
-      //     id: 0,
-      //     name: this.landmarkGroupForm.controls.landmarkGroupName.value,
-      //     organizationId: this.OrgId,
-      //     refId: 0,
-      //     description: this.landmarkGroupForm.controls.landmarkGroupDescription.value,
-      //     groupType: this.landmarkGroupForm.controls.groupType.value,
-      //     accounts: this.showUserList ? accountList : []
-      //   }
-      //   this.accountService.createAccountGroup(createAccGrpObj).subscribe((d) => {
-      //     let accountGrpObj: any = {
-      //       accountId: 0,
-      //       organizationId: this.OrgId,
-      //       accountGroupId: 0,
-      //       vehicleGroupId: 0,
-      //       roleId: 0,
-      //       name: ""
-      //     }
-      //     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((accountGrpData: any) => {
-      //       this.userCreatedMsg = this.getUserCreatedMessage();
-      //       let emitObj = { stepFlag: false, gridData: accountGrpData, successMsg: this.userCreatedMsg };
-      //       this.backToPage.emit(emitObj);
-      //     }, (err) => { });
-      //   }, (err) => {
-      //     //console.log(err);
-      //     if (err.status == 409) {
-      //       this.duplicateEmailMsg = true;
-      //     }
-      //   });
+      let createGrpObj = {
+          id: 0,
+          organizationId: this.OrgId,
+          name: this.landmarkGroupForm.controls.landmarkGroupName.value,
+          description: this.landmarkGroupForm.controls.landmarkGroupDescription.value,
+          iconId: 0,
+          state: "",
+          createdAt: 0,
+          createdBy: this.accountId,
+          modifiedAt: 0,
+          modifiedBy: 0,
+          poilist: landmarkList
+        }
+        
+        this.landmarkGroupService.createLandmarkGroup(createGrpObj).subscribe((response) => {
+          let objData = { 
+              organizationid : this.OrgId,
+          };
+          this.landmarkGroupService.getLandmarkGroups(objData).subscribe((landmarkGrpData: any) => {
+            this.groupCreatedMsg = this.getGroupCreatedMessage();
+            let emitObj = { actionFlag: false, gridData: landmarkGrpData["groups"], successMsg: this.groupCreatedMsg };
+            this.backToPage.emit(emitObj);
+          }, (err) => { });
+        }, (err) => {
+          //console.log(err);
+          if (err.status == 409) {
+            this.duplicateGroupMsg = true;
+          }
+        });
     }
     else{ // update
-      // let updateAccGrpObj = {
-      //   id: this.selectedRowData.id,
-      //   name: this.landmarkGroupForm.controls.landmarkGroupName.value,
-      //   organizationId: this.selectedRowData.organizationId,
-      //   refId: 0,
-      //   description: this.landmarkGroupForm.controls.landmarkGroupDescription.value,
-      //   groupType: this.landmarkGroupForm.controls.groupType.value,
-      //   accounts: this.showUserList ? accountList : []
-      // }
-      // this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
-      //   let accountGrpObj: any = {
-      //     accountId: 0,
-      //     organizationId: this.OrgId,
-      //     accountGroupId: 0,
-      //     vehicleGroupId: 0,
-      //     roleId: 0,
-      //     name: ""
-      //   }
-      //   this.accountService.getAccountGroupDetails(accountGrpObj).subscribe((accountGrpData: any) => {
-      //     this.userCreatedMsg = this.getUserCreatedMessage();
-      //     let emitObj = { stepFlag: false, gridData: accountGrpData, successMsg: this.userCreatedMsg };
-      //     this.backToPage.emit(emitObj);
-      //   }, (err) => { });
-      // }, (err) => {
-      //   //console.log(err);
-      //   if (err.status == 409) {
-      //     this.duplicateEmailMsg = true;
-      //   }
-      // });
+      let updateGrpObj = {
+        id: this.selectedRowData.id,
+        organizationId: this.OrgId,
+        name: this.landmarkGroupForm.controls.landmarkGroupName.value,
+        description: this.landmarkGroupForm.controls.landmarkGroupDescription.value,
+        iconId: 0,
+        state: "",
+        createdAt: 0,
+        createdBy: this.accountId,
+        modifiedAt: 0,
+        modifiedBy: 0,
+        poilist: landmarkList
+      }
+
+      this.landmarkGroupService.updateLandmarkGroup(updateGrpObj).subscribe((d) => {
+        let accountGrpObj: any = {
+          accountId: 0,
+          organizationId: this.OrgId,
+          accountGroupId: 0,
+          vehicleGroupId: 0,
+          roleId: 0,
+          name: ""
+        }
+        let objData = { 
+          organizationid : this.OrgId,
+        };
+        this.landmarkGroupService.getLandmarkGroups(objData).subscribe((landmarkGrpData: any) => {
+        this.groupCreatedMsg = this.getGroupCreatedMessage();
+        let emitObj = { actionFlag: false, gridData: landmarkGrpData["groups"], successMsg: this.groupCreatedMsg };
+        this.backToPage.emit(emitObj);
+      }, (err) => { });
+      }, (err) => {
+        //console.log(err);
+        if (err.status == 409) {
+          this.duplicateGroupMsg = true;
+        }
+      });
     }
   }
 
-  getUserCreatedMessage() {
+  getGroupCreatedMessage() {
     let groupName = `${this.landmarkGroupForm.controls.landmarkGroupName.value}`;
     if(this.actionType == 'create') {
       if(this.translationData.lblLandmarkGroupCreatedSuccessfully)

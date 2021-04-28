@@ -128,6 +128,8 @@ string ParentCategoryName =5;
 string SubCategoryName =6;
 int32 No_Of_POI =7;
 int32 No_Of_Geofence =8;
+string Description =9;
+int64 Created_At =10;
 
 }
 

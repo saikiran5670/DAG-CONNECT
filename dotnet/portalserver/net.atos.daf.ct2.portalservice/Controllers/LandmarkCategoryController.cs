@@ -27,13 +27,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient, AuditHelper auditHelper, OrganizationService.OrganizationServiceClient organizationClient, Common.AccountPrivilegeChecker privilegeChecker)
+        private readonly HeaderObj _userDetails;
+        public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
+            AuditHelper auditHelper, OrganizationService.OrganizationServiceClient organizationClient, Common.AccountPrivilegeChecker privilegeChecker
+            , IHttpContextAccessor _httpContextAccessor)
         {
             _categoryServiceClient = categoryServiceClient;
             _auditHelper = auditHelper;
             _categoryMapper = new CategoryMapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
 
@@ -46,7 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.Organization_Id == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege(Request);
+                    bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global category.");
                 }
@@ -113,7 +117,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 if (request.Organization_Id == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege(Request);
+                    bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot edit global category.");
                 }
@@ -156,7 +160,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                bool hasRights = await HasAdminPrivilege(Request);
+                bool hasRights = await HasAdminPrivilege();
 
                 if (request.Id <= 0)
                 {
@@ -328,16 +332,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [NonAction]
-        public async Task<bool> HasAdminPrivilege(HttpRequest request)
+        public async Task<bool> HasAdminPrivilege()
         {
             bool Result = false;
             try
             {
-                var headerData = _auditHelper.GetHeaderData(request);
-                int roleid = headerData.roleId;
-                int organizationid = headerData.orgId;
-                //int Accountid = headerData.accountId;
-                int level = await _privilegeChecker.GetLevelByRoleId(organizationid, roleid);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else

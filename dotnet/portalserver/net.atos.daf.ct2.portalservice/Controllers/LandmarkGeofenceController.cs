@@ -28,13 +28,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker)
+        private readonly HeaderObj _userDetails;
+        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker
+            , IHttpContextAccessor _httpContextAccessor)
         {
             _GeofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.Geofence.Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
+             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
 
         }
 
@@ -49,7 +52,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  _logger.Info("CreatePolygonGeofence method in Geofence API called.");
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege(Request);
+                    bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
                 }
@@ -463,16 +466,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
         [NonAction]
-        public async Task<bool> HasAdminPrivilege(HttpRequest request)
+        public async Task<bool> HasAdminPrivilege()
         {
             bool Result = false;
             try
             {
-                var headerData = _auditHelper.GetHeaderData(request);
-                int roleid = headerData.roleId;
-                int organizationid = headerData.orgId;
-                //int Accountid = headerData.accountId;
-                int level = await _privilegeChecker.GetLevelByRoleId(organizationid, roleid);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else

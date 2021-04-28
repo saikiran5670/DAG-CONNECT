@@ -25,16 +25,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
-
+        private readonly HeaderObj _userDetails;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker)
+        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, 
+            Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.POI.Mapper();
             _privilegeChecker = privilegeChecker;
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpGet]
@@ -80,7 +82,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege(Request);
+                    bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
                 }
@@ -134,7 +136,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege(Request);
+                    bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
                 }
@@ -413,16 +415,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         [NonAction]
-        public async Task<bool> HasAdminPrivilege(HttpRequest request)
+        public async Task<bool> HasAdminPrivilege()
         {
             bool Result = false;
             try
             {
-                var headerData = _auditHelper.GetHeaderData(request);
-                int roleid = headerData.roleId;
-                int organizationid = headerData.orgId;
-                //int Accountid = headerData.accountId;
-                int level = await _privilegeChecker.GetLevelByRoleId(organizationid, roleid);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else
@@ -435,7 +433,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             return Result;
         }
 
+        [HttpGet]
+        [Route("test")]
+        public async Task<IActionResult> GetLevelForTest()
+        {
+            try
+            {
+                return Ok(JsonConvert.SerializeObject(Request.Headers["Headerobj"]));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex);
+            }
+        }
 
+        [HttpGet]
+        [Route("test2")]
+        public async Task<IActionResult> GetLevelForTest2()
+        {
+            try
+            {
+                return Ok(JsonConvert.SerializeObject(Request.Headers["headerObj"]));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex);
+            }
+        }
     }
 }
 

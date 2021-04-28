@@ -47,7 +47,7 @@ export class LandmarkGroupService {
    };
      const options =  { params: new HttpParams(data), headers: headers };
      return this.httpClient
-       .get<any[]>(`${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}`,headers)
+       .get<any[]>(data.groupid ? `${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}&groupid=${data.groupid}` : `${this.landmarkGroupServiceUrl}/get?Organizationid=${data.organizationid}`,headers)
        .pipe(catchError(this.handleError));
    }
 
@@ -59,6 +59,26 @@ export class LandmarkGroupService {
     let data = { groupId: groupId };
    return this.httpClient
       .post<any>(`${this.landmarkGroupServiceUrl}/delete?GroupId=${groupId}`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  createLandmarkGroup(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.landmarkGroupServiceUrl}/create`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateLandmarkGroup(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.landmarkGroupServiceUrl}/update`, data, headers)
       .pipe(catchError(this.handleError));
   }
 }
