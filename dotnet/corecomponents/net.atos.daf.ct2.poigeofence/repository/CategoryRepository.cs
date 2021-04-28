@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
@@ -78,9 +79,46 @@ namespace net.atos.daf.ct2.poigeofence.repository
             log.Info("Delete Category method called in repository");
             try
             {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var parameter = new DynamicParameters();
+
+                    var temp = await DeleteSubCategory(categoryId);
+
+                    var Deletecategory = @"update master.category set state='D' 
+                                   WHERE id = @ID RETURNING id ";
+
+                    parameter.Add("@ID", categoryId);
+
+                    var id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
+
+                    transactionScope.Complete();
+                    if (id > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+        public async Task<bool> updateSubCategory(int categoryId)
+        {
+            log.Info("updateSubCategory  method called in repository");
+            try
+            {
                 var parameter = new DynamicParameters();
+
                 var Deletecategory = @"update master.category set state='D' 
-                                   WHERE id= @ID  RETURNING id ";
+                                   WHERE id = @ID RETURNING id ";
 
                 parameter.Add("@ID", categoryId);
 
@@ -93,14 +131,44 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     return false;
                 }
-               
+
             }
             catch (Exception ex)
             {
-                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
+                log.Info("updateSubCategory method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
                 log.Error(ex.ToString());
                 throw ex;
             }
+        }
+        public async Task<IEnumerable<int>> DeleteSubCategory(int categoryId)
+        {
+            try
+            {
+
+                List<int> obj = new List<int>();
+                var parameter = new DynamicParameters();
+                var query = @"select id, name  from master.category where parent_id = @categoryId ";
+                parameter.Add("@categoryId", categoryId);
+                IEnumerable<int> subCategoryDetails = await _dataAccess.QueryAsync<int>(query, parameter);
+                if (subCategoryDetails != null)
+                {
+                    foreach (dynamic record in subCategoryDetails)
+                    {
+                        obj.Add(record);
+
+                        updateSubCategory(record);
+                    }
+                }
+
+                return obj;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
         }
 
         public async Task<Category> EditCategory(Category category)
@@ -226,8 +294,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                     if (categoryFilter.OrganizationId > 0)
                     {
+                        //It will return organization specific category/subcategory
                         parameter.Add("@organization_id", categoryFilter.OrganizationId);
-                        getQuery = getQuery + " and organization_id=@organization_id ";
+                        getQuery = getQuery + " and organization_id=@organization_id or organization_id is null ";
+                    }
+                    else
+                    {
+                        //only return global poi
+                        getQuery = getQuery + " and organization_id is null ";
                     }
                     parameter.Add("@State", "A");
                     getQuery = getQuery + " and state= @State ";
@@ -332,7 +406,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 getQuery = @"with result As
                             (
-                            select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon
+                            select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
+							pcat.description,pcat.created_at
                             from master.category pcat
                             left join master.category scat on pcat.id = scat.parent_id
                             where pcat.type ='C' and pcat.state ='A'
@@ -341,7 +416,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             (select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') ) as No_of_Geofence,
                             (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
                             r.Parent_category_Icon As IconId,
-                            (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon
+                            (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
+							r.description,r.created_at
                             from result r ";
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 

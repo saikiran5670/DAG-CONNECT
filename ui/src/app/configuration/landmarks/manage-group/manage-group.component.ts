@@ -77,12 +77,11 @@ export class ManageGroupComponent implements OnInit {
   
     this.landmarkGroupService.getLandmarkGroups(objData).subscribe((data: any) => {
       this.hideloader();
-      this.initData = data["groups"];
-      if(this.initData.length == 0) //temporary change
-        this.prepareMockData();
-      this.updateDatasource(this.initData);
+      if(data){
+        this.initData = data["groups"];
+        this.updateDatasource(this.initData);
+      }
     }, (error) => {
-      this.prepareMockData();
       //console.log(error)
       this.hideloader();
     });
@@ -98,23 +97,6 @@ export class ManageGroupComponent implements OnInit {
       this.dataSource.sort = this.sort;
     });
   }
-
-  prepareMockData(){
-    this.initData = [{
-      name: 'Group-1', 
-      poiCount: 4, 
-      geofenceCount: 5,
-      createdAt: new Date().getTime()
-    },
-    {
-      name: 'Group-2', 
-      poiCount: 0, 
-      geofenceCount: 8,
-      createdAt: new Date().getTime()
-    }];
-    this.updateDatasource(this.initData);
-  }
-
 
   getNewTagData(data: any){
     let currentDate = new Date().getTime();
@@ -177,20 +159,23 @@ export class ManageGroupComponent implements OnInit {
   }
 
   editViewlandmarkGroup(row: any, actionType: any){
+    if(actionType == 'edit'){ //temporary change as view is not working
     this.tabVisibility.emit(false);
-    this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
-    this.selectedRowData = row;
-    this.actionType = actionType;
-    this.createViewEditStatus = true;
-    // let objData = {
-      
-    // }
-    //   this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
-     //  this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
-    //   this.selectedRowData = usrlist[0];
-    //   this.actionType = actionType;
-    //   this.createViewEditStatus = true;
-    // });
+    // this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
+    // this.selectedRowData = row;
+    // this.actionType = actionType;
+    // this.createViewEditStatus = true;
+    let objData = { 
+      organizationid : this.organizationId,
+      groupid : row.id
+   };
+      this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
+      this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
+      this.selectedRowData = groupDetails["groups"][0];
+      this.actionType = actionType;
+      this.createViewEditStatus = true;
+    });
+  }
   }
 
   getDeletMsg(groupName: any){

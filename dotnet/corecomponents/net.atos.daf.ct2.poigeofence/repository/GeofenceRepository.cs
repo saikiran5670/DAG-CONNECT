@@ -188,36 +188,25 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 if (geofenceEntityRequest.organization_id > 0)
                 {
+                    //It will return organization specific geofence along with global geofence 
                     parameter.Add("@organization_id", geofenceEntityRequest.organization_id);
-                    query = $"{query} and L.organization_id=@organization_id ";
-
-                    if (geofenceEntityRequest.category_id > 0)
-                    {
-                        parameter.Add("@category_id", geofenceEntityRequest.category_id);
-                        query = $"{query} and L.category_id=@category_id";
-                    }
-
-                    if (geofenceEntityRequest.sub_category_id > 0)
-                    {
-                        parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
-                        query = $"{query} and L.sub_category_id=@sub_category_id";
-                    }
+                    query = $"{query} and L.organization_id=@organization_id or L.organization_id is null ";
                 }
                 else
                 {
-                    if (geofenceEntityRequest.category_id > 0)
-                    {
-                        parameter.Add("@category_id", geofenceEntityRequest.category_id);
-                        query = $"{query} and L.category_id=@category_id";
-                    }
-
-                    if (geofenceEntityRequest.sub_category_id > 0)
-                    {
-                        parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
-                        query = $"{query} and L.sub_category_id=@sub_category_id";
-                    }
+                    //only return global geofence 
+                    query = $"{query} and L.organization_id=null ";
                 }
-
+                if (geofenceEntityRequest.category_id > 0)
+                {
+                    parameter.Add("@category_id", geofenceEntityRequest.category_id);
+                    query = $"{query} and L.category_id=@category_id";
+                }
+                if (geofenceEntityRequest.sub_category_id > 0)
+                {
+                    parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
+                    query = $"{query} and L.sub_category_id=@sub_category_id";
+                }
                 return await dataAccess.QueryAsync<GeofenceEntityResponce>(query, parameter);
             }
             catch (System.Exception ex)

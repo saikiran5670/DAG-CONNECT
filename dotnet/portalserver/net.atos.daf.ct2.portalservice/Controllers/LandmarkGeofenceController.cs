@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using log4net;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -24,14 +25,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly GeofenceService.GeofenceServiceClient _GeofenceServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.Geofence.Mapper _mapper;
+        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper)
+        private readonly HeaderObj _userDetails;
+        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker
+            , IHttpContextAccessor _httpContextAccessor)
         {
             _GeofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.Geofence.Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _privilegeChecker = privilegeChecker;
+             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+
         }
 
         #region Geofence
@@ -43,7 +50,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                  _logger.Info("CreatePolygonGeofence method in Geofence API called.");
-
+                if (request.OrganizationId == 0)
+                {
+                    bool hasRights = await HasAdminPrivilege();
+                    if (!hasRights)
+                        return StatusCode(400, "You cannot create global poi.");
+                }
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
                 {
@@ -453,5 +465,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
+        [NonAction]
+        public async Task<bool> HasAdminPrivilege()
+        {
+            bool Result = false;
+            try
+            {
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                if (level == 10 || level == 20)
+                    Result = true;
+                else
+                    Result = false;
+            }
+            catch (Exception ex)
+            {
+                Result = false;
+            }
+            return Result;
+        }
     }
 }

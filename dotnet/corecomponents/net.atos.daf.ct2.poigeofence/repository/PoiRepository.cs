@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         public async Task<List<POI>> GetAllPOI(POI poiFilter)
         {
             try
-            {
+            {              
                 var parameter = new DynamicParameters();
                 List<POI> pois = new List<POI>();
                 string query = string.Empty;
@@ -97,10 +97,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             l.created_at as createdat,
                             l.created_by as createdby,
                             l.modified_at as modifiedat,
-                            l.modified_by as modifiedby
+                            l.modified_by as modifiedby,
+                            icon.icon
                             FROM master.landmark l
                             LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
                             LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
+                            LEFT JOIN MASTER.icon icon on icon.id = c.icon_id
                             WHERE 1=1 and l.state in ('A','I') ";
 
                 if (poiFilter.Id > 0)
@@ -110,8 +112,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 if (poiFilter.OrganizationId > 0)
                 {
+                    //It will return organization specific geofence along with global geofence 
                     parameter.Add("@organization_id", poiFilter.OrganizationId);
-                    query = query + " and l.organization_id = @organization_id ";
+                    query = query + " and l.organization_id = @organization_id or l.organization_id is null ";
+                }
+                else
+                {
+                    //only return global geofence
+                    query = $"{query} and L.organization_id=null ";
                 }
                 if (poiFilter.CategoryId > 0)
                 {
@@ -478,6 +486,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             POI poi = new POI();
             poi.Id = record.id;
+            poi.icon = record.icon !=null ?record.icon: new Byte[] { };
             poi.OrganizationId = record.organizationid != null ? record.organizationid : 0;
             poi.CategoryId = record.categoryid != null ? record.categoryid : 0;
             poi.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;

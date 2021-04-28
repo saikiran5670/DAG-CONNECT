@@ -15,7 +15,10 @@ namespace net.atos.daf.ct2.poigeofence.entity
             public string SubCategory { get; set; }
             public int No_of_POI { get; set; }
             public int No_of_Geofence { get; set; }
-            public List<CategoryList> CategoryLists { get; set; }
+            public string Description { get; set; }
+            public long Created_at { get; set; }
+
+        public List<CategoryList> CategoryLists { get; set; }
 
         
     }

@@ -951,6 +951,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("getlevel")]
+        public async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        {
+            int level = -1;
+            try
+            {
+                LevelByRoleRequest request = new LevelByRoleRequest();
+                request.OrgId = orgId;
+                request.RoleId = roleId;
+                LevelResponse response = await organizationClient.GetLevelByRoleIdAsync(request);
+                if (response != null && response.Code == organizationservice.Responcecode.Success)
+                {
+                    level = response.Level;
+                }
+                else
+                {
+                    level = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                level = -1;
+            }
+            return level;
+        }
     }
 }
 

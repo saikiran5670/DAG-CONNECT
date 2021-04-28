@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
     public class POI
     {
         public int Id { get; set; }
+        public byte[] Icon { get; set; }
         public int OrganizationId { get; set; }
         [Required]
         public int CategoryId { get; set; }

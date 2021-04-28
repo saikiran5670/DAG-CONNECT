@@ -205,6 +205,8 @@ namespace net.atos.daf.ct2.poigeofenservice
                     catdetails.SubCategoryName = item.SubCategory == null ? "" : item.SubCategory;
                     catdetails.NoOfPOI = item.No_of_POI;
                     catdetails.NoOfGeofence = item.No_of_Geofence;
+                    catdetails.Description = !string.IsNullOrEmpty(item.Description) ? item.Description : string.Empty;
+                    catdetails.CreatedAt = item.Created_at;
                     response.Categories.Add(catdetails);
 
                 }
