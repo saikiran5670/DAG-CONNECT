@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _geofenceRepository = new PoiRepository(_dataAccess);
+           // _geofenceRepository = new PoiRepository(_dataAccess);
         }
 
     }
