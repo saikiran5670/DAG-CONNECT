@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 {
                     var Data = new GetCategoryType();
                     Data.Id = item.Id;
-                    Data.Name = item.Name;
+                    Data.Name = !string.IsNullOrEmpty(item.Name) ? item.Name : string.Empty;
                     response.Categories.Add(Data);
                 }
 
@@ -256,5 +256,6 @@ namespace net.atos.daf.ct2.poigeofenservice
         //}
 
         // END - Category
+
     }
 }
