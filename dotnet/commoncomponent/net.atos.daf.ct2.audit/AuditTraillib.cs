@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.audit
                          
         }
 
-        public async Task<int> AddLogs(DateTime Created_at,DateTime Performed_at,int Performed_by, string Component_name,string Service_name,AuditTrailEnum.Event_type Event_type,AuditTrailEnum.Event_status Event_status,string Message,int Sourceobject_id,int Targetobject_id,string Updated_data)
+        public async Task<int> AddLogs(DateTime Created_at,DateTime Performed_at,int Performed_by, string Component_name,string Service_name,AuditTrailEnum.Event_type Event_type,AuditTrailEnum.Event_status Event_status,string Message,int Sourceobject_id,int Targetobject_id,string Updated_data,int roleid,int organizationid)
         {
             try
             {
@@ -47,7 +47,9 @@ namespace net.atos.daf.ct2.audit
                 logs.Event_status = Event_status;  
                 logs.Message = Message;  
                 logs.Sourceobject_id = Sourceobject_id;  
-                logs.Targetobject_id = Targetobject_id;  
+                logs.Targetobject_id = Targetobject_id;
+                logs.Role_Id = Targetobject_id;
+                logs.Organization_Id = Targetobject_id;
                 logs.Updated_data = Newtonsoft.Json.JsonConvert.SerializeObject(Updated_data);                
                 return await AddLogs(logs);
                

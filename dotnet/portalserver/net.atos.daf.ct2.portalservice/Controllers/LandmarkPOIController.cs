@@ -439,7 +439,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                return Ok(JsonConvert.SerializeObject(_userDetails));
+                return Ok(JsonConvert.SerializeObject(Request.Headers["Headerobj"]));
             }
             catch (Exception ex)
             {
@@ -453,7 +453,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                return Ok(JsonConvert.SerializeObject(Request.Headers));
+                return Ok(JsonConvert.SerializeObject(Request.Headers["headerObj"]));
             }
             catch (Exception ex)
             {
