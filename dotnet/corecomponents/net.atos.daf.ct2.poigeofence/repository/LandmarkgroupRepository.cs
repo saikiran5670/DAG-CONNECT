@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@organization_id", organizationid);
                     query = query + " and lg.organization_id=@organization_id";
                 }
-                else if (groupid > 1)
+                if (groupid > 1)
                 {
                     parameter.Add("@id", groupid);
                     query = query + " and lg.id=@id";
