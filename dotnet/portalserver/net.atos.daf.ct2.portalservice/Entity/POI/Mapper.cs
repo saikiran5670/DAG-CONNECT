@@ -75,5 +75,34 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         }
 
 
+
+        public LandmarkType Maplandmarktype(string type)
+        {
+            var landmarktype = LandmarkType.None;
+            switch (type)
+            {
+                case "C":
+                    landmarktype = LandmarkType.CircularGeofence;
+                    break;
+                case "R":
+                    landmarktype = LandmarkType.Corridor;
+                    break;
+                case "N":
+                    landmarktype = LandmarkType.None;
+                    break;
+                case "P":
+                    landmarktype = LandmarkType.POI;
+                    break;
+                case "O":
+                    landmarktype = LandmarkType.PolygonGeofence;
+                    break;
+                case "U":
+                    landmarktype = LandmarkType.Route;
+                    break;
+               
+
+            }
+            return landmarktype;
+        }
     }
 }

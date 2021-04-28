@@ -28,13 +28,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, OrganizationService.OrganizationServiceClient organizationClient,AuditHelper auditHelper)
+        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, OrganizationService.OrganizationServiceClient organizationClient,AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.POI.Mapper();
-            _privilegeChecker = new Common.AccountPrivilegeChecker(_organizationClient);
+            //_privilegeChecker = new Common.AccountPrivilegeChecker(_organizationClient);
+            _privilegeChecker = privilegeChecker;
         }
 
         [HttpGet]

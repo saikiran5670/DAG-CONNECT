@@ -98,13 +98,13 @@
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
           <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                <input matInput (keyup)="applyFilterForPOI($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
           </div>
         </div>
         <div>
-          <mat-table [dataSource]="dataSource" class="table-items" matSort>
+          <mat-table [dataSource]="poiDataSource" class="table-items" matSort>
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
@@ -130,13 +130,13 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
                 <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="category">
+              <ng-container matColumnDef="categoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.category }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
               </ng-container>
-              <ng-container matColumnDef="subCategory">
+              <ng-container matColumnDef="subCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subCategory }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="address">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Address</mat-header-cell>
@@ -162,13 +162,13 @@
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
           <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                <input matInput (keyup)="applyFilterForGeofence($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
           </div>
         </div>
         <div>
-          <mat-table [dataSource]="dataSource" class="table-items" matSort>
+          <mat-table [dataSource]="geofenceDataSource" class="table-items" matSort>
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)='$event ? masterToggleForGeofence() : null'
@@ -184,17 +184,17 @@
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="name">
+            <ng-container matColumnDef="geofenceName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="category">
+            <ng-container matColumnDef="categoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.category }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="subCategory">
+            <ng-container matColumnDef="subCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subCategory }}</mat-cell>
+                <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumnsGeofence"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumnsGeofence;">
