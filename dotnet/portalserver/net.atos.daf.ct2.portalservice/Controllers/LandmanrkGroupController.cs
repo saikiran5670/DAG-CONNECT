@@ -27,6 +27,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _groupServiceclient = groupService;
             _auditHelper = auditHelper;
+            _mapper = new Entity.POI.Mapper();
         }
 
         [HttpPost]
@@ -42,30 +43,43 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objgroup.Name = request.Name;
                 objgroup.Description = request.Description;
                 objgroup.CreatedBy = request.CreatedBy;
-                objgroup.State  = request.State;                
-               
+                objgroup.State = request.State;
+                if (request.OrganizationId == 0)
+                {
+                    return StatusCode(400, "Organization id is required");
+                }
                 foreach (var item in request.Poilist)
                 {
                     PoiId pOI = new PoiId();
+                    if (item.ID == 0)
+                    {
+                        return StatusCode(400, "Poi id is required");
+                    }
                     pOI.Poiid = item.ID;
-                    pOI.Type = item.Type;
+
+                    pOI.Type = _mapper.Maplandmarktype(item.Type).ToString();
+                    if (pOI.Type == "None")
+                    {
+                        return StatusCode(400, "Invalid POI type");
+                    }
+
                     objgroup.PoiIds.Add(pOI);
                 }
                 var result = await _groupServiceclient.CreateAsync(objgroup);
-                
+
                 if (result != null && result.Code == Responcecodes.Conflict)
                 {
                     return StatusCode(400, result.Message);
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
-                    //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
-                    //"POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    //"Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    //Request);
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "Create method in Group controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                    Request);
                     return Ok(result);
                 }
-                else 
+                else
                 {
                     if (result.Message.Contains(FK_Constraint))
                     {
@@ -96,21 +110,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Group ID is required");
                 }
-                if (request.Poilist.Count < 1 )
+                if (request.Poilist.Count < 1)
                 {
                     return StatusCode(400, "POI List is required.");
                 }
                 _logger.Info("Update Group.");
 
                 GroupUpdateRequest objgroup = new GroupUpdateRequest();
-                objgroup.Id = request.Id;                
+                objgroup.Id = request.Id;
                 objgroup.Name = request.Name;
                 objgroup.Description = request.Description;
                 foreach (var item in request.Poilist)
                 {
                     PoiId pOI = new PoiId();
+                    if (item.ID == 0)
+                    {
+                        return StatusCode(400, "Poi id is required");
+                    }
                     pOI.Poiid = item.ID;
-                    pOI.Type = item.Type;
+                    pOI.Type = _mapper.Maplandmarktype(item.Type).ToString();
+                    if (pOI.Type == "None")
+                    {
+                        return StatusCode(400, "Invalid POI type");
+                    }
+
                     objgroup.PoiIds.Add(pOI);
                 }
                 var result = await _groupServiceclient.UpdateAsync(objgroup);
@@ -153,12 +176,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("delete")]
-        public async Task<IActionResult> Delete(int GroupId,int modifiedby)
+        public async Task<IActionResult> Delete(int GroupId, int modifiedby)
         {
             //GroupAddRequest objgroup = new GroupAddRequest();
             try
             {
-                if (GroupId ==0)
+                if (GroupId == 0)
                 {
                     return StatusCode(400, "Group ID is required");
                 }
@@ -168,7 +191,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objgroup.Id = GroupId;
                 objgroup.Modifiedby = modifiedby;
 
-               
+
                 var result = await _groupServiceclient.DeleteAsync(objgroup);
 
                 if (result != null && result.Code == Responcecodes.Failed)
@@ -233,7 +256,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(404, "Group details not found");
                     }
-                    
+
                 }
                 else
                 {

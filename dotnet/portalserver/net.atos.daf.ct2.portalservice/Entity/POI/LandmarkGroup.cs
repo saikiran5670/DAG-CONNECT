@@ -27,7 +27,20 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
 
     public class GroupPois
     {
+        [Required]
         public int ID { get; set; }
+        [Required]
         public string Type { get; set; }
+    }
+
+    public enum LandmarkType
+    {
+        None = 'N',
+        POI = 'P',
+        CircularGeofence = 'C',
+        PolygonGeofence = 'O',
+        Corridor = 'R',
+        Route = 'U'
+
     }
 }
