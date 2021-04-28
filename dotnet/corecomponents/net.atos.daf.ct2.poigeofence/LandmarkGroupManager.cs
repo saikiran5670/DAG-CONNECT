@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.poigeofence
                             obj.SubCategoryName = item.subcategoryname;
                             obj.Address = item.address;
                             obj.icon = item.icon;
-                            obj.Type = item.type.ToString();
+                            obj.Type = Convert.ToString((char)item.type);
                             group.PoiList.Add(obj);
                                              
                     }
