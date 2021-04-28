@@ -36,6 +36,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                 {
                     headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
                 }
+                else if (Headers.Any(item => item.Key == "Headerobj"))
+                {
+                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
+                }
             }
             return headerObj;
         }
