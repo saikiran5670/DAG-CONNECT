@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else
                 {
-                    response.Message = "POI is not Update";
+                    response.Message = "POI is not Updated";
                     response.Code = Responsecode.Failed;
                 }
             }
