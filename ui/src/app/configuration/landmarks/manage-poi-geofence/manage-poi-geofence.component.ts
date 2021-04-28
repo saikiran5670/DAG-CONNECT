@@ -9,6 +9,8 @@ import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
+import { QueryList } from '@angular/core';
+import { ViewChildren } from '@angular/core';
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -37,8 +39,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   createEditViewPoiFlag: boolean = false;
   createEditViewGeofenceFlag: boolean = false;
   mapFlag: boolean = false;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   selectedpois = new SelectionModel(true, []);
   selectedgeofences = new SelectionModel(true, []);
   @Output() tabVisibility: EventEmitter<boolean> =   new EventEmitter();
@@ -81,8 +83,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     tableData = this.getNewTagData(tableData);
     this.poidataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.poidataSource.paginator = this.paginator;
-      this.poidataSource.sort = this.sort;
+      this.poidataSource.paginator = this.paginator.toArray()[0];
+      this.poidataSource.sort = this.sort.toArray()[0];
     });
   }
 
@@ -104,8 +106,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     tableData = this.getNewTagData(tableData);
     this.geofencedataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.geofencedataSource.paginator = this.paginator;
-      this.geofencedataSource.sort = this.sort;
+      this.geofencedataSource.paginator = this.paginator.toArray()[1];
+      this.geofencedataSource.sort = this.sort.toArray()[1];
     });
   }
 
