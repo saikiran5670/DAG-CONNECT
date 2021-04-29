@@ -215,8 +215,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   onGeofenceSelection() {
-    console.log("--geofence selection--")
+    this.tabVisibility.emit(false);
     this.createEditViewGeofenceFlag = true;
+    console.log("--geofence selection--",this.createEditViewGeofenceFlag)
   }
 
   editViewPoi(rowData: any, type: any){
