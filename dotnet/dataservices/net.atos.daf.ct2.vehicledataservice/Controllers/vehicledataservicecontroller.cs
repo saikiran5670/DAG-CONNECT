@@ -59,9 +59,12 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                         if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification != null)
                         {
                             logger.LogInformation("UpdateVehicle function called -" + vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN);
+                            if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN.Length != 17)
+                            {
+                                return StatusCode(400, string.Empty);
+                            }
 
-                            if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.VIN) ||
-                                !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate) ||
+                            if (!Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleID.LicensePlate) ||
                                 !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Make) ||
                                 !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.ID) ||
                                 !Common.Common.ValidateFieldLength(50, vehicleData.VehicleUpdatedEvent.Vehicle.VehicleClassification.Series.vehicleRange) ||
@@ -242,7 +245,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     {
                         //Vehicle Named Structure
                         //Chassis
-                        vehicleProperties.Chassis_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.ID.Trim();
+                        vehicleProperties.Chassis_Id = vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.ID;
 
                         //Fuel Tank
                         vehicleProperties.VehicleFuelTankProperties = new List<VehicleFuelTankProperties>();
