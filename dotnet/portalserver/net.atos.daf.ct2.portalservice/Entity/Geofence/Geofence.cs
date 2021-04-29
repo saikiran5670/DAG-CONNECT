@@ -66,6 +66,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         [Required]
         public string Name { get; set; }
         public int ModifiedBy { get; set; }
+        public int OrganizationId { get; set; }
     }
 
     public class GeofenceEntity
