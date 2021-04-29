@@ -21,7 +21,10 @@ namespace net.atos.daf.ct2.features
         {
             return await FeatureRepository.AddFeatureSet(featureSet);
         }
-
+        public async Task<int> GetMinimumLevel(List<Feature> features)
+        {
+            return await FeatureRepository.GetMinimumLevel(features);
+        }
         public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state)
         {
             return await FeatureRepository.GetFeatureSet(FeatureSetId, state);
