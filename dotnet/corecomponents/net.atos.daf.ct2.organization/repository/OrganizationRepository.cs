@@ -1107,7 +1107,7 @@ namespace net.atos.daf.ct2.organization.repository
             parameter.Add("@id", roleId);
             parameter.Add("@organization_id", orgId);
             var data = await dataAccess.ExecuteScalarAsync
-                             (@"select level from master.Role where id=@id and organization_id=@organization_id",
+                             (@"select level from master.Role where id=@id and (organization_id=@organization_id or organization_id  is null)",
                             parameter);
             int level = data != null ? Convert.ToInt32(data) : 0;
             return level;

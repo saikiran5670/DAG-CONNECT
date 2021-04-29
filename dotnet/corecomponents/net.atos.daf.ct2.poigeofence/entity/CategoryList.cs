@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
             public string Description { get; set; }
             public long Created_at { get; set; }
            public string Icon_Name { get; set; }
+           public int Organization_Id { get; set; }
 
         public List<CategoryList> CategoryLists { get; set; }
 

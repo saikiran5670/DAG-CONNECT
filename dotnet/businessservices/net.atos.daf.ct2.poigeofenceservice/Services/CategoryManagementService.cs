@@ -218,6 +218,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     catdetails.Description = !string.IsNullOrEmpty(item.Description) ? item.Description : string.Empty;
                     catdetails.CreatedAt = item.Created_at;
                     catdetails.IconName = !string.IsNullOrEmpty(item.Icon_Name) ? item.Icon_Name : string.Empty;
+                    catdetails.OrganizationId = item.Organization_Id;
                     response.Categories.Add(catdetails);
 
                 }

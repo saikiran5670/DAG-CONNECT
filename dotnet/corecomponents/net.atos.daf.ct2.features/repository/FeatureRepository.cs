@@ -60,6 +60,17 @@ namespace net.atos.daf.ct2.features.repository
            
         }
 
+        public async Task<int> GetMinimumLevel(List<Feature> features)
+        {
+             string featureid= string.Join(",", features.Select(p => p.Id.ToString()));
+            var parameterfeature = new DynamicParameters();
+            parameterfeature.Add("@featureid", featureid);
+            string query = @"select  min(level) from master.feature where id in (" + featureid +")";
+             var minlevel= await dataAccess.ExecuteScalarAsync<int>(query, parameterfeature);
+            return minlevel;
+
+        }
+
         public int AddFeatureSetFeature(int featuresetid, int FeatureID)
         {
                 var parameterfeature = new DynamicParameters();
@@ -154,7 +165,7 @@ namespace net.atos.daf.ct2.features.repository
                 if (level > 0)
                 {
                     parameter.Add("@level", level);
-                    QueryStatement = QueryStatement + " and f.level  = @level";
+                    QueryStatement = QueryStatement + " and f.level  >= @level";
                 }
 
             }
