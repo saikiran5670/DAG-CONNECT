@@ -12,7 +12,7 @@ rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
 rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
 rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
-rpc BulkImportGeofence (BulkGeofenceRequest) returns (GeofenceResponse);
+rpc BulkImportGeofence (BulkGeofenceRequest) returns (BulkGeofenceResponse);
 rpc UpdateCircularGeofence (GeofenceCircularUpdateRequest) returns (GeofenceCircularUpdateResponce);
 }
 
@@ -72,7 +72,7 @@ message GeofenceResponse{
 }
 
 message BulkGeofenceResponse{
-    repeated GeofenceRequest GeofenceRequest =1;
+    repeated GeofenceRequest FailureResult =1;
     Responsecode Code=2;
     int32 FailureCount = 3;
     int32 AddedCount  = 4;

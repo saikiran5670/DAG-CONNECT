@@ -174,6 +174,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 }
             }
             geofence.CreatedBy = geofenceRequest.CreatedBy;
+            geofence.Message = geofenceRequest.Message;
             return geofence;
         }
 
@@ -187,6 +188,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Latitude = nodeRequest.Latitude;
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
+            nodes.Message = nodeRequest.Message;
             return nodes;
         }
 
@@ -307,9 +309,6 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                         CreatedBy = x.CreatedBy
                                     }).ToList());
             return poiResponse;
-        }
-
-
-
+        }        
     }
 }

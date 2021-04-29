@@ -380,7 +380,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 foreach (var request in requests)
                     bulkGeofenceRequest.GeofenceRequest.Add(_mapper.ToGeofenceRequest(request));
                 var response = await _GeofenceServiceClient.BulkImportGeofenceAsync(bulkGeofenceRequest);
-                return StatusCode((int)response.Code, response.Message);
+                return StatusCode((int)response.Code, response);
             }
             catch (Exception ex)
             {

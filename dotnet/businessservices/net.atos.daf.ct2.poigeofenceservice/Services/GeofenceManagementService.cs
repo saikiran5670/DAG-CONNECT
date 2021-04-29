@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     lstGeofenceId.Add(item);
                 }
-                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();               
+                GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
                 objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
                 bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.geofenceservice
             }
         }
 
-        public override async Task<GeofenceResponse> BulkImportGeofence(BulkGeofenceRequest requests, ServerCallContext context)
+        public override async Task<BulkGeofenceResponse> BulkImportGeofence(BulkGeofenceRequest requests, ServerCallContext context)
         {
             try
             {
@@ -260,20 +260,24 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
 
                 var geofenceList = await _geofenceManager.BulkImportGeofence(geofence);
-                var failCount = geofenceList.Where(w => w.IsFailed).Count();
-                var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false).Count();
-                var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false).Count();
-                return await Task.FromResult(new GeofenceResponse
-                {
-                    Code = Responsecode.Success,
-                    Message = failCount > 0 ? $"Bulk Geofence imported with newly Added {addedCount} count, Updated {updateCount} count and failed {failCount} count."
-                                                                                : $"Bulk Geofence imported successfuly with newly Added {addedCount} count, Updated {updateCount} count",
-                });
+                
+                var failCount = geofenceList.Where(w => (w.IsFailed || w.Nodes.Where(w => w.IsFailed).Count() > 0)).Count();
+                var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false && w.Nodes.Where(w => w.IsFailed).Count() == 0).Count();
+                var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false && w.Nodes.Where(w => w.IsFailed).Count() == 0).Count();
+
+                var response = new BulkGeofenceResponse();
+                response.Code = Responsecode.Success;
+                response.FailureCount = failCount;
+                response.AddedCount = addedCount;
+                response.UpdatedCount = updateCount;
+                foreach (var item in geofenceList.Where(w => (w.IsFailed || w.Nodes.Where(w => w.IsFailed).Count() > 0)))
+                    response.FailureResult.Add(_mapper.ToGeofenceRequest(item));
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;                
+                throw ex;
             }
         }
 
