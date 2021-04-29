@@ -191,11 +191,16 @@ export class ManageCategoryComponent implements OnInit {
      });
   }
 
-  getDeletMsg(categoryName: any){
-    if(this.translationData.lblLandmarkCategoryDelete)
-      return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
-    else
-      return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+  getDeletMsg(categoryName?: any){
+    if(categoryName){
+      if(this.translationData.lblLandmarkCategoryDelete)
+        return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
+      else
+        return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+    }
+    else{
+      return this.translationData.lblBulkLandmarkCategoryDelete ? this.translationData.lblBulkLandmarkCategoryDelete : "Landmark category was successfully deleted";
+    }
   }
 
   successMsgBlink(msg: any){
@@ -260,6 +265,7 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onBackToPage(objData: any) {
+    this.selectedCategory.clear();
     this.tabVisibility.emit(true);
     this.createViewEditStatus = objData.stepFlag;
     if(objData.successMsg && objData.successMsg != ''){
@@ -305,6 +311,17 @@ export class ManageCategoryComponent implements OnInit {
     else
       return `${this.selectedCategory.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  onBulkDeleteCategory(){
+   let filterIds:any = this.selectedCategory.selected.map(item => item.parentCategoryId); 
+   let deleteObj: any = {
+    ids: filterIds
+   }
+   this.landmarkCategoryService.deleteBulkLandmarkCategory(deleteObj).subscribe((deletedData: any) => {
+    this.successMsgBlink(this.getDeletMsg());
+    this.loadLandmarkCategoryData();
+   });
   }
 
 }
