@@ -1,4 +1,16 @@
 <div  *ngIf = "!importPOIClicked">
+<div class='bgtrans'>
+  <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
+    style='padding:10px; color:#fff; background: #5dc24e;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ poiCreatedMsg }}
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+    </div>
+  </div>
+</div>
+<div>
 <!-- <app-common-map *ngIf="mapFlag"></app-common-map> -->
 <div *ngIf='!createEditViewGeofenceFlag'>
 <mat-card class='mat-elevation-z' *ngIf='!createEditViewPoiFlag'>
@@ -233,7 +245,7 @@
 <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </mat-card>
 </div>
-<app-create-edit-view-poi *ngIf= "createEditViewPoiFlag" (createViewEditPoiEmit)='checkCreationForPoi($event)'[translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' ></app-create-edit-view-poi>
+<app-create-edit-view-poi *ngIf= "createEditViewPoiFlag" (backToPage)='checkCreationForPoi($event)'[translationData]='translationData' [actionType]='actionType' [selectedElementData]='selectedElementData' ></app-create-edit-view-poi>
 <app-create-edit-view-geofence *ngIf="createEditViewGeofenceFlag" [translationData]='translationData' [actionType]='actionType'></app-create-edit-view-geofence>
 </div>
 <div class='bgtrans' *ngIf = "importPOIClicked">

@@ -49,24 +49,25 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             {
                 var selectedType = string.Empty;
                 long currentdatetime=UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                var contentTypes = this.Request.ContentType.Split(";");
-                if (contentTypes.Any(x => x.Trim().Equals("text/csv")))
-                    selectedType = "text/csv";
-                if (contentTypes.Any(x => x.Trim().Equals("application/json")))
-                    selectedType = "application/json";
+                if(string.IsNullOrEmpty(this.Request.ContentType))
+                    return StatusCode(400, string.Empty);
 
-                await AuditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get mileage method vehicle mileage service", 1, 2, selectedType, 0,0);                               
+                await AuditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
+                
+                var contentTypes = this.Request.ContentType.Split(";");
+                if (contentTypes.Any(x => x.Trim().Equals("text/csv", StringComparison.CurrentCultureIgnoreCase)))
+                    selectedType = "text/csv";
+                if (contentTypes.Any(x => x.Trim().Equals("application/json", StringComparison.CurrentCultureIgnoreCase)))
+                    selectedType = "application/json";                
                 
                 if (!string.IsNullOrEmpty(selectedType))
-                {
-                   
+                {                   
                     bool isNumeric = long.TryParse(since, out long n);
                     if(isNumeric)
                     {
                         string sTimezone = "UTC";
-                        string targetdateformat = "MM/DD/YYYY";
                         DateTime dDate;
-                        string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, targetdateformat);
+                        string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
                         if (!DateTime.TryParse(converteddatetime, out dDate))
                         {
                             return StatusCode(400, string.Empty);

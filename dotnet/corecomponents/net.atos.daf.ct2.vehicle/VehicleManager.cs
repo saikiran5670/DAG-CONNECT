@@ -242,13 +242,13 @@ namespace net.atos.daf.ct2.vehicle
                 if (string.IsNullOrEmpty(since) || since == "yesterday")
                 {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
-                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(DateTime.Today.AddDays(-1)));
+                    endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
                 }
                 else if (since == "today")
                 {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
-                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(DateTime.Now));
+                    endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 }
                 else if (isnumeric)
                 {

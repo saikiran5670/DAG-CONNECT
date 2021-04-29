@@ -259,7 +259,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   checkCreationForPoi(item: any){
-    this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
+    // this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
     this.createEditViewPoiFlag = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
@@ -267,7 +267,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(item.tableData) {
       this.poiInitData = item.tableData;
     }
-    this.loadPoiData;
+    this.loadPoiData();
+  }
+
+  onClose()
+  {
+  
   }
 
   deletePoi(rowData: any){
