@@ -127,8 +127,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         }
                         catch (Exception ex)
                         {
-                            item.IsFailed = false;
-                            item.Message = $"There was an error inserting data :- {ex.Message}";
+                            log.Info("Creating Polygon geofence method for Node in repository failed for Name {geofence.Name}:");
+                            log.Error(ex.ToString());
+                            item.IsFailed = true;
+                            item.Message = $"There was an error inserting node data";
                         }
                     }
                 }
@@ -136,8 +138,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                geofence.IsFailed = false;
-                geofence.Message = $"There was an error inserting data :- {ex.Message}";
+                log.Info("Creating Polygon geofence method in repository failed for Name {geofence.Name}:");
+                log.Error(ex.ToString());
+                geofence.IsFailed = true;
+                geofence.Message = $"There was an error inserting polygon data";
             }
             return geofence;
         }
@@ -368,8 +372,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                     catch (Exception ex)
                     {
+                        log.Info($"Creating Circuler geofence method in repository failed Name {item.Name}:");
+                        log.Error(ex.ToString());
                         item.IsFailed = true;
-                        item.Message = $"There was an error inserting data :- {ex.Message}";
+                        item.Message = $"There was an error inserting Circuler geofence data.";
                     }
                 }
             }
@@ -581,8 +587,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
+                log.Info($"Updating geofence for Bulk import method in repository failed Name {geofence.Name}:");
+                log.Error(ex.ToString());
                 geofence.IsFailed = true;
-                geofence.Message = $"There was an error updateing landmark :- {ex.Message}";
+                geofence.Message = $"There was an error updating geofence data.";
             }
             return geofence;
         }

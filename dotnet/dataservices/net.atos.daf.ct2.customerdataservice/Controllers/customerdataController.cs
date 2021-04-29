@@ -188,7 +188,6 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 objHandOver.ReferenceDateTime = keyHandOver.KeyHandOverEvent.ReferenceDateTime;
                 objHandOver.CustomerID = keyHandOver.KeyHandOverEvent.EndCustomer.ID;
 
-
                 // Configuarable values                                       
                 objHandOver.OwnerRelationship = Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value;
                 objHandOver.OEMRelationship = Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value;
@@ -224,102 +223,97 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         return StatusCode(400, string.Empty);
                     }
                 }
-                if ((objHandOver.ReferenceDateTime == null) || (string.IsNullOrEmpty(objHandOver.ReferenceDateTime)))
+                if (string.IsNullOrEmpty(objHandOver.ReferenceDateTime))
                 {
                     return StatusCode(400, string.Empty);
                 }
-                if ((objHandOver.ReferenceDateTime != null) || (!string.IsNullOrEmpty(objHandOver.ReferenceDateTime)))
+
+                string dateformat = "yyyy-mm-ddThh:mm:ss";
+                DateTime parsedRefDateTime;
+                if (objHandOver.ReferenceDateTime != null && DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))
                 {
-                    if ((Convert.ToDateTime(objHandOver.ReferenceDateTime)).ToUniversalTime() > System.DateTime.Now.ToUniversalTime())
+                    if (parsedRefDateTime.ToUniversalTime() > System.DateTime.Now.ToUniversalTime())
                     {
                         return StatusCode(400, string.Empty);
                     }
                 }
-            
+                else
+                    return StatusCode(400, string.Empty);
 
                 objHandOver.CustomerName = keyHandOver.KeyHandOverEvent.EndCustomer.Name;
 
-                string dateformat = "yyyy-mm-ddThh:mm:ss";
-                DateTime parsed;
-                if (!(DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
+                if (keyHandOver.KeyHandOverEvent.EndCustomer.Address != null)
                 {
-                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address != null)
+                    objHandOver.Type = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type;
+                    objHandOver.Street = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street;
+                    objHandOver.StreetNumber = keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber;
+                    objHandOver.PostalCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
+                    objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
+                    objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
+
+                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type != null)
                     {
                         objHandOver.Type = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type;
-                        objHandOver.Street = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street;
-                        objHandOver.StreetNumber = keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber;
-                        objHandOver.PostalCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
-                        objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
-                        objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
-
-                        if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type != null)
+                        if (objHandOver.Type.Trim().Length > 50)
                         {
-                            objHandOver.Type = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Type;
-                            if (objHandOver.Type.Trim().Length > 50)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
+                            return StatusCode(400, string.Empty);
                         }
-
-                        if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street != null)
-                        {
-                            objHandOver.Street = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street;
-                            if (objHandOver.Street.Trim().Length > 50)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
-                        }
-                        if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber != null)
-                        {
-                            objHandOver.StreetNumber = keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber;
-                            if (objHandOver.StreetNumber.Trim().Length > 50)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
-                        }
-                        if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode != null)
-                        {
-                            objHandOver.PostalCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
-                            if (objHandOver.PostalCode.Trim().Length > 15)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
-                        }
-                        if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.City != null)
-                        {
-                            objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
-                            if (objHandOver.City.Trim().Length > 50)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
-                        }
-                        if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode != null)
-                        {
-                            objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
-                            if (objHandOver.CountryCode.Trim().Length > 20)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
-                        }
-                        if (objHandOver.CustomerName != null)
-                        {
-                            if (objHandOver.CountryCode.Trim().Length > 100)
-                            {
-                                return StatusCode(400, string.Empty);
-                            }
-                        }
-                        await organizationtmanager.KeyHandOverEvent(objHandOver);
-                        return Ok();
                     }
-                    else
+
+                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street != null)
                     {
-                        await organizationtmanager.KeyHandOverEvent(objHandOver);
-                        return Ok();
+                        objHandOver.Street = keyHandOver.KeyHandOverEvent.EndCustomer.Address.Street;
+                        if (objHandOver.Street.Trim().Length > 50)
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
                     }
+                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber != null)
+                    {
+                        objHandOver.StreetNumber = keyHandOver.KeyHandOverEvent.EndCustomer.Address.StreetNumber;
+                        if (objHandOver.StreetNumber.Trim().Length > 50)
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode != null)
+                    {
+                        objHandOver.PostalCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.PostalCode;
+                        if (objHandOver.PostalCode.Trim().Length > 15)
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.City != null)
+                    {
+                        objHandOver.City = keyHandOver.KeyHandOverEvent.EndCustomer.Address.City;
+                        if (objHandOver.City.Trim().Length > 50)
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+                    if (keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode != null)
+                    {
+                        objHandOver.CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address.CountryCode;
+                        if (objHandOver.CountryCode.Trim().Length > 20)
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+                    if (objHandOver.CustomerName != null)
+                    {
+                        if (objHandOver.CustomerName.Trim().Length > 100)
+                        {
+                            return StatusCode(400, string.Empty);
+                        }
+                    }
+                    await organizationtmanager.KeyHandOverEvent(objHandOver);
+                    return Ok();
                 }
                 else
                 {
-                    return StatusCode(400, string.Empty);
+                    await organizationtmanager.KeyHandOverEvent(objHandOver);
+                    return Ok();
                 }                
             }
             catch (Exception ex)
