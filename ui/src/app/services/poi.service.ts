@@ -48,15 +48,16 @@ export class POIService {
       .get<any[]>(`${this.PoiServiceUrl}/downloadpoiforexcel?OrganizationId=${orgId}`,headers)
       .pipe(catchError(this.handleError));
   }
-//   createPoi(data): Observable<any> {
-//     let headerObj = this.generateHeader();
-//     const headers = {
-//       headers: new HttpHeaders({ headerObj }),
-//     };
-//     return this.httpClient
-//       .post<any>(`${this.PoiServiceUrl}/create`, data, headers)
-//       .pipe(catchError(this.handleError));
-//   }
+  
+  createPoi(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.PoiServiceUrl}/create`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
 
 //   updatePoi(data): Observable<any> {
 //     let headerObj = this.generateHeader();

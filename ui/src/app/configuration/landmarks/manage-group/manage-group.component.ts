@@ -11,8 +11,8 @@ import html2canvas from 'html2canvas';
 import { TranslationService } from 'src/app/services/translation.service';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { UserDetailTableComponent } from 'src/app/admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 
 
 @Component({
@@ -46,7 +46,7 @@ export class ManageGroupComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
-  dialogRef: MatDialogRef<UserDetailTableComponent>;
+  dialogRef: MatDialogRef<CommonTableComponent>;
 
   constructor(private translationService: TranslationService, private landmarkGroupService: LandmarkGroupService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,
     private dialog: MatDialog, private domSanitizer: DomSanitizer) {
@@ -177,7 +177,7 @@ export class ManageGroupComponent implements OnInit {
       colsName: colsName,
       tableTitle: tableTitle
     }
-    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
+    this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 
   deleteLandmarkGroup(row){
