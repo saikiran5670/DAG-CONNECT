@@ -48,6 +48,17 @@ export class POIService {
       .get<any[]>(`${this.PoiServiceUrl}/downloadpoiforexcel?OrganizationId=${orgId}`,headers)
       .pipe(catchError(this.handleError));
   }
+
+  importPOIExcel(data): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    let orgId = localStorage.getItem('accountOrganizationId');
+    return this.httpClient
+      .post<any[]>(`${this.PoiServiceUrl}/uploadexcel`,data,headers)
+      .pipe(catchError(this.handleError));
+  }
   
   createPoi(data): Observable<any> {
     let headerObj = this.generateHeader();
