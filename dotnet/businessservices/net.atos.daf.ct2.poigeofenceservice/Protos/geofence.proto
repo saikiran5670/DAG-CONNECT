@@ -136,6 +136,7 @@ message GetGeofenceResponse{
     int64 ModifiedAt=17;
     int32 CategoryId=18;
     int32 SubCategoryId=19;
+    string Type=20;
 }
 
 message GeofencePolygonUpdateRequest{

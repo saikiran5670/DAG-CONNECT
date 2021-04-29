@@ -242,7 +242,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 idRequest.GeofenceId = request.GeofenceId;
 
                 var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);
-                return Ok(result);              
+                if (result.Id>0)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return StatusCode(404,"No record found ");
+                }                          
             }
             catch (Exception ex)
             {

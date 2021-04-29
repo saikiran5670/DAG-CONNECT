@@ -237,8 +237,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                  L.name, 
                                  case when C.type='P' then C.name end categoryName,
                                  case when C.type='S' then C.name end subcategoryName,
-                                 L.category_id CategoryId,
-                                 L.category_id categoryId,
+                                 case when L.type='O' then 'PolygonGeofence'
+                                  when L.type='C' then 'CircularGeofence'
+                                  when L.type='P' then 'POI'
+                                  when L.type='R' then 'Corridor'
+                                  when L.type='U' then 'Route'
+                                  end as type,
+                                 L.category_id CategoryId,                                
                                  L.sub_category_id SubCategoryId,
                                  L.state State,
                                  L.address,
