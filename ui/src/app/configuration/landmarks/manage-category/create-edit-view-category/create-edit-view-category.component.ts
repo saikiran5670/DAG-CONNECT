@@ -31,14 +31,18 @@ export class CreateEditViewCategoryComponent implements OnInit {
   uploadIconName: any = "";
   imageMaxMsg: boolean = false;
   clearInput: any;
+  userType: any= "";
+  types = ['Global', 'Regular'];
 
   constructor(private _formBuilder: FormBuilder, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.userType= localStorage.getItem("userType");
     this.categoryForm = this._formBuilder.group({
       categoryName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
+      type: ['Regular', [Validators.required]],
       categoryType: ['', []],
       parentCategory: [],
       categoryDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
@@ -82,6 +86,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.imageMaxMsg = false;
     this.imageEmptyMsg = false;
     this.categoryForm.get('categoryName').setValue(this.selectedRowData.parentCategoryName);
+    this.categoryForm.get('type').setValue(this.selectedRowData.Organization_Id ? (this.selectedRowData.Organization_Id  > 0 ? 'Regular': 'Global' ) : 'Global');
     this.categoryForm.get('categoryDescription').setValue(this.selectedRowData.description);
     this.categoryForm.get('categoryType').setValue(this.selectedCategoryType);
     this.categoryForm.get('parentCategory').setValue(this.selectedRowData.parentCategoryId);
@@ -149,7 +154,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
     if(this.actionType == 'create'){ //-- create category
       let createdObj: any = {
         id: 0,
-        organization_Id: this.accountOrganizationId,
+        organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0,
         name: this.categoryForm.controls.categoryName.value,
         iconName: this.uploadIconName, //-- icon name
         type: (this.selectedCategoryType == 'category') ? 'C' : 'S',
@@ -172,7 +177,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
         iconName: this.uploadIconName,
         modified_By: this.accountId,
         icon: this.uploadIcon,
-        description: this.categoryForm.controls.categoryDescription.value
+        description: this.categoryForm.controls.categoryDescription.value,
+        organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0
       }
       this.landmarkCategoryService.updateLandmarkCategory(updatedObj).subscribe((updatedData: any) => {
         this.loadLandmarkCategoryData();
