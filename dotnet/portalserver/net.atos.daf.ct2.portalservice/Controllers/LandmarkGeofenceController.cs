@@ -241,7 +241,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }                
                 idRequest.GeofenceId = request.GeofenceId;
 
-                var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);                
+                var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);
                 return Ok(result);              
             }
             catch (Exception ex)
