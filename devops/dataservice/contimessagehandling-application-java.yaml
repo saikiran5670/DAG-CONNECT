@@ -163,4 +163,4 @@ jobs:
       displayName: 'Publish Pipeline Artifact'
       inputs:
         targetPath: 'java/corecomponents/properties/tripMileage.properties'
-        artifact: drop
+        artifact: properties
