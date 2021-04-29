@@ -182,7 +182,11 @@ export class CreateEditViewCategoryComponent implements OnInit {
 
   loadLandmarkCategoryData(){
     let categoryList: any = [];
-    this.landmarkCategoryService.getLandmarkCategoryType('C').subscribe((parentCategoryData: any) => {
+    let objData = {
+      type:'C',
+      Orgid: this.accountOrganizationId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
       categoryList = parentCategoryData.categories;
       this.getSubCategoryData(categoryList);
     }, (error) => {
@@ -193,7 +197,11 @@ export class CreateEditViewCategoryComponent implements OnInit {
 
   getSubCategoryData(categoryList: any){
     let subCategoryList: any = [];
-    this.landmarkCategoryService.getLandmarkCategoryType('S').subscribe((subCategoryData: any) => {
+    let objData = {
+      type:'S',
+      Orgid: this.accountOrganizationId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
       subCategoryList = subCategoryData.categories;
       this.getCategoryDetails(categoryList, subCategoryList);
     }, (error) => {

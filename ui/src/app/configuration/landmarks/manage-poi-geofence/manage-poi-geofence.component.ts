@@ -144,7 +144,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   loadLandmarkCategoryData(){
     this.showLoadingIndicator = true;
-    this.landmarkCategoryService.getLandmarkCategoryType('C').subscribe((parentCategoryData: any) => {
+    let objData = {
+      type:'C',
+      Orgid: this.accountOrganizationId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
       this.categoryList = parentCategoryData.categories;
       this.getSubCategoryData();
     }, (error) => {
@@ -154,7 +158,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   getSubCategoryData(){
-    this.landmarkCategoryService.getLandmarkCategoryType('S').subscribe((subCategoryData: any) => {
+    let objData = {
+      type:'S',
+      Orgid: this.accountOrganizationId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
       this.subCategoryList = subCategoryData.categories;
       this.getCategoryDetails();
     }, (error) => {
