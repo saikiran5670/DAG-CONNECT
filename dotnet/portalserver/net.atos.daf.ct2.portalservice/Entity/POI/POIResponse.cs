@@ -25,6 +25,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public string State { get; set; }
         //public int TripId { get; set; }
         public long CreatedAt { get; set; }
+        public byte[] Icon { get; set; }
         //public int CreatedBy { get; set; }
         //public long ModifiedAt { get; set; }
         //public int ModifiedBy { get; set; }

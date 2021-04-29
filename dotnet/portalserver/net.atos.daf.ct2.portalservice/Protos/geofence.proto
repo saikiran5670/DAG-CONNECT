@@ -25,8 +25,8 @@ enum Responsecode{
   InternalServerError = 500;
 }
 
-message DeleteRequest{  
-repeated int32 GeofenceId=1;     
+message DeleteRequest{
+   repeated int32 GeofenceId=1;  
 }
 message GeofenceDeleteResponse {
   Responsecode Code=1;
@@ -52,6 +52,7 @@ message GeofenceRequest{
     int32 CreatedBy = 16;
     repeated NodeRequest NodeRequest=17;
     bool Exists=18;
+    google.protobuf.StringValue Message =19;
 }
 message NodeRequest{
     int32 Id =1;
@@ -61,12 +62,21 @@ message NodeRequest{
     double Longitude =5;
     string State=6;
     int32 CreatedBy = 7;
+    google.protobuf.StringValue Message =8;
 }
 
 message GeofenceResponse{
    GeofenceRequest GeofenceRequest =1;
     Responsecode Code=2;
     string message = 3;
+}
+
+message BulkGeofenceResponse{
+    repeated GeofenceRequest GeofenceRequest =1;
+    Responsecode Code=2;
+    int32 FailureCount = 3;
+    int32 AddedCount  = 4;
+    int32 UpdatedCount  = 5;
 }
 
 message GeofenceEntityRequest{

@@ -1,4 +1,5 @@
-﻿using net.atos.daf.ct2.poiservice;
+﻿using Google.Protobuf;
+using net.atos.daf.ct2.poiservice;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             //poi.Distance = Convert.ToDouble(poiResponseData.Distance);
             poi.State = poiResponseData.State;
             poi.CreatedAt = poiResponseData.CreatedAt;
+            poi.Icon = poiResponseData.Icon != null ? poiResponseData.Icon.ToByteArray() : new Byte[] { };
             return poi;
         }
 

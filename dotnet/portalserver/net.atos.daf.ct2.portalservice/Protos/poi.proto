@@ -58,6 +58,7 @@ message POIRequest{
     int32 TripId = 15;
     int32 CreatedBy = 16;
     int32 CreatedAt = 17;
+    bytes Icon =18;
 }
 message POIData{
     int32 Id =1;
@@ -78,6 +79,7 @@ message POIData{
     string State=16;
     int32 CreatedBy=17;
     int64 CreatedAt=18;
+    bytes Icon =19;
 }
 message POIResponse{
   POIData POIData = 1;

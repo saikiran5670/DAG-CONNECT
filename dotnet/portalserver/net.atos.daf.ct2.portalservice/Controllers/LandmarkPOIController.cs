@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.OrganizationId == 0)
+                if (request.OrganizationId <= 0)
                 {
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 
-                if (request.OrganizationId == 0)
+                if (request.OrganizationId <= 0)
                 {
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
@@ -146,7 +146,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The POI name is required.");
                 }
-                
+                if (request.Id <= 0)
+                {
+                    return StatusCode(400, "The POI Id is required.");
+                }
+
                 var poiRequest = new POIRequest();                
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.UpdatePOIAsync(poiRequest);
@@ -431,34 +435,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Result = false;
             }
             return Result;
-        }
-
-        [HttpGet]
-        [Route("test")]
-        public async Task<IActionResult> GetLevelForTest()
-        {
-            try
-            {
-                return Ok(JsonConvert.SerializeObject(_userDetails));
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex);
-            }
-        }
-
-        [HttpGet]
-        [Route("test2")]
-        public async Task<IActionResult> GetLevelForTest2()
-        {
-            try
-            {
-                return Ok(JsonConvert.SerializeObject(Request.Headers));
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex);
-            }
         }
     }
 }

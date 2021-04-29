@@ -58,6 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
 
             var Requests = new CategoryGetRequest();
             Requests.Type = request.Type;
+            Requests.OrganizationId = request.Organization_Id;
             return Requests;
         }
     }
