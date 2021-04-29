@@ -162,5 +162,5 @@ jobs:
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Pipeline Artifact'
       inputs:
-        targetPath: 'devops/dataservice/featureactivationservice-api-dotnet.yaml'
+        targetPath: 'java/corecomponents/properties/tripMileage.properties'
         artifact: drop
