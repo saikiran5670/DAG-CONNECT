@@ -2,13 +2,13 @@
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
-  <!-- <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
     <span class='custom-font' (click)="toBack()">
       <span>
-        <&nbsp;< /span>
+        <&nbsp; </span>
           <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
       </span>
-  </div> -->
+  </div>
 </div>
 
 <mat-card class='mat-elevation-z'>
@@ -49,6 +49,9 @@
                   formControlName="name">
               </mat-form-field>
             </div>
+            <!-- <div *ngIf="actionType == 'edit'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
+          </div> -->
           </div>
           <div class="areaWidth" fxLayout="column" >
             <mat-label>
@@ -152,9 +155,11 @@
           <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
             translationData.lblCancel || 'Cancel' }}</button>
             <button class='no-margin' [disabled]="!poiFormGroup.valid" mat-raised-button (click)='onCreatePoi()'
-            color="primary" >{{ createStatus ? (translationData.lblCreate ||
+            color="primary" *ngIf="actionType == 'create'">{{ createStatus ? (translationData.lblCreate ||
             'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
+            <button class='no-margin' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
+            (click)='onCreatePoi()'>{{ translationData.lblReset || 'Reset' }}</button>
         </div>
       </div>
 

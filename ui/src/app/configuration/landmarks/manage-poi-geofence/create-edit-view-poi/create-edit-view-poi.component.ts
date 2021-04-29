@@ -72,6 +72,7 @@ state: any;
     }
   
     ngOnInit(): void {
+      console.log("for create-edit-view-poi" +this.selectedElementData);
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
       this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
 
@@ -92,7 +93,9 @@ state: any;
         ]
       });
       this.breadcumMsg = this.getBreadcum(this.actionType);
-
+      if(this.actionType == 'view' || this.actionType == 'edit' ){
+        this.setDefaultValue();
+      }
       this.loadInitData();
       this.loadLandmarkCategoryData();
 
@@ -285,16 +288,28 @@ console.log("poiformgroup=" +this.poiFormGroup);
     }
   }
 
+  setDefaultValue(){
+    this.poiFormGroup.get("name").setValue(this.selectedElementData.name);
+    this.poiFormGroup.get("address").setValue(this.selectedElementData.address);
+    this.poiFormGroup.get("city").setValue(this.selectedElementData.city);
+    this.poiFormGroup.get("zip").setValue(this.selectedElementData.zipcode);
+    this.poiFormGroup.get("lattitude").setValue(this.selectedElementData.latitude);
+    this.poiFormGroup.get("longitude").setValue(this.selectedElementData.longitude);
+    this.poiFormGroup.get("country").setValue(this.selectedElementData.country);
+    this.poiFormGroup.get("category").setValue(this.selectedElementData.categoryId);
+    this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryId);
+
+  
+  }
+
   onCreatePoi(){
-    if(this.actionType == 'create'){
-    console.log(this.poiFormGroup.controls);
       let objData = {
         id: 0,
         organizationId: this.organizationId,
-        // categoryId: this.poiFormGroup.controls.category.value,
-        // subCategoryId: this.poiFormGroup.controls.category.value,
-         categoryId: 5,
-        subCategoryId: 7,
+        categoryId: this.poiFormGroup.controls.category.value,
+        subCategoryId: this.poiFormGroup.controls.subcategory.value,
+        //  categoryId: 5,
+        // subCategoryId: 7,
         name: this.poiFormGroup.controls.name.value,
         address: this.poiFormGroup.controls.address.value,
         city: this.poiFormGroup.controls.city.value,
@@ -302,7 +317,7 @@ console.log("poiformgroup=" +this.poiFormGroup);
         zipcode: this.poiFormGroup.controls.zip.value,
         latitude: this.poiFormGroup.controls.lattitude.value,
         longitude: this.poiFormGroup.controls.longitude.value,
-        state: "MH",
+        state: this.state,
         createdBy: 0
       }
 
@@ -322,24 +337,40 @@ this.userCreatedMsg = this.getUserCreatedMessage();
       });
     }
     else{
-      // let objData = {
-      //   id: 0,
-      //   organizationId: this.organizationId,
-      //   categoryId: 5,
-      //   subCategoryId: 7,
-      //   name: this.poiFormGroup.controls.name.value,
-      //   address: this.poiFormGroup.controls.address.value,
-      //   city: this.poiFormGroup.controls.city.value,
-      //   country: this.poiFormGroup.controls.country.value,
-      //   zipcode: this.poiFormGroup.controls.zip.value,
-      //   latitude: this.poiFormGroup.controls.lattitude.value,
-      //   longitude: this.poiFormGroup.controls.longitude.value,
-      //   state: "MH",
-      //   createdBy: 0
-      // }
+      console.log(this.selectedElementData);
+      let objData = {
+        id: this.selectedElementData.id,
+        icon: this.selectedElementData.icon,
+        organizationId: this.selectedElementData.organizationId,
+        categoryId: this.poiFormGroup.controls.category.value,
+        subCategoryId: this.poiFormGroup.controls.subcategory.value,
+        name: this.poiFormGroup.controls.name.value,
+        address: this.poiFormGroup.controls.address.value,
+        city: this.poiFormGroup.controls.city.value,
+        country: this.poiFormGroup.controls.country.value,
+        zipcode: this.poiFormGroup.controls.zip.value,
+        latitude: this.poiFormGroup.controls.lattitude.value,
+        longitude: this.poiFormGroup.controls.longitude.value,
+        state: this.selectedElementData.state,
+        createdBy: 0
+      }
+
+      this.POIService.updatePoi(objData).subscribe((data : any) => {
+      this.POIService.getPois(this.organizationId).subscribe((data : any) => {
+        this.poiInitdata = data;
+        this.userCreatedMsg = this.getUserCreatedMessage();
+                let emitObj = {
+                  stepFlag: false,
+                  successMsg: this.userCreatedMsg,
+                  tableData: this.poiInitdata,
+                }    
+                this.backToPage.emit(emitObj); 
+        
+              });
+              });
 
     }
 
   }
-  }
+  
 }
