@@ -158,6 +158,8 @@
             color="primary" >{{ createStatus ? (translationData.lblCreate ||
             'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
+            (click)='onCreatePoi()'>{{ translationData.lblReset || 'Reset' }}</button>
         </div>
       </div>
 

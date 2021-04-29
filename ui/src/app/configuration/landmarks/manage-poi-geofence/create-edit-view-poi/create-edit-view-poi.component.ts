@@ -317,7 +317,7 @@ console.log("poiformgroup=" +this.poiFormGroup);
         zipcode: this.poiFormGroup.controls.zip.value,
         latitude: this.poiFormGroup.controls.lattitude.value,
         longitude: this.poiFormGroup.controls.longitude.value,
-        state: "MH",
+        state: this.state,
         createdBy: 0
       }
 
@@ -337,12 +337,13 @@ this.userCreatedMsg = this.getUserCreatedMessage();
       });
     }
     else{
-      console.log(this.poiFormGroup);
+      console.log(this.selectedElementData);
       let objData = {
-        id: 0,
-        organizationId: this.organizationId,
-        categoryId: 5,
-        subCategoryId: 7,
+        id: this.selectedElementData.id,
+        icon: this.selectedElementData.icon,
+        organizationId: this.selectedElementData.organizationId,
+        categoryId: this.poiFormGroup.controls.category.value,
+        subCategoryId: this.poiFormGroup.controls.subcategory.value,
         name: this.poiFormGroup.controls.name.value,
         address: this.poiFormGroup.controls.address.value,
         city: this.poiFormGroup.controls.city.value,
@@ -350,9 +351,23 @@ this.userCreatedMsg = this.getUserCreatedMessage();
         zipcode: this.poiFormGroup.controls.zip.value,
         latitude: this.poiFormGroup.controls.lattitude.value,
         longitude: this.poiFormGroup.controls.longitude.value,
-        state: "MH",
+        state: this.selectedElementData.state,
         createdBy: 0
       }
+
+      this.POIService.updatePoi(objData).subscribe((data : any) => {
+      this.POIService.getPois(this.organizationId).subscribe((data : any) => {
+        this.poiInitdata = data;
+        this.userCreatedMsg = this.getUserCreatedMessage();
+                let emitObj = {
+                  stepFlag: false,
+                  successMsg: this.userCreatedMsg,
+                  tableData: this.poiInitdata,
+                }    
+                this.backToPage.emit(emitObj); 
+        
+              });
+              });
 
     }
 
