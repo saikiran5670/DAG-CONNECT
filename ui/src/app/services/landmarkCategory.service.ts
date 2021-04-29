@@ -104,7 +104,7 @@ export class LandmarkCategoryService {
         .pipe(catchError(this.handleError));
     }
 
-    geCategoryGeofences(orgId: any, categoryId: any): Observable<any[]> {
+    getCategoryGeofences(orgId: any, categoryId: any): Observable<any[]> {
       let headerObj = this.generateHeader();
       const headers = {
         headers: new HttpHeaders({ headerObj }),
