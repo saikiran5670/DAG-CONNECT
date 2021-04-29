@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle")]
-    //[Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
     public class VehicleMileageController:ControllerBase
     {
         private readonly ILogger<VehicleMileageController> logger;        
