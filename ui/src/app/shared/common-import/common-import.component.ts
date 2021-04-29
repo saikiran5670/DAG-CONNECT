@@ -68,26 +68,26 @@ export class CommonImportComponent implements OnInit {
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('Template');
     //Add Header Row
-    let headerRow = worksheet.addRow(header);
-    // Cell Style : Fill and Border
-    headerRow.eachCell((cell, number) => {
-      //console.log(cell)
-      if(number != 5){
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FF0A3175' },
-          bgColor: { argb: 'FF0000FF' }
-        }
-        cell.font = {
-          color: { argb: 'FFFFFFFF'},
-          bold: true
-        }
-      }else{
-        //cell.alignment = { wrapText: true, vertical: 'justify', horizontal: 'justify' }
-      }
-      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-    });
+    // let headerRow = worksheet.addRow(header);
+    // // Cell Style : Fill and Border
+    // headerRow.eachCell((cell, number) => {
+    //   //console.log(cell)
+    //   if(number != 5){
+    //     cell.fill = {
+    //       type: 'pattern',
+    //       pattern: 'solid',
+    //       fgColor: { argb: 'FF0A3175' },
+    //       bgColor: { argb: 'FF0000FF' }
+    //     }
+    //     cell.font = {
+    //       color: { argb: 'FFFFFFFF'},
+    //       bold: true
+    //     }
+    //   }else{
+    //     //cell.alignment = { wrapText: true, vertical: 'justify', horizontal: 'justify' }
+    //   }
+    //   cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+    // });
     // Add Data and Conditional Formatting
     data.forEach(d => {
       let row = worksheet.addRow(d);
@@ -96,12 +96,24 @@ export class CommonImportComponent implements OnInit {
     //let csvData = XLSX.utils.sheet_to_csv(data);  
     // const csvFile: Blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });  
     // FileSaver.saveAs(csvFile, this.templateFileName);  
-    workbook.csv.writeBuffer().then((data) => {
-      let blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
-      FileSaver.saveAs(blob, this.templateFileName);
-    });
+   
+    if(this.importFileComponent == 'poi'){
+      this.templateFileName = 'poiData.xlsx';
+      workbook.xlsx.writeBuffer().then((data) => {
+        let blob = new Blob([data], { type: 'text/xlxs;charset=utf-8;' });
+        FileSaver.saveAs(blob, this.templateFileName);
+      });
+    }
+    else{
+      workbook.csv.writeBuffer().then((data) => {
+        let blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+        FileSaver.saveAs(blob, this.templateFileName);
+      });
+    }
+
     
   }
+
 
   addfile(event: any){ 
     this.excelEmptyMsg = false;   
