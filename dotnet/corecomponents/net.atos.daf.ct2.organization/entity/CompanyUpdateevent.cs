@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.organization.entity
         public string ID { get; set; } 
         public string Name { get; set; } 
         public Address Address { get; set; } 
-        public DateTime ReferenceDateTime { get; set; } 
+        public string ReferenceDateTime { get; set; } 
     }
 
     public class CompanyUpdatedEvent    {

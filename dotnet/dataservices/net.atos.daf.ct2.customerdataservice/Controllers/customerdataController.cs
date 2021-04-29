@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
     [Route("customer-data")]
-    //[Authorize(Policy = AccessPolicies.MainAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
     public class customerdataController : ControllerBase
     {
         private readonly ILogger<customerdataController> logger;
@@ -56,8 +56,25 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 CustomerRequest customerRequest = new CustomerRequest();
                 // customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
                 customerRequest.CustomerID = customer.CompanyUpdatedEvent.Company.ID;
-                // customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;              
-                customerRequest.ReferenceDateTime = customer.CompanyUpdatedEvent.Company.ReferenceDateTime;
+                // customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;                
+
+                if (string.IsNullOrEmpty(customer.CompanyUpdatedEvent.Company.ReferenceDateTime))
+                {
+                    return StatusCode(400, string.Empty);
+                }
+                string dateformat = "yyyy-MM-ddTHH:mm:ss";
+                DateTime parsedRefDateTime;
+                if (customerRequest.ReferenceDateTime != null && DateTime.TryParseExact(customer.CompanyUpdatedEvent.Company.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))
+                {
+                    if (parsedRefDateTime.ToUniversalTime() > System.DateTime.Now.ToUniversalTime())
+                    {
+                        return StatusCode(400, string.Empty);
+                    }
+                }
+                else
+                    return StatusCode(400, string.Empty);
+
+                customerRequest.ReferenceDateTime = parsedRefDateTime;
 
                 // Configuarable values   
                 customerRequest.OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value;
@@ -65,97 +82,88 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 if (customerRequest.ReferenceDateTime != null && (customerRequest.CustomerID != null) && (customerRequest.CustomerID.Trim().Length > 0)
                     && (customerRequest.ReferenceDateTime).ToUniversalTime() < System.DateTime.Now.ToUniversalTime())
                 {
-                    string dateformat = "yyyy-mm-ddThh:mm:ss";
-                    DateTime parsed;
-                    if (!(DateTime.TryParseExact(Convert.ToString(customerRequest.ReferenceDateTime), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsed)))
+                    if (!((customerRequest.CustomerID.Trim().Length > 100)
+                        || (customerRequest.ReferenceDateTime == new DateTime())
+                        ))
                     {
-                        if (!((customerRequest.CustomerID.Trim().Length > 100)
-                            || (customerRequest.ReferenceDateTime == new DateTime())
-                            ))
+                        if (customer.CompanyUpdatedEvent.Company.type != null)
                         {
-                            if (customer.CompanyUpdatedEvent.Company.type != null)
+                            customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
+                            if (customerRequest.CompanyType.Trim().Length > 50)
                             {
-                                customerRequest.CompanyType = customer.CompanyUpdatedEvent.Company.type;
-                                if (customerRequest.CompanyType.Trim().Length > 50)
+                                return StatusCode(400, string.Empty);
+                            }
+                        }
+
+                        if (customer.CompanyUpdatedEvent.Company.Name != null)
+                        {
+                            customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
+                            if (customerRequest.CustomerName.Trim().Length > 100)
+                            {
+                                return StatusCode(400, string.Empty);
+                            }
+                        }
+
+                        if (customer.CompanyUpdatedEvent.Company.Address != null)
+                        {
+                            if (customer.CompanyUpdatedEvent.Company.Address.Type != null)
+                            {
+                                customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
+                                if (customerRequest.AddressType.Trim().Length > 50)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+                            if (customer.CompanyUpdatedEvent.Company.Address.Street != null)
+                            {
+                                customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
+                                if (customerRequest.Street.Trim().Length > 50)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+                            if (customer.CompanyUpdatedEvent.Company.Address.StreetNumber != null)
+                            {
+                                customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
+                                if (customerRequest.StreetNumber.Trim().Length > 50)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+                            if (customer.CompanyUpdatedEvent.Company.Address.PostalCode != null)
+                            {
+                                customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
+                                if (customerRequest.PostalCode.Trim().Length > 15)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+                            if (customer.CompanyUpdatedEvent.Company.Address.City != null)
+                            {
+                                customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
+                                if (customerRequest.City.Trim().Length > 15)
+                                {
+                                    return StatusCode(400, string.Empty);
+                                }
+                            }
+                            if (customer.CompanyUpdatedEvent.Company.Address.CountryCode != null)
+                            {
+                                customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
+                                if (customerRequest.CountryCode.Trim().Length > 20)
                                 {
                                     return StatusCode(400, string.Empty);
                                 }
                             }
 
-                            if (customer.CompanyUpdatedEvent.Company.Name != null)
-                            {
-                                customerRequest.CustomerName = customer.CompanyUpdatedEvent.Company.Name;
-                                if (customerRequest.CustomerName.Trim().Length > 100)
-                                {
-                                    return StatusCode(400, string.Empty);
-                                }
-                            }
-
-                            if (customer.CompanyUpdatedEvent.Company.Address != null)
-                            {
-                                if (customer.CompanyUpdatedEvent.Company.Address.Type != null)
-                                {
-                                    customerRequest.AddressType = customer.CompanyUpdatedEvent.Company.Address.Type;
-                                    if (customerRequest.AddressType.Trim().Length > 50)
-                                    {
-                                        return StatusCode(400, string.Empty);
-                                    }
-                                }
-                                if (customer.CompanyUpdatedEvent.Company.Address.Street != null)
-                                {
-                                    customerRequest.Street = customer.CompanyUpdatedEvent.Company.Address.Street;
-                                    if (customerRequest.Street.Trim().Length > 50)
-                                    {
-                                        return StatusCode(400, string.Empty);
-                                    }
-                                }
-                                if (customer.CompanyUpdatedEvent.Company.Address.StreetNumber != null)
-                                {
-                                    customerRequest.StreetNumber = customer.CompanyUpdatedEvent.Company.Address.StreetNumber;
-                                    if (customerRequest.StreetNumber.Trim().Length > 50)
-                                    {
-                                        return StatusCode(400, string.Empty);
-                                    }
-                                }
-                                if (customer.CompanyUpdatedEvent.Company.Address.PostalCode != null)
-                                {
-                                    customerRequest.PostalCode = customer.CompanyUpdatedEvent.Company.Address.PostalCode;
-                                    if (customerRequest.PostalCode.Trim().Length > 15)
-                                    {
-                                        return StatusCode(400, string.Empty);
-                                    }
-                                }
-                                if (customer.CompanyUpdatedEvent.Company.Address.City != null)
-                                {
-                                    customerRequest.City = customer.CompanyUpdatedEvent.Company.Address.City;
-                                    if (customerRequest.City.Trim().Length > 15)
-                                    {
-                                        return StatusCode(400, string.Empty);
-                                    }
-                                }
-                                if (customer.CompanyUpdatedEvent.Company.Address.CountryCode != null)
-                                {
-                                    customerRequest.CountryCode = customer.CompanyUpdatedEvent.Company.Address.CountryCode;
-                                    if (customerRequest.CountryCode.Trim().Length > 20)
-                                    {
-                                        return StatusCode(400, string.Empty);
-                                    }
-                                }
-
-                                await organizationtmanager.UpdateCustomer(customerRequest);
-                                logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
-                                return Ok();
-                            }
-                            else
-                            {
-                                await organizationtmanager.UpdateCustomer(customerRequest);
-                                logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
-                                return Ok();
-                            }
+                            await organizationtmanager.UpdateCustomer(customerRequest);
+                            logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                            return Ok();
                         }
                         else
                         {
-                            return StatusCode(400, string.Empty);
+                            await organizationtmanager.UpdateCustomer(customerRequest);
+                            logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                            return Ok();
                         }
                     }
                     else
@@ -223,19 +231,19 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                         return StatusCode(400, string.Empty);
                     }
                 }
+
                 if (string.IsNullOrEmpty(objHandOver.ReferenceDateTime))
                 {
                     return StatusCode(400, string.Empty);
                 }
-
-                string dateformat = "yyyy-mm-ddThh:mm:ss";
+                string dateformat = "yyyy-MM-ddTHH:mm:ss";
                 DateTime parsedRefDateTime;
                 if (objHandOver.ReferenceDateTime != null && DateTime.TryParseExact(objHandOver.ReferenceDateTime, dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))
-                {
+                {                    
                     if (parsedRefDateTime.ToUniversalTime() > System.DateTime.Now.ToUniversalTime())
                     {
                         return StatusCode(400, string.Empty);
-                    }
+                    }                                
                 }
                 else
                     return StatusCode(400, string.Empty);
