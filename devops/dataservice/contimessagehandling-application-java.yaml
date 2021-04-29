@@ -159,3 +159,8 @@ jobs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'java/corecomponents/properties/tripMileage.properties'
+        artifact: drop

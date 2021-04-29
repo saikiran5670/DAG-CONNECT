@@ -22,7 +22,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   showLoadingIndicator: any = false;
   @Input() translationData: any;
- // @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
   displayedColumnsGeo = ['All', 'geofenceName', 'categoryName', 'subCategoryName', 'Actions'];
   poidataSource: any;
@@ -398,8 +398,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     FileSaver.saveAs(data, fileName + '_exported'+ EXCEL_EXTENSION);
   }
 
-  // exportGeofenceAsExcelFile(){
-  //   this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
+  exportGeofenceAsExcelFile(){
+    this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
 
-  // }
+  }
 }
