@@ -44,7 +44,7 @@ public class MileageSink extends RichSinkFunction<TripMileage> implements Serial
 		statement.setDouble(12, rec.getGpsDistance());
 		statement.setLong(13, rec.getModifiedAt());
 
-		System.out.println("maileage data for veh "+rec);
+		System.out.println("mileage data for veh "+rec);
 		statement.addBatch();
 		statement.executeBatch();
 	}
