@@ -18,12 +18,13 @@
     </div>
   </div>
 
-  <div #map style="width: 900px; height: 450px">
-    <!-- <div style="padding: 10px 0">  
-          <input type="text" placeholder="Search places..." [(ngModel)]="query" style="width: 90%;" />  
-          <button><mat-icon (click)="places(query)">search</mat-icon></button>
-        </div>   -->
-    <!-- <code>H.map.Marker</code> -->
+  <div #map id="map" style="width: 900px; height: 450px">
+    <div #searchbox style="padding: 10px 0">  
+          <input type="text" placeholder="Search your location..." style="width: 30%;" />  
+          <!-- <button><mat-icon (click)="places(query)">search</mat-icon></button> -->
+          <!-- <button><mat-icon>search</mat-icon></button> -->
+        </div>  
+   
   </div>
 
 </mat-card>
@@ -109,12 +110,9 @@
           </mat-label>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-form-field appearance="outline" class='margin-right-xxlg'>
-              <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-                <mat-option>
-                  Category1
-                </mat-option>
-                <mat-option>
-                  Category2
+              <mat-select  formControlName="category" (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+                <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+                  {{ rer.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -127,12 +125,9 @@
           </mat-label>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-form-field appearance="outline" class='margin-right-xxlg'>
-              <mat-select placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                <mat-option>
-                  Category1
-                </mat-option>
-                <mat-option>
-                  Category2
+              <mat-select formControlName="subcategory" (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                    {{ rer.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -210,7 +205,7 @@
           <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
             translationData.lblCancel || 'Cancel' }}</button>
             <button class='no-margin' [disabled]="!poiFormGroup.valid" mat-raised-button
-            color="primary" >{{ createStatus ? (translationData.lblCreate ||
+            color="primary"  (click)='onCreatePoi()'>{{ createStatus ? (translationData.lblCreate ||
             'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
