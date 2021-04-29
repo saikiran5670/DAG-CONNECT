@@ -95,7 +95,7 @@ message GeofenceEntityResponce{
     string categoryName =2;
     string subCategoryName=3;
     int32 geofenceId=4;
-
+    string type=5;
 }
 
 message CircularGeofenceRequest{
@@ -133,7 +133,10 @@ message GetGeofenceResponse{
     int32 CreatedBy=14;
     int32 ModifiedBy=15;
     int64 CreatedAt=16;
-    int64 ModifiedAt=17;    
+    int64 ModifiedAt=17;
+    int32 CategoryId=18;
+    int32 SubCategoryId=19;
+    string Type=20;
 }
 
 message GeofencePolygonUpdateRequest{
