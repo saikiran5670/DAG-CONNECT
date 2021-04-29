@@ -49,6 +49,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
   subCategoryList: any = [];
   private _snackBar: any;
   initData: any[];
+  importPOIClicked : boolean = false;
+  importClicked : boolean = false;
+  impportTitle = "Import POI";
+  importTranslationData : any = {};
+  templateTitle = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
+'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type'];
+  templateValue =
+    [36,10,null,8,null,"Poi Test",
+'Pune','Pune','India','411057',51.07,57.07,12,'Active','POI'];
+  tableColumnList = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
+  'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type','Fail Reason'];
+  tableColumnName = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
+  'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Fail Reason'];
+  tableTitle = 'Rejected POI Details';
+  @Output() showImportCSV : EventEmitter<any> = new EventEmitter();
 
   constructor( 
     private dialogService: ConfirmDialogService,
@@ -404,7 +419,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   }
 
+  updateImportView(_event){
+    this.importPOIClicked = _event;
+  }
+
   importPOIExcel(){
+    this.importPOIClicked = true;
+    this.showImportCSV.emit(true);
+    this.processTranslationForImport();
   //   let poidata= [
   //     {
   //         "organizationId": 36,
@@ -428,5 +450,44 @@ export class ManagePoiGeofenceComponent implements OnInit {
   //       console.log(data)
   //   })
   }
+
+  processTranslationForImport(){
+    if(this.translationData){
+      this.importTranslationData.importTitle = this.translationData.lblImportNewPOI || 'Import New POI';
+      this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate|| 'Download a Template';
+      this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Each line is required to have at least X column: POI Name, Latitude, Longitude and Category separated by either a column or semicolon. You can also optionally specify a description and a XXXX for each POI.';
+      this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedFile|| 'Upload Updated Excel File';
+      this.importTranslationData.browse= this.translationData.lblbrowse || 'Browse';
+      this.importTranslationData.uploadButtonText= this.translationData.lbluploadPackage || 'Upload';
+      this.importTranslationData.selectFile= this.translationData.lblPleaseSelectAFile || 'Please select a file';
+      this.importTranslationData.totalSizeMustNotExceed= this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
+      this.importTranslationData.emptyFile= this.translationData.lblEmptyFile || 'Empty File';
+      this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails || 'Imported file details';
+      this.importTranslationData.new= this.translationData.lblNew || 'new';
+      this.importTranslationData.fileType= this.translationData.lblPPOI || 'POI';
+      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage || 'packages';
+      this.importTranslationData.imported= this.translationData.lblimport || 'Imported';
+      this.importTranslationData.rejected= this.translationData.lblrejected|| 'Rejected';
+      this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists  || 'Package code already exists';
+      this.importTranslationData.input1mandatoryReason = this.translationData.lblPackageCodeMandatoryReason || 'Package Code is mandatory input';
+      this.importTranslationData.input2mandatoryReason = this.translationData.lblPackageNameMandatoryReason || 'Package Name is mandatory input';
+      this.importTranslationData.maxAllowedLengthReason = this.translationData.lblExceedMaxLength || "'$' exceeds maximum allowed length of '#' chars";
+      this.importTranslationData.specialCharNotAllowedReason = this.translationData.lblSpecialCharNotAllowed || "Special characters not allowed in '$'";
+      this.importTranslationData.packageDescriptionCannotExceedReason = this.translationData.lblPackageDescriptionCannotExceed || 'Package Description cannot exceed 100 characters';
+      this.importTranslationData.packageTypeMandateReason = this.translationData.lblPackageTypeMandate|| 'Package Type is mandatory input';
+      this.importTranslationData.packageStatusMandateReason = this.translationData.lblPackageStatusMandate|| 'Package Status is mandatory input';
+      this.importTranslationData.packageTypeReason = this.translationData.lblPackageTypeValue || 'Package type should be VIN or Organization';
+      this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue || 'Package status can be Active or Inactive';
+      this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty|| "Features should be comma separated and cannot be empty";
+      this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid|| "Feature is invalid";
+      this.tableTitle = this.translationData.lblTableTitle || 'Rejected Driver Details';
+      this.tableColumnName = [this.translationData.lblId || 'Id',
+                              this.translationData.lblName ||'Name',
+                              this.translationData.lblCategory || 'Category',
+                              this.translationData.lblAddress || 'Address',
+                              this.translationData.lblFailReason || 'Fail Reason'];
+    }
+  }
+
 }
 
