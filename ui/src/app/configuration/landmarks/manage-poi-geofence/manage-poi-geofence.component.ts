@@ -402,4 +402,30 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
 
   }
+
+  importPOIExcel(){
+  //   let poidata= [
+  //     {
+  //         "organizationId": 36,
+  //         "categoryId": 10,
+  //         "categoryName": null,
+  //         "subCategoryId": 8,
+  //         "subCategoryName": null,
+  //         "name": "Poi Test",
+  //         "address": "Pune",
+  //         "city": "Pune",
+  //         "country": "India",
+  //         "zipcode": "411057",
+  //         "latitude": 51.07,
+  //         "longitude": 57.07,
+  //         "distance": 12,
+  //         "state": "Active",
+  //         "type": "POI"
+  //     }
+  // ]
+  //   this.poiService.importPOIExcel(poidata).subscribe((data)=>{
+  //       console.log(data)
+  //   })
+  }
 }
+
