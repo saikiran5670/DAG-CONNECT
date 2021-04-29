@@ -7,6 +7,7 @@ import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dia
 import { LandmarkCategoryService } from '../../../services/landmarkCategory.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonTableComponent } from '../../../shared/common-table/common-table.component'; 
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-manage-category',
@@ -22,7 +23,7 @@ export class ManageCategoryComponent implements OnInit {
   accountOrganizationId: any;
   createViewEditStatus: boolean = false;
   showLoadingIndicator: any = false;
-  displayedColumns: string[] = ['icon', 'parentCategoryName', 'subCategoryName', 'noOfPOI', 'noOfGeofence', 'action'];
+  displayedColumns: string[] = ['select', 'icon', 'parentCategoryName', 'subCategoryName', 'noOfPOI', 'noOfGeofence', 'action'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   categoryList: any = [];
@@ -33,6 +34,7 @@ export class ManageCategoryComponent implements OnInit {
   selectedRowData: any = [];
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   dialogRef: MatDialogRef<CommonTableComponent>;
+  selectedCategory = new SelectionModel(true, []);
 
   constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
@@ -209,6 +211,16 @@ export class ManageCategoryComponent implements OnInit {
     const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
     const tableTitle = this.translationData.lblPOI || 'POI';
     this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, rowData.parentCategoryId).subscribe((poiData: any) => {
+      poiData.forEach(element => {
+        if(element.icon && element.icon != ''){
+          // let TYPED_ARRAY = new Uint8Array(element.icon);
+          // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+          // let base64String = btoa(STRING_CHAR);
+          element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
+        }else{
+          element.icon = '';
+        }
+      });
       this.callToCommonTable(poiData, colsList, colsName, tableTitle);
     });
   }
@@ -272,4 +284,27 @@ export class ManageCategoryComponent implements OnInit {
       this.categoryTitleVisible = false;
     }, 5000);
   }
+
+  masterToggleForCategory() {
+    this.isAllSelectedForCategory()
+      ? this.selectedCategory.clear()
+      : this.dataSource.data.forEach((row) =>
+        this.selectedCategory.select(row)
+      );
+  }
+
+  isAllSelectedForCategory() {
+    const numSelected = this.selectedCategory.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForCategory(row?: any): string {
+    if (row)
+      return `${this.isAllSelectedForCategory() ? 'select' : 'deselect'} all`;
+    else
+      return `${this.selectedCategory.isSelected(row) ? 'deselect' : 'select'
+        } row`;
+  }
+
 }
