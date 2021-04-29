@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 foreach (var item in data)
                 {
                     net.atos.daf.ct2.poiservice.POIData objPOI = new net.atos.daf.ct2.poiservice.POIData();
-                    //objPOI.Id = item.Id;
+                    objPOI.Id = item.Id;
                     //objPOI.OrganizationId = item.OrganizationId;
                     //objPOI.CategoryId = item.CategoryId;
                     //objPOI.SubCategoryId = item.SubCategoryId;
@@ -252,6 +252,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 foreach (var item in result)
                 {
                     POIData objPOIData = new POIData();
+                    objPOIData.Id = item.Id;
                     objPOIData.Name = item.Name == null ? string.Empty : item.Name;
                     objPOIData.Latitude = item.Latitude;
                     objPOIData.Longitude = item.Longitude;
