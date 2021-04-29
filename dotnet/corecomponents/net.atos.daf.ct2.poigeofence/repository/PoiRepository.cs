@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                 {
                     //only return global poi
-                    query = $"{query} and L.organization_id is null ";
+                    query = query + " and l.organization_id is null ";
                 }
                 if (poiFilter.CategoryId > 0)
                 {
