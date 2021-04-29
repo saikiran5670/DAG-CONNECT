@@ -19,7 +19,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   breadcumMsg: any = ''; 
   @Input() actionType: any;
-  poiFormGroup: FormGroup;
+  geofenceFormGroup: FormGroup;
   form: Form;
   title = 'here-project';
   private platform: any;
@@ -42,6 +42,8 @@ userCreatedMsg: any = '';
 hereMapService: any;
 organizationId: number;
 localStLanguage: any;
+polygoanGeofence: boolean = false;
+circularGeofence: boolean = false;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -58,7 +60,7 @@ localStLanguage: any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
 
-    this.poiFormGroup = this._formBuilder.group({
+    this.geofenceFormGroup = this._formBuilder.group({
       name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       category: ['', [ Validators.required]],
       sub_category: ['', [ Validators.required]],
@@ -142,4 +144,29 @@ setUpClickListener(map, here, poiFlag) {
     
 }
 
+setAddressValues(addressVal,positions){
+  //     console.log("this is in setAddress()");
+  // console.log(addressVal);
+  this.address = addressVal.Label;
+  this.zip = addressVal.PostalCode;
+  this.city = addressVal.City;
+  this.country = addressVal.Country;
+  var nameArr = positions.split(',');
+  // console.log(nameArr[0]);
+  this.geofenceFormGroup.get("address").setValue(this.address);
+  this.geofenceFormGroup.get("zip").setValue(this.zip);
+  this.geofenceFormGroup.get("city").setValue(this.city);
+  this.geofenceFormGroup.get("country").setValue(this.country);
+  this.geofenceFormGroup.get("lattitude").setValue(nameArr[0]);
+  this.geofenceFormGroup.get("longitude").setValue(nameArr[1]);
+  }
+  
+    onCancel(){
+      let emitObj = {
+        stepFlag: false,
+        successMsg: this.userCreatedMsg,
+      }    
+      this.backToPage.emit(emitObj);
+    }
+  
 }

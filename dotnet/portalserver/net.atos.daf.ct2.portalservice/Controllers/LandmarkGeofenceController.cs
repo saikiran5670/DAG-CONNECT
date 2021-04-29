@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
-                        return StatusCode(400, "You cannot create global poi.");
+                        return StatusCode(400, "You cannot create global geofence.");
                 }
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
@@ -117,6 +117,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger.Info("CreateCircularGeofence method in Geofence API called.");
             try
             {
+                bool allEqual = !request.GroupBy(o => o.OrganizationId).Skip(1).Any();
+                if (allEqual)
+                {
+                    if (request[0].OrganizationId == 0)
+                    {
+                        bool hasRights = await HasAdminPrivilege();
+                        if (!hasRights)
+                            return StatusCode(400, "You cannot create global geofence.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(400, "Different organization id in passed circular geofence request..");
+                }
                 var geofenceRequest = new geofenceservice.CircularGeofenceRequest();
                 foreach (var item in request)
                 {
@@ -319,6 +333,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                  _logger.Info("UpdatePolygonGeofence method in geofence API called.");
 
+                // Validate Admin Privilege
+                if (request.OrganizationId == 0)
+                {
+                    bool hasRights = await HasAdminPrivilege();
+                    if (!hasRights)
+                        return StatusCode(400, "You cannot create global geofence.");
+                }
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
                 {
@@ -356,7 +377,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Update  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                 "Update polygon method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
                 _logger.Error(null, ex);
                 // check for fk violation
@@ -387,7 +408,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 foreach (var request in requests)
                     bulkGeofenceRequest.GeofenceRequest.Add(_mapper.ToGeofenceRequest(request));
                 var response = await _GeofenceServiceClient.BulkImportGeofenceAsync(bulkGeofenceRequest);
-                return StatusCode((int)response.Code, response.Message);
+                return StatusCode((int)response.Code, response);
             }
             catch (Exception ex)
             {
@@ -417,6 +438,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                  _logger.Info("UpdateCircularGeofence method in Geofence API called.");
+
+                // Validate Admin Privilege
+                if (request.OrganizationId == 0)
+                {
+                    bool hasRights = await HasAdminPrivilege();
+                    if (!hasRights)
+                        return StatusCode(400, "You cannot create global geofence.");
+                }
+
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
                 {
@@ -454,7 +484,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Update  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
+                 "Update Circular method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
                 _logger.Error(null, ex);
                 // check for fk violation
