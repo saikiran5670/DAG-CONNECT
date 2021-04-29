@@ -111,9 +111,12 @@ export class ManageCategoryComponent implements OnInit {
         let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
         let base64String = btoa(STRING_CHAR);
         row.imageUrl = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
-        row.categoryDescription = ''; // temporary
       }else{
         row.imageUrl = '';
+      }
+
+      if(!row.description){
+        row.description = '';
       }
     });
     let newTrueData = data.filter(item => item.newTag == true);
@@ -121,23 +124,6 @@ export class ManageCategoryComponent implements OnInit {
     let newFalseData = data.filter(item => item.newTag == false);
     Array.prototype.push.apply(newTrueData, newFalseData); 
     return newTrueData;
-  }
-
-  prepareMockData(){
-    this.initData = [{
-      icon: 'Icon-1', 
-      category: 'Cat-1', 
-      subCategory: 'SubCat-1', 
-      poi: 2, 
-      geofence: 3
-    },
-    {
-      icon: 'Icon-2', 
-      category: 'Cat-2', 
-      subCategory: 'SubCat-2', 
-      poi: 4, 
-      geofence: 8
-    }];
   }
 
   onNewCategory(){

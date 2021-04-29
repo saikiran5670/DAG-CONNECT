@@ -38,7 +38,8 @@ export class CreateEditViewGroupComponent implements OnInit {
   breadcumMsg: any = '';
   landmarkGroupForm: FormGroup;
   duplicateGroupMsg: boolean= false;
-
+  categoryList: any= [];
+  subCategoryList: any= []
 
   constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService) { }
 
@@ -98,7 +99,7 @@ export class CreateEditViewGroupComponent implements OnInit {
         }
       });
       tableData = selectedPOIList;
-      this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName',, 'address'];
+      this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
       this.updatePOIDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
@@ -337,6 +338,14 @@ export class CreateEditViewGroupComponent implements OnInit {
     else
       return `${this.selectedGeofence.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  onCategoryChange(){
+
+  }
+
+  onSubCategoryChange(){
+
   }
 
 }

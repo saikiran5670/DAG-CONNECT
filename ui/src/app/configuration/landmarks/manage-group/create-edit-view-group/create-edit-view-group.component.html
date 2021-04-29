@@ -102,6 +102,24 @@
                 <span matPrefix><mat-icon>search</mat-icon></span>
             </mat-form-field>
           </div>
+          <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+              <mat-select  (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+              <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+              </mat-select>
+          </mat-form-field>
+          </div>
+          <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+                <mat-select (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                    {{ rer.name }}
+                </mat-option>
+                </mat-select>
+            </mat-form-field>
+          </div>
         </div>
         <div>
           <mat-table [dataSource]="poiDataSource" class="table-items" matSort>
@@ -164,6 +182,24 @@
             <mat-form-field appearance="outline">
                 <input matInput (keyup)="applyFilterForGeofence($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
                 <span matPrefix><mat-icon>search</mat-icon></span>
+            </mat-form-field>
+          </div>
+          <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+              <mat-select  (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+              <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+              </mat-select>
+          </mat-form-field>
+          </div>
+          <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+                <mat-select (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                    {{ rer.name }}
+                </mat-option>
+                </mat-select>
             </mat-form-field>
           </div>
         </div>

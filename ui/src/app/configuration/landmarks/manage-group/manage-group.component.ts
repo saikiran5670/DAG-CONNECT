@@ -10,6 +10,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { TranslationService } from 'src/app/services/translation.service';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { UserDetailTableComponent } from 'src/app/admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
 
 
 @Component({
@@ -43,8 +45,10 @@ export class ManageGroupComponent implements OnInit {
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
+  dialogRef: MatDialogRef<UserDetailTableComponent>;
 
-  constructor(private translationService: TranslationService, private landmarkGroupService: LandmarkGroupService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
+  constructor(private translationService: TranslationService, private landmarkGroupService: LandmarkGroupService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,
+    private dialog: MatDialog) {
     this.defaultTranslation();
   }
 
@@ -123,11 +127,44 @@ export class ManageGroupComponent implements OnInit {
   }
 
   onPOIClick(row: any){
-
+    const colsList = ['landmarkname', 'categoryname', 'subcategoryname', 'address'];
+    const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
+    const tableTitle = this.translationData.lblPOI || 'POI';
+    let objData = { 
+      organizationid : this.organizationId,
+      groupid : row.id
+   };
+      this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
+      this.selectedRowData = groupDetails["groups"][0].landmarks.filter(item => item.type == "P");
+      this.callToCommonTable(this.selectedRowData, colsList, colsName, tableTitle);
+    });
   }
 
   onGeofenceClick(row: any){
+    const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
+    const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
+    const tableTitle = this.translationData.lblGeofence || 'Geofence';
+    let objData = { 
+      organizationid : this.organizationId,
+      groupid : row.id
+   };
+      this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
+      this.selectedRowData = groupDetails["groups"][0].landmarks.filter(item => (item.type == "C" || item.type == "O"));
+      this.callToCommonTable(this.selectedRowData, colsList, colsName, tableTitle);
+    });
+  }
 
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName: colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
 
   deleteLandmarkGroup(row){
@@ -159,12 +196,7 @@ export class ManageGroupComponent implements OnInit {
   }
 
   editViewlandmarkGroup(row: any, actionType: any){
-    if(actionType == 'edit'){ //temporary change as view is not working
     this.tabVisibility.emit(false);
-    // this.titleText = (actionType == 'view') ? (this.translationData.lblViewGroupDetails || "View Group Details") : (this.translationData.lblEditGroupDetails || "Edit Group Details") ;
-    // this.selectedRowData = row;
-    // this.actionType = actionType;
-    // this.createViewEditStatus = true;
     let objData = { 
       organizationid : this.organizationId,
       groupid : row.id
@@ -175,7 +207,6 @@ export class ManageGroupComponent implements OnInit {
       this.actionType = actionType;
       this.createViewEditStatus = true;
     });
-  }
   }
 
   getDeletMsg(groupName: any){

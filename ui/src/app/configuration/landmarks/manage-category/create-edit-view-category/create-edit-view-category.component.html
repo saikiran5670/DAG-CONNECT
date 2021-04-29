@@ -48,10 +48,10 @@
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-radio-group (change)='onCategoryChange($event)' formControlName="categoryType">
-                    <mat-radio-button style='margin-right: 20px;' value="category"
+                    <mat-radio-button [disableRipple]="actionType == 'edit'" style='margin-right: 20px;' value="category"
                       [checked]="selectedCategoryType ===  'category' ? true : false">{{ translationData.lblCategory || 'Category' }}
                     </mat-radio-button>
-                    <mat-radio-button style='margin-right: 20px;' value="subcategory"
+                    <mat-radio-button [disabled]="actionType == 'edit'" [disableRipple]="actionType == 'edit'" style='margin-right: 20px;' value="subcategory"
                       [checked]="selectedCategoryType ===  'subcategory' ? true : false">{{ translationData.lblSubCategory || 'Sub-Category' }}
                     </mat-radio-button>
                   </mat-radio-group>
@@ -66,11 +66,12 @@
           <div class='full-width' fxLayout="column" fxLayoutGap="0px" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
                   <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblSelectAndUploadIcon || 'Select And Upload Icon' }} <span class='mandatoryColor'>*</span></mat-label>
+                      <mat-label>{{ translationData.lblSelectAndUploadIcon || 'Select And Upload Icon' }}</mat-label>
                       <mat-form-field appearance="outline">
-                          <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.png, .jpg, .jpeg'" formControlName="uploadFile" placeholder="Upload Icon" ></ngx-mat-file-input>
+                          <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadFile" placeholder="Upload Icon" ></ngx-mat-file-input>
                           <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
                       </mat-form-field>
+                      <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting icon format - .jpg, .png, .gif and size- 32x32px' }}</span>
                       <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
                           {{ translationData.lblPleaseselectafile || 'Please select a file' }}
                       </mat-error>
@@ -81,15 +82,18 @@
                       <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
                           {{ translationData.lblEmptyFile || 'Empty File' }}
                       </mat-error>
+                      <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                        {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                      </mat-error>
                   </div>
-                  <!-- <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
-                      <button style='color: #fff;' [disabled]="!categoryForm.valid || imageEmptyMsg" [ngStyle]="{'margin-top': categoryForm.get('uploadFile').hasError('required') || imageEmptyMsg  ? '9px' : '29px' }" mat-flat-button color="primary"
-                          (click)="uploadIcon(removableInput)">
-                          <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUpload || 'Upload' }}
-                      </button>
-                  </div> -->
             </div>
-            <div *ngIf="actionType == 'view'"></div>
+            <div *ngIf="actionType == 'view'">
+              <mat-label>{{ translationData.lblSelectedIcon || 'Selected Icon'}}</mat-label>
+              <span style='display: flex; margin-bottom: 3px;'>
+                <img matTooltip={{uploadIconName}} [src]='uploadIcon' alt='' width='20px' height='20px'>
+                &nbsp; &nbsp;{{ uploadIconName }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -145,7 +149,7 @@
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-            <button class='no-margin' [disabled]="!categoryForm.valid" mat-raised-button color="primary"
+            <button class='no-margin' [disabled]="!categoryForm.valid || imageMaxMsg" mat-raised-button color="primary"
               (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
               (translationData.lblConfirm || 'Confirm') }}</button>
           </div>
