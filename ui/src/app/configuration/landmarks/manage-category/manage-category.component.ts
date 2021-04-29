@@ -314,14 +314,15 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onBulkDeleteCategory(){
-   let filterIds:any = this.selectedCategory.selected.map(item => item.parentCategoryId); 
-   let deleteObj: any = {
-    ids: filterIds
-   }
-   this.landmarkCategoryService.deleteBulkLandmarkCategory(deleteObj).subscribe((deletedData: any) => {
-    this.successMsgBlink(this.getDeletMsg());
-    this.loadLandmarkCategoryData();
-   });
+    let filterIds: any = this.selectedCategory.selected.map(item => item.parentCategoryId)
+        .filter((value, index, self) => self.indexOf(value) === index)
+    let deleteObj: any = {
+      ids: filterIds
+    }
+    this.landmarkCategoryService.deleteBulkLandmarkCategory(deleteObj).subscribe((deletedData: any) => {
+      this.successMsgBlink(this.getDeletMsg());
+      this.loadLandmarkCategoryData();
+    });
   }
 
 }
