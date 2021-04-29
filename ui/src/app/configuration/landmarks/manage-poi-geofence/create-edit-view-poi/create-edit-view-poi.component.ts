@@ -55,6 +55,8 @@ longitude: any;
 subCategoryList: any = [];
 poiInitdata: any = [];
 userName: string = '';
+state: any;
+
 @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
   @ViewChild("map")
@@ -76,7 +78,7 @@ userName: string = '';
       this.poiFormGroup = this._formBuilder.group({
         name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
         category: ['', [ Validators.required]],
-        sub_category: ['', [ Validators.required]],
+        subcategory: ['', [ Validators.required]],
         address: [''],
         zip: [''],
         city: [''],
@@ -152,7 +154,7 @@ userName: string = '';
         stepFlag: false,
         msg: ""
       }    
-      this.createViewEditPoiEmit.emit(emitObj);    
+      this.backToPage.emit(emitObj);    
     }
   
     getBreadcum(type: any){
@@ -210,10 +212,11 @@ userName: string = '';
                     this.locations = <Array<any>>result;
                     data = this.locations[0].Location.Address;
                     // console.log(this.locations[0].Location.Address);
+                    let pos= this.locations[0].Location.DisplayPosition;
                     console.log(data);
                     this.data = data;
                     poiFlag = false;
-                    thisRef.setAddressValues(data,this.position);
+                    thisRef.setAddressValues(data,pos);
                 }, error => {
                     console.error(error);
                 });
@@ -232,20 +235,22 @@ userName: string = '';
 
   setAddressValues(addressVal,positions){
 //     console.log("this is in setAddress()");
-// console.log(addressVal);
+console.log(addressVal);
 this.address = addressVal.Label;
 this.zip = addressVal.PostalCode;
 this.city = addressVal.City;
-// this.state
+this.state = addressVal.State;
 this.country = addressVal.Country;
-var nameArr = positions.split(',');
-// console.log(nameArr[0]);
+// var nameArr = positions.split(',');
+let pos = positions;
+console.log(this.lattitude);
 this.poiFormGroup.get("address").setValue(this.address);
 this.poiFormGroup.get("zip").setValue(this.zip);
 this.poiFormGroup.get("city").setValue(this.city);
 this.poiFormGroup.get("country").setValue(this.country);
-this.poiFormGroup.get("lattitude").setValue(nameArr[0]);
-this.poiFormGroup.get("longitude").setValue(nameArr[1]);
+this.poiFormGroup.get("lattitude").setValue(positions.Latitude);
+this.poiFormGroup.get("longitude").setValue(positions.Longitude);
+console.log("poiformgroup=" +this.poiFormGroup);
 // this.poiFormGroup.get("category").setValue(this.selectedCategoryType);
 }
 
@@ -295,15 +300,14 @@ this.poiFormGroup.get("longitude").setValue(nameArr[1]);
         city: this.poiFormGroup.controls.city.value,
         country: this.poiFormGroup.controls.country.value,
         zipcode: this.poiFormGroup.controls.zip.value,
-        latitude: this.poiFormGroup.controls.lattitude,
-        longitude: this.poiFormGroup.controls.longitude,
+        latitude: this.poiFormGroup.controls.lattitude.value,
+        longitude: this.poiFormGroup.controls.longitude.value,
         state: "MH",
         createdBy: 0
       }
 
+      if(this.actionType == 'create'){
       this.POIService.createPoi(objData).subscribe((res: any) => {
-        console.log("created");
-        console.log(res);
       this.POIService.getPois(this.organizationId).subscribe((data : any) => {
 this.poiInitdata = data;
 this.userCreatedMsg = this.getUserCreatedMessage();
@@ -312,10 +316,30 @@ this.userCreatedMsg = this.getUserCreatedMessage();
           successMsg: this.userCreatedMsg,
           tableData: this.poiInitdata,
         }    
-        this.createViewEditPoiEmit.emit(emitObj); 
+        this.backToPage.emit(emitObj); 
 
       });
       });
+    }
+    else{
+      // let objData = {
+      //   id: 0,
+      //   organizationId: this.organizationId,
+      //   categoryId: 5,
+      //   subCategoryId: 7,
+      //   name: this.poiFormGroup.controls.name.value,
+      //   address: this.poiFormGroup.controls.address.value,
+      //   city: this.poiFormGroup.controls.city.value,
+      //   country: this.poiFormGroup.controls.country.value,
+      //   zipcode: this.poiFormGroup.controls.zip.value,
+      //   latitude: this.poiFormGroup.controls.lattitude.value,
+      //   longitude: this.poiFormGroup.controls.longitude.value,
+      //   state: "MH",
+      //   createdBy: 0
+      // }
+
+    }
+
   }
   }
 }

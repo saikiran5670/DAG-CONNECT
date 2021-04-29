@@ -244,7 +244,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   checkCreationForPoi(item: any){
-    this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
+    // this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
     this.createEditViewPoiFlag = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
@@ -252,7 +252,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if(item.tableData) {
       this.poiInitData = item.tableData;
     }
-    this.loadPoiData;
+    this.loadPoiData();
+  }
+
+  onClose()
+  {
+  
   }
 
   deletePoi(rowData: any){
@@ -403,4 +408,30 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
 
   }
+
+  importPOIExcel(){
+  //   let poidata= [
+  //     {
+  //         "organizationId": 36,
+  //         "categoryId": 10,
+  //         "categoryName": null,
+  //         "subCategoryId": 8,
+  //         "subCategoryName": null,
+  //         "name": "Poi Test",
+  //         "address": "Pune",
+  //         "city": "Pune",
+  //         "country": "India",
+  //         "zipcode": "411057",
+  //         "latitude": 51.07,
+  //         "longitude": 57.07,
+  //         "distance": 12,
+  //         "state": "Active",
+  //         "type": "POI"
+  //     }
+  // ]
+  //   this.poiService.importPOIExcel(poidata).subscribe((data)=>{
+  //       console.log(data)
+  //   })
+  }
 }
+
