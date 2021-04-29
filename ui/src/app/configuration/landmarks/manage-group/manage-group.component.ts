@@ -12,6 +12,7 @@ import { TranslationService } from 'src/app/services/translation.service';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { UserDetailTableComponent } from 'src/app/admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 @Component({
@@ -48,7 +49,7 @@ export class ManageGroupComponent implements OnInit {
   dialogRef: MatDialogRef<UserDetailTableComponent>;
 
   constructor(private translationService: TranslationService, private landmarkGroupService: LandmarkGroupService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar,
-    private dialog: MatDialog) {
+    private dialog: MatDialog, private domSanitizer: DomSanitizer) {
     this.defaultTranslation();
   }
 
@@ -127,8 +128,8 @@ export class ManageGroupComponent implements OnInit {
   }
 
   onPOIClick(row: any){
-    const colsList = ['landmarkname', 'categoryname', 'subcategoryname', 'address'];
-    const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
+    const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
+    const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
     const tableTitle = this.translationData.lblPOI || 'POI';
     let objData = { 
       organizationid : this.organizationId,
@@ -136,7 +137,19 @@ export class ManageGroupComponent implements OnInit {
    };
       this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
       this.selectedRowData = groupDetails["groups"][0].landmarks.filter(item => item.type == "P");
-      this.callToCommonTable(this.selectedRowData, colsList, colsName, tableTitle);
+      if(this.selectedRowData.length > 0){
+        this.selectedRowData.forEach(element => {
+          if(element.icon && element.icon != '' && element.icon.length > 0){
+            let TYPED_ARRAY = new Uint8Array(element.icon);
+            let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+            let base64String = btoa(STRING_CHAR);
+            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+          }else{
+            element.icon = '';
+          }
+        });
+        this.callToCommonTable(this.selectedRowData, colsList, colsName, tableTitle);
+      }
     });
   }
 

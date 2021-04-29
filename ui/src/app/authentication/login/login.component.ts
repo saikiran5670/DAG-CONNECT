@@ -71,6 +71,18 @@ export class LoginComponent implements OnInit {
          //console.log("data:: ", data)
          if(data.status === 200){
             //this.cookiesFlag = true;
+            if(data.body.accountInfo){
+              localStorage.setItem('accountId', data.body.accountInfo.id ? data.body.accountInfo.id : 0);
+            }
+        
+            if(data.body.accountOrganization.length > 0){
+              localStorage.setItem('accountOrganizationId', data.body.accountOrganization[0].id);
+              localStorage.setItem("organizationName", data.body.accountOrganization[0].name);
+            }
+      
+            if(data.body.accountRole.length > 0){
+              localStorage.setItem('accountRoleId', data.body.accountRole[0].id);
+            }
 
             let loginObj = {
               id: data.body.accountInfo.id,
@@ -78,7 +90,8 @@ export class LoginComponent implements OnInit {
               email: "",
               accountIds: "",
               name: "",
-              accountGroupId: 0
+              accountGroupId: 0,
+              dataBody: data.body
             }
             
               this.accountService.getAccount(loginObj).subscribe(getAccresp => {
@@ -261,7 +274,6 @@ export class LoginComponent implements OnInit {
     else{
       data.accountId = 0;
     }
-    localStorage.setItem('accountId', data.accountId);
 
   //---Test scenario -----//
   //  org  role  action
@@ -312,15 +324,6 @@ export class LoginComponent implements OnInit {
       });
     }
     else{ //-- skip popup
-      if(data.accountOrganization.length > 0){
-        localStorage.setItem('accountOrganizationId', data.accountOrganization[0].id);
-        localStorage.setItem("organizationName", data.accountOrganization[0].name);
-      }
-
-      if(data.accountRole.length > 0){
-        localStorage.setItem('accountRoleId', data.accountRole[0].id);
-      }
-
       let loginDetailsObj: any = {
         organization: organization,
         role: role,

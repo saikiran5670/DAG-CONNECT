@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Form, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
@@ -11,19 +11,20 @@ declare var H: any;
   styleUrls: ['./create-edit-view-geofence.component.less']
 })
 export class CreateEditViewGeofenceComponent implements OnInit {
-  
+  @Output() createViewEditPoiEmit = new EventEmitter<object>();
+  @Input() createStatus: boolean;
   @Input() translationData: any;
-  map: any; 
-  @ViewChild("map")
-  public mapElement: ElementRef;
+  @Input() selectedElementData: any;
+  @Input() viewFlag: boolean;
+  @Output() backToPage = new EventEmitter<any>();
   breadcumMsg: any = ''; 
-  // @Input() actionType: any;
-  // poiFormGroup: FormGroup;
-  // form: Form;
+  @Input() actionType: any;
+  poiFormGroup: FormGroup;
+  form: Form;
   title = 'here-project';
   private platform: any;
   private search: any;
-//  map: any; 
+ map: any; 
  private ui: any; 
  lat: any = '37.7397';  
  lng: any = '-121.4252'; 
@@ -32,16 +33,52 @@ export class CreateEditViewGeofenceComponent implements OnInit {
  public position: string;
  public locations: Array<any>;
 poiFlag:boolean = true;
+data: any;
+address: 'chaitali';
+zip: any;
+city: any;
+country: any;
+userCreatedMsg: any = ''; 
+hereMapService: any;
+organizationId: number;
+localStLanguage: any;
+
+  @ViewChild("map")
+  public mapElement: ElementRef;
   
-  constructor(private here: HereService,) {
+  constructor(private here: HereService, private _formBuilder: FormBuilder) { 
     this.query = "starbucks";
     this.platform = new H.service.Platform({
         "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
+  }
 
-   }
 
   ngOnInit(): void {
+    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+
+    this.poiFormGroup = this._formBuilder.group({
+      name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+      category: ['', [ Validators.required]],
+      sub_category: ['', [ Validators.required]],
+      address: [''],
+      zip: [''],
+      city: [''],
+      country: [''],
+      lattitude: [''],
+      longitude: ['']
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('name'),
+      ]
+    });
+    this.breadcumMsg = this.getBreadcum(this.actionType);
+
+    // this.loadInitData();
+   
+
   }
 
   getBreadcum(type: any){

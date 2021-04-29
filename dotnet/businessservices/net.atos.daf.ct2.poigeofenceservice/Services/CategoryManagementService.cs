@@ -124,16 +124,26 @@ namespace net.atos.daf.ct2.poigeofenservice
 
 
                 var result = await _categoryManager.DeleteCategory(request.Id);
-                if (result)
+                if (result.ID >=0)
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
                     response.CategoryID = request.Id;
 
                 }
-                else
+                else if (result.ID == -1)
                 {
-                    response.Message = "Category Not Found";
+                    response.Message = "You can not delete the category it contain subcategory  ";
+                    response.Code = Responsecode.Failed;
+                }
+                else if (result.ID == -2)
+                {
+                    response.Message = "You can not delete the category it contain POI or Geofence  ";
+                    response.Code = Responsecode.Failed;
+                }
+                else 
+                {
+                    response.Message = "Category Not found";
                     response.Code = Responsecode.NotFound;
                 }
                 return await Task.FromResult(response);
