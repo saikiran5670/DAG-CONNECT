@@ -20,6 +20,11 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.Enum;
+using Newtonsoft.Json;
+using System.Linq;
+
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
@@ -28,10 +33,12 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
     public class VehicleMileageController:ControllerBase
     {
         private readonly ILogger<VehicleMileageController> logger;        
-        private readonly IVehicleManager vehicleManager;                
-        public VehicleMileageController(IVehicleManager _vehicleManager, ILogger<VehicleMileageController> _logger)
+        private readonly IVehicleManager vehicleManager;
+        private readonly IAuditTraillib AuditTrail;
+        public VehicleMileageController(IVehicleManager _vehicleManager, ILogger<VehicleMileageController> _logger, IAuditTraillib _AuditTrail)
         {                   
             vehicleManager = _vehicleManager;
+            AuditTrail = _AuditTrail;
             logger = _logger;
         }
         [HttpGet]
@@ -40,9 +47,17 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         {
             try
             {
+                var selectedType = string.Empty;
                 long currentdatetime=UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                var contentType = this.Request.ContentType;
-                if (contentType== "text/csv" || contentType == "application/json")
+                var contentTypes = this.Request.ContentType.Split(";");
+                if (contentTypes.Any(x => x.Trim().Equals("text/csv")))
+                    selectedType = "text/csv";
+                if (contentTypes.Any(x => x.Trim().Equals("application/json")))
+                    selectedType = "application/json";
+
+                await AuditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get mileage method vehicle mileage service", 1, 2, selectedType, 0,0);                               
+                
+                if (!string.IsNullOrEmpty(selectedType))
                 {
                    
                     bool isNumeric = long.TryParse(since, out long n);
@@ -67,7 +82,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     }
 
                     VehicleMileage vehiclemileage = new VehicleMileage();
-                    vehiclemileage= await vehicleManager.GetVehicleMileage(since,isNumeric, contentType);
+                    vehiclemileage= await vehicleManager.GetVehicleMileage(since,isNumeric, selectedType);
 
 
                     if (vehiclemileage.Vehicles.Count == 0 && vehiclemileage.VehiclesCSV.Count == 0)
@@ -75,7 +90,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                         return StatusCode(404, string.Empty);
                     } 
 
-                    if (contentType=="text/csv")
+                    if (selectedType.Equals("text/csv"))
                     {                        
                      return new VehicleMileageCSVResult(vehiclemileage.VehiclesCSV); //, "mileagedata.csv"
                     }
