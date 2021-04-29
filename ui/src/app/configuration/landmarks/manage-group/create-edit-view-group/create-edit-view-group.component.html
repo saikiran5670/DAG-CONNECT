@@ -71,7 +71,7 @@
           <div fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" fxLayoutAlign='center center'>
               <mat-icon class='margin-right-10'>info</mat-icon>
-              <span>{{translationData.lblHintMsg || 'You can select POI and Geofence from below list to map with this Group' }}</span>
+              <span>{{translationData.lblHintMsg || 'You can select POI and Geofence from below list to map with this Group' }} <span class='mandatoryColor'>*</span></span>
             </div>
           </div>
           <div fxLayout="column" fxLayoutAlign="end">
@@ -79,7 +79,7 @@
               <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
               <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-              <button class='no-margin' [disabled]="!landmarkGroupForm.valid" mat-raised-button color="primary"
+              <button class='no-margin' [disabled]="!landmarkGroupForm.valid || selectedPOI.selected.length == 0 || selectedGeofence.selected.length == 0" mat-raised-button color="primary"
                 (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                 (translationData.lblConfirm || 'Confirm') }}</button>
             </div>
@@ -92,7 +92,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI') }}</span>&nbsp;<span>({{ translationData.lblOptional || 'Optional' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI ') }}</span>  <span class='mandatoryColor'>*</span></span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
@@ -174,7 +174,7 @@
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence') }}</span>&nbsp;<span>({{ translationData.lblOptional || 'Optional' }})</span></span>
+              <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedGeofence || 'Selected Geofence') : (translationData.lblSelectGeofence || 'Select Geofence ') }}</span>  <span class='mandatoryColor'>*</span></span>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>

@@ -17,11 +17,11 @@
             </div>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
               <div fxLayout="row" class='areaWidth'>
-                    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                      <button mat-flat-button color="primary" (click)="onNewCategory()">
-                      <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCategory || 'New Category' }}
-                      </button>
-                    </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                  <button mat-flat-button color="primary" (click)="onNewCategory()">
+                  <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCategory || 'New Category' }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -42,16 +42,25 @@
                     {{ rer.name }}
                 </mat-option>
                 </mat-select>
-            </mat-form-field>
+              </mat-form-field>
             </div>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <mat-form-field appearance="outline">
-              <mat-select [disabled]='initData.length == 0' (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-              <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
-                  {{ rer.name }}
-              </mat-option>
-              </mat-select>
-          </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-select [disabled]='initData.length == 0' (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                    {{ rer.name }}
+                </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" style='width: 100%; float: right;'>
+              <div fxLayout="row" fxLayoutAlign="flex-end"  class='areaWidth'>
+                <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+                  <button [disabled]='selectedCategory.selected.length == 0' mat-flat-button color="warn" (click)="onBulkDeleteCategory()">
+                    <mat-icon>deleteicon</mat-icon> {{ translationData.lblDelete || 'Delete' }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
