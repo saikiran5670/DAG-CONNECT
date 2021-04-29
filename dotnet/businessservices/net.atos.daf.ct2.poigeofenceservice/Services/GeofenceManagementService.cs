@@ -140,6 +140,8 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     response.GeofenceName = entity.Name;
                     response.Id = entity.Id;
+                    response.CategoryId = entity.CategoryId;
+                    response.SubCategoryId = entity.SubCategoryId;
                     response.OrganizationId = entity.OrganizationId;
                     if (entity.CategoryName != null)
                     {
@@ -148,6 +150,10 @@ namespace net.atos.daf.ct2.geofenceservice
                     if (entity.SubCategoryName != null)
                     {
                         response.SubCategoryName = entity.SubCategoryName;
+                    }
+                    if (entity.Type != null)
+                    {
+                        response.Type = entity.Type;
                     }
                     response.Address = entity.Address;
                     response.City = entity.City;

@@ -49,6 +49,7 @@ public class MileageConstants {
 	public static final String MILEAGE_TIME_WINDOW_SECONDS = "mileage.time.window.seconds";
 	public static final String MILEAGE_BUSINESS_TIME_WINDOW_SECONDS = "mileage.business.time.window.seconds";
 	public static final String MILEAGE_ERROR_MARGIN = "mileage.error.margin";
+	public static final String MILEAGE_WATERMARK_TIME_WINDOW_SECONDS = "mileage.watermark.time.window.seconds";
 
 	//Kafka parameter
 	
@@ -64,5 +65,7 @@ public class MileageConstants {
 	public static final String REQUEST_TIMEOUT_MILLISEC = "request.timeout.ms";
 		
 	public static final String UNKNOWN = "UNKNOWN";
+	public static final Integer ZERO = 0;
+	public static final Long ZERO_VAL = 0L;
 		
 }

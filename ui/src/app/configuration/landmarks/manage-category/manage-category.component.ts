@@ -5,7 +5,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { ConfirmDialogService } from '../../../shared/confirm-dialog/confirm-dialog.service';
 import { LandmarkCategoryService } from '../../../services/landmarkCategory.service';
-import { DomSanitizer } from '@angular/platform-browser'; 
+import { DomSanitizer } from '@angular/platform-browser';
+import { CommonTableComponent } from '../../../shared/common-table/common-table.component'; 
 
 @Component({
   selector: 'app-manage-category',
@@ -31,8 +32,9 @@ export class ManageCategoryComponent implements OnInit {
   actionType: any;
   selectedRowData: any = [];
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
+  dialogRef: MatDialogRef<CommonTableComponent>;
 
-  constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer) { }
+  constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -42,7 +44,11 @@ export class ManageCategoryComponent implements OnInit {
 
   loadLandmarkCategoryData(){
     this.showLoadingIndicator = true;
-    this.landmarkCategoryService.getLandmarkCategoryType('C').subscribe((parentCategoryData: any) => {
+    let objData = {
+      type:'C',
+      Orgid: this.accountOrganizationId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
       this.categoryList = parentCategoryData.categories;
       this.getSubCategoryData();
     }, (error) => {
@@ -52,7 +58,11 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   getSubCategoryData(){
-    this.landmarkCategoryService.getLandmarkCategoryType('S').subscribe((subCategoryData: any) => {
+    let objData = {
+      type:'S',
+      Orgid: this.accountOrganizationId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
       this.subCategoryList = subCategoryData.categories;
       this.getCategoryDetails();
     }, (error) => {
@@ -195,11 +205,34 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onPOIClick(rowData: any){
+    const colsList = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
+    const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
+    const tableTitle = this.translationData.lblPOI || 'POI';
+    this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, rowData.parentCategoryId).subscribe((poiData: any) => {
+      this.callToCommonTable(poiData, colsList, colsName, tableTitle);
+    });
+  }
 
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName: colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 
   onGeofenceClick(rowData: any){
-
+    const colsList = ['geofenceName', 'categoryName', 'subCategoryName'];
+    const colsName = [this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
+    const tableTitle = this.translationData.lblGeofence || 'Geofence';
+    this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, rowData.parentCategoryId).subscribe((geofenceData: any) => {
+      this.callToCommonTable(geofenceData.geofenceList, colsList, colsName, tableTitle);
+    });
   }
 
   onCategoryChange(){

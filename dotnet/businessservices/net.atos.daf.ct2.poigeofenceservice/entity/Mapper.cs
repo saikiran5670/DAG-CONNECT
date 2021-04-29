@@ -28,8 +28,11 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             {
                 objResponse.GeofenceName = request.geofenceName;
             }
-
-            objResponse.GeofenceId = request.geofenceID;
+            if (request.type!=null)
+            {
+                objResponse.Type = request.type;
+            }
+            objResponse.GeofenceId = request.geofenceID;            
             return objResponse;
         }
 
