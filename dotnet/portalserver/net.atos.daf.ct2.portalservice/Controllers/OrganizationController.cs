@@ -93,9 +93,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.CreateRelationshipAsync(objRequest);
-                    if (orgResponse.Relationship.Id < 1)
+                    if (orgResponse.Relationship == null)
                     {
-                        return StatusCode(400, "Relationship not created. ");
+                        return StatusCode(500, "Failed to create relationship.");
                     }
                     else
                     {
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Featureset id not created");
+                    return StatusCode(500, "Featureset not created");
                 }
             }
             catch (Exception ex)
