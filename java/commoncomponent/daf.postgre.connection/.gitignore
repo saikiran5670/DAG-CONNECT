@@ -1,3 +1,4 @@
-/target/classes/
-.classpath
 /classes/
+/target/
+/test-classes/
+.classpath
