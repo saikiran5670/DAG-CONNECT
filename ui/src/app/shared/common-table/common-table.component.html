@@ -23,9 +23,10 @@
           <mat-table [dataSource]="dataSource" class="table-items" matSort>
             <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
               <div *ngIf="disCol == 'icon'">
-                <mat-header-cell *matHeaderCellDef>{{ data.colsName[colIndex] }}</mat-header-cell>
-                <mat-cell *matCellDef="let element" matTooltip="{{ 'Icon' }}">
-                  <mat-icon>place</mat-icon>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <mat-icon *ngIf="element.icon && element.icon == ''">place</mat-icon>
+                  <img *ngIf="element.icon && element.icon != ''" [src]='element.icon' alt='' width='20px' height='20px'>
                 </mat-cell>
               </div>
               <div *ngIf="disCol != 'icon'">
