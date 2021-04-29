@@ -290,14 +290,14 @@ console.log("poiformgroup=" +this.poiFormGroup);
 
   setDefaultValue(){
     this.poiFormGroup.get("name").setValue(this.selectedElementData.name);
-    this.poiFormGroup.get("address").setValue(this.selectedElementData.name);
+    this.poiFormGroup.get("address").setValue(this.selectedElementData.address);
     this.poiFormGroup.get("city").setValue(this.selectedElementData.city);
     this.poiFormGroup.get("zip").setValue(this.selectedElementData.zipcode);
     this.poiFormGroup.get("lattitude").setValue(this.selectedElementData.latitude);
     this.poiFormGroup.get("longitude").setValue(this.selectedElementData.longitude);
     this.poiFormGroup.get("country").setValue(this.selectedElementData.country);
-    this.poiFormGroup.get("category").setValue(this.selectedElementData.categoryName);
-    this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryName);
+    this.poiFormGroup.get("category").setValue(this.selectedElementData.categoryId);
+    this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryId);
 
   
   }

@@ -35,12 +35,18 @@ export class ManageCategoryComponent implements OnInit {
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   dialogRef: MatDialogRef<CommonTableComponent>;
   selectedCategory = new SelectionModel(true, []);
+  allCategoryData : any =[];
+  selectedCategoryId = null;
+  selectedSubCategoryId = null;
+
+  userType: any= "";
 
   constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.userType= localStorage.getItem("userType");
     this.loadLandmarkCategoryData();
   }
 
@@ -77,6 +83,7 @@ export class ManageCategoryComponent implements OnInit {
     this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
       this.hideloader();
       //let data = this.createImageData(categoryData.categories);
+      this.allCategoryData = categoryData.categories;
       this.onUpdateDataSource(categoryData.categories);
     }, (error) => {
       this.hideloader();
@@ -91,6 +98,7 @@ export class ManageCategoryComponent implements OnInit {
 
   onUpdateDataSource(tableData: any) {
     this.initData = tableData;
+
     if(this.initData.length > 0){
       this.initData = this.getNewTagData(this.initData);
     }
@@ -252,12 +260,34 @@ export class ManageCategoryComponent implements OnInit {
     });
   }
 
-  onCategoryChange(){
-
+  onCategoryChange(_event){
+    this.selectedCategoryId = _event.value;
+    let selectedId = this.selectedCategoryId;
+    let selectedSubId = this.selectedSubCategoryId;
+    let categoryData = this.allCategoryData.filter(function(e) {
+      return e.parentCategoryId === selectedId;
+    });
+    if(selectedSubId){
+      categoryData = this.allCategoryData.filter(function(e) {
+      return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
+    });
+    }
+    this.onUpdateDataSource(categoryData);
   }
 
-  onSubCategoryChange(){
-
+  onSubCategoryChange(_event){
+    this.selectedSubCategoryId = _event.value;
+    let selectedId = this.selectedCategoryId;
+    let selectedSubId = this.selectedSubCategoryId;
+    let subCategoryData = this.allCategoryData.filter(function(e) {
+      return (e.subCategoryId === selectedSubId);
+    });
+    if(this.selectedCategoryId){
+      subCategoryData = this.allCategoryData.filter(function(e) {
+      return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
+    });
+    }
+    this.onUpdateDataSource(subCategoryData);
   }
 
   onClose(){

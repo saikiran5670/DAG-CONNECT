@@ -37,7 +37,7 @@
             </div>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
-                <mat-select [disabled]='initData.length == 0' (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+                <mat-select [disabled]='allCategoryData.length == 0' (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
                 <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                     {{ rer.name }}
                 </mat-option>
@@ -46,7 +46,7 @@
             </div>
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
-                <mat-select [disabled]='initData.length == 0' (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-select [disabled]='allCategoryData.length == 0' (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
                 <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                     {{ rer.name }}
                 </mat-option>
@@ -123,10 +123,10 @@
                   <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="View">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.Organization_Id != undefined && row.Organization_Id > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
                     <mat-icon>create</mat-icon>
                   </button>
-                  <button class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.Organization_Id != undefined && row.Organization_Id > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
                 </mat-cell>
