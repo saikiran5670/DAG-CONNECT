@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
             public int No_of_Geofence { get; set; }
             public string Description { get; set; }
             public long Created_at { get; set; }
+           public string Icon_Name { get; set; }
 
         public List<CategoryList> CategoryLists { get; set; }
 

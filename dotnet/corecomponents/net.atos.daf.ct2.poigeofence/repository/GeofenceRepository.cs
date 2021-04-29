@@ -179,9 +179,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty;
                 query = @"select L.id geofenceID,
-                                 L.name geofenceName, 
+                                 L.name geofenceName, L.type ,
                                  case when C.type='P' then C.name end category,
-                                 case when C.type='S' then C.name end subCategory 
+                                 case when C.type='S' then C.name end subCategory                                
                                  from master.landmark L
 	                             left join master.category C on L.category_id=C.id
 	                             where L.state='A'";
@@ -190,12 +190,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     //It will return organization specific geofence along with global geofence 
                     parameter.Add("@organization_id", geofenceEntityRequest.organization_id);
-                    query = $"{query} and L.organization_id=@organization_id or L.organization_id is null ";
+                    query = $"{query} and (L.organization_id=@organization_id or L.organization_id is null)";
                 }
                 else
                 {
                     //only return global geofence 
-                    query = $"{query} and L.organization_id=null ";
+                    query = $"{query} and L.organization_id is null ";
                 }
                 if (geofenceEntityRequest.category_id > 0)
                 {
@@ -231,6 +231,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                  L.name, 
                                  case when C.type='P' then C.name end categoryName,
                                  case when C.type='S' then C.name end subcategoryName,
+                                 case when L.type='O' then 'PolygonGeofence'
+                                  when L.type='C' then 'CircularGeofence'
+                                  when L.type='P' then 'POI'
+                                  when L.type='R' then 'Corridor'
+                                  when L.type='U' then 'Route'
+                                  end as type,
+                                 L.category_id CategoryId,                                
+                                 L.sub_category_id SubCategoryId,
                                  L.state State,
                                  L.address,
                                  L.city,

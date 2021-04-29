@@ -168,7 +168,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else
                 {
-                    response.Message = "POI is not created";
+                    response.Message = "POI is not Updated";
                     response.Code = Responsecode.Failed;
                 }
             }
@@ -178,7 +178,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 return await Task.FromResult(new POIResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "POI Creation Failed due to - " + ex.Message,
+                    Message = "POI Updation Failed due to - " + ex.Message,
                 });
             }
             return response;

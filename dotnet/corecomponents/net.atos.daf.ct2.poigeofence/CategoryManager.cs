@@ -23,14 +23,14 @@ namespace net.atos.daf.ct2.poigeofence
             return await _categoryRepository.EditCategory(category);
         }
 
-        public async Task<bool> DeleteCategory(int ID)
+        public async Task<CategoryID> DeleteCategory(int ID)
         {
             return await _categoryRepository.DeleteCategory(ID);
         }
 
-        public async Task<IEnumerable<Category>> GetCategory( string Type)
+        public async Task<IEnumerable<Category>> GetCategory( string Type, int OrganizationId)
         {
-            return await _categoryRepository.GetCategoryType(Type);
+            return await _categoryRepository.GetCategoryType(Type, OrganizationId);
         }
 
         public async Task<IEnumerable<CategoryList>> GetCategoryDetails()

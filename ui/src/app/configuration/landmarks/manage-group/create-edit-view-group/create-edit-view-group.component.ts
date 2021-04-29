@@ -9,6 +9,7 @@ import { POIService } from 'src/app/services/poi.service';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { element } from 'protractor';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 @Component({
@@ -38,9 +39,10 @@ export class CreateEditViewGroupComponent implements OnInit {
   breadcumMsg: any = '';
   landmarkGroupForm: FormGroup;
   duplicateGroupMsg: boolean= false;
+  categoryList: any= [];
+  subCategoryList: any= []
 
-
-  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService) { }
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -81,10 +83,23 @@ export class CreateEditViewGroupComponent implements OnInit {
 
   loadPOIData() {
     this.poiService.getPois(this.OrgId).subscribe((poilist: any) => {
-      let poiGridData = poilist;
-      this.updatePOIDataSource(poiGridData);
-      if(this.actionType == 'view' || this.actionType == 'edit')
+      if(poilist.length > 0){
+        poilist.forEach(element => {
+          if(element.icon && element.icon != '' && element.icon.length > 0){
+            let TYPED_ARRAY = new Uint8Array(element.icon);
+            let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+            let base64String = btoa(STRING_CHAR);
+            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+          }else{
+            element.icon = '';
+          }
+        });
+        let poiGridData = poilist;
+        this.updatePOIDataSource(poiGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit')
         this.loadPOISelectedData(poiGridData);
+      }
+      
     });
   }
 
@@ -98,7 +113,7 @@ export class CreateEditViewGroupComponent implements OnInit {
         }
       });
       tableData = selectedPOIList;
-      this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName',, 'address'];
+      this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
       this.updatePOIDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
@@ -337,6 +352,14 @@ export class CreateEditViewGroupComponent implements OnInit {
     else
       return `${this.selectedGeofence.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  onCategoryChange(){
+
+  }
+
+  onSubCategoryChange(){
+
   }
 
 }

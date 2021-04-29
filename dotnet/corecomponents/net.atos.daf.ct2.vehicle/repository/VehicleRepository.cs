@@ -1207,7 +1207,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     vehicleDataMart.Vid = "";
                     vehicleDataMart.Engine_Type = vehicleproperty.Engine_Type;
                     vehicleDataMart.Type = vehicleproperty.Classification_Type_Id;
-                    vehicleDataMart.Model_Type = "";
+                    vehicleDataMart.Model_Type = vehicleproperty.Classification_Model_Id;
                     vehicleDataMart.IsIPPS = true;
                     await CreateAndUpdateVehicleInDataMart(vehicleDataMart);
                 }

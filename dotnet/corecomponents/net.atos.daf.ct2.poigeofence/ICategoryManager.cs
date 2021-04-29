@@ -8,8 +8,8 @@ namespace net.atos.daf.ct2.poigeofence
     {
         Task<Category> AddCategory(Category category);
         Task<Category> EditCategory(Category category);
-        Task<bool> DeleteCategory(int ID);
-        Task<IEnumerable<Category>> GetCategory( string type);
+        Task<CategoryID> DeleteCategory(int ID);
+        Task<IEnumerable<Category>> GetCategory( string type, int OrganizationId);
         Task<IEnumerable<CategoryList>> GetCategoryDetails();
     }
 }

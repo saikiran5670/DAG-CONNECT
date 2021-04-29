@@ -74,33 +74,50 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return category;
         }
 
-        public async Task<bool> DeleteCategory(int categoryId)
+        public async Task<CategoryID> DeleteCategory(int categoryId)
         {
             log.Info("Delete Category method called in repository");
             try
             {
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
+                    var id = 0;
+                    CategoryID categoryID = new CategoryID();
                     var parameter = new DynamicParameters();
 
-                    var temp = await DeleteSubCategory(categoryId);
+                    var IsexistSubcategory = await GetSubCategory(categoryId);
+                    var IsexistPOIGeofence = await GetPOICategory(categoryId);
 
-                    var Deletecategory = @"update master.category set state='D' 
+                    if (IsexistSubcategory.Count() <= 0 && IsexistPOIGeofence.Count() <=0)
+                    {
+
+
+                        var Deletecategory = @"update master.category set state='D' 
                                    WHERE id = @ID RETURNING id ";
 
-                    parameter.Add("@ID", categoryId);
+                        parameter.Add("@ID", categoryId);
 
-                    var id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
+                         id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
 
-                    transactionScope.Complete();
+                        transactionScope.Complete();
+                    }
                     if (id > 0)
                     {
-                        return true;
+                        categoryID.ID = id;
+                    }
+                    else if (IsexistSubcategory.Count() > 0)
+                    {
+                        categoryID.ID = -1;
+                    }
+                    else if (IsexistPOIGeofence.Count() > 0)
+                    {
+                        categoryID.ID = -2;
                     }
                     else
                     {
-                        return false;
+                        categoryID.ID = -3; // Not Found
                     }
+                    return categoryID;
                 }
             }
             catch (Exception ex)
@@ -110,37 +127,39 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw ex;
             }
         }
-        public async Task<bool> updateSubCategory(int categoryId)
+        public async Task<IEnumerable<int>> GetPOICategory (int categoryId)
         {
-            log.Info("updateSubCategory  method called in repository");
             try
             {
+
+                List<int> obj = new List<int>();
                 var parameter = new DynamicParameters();
-
-                var Deletecategory = @"update master.category set state='D' 
-                                   WHERE id = @ID RETURNING id ";
-
-                parameter.Add("@ID", categoryId);
-
-                var id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
-                if (id > 0)
+                var query = @"select id 
+                              from master.Landmark 
+                              where category_id = @categoryId and type in ('C','O','P')";
+                parameter.Add("@categoryId", categoryId);
+                IEnumerable<int> subCategoryDetails = await _dataAccess.QueryAsync<int>(query, parameter);
+                if (subCategoryDetails != null)
                 {
-                    return true;
+                    foreach (dynamic record in subCategoryDetails)
+                    {
+                        obj.Add(record);
+
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+
+                return obj;
 
             }
             catch (Exception ex)
             {
-                log.Info("updateSubCategory method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
-                log.Error(ex.ToString());
                 throw ex;
             }
+
+
         }
-        public async Task<IEnumerable<int>> DeleteSubCategory(int categoryId)
+
+        public async Task<IEnumerable<int>> GetSubCategory(int categoryId)
         {
             try
             {
@@ -155,8 +174,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     foreach (dynamic record in subCategoryDetails)
                     {
                         obj.Add(record);
-
-                        updateSubCategory(record);
+                      
                     }
                 }
 
@@ -249,11 +267,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        public Task<IEnumerable<Category>> GetCategoryType(string Type)
+        public Task<IEnumerable<Category>> GetCategoryType(string Type, int OrganizationId)
         
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.Type = Type.ToUpper();
+            categoryFilter.OrganizationId = OrganizationId;
             if (categoryFilter.Type.Length > 1)
             {
                 categoryFilter.Type= _catogoryCoreMapper.MapType(categoryFilter.Type);
@@ -407,9 +426,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 getQuery = @"with result As
                             (
                             select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
-							pcat.description,pcat.created_at
+							pcat.description,pcat.created_at,i.name As Icon_Name
                             from master.category pcat
                             left join master.category scat on pcat.id = scat.parent_id
+								join master.icon i on i.id = pcat.icon_id
                             where pcat.type ='C' and pcat.state ='A'
                             ) 
                             select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
@@ -417,7 +437,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
                             r.Parent_category_Icon As IconId,
                             (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
-							r.description,r.created_at
+							r.description,r.created_at,r.Icon_Name
                             from result r ";
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 

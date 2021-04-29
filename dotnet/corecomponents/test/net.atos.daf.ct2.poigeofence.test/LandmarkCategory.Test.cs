@@ -91,7 +91,8 @@ namespace net.atos.daf.ct2.poigeofence.test
         public void GetCategory()
         {
             string Type = "C";
-            var result = _categoryManager.GetCategory(Type).Result;
+            int OrganizationId = 10;
+            var result = _categoryManager.GetCategory(Type, OrganizationId).Result;
             Assert.IsNotNull(result);
             
 

@@ -124,16 +124,26 @@ namespace net.atos.daf.ct2.poigeofenservice
 
 
                 var result = await _categoryManager.DeleteCategory(request.Id);
-                if (result)
+                if (result.ID >=0)
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
                     response.CategoryID = request.Id;
 
                 }
-                else
+                else if (result.ID == -1)
                 {
-                    response.Message = "Category Not Found";
+                    response.Message = "You can not delete the category it contain subcategory  ";
+                    response.Code = Responsecode.Failed;
+                }
+                else if (result.ID == -2)
+                {
+                    response.Message = "You can not delete the category it contain POI or Geofence  ";
+                    response.Code = Responsecode.Failed;
+                }
+                else 
+                {
+                    response.Message = "Category Not found";
                     response.Code = Responsecode.NotFound;
                 }
                 return await Task.FromResult(response);
@@ -153,7 +163,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             {
                 _logger.Info("Get Category .");
 
-                var result = await _categoryManager.GetCategory(request.Type);
+                var result = await _categoryManager.GetCategory(request.Type, request.OrganizationId);
                 foreach (var item in result)
                 {
                     var Data = new GetCategoryType();
@@ -207,6 +217,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     catdetails.NoOfGeofence = item.No_of_Geofence;
                     catdetails.Description = !string.IsNullOrEmpty(item.Description) ? item.Description : string.Empty;
                     catdetails.CreatedAt = item.Created_at;
+                    catdetails.IconName = !string.IsNullOrEmpty(item.Icon_Name) ? item.Icon_Name : string.Empty;
                     response.Categories.Add(catdetails);
 
                 }
