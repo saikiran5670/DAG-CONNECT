@@ -70,15 +70,15 @@ export class POIService {
       .pipe(catchError(this.handleError));
   }
 
-//   updatePoi(data): Observable<any> {
-//     let headerObj = this.generateHeader();
-//     const headers = {
-//       headers: new HttpHeaders({ headerObj }),
-//     };
-//     return this.httpClient
-//       .put<any>(`${this.PoiServiceUrl}/update`, data, headers)
-//       .pipe(catchError(this.handleError));
-//   }
+  updatePoi(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.PoiServiceUrl}/update`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
 
   deletePoi(packageId: number): Observable<void> {
     let headerObj = this.generateHeader();
