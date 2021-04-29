@@ -35,12 +35,14 @@ export class ManageCategoryComponent implements OnInit {
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   dialogRef: MatDialogRef<CommonTableComponent>;
   selectedCategory = new SelectionModel(true, []);
+  userType: any= "";
 
   constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.userType= localStorage.getItem("userType");
     this.loadLandmarkCategoryData();
   }
 

@@ -19,7 +19,7 @@
       <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-            <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
               <mat-label>{{ translationData.lblName || 'Name' }} <span class='mandatoryColor'>*</span>
               </mat-label>
                 <div *ngIf="actionType != 'view'">
@@ -36,6 +36,22 @@
                   <mat-error *ngIf="categoryForm.get('categoryName').hasError('specialCharsNotAllowed')">
                       {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                   </mat-error>
+                </div>
+                <div *ngIf="actionType == 'view'">
+                  <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+                </div>
+            </div>
+            <div *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
+              </mat-label>
+                <div *ngIf="actionType != 'view'">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-select formControlName="type">
+                        <mat-option *ngFor="let type of types" [value]="type">
+                            {{type}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
                 </div>
                 <div *ngIf="actionType == 'view'">
                   <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>

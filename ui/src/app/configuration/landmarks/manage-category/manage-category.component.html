@@ -123,10 +123,10 @@
                   <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="View">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.Organization_Id != undefined && row.Organization_Id > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
                     <mat-icon>create</mat-icon>
                   </button>
-                  <button class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.Organization_Id != undefined && row.Organization_Id > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
                 </mat-cell>
