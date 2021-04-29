@@ -190,7 +190,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     //It will return organization specific geofence along with global geofence 
                     parameter.Add("@organization_id", geofenceEntityRequest.organization_id);
-                    query = $"{query} and L.organization_id=@organization_id";
+                    query = $"{query} and (L.organization_id=@organization_id or L.organization_id is null)";
                 }
                 else
                 {
