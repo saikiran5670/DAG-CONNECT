@@ -36,6 +36,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poi.CategoryId = poiResponseData.CategoryId;
             poi.SubCategoryId = poiResponseData.SubCategoryId;
             poi.Name = poiResponseData.Name;
+            poi.SubCategoryName = poiResponseData.SubCategoryName;
+            poi.CategoryName = poiResponseData.CategoryName;
             //poi.Type = poiResponseData.Type;
             poi.Address = poiResponseData.Address;
             poi.City = poiResponseData.City;

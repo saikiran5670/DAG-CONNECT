@@ -60,10 +60,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.setDefaultIcon();
     this.selectedCategoryType = 'category';
     this.breadcumMsg = this.getBreadcum();
-    if(this.actionType == 'edit'){
-      this.setDefaultValues();
-    }
     if(this.actionType == 'edit' || this.actionType == 'view'){
+      this.setDefaultValues();
       this.makeIcon(this.selectedRowData.icon);
     }
   }
@@ -82,13 +80,12 @@ export class CreateEditViewCategoryComponent implements OnInit {
   }
 
   setDefaultValues(){
-    this.selectedCategoryType = 'category';
     this.imageMaxMsg = false;
     this.imageEmptyMsg = false;
-    this.categoryForm.get('categoryName').setValue(this.selectedRowData.parentCategoryName);
-    this.categoryForm.get('type').setValue(this.selectedRowData.Organization_Id ? (this.selectedRowData.Organization_Id  > 0 ? 'Regular': 'Global' ) : 'Global');
+    this.categoryForm.get('categoryName').setValue(this.selectedRowData.subCategoryId == 0 ? this.selectedRowData.parentCategoryName : this.selectedRowData.subCategoryName);
+    this.categoryForm.get('type').setValue(this.selectedRowData.organizationId ? (this.selectedRowData.organizationId  > 0 ? 'Regular': 'Global' ) : 'Global');
     this.categoryForm.get('categoryDescription').setValue(this.selectedRowData.description);
-    this.categoryForm.get('categoryType').setValue(this.selectedCategoryType);
+    this.selectedCategoryType = this.selectedRowData.subCategoryId == 0 ? 'category' : 'subcategory';
     this.categoryForm.get('parentCategory').setValue(this.selectedRowData.parentCategoryId);
     //this.categoryForm.get('uploadFile').setValue(this.selectedRowData.icon);
   }
@@ -172,7 +169,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
       });
     }else{ //-- update category
       let updatedObj: any = {
-        id: this.selectedRowData.parentCategoryId,
+        id: (this.selectedRowData.subCategoryId == 0) ? this.selectedRowData.parentCategoryId : this.selectedRowData.subCategoryId,
         name: this.categoryForm.controls.categoryName.value,
         iconName: this.uploadIconName,
         modified_By: this.accountId,

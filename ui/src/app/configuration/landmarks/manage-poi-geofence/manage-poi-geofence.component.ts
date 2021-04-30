@@ -64,7 +64,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV : EventEmitter<any> = new EventEmitter();
-
+  selectedCategoryId = null;
+  selectedSubCategoryId = null;
+  allCategoryPOIData : any;
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
@@ -90,8 +92,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data : any) => {
       this.poiInitData = data;
-      console.log(this.poiInitData);
+      console.log("poiData=" +this.poiInitData);
       this.hideloader();
+      this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
     }, (error) => {
       this.poiInitData = [];
@@ -113,7 +116,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((data : any) => {
       this.geoInitData = data["geofenceList"];
-      console.log(this.geoInitData);
       this.hideloader();
       this.updatedGeofenceTableData(this.geoInitData);
     }, (error) => {
@@ -129,7 +131,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     setTimeout(()=>{
       this.geofencedataSource.paginator = this.paginator.toArray()[1];
       this.geofencedataSource.sort = this.sort.toArray()[1];
-    });
+    },1000);
   }
 
   getNewTagData(data: any){
@@ -196,14 +198,36 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  onCategoryChange(){
+  onCategoryChange(_event){
+    this.selectedCategoryId = _event.value;
+    this.updateSelectionData();
+  }
+
+  onSubCategoryChange(_event){
+    this.selectedSubCategoryId = _event.value;
+    //this.updateSelectionData();
 
   }
 
-  onSubCategoryChange(){
-
+  updateSelectionData(){
+    let poiCategoryData = [];
+    if(this.selectedCategoryId){
+      
+      poiCategoryData = this.allCategoryPOIData.filter((e)=>{
+        return (e.subCategoryId === this.selectedCategoryId);
+      });
+    }
+    if(this.selectedSubCategoryId){
+      poiCategoryData = this.allCategoryPOIData.filter((e) =>{
+      return (e.subCategoryId === this.selectedSubCategoryId);
+    });
   }
-
+    if(this.selectedCategoryId && this.selectedSubCategoryId ){
+      poiCategoryData = this.allCategoryPOIData.filter((e)=> {
+      return (e.parentCategoryId ===  this.selectedCategoryId && e.subCategoryId === this.selectedSubCategoryId);
+    });
+  }
+  }
   // mockData() {
   //   this.data = [
   //     {
@@ -234,17 +258,16 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.tabVisibility.emit(false);
     this.createEditViewPoiFlag = true;
     this.actionType = 'create';
-    console.log("createEditView() method called");
   }
 
   onGeofenceSelection() {
     this.tabVisibility.emit(false);
     this.createEditViewGeofenceFlag = true;
     this.actionType = 'create';
-    console.log("--geofence selection--",this.createEditViewGeofenceFlag)
   }
 
   editViewPoi(rowData: any, type: any){
+    this.tabVisibility.emit(false);
     this.actionType = type;
     this.selectedElementData = rowData;
     this.createEditViewPoiFlag = true;
@@ -277,21 +300,23 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   deletePoi(rowData: any){
-    let poiId = rowData.id;
+    let poiId = {
+      id :[rowData.id]
+    };
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.code);
+    this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      // this.poidataSource.deletePoi(poiId).subscribe((data) => {
-      //   this.openSnackBar('Item delete', 'dismiss');
-      //   this.loadPoiData();
-      // })
-      //   this.successMsgBlink(this.getDeletMsg(rowData.code));
+      this.poiService.deletePoi(poiId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadPoiData();
+      })
+        this.successMsgBlink(this.getDeletMsg(rowData.name));
       }
     });
   }
@@ -399,12 +424,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
-
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData)=>{
-        
-    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(poiData);
+      const result = poiData.map(({organizationId,id,categoryId,subCategoryId,type,city,country,zipcode,latitude,longitude,distance,state,createdBy,createdAt,icon,...rest}) => ({...rest}));
+    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
     const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
     this.saveAsExcelFile(excelBuffer, excelFileName);
@@ -421,7 +445,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   exportGeofenceAsExcelFile(){
-    this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'GeofenceData', sheet: 'sheet_name'});
 
   }
 

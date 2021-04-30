@@ -1,4 +1,4 @@
-<div *ngIf="actionType == 'create'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="actionType == 'create' || actionType == 'edit'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
@@ -48,6 +48,18 @@
                 <input maxlength="20" placeholder="{{ translationData.lblEnterPoiName|| 'Enter Poi Name' }}" matInput
                   formControlName="name">
               </mat-form-field>
+              <mat-error *ngIf="poiFormGroup.get('name').hasError('required')">
+                {{ translationData.lblPleasenterPoiName || 'Please enter Poi Name'}}
+            </mat-error>
+            <mat-error *ngIf="poiFormGroup.get('name').hasError('max')">
+              {{ translationData.lblDataAttributeSetmaxlength || 'Max length should be 100' }}
+          </mat-error>
+          <mat-error *ngIf="poiFormGroup.get('name').hasError('min')">
+            {{ translationData.lblDataAttributeSetminlength || 'Min length should be 1' }}
+        </mat-error>
+          <mat-error *ngIf="poiFormGroup.get('name').hasError('specialCharsNotAllowed')">
+            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+        </mat-error>
             </div>
             <!-- <div *ngIf="actionType == 'edit'">
               <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
@@ -66,12 +78,15 @@
                 </mat-option>
               </mat-select>
               </mat-form-field>
+              <mat-error *ngIf="poiFormGroup.get('category').hasError('required')">
+                {{ translationData.lblPleasSelectCategory || 'Please Select Category'}}
+            </mat-error>
             </div>
           </div>
           <div class="areaWidth" fxLayout="column" >
             <mat-label>
-              <span>{{ translationData.lblType || 'Select Sub-Category' }}</span><span *ngIf="actionType != 'view'"
-                class='mandatoryColor'>*</span>
+              <span>{{ translationData.lblType || 'Select Sub-Category' }}</span>
+              <!-- <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span> -->
             </mat-label>
             <div class="areaWidth" fxLayout="column" >
               <mat-form-field appearance="outline" >
@@ -131,19 +146,21 @@
           </div>
         </div>
         <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiLattitude || 'Lattitude' }}</span></mat-label>
+          <mat-label><span>{{ translationData.lblPoiLattitude || 'Lattitude' }}</span>
+            <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+          </mat-label>
           <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiLattitude|| 'Select One' }}" matInput
+            <mat-form-field  appearance="outline" class="full-width" >
+              <input  [readonly]="true" maxlength="50" placeholder="{{ translationData.lblEnterPoiLattitude|| 'Select One' }}" matInput
                 formControlName="lattitude">
             </mat-form-field>
           </div>
         </div>
         <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiLongitude || 'Longitude' }}</span></mat-label>
+          <mat-label><span>{{ translationData.lblPoiLongitude || 'Longitude' }}</span><span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiLongitude|| 'Select One' }}" matInput
+            <mat-form-field appearance="outline" class="full-width" >
+              <input  [readonly]="true" maxlength="50" placeholder="{{ translationData.lblEnterPoiLongitude|| 'Select One' }}" matInput
                 formControlName="longitude">
             </mat-form-field>
           </div>
@@ -159,7 +176,7 @@
             'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
             <button class='no-margin' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
-            (click)='onCreatePoi()'>{{ translationData.lblReset || 'Reset' }}</button>
+            (click)='onCreatePoi()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
         </div>
       </div>
 

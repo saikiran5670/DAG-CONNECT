@@ -79,7 +79,7 @@
               <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
               <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-              <button class='no-margin' [disabled]="!landmarkGroupForm.valid || selectedPOI.selected.length == 0 || selectedGeofence.selected.length == 0" mat-raised-button color="primary"
+              <button class='no-margin' [disabled]="!landmarkGroupForm.valid || (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0)" mat-raised-button color="primary"
                 (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                 (translationData.lblConfirm || 'Confirm') }}</button>
             </div>
@@ -104,8 +104,9 @@
           </div>
           <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-              <mat-select  (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-              <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+              <mat-select  (selectionChange)="onCategoryChange('POI', $event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+                <mat-option value="0">--All--</mat-option>
+                <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
               </mat-select>
@@ -113,7 +114,7 @@
           </div>
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-                <mat-select (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-select (selectionChange)="onSubCategoryChange('POI', $event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
                 <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                     {{ rer.name }}
                 </mat-option>
@@ -141,7 +142,8 @@
             <ng-container matColumnDef="icon">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Icon</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  <mat-icon>place</mat-icon>
+                  <mat-icon *ngIf="row.icon && row.icon == ''">place</mat-icon>
+                  <img *ngIf="row.icon && row.icon != ''" [src]='row.icon' alt='' width='20px' height='20px'>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="name">
@@ -186,7 +188,8 @@
           </div>
           <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-              <mat-select  (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+              <mat-select  (selectionChange)="onCategoryChange('Geofence', $event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+              <mat-option value="0">--All--</mat-option>
               <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -195,8 +198,8 @@
           </div>
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
-                <mat-select (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                <mat-select (selectionChange)="onSubCategoryChange('Geofence', $event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                  <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                     {{ rer.name }}
                 </mat-option>
                 </mat-select>
