@@ -260,6 +260,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   checkCreationForPoi(item: any){
     // this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
+    this.tabVisibility.emit(true);
     this.createEditViewPoiFlag = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
