@@ -445,7 +445,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   exportGeofenceAsExcelFile(){
-    this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'GeofenceData', sheet: 'sheet_name'});
 
   }
 
