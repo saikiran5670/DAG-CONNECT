@@ -25,7 +25,7 @@
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
                     <input placeholder="{{ translationData.lblEnterName || 'Enter Name' }}" matInput
-                      formControlName="categoryName" required maxlength="50">
+                      formControlName="categoryName" required maxlength="100">
                   </mat-form-field>
                   <mat-error *ngIf="categoryForm.get('categoryName').hasError('required')">
                     {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
