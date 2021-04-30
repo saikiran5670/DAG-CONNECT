@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 var icon_ID = await InsertIcons(category);
 
-                var isexist = CheckCategoryIsexist(category.Name, category.Organization_Id);
+                var isexist = CheckCategoryIsexist(category.Name, category.Organization_Id , category.Id);
                 if (!isexist)
                 {
 
@@ -203,7 +203,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 if (isCategoryUpdate  )
                 {
-                    var isCategoryNameExist = CheckCategoryIsexist(category.Name,category.Organization_Id);
+                    var isCategoryNameExist = CheckCategoryIsexist(category.Name,category.Organization_Id , category.Id);
 
                     if (!isCategoryNameExist)
                     {
@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        private bool CheckCategoryIsexist(string categoryName, int? OrganizationId)
+        private bool CheckCategoryIsexist(string categoryName, int? OrganizationId, int categoryid)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryName = categoryName;
@@ -355,7 +355,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
             var categories = GetCategory(categoryFilter);
 
-            var nameExistsForInsert = categories.Result.Where(t => t.Name == categoryName ).Count();
+            var nameExistsForInsert = categories.Result.Where(t => t.Name == categoryName && t.Id != categoryid).Count();
             if (nameExistsForInsert == 0)
                 return false;
             else if (nameExistsForInsert > 0)
