@@ -10,6 +10,7 @@ namespace net.atos.daf.ct2.features.repository
         #region Feature Set
 
         Task<int> AddFeatureSet(FeatureSet featureSet);
+        Task<int> GetMinimumLevel(List<Feature> features);
         Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet);
        // Task<int> DeleteFeatureSet(int FeatureSetId, int Userid);
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state);

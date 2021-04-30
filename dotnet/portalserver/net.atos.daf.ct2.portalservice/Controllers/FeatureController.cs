@@ -38,14 +38,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private IMemoryCacheProvider _cache;
+        private readonly HeaderObj _userDetails;
         private readonly PortalCacheConfiguration _cachesettings;
         private readonly Dictionary<string, string> headers;
-
+        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         #endregion
 
         #region Constructor
         public FeatureController(FeatureService.FeatureServiceClient Featureclient, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings,
-             AuditHelper auditHelper)
+             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
         {
             _featureclient = Featureclient;
             _auditHelper = auditHelper;
@@ -53,6 +54,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _mapper = new Mapper();
             _cache = cache;
             _cachesettings = cachesettings.Value;
+            _privilegeChecker = privilegeChecker;
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             //headers = GetHeaders(Request.Headers);
         }
         #endregion
@@ -149,9 +152,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //{
                 //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
                 //}
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
-                FeatureObj.Level = featureRequest.Level;
+                FeatureObj.Level = level;
+                //FeatureObj.Level = featureRequest.Level;
                 FeatureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
@@ -322,7 +328,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //if (cachedfeature != null) return Ok(cachedfeature);
 
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
-
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                request.Level = level;
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();

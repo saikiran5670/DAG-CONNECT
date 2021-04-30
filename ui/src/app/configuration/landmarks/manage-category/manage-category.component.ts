@@ -98,7 +98,6 @@ export class ManageCategoryComponent implements OnInit {
 
   onUpdateDataSource(tableData: any) {
     this.initData = tableData;
-
     if(this.initData.length > 0){
       this.initData = this.getNewTagData(this.initData);
     }
@@ -173,16 +172,17 @@ export class ManageCategoryComponent implements OnInit {
   deleteCategory(rowData: any){
     let deleteText: any;
     let deleteMsg: any;
-    if(rowData.subCategoryId && rowData.subCategoryId > 0){ //-- for having sub-category 
+    let search = this.initData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
+    if(search.length > 1) { //-- having sub category
       deleteText = 'hide-btn'; 
       deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "The '$' contains a sub-category. You can not delete this category if it has a sub-category. To remove this category, first remove connected sub-category.";
-    }
-    else{
+    }else{
       deleteText = this.translationData.lblDelete || 'Delete';
       deleteMsg = this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?";
     }
+
     const options = {
-      title: this.translationData.lblDeleteGroup || 'Delete',
+      title: this.translationData.lblDelete || 'Delete',
       message: deleteMsg,
       cancelText: this.translationData.lblCancel || 'Cancel',
       confirmText: deleteText 
