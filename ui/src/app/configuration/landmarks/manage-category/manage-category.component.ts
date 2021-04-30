@@ -349,15 +349,38 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onBulkDeleteCategory(){
-    let filterIds: any = this.selectedCategory.selected.map(item => item.parentCategoryId)
-        .filter((value, index, self) => self.indexOf(value) === index)
-    let deleteObj: any = {
-      ids: filterIds
+    let bulkCategories= [];
+    const options = {
+      title: this.translationData.lblDeleteGroup || 'Bulk Delete Category',
+      message: this.translationData.lblBulkDeleteMessage || "Deleting Parent category will delete all of its sub-categories also. Are you sure you want to delete?",
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: this.translationData.lblDelete || 'Delete'
+    };
+    this.dialogService.DeleteModelOpen(options);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      // let filterIds: any = this.selectedCategory.selected.map(item => item.parentCategoryId)
+      // .filter((value, index, self) => self.indexOf(value) === index)
+
+      
+      this.selectedCategory.selected.forEach(item => {
+        bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+      });
+
+      let bulkDeleteObj: any = {
+        category_SubCategory_s: bulkCategories
+      }
+      this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
+        this.successMsgBlink(this.getDeletMsg());
+        this.loadLandmarkCategoryData();
+        this.selectedCategory = new SelectionModel(true, []);
+      });
     }
-    this.landmarkCategoryService.deleteBulkLandmarkCategory(deleteObj).subscribe((deletedData: any) => {
-      this.successMsgBlink(this.getDeletMsg());
-      this.loadLandmarkCategoryData();
-    });
+   });
+
+
+
+    
   }
 
 }
