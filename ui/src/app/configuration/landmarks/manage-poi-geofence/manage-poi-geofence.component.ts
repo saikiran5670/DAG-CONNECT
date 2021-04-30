@@ -242,6 +242,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   editViewPoi(rowData: any, type: any){
+    this.tabVisibility.emit(false);
     this.actionType = type;
     this.selectedElementData = rowData;
     this.createEditViewPoiFlag = true;
@@ -391,9 +392,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
       return `${this.selectedgeofences.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
-  pageSizeUpdated(_event) {
+  pageSizeUpdatedPOI(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
+
+  pageSizeUpdatedGeofence(_event) {
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[1].scrollTo(1, 1)
     }, 100);
   }
 
