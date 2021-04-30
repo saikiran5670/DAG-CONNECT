@@ -64,7 +64,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV : EventEmitter<any> = new EventEmitter();
-
+  selectedCategoryId = null;
+  selectedSubCategoryId = null;
+  allCategoryPOIData : any;
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
@@ -92,6 +94,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.poiInitData = data;
       console.log("poiData=" +this.poiInitData);
       this.hideloader();
+      this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
     }, (error) => {
       this.poiInitData = [];
@@ -195,14 +198,36 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  onCategoryChange(){
+  onCategoryChange(_event){
+    this.selectedCategoryId = _event.value;
+    this.updateSelectionData();
+  }
+
+  onSubCategoryChange(_event){
+    this.selectedSubCategoryId = _event.value;
+    //this.updateSelectionData();
 
   }
 
-  onSubCategoryChange(){
-
+  updateSelectionData(){
+    let poiCategoryData = [];
+    if(this.selectedCategoryId){
+      
+      poiCategoryData = this.allCategoryPOIData.filter((e)=>{
+        return (e.subCategoryId === this.selectedCategoryId);
+      });
+    }
+    if(this.selectedSubCategoryId){
+      poiCategoryData = this.allCategoryPOIData.filter((e) =>{
+      return (e.subCategoryId === this.selectedSubCategoryId);
+    });
   }
-
+    if(this.selectedCategoryId && this.selectedSubCategoryId ){
+      poiCategoryData = this.allCategoryPOIData.filter((e)=> {
+      return (e.parentCategoryId ===  this.selectedCategoryId && e.subCategoryId === this.selectedSubCategoryId);
+    });
+  }
+  }
   // mockData() {
   //   this.data = [
   //     {
