@@ -58,7 +58,7 @@
             <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" style='width: 100%; float: right;'>
               <div fxLayout="row" fxLayoutAlign="flex-end"  class='areaWidth'>
                 <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-                  <button [disabled]='selectedCategory.selected.length == 0' mat-flat-button color="warn" (click)="onBulkDeleteCategory()">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (accountOrganizationId != undefined && accountOrganizationId > 0)" [disabled]='selectedCategory.selected.length == 0' mat-flat-button color="warn" (click)="onBulkDeleteCategory()">
                     <mat-icon>deleteicon</mat-icon> {{ translationData.lblDelete || 'Delete' }}
                   </button>
                 </div>
