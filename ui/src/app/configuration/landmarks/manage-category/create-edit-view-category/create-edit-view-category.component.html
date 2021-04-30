@@ -38,7 +38,7 @@
                   </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ (selectedRowData.subCategoryId == 0) ? selectedRowData.parentCategoryName : selectedRowData.subCategoryName }}</span>
                 </div>
             </div>
             <div *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
@@ -115,8 +115,8 @@
       </div>
       <div *ngIf="selectedCategoryType == 'subcategory'" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span>
-          </mat-label>
+          <mat-label *ngIf="actionType != 'view'">{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
+          <mat-label *ngIf="actionType == 'view'">{{ translationData.lblSelectedParentCategory || 'Selected Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class='full-width'>
               <mat-select formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
@@ -152,7 +152,7 @@
           </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.categoryDescription ? selectedRowData.categoryDescription : '--' }}</span>
+            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left"></div>
