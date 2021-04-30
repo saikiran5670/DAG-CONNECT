@@ -142,7 +142,7 @@ CREATE TABLE if not exists master.icon
 TABLESPACE pg_default;
 
 ALTER TABLE  master.icon 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin ;
 
 Do $$
 begin
@@ -182,7 +182,7 @@ CREATE TABLE if not exists master.dtcwarning
 TABLESPACE pg_default;
 
 ALTER TABLE  master.dtcwarning 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -236,7 +236,7 @@ CREATE TABLE if not exists master.termsandcondition
 TABLESPACE pg_default;
 
 ALTER TABLE  master.termsandcondition 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -267,7 +267,7 @@ CREATE TABLE if not exists master.accounttermsacondition
 TABLESPACE pg_default;
 
 ALTER TABLE  master.accounttermsacondition 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -351,7 +351,7 @@ CREATE TABLE if not exists master.emailtemplate
 TABLESPACE pg_default;
 
 ALTER TABLE  master.emailtemplate 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -382,7 +382,7 @@ CREATE TABLE if not exists master.emailtemplatelabels
 TABLESPACE pg_default;
 
 ALTER TABLE  master.emailtemplatelabels 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -434,7 +434,7 @@ CREATE TABLE if not exists master.passwordpolicy
 TABLESPACE pg_default;
 
 ALTER TABLE master.passwordpolicy
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
