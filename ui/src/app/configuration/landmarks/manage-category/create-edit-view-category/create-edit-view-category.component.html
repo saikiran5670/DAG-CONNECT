@@ -4,7 +4,7 @@
     </div>
     <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
-        <span><&nbsp;</span>
+        <span>&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
@@ -54,7 +54,7 @@
                 </mat-form-field>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.organizationId == 0 ? 'Global' : 'Regular' }}</span>
+                  <span style='font-weight: 500!important;'>{{ selectedRowData.organizationId ? (selectedRowData.organizationId > 0 ? (translationData.lblRegular || 'Regular') : (translationData.lblGlobal || 'Global')) : (translationData.lblGlobal || 'Global') }}</span>
                 </div>
             </div>
           </div>
@@ -73,7 +73,7 @@
                   </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedCategoryType ? selectedCategoryType : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ (selectedCategoryType ===  'category') ? (translationData.lblCategory || 'Category') : (translationData.lblSubCategory || 'Sub-Category') }}</span>
                 </div>
             </div>
           </div>
