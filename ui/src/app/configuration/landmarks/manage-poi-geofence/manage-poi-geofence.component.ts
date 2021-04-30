@@ -128,7 +128,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     setTimeout(()=>{
       this.geofencedataSource.paginator = this.paginator.toArray()[1];
       this.geofencedataSource.sort = this.sort.toArray()[1];
-    });
+    },1000);
   }
 
   getNewTagData(data: any){
