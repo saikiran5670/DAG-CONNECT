@@ -29,11 +29,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
 
     public class EditCategoryRequest
     {
-        [Range(1, 50, ErrorMessage = "Value lies outside the 1 to 50 range")]
+        
         public int Id { get; set; }
+        [StringLength(100)]
         public string Name { get; set; }
         public string IconName { get; set; }
-        [Range(1, 100, ErrorMessage = "Value lies outside the 1 to 50 range")]
+        [StringLength(100)]
         public string Description { get; set; }
         public int Modified_By { get; set; }
         public byte[] icon { get; set; }
