@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using net.atos.daf.ct2.poigeofences;
+using net.atos.daf.ct2.portalservice.Entity.Category;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             Requests.ModifiedBy = request.Modified_By;
             Requests.Icon = ByteString.CopyFrom(request.icon);
             Requests.Description = !string.IsNullOrEmpty(request.Description) ? request.Description : string.Empty;
+            Requests.OrganizationId = request.Organization_Id;
 
             return Requests;
 
@@ -60,6 +62,22 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             Requests.Type = request.Type;
             Requests.OrganizationId = request.Organization_Id;
             return Requests;
+        }
+
+        public DeleteRequest MapCategoryforBulkDelete(DeleteCategory request)
+        {
+
+            DeleteRequest response = new DeleteRequest();
+            if (request == null) return response;
+
+            if (request != null && request.category_SubCategory_s != null)
+            {
+                foreach (var item in request.category_SubCategory_s)
+                {
+                    response.CatSubCatIDList.Add(new CatSubCatID() { CategoryId = item.CategoryId, SubCategoryId = item.SubCategoryId });
+                }
+            }
+            return response;
         }
     }
 }

@@ -115,12 +115,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Category id is required.");
                 }
-                if (request.Organization_Id == 0)
-                {
-                    bool hasRights = await HasAdminPrivilege();
-                    if (!hasRights)
-                        return StatusCode(400, "You cannot edit global category.");
-                }
+                //if (request.Organization_Id == 0)
+                //{
+                //    bool hasRights = await HasAdminPrivilege();
+                //    if (!hasRights)
+                //        return StatusCode(400, "You cannot edit global category.");
+                //}
                 var MapRequest = _categoryMapper.MapCategoryforEdit(request);
                 var data = await _categoryServiceClient.EditCategoryAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -296,7 +296,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 DeleteRequest objlist = new DeleteRequest();
 
-                objlist.MultiCategoryID.Add(request.Ids);
+                //objlist.MultiCategoryID.Add(request.Ids);
+
+                objlist = _categoryMapper.MapCategoryforBulkDelete(request);
 
                 var data = await _categoryServiceClient.BulkDeleteCategoryAsync(objlist);
 

@@ -82,10 +82,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var id = 0;
+                    int isbulk = 0;
                     CategoryID categoryID = new CategoryID();
                     var parameter = new DynamicParameters();
 
-                    var IsexistSubcategory = await GetSubCategory(categoryId);
+                    var IsexistSubcategory = await GetSubCategory(categoryId, isbulk);
                     var IsexistPOIGeofence = await GetPOICategory(categoryId);
 
                     if (IsexistSubcategory.Count() <= 0 && IsexistPOIGeofence.Count() <=0)
@@ -159,7 +160,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         }
 
-        public async Task<IEnumerable<int>> GetSubCategory(int categoryId)
+        public async Task<IEnumerable<int>> GetSubCategory(int categoryId , int isbulk)
         {
             try
             {
@@ -174,6 +175,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     foreach (dynamic record in subCategoryDetails)
                     {
                         obj.Add(record);
+                        if (isbulk ==1)
+                        {
+                            await DeleteSubCategoryBulk(record);
+                        }
                       
                     }
                 }
@@ -194,11 +199,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var icon_ID = await InsertIcons(category);
-                var isCategoryUpdate = CheckCategoryForUpdate(category.Id);
-                
-                if (isCategoryUpdate)
+                var isCategoryUpdate = CheckCategoryForUpdate(category.Id ,category.Organization_Id);
+
+                if (isCategoryUpdate  )
                 {
-                    var isCategoryNameExist = CheckCategoryNameForUpdate(category.Name,category.Organization_Id);
+                    var isCategoryNameExist = CheckCategoryIsexist(category.Name,category.Organization_Id);
 
                     if (!isCategoryNameExist)
                     {
@@ -251,10 +256,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        private bool CheckCategoryForUpdate(int id)
+        private bool CheckCategoryForUpdate(int id , int ? Organization_Id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryID = id;
+            categoryFilter.OrganizationId = Organization_Id;
 
             var categories = GetCategory(categoryFilter);
 
@@ -315,7 +321,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         //It will return organization specific category/subcategory
                         parameter.Add("@organization_id", categoryFilter.OrganizationId);
-                        getQuery = getQuery + " and organization_id=@organization_id or organization_id is null ";
+                        getQuery = getQuery + " and organization_id=@organization_id  ";
                     }
                     else
                     {
@@ -461,8 +467,126 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         }
 
-        
+        public async Task<Category_SubCategory_ID_Class> BulkDeleteCategory(DeleteCategoryclass deleteCategoryclass)
+        {
+            //1 | -               | check parent cat having any sub cat in query, if yes..then delete parent and all related sub-cat
+            //1 | -               | check parent cat having any sub cat in query, if No...then simply delete parent category
+            //1 | 1 | check sub cat from req.payload, if yes...delete particular sub cat from par cat.
+            log.Info("Delete Category method called in repository");
+            try
+            {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    Category_SubCategory_ID_Class obj = new Category_SubCategory_ID_Class();
+                    foreach (var item in deleteCategoryclass.category_SubCategory_s)
+                    {
+                        var temp = new Category_SubCategory_ID_Class();
+                        temp.CategoryId = item.CategoryId;
+                        temp.SubCategoryId = item.SubCategoryId;
+                        var del = await DeleteSubCategory(temp);
 
+                        if (del.CategoryId >0)
+                        {
+                            obj.CategoryId = del.CategoryId;
+                        }
+
+                    }
+                    transactionScope.Complete();
+                    return obj;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(deleteCategoryclass));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+        
+        public async Task<Category_SubCategory_ID_Class> DeleteSubCategory(Category_SubCategory_ID_Class categoryobj)
+        {
+            log.Info("Delete Category method called in repository");
+            try
+            {
+                //1 | -               | check parent cat having any sub cat in query, if yes..then delete parent and all related sub-cat
+                //1 | -               | check parent cat having any sub cat in query, if No...then simply delete parent category
+                //1 | 1 | check sub cat from req.payload, if yes...delete particular sub cat from par cat.
+
+                int isbulk = 1;
+                int id = 0;
+                Category_SubCategory_ID_Class obj = new Category_SubCategory_ID_Class();
+
+                if (categoryobj.CategoryId >0 && categoryobj.SubCategoryId ==0)
+                {
+                    var IsexistSubcategory = await GetSubCategory(categoryobj.CategoryId, isbulk);
+
+                    var parameter = new DynamicParameters();
+                    var updatecategory = @"update master.category 
+                                          set state='D' 
+                                          where id =@ID RETURNING id  ";
+
+                    parameter.Add("@ID", categoryobj.CategoryId);
+
+                    id = await _dataAccess.ExecuteScalarAsync<int>(updatecategory, parameter);
+
+                }
+                if (categoryobj.CategoryId > 0 && categoryobj.SubCategoryId > 0)
+                {
+
+                    var parameter = new DynamicParameters();
+                    var updatecategory = @"update master.category 
+                                          set state='D' 
+                                          where id =@ID RETURNING id  ";
+
+                    parameter.Add("@ID", categoryobj.SubCategoryId);
+
+                     id = await _dataAccess.ExecuteScalarAsync<int>(updatecategory, parameter);
+                }
+                obj.CategoryId = id;
+
+                return obj;
+
+            }
+            catch (Exception ex)
+            {
+                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryobj.CategoryId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+
+        public async Task<CategoryID> DeleteSubCategoryBulk(int subcategoryId)
+        {
+            log.Info("Delete Category method called in repository");
+            try
+            {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var id = 0;
+
+                    CategoryID categoryID = new CategoryID();
+                    var parameter = new DynamicParameters();
+
+                    var Deletecategory = @"update master.category set state='D' 
+                                   WHERE id = @ID RETURNING id ";
+
+                    parameter.Add("@ID", subcategoryId);
+
+                    id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
+                    categoryID.ID = id;
+                    transactionScope.Complete();
+
+
+                    return categoryID;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(subcategoryId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
 
     }
 }
