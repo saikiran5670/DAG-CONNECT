@@ -300,21 +300,23 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   deletePoi(rowData: any){
-    let poiId = rowData.id;
+    let poiId = {
+      id :[rowData.id]
+    };
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.code);
+    this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      // this.poidataSource.deletePoi(poiId).subscribe((data) => {
-      //   this.openSnackBar('Item delete', 'dismiss');
-      //   this.loadPoiData();
-      // })
-      //   this.successMsgBlink(this.getDeletMsg(rowData.code));
+      this.poiService.deletePoi(poiId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadPoiData();
+      })
+        this.successMsgBlink(this.getDeletMsg(rowData.name));
       }
     });
   }
