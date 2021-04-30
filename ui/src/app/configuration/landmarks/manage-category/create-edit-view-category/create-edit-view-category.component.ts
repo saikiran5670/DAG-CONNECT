@@ -169,7 +169,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
       });
     }else{ //-- update category
       let updatedObj: any = {
-        id: this.selectedRowData.parentCategoryId,
+        id: (this.selectedRowData.subCategoryId == 0) ? this.selectedRowData.parentCategoryId : this.selectedRowData.subCategoryId,
         name: this.categoryForm.controls.categoryName.value,
         iconName: this.uploadIconName,
         modified_By: this.accountId,
