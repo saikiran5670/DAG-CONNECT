@@ -191,7 +191,7 @@
 </div>
 <div *ngIf='geoInitData.length == 0'>No Record Found</div>
 <div *ngIf='geoInitData.length > 0'>
-  <mat-table matTableExporter [dataSource]="geofencedataSource" class="table-items" matSort>
+  <mat-table matTableExporter [dataSource]="geofencedataSource" [hiddenColumns]=[0,4] class="table-items" matSort>
     <ng-container matColumnDef="All">
       <mat-header-cell *matHeaderCellDef>
         <mat-checkbox (change)='$event ? masterToggleForGeo() : null'
