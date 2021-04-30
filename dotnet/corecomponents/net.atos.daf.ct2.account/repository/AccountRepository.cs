@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", account.Id);
-               // parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
+                // parameter.Add("@email", String.IsNullOrEmpty(account.EmailId) ? account.EmailId : account.EmailId.ToLower());
                 parameter.Add("@salutation", account.Salutation);
                 parameter.Add("@first_name", account.FirstName);
                 parameter.Add("@last_name", account.LastName);
@@ -382,9 +382,26 @@ namespace net.atos.daf.ct2.account
                         VALUES(@account_id, @modified_at) 
                         ON CONFLICT (account_id) 
                         DO 
-                        UPDATE SET modified_at = @modified_at
+                        UPDATE SET modified_at = @modified_at,is_reminder_sent = false
                         RETURNING id";
 
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> UpdateIsReminderSent(int accountId, bool isReminderSent = true)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@is_reminder_sent", isReminderSent);
+
+                string query = "UPDATE master.passwordpolicy SET is_reminder_sent = @is_reminder_sent where account_id = @account_id RETURNING id";
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
@@ -448,19 +465,19 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var parameter = new DynamicParameters();                
+                var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
 
                 string query =
-                    @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin from master.passwordpolicy where account_id = @account_id";
+                    @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin,is_reminder_sent as IsReminderSent from master.passwordpolicy where account_id = @account_id";
 
-                return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);                
+                return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-        }        
+        }
 
         public async Task<string> GetLanguageCodePreference(string emailId, int? orgId)
         {
@@ -475,7 +492,7 @@ namespace net.atos.daf.ct2.account
 
                 var accountPreferenceId = await dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
 
-                if(!accountPreferenceId.HasValue)
+                if (!accountPreferenceId.HasValue)
                 {
                     string orgQuery = string.Empty;
                     int? orgPreferenceId = null;
@@ -541,7 +558,7 @@ namespace net.atos.daf.ct2.account
                 var parameter = new DynamicParameters();
                 parameter.Add("@noOfDays", noOfDays);
 
-                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) = @noOfDays";
+                var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
                 return await dataAccess.QueryAsync<Account>(query, parameter);
             }
             catch (Exception ex)
@@ -1188,7 +1205,7 @@ namespace net.atos.daf.ct2.account
                 if (accountId > 0)
                 {
                     parameter.Add("@account_id", accountId);
-                    query = @"select o.id,case when o.name is null then 'Unknown' else o.name end as name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
+                    query = @"select o.id, coalesce(o.name, '(' || o.org_id || ')') as name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
                     IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
                     keyValueList = result.ToList();
                 }

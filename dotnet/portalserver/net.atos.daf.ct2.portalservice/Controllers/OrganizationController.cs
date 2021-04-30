@@ -93,9 +93,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.CreateRelationshipAsync(objRequest);
-                    if (orgResponse.Relationship.Id < 1)
+                    if (orgResponse.Relationship == null)
                     {
-                        return StatusCode(400, "Relationship not created. ");
+                        return StatusCode(500, "Failed to create relationship.");
                     }
                     else
                     {
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Featureset id not created");
+                    return StatusCode(500, "Featureset not created");
                 }
             }
             catch (Exception ex)
@@ -950,6 +950,33 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        [HttpGet]
+        [Route("getlevel")]
+        public async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        {
+            int level = -1;
+            try
+            {
+                LevelByRoleRequest request = new LevelByRoleRequest();
+                request.OrgId = orgId;
+                request.RoleId = roleId;
+                LevelResponse response = await organizationClient.GetLevelByRoleIdAsync(request);
+                if (response != null && response.Code == organizationservice.Responcecode.Success)
+                {
+                    level = response.Level;
+                }
+                else
+                {
+                    level = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                level = -1;
+            }
+            return level;
         }
     }
 }

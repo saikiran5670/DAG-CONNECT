@@ -30,7 +30,7 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
                   <mat-cell *matCellDef="let element" matTooltip="{{ element.roleList }}"><span class="text-truncate">{{ element[disCol].length > 0 ? element.roleList : '&nbsp; &nbsp; -' }}</span></mat-cell>
                 </div>
-                <div *ngIf="disCol != 'roles' && disCol != 'firstName'">
+                <div *ngIf="disCol != 'roles' && disCol != 'firstName' && disCol != 'icon'">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ data.colsName[colIndex] }}</mat-header-cell>
                   <mat-cell *matCellDef="let element">{{ element[disCol] }}</mat-cell>
                 </div>

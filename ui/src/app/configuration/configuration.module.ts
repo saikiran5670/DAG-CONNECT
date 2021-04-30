@@ -16,6 +16,15 @@ import { EditViewVehicleComponent } from './vehicle-management/edit-view-vehicle
 import { MatTableExporterModule } from 'mat-table-exporter';
 import { TermsConditionsManagementComponent } from './terms-conditions-management/terms-conditions-management.component';
 import { DtcTranslationComponent } from './dtc-translation/dtc-translation.component';
+import { ManagePoiGeofenceComponent } from './landmarks/manage-poi-geofence/manage-poi-geofence.component';
+import { ManageGroupComponent } from './landmarks/manage-group/manage-group.component';
+import { ManageCategoryComponent } from './landmarks/manage-category/manage-category.component';
+import { ManageCorridorComponent } from './landmarks/manage-corridor/manage-corridor.component';
+import { CreateEditViewPoiComponent } from './landmarks/manage-poi-geofence/create-edit-view-poi/create-edit-view-poi.component';
+import { ReportSchedulerComponent } from './report-scheduler/report-scheduler.component';
+import { CreateEditViewCategoryComponent } from './landmarks/manage-category/create-edit-view-category/create-edit-view-category.component';
+import { CreateEditViewGroupComponent } from './landmarks/manage-group/create-edit-view-group/create-edit-view-group.component';
+import { CreateEditViewGeofenceComponent } from './landmarks/manage-poi-geofence/create-edit-view-geofence/create-edit-view-geofence.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +36,16 @@ import { DtcTranslationComponent } from './dtc-translation/dtc-translation.compo
     CreateEditViewVehicleGroupComponent,
     EditViewVehicleComponent,
     TermsConditionsManagementComponent,
-    DtcTranslationComponent
+    DtcTranslationComponent,
+    ManagePoiGeofenceComponent,
+    ManageGroupComponent,
+    ManageCategoryComponent,
+    ManageCorridorComponent,
+    CreateEditViewPoiComponent,
+    ReportSchedulerComponent,
+    CreateEditViewCategoryComponent,
+    CreateEditViewGroupComponent,
+    CreateEditViewGeofenceComponent
   ],
   imports: [
     CommonModule,

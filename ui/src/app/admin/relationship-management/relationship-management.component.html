@@ -40,7 +40,7 @@
             <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
             <div *ngIf='initData.length > 0' fxLayout="row" class='margin-top-xlg' id="relationshipData">
                 <div fxLayout="column" class='full-width'>
-                    <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter">
+                    <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[5]">
                         <!-- <ng-container matColumnDef="newTag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let row">
@@ -72,8 +72,8 @@
                             <mat-cell *matCellDef="let row" matTooltip="{{ row.description }}"><span class="text-truncate">{{row.description}}</span> </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
-                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
-                            <mat-cell *matCellDef="let row">
+                            <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                            <mat-cell *matCellDef="let row" class="action">
                                 <button class='actionBtn' mat-flat-button matTooltip="View" (click)="viewRelationship(row)">
                                     <mat-icon>visibility</mat-icon>
                                 </button>

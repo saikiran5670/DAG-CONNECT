@@ -424,18 +424,27 @@ namespace net.atos.daf.ct2.translation.repository
                     var translationobjdata = translationcodeList.Where(I => I.Name == translationdata.Name && I.Code == translationdata.Code).FirstOrDefault();
                     if (translationobjdata != null)
                     {
-                        parameter = new DynamicParameters();
-                        parameter.Add("@id", translationobjdata.Id);
-                        parameter.Add("@Code", translationobjdata.Code);
-                        parameter.Add("@Type", type == null ? "L" : type);
-                        parameter.Add("@Name", translationobjdata.Name);
-                        parameter.Add("@Value", translationobjdata.Value);
-                        //parameter.Add("@Created_at", translationdata.created_at);
-                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                        query = @"update translation.translation set 
+                        if (translationobjdata.Value == translationdata.Value)
+                        {
+                            // nO need to update the records
+                            return translationStatus.Ignored;
+                        }
+                        else
+                        {
+                            parameter = new DynamicParameters();
+                            parameter.Add("@id", translationobjdata.Id);
+                            parameter.Add("@Code", translationobjdata.Code);
+                            parameter.Add("@Type", type == null ? "L" : type);
+                            parameter.Add("@Name", translationobjdata.Name);
+                            parameter.Add("@Value", translationdata.Value);
+                            //parameter.Add("@Created_at", translationdata.created_at);
+                            parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                            query = @"update translation.translation set 
                                 code= @Code,type= @Type,name= @Name,value = @Value,modified_at = @modified_at Where id=@id RETURNING id";
-                        var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                        return translationStatus.Updated;
+                            var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                            return translationStatus.Updated;
+                        }
+                       
                     }
                     else
                     {
@@ -539,14 +548,26 @@ namespace net.atos.daf.ct2.translation.repository
                 parameter.Add("@languageCode", languageCode);
                 parameter.Add("@templateId", template.TemplateId);
 
-                string emailTemplateLabelQuery =
-                    @"select tl.name as LabelKey, tl.value as TranslatedValue 
-                from master.emailtemplatelabels etl
-                INNER JOIN translation.translation tl ON etl.key=tl.name and tl.code=@languageCode
-                WHERE etl.email_template_id=@templateId";
-
+                string emailTemplateLabelQuery;
+                if (languageCode.Equals("EN-GB"))
+                {
+                    emailTemplateLabelQuery =
+                        @"select etl.key as LabelKey, tl.value as TranslatedValue 
+                        from master.emailtemplatelabels etl
+                        INNER JOIN translation.translation tl ON etl.key=tl.name and tl.code=@languageCode
+                        WHERE etl.email_template_id=@templateId";
+                }
+                else
+                {
+                    emailTemplateLabelQuery =
+                        @"select etl.key as LabelKey, 
+	                    coalesce(tl1.value, tl2.value) as TranslatedValue 
+	                    from master.emailtemplatelabels etl
+	                    left JOIN translation.translation tl1  ON etl.key=tl1.name and tl1.code=@languageCode
+	                    left JOIN translation.translation tl2  ON etl.key=tl2.name and tl2.code='EN-GB'
+	                    WHERE etl.email_template_id=@templateId";
+                }                                        
                 IEnumerable<EmailTemplateTranslationLabel> labels = await dataAccess.QueryAsync<EmailTemplateTranslationLabel>(emailTemplateLabelQuery, parameter);
-
                 template.TemplateLabels = labels;
                 return template;
             }

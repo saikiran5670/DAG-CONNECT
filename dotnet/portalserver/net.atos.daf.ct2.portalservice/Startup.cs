@@ -1,4 +1,4 @@
-using System;
+using System; 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +30,9 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscriptionservice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.poigeofences;
+using net.atos.daf.ct2.poiservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -57,6 +60,8 @@ namespace net.atos.daf.ct2.portalservice
             var organizationservice = Configuration["ServiceConfiguration:organizationservice"];
             var driverservice = Configuration["ServiceConfiguration:driverservice"];
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
+            var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
+
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
             var cookiesexpireat = Configuration["WebServerConfiguration:cookiesexpireat"];
@@ -122,6 +127,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddMemoryCache();
             services.AddControllers();
             services.AddTransient<AuditHelper, AuditHelper>();
+            services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
             services.AddScoped<IMemoryCacheProvider, MemoryCacheProvider>();
@@ -161,6 +167,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(auditservice);
             });
+            services.AddGrpcClient<CategoryService.CategoryServiceClient>(o =>
+            {
+                o.Address = new Uri(landmarkservice);
+            });
             services.AddGrpcClient<DriverService.DriverServiceClient>(o =>
             {
                 o.Address = new Uri(driverservice);
@@ -168,6 +178,18 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<SubscribeGRPCService.SubscribeGRPCServiceClient>(o =>
             {
                 o.Address = new Uri(subscriptionservice);
+            });
+            services.AddGrpcClient<GeofenceService.GeofenceServiceClient>(o =>
+            {
+                o.Address = new Uri(landmarkservice);
+            });
+            services.AddGrpcClient<POIService.POIServiceClient>(o =>
+            {
+                o.Address = new Uri(landmarkservice);
+            });
+            services.AddGrpcClient<GroupService.GroupServiceClient>(o =>
+            {
+                o.Address = new Uri(landmarkservice);
             });
             services.AddSwaggerGen(c =>
             {

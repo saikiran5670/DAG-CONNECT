@@ -48,6 +48,7 @@ export class OrganisationDetailsComponent implements OnInit {
   vehicleOptHolder:string;
   driverOptIn : string;
   vehicleOptIn : string;
+  showLoadingIndicator : boolean = false;
   constructor(private _formBuilder: FormBuilder,private translationService: TranslationService, private organizationService: OrganizationService) { 
     this.defaultTranslation();
   }
@@ -170,7 +171,9 @@ export class OrganisationDetailsComponent implements OnInit {
   onPreferenceEdit() {
     this.editPrefereneceFlag = true;
     let languageCode = this.localStLanguage.code;
+    this.showLoadingIndicator = true;
     this.translationService.getPreferences(languageCode).subscribe((data: any) => {
+      this.showLoadingIndicator = false;
       let dropDownData = data;
       this.languageDropdownData = dropDownData.language;
       this.timezoneDropdownData = dropDownData.timezone;
@@ -181,34 +184,30 @@ export class OrganisationDetailsComponent implements OnInit {
       this.vehicleStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt in'},{id:'H',value:'Inherit'}]
       this.driverStatusDropdownData = [{id:'U',value:'Opt Out'},{id:'I',value:'Opt in'},{id:'H',value:'Inherit'}]
       
+      this.languageHolder =  this.organisationData.language ? this.organisationData.language :  this.languageDropdownData[0].id;
+      this.timezoneHolder =  this.organisationData.timezone ? this.organisationData.timezone :  this.timezoneDropdownData[0].id;
+      this.currencyHolder =  this.organisationData.currency ? this.organisationData.currency :  this.currencyDropdownData[0].id;
+      this.unitHolder =  this.organisationData.unit ? this.organisationData.unit :  this.unitDropdownData[0].id;
+      this.dateFormatHolder =  this.organisationData.dateFormat ? this.organisationData.dateFormat :  this.dateFormatDropdownData[0].id;
+      this.timeFormatHolder =  this.organisationData.timeFormat ? this.organisationData.timeFormat :  this.timeFormatDropdownData[0].id;
+      this.vehicleOptHolder =  this.organisationData.driverOptIn ? this.organisationData.driverOptIn :  this.vehicleStatusDropdownData[0].id;
+      this.driverOptHolder =  this.organisationData.vehicleOptIn ? this.organisationData.vehicleOptIn : this.driverStatusDropdownData[0].id;
+
+      this.orgDetailsPreferenceForm.controls.language.setValue(this.languageHolder);
+      this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.timezoneHolder);
+      this.orgDetailsPreferenceForm.controls.unit.setValue(this.unitHolder);
+      this.orgDetailsPreferenceForm.controls.currency.setValue(this.currencyHolder);
+      this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.dateFormatHolder);
+      this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.timeFormatHolder);
+      this.orgDetailsPreferenceForm.controls.driverDefaultStatus.setValue(this.organisationData.driverOptIn);
+      this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.setValue(this.organisationData.vehicleOptIn);
       // this.vehicleDisplayDropdownData = dropDownData.vehicledisplay;
       // this.landingPageDisplayDropdownData = accountNavMenu;
       
-      this.languageHolder =  this.organisationData.languageName ? this.organisationData.languageName :  'Language';
-      this.timezoneHolder =  this.organisationData.timezone ? this.organisationData.timezone :  'TimeZone';
-      this.currencyHolder =  this.organisationData.currency ? this.organisationData.currency :  'Currency';
-      this.unitHolder =  this.organisationData.unit ? this.organisationData.unit :  'Unit';
-      this.dateFormatHolder =  this.organisationData.dateFormat ? this.organisationData.dateFormat :  'Date Format';
-      this.timeFormatHolder =  this.organisationData.timeFormat ? this.organisationData.timeFormat :  'Time Format';
-      this.vehicleOptHolder =  this.organisationData.driverOptIn ? this.organisationData.driverOptIn :  'Driver Opt In';
-      this.driverOptHolder =  this.organisationData.vehicleOptIn ? this.organisationData.vehicleOptIn :  'Vehicle Opt In';
-
-
-this.orgDetailsPreferenceForm.controls.language.setValue(this.organisationData.languageName );
-this.orgDetailsPreferenceForm.controls.timeZone.setValue(this.organisationData.timezone);
-this.orgDetailsPreferenceForm.controls.unit.setValue(this.organisationData.unit);
-this.orgDetailsPreferenceForm.controls.currency.setValue(this.organisationData.currency);
-this.orgDetailsPreferenceForm.controls.dateFormat.setValue(this.organisationData.dateFormat);
-this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData.timeFormat);
-
-
-
-
-
+      
     });
 
-    this.orgDetailsPreferenceForm.controls.driverDefaultStatus.setValue(this.organisationData.driverOptIn);
-    this.orgDetailsPreferenceForm.controls.vehicleDefaultStatus.setValue(this.organisationData.vehicleOptIn);
+
   }
   onCloseMsg(){
     this.titleVisible = false;
@@ -218,7 +217,7 @@ this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData
     this.editPrefereneceFlag = false;
   }
   onReset() {
-
+    this.onPreferenceEdit();
   }
   onCreateUpdate() {
     let orgSuccess : boolean = false;
@@ -272,6 +271,7 @@ this.orgDetailsPreferenceForm.controls.timeFormat.setValue(this.organisationData
     this.titleVisible = true;
     this.editPrefereneceFlag = false;
     this.OrgDetailsMsg = msg;
+    this.loadOrganisationdata();
     setTimeout(() => {  
       this.titleVisible = false;
     }, 5000);

@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.subscription.test
             //objUnSubscription.OrderID = "00000000-0000-0000-0000-000000000000";
             objUnSubscription.OrganizationID = "ddsss";
             //objUnSubscription.PackageId = "PKG007";//for type O
-            objUnSubscription.PackageId = "string12";//for type V
+            //objUnSubscription.PackageId = "string12";//for type V
             objUnSubscription.VINs = new List<string>();
             objUnSubscription.VINs.Add("Vehicle_143_1");
             objUnSubscription.VINs.Add("Vehicle_143_2");

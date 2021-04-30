@@ -8,6 +8,8 @@ using System.Linq;
 using net.atos.daf.ct2.group;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.audit;
 
 namespace net.atos.daf.ct2.vehicle.test
 {
@@ -18,7 +20,9 @@ namespace net.atos.daf.ct2.vehicle.test
         private readonly IDataMartDataAccess _datamartDataacess;
         private readonly IConfiguration _config;
         private readonly IVehicleRepository _vehicleRepository;
-        private readonly IGroupRepository _groupRepository;  
+        private readonly IVehicleManager _vehiclemanager;
+        private readonly IGroupRepository _groupRepository;
+        private readonly IAuditTraillib _auditlog;
 
         public vehiclerepositorytest()
         {
@@ -28,6 +32,7 @@ namespace net.atos.daf.ct2.vehicle.test
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess, _datamartDataacess);
             _groupRepository=new GroupRepository(_dataAccess);
+            _vehiclemanager = new VehicleManager(_vehicleRepository, _auditlog);
 
         }
         //[TestCategory("Unit-Test-Case")]
@@ -178,6 +183,34 @@ namespace net.atos.daf.ct2.vehicle.test
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
+
+        #region Vehicle Mileage
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get Vehicle Mileage Data ")]
+        [TestMethod]
+        public async Task UnT_vehicle_VehicleManager_GetVehicleMileage()
+        {
+            long lsince = 1619419546008;
+            string sTimezone = "UTC";
+            string targetdateformat = "MM/DD/YYYY";
+            string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(lsince, sTimezone, targetdateformat);            
+            string since = converteddatetime;            
+            bool isnumeric = true;
+            string contenttype = "text/csv";
+            var results = await _vehiclemanager.GetVehicleMileage(since, isnumeric, contenttype);
+            if (contenttype == "text/csv")
+            {
+                Assert.IsNotNull(results.VehiclesCSV);
+                Assert.IsTrue(results.VehiclesCSV != null);
+            }
+            else 
+            {
+                Assert.IsNotNull(results.Vehicles);
+                Assert.IsTrue(results.Vehicles != null);
+            }
+           
+        }
+        #endregion
 
         //[TestCategory("Unit-Test-Case")]
         //[Description("Test for create vehicle group and vehicle details")]

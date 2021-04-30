@@ -1,9 +1,17 @@
-<div class="bgtrans">
-    <mat-card class='margin-top-lg border-none bg-none no-padding full-width margin-top-40 mat-elevation-z' fxLayout="column" fxLayoutAlign="start start">
-    <mat-card-content class="full-width">
-      <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-        <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
+<div class="bgtrans tabs">
+  <!-- <mat-tab-group [ngStyle]="{'visibility':  tabVisibilityStatus  ? 'visible' : 'hidden' }" [(selectedIndex)]="selectedIndex"> -->
+  <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+    <mat-tab label="Manage POI and Geofence">
+      <app-manage-poi-geofence *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-poi-geofence>
+    </mat-tab>
+    <mat-tab label="Manage Group">
+      <app-manage-group *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-group>
+    </mat-tab>
+    <mat-tab label="Manage Category">
+      <app-manage-category *ngIf="selectedIndex == 2" (tabVisibility)="tabVisibilityHandler($event)" [translationData]='translationData'></app-manage-category>
+    </mat-tab>
+    <mat-tab label="Manage Corridor">
+      <app-manage-corridor *ngIf="selectedIndex == 3" [translationData]='translationData'></app-manage-corridor>
+    </mat-tab>
+  </mat-tab-group>
 </div>

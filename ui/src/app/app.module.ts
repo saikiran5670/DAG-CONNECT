@@ -24,6 +24,12 @@ import { SubscriptionService } from './services/subscription.service';
 import { AppInterceptor } from './interceptor/app.interceptor';
 import { HttpErrorInterceptor, SessionDialogService } from './interceptor/http-error.interceptor';
 import { ErrorComponent } from './error/error.component';
+import { LandmarkGroupService } from './services/landmarkGroup.service';
+import { POIService } from './services/poi.service';
+import { LandmarkCategoryService } from './services/landmarkCategory.service';
+import { GeofenceService } from './services/landmarkGeofence.service';
+
+
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -66,7 +72,11 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     DriverService,
     FeatureService,
     PackageService,
-    SubscriptionService
+    SubscriptionService,
+    LandmarkGroupService,
+    POIService,
+    LandmarkCategoryService,
+    GeofenceService
   ],
   bootstrap: [AppComponent],
 })

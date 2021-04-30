@@ -1,0 +1,172 @@
+
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+option csharp_namespace = "net.atos.daf.ct2.geofenceservice";
+
+package geofence;
+
+service GeofenceService{
+rpc DeleteGeofence (DeleteRequest) returns (GeofenceDeleteResponse);
+rpc CreatePolygonGeofence (GeofenceRequest) returns (GeofenceResponse);
+rpc GetAllGeofence (GeofenceEntityRequest) returns (GeofenceEntityResponceList);
+rpc CreateCircularGeofence (CircularGeofenceRequest) returns (CircularGeofenceResponse);
+rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
+rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
+rpc BulkImportGeofence (BulkGeofenceRequest) returns (BulkGeofenceResponse);
+rpc UpdateCircularGeofence (GeofenceCircularUpdateRequest) returns (GeofenceCircularUpdateResponce);
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message DeleteRequest{
+   repeated int32 GeofenceId=1;  
+}
+message GeofenceDeleteResponse {
+  Responsecode Code=1;
+  string Message = 2;  
+}
+
+message GeofenceRequest{
+    int32 Id =1;
+    google.protobuf.Int32Value OrganizationId=2;
+    int32 CategoryId = 3;
+    int32 SubCategoryId = 4;
+    string Name =5;
+    string Type=6;
+    string Address=7;
+    string City=8;
+    string Country=9;
+    string Zipcode=10;
+    double Latitude=11;
+    double Longitude=12;
+    double Distance=13;
+    string State=14;
+    int32 TripId = 15;
+    int32 CreatedBy = 16;
+    repeated NodeRequest NodeRequest=17;
+    bool Exists=18;
+    google.protobuf.StringValue Message =19;
+}
+message NodeRequest{
+    int32 Id =1;
+    int32 LandmarkId = 2;
+    int32 SeqNo = 3;
+    double Latitude =4;
+    double Longitude =5;
+    string State=6;
+    int32 CreatedBy = 7;
+    google.protobuf.StringValue Message =8;
+}
+
+message GeofenceResponse{
+   GeofenceRequest GeofenceRequest =1;
+    Responsecode Code=2;
+    string message = 3;
+}
+
+message BulkGeofenceResponse{
+    repeated GeofenceRequest FailureResult =1;
+    Responsecode Code=2;
+    int32 FailureCount = 3;
+    int32 AddedCount  = 4;
+    int32 UpdatedCount  = 5;
+}
+
+message GeofenceEntityRequest{
+    int32 organization_id =1;
+    int32 category_id = 2;
+    int32 sub_category_id = 3;
+    int32 roleIdlevel =4;
+}
+
+message GeofenceEntityResponceList  {
+  repeated GeofenceEntityResponce GeofenceList = 1;
+  Responsecode code = 2;
+}
+message GeofenceEntityResponce{
+    string geofenceName = 1;
+    string categoryName =2;
+    string subCategoryName=3;
+    int32 geofenceId=4;
+    string type=5;
+}
+
+message CircularGeofenceRequest{
+   repeated GeofenceRequest GeofenceRequest =1;
+}
+
+message BulkGeofenceRequest{
+   repeated GeofenceRequest GeofenceRequest =1;
+}
+
+message CircularGeofenceResponse{
+   repeated GeofenceRequest GeofenceRequest =1;
+    Responsecode Code=2;
+    string message = 3;
+}
+
+ message IdRequest {
+  int32 organizationId = 1;
+  int32 geofenceId=2;
+}
+message GetGeofenceResponse{
+    int32 Id =1;
+    int32 OrganizationId=2;
+    string CategoryName = 3;
+    string SubCategoryName = 4;
+    string GeofenceName =5;
+    string Address=6;
+    string City=7;
+    string Country=8;
+    string Zipcode=9;
+    double Latitude=10;
+    double Longitude=11;
+    double Distance=12;
+    string State=13;
+    int32 CreatedBy=14;
+    int32 ModifiedBy=15;
+    int64 CreatedAt=16;
+    int64 ModifiedAt=17;
+    int32 CategoryId=18;
+    int32 SubCategoryId=19;
+    string Type=20;
+}
+
+message GeofencePolygonUpdateRequest{
+ int32 Id =1;
+ google.protobuf.Int32Value OrganizationId=2;
+ int32 CategoryId = 3;
+ int32 SubCategoryId = 4;
+ string Name =5;
+ bool Exists=6;
+ int32 ModifiedBy = 7;
+}
+
+message GeofencePolygonUpdateResponce{
+    GeofencePolygonUpdateRequest GeofencePolygonUpdateRequest=1;
+    Responsecode Code=2;
+    string message = 3;
+}
+
+message GeofenceCircularUpdateRequest{
+ int32 Id =1;
+ google.protobuf.Int32Value OrganizationId=2;
+ int32 CategoryId = 3;
+ int32 SubCategoryId = 4;
+ string Name =5;
+ bool Exists=6;
+ int32 ModifiedBy = 7;
+}
+
+message GeofenceCircularUpdateResponce{
+    GeofenceCircularUpdateRequest GeofenceCircularUpdateRequest=1;
+    Responsecode Code=2;
+    string message = 3;
+}

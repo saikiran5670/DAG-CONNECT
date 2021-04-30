@@ -1,0 +1,162 @@
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option csharp_namespace = "net.atos.daf.ct2.poigeofences";
+
+package poigeofences;
+
+service CategoryService{
+
+rpc AddCategory (CategoryAddRequest) returns (CategoryAddResponse);
+rpc EditCategory (CategoryEditRequest) returns (CategoryEditResponse);
+rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
+rpc GetCategoryType (CategoryGetRequest) returns (CategoryGetResponse);
+rpc GetCategoryDetails (GetRequest) returns (GetResponse);
+rpc BulkDeleteCategory (DeleteRequest) returns (DeleteResponse);
+    }
+
+
+enum Responsecode{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}
+
+
+message CategoryAddRequest
+{
+      int32 Id =1;
+      int32 Organization_Id =2;
+      string Name =3;
+      string Icon_Name =4;
+      string Type =5;
+      int32 Parent_Id =6;
+      string State=7;
+      string Description =8;
+      int32 Created_By =9;
+      int32 Modified_By =10;
+      bytes Icon =11;
+
+}
+message CategoryAddResponse
+{
+  Responsecode Code=1;
+  string Message = 2;  
+  int32 CategoryID =3;
+}
+
+message CategoryEditRequest
+{
+      int32 Id =1;
+      string Name =2;
+      bytes Icon =3;
+      string Icon_Name =4;
+      int32 Modified_By =5;
+      string Description =6;
+      int32 Organization_Id =7;
+
+}
+message CategoryEditResponse
+{
+  Responsecode Code=1;
+  string Message = 2;  
+   int32 CategoryID =3;
+}
+
+message CategoryDeleteRequest
+{
+      int32 Id =1;
+}
+message CategoryDeleteResponse
+{
+  Responsecode Code=1;
+  string Message = 2;  
+  int32 CategoryID =3;
+}
+message CategoryGetRequest
+{
+ string type= 1;
+ int32 Organization_Id =2;
+}
+message CategoryGetResponse
+{
+repeated GetCategoryType categories =1;
+  Responsecode Code=2;
+  string Message = 3;  
+}
+
+message GetCategoryType
+{
+ int32 Id =1;
+ string Name =2;
+}
+
+message category{
+
+     int32 Id =1;
+      int32 Organization_Id =2;
+      string Name =3;
+      int32 Icon_Id =4;
+      string Type =5;
+      int32 Parent_Id =6;
+      string State=7;
+      int64 Created_At =8;
+      int32 Created_By =9;
+      int64 Modified_At= 10;
+      int32 Modified_By =11;
+}
+
+message GetRequest
+{
+
+}
+message GetResponse{
+
+repeated categoryDetails categories =1;
+  Responsecode Code=2;
+  string Message = 3; 
+
+}
+
+message categoryDetails
+{
+int32 ParentCategoryId =1;
+int32 SubCategoryId =2;
+int32 IconId =3;
+bytes Icon =4;
+string ParentCategoryName =5;
+string SubCategoryName =6;
+int32 No_Of_POI =7;
+int32 No_Of_Geofence =8;
+string Description =9;
+int64 Created_At =10;
+string Icon_Name =11;
+int32 Organization_Id =12;
+
+}
+
+message DeleteRequest
+{
+ repeated CatSubCatID CatSubCatIDList = 1;
+}
+
+message CatSubCatID
+{
+int32 CategoryId = 1;
+int32 SubCategoryId = 2;
+
+}
+
+
+message DeleteResponse
+{
+ Responsecode Code=1;
+  string Message = 2;  
+  repeated IdList DeleteRequestList  =3;
+
+}
+message IdList
+{
+   int32 CategoryIds = 1;
+}

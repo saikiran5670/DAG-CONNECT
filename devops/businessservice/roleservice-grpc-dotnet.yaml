@@ -18,6 +18,8 @@ parameters:
   - TEST01
   - TEST02
   - ACC03
+  - ACC01
+  - ACC02
 
 pool: $(PRIVATEAGENT)
 
@@ -34,11 +36,15 @@ variables:
   - group: TEST02-Build-Variables
 - ${{ if eq(parameters.ENV, 'ACC03') }}:
   - group: ACC03-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC01') }}:
+  - group: ACC01-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC02') }}:
+  - group: ACC02-Build-Variables
   
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.roleservice/appsettings.json'
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.roleservice/appsettings.Production.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -51,7 +57,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/businessservices/net.atos.daf.ct2.roleservice/appsettings.json
+      cat dotnet/businessservices/net.atos.daf.ct2.roleservice/appsettings.Production.json
 
 - task: replacetokens@3
   inputs:

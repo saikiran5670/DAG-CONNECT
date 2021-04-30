@@ -11,6 +11,10 @@
     "driverRESTServiceURL": "https://api.dev1.ct2.atos.net/driver",
     "packageRESTServiceURL": "https://api.dev1.ct2.atos.net/package",
     "organizationRESTServiceURL": "https://api.dev1.ct2.atos.net/organization",
-    "subscriptionRESTServiceURL": "https://api.dev1.ct2.atos.net/subscribe"
+    "subscriptionRESTServiceURL": "https://api.dev1.ct2.atos.net/subscribe",
+    "landmarkGroupRESTServiceURL": "https://api.dev1.ct2.atos.net/landmarkgroup",
+    "poiRESTServiceURL": "https://api.dev1.ct2.atos.net/poi",
+    "landmarkCategoryRESTServiceURL": "https://api.dev1.ct2.atos.net/poigeofence",
+    "geofenceRESTServiceURL": "https://api.dev1.ct2.atos.net/geofence"
   }
 }

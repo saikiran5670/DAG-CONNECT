@@ -11,6 +11,10 @@
       "driverRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/driver",
       "packageRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/package",
       "organizationRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/organization",
-      "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe"
+      "subscriptionRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/subscribe",
+      "landmarkGroupRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/landmarkgroup",
+      "poiRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poi",
+      "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence",
+      "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence"
     }
 }
