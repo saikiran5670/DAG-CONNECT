@@ -128,7 +128,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     setTimeout(()=>{
       this.geofencedataSource.paginator = this.paginator.toArray()[1];
       this.geofencedataSource.sort = this.sort.toArray()[1];
-    });
+    },1000);
   }
 
   getNewTagData(data: any){
@@ -242,6 +242,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   editViewPoi(rowData: any, type: any){
+    this.tabVisibility.emit(false);
     this.actionType = type;
     this.selectedElementData = rowData;
     this.createEditViewPoiFlag = true;
@@ -396,7 +397,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
-
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData)=>{
