@@ -1745,11 +1745,6 @@ namespace net.atos.daf.ct2.vehicle.repository
                
                 IEnumerable<dtoVehicleMileage> mileageData = await DataMartdataAccess.QueryAsync<dtoVehicleMileage>(QueryStatement, parameter);
                 
-                //List<Vehicles> vehiclesList = new List<Vehicles>();
-                //foreach (dynamic record in mileageData)
-                //{                                   
-                //    vehiclesList.Add(MapMileage(record));
-                //}
                 return mileageData;
             }
             catch (Exception ex)

@@ -240,21 +240,14 @@ namespace net.atos.daf.ct2.vehicle
                 long endDate = 0;
 
                 if (string.IsNullOrEmpty(since) || since == "yesterday")
-                {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
-                    endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-
-                }
                 else if (since == "today")
-                {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
-                    endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                }
                 else if (isnumeric)
-                {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
-                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(Convert.ToDateTime(since)));
-                }
+
+                endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+               
                 IEnumerable<dtoVehicleMileage> vehiclemileageList= await vehicleRepository.GetVehicleMileage(startDate, endDate);
                 
                 VehicleMileage vehicleMileage = new VehicleMileage();
@@ -270,20 +263,20 @@ namespace net.atos.daf.ct2.vehicle
                         if (contenttype == "text/csv")
                         {
                             VehiclesCSV vehiclesCSV = new VehiclesCSV();
-                            vehiclesCSV.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat); 
+                            vehiclesCSV.EvtDateTime =item.evt_timestamp>0? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat):string.Empty; 
                             vehiclesCSV.VIN = item.vin;
-                            vehiclesCSV.TachoMileage = item.odo_distance;
-                            vehiclesCSV.RealMileage = item.real_distance;
+                            vehiclesCSV.TachoMileage = item.odo_distance > 0?item.odo_distance:0;
+                            vehiclesCSV.RealMileage = item.real_distance > 0 ? item.real_distance:0;
                             vehiclesCSV.RealMileageAlgorithmVersion = "1.2";
                             vehicleMileage.VehiclesCSV.Add(vehiclesCSV); 
                         }
                         else
                         {
                             Vehicles vehiclesobj = new Vehicles();
-                            vehiclesobj.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat); ;
+                            vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty; ;
                             vehiclesobj.VIN = item.vin;
-                            vehiclesobj.TachoMileage = item.odo_distance;
-                            vehiclesobj.GPSMileage = item.real_distance;
+                            vehiclesobj.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0; 
+                            vehiclesobj.GPSMileage = item.real_distance>0 ? item.real_distance :0;
                             vehiclesobj.RealMileageAlgorithmVersion = "1.2";
                             vehicleMileage.Vehicles.Add(vehiclesobj);
                         }

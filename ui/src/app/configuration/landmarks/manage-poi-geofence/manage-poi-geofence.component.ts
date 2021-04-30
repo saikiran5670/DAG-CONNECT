@@ -300,21 +300,23 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   deletePoi(rowData: any){
-    let poiId = rowData.id;
+    let poiId = {
+      id :[rowData.id]
+    };
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.code);
+    this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      // this.poidataSource.deletePoi(poiId).subscribe((data) => {
-      //   this.openSnackBar('Item delete', 'dismiss');
-      //   this.loadPoiData();
-      // })
-      //   this.successMsgBlink(this.getDeletMsg(rowData.code));
+      this.poiService.deletePoi(poiId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadPoiData();
+      })
+        this.successMsgBlink(this.getDeletMsg(rowData.name));
       }
     });
   }
@@ -425,8 +427,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData)=>{
-        
-    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(poiData);
+      const result = poiData.map(({organizationId,id,categoryId,subCategoryId,type,city,country,zipcode,latitude,longitude,distance,state,createdBy,createdAt,icon,...rest}) => ({...rest}));
+    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
     const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
     this.saveAsExcelFile(excelBuffer, excelFileName);
@@ -443,7 +445,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   exportGeofenceAsExcelFile(){
-    this.matTableExporter.exportTable('csv', {fileName:'GeofenceData', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'GeofenceData', sheet: 'sheet_name'});
 
   }
 
