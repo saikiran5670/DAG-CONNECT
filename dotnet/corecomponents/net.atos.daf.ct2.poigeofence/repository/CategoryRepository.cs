@@ -199,7 +199,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var icon_ID = await InsertIcons(category);
-                var isCategoryUpdate = CheckCategoryForUpdate(category.Id);
+                var isCategoryUpdate = CheckCategoryForUpdate(category.Id ,category.Organization_Id);
                 
                 if (isCategoryUpdate)
                 {
@@ -256,10 +256,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        private bool CheckCategoryForUpdate(int id)
+        private bool CheckCategoryForUpdate(int id , int ? Organization_Id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryID = id;
+            categoryFilter.OrganizationId = Organization_Id;
 
             var categories = GetCategory(categoryFilter);
 

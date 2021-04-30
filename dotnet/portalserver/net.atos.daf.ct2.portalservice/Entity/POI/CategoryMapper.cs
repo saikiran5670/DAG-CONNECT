@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             Requests.ModifiedBy = request.Modified_By;
             Requests.Icon = ByteString.CopyFrom(request.icon);
             Requests.Description = !string.IsNullOrEmpty(request.Description) ? request.Description : string.Empty;
+            Requests.OrganizationId = request.Organization_Id;
 
             return Requests;
 

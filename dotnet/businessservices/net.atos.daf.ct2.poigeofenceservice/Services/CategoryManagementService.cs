@@ -90,6 +90,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.icon = request.Icon.ToByteArray();
                 obj.Description = request.Description;
                 obj.Modified_By = request.ModifiedBy;
+                obj.Organization_Id = request.OrganizationId;
 
                 var result = await _categoryManager.EditCategory(obj);
                 if (result != null && result.Id >= 0)
