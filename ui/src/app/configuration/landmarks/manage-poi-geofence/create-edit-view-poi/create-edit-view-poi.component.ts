@@ -80,15 +80,15 @@ selectedMarker: any;
       this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
 
       this.poiFormGroup = this._formBuilder.group({
-        name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+        name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1),Validators.max(100)]],
         category: ['', [ Validators.required]],
-        subcategory: ['', [ Validators.required]],
+        subcategory: [''],
         address: [''],
         zip: [''],
         city: [''],
         country: [''],
-        lattitude: [''],
-        longitude: ['']
+        lattitude: ['',[ Validators.required]],
+        longitude: ['',[ Validators.required]]
       },
       {
         validator: [
