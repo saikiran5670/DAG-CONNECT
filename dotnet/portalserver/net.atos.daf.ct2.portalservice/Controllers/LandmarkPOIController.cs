@@ -260,7 +260,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                     Request);
-                    return Ok("POI's has been deleted");
+                    poiResponse.Message = "POI's has been deleted";                   
+                    return Ok(poiResponse);
                 }
                 else
                 {
