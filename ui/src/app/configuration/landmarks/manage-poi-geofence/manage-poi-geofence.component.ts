@@ -392,18 +392,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
       return `${this.selectedgeofences.isSelected(row) ? 'deselect' : 'select'
         } row`;
   }
-  pageSizeUpdatedPOI(_event) {
+  pageSizeUpdated(_event) {
     setTimeout(() => {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
-
-  pageSizeUpdatedGeofence(_event) {
-    setTimeout(() => {
-      document.getElementsByTagName('mat-sidenav-content')[1].scrollTo(1, 1)
-    }, 100);
-  }
-
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData)=>{
