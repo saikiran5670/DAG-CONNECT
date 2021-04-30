@@ -200,10 +200,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var icon_ID = await InsertIcons(category);
                 var isCategoryUpdate = CheckCategoryForUpdate(category.Id ,category.Organization_Id);
-                
-                if (isCategoryUpdate)
+
+                if (isCategoryUpdate  )
                 {
-                    var isCategoryNameExist = CheckCategoryNameForUpdate(category.Name,category.Organization_Id);
+                    var isCategoryNameExist = CheckCategoryIsexist(category.Name,category.Organization_Id);
 
                     if (!isCategoryNameExist)
                     {
@@ -321,7 +321,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         //It will return organization specific category/subcategory
                         parameter.Add("@organization_id", categoryFilter.OrganizationId);
-                        getQuery = getQuery + " and organization_id=@organization_id or organization_id is null ";
+                        getQuery = getQuery + " and organization_id=@organization_id  ";
                     }
                     else
                     {
