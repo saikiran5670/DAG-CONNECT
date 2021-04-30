@@ -38,6 +38,7 @@
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
                 <mat-select [disabled]='allCategoryData.length == 0' (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+                <mat-option value="0">--All--</mat-option>
                 <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                     {{ rer.name }}
                 </mat-option>
@@ -123,10 +124,10 @@
                   <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="View">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.Organization_Id != undefined && row.Organization_Id > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
                     <mat-icon>create</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.Organization_Id != undefined && row.Organization_Id > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
                 </mat-cell>

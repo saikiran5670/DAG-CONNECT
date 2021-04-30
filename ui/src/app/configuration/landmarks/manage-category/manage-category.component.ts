@@ -261,18 +261,23 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onCategoryChange(_event){
-    this.selectedCategoryId = _event.value;
-    let selectedId = this.selectedCategoryId;
-    let selectedSubId = this.selectedSubCategoryId;
-    let categoryData = this.allCategoryData.filter(function(e) {
-      return e.parentCategoryId === selectedId;
-    });
-    if(selectedSubId){
-      categoryData = this.allCategoryData.filter(function(e) {
-      return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
-    });
+    if(_event.value == 0){
+      this.onUpdateDataSource(this.allCategoryData);
     }
-    this.onUpdateDataSource(categoryData);
+    else{
+      this.selectedCategoryId = _event.value;
+      let selectedId = this.selectedCategoryId;
+      let selectedSubId = this.selectedSubCategoryId;
+      let categoryData = this.allCategoryData.filter(function(e) {
+        return e.parentCategoryId === selectedId;
+      });
+      if(selectedSubId){
+        categoryData = this.allCategoryData.filter(function(e) {
+        return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
+      });
+      }
+      this.onUpdateDataSource(categoryData);
+    }
   }
 
   onSubCategoryChange(_event){
