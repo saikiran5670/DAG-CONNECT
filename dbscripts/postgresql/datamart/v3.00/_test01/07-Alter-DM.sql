@@ -1,5 +1,5 @@
 CREATE SCHEMA  mileage 
-    AUTHORIZATION pgadmin;
+    AUTHORIZATION pgdbmadmin;
 CREATE TABLE if not exists mileage.vehiclemileage
 (
 	id serial not null, 
@@ -16,7 +16,7 @@ CREATE TABLE if not exists mileage.vehiclemileage
 TABLESPACE pg_default;
 
 ALTER TABLE  mileage.vehiclemileage 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 
 Do $$
