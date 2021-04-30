@@ -24,7 +24,7 @@ CREATE TABLE if not exists master.category
 TABLESPACE pg_default;
 
 ALTER TABLE  master.category 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -84,7 +84,7 @@ CREATE TABLE if not exists master.landmark
 TABLESPACE pg_default;
 
 ALTER TABLE  master.landmark 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -166,7 +166,7 @@ CREATE TABLE if not exists master.nodes
 TABLESPACE pg_default;
 
 ALTER TABLE  master.nodes 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -216,7 +216,7 @@ CREATE TABLE if not exists master.landmarkgroup
 TABLESPACE pg_default;
 
 ALTER TABLE  master.landmarkgroup 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 Do $$
 begin
@@ -277,7 +277,7 @@ CREATE TABLE if not exists master.landmarkgroupref
 TABLESPACE pg_default;
 
 ALTER TABLE  master.landmarkgroupref 
-    OWNER to pgadmin;
+    OWNER to pgdbmadmin;
 
 
 Do $$
