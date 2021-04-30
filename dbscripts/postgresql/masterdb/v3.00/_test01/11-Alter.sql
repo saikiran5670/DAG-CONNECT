@@ -11,7 +11,7 @@ CREATE TABLE if not exists master.category
 (
 	id serial not null, 
 	organization_id  int ,
-	name varchar(50) not null, 
+	name varchar(100) not null, 
 	icon_id  int null, 
 	type char(1) not null,
 	parent_id  int,
