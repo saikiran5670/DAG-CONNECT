@@ -79,7 +79,7 @@
               <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
               <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-              <button class='no-margin' [disabled]="!landmarkGroupForm.valid || selectedPOI.selected.length == 0 || selectedGeofence.selected.length == 0" mat-raised-button color="primary"
+              <button class='no-margin' [disabled]="!landmarkGroupForm.valid || (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0)" mat-raised-button color="primary"
                 (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
                 (translationData.lblConfirm || 'Confirm') }}</button>
             </div>

@@ -46,16 +46,19 @@ country: any;
 userCreatedMsg: any = ''; 
 hereMapService: any;
 organizationId: number;
+latitude: any;
+longitude: any;
 localStLanguage: any;
 initData: any = [];
 showLoadingIndicator: any = false;
 categoryList: any = [];
-lattitude: any;
-longitude: any;
+actualLattitude: any;
+actuallongitude: any;
 subCategoryList: any = [];
 poiInitdata: any = [];
 userName: string = '';
 state: any;
+selectedMarker: any;
 
 @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
@@ -77,15 +80,15 @@ state: any;
       this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
 
       this.poiFormGroup = this._formBuilder.group({
-        name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+        name: ['', [ Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1),Validators.max(100)]],
         category: ['', [ Validators.required]],
-        subcategory: ['', [ Validators.required]],
+        subcategory: [''],
         address: [''],
         zip: [''],
         city: [''],
         country: [''],
-        lattitude: [''],
-        longitude: ['']
+        lattitude: ['',[ Validators.required]],
+        longitude: ['',[ Validators.required]]
       },
       {
         validator: [
@@ -183,8 +186,13 @@ state: any;
   // Create the default UI components
   var ui = H.ui.UI.createDefault(this.map, defaultLayers);
   var searchbox = ui.getControl("searchbox");
-
-  this.setUpClickListener(this.map, this.here, this.poiFlag, this.data,this);
+  if(this.actionType == 'edit'){
+    let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
+    let getSelectedLongitude = this.poiFormGroup.get("longitude").value;
+     this.selectedMarker = new H.map.Marker({lat:getSelectedLatitude, lng:getSelectedLongitude});
+    this.map.addObject(this.selectedMarker);
+  }
+  this.setUpClickListener(this.map,behavior,this.selectedMarker, this.here, this.poiFlag, this.data,this);
   
 
   }
@@ -192,23 +200,117 @@ state: any;
 
 
 
-   setUpClickListener(map, here, poiFlag, data,thisRef) {
+   setUpClickListener(map,behavior,selectedMarker, here, poiFlag, data,thisRef) {
     // obtain the coordinates and display
     map.addEventListener('tap', function (evt) {
+      
       if(poiFlag){
+
+        if(this.actionType= 'edit'){
+          console.log("----when edit selected marker--",selectedMarker)
+          map.removeObject(selectedMarker);
+          // map.removeObjects(searchMarkers);
+        }
       var coord = map.screenToGeo(evt.currentPointer.viewportX,
               evt.currentPointer.viewportY); 
               let x = Math.abs(coord.lat.toFixed(4));
               let y = Math.abs(coord.lng.toFixed(4));
+              this.actualLattitude = x;
+              this.actuallongitude = y;
               console.log("latitude=" +x);
               console.log("longi=" +y);
             
-              let locations = new H.map.Marker({lat:x, lng:y});
+              let locations = new H.map.Marker({lat:x, lng:y}, {
+                // mark the object as volatile for the smooth dragging
+                volatility: true
+              });
 
-              map.addObject(locations);
-             
-              this.position = x +","+y;             
-              console.log(this.position);
+
+                // Ensure that the marker can receive drag events
+                locations.draggable = true;
+                map.addObject(locations);
+
+                // disable the default draggability of the underlying map
+  // and calculate the offset between mouse and target's position
+  // when starting to drag a marker object:
+  map.addEventListener('dragstart', function(ev) {
+    var target = ev.target,
+        pointer = ev.currentPointer;
+    if (target instanceof H.map.Marker) {
+      var targetPosition = map.geoToScreen(target.getGeometry());
+      target['offset'] = new H.math.Point(pointer.viewportX - targetPosition.x, pointer.viewportY - targetPosition.y);
+      behavior.disable();
+    }
+  }, false);
+
+
+// re-enable the default draggability of the underlying map
+  // when dragging has completed
+  map.addEventListener('dragend', function(ev) {
+    var target = ev.target;
+    if (target instanceof H.map.Marker) {
+      behavior.enable();
+    }
+  }, false);
+
+  // Listen to the drag event and move the position of the marker
+  // as necessary
+  map.addEventListener('drag', function(ev) {
+    var target = ev.target,
+        pointer = ev.currentPointer;
+    if (target instanceof H.map.Marker) {
+      target.setGeometry(map.screenToGeo(pointer.viewportX - target['offset'].x, pointer.viewportY - target['offset'].y));
+    }
+
+    var coord = map.screenToGeo(evt.currentPointer.viewportX,
+      evt.currentPointer.viewportY); 
+      let x = Math.abs(coord.lat.toFixed(4));
+      let y = Math.abs(coord.lng.toFixed(4));
+      console.log(" updated - latitude=" +x);
+      console.log("updated - longi=" +y);
+
+      let dataUpdated = this.locations[0].Location.Address;
+      // console.log(this.locations[0].Location.Address);
+      let position= this.locations[0].Location.DisplayPosition;
+      this.data = dataUpdated;
+      // console.log("---while dragging location and data--",dataUpdated,"---position---",position);
+
+      thisRef.setAddressValues(dataUpdated,position);
+      this.actualLattitude = x;
+      this.actuallongitude = y;
+
+
+
+
+      this.position = this.actualLattitude +","+this.actuallongitude;             
+      // console.log("---updated positions with lat long----",this.position);
+      if(this.position) {
+        
+    here.getAddressFromLatLng(this.position).then(result => {
+            this.locations = <Array<any>>result;
+            data = this.locations[0].Location.Address;
+            // console.log(this.locations[0].Location.Address);
+            let pos= this.locations[0].Location.DisplayPosition;
+            // console.log(data);
+            this.data = data;
+            poiFlag = false;
+            thisRef.setAddressValues(data,pos);
+        }, error => {
+            // console.error(error);
+        });
+       }
+
+
+
+
+
+  }, false);
+
+
+
+              
+              this.position = this.actualLattitude +","+this.actuallongitude;             
+              console.log("---initial positions with lat long----",this.position);
               if(this.position) {
                 
             here.getAddressFromLatLng(this.position).then(result => {
@@ -216,12 +318,12 @@ state: any;
                     data = this.locations[0].Location.Address;
                     // console.log(this.locations[0].Location.Address);
                     let pos= this.locations[0].Location.DisplayPosition;
-                    console.log(data);
+                    // console.log(data);
                     this.data = data;
                     poiFlag = false;
                     thisRef.setAddressValues(data,pos);
                 }, error => {
-                    console.error(error);
+                    // console.error(error);
                 });
                }
               //  return this.data;
@@ -238,7 +340,7 @@ state: any;
 
   setAddressValues(addressVal,positions){
 //     console.log("this is in setAddress()");
-console.log(addressVal);
+// console.log(addressVal);
 this.address = addressVal.Label;
 this.zip = addressVal.PostalCode;
 this.city = addressVal.City;
@@ -246,7 +348,7 @@ this.state = addressVal.State;
 this.country = addressVal.Country;
 // var nameArr = positions.split(',');
 let pos = positions;
-console.log(this.lattitude);
+// console.log(this.lattitude);
 this.poiFormGroup.get("address").setValue(this.address);
 this.poiFormGroup.get("zip").setValue(this.zip);
 this.poiFormGroup.get("city").setValue(this.city);

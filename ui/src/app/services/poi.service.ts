@@ -80,16 +80,17 @@ export class POIService {
       .pipe(catchError(this.handleError));
   }
 
-  deletePoi(packageId: number): Observable<void> {
+  deletePoi(obj): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
+      body: obj.id
     };
-    let data = { packageId: packageId };
-   return this.httpClient
-      .delete<any>(`${this.PoiServiceUrl}/delete?packageId=${packageId}`, headers)
+    return this.httpClient
+      .delete<any>(`${this.PoiServiceUrl}/delete`, headers)
       .pipe(catchError(this.handleError));
   }
+
 
 //   importPoi(data): Observable<any> {
 //     let headerObj = this.generateHeader();

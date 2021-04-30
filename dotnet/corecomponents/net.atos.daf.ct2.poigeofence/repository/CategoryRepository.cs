@@ -434,15 +434,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
 							pcat.description,pcat.created_at,i.name As Icon_Name, COALESCE(pcat.organization_id,0) as organization_id
                             from master.category pcat
-                            left join master.category scat on pcat.id = scat.parent_id
-								join master.icon i on i.id = pcat.icon_id
+                            left join master.category scat on pcat.id = scat.parent_id and scat.state='A'
+							left join master.icon i on i.id = pcat.icon_id
                             where pcat.type ='C' and pcat.state ='A'
 								union
 								select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
 							pcat.description,pcat.created_at,i.name As Icon_Name, COALESCE(pcat.organization_id,0) as organization_id
                             from master.category pcat
-                            left join master.category scat on pcat.id = 0
-								join master.icon i on i.id = pcat.icon_id
+                            left join master.category scat on pcat.id = 0 --and scat.state='A'
+							left join master.icon i on i.id = pcat.icon_id
                             where pcat.type ='C' and pcat.state ='A'
 								
                             ) 
