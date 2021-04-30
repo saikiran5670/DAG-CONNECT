@@ -427,8 +427,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   public exportAsExcelFile(): void {
     let json: any[], excelFileName: string = 'POIData';
     this.poiService.downloadPOIForExcel().subscribe((poiData)=>{
-        
-    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(poiData);
+      const result = poiData.map(({organizationId,id,categoryId,subCategoryId,type,city,country,zipcode,latitude,longitude,distance,state,createdBy,createdAt,icon,...rest}) => ({...rest}));
+    const myworksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(result);
     const myworkbook: XLSX.WorkBook = { Sheets: { 'data': myworksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(myworkbook, { bookType: 'xlsx', type: 'array' });
     this.saveAsExcelFile(excelBuffer, excelFileName);
