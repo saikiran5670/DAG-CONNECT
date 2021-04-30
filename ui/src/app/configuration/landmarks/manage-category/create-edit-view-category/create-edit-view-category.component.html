@@ -54,7 +54,7 @@
                 </mat-form-field>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ selectedRowData.organizationId ? (selectedRowData.organizationId > 0 ? (translationData.lblRegular || 'Regular') : (translationData.lblGlobal || 'Global')) : (translationData.lblGlobal || 'Global') }}</span>
                 </div>
             </div>
           </div>
@@ -73,7 +73,7 @@
                   </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedCategoryType ? selectedCategoryType : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ (selectedCategoryType ===  'category') ? (translationData.lblCategory || 'Category') : (translationData.lblSubCategory || 'Sub-Category') }}</span>
                 </div>
             </div>
           </div>
