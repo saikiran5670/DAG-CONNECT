@@ -30,7 +30,20 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int ID { get; set; }
     }
 
-   
+
+    public class DeleteCategoryclass
+    {
+        // public int[] Ids { get; set; }
+        public List<Category_SubCategory_ID_Class> category_SubCategory_s { get; set; }
+
+    }
+
+    public class Category_SubCategory_ID_Class
+    {
+        public int CategoryId { get; set; }
+        public int SubCategoryId { get; set; }
+    }
+
 
 
 }

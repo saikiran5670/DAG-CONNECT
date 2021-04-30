@@ -37,5 +37,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _categoryRepository.GetCategoryDetails();
         }
+
+        public async Task<Category_SubCategory_ID_Class> BulkDeleteCategory(DeleteCategoryclass deleteCategoryclass)
+        {
+            return await _categoryRepository.BulkDeleteCategory(deleteCategoryclass);
+        }
     }
 }

@@ -98,7 +98,6 @@ export class ManageCategoryComponent implements OnInit {
 
   onUpdateDataSource(tableData: any) {
     this.initData = tableData;
-
     if(this.initData.length > 0){
       this.initData = this.getNewTagData(this.initData);
     }
@@ -173,16 +172,17 @@ export class ManageCategoryComponent implements OnInit {
   deleteCategory(rowData: any){
     let deleteText: any;
     let deleteMsg: any;
-    if(rowData.subCategoryId && rowData.subCategoryId > 0){ //-- for having sub-category 
+    let search = this.initData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
+    if(search.length > 1) { //-- having sub category
       deleteText = 'hide-btn'; 
       deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "The '$' contains a sub-category. You can not delete this category if it has a sub-category. To remove this category, first remove connected sub-category.";
-    }
-    else{
+    }else{
       deleteText = this.translationData.lblDelete || 'Delete';
       deleteMsg = this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?";
     }
+
     const options = {
-      title: this.translationData.lblDeleteGroup || 'Delete',
+      title: this.translationData.lblDelete || 'Delete',
       message: deleteMsg,
       cancelText: this.translationData.lblCancel || 'Cancel',
       confirmText: deleteText 
@@ -261,18 +261,23 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onCategoryChange(_event){
-    this.selectedCategoryId = _event.value;
-    let selectedId = this.selectedCategoryId;
-    let selectedSubId = this.selectedSubCategoryId;
-    let categoryData = this.allCategoryData.filter(function(e) {
-      return e.parentCategoryId === selectedId;
-    });
-    if(selectedSubId){
-      categoryData = this.allCategoryData.filter(function(e) {
-      return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
-    });
+    if(_event.value == 0){
+      this.onUpdateDataSource(this.allCategoryData);
     }
-    this.onUpdateDataSource(categoryData);
+    else{
+      this.selectedCategoryId = _event.value;
+      let selectedId = this.selectedCategoryId;
+      let selectedSubId = this.selectedSubCategoryId;
+      let categoryData = this.allCategoryData.filter(function(e) {
+        return e.parentCategoryId === selectedId;
+      });
+      if(selectedSubId){
+        categoryData = this.allCategoryData.filter(function(e) {
+        return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
+      });
+      }
+      this.onUpdateDataSource(categoryData);
+    }
   }
 
   onSubCategoryChange(_event){

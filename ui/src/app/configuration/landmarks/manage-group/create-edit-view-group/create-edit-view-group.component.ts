@@ -10,6 +10,7 @@ import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { element } from 'protractor';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
 
 
 @Component({
@@ -41,8 +42,12 @@ export class CreateEditViewGroupComponent implements OnInit {
   duplicateGroupMsg: boolean= false;
   categoryList: any= [];
   subCategoryList: any= []
+  selectedCategoryId = null;
+  selectedSubCategoryId = null;
+  poiGridData = [];
+  geofenceGridData = [];
 
-  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer) { }
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private landmarkCategoryService: LandmarkCategoryService) { }
 
   ngOnInit() {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -66,7 +71,35 @@ export class CreateEditViewGroupComponent implements OnInit {
     }
     this.loadPOIData();
     this.loadGeofenceData();
+    this.loadLandmarkCategoryData();
   }
+
+  loadLandmarkCategoryData(){
+    let objData = {
+      type:'C',
+      Orgid: this.OrgId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
+      this.categoryList = parentCategoryData.categories;
+      this.getSubCategoryData();
+    }, (error) => {
+      this.categoryList = [];
+      this.getSubCategoryData();
+    }); 
+  }
+
+  getSubCategoryData(){
+    let objData = {
+      type:'S',
+      Orgid: this.OrgId
+    }
+    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
+      this.subCategoryList = subCategoryData.categories;
+    }, (error) => {
+      this.subCategoryList = [];
+    });
+  }
+
 
   setDefaultValue(){
     this.landmarkGroupForm.get('landmarkGroupName').setValue(this.selectedRowData.name);
@@ -94,10 +127,10 @@ export class CreateEditViewGroupComponent implements OnInit {
             element.icon = '';
           }
         });
-        let poiGridData = poilist;
-        this.updatePOIDataSource(poiGridData);
+        this.poiGridData = poilist;
+        this.updatePOIDataSource(this.poiGridData);
         if(this.actionType == 'view' || this.actionType == 'edit')
-        this.loadPOISelectedData(poiGridData);
+        this.loadPOISelectedData(this.poiGridData);
       }
       
     });
@@ -133,10 +166,11 @@ export class CreateEditViewGroupComponent implements OnInit {
 
   loadGeofenceData() {
     this.geofenceService.getAllGeofences(this.OrgId).subscribe((geofencelist: any) => {
-      let geofenceGridData = geofencelist.geofenceList;
-      this.updateGeofenceDataSource(geofenceGridData);
+      this.geofenceGridData = geofencelist.geofenceList;
+     this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
+      this.updateGeofenceDataSource(this.geofenceGridData);
       if(this.actionType == 'view' || this.actionType == 'edit')
-        this.loadGeofenceSelectedData(geofenceGridData);
+        this.loadGeofenceSelectedData(this.geofenceGridData);
     });
   }
 
@@ -354,12 +388,50 @@ export class CreateEditViewGroupComponent implements OnInit {
         } row`;
   }
 
-  onCategoryChange(){
-
+  onCategoryChange(landmarkName ,_event){
+    if(_event.value == 0){
+      this.updatePOIDataSource(this.poiGridData);
+    }
+    else{
+      this.selectedCategoryId = _event.value;
+      let selectedId = this.selectedCategoryId;
+      let selectedSubId = this.selectedSubCategoryId;
+      if(landmarkName == 'POI'){
+        let categoryData = this.poiGridData.filter(function(e) {
+          return e.categoryId === selectedId;
+        });
+        if(selectedSubId){
+          categoryData = this.poiGridData.filter(function(e) {
+            return (e.categoryId === selectedId && e.subCategoryId === selectedSubId);
+          });
+        }
+        this.updatePOIDataSource(categoryData);
+      }
+      else{//landmarkName= "Geofence"
+        //Pending because categoryId and subcategoryId fields not present in getallgeofence api response.
+      }
+    }
+    
   }
 
-  onSubCategoryChange(){
-
+  onSubCategoryChange(landmarkName, _event){
+    this.selectedSubCategoryId = _event.value;
+    let selectedId = this.selectedCategoryId;
+    let selectedSubId = this.selectedSubCategoryId;
+    if(landmarkName == 'POI'){
+      let subCategoryData = this.poiGridData.filter(function(e) {
+        return (e.subCategoryId === selectedSubId);
+      });
+      if(this.selectedCategoryId){
+        subCategoryData = this.poiGridData.filter(function(e) {
+          return (e.categoryId === selectedId && e.subCategoryId === selectedSubId);
+        });
+      }
+      this.updatePOIDataSource(subCategoryData);
+    }
+    else{ //landmarkName= "Geofence"
+      //Pending because categoryId and subcategoryId fields not present in getallgeofence api response.
+    }
   }
 
 }

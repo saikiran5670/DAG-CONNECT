@@ -71,18 +71,18 @@ namespace net.atos.daf.ct2.poigeofence.test
 
         }
 
-        [TestCategory("Unit-Test-Case")]
-        [Description("Test for Delete Category")]
-        [TestMethod]
-        [Timeout(TestTimeout.Infinite)]
-        public void DeleteCategory()
-        {
-            int CategoryId = 14;
-            var result = _categoryManager.DeleteCategory(CategoryId).Result;
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result);
+        //[TestCategory("Unit-Test-Case")]
+        //[Description("Test for Delete Category")]
+        //[TestMethod]
+        //[Timeout(TestTimeout.Infinite)]
+        //public void DeleteCategory()
+        //{
+        //    int CategoryId = 14;
+        //    var result = _categoryManager.DeleteCategory(CategoryId).Result;
+        //    Assert.IsNotNull(result);
+        //    Assert.IsTrue(result);
 
-        }
+        //}
 
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Get Category Type")]

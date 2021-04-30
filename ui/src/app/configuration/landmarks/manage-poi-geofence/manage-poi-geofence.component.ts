@@ -90,7 +90,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data : any) => {
       this.poiInitData = data;
-      console.log(this.poiInitData);
+      console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.updatedPOITableData(this.poiInitData);
     }, (error) => {
@@ -113,7 +113,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((data : any) => {
       this.geoInitData = data["geofenceList"];
-      console.log(this.geoInitData);
       this.hideloader();
       this.updatedGeofenceTableData(this.geoInitData);
     }, (error) => {
@@ -234,14 +233,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.tabVisibility.emit(false);
     this.createEditViewPoiFlag = true;
     this.actionType = 'create';
-    console.log("createEditView() method called");
   }
 
   onGeofenceSelection() {
     this.tabVisibility.emit(false);
     this.createEditViewGeofenceFlag = true;
     this.actionType = 'create';
-    console.log("--geofence selection--",this.createEditViewGeofenceFlag)
   }
 
   editViewPoi(rowData: any, type: any){
@@ -260,6 +257,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   checkCreationForPoi(item: any){
     // this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
+    this.tabVisibility.emit(true);
     this.createEditViewPoiFlag = item.stepFlag;
     if(item.successMsg) {
       this.successMsgBlink(item.successMsg);
