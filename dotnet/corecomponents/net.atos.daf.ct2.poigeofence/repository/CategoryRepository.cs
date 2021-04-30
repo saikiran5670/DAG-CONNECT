@@ -461,7 +461,66 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         }
 
+        public async Task<Category_SubCategory_ID_Class> BulkDeleteCategory(DeleteCategoryclass deleteCategoryclass)
+        {
+            log.Info("Delete Category method called in repository");
+            try
+            {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    Category_SubCategory_ID_Class obj = new Category_SubCategory_ID_Class();
+                    foreach (var item in deleteCategoryclass.category_SubCategory_s)
+                    {
+                        var temp = new Category_SubCategory_ID_Class();
+                        temp.CategoryId = item.CategoryId;
+                        temp.SubCategoryId = item.SubCategoryId;
+                        var del = await DeleteSubCategory(temp);
+
+                        if (del.CategoryId >0)
+                        {
+                            obj.CategoryId = del.CategoryId;
+                        }
+
+                    }
+                    transactionScope.Complete();
+                    return obj;
+                }
+            }
+            catch (Exception ex)
+            {
+                //log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
+                //log.Error(ex.ToString());
+                throw ex;
+            }
+        }
         
+        public async Task<Category_SubCategory_ID_Class> DeleteSubCategory(Category_SubCategory_ID_Class categoryobj)
+        {
+            log.Info("Delete Category method called in repository");
+            try
+            {
+                Category_SubCategory_ID_Class obj = new Category_SubCategory_ID_Class();
+
+                var parameter = new DynamicParameters();
+                var updatecategory = @"update master.category 
+                                          set state='D' 
+                                          where id in ("+ categoryobj.CategoryId +","+ categoryobj.SubCategoryId+" ) RETURNING id  ";
+
+                        parameter.Add("@ID", (categoryobj.CategoryId +","+ categoryobj.SubCategoryId ));
+
+                      var  id = await _dataAccess.ExecuteScalarAsync<int>(updatecategory, parameter);
+                obj.CategoryId = id;
+
+                return obj;
+
+            }
+            catch (Exception ex)
+            {
+                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryobj.CategoryId));
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
 
 
     }

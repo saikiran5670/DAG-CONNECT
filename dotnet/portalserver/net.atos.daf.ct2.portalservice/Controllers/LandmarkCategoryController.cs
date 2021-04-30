@@ -296,7 +296,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 DeleteRequest objlist = new DeleteRequest();
 
-                objlist.MultiCategoryID.Add(request.Ids);
+                //objlist.MultiCategoryID.Add(request.Ids);
+
+                objlist = _categoryMapper.MapCategoryforBulkDelete(request);
 
                 var data = await _categoryServiceClient.BulkDeleteCategoryAsync(objlist);
 

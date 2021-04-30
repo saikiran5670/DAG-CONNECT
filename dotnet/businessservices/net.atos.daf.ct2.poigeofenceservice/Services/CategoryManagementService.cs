@@ -9,6 +9,7 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poigeofenceservice;
+using net.atos.daf.ct2.poigeofenceservice.entity;
 using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.poigeofenservice
@@ -18,11 +19,13 @@ namespace net.atos.daf.ct2.poigeofenservice
         private ILog _logger;
         // private readonly Mapper _mapper;
         private readonly ICategoryManager _categoryManager;
+        private readonly DeleteCategoryMapper _deleteCategoryMapper;
         public CategoryManagementService(IPoiManager poiManager, ICategoryManager categoryManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             //  _mapper = new Mapper();
             _categoryManager = categoryManager;
+            _deleteCategoryMapper = new DeleteCategoryMapper();
 
         }
 
@@ -247,20 +250,27 @@ namespace net.atos.daf.ct2.poigeofenservice
         {
             DeleteResponse response = new DeleteResponse();
             CategoryID obj = new CategoryID();
-            foreach (var item in request.MultiCategoryID)
+            DeleteCategoryclass objj = new DeleteCategoryclass();
+
+
+            objj = _deleteCategoryMapper.ToTranslationDeleteEntity(request);
+            var result = await _categoryManager.BulkDeleteCategory(objj);
+
+            if (result.CategoryId >0)
             {
-                obj.ID = item;
-                var result = await _categoryManager.DeleteCategory(obj.ID);
-
-                response.Message = "Delete successfully";
                 response.Code = Responsecode.Success;
+                response.Message = " Category deleted Sucessfully";
             }
-
+            else
+            {
+                response.Code = Responsecode.Failed;
+                response.Message = "Resource Not Found ";
+            }
             return await Task.FromResult(response);
         }
 
 
-        //public override async Task<DeleteResponse> GetOrganisationId (CategoryDeleteRequest request, ServerCallContext context)
+        //public override async Task<DeleteResponse> GetOrganisationId(CategoryDeleteRequest request, ServerCallContext context)
         //{
         //    DeleteResponse response = new DeleteResponse();
         //    CategoryID obj = new CategoryID();

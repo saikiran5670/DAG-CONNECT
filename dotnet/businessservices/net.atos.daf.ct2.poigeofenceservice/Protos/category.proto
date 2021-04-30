@@ -138,7 +138,14 @@ int32 Organization_Id =12;
 
 message DeleteRequest
 {
- repeated int32 MultiCategoryID = 1;
+ repeated CatSubCatID CatSubCatIDList = 1;
+}
+
+message CatSubCatID
+{
+int32 CategoryId = 1;
+int32 SubCategoryId = 2;
+
 }
 
 message IdList

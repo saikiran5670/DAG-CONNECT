@@ -29,8 +29,4 @@
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.poigeofence\net.atos.daf.ct2.poigeofence.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="entity\" />
-  </ItemGroup>
-
 </Project>

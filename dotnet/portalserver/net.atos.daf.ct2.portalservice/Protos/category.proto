@@ -138,12 +138,14 @@ int32 Organization_Id =12;
 
 message DeleteRequest
 {
- repeated int32 MultiCategoryID = 1;
+ repeated CatSubCatID CatSubCatIDList = 1;
 }
 
-message IdList
+message CatSubCatID
 {
-   int32 CategoryIds = 1;
+int32 CategoryId = 1;
+int32 SubCategoryId = 2;
+
 }
 
 
@@ -153,4 +155,8 @@ message DeleteResponse
   string Message = 2;  
   repeated IdList DeleteRequestList  =3;
 
+}
+message IdList
+{
+   int32 CategoryIds = 1;
 }
