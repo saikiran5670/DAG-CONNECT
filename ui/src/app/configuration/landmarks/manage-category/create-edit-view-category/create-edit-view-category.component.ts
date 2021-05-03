@@ -170,7 +170,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
       this.landmarkCategoryService.addLandmarkCategory(createdObj).subscribe((createdData: any) => {
         this.loadLandmarkCategoryData();
       }, (error) => {
-        if(error.status == 404){
+        if(error.status == 409){
           this.duplicateCategory = true;
           this.getDuplicateCategoryMsg(this.categoryForm.controls.categoryName.value.trim());
         }
@@ -188,7 +188,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
       this.landmarkCategoryService.updateLandmarkCategory(updatedObj).subscribe((updatedData: any) => {
         this.loadLandmarkCategoryData();
       }, (error) => {
-        if(error.status == 404){
+        if(error.status == 409){
           this.duplicateCategory = true;
           this.getDuplicateCategoryMsg(this.categoryForm.controls.categoryName.value.trim());
         }
