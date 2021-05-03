@@ -4,6 +4,8 @@
     {
         public const string MainAccessPolicy = "api.vehicle-data";
         public const string MainMileageAccessPolicy = "api.vehicle-mileage";
+        public const string MainNamelistAccessPolicy = "api.vehicle-namelist";
+
     }
    
 }

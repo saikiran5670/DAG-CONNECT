@@ -46,8 +46,12 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             #region Vehicle Mileage Data
             Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate);
-        
-            #endregion
+
+        #endregion
+
+        #region Vehicle Namelist Data
+        Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate);
+        #endregion
 
         // Task<bool> SetConnectionStatus(char Status);
 
