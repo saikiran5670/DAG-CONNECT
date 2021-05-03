@@ -96,6 +96,9 @@ message GeofenceEntityResponce{
     string subCategoryName=3;
     int32 geofenceId=4;
     string type=5;
+    int32 categoryId=6;
+    int32 SubCategoryId=7;
+
 }
 
 message CircularGeofenceRequest{
