@@ -510,6 +510,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
+                request.PreferenceType = "A";
                 var accountPreference = _mapper.ToAccountPreference(request);
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
@@ -547,20 +548,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 // Validation                 
-                if ((request.Id <= 0) || (request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
+                if ((request.LanguageId <= 0) || (request.TimezoneId <= 0) || (request.CurrencyId <= 0) ||
                     (request.UnitId <= 0) || (request.VehicleDisplayId <= 0) || (request.DateFormatTypeId <= 0) || (request.TimeFormatId <= 0) ||
                     (request.LandingPageDisplayId <= 0)
                     )
                 {
                     return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
+                request.PreferenceType = "O";
                 var accountPreference = _mapper.ToAccountPreference(request);
-                AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.UpdatePreferenceAsync(accountPreference);
+                AccountBusinessService.AccountPreferenceResponse preference = null;
+                if (request.Id == 0)
+                    preference = await _accountClient.CreatePreferenceAsync(accountPreference);
+                else
+                    preference = await _accountClient.UpdatePreferenceAsync(accountPreference);          
+
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
                     "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "UpdatePreference  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+                    "UpdatePreference  method in Organization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else

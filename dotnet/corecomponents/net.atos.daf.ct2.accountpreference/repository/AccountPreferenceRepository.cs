@@ -107,10 +107,8 @@ namespace net.atos.daf.ct2.accountpreference
         {
             try
             {
-                var parameter = new DynamicParameters();
-                parameter.Add("@ref_id", preference.RefId);
-                parameter.Add("@id", preference.Id);
-                parameter.Add("@type", (char)preference.PreferenceType);
+                var parameter = new DynamicParameters();                
+                parameter.Add("@id", preference.Id);                
                 parameter.Add("@language_id", preference.LanguageId);
                 parameter.Add("@timezone_id", preference.TimezoneId);
                 parameter.Add("@currency_id", preference.CurrencyId);
@@ -118,8 +116,7 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@vehicle_display_id", preference.VehicleDisplayId);
                 parameter.Add("@date_format_id", preference.DateFormatTypeId);
                 parameter.Add("@time_format_id", preference.TimeFormatId);
-                parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
-                //parameter.Add("@driver_id", preference.DriverId);
+                parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);                
 
                 var query = @"update master.accountpreference set language_id=@language_id,
                             timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
