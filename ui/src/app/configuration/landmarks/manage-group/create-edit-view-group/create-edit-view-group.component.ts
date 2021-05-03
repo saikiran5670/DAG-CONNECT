@@ -119,10 +119,10 @@ export class CreateEditViewGroupComponent implements OnInit {
       if(poilist.length > 0){
         poilist.forEach(element => {
           if(element.icon && element.icon != '' && element.icon.length > 0){
-            let TYPED_ARRAY = new Uint8Array(element.icon);
-            let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-            let base64String = btoa(STRING_CHAR);
-            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+            // let TYPED_ARRAY = new Uint8Array(element.icon);
+            // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+            // let base64String = btoa(STRING_CHAR);
+            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
           }else{
             element.icon = '';
           }
