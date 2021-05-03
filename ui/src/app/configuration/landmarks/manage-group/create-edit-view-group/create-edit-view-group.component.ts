@@ -201,6 +201,14 @@ export class CreateEditViewGroupComponent implements OnInit {
 
   updatePOIDataSource(tableData: any){
     this.poiDataSource= new MatTableDataSource(tableData);
+    this.poiDataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.name.toString().toLowerCase().includes(filter) ||
+        data.categoryName.toString().toLowerCase().includes(filter) ||
+        data.subCategoryName.toString().toLowerCase().includes(filter) || 
+        data.address.toString().toLowerCase().includes(filter)
+      );
+    };
     setTimeout(()=>{
       this.poiDataSource.paginator = this.paginator.toArray()[0];
       this.poiDataSource.sort = this.sort.toArray()[0];
@@ -209,6 +217,13 @@ export class CreateEditViewGroupComponent implements OnInit {
 
   updateGeofenceDataSource(tableData: any){
     this.geofenceDataSource = new MatTableDataSource(tableData);
+    this.geofenceDataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.geofenceName.toString().toLowerCase().includes(filter) ||
+        data.categoryName.toString().toLowerCase().includes(filter) ||
+        data.subCategoryName.toString().toLowerCase().includes(filter)
+      );
+    };
     setTimeout(()=>{
       this.geofenceDataSource.paginator = this.paginator.toArray()[1];
       this.geofenceDataSource.sort = this.sort.toArray()[1];

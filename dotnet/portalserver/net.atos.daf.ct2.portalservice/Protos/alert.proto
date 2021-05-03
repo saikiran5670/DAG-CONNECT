@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.alertservice";
+
+package alert;
+
+service AlertService {
+  
+}
+
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}

@@ -42,7 +42,9 @@
     <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Client" />-->
 	<Protobuf Include="Protos\category.proto" GrpcServices="Client" />
 	<Protobuf Include="Protos\poi.proto" GrpcServices="Client" />
-	  <Protobuf Include="Protos\group.proto" GrpcServices="Client" />
+	<Protobuf Include="Protos\group.proto" GrpcServices="Client" />
+	<Protobuf Include="Protos\alert.proto" GrpcServices="Client" />
+	 
 	  
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ export class LandmarkGroupService {
       console.error('Server side error', errResponse);
     }
     return throwError(
-      'There is a problem with the service. Please try again later.'
+      errResponse
     );
   }
 
