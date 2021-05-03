@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (result != null && result.Code == Responcecodes.Conflict)
                 {
-                    return StatusCode(400, result.Message);
+                    return StatusCode(409, result.Message);
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
@@ -143,13 +143,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var result = await _groupServiceclient.UpdateAsync(objgroup);
                 if (result != null && result.Code == Responcecodes.Conflict)
                 {
-                    return StatusCode(400, result.Message);
-                }
-                if (result != null && result.Code == Responcecodes.Failed)
-                {
                     return StatusCode(409, result.Message);
                 }
-                else if (result != null && result.Code == Responcecodes.Success)
+                
+                if (result != null && result.Code == Responcecodes.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,

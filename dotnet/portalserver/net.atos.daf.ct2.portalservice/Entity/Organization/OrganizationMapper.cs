@@ -120,6 +120,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             preference.DateFormatId = request.DateFormatId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
+            preference.PreferenceType = request.PreferenceType;
             return preference;
         } 
          public AccountBusinessService.AccountPreference ToAccountPreference(net.atos.daf.ct2.portalservice.Account.AccountPreferenceRequest request)
@@ -128,7 +129,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             {
                 Id = request.Id,
                 RefId = request.RefId,
-                PreferenceType = "A",
+                PreferenceType = request.PreferenceType,
                 LanguageId = request.LanguageId,
                 TimezoneId = request.TimezoneId,
                 CurrencyId = request.CurrencyId,
