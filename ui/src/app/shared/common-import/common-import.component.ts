@@ -42,6 +42,7 @@ export class CommonImportComponent implements OnInit {
   @Input() tableColumnList : any;
   @Input() tableColumnName : any;
   @Input() tableTitle : string;
+
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -64,12 +65,14 @@ export class CommonImportComponent implements OnInit {
   downloadTemplate(){
     const header = this.templateTitle;//['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
     const data = this.templateValue;
-    
+    console.log(this.templateValue)
+    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+
     let workbook = new Workbook();
     let worksheet = workbook.addWorksheet('Template');
     //Add Header Row
-    // let headerRow = worksheet.addRow(header);
-    // // Cell Style : Fill and Border
+    let headerRow = worksheet.addRow(header);
+    // Cell Style : Fill and Border
     // headerRow.eachCell((cell, number) => {
     //   //console.log(cell)
     //   if(number != 5){
@@ -97,14 +100,16 @@ export class CommonImportComponent implements OnInit {
     // const csvFile: Blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });  
     // FileSaver.saveAs(csvFile, this.templateFileName);  
    
-    if(this.importFileComponent == 'poi'){
+    if(this.importFileComponent === 'poi'){
       this.templateFileName = 'poiData.xlsx';
+      console.log(data)
       workbook.xlsx.writeBuffer().then((data) => {
-        let blob = new Blob([data], { type: 'text/xlxs;charset=utf-8;' });
+        let blob = new Blob([data], { type: EXCEL_TYPE });
         FileSaver.saveAs(blob, this.templateFileName);
       });
     }
     else{
+      console.log(data)
       workbook.csv.writeBuffer().then((data) => {
         let blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
         FileSaver.saveAs(blob, this.templateFileName);

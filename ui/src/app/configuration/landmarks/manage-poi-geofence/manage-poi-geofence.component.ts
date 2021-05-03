@@ -55,9 +55,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importTranslationData : any = {};
   templateTitle = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
 'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type'];
-  templateValue =
-    [36,10,null,8,null,"Poi Test",
-'Pune','Pune','India','411057',51.07,57.07,12,'Active','POI'];
+  templateValue =[
+    [36,10,'CategoryName',8,'SubCategoryName',"Poi Test",
+'Pune','Pune','India','411057',51.07,57.07,12,'Active','POI']];
   tableColumnList = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
   'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type','Fail Reason'];
   tableColumnName = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
@@ -227,6 +227,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       return (e.parentCategoryId ===  this.selectedCategoryId && e.subCategoryId === this.selectedSubCategoryId);
     });
   }
+  //console.log(poiCategoryData)
   }
   // mockData() {
   //   this.data = [
