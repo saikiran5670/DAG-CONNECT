@@ -4,7 +4,7 @@
     </div>
     <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
       <span class='custom-font' (click)="onCancel()">
-        <span>&nbsp;</span>
+        <span><&nbsp;</span>
         <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
     </div>
 </div>
@@ -35,6 +35,9 @@
                    </mat-error>
                   <mat-error *ngIf="categoryForm.get('categoryName').hasError('specialCharsNotAllowed')">
                       {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                  </mat-error>
+                  <mat-error *ngIf="duplicateCategory">
+                    {{ duplicateCatMsg }}
                   </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">

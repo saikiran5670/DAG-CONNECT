@@ -329,7 +329,35 @@ namespace net.atos.daf.ct2.geofenceservice
                 });
             }
         }
-
+        public override async Task<GeofenceListResponse> GetAllGeofences(GeofenceRequest request, ServerCallContext context)
+        {
+            GeofenceListResponse response = new GeofenceListResponse();
+            try
+            {
+                net.atos.daf.ct2.poigeofence.entity.Geofence geofence = new poigeofence.entity.Geofence();
+                geofence.OrganizationId = request.OrganizationId !=null ? request.OrganizationId.Value : 0;
+                geofence.CategoryId = request.CategoryId;
+                geofence.SubCategoryId = request.SubCategoryId;
+                geofence.Id = request.Id;
+                var result = await _geofenceManager.GetAllGeofence(geofence);
+                if (result != null)
+                {
+                    foreach (net.atos.daf.ct2.poigeofence.entity.Geofence entity in result)
+                    {
+                        response.Geofences.Add(_mapper.ToGeofenceRequest(entity));
+                    }
+                }
+                response.Code = Responsecode.Success;
+                response.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                response.Code = Responsecode.Failed;
+                response.Message = ex.Message;
+            }
+            return await Task.FromResult(response);
+        }
         #endregion
     }
 }
