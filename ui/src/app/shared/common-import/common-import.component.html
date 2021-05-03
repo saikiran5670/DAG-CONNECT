@@ -71,12 +71,12 @@
     <div *ngIf="!packageCodeErrorMsg">
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.imported || 'Imported' }} <span style='color: green'>{{importedPackagesCount}} {{this.importTranslationData.new}} {{importedPackagesCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
+            <span>{{ this.importTranslationData.imported || 'Imported' }} <span style='color: green'>{{importedCount}} {{this.importTranslationData.new}} {{importedCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.rejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedPackagesCount > 0}" (click)="(rejectedPackagesCount > 0) ? showRejectedPopup(rejectedPackageList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedPackagesCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
+            <span>{{ this.importTranslationData.rejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedCount > 0}" (click)="(rejectedCount > 0) ? showRejectedPopup(rejectedList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
 
         </div>
     </div>
