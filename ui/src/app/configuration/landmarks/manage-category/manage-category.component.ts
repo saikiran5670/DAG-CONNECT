@@ -332,6 +332,8 @@ export class ManageCategoryComponent implements OnInit {
     }
     if(objData.gridData){
       this.initData = objData.gridData;
+    }else{
+      this.initData = this.allCategoryData;
     }
     if(objData.categoryList){
       this.categoryList = objData.categoryList;
