@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty;
                 query = @"select L.id geofenceID,
-                                 L.name geofenceName, L.type ,
+                                 L.name geofenceName, L.type ,L.category_id categoryID,L.sub_category_id subcategoryId,
                                  case when C.type='P' then C.name end category,
                                  case when C.type='S' then C.name end subCategory                                
                                  from master.landmark L
@@ -594,7 +594,220 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             return geofence;
         }
+        public async Task<IEnumerable<Geofence>> GetAllGeofence(Geofence geofenceFilter)
+        {
+            GeofenceEntityRequest geofenceEntityRequestList = new GeofenceEntityRequest();
+            try
+            {
+                string query = string.Empty;
+                var parameter = new DynamicParameters();
+                query = @" select l.id Id,
+                        l.organization_id OrganizationId,
+                        l.Name, 
+                        c.name CategoryName,
+                        s.name SubcategoryName,
+                        l.type as Type,
+                        l.category_id CategoryId,                                
+                        l.sub_category_id SubCategoryId,
+                        l.state State,
+                        l.address Address ,
+                        l.city City,
+                        l.country Country,
+                        l.zipcode Zipcode,
+                        l.latitude Latitude,
+                        l.longitude Logitude,
+                        l.distance Distance,
+                        l.created_at CreatedAt,
+                        l.created_by CreatedBy,
+                        l.modified_at ModifiedAt,
+                        l.modified_by ModifiedBy,
+                        n.id as NodeId, 
+                        n.landmark_id as LandmarkId, 
+                        n.seq_no as SeqNo , 
+                        n.latitude NodeLatitude, 
+                        n.longitude NodeLongitude , 
+                        n.state as NodeState, 
+                        n.created_at as NodeCreatedAt, 
+                        n.created_by as NodeCreatedBy , 
+                        n.modified_at as NodeModifiedAt, 
+                        n.modified_by as NodeModifiedBy
+                        from master.landmark l
+                        LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id  and l.state <>'D' and c.state <>'D'
+                        LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id and l.state <>'D' and s.state <>'D'
+                        Left JOIN MASTER.NODES n on l.id=n.landmark_id and l.state <>'D' and n.state <>'D'
+                        where 1=1  and l.type in ('C','O') ";
 
+                if (geofenceFilter.Id > 0)
+                {
+                    parameter.Add("@id", geofenceFilter.Id);
+                    query = query + " and l.id=@id ";
+                }
+                if (geofenceFilter.OrganizationId > 0)
+                {
+                    //It will return organization specific geofence along with global geofence 
+                    parameter.Add("@organization_id", geofenceFilter.OrganizationId);
+                    query = query + " and (l.organization_id = @organization_id or l.organization_id is null) ";
+                }
+                else
+                {
+                    //only return global geofence 
+                    query = query + "  and l.organization_id is null ";
+                }
+                if (geofenceFilter.CategoryId > 0)
+                {
+                    parameter.Add("@category_id", geofenceFilter.CategoryId);
+                    query = query + " and l.category_id= @category_id ";
+                }
+                if (geofenceFilter.SubCategoryId > 0)
+                {
+                    parameter.Add("@sub_category_id", geofenceFilter.SubCategoryId);
+                    query = query + " and l.sub_category_id= @sub_category_id ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.Name))
+                {
+                    parameter.Add("@name", geofenceFilter.Name.ToLower());
+                    query = query + " and LOWER(l.name) = @name ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.Address))
+                {
+                    parameter.Add("@address", geofenceFilter.Address.ToLower());
+                    query = query + " and LOWER(l.address) = @address ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.City))
+                {
+                    parameter.Add("@city", geofenceFilter.City.ToLower());
+                    query = query + " and LOWER(l.city) = @city ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.Country))
+                {
+                    parameter.Add("@country", geofenceFilter.Country.ToLower());
+                    query = query + " and LOWER(l.country) = @country ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.Zipcode))
+                {
+                    parameter.Add("@zipcode", geofenceFilter.Zipcode.ToLower());
+                    query = query + " and LOWER(l.zipcode) = @zipcode ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.Type) && geofenceFilter.Type.ToUpper() != "NONE" && geofenceFilter.Type.Length == 1)
+                {
+                    parameter.Add("@type", Convert.ToChar(geofenceFilter.Type));
+                    query = query + " and l.type = @type ";
+                }
+                if (!string.IsNullOrEmpty(geofenceFilter.State) && geofenceFilter.State.ToUpper() != "NONE" && geofenceFilter.State.Length == 1)
+                {
+                    parameter.Add("@state", geofenceFilter.State);
+                    query = query + " and l.state = @state ";
+                }
+                if (string.IsNullOrEmpty(geofenceFilter.State) || geofenceFilter.State.ToUpper() == "NONE")
+                {
+                    //parameter.Add("@state", MapLandmarkStateToChar(geofenceFilter.State));
+                    query = query + " and l.state in ('A','I') ";
+                }
+                if (geofenceFilter.Latitude > 0)
+                {
+                    parameter.Add("@latitude", geofenceFilter.Latitude);
+                    query = query + " and l.latitude = @latitude ";
+                }
+                if (geofenceFilter.Longitude > 0)
+                {
+                    parameter.Add("@longitude", geofenceFilter.Longitude);
+                    query = query + " and l.longitude= @longitude ";
+                }
+                if (geofenceFilter.TripId > 0)
+                {
+                    parameter.Add("@trip_id", geofenceFilter.TripId);
+                    query = query + " and l.trip_id= @trip_id ";
+                }
+                if (geofenceFilter.CreatedBy > 0)
+                {
+                    parameter.Add("@created_at", geofenceFilter.CreatedAt);
+                    query = query + " and l.created_at= @created_at ";
+                }
+                if (geofenceFilter.ModifiedBy > 0)
+                {
+                    parameter.Add("@modified_at", geofenceFilter.CreatedAt);
+                    query = query + " and l.modified_at= @modified_at ";
+                }
+                Dictionary<int, Geofence> geofencelookup = new Dictionary<int, Geofence>();
+                var nodelookup = new Dictionary<int, Nodes>();
+                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                List<Geofence> geofencelst = new List<Geofence>();
+                Geofence geofence = new Geofence();
+                Nodes node = new Nodes();
+                foreach (var item in result)
+                {
+                    //if present, return existing geofence (avoid duplicate entry of geofence)
+                    if (!geofencelookup.TryGetValue(Convert.ToInt32(item.id), out geofence))
+                        //add only distinct records into geofence based on id
+                        geofencelookup.Add(Convert.ToInt32(item.id), geofence = Map(item));
+
+                    if (geofence.Nodes == null)
+                        geofence.Nodes = new List<Nodes>();
+
+                    // check if geofence has node(s) 
+                    if (item.nodeid != null && item.id == item.landmarkid)
+                    {
+                        //if present, return existing nodes(avoid duplicate entry of node)
+                        if (!nodelookup.TryGetValue(Convert.ToInt32(item.nodeid), out node))
+                        {
+                            node = new Nodes();
+                            node.Id = item.nodeid;
+                            node.LandmarkId = item.landmarkid != null ? item.landmarkid : 0;
+                            node.SeqNo = item.seqno != null ? item.seqno : 0;
+                            node.Latitude = item.nodelatitude != null ? Convert.ToDouble(item.nodelatitude) : 0;
+                            node.Longitude = item.nodelongitude != null ? Convert.ToDouble(item.nodelongitude) : 0;
+                            node.State = string.IsNullOrEmpty(item.nodestate) ? item.nodestate : string.Empty;
+                            node.CreatedAt = item.nodecreatedat != null ? item.nodecreatedat : 0;
+                            node.CreatedBy = item.nodecreatedby != null ? item.nodecreatedby : 0;
+                            node.ModifiedAt = item.nodemodifiedat != null ? item.nodemodifiedat : 0;
+                            node.ModifiedBy = item.nodemodifiedby != null ? item.nodemodifiedby : 0;
+                            //add node to exisitng geofence
+                            geofence.Nodes.Add(node);
+                            //add distinct node to node dictionary.
+                            nodelookup.Add(Convert.ToInt32(item.nodeid), node);
+                        }
+                    }
+                }
+                foreach (var keyValuePair in geofencelookup)
+                {
+                    //add geofence object along with nodes to geofence list 
+                    geofencelst.Add(keyValuePair.Value);
+                }
+                return geofencelst;
+            }
+            catch (System.Exception ex)
+            {
+                log.Info("GetGeofenceByGeofenceID  method in repository failed :");
+                log.Error(ex.ToString());
+                throw ex;
+            }
+        }
+        public Geofence Map(dynamic record)
+        {
+            Geofence geofence = new Geofence();
+            geofence.Id = record.id;
+            geofence.OrganizationId = record.organizationid != null ? record.organizationid : 0;
+            geofence.CategoryId = record.categoryid != null ? record.categoryid : 0;
+            geofence.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
+            geofence.SubCategoryId = record.subcategoryid != null ? record.subcategoryid : 0;
+            geofence.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
+            geofence.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
+            geofence.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
+            geofence.City = !string.IsNullOrEmpty(record.city) ? record.City : string.Empty;
+            geofence.Country = !string.IsNullOrEmpty(record.country) ? record.country : string.Empty;
+            geofence.Zipcode = !string.IsNullOrEmpty(record.zipcode) ? record.zipcode : string.Empty;
+            geofence.Type = record.type;
+            geofence.Latitude = Convert.ToDouble(record.latitude);
+            geofence.Longitude = Convert.ToDouble(record.logitude);
+            geofence.Distance = Convert.ToDouble(record.distance);
+            geofence.TripId = record.tripid != null ? record.tripid : 0;
+            geofence.CreatedAt = record.createdat != null ? record.createdat : 0;
+            geofence.State = record.state;
+            geofence.CreatedBy = record.createdby != null ? record.createdby : 0;
+            geofence.ModifiedAt = record.modifiedat != null ? record.modifiedat : 0;
+            geofence.ModifiedBy = record.modifiedby != null ? record.modifiedby : 0;
+            return geofence;
+        }
         #endregion
     }
 

@@ -32,7 +32,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             {
                 objResponse.Type = request.type;
             }
-            objResponse.GeofenceId = request.geofenceID;            
+            objResponse.GeofenceId = request.geofenceID;
+            objResponse.CategoryId = request.categoryID;
+            objResponse.SubCategoryId = request.subcategoryId;
             return objResponse;
         }
 
@@ -142,11 +144,11 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public net.atos.daf.ct2.geofenceservice.GeofenceRequest ToGeofenceRequest(Geofence geofenceRequest)
         {
             GeofenceRequest geofence = new GeofenceRequest();
-            geofence.Id = Convert.ToInt32(geofenceRequest.Id);
-            geofence.OrganizationId = Convert.ToInt32(geofenceRequest.OrganizationId);
+            geofence.Id = geofenceRequest.Id;
+            geofence.OrganizationId = geofenceRequest.OrganizationId;
             geofence.CategoryId = geofenceRequest.CategoryId;
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
-            geofence.Name = geofenceRequest.Name;
+            geofence.Name = !string.IsNullOrEmpty(geofenceRequest.Name) ? geofenceRequest.Name : string.Empty;
             if (!string.IsNullOrEmpty(geofenceRequest.Type))
             {
                 char type = Convert.ToChar(geofenceRequest.Type);
@@ -159,14 +161,14 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                     geofence.Type = ((char)LandmarkType.PolygonGeofence).ToString();
                 }
             }
-            geofence.Address = geofenceRequest.Address;
-            geofence.City = geofenceRequest.City;
-            geofence.Country = geofenceRequest.Country;
-            geofence.Zipcode = geofenceRequest.Zipcode;
+            geofence.Address = !string.IsNullOrEmpty(geofenceRequest.Address) ? geofenceRequest.Address : string.Empty;
+            geofence.City = !string.IsNullOrEmpty(geofenceRequest.City) ? geofenceRequest.City : string.Empty;
+            geofence.Country = !string.IsNullOrEmpty(geofenceRequest.Country) ? geofenceRequest.Country : string.Empty;
+            geofence.Zipcode = !string.IsNullOrEmpty(geofenceRequest.Zipcode) ? geofenceRequest.Zipcode : string.Empty;
             geofence.Latitude = geofenceRequest.Latitude;
             geofence.Longitude = geofenceRequest.Longitude;
             geofence.Distance = geofenceRequest.Distance;
-            //geofence.State = Convert.ToChar(geofenceRequest.State);
+            geofence.State = !string.IsNullOrEmpty(geofenceRequest.State) ? geofenceRequest.State : string.Empty;
             geofence.TripId = geofenceRequest.TripId;
             //geofence.NodeRequest = new List<NodeRequest>();
             foreach (var item in geofenceRequest.Nodes)
@@ -180,6 +182,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.Message = geofenceRequest.Message;
             return geofence;
         }
+
 
         public NodeRequest ToNodesRequest(Nodes nodeRequest)
         {

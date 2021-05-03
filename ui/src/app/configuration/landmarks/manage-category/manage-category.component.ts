@@ -36,10 +36,10 @@ export class ManageCategoryComponent implements OnInit {
   dialogRef: MatDialogRef<CommonTableComponent>;
   selectedCategory = new SelectionModel(true, []);
   allCategoryData : any =[];
-  selectedCategoryId = null;
-  selectedSubCategoryId = null;
-
   userType: any= "";
+  categorySelection: any = 0;
+  subCategorySelection: any = 0;
+
 
   constructor(private dialogService: ConfirmDialogService, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
   
@@ -260,43 +260,62 @@ export class ManageCategoryComponent implements OnInit {
     });
   }
 
-  onCategoryChange(_event){
-    if(_event.value == 0){
-      this.onUpdateDataSource(this.allCategoryData);
+  onCategoryChange(_event: any){
+    this.categorySelection = parseInt(_event.value);
+    if(this.categorySelection == 0 && this.subCategorySelection == 0){
+      this.onUpdateDataSource(this.allCategoryData); //-- load all data
+    }
+    else if(this.categorySelection == 0 && this.subCategorySelection != 0){
+      let filterData = this.allCategoryData.filter(item => item.subCategoryId == this.subCategorySelection);
+      if(filterData){
+        this.onUpdateDataSource(filterData);
+      }
+      else{
+        this.onUpdateDataSource([]);
+      }
     }
     else{
-      this.selectedCategoryId = _event.value;
-      let selectedId = this.selectedCategoryId;
-      let selectedSubId = this.selectedSubCategoryId;
-      let categoryData = this.allCategoryData.filter(function(e) {
-        return e.parentCategoryId === selectedId;
-      });
-      if(selectedSubId){
-        categoryData = this.allCategoryData.filter(function(e) {
-        return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
-      });
+      let selectedId = this.categorySelection;
+      let selectedSubId = this.subCategorySelection;
+      let categoryData = this.allCategoryData.filter(item => item.parentCategoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
       this.onUpdateDataSource(categoryData);
     }
   }
 
-  onSubCategoryChange(_event){
-    if(_event.value == 0){
-      this.onUpdateDataSource(this.allCategoryData);
+  onSubCategoryChange(_event: any){
+    this.subCategorySelection = parseInt(_event.value);
+    if(this.categorySelection == 0 && this.subCategorySelection == 0){
+      this.onUpdateDataSource(this.allCategoryData); //-- load all data
+    }
+    else if(this.subCategorySelection == 0 && this.categorySelection != 0){
+      let filterData = this.allCategoryData.filter(item => item.parentCategoryId == this.categorySelection);
+      if(filterData){
+        this.onUpdateDataSource(filterData);
+      }
+      else{
+        this.onUpdateDataSource([]);
+      }
+    }
+    else if(this.subCategorySelection != 0 && this.categorySelection == 0){
+      let filterData = this.allCategoryData.filter(item => item.subCategoryId == this.subCategorySelection);
+      if(filterData){
+        this.onUpdateDataSource(filterData);
+      }
+      else{
+        this.onUpdateDataSource([]);
+      }
     }
     else{
-      this.selectedSubCategoryId = _event.value;
-      let selectedId = this.selectedCategoryId;
-      let selectedSubId = this.selectedSubCategoryId;
-      let subCategoryData = this.allCategoryData.filter(function (e) {
-        return (e.subCategoryId === selectedSubId);
-      });
-      if (this.selectedCategoryId) {
-        subCategoryData = this.allCategoryData.filter(function (e) {
-          return (e.parentCategoryId === selectedId && e.subCategoryId === selectedSubId);
-        });
+      let selectedId = this.categorySelection;
+      let selectedSubId = this.subCategorySelection;
+      let categoryData = this.allCategoryData.filter(item => item.parentCategoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
-      this.onUpdateDataSource(subCategoryData);
+      this.onUpdateDataSource(categoryData);
     }
   }
 
@@ -312,7 +331,7 @@ export class ManageCategoryComponent implements OnInit {
       this.showSuccessMessage(objData.successMsg);
     }
     if(objData.gridData){
-      this.initData = objData.gridData;
+      this.allCategoryData = objData.gridData;
     }
     if(objData.categoryList){
       this.categoryList = objData.categoryList;
@@ -320,7 +339,9 @@ export class ManageCategoryComponent implements OnInit {
     if(objData.subCategoryList){
       this.subCategoryList = objData.subCategoryList;
     }
-    this.onUpdateDataSource(this.initData);
+    this.categorySelection = 0;
+    this.subCategorySelection = 0;
+    this.onUpdateDataSource(this.allCategoryData);
   }
 
   showSuccessMessage(msg: any){
@@ -381,11 +402,6 @@ export class ManageCategoryComponent implements OnInit {
         this.selectedCategory = new SelectionModel(true, []);
       });
     }
-   });
-
-
-
-    
+   });    
   }
-
 }

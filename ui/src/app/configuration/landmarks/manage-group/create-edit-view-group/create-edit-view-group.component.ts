@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -28,10 +28,8 @@ export class CreateEditViewGroupComponent implements OnInit {
   selectedGeofence = new SelectionModel(true, []);
   poiDataSource: any = new MatTableDataSource([]);
   geofenceDataSource: any = new MatTableDataSource([]);
-  @ViewChild(MatPaginator) poiPaginator: MatPaginator;
-  @ViewChild(MatPaginator) geofencePaginator: MatPaginator;
-  @ViewChild(MatSort) poiSort: MatSort;
-  @ViewChild(MatSort) geofenceSort: MatSort;
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
   @Input() translationData: any;
   @Input() selectedRowData: any;
   @Input() actionType: any;
@@ -119,10 +117,10 @@ export class CreateEditViewGroupComponent implements OnInit {
       if(poilist.length > 0){
         poilist.forEach(element => {
           if(element.icon && element.icon != '' && element.icon.length > 0){
-            let TYPED_ARRAY = new Uint8Array(element.icon);
-            let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-            let base64String = btoa(STRING_CHAR);
-            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+            // let TYPED_ARRAY = new Uint8Array(element.icon);
+            // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+            // let base64String = btoa(STRING_CHAR);
+            element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
           }else{
             element.icon = '';
           }
@@ -204,16 +202,16 @@ export class CreateEditViewGroupComponent implements OnInit {
   updatePOIDataSource(tableData: any){
     this.poiDataSource= new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.poiDataSource.paginator = this.poiPaginator;
-      this.poiDataSource.sort = this.poiSort;
+      this.poiDataSource.paginator = this.paginator.toArray()[0];
+      this.poiDataSource.sort = this.sort.toArray()[0];
     });
   }
 
   updateGeofenceDataSource(tableData: any){
     this.geofenceDataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
-      this.geofenceDataSource.paginator = this.geofencePaginator;
-      this.geofenceDataSource.sort = this.geofenceSort;
+      this.geofenceDataSource.paginator = this.paginator.toArray()[1];
+      this.geofenceDataSource.sort = this.sort.toArray()[1];
     });
   }
 

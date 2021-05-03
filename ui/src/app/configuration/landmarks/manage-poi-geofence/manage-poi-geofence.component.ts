@@ -53,15 +53,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
   importClicked : boolean = false;
   impportTitle = "Import POI";
   importTranslationData : any = {};
-  templateTitle = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
-'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type'];
-  templateValue =
-    [36,10,null,8,null,"Poi Test",
-'Pune','Pune','India','411057',51.07,57.07,12,'Active','POI'];
-  tableColumnList = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
-  'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type','Fail Reason'];
-  tableColumnName = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryId',
-  'POI Name','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Fail Reason'];
+  templateTitle = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryName',
+'POIName','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type'];
+  templateValue =[
+    [36,10,'CategoryName',8,'SubCategoryName',"PoiTest",
+'Pune','Pune','India','411057',51.07,57.07,12,'Active','POI']];
+  tableColumnList = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryName',
+  'POIName','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Type','Fail Reason'];
+  tableColumnName = ['OrganizationId','CategoryId','CategoryName','SubCategoryId','SubCategoryName',
+  'POIName','Address','City','Country','Zipcode','Latitude','Longitude','Distance','State','Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV : EventEmitter<any> = new EventEmitter();
   selectedCategoryId = null;
@@ -116,6 +116,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((data : any) => {
       this.geoInitData = data["geofenceList"];
+      this.geoInitData = this.geoInitData.filter(item => item.type == "C" || item.type == "O");
       this.hideloader();
       this.updatedGeofenceTableData(this.geoInitData);
     }, (error) => {
@@ -227,6 +228,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       return (e.parentCategoryId ===  this.selectedCategoryId && e.subCategoryId === this.selectedSubCategoryId);
     });
   }
+  //console.log(poiCategoryData)
   }
   // mockData() {
   //   this.data = [
@@ -457,28 +459,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.importPOIClicked = true;
     this.showImportCSV.emit(true);
     this.processTranslationForImport();
-  //   let poidata= [
-  //     {
-  //         "organizationId": 36,
-  //         "categoryId": 10,
-  //         "categoryName": null,
-  //         "subCategoryId": 8,
-  //         "subCategoryName": null,
-  //         "name": "Poi Test",
-  //         "address": "Pune",
-  //         "city": "Pune",
-  //         "country": "India",
-  //         "zipcode": "411057",
-  //         "latitude": 51.07,
-  //         "longitude": 57.07,
-  //         "distance": 12,
-  //         "state": "Active",
-  //         "type": "POI"
-  //     }
-  // ]
-  //   this.poiService.importPOIExcel(poidata).subscribe((data)=>{
-  //       console.log(data)
-  //   })
   }
 
   processTranslationForImport(){
@@ -495,7 +475,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails || 'Imported file details';
       this.importTranslationData.new= this.translationData.lblNew || 'new';
       this.importTranslationData.fileType= this.translationData.lblPPOI || 'POI';
-      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage || 'packages';
+      this.importTranslationData.fileTypeMultiple= this.translationData.lblPPOI || 'POI';
       this.importTranslationData.imported= this.translationData.lblimport || 'Imported';
       this.importTranslationData.rejected= this.translationData.lblrejected|| 'Rejected';
       this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists  || 'Package code already exists';
@@ -510,12 +490,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue || 'Package status can be Active or Inactive';
       this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty|| "Features should be comma separated and cannot be empty";
       this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid|| "Feature is invalid";
-      this.tableTitle = this.translationData.lblTableTitle || 'Rejected Driver Details';
-      this.tableColumnName = [this.translationData.lblId || 'Id',
-                              this.translationData.lblName ||'Name',
-                              this.translationData.lblCategory || 'Category',
-                              this.translationData.lblAddress || 'Address',
-                              this.translationData.lblFailReason || 'Fail Reason'];
+      this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
     }
   }
 

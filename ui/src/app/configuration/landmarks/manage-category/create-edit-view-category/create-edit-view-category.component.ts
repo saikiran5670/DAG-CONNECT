@@ -33,6 +33,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
   clearInput: any;
   userType: any= "";
   types = ['Global', 'Regular'];
+  duplicateCategory: boolean = false;
+  duplicateCatMsg: any = '';
 
   constructor(private _formBuilder: FormBuilder, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer) { }
 
@@ -148,16 +150,17 @@ export class CreateEditViewCategoryComponent implements OnInit {
   }
 
   onCreateUpdate(){
+    this.duplicateCategory = false;
     if(this.actionType == 'create'){ //-- create category
       let createdObj: any = {
         id: 0,
         organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0,
-        name: this.categoryForm.controls.categoryName.value,
+        name: this.categoryForm.controls.categoryName.value.trim(),
         iconName: this.uploadIconName, //-- icon name
         type: (this.selectedCategoryType == 'category') ? 'C' : 'S',
         parent_Id: (this.selectedCategoryType == 'category') ? 0 : this.categoryForm.controls.parentCategory.value,
         state: "A", //-- Active
-        description: this.categoryForm.controls.categoryDescription.value,
+        description: this.categoryForm.controls.categoryDescription.value.trim(),
         created_At: 0,
         created_By: this.accountId, //-- login account id
         modified_At: 0,
@@ -166,21 +169,38 @@ export class CreateEditViewCategoryComponent implements OnInit {
       }
       this.landmarkCategoryService.addLandmarkCategory(createdObj).subscribe((createdData: any) => {
         this.loadLandmarkCategoryData();
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicateCategory = true;
+          this.getDuplicateCategoryMsg(this.categoryForm.controls.categoryName.value.trim());
+        }
       });
     }else{ //-- update category
       let updatedObj: any = {
         id: (this.selectedRowData.subCategoryId == 0) ? this.selectedRowData.parentCategoryId : this.selectedRowData.subCategoryId,
-        name: this.categoryForm.controls.categoryName.value,
+        name: this.categoryForm.controls.categoryName.value.trim(),
         iconName: this.uploadIconName,
         modified_By: this.accountId,
         icon: this.uploadIcon,
-        description: this.categoryForm.controls.categoryDescription.value,
-        organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0
+        description: this.categoryForm.controls.categoryDescription.value.trim(),
+        organization_Id: (this.categoryForm.controls.type.value == "Regular") ? this.accountOrganizationId : 0
       }
       this.landmarkCategoryService.updateLandmarkCategory(updatedObj).subscribe((updatedData: any) => {
         this.loadLandmarkCategoryData();
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicateCategory = true;
+          this.getDuplicateCategoryMsg(this.categoryForm.controls.categoryName.value.trim());
+        }
       });
     }
+  }
+
+  getDuplicateCategoryMsg(catName: any){
+    if(this.translationData.lblDuplicateCategoryMsg)
+      this.duplicateCatMsg = this.translationData.lblDuplicateCategoryMsg.replace('$', catName);
+    else
+      this.duplicateCatMsg = ("Category Name '$' already exists.").replace('$', catName);
   }
 
   loadLandmarkCategoryData(){

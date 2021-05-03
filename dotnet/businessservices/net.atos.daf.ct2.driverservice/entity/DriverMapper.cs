@@ -7,37 +7,37 @@ namespace net.atos.daf.ct2.driverservice.entity
 {
     public class DriverMapper
     {
-
-        //net.atos.daf.ct2.driver.entity.DriverResponse
-        public net.atos.daf.ct2.driverservice.DriverResponse ToDriverResponse(net.atos.daf.ct2.driver.entity.Driver request)
+        public net.atos.daf.ct2.driverservice.DriverResponse ToDriverResponse(net.atos.daf.ct2.driver.entity.DriverResponse request)
         {
             net.atos.daf.ct2.driverservice.DriverResponse driver = new net.atos.daf.ct2.driverservice.DriverResponse();
             driver.Id = request.Id;
             driver.OrganizationId = request.Organization_id;
-            if (!(string.IsNullOrEmpty(request.email)))
+            if (!(string.IsNullOrEmpty(request.Email)))
             {
-                driver.Email = request.email;
+                driver.Email = request.Email;
             }
-            if (!(string.IsNullOrEmpty(request.first_name)))
+            if (!(string.IsNullOrEmpty(request.FirstName)))
             {
-                driver.FirstName = request.first_name;
+                driver.FirstName = request.FirstName;
             }
-            if (!(string.IsNullOrEmpty(request.last_name)))
+            if (!(string.IsNullOrEmpty(request.LastName)))
             {
-                driver.LastName = request.last_name;
+                driver.LastName = request.LastName;
             }
-
-            driver.Status = request.Status;
-            // driver.IsActive= request.IsActive;
+            driver.Status = request.Status;           
             driver.OptIn = request.opt_in;
             driver.DriverIdExt = request.Driver_id_ext;
-
-
-            // driver.modified_at= request.modified_at;
-            // driver.modified_by= request.modified_by;
             if (!(string.IsNullOrEmpty(request.created_at.ToString())))
             {
                 driver.CreatedAt = Convert.ToString(request.created_at);
+            }
+            if (!(string.IsNullOrEmpty(request.modified_at.ToString())))
+            {
+                driver.ModifiedAt = Convert.ToString(request.modified_at);
+            }
+            if (!(string.IsNullOrEmpty(request.modified_by)))
+            {
+                driver.ModifiedBy = Convert.ToString(request.modified_by);
             }
             return driver;
         }

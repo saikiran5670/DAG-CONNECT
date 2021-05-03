@@ -500,7 +500,49 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpGet]
+        [Route("getallgeofences")]
+        public async Task<IActionResult> GetAllGeofences([FromQuery] GeofenceFilter request)
+        {
+            GeofenceListResponse response = new GeofenceListResponse();
+            try
+            {
+                GeofenceRequest geofenceRequest = new GeofenceRequest();
+                geofenceRequest.Id = request.Id;
+                geofenceRequest.OrganizationId = request.OrganizationId;
+                geofenceRequest.CategoryId = request.CategoryId;
+                geofenceRequest.SubCategoryId = request.SubCategoryId;
+                
+                var result = await _GeofenceServiceClient.GetAllGeofencesAsync(geofenceRequest);
+                
+                if (result != null && result.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
+                 Request);
 
+                    return Ok(result.Geofences);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server Error.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
+                 Request);
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+
+        }
         #endregion
         [NonAction]
         public async Task<bool> HasAdminPrivilege()
