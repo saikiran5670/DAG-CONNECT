@@ -341,6 +341,8 @@ export class ManageCategoryComponent implements OnInit {
     if(objData.subCategoryList){
       this.subCategoryList = objData.subCategoryList;
     }
+    this.categorySelection = 0;
+    this.subCategorySelection = 0;
     this.onUpdateDataSource(this.initData);
   }
 
