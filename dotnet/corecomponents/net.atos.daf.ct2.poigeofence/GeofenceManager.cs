@@ -47,5 +47,9 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await geofenceRepository.UpdateCircularGeofence(geofence);
         }
+        public async Task<IEnumerable<Geofence>> GetAllGeofence(Geofence geofenceFilter)
+        {
+            return await geofenceRepository.GetAllGeofence(geofenceFilter);
+        }
     }
 }
