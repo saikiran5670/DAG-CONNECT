@@ -4,7 +4,7 @@ import { FileValidator } from 'ngx-material-file-input';
 import { CustomValidators } from '../../../../shared/custom.validators';
 import * as XLSX from 'xlsx';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser'; 
 
 @Component({
   selector: 'app-create-edit-view-category',
