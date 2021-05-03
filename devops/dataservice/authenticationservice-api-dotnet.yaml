@@ -59,6 +59,23 @@ steps:
     script: |
       cat dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/appsettings.Production.json
 
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/log4net.config'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/dataservices/net.atos.daf.ct2.authenticationservicerest/log4net.config
+
 - task: Docker@0
   displayName: 'Build an image'
   inputs:
