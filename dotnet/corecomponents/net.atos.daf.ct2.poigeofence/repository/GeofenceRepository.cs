@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty;
                 query = @"select L.id geofenceID,
-                                 L.name geofenceName, L.type ,
+                                 L.name geofenceName, L.type ,L.category_id categoryID,L.sub_category_id subcategoryId,
                                  case when C.type='P' then C.name end category,
                                  case when C.type='S' then C.name end subCategory                                
                                  from master.landmark L

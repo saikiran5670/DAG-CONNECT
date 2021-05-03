@@ -32,7 +32,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             {
                 objResponse.Type = request.type;
             }
-            objResponse.GeofenceId = request.geofenceID;            
+            objResponse.GeofenceId = request.geofenceID;
+            objResponse.CategoryId = request.categoryID;
+            objResponse.SubCategoryId = request.subcategoryId;
             return objResponse;
         }
 
