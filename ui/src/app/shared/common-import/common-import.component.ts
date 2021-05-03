@@ -30,13 +30,13 @@ export class CommonImportComponent implements OnInit {
   file: any;
   arrayBuffer: any;
   filelist: any = [];
-  rejectedPackageList : any = [];
-  importedPackagesCount : number = 0;
-  rejectedPackagesCount : number = 0;
+  rejectedList : any = [];
+  importedCount : number = 0;
+  rejectedCount : number = 0;
   showImportStatus : boolean = false;
   packageCodeError : boolean = false;
   packageCodeErrorMsg : string = "";
-  driverDialogRef: MatDialogRef<CommonTableComponent>;
+  rejectedDialogRef: MatDialogRef<CommonTableComponent>;
   @Input() importTranslationData : any;
   @Input() importFileComponent : string;
   @Input() templateTitle : any;
@@ -109,14 +109,12 @@ export class CommonImportComponent implements OnInit {
    
     if(this.importFileComponent === 'poi'){
       this.templateFileName = 'poiData.xlsx';
-      console.log(data)
       workbook.xlsx.writeBuffer().then((data) => {
         let blob = new Blob([data], { type: EXCEL_TYPE });
         FileSaver.saveAs(blob, this.templateFileName);
       });
     }
     else{
-      console.log(data)
       workbook.csv.writeBuffer().then((data) => {
         let blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
         FileSaver.saveAs(blob, this.templateFileName);
@@ -294,16 +292,16 @@ export class CommonImportComponent implements OnInit {
   }
 
   callImportAPI(validData,invalidData,removableInput){
-    this.rejectedPackageList = invalidData;
-    this.rejectedPackagesCount = invalidData.length;
-    this.importedPackagesCount = 0;
+    this.rejectedList = invalidData;
+    this.rejectedCount = invalidData.length;
+    this.importedCount = 0;
     this.packageCodeError = false;
     if(validData.length > 0){
         this.packageService.importPackage(validData).subscribe((resultData)=>{
           this.showImportStatus = true;
           removableInput.clear();
           if(resultData){
-            this.importedPackagesCount = resultData.packageList.length;
+            this.importedCount = resultData.packageList.length;
           }
         },
         (err)=>{
@@ -311,8 +309,8 @@ export class CommonImportComponent implements OnInit {
           this.showImportStatus = true;
 
           if(err.status === 409){
-            this.rejectedPackageList = this.rejectedPackageList + this.importedPackagesCount;
-            this.importedPackagesCount = 0
+            this.rejectedList = this.rejectedList + this.importedCount;
+            this.importedCount = 0
             this.packageCodeError = true;
             this.packageCodeErrorMsg = this.importTranslationData.existError;
           }
@@ -441,21 +439,21 @@ export class CommonImportComponent implements OnInit {
 
   
   callPOIImportAPI(validData,invalidData,removableInput){
-    this.rejectedPackageList = invalidData;
-    this.rejectedPackagesCount = invalidData.length;
-    this.importedPackagesCount = 0;
+    this.rejectedList = invalidData;
+    this.rejectedCount = invalidData.length;
+    this.importedCount = 0;
     this.packageCodeError = false;
     if(validData.length > 0){
         this.poiService.importPOIExcel(validData).subscribe((resultData)=>{
           this.showImportStatus = true;
           removableInput.clear();
           if(resultData["poiUploadedList"].length >0){
-            this.importedPackagesCount = resultData["poiUploadedList"].length;
+            this.importedCount = resultData["poiUploadedList"].length;
           }
           if(resultData["poiDuplicateList"].length >0){
-            this.rejectedPackageList.push(...resultData["poiDuplicateList"]);
+            this.rejectedList.push(...resultData["poiDuplicateList"]);
             this.updateDuplicateErrorMsg()
-            this.rejectedPackagesCount =  this.rejectedPackageList.length;  
+            this.rejectedCount =  this.rejectedList.length;  
           }
         },
         (err)=>{
@@ -639,42 +637,42 @@ export class CommonImportComponent implements OnInit {
     }
   }
 
-  showRejectedPopup(rejectedPackageList){
+  showRejectedPopup(rejectedList){
     let populateRejectedList=[];
     if(this.importFileComponent === 'package'){
-      for(var i in rejectedPackageList){
+      for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "packageCode":this.rejectedPackageList[i]["code"],
-            "packageName": this.rejectedPackageList[i]["name"],
-            "packageDescription" :this.rejectedPackageList[i]["description"],
-            "packageType" : this.rejectedPackageList[i]["type"],
-            "packageStatus" :this.rejectedPackageList[i]["status"],
-            "packageFeature" :this.rejectedPackageList[i]["features"],
-            "returnMessage" :this.rejectedPackageList[i]["returnMessage"]
+            "packageCode":this.rejectedList[i]["code"],
+            "packageName": this.rejectedList[i]["name"],
+            "packageDescription" :this.rejectedList[i]["description"],
+            "packageType" : this.rejectedList[i]["type"],
+            "packageStatus" :this.rejectedList[i]["status"],
+            "packageFeature" :this.rejectedList[i]["features"],
+            "returnMessage" :this.rejectedList[i]["returnMessage"]
           }
         )
       }
     }
     else if(this.importFileComponent === 'poi'){
-      for(var i in rejectedPackageList){
+      for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "organisionId":this.rejectedPackageList[i]["organizationId"],
-            "categoryId": this.rejectedPackageList[i]["categoryId"],
-            "categoryName" :this.rejectedPackageList[i]["categoryName"],
-            "subCategoryId" : this.rejectedPackageList[i]["subCategoryId"],
-            "subCategoryName" :this.rejectedPackageList[i]["subCategoryName"],
-            "name" :this.rejectedPackageList[i]["name"],
-            "address":this.rejectedPackageList[i]["address"],
-            "city": this.rejectedPackageList[i]["city"],
-            "country" :this.rejectedPackageList[i]["country"],
-            "zipcode" : this.rejectedPackageList[i]["zipcode"],
-            "latitude" :this.rejectedPackageList[i]["latitude"],
-            "longitude" :this.rejectedPackageList[i]["longitude"],
-            "distance" :this.rejectedPackageList[i]["distance"],
-            "state" :this.rejectedPackageList[i]["state"],
-            "returnMessage" :this.rejectedPackageList[i]["returnMessage"]
+            "organisionId":this.rejectedList[i]["organizationId"],
+            "categoryId": this.rejectedList[i]["categoryId"],
+            "categoryName" :this.rejectedList[i]["categoryName"],
+            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "subCategoryName" :this.rejectedList[i]["subCategoryName"],
+            "name" :this.rejectedList[i]["name"],
+            "address":this.rejectedList[i]["address"],
+            "city": this.rejectedList[i]["city"],
+            "country" :this.rejectedList[i]["country"],
+            "zipcode" : this.rejectedList[i]["zipcode"],
+            "latitude" :this.rejectedList[i]["latitude"],
+            "longitude" :this.rejectedList[i]["longitude"],
+            "distance" :this.rejectedList[i]["distance"],
+            "state" :this.rejectedList[i]["state"],
+            "returnMessage" :this.rejectedList[i]["returnMessage"]
           }
         )
       }
@@ -684,26 +682,19 @@ export class CommonImportComponent implements OnInit {
      
   }
 
-  // populate rejected list for POI
-  // showPOIRejectedPopup(rejectedPackageList){
-  //   let populateRejectedList=[];
-  //   if(this.importFileComponent === 'poi'){
-      
-  //   }
-  //   this.displayPopup(populateRejectedList);
-    
-     
-  // }
+ 
   displayPopup(populateRejectedList){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.data = {};
+
     dialogConfig.data = {
       tableData: populateRejectedList,
       colsList: this.tableColumnList,
       colsName: this.tableColumnName,
       tableTitle: this.tableTitle
     }
-    this.driverDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+    this.rejectedDialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
 }
