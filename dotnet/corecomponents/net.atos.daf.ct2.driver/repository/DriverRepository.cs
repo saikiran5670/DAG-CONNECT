@@ -28,18 +28,19 @@ namespace net.atos.daf.ct2.driver
         }      
 
        
-        public async Task<IEnumerable<Driver>> GetDriver(int OrganizatioId, int driverId)
+        public async Task<IEnumerable<DriverResponse>> GetDriver(int OrganizatioId, int driverId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", OrganizatioId);
                 parameter.Add("@id", driverId);
+                parameter.Add("@state", "A");
 
-                var QueryStatement = @" SELECT id, organization_id,driver_id_ext, first_name, last_name, email, status, state,opt_in,modified_at,modified_by,created_at
-                                    from master.driver where organization_id=@organization_id and (id=@id OR @id=0) and state='A'";
+                var QueryStatement = @" SELECT id, organization_id,driver_id_ext, first_name FirstName, last_name LastName, email, status, state,opt_in,modified_at ,modified_by,created_at
+                                    from master.driver where organization_id=@organization_id and (id=@id OR @id=0) and state=@state";
 
-                return await dataAccess.QueryAsync<Driver>(QueryStatement, parameter);
+                return await dataAccess.QueryAsync<DriverResponse>(QueryStatement, parameter);
             }
             catch (Exception ex)
             {

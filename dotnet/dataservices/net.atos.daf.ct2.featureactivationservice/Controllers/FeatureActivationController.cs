@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,8 +51,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.packageId))
                     {
                         return StatusCode(400, string.Empty);
-                    }
-                    
+                    }                    
 
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
                     Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
@@ -67,24 +67,21 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         else
                         {
                             Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                        }
-                       
+                        }                       
                     }
                     catch (Exception)
                     {
-
                         logger.LogInformation($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
                         return StatusCode(400, string.Empty);
                     }
 
                     var order = await subscriptionManager.Subscribe(Objsubs);
-                    if (order == null)
-                    {
-                        logger.LogInformation($"No Data found for Subscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation)}");
-                        return StatusCode(404, string.Empty);
+                    if (order.Item1 != HttpStatusCode.OK)
+                    {                        
+                        return StatusCode((int)order.Item1, string.Empty);
                     }
-                    logger.LogInformation($"Subscription data has been Inserted, order ID - {order.orderId}");
-                    return Ok(order);
+                    logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.orderId}");
+                    return Ok(order.Item2);
                 }
                 else 
                 if (objsubscriptionActivation.UnsubscribeEvent != null)
@@ -120,14 +117,13 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         return StatusCode(400, string.Empty); ;
                     }
 
-                    var orderId = await subscriptionManager.Unsubscribe(Objunsubs);
-                    if (orderId == null)
+                    var order = await subscriptionManager.Unsubscribe(Objunsubs);
+                    if (order.Item1 != HttpStatusCode.OK)
                     {
-                        logger.LogInformation($"No Data found for UnSubscription, payload - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.UnsubscribeEvent)}");
-                        return StatusCode(404, string.Empty);
+                        return StatusCode((int)order.Item1, string.Empty);
                     }
-                    logger.LogInformation($"Subscription data has been UnSubscribed, order ID - {orderId}");
-                    return Ok(orderId);
+                    logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
+                    return Ok(order.Item2);
                 }
                 else
                 {

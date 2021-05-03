@@ -133,7 +133,7 @@ namespace net.atos.daf.ct2.accountservice
             accountpreference.AccountPreference preference = new accountpreference.AccountPreference();
             preference.Id = request.Id;
             preference.RefId = request.RefId;
-            preference.PreferenceType = Preference.PreferenceType.Account;
+            preference.PreferenceType = request.PreferenceType.Equals("A") ? Preference.PreferenceType.Account : Preference.PreferenceType.Organization;
             preference.LanguageId = request.LanguageId;
             preference.TimezoneId = request.TimezoneId;
             preference.CurrencyId = request.CurrencyId;

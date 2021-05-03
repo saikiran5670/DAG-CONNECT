@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.driver
         {
             return await driverRepository.ImportDrivers(driver,orgid);
         }
-        public async Task<IEnumerable<Driver>> GetDriver(int OrganizationId, int DriverID)
+        public async Task<IEnumerable<DriverResponse>> GetDriver(int OrganizationId, int DriverID)
         {
             return await driverRepository.GetDriver(OrganizationId,DriverID);
         }

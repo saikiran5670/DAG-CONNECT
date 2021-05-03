@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (data != null && data.Code == Responsecode.Conflict)
                 {
-                    return StatusCode(404, data.Message);
+                    return StatusCode(409, data.Message);
                 }
                 else
                 {
@@ -134,6 +134,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else if (data != null && data.Code == Responsecode.NotFound)
                 {
                     return StatusCode(404, data.Message);
+                }
+                else if (data != null && data.Code == Responsecode.Conflict)
+                {
+                    return StatusCode(409, data.Message);
                 }
                 else
                 {

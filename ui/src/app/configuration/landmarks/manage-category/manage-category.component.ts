@@ -331,7 +331,7 @@ export class ManageCategoryComponent implements OnInit {
       this.showSuccessMessage(objData.successMsg);
     }
     if(objData.gridData){
-      this.initData = objData.gridData;
+      this.allCategoryData = objData.gridData;
     }
     if(objData.categoryList){
       this.categoryList = objData.categoryList;
@@ -339,7 +339,9 @@ export class ManageCategoryComponent implements OnInit {
     if(objData.subCategoryList){
       this.subCategoryList = objData.subCategoryList;
     }
-    this.onUpdateDataSource(this.initData);
+    this.categorySelection = 0;
+    this.subCategorySelection = 0;
+    this.onUpdateDataSource(this.allCategoryData);
   }
 
   showSuccessMessage(msg: any){
