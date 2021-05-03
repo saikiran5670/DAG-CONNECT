@@ -36,6 +36,9 @@
                   <mat-error *ngIf="categoryForm.get('categoryName').hasError('specialCharsNotAllowed')">
                       {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                   </mat-error>
+                  <mat-error *ngIf="duplicateCategory">
+                    {{ duplicateCatMsg }}
+                  </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
                   <span style='font-weight: 500!important;'>{{ (selectedRowData.subCategoryId == 0) ? selectedRowData.parentCategoryName : selectedRowData.subCategoryName }}</span>
