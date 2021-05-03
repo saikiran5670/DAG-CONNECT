@@ -658,28 +658,27 @@ export class CommonImportComponent implements OnInit {
       for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "organisionId":this.rejectedList[i]["organizationId"],
-            "categoryId": this.rejectedList[i]["categoryId"],
-            "categoryName" :this.rejectedList[i]["categoryName"],
-            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
-            "subCategoryName" :this.rejectedList[i]["subCategoryName"],
-            "name" :this.rejectedList[i]["name"],
-            "address":this.rejectedList[i]["address"],
-            "city": this.rejectedList[i]["city"],
-            "country" :this.rejectedList[i]["country"],
-            "zipcode" : this.rejectedList[i]["zipcode"],
-            "latitude" :this.rejectedList[i]["latitude"],
-            "longitude" :this.rejectedList[i]["longitude"],
-            "distance" :this.rejectedList[i]["distance"],
-            "state" :this.rejectedList[i]["state"],
+            "OrganizationId":this.rejectedList[i]["organizationId"],
+            "CategoryId": this.rejectedList[i]["categoryId"],
+            "CategoryName" :this.rejectedList[i]["categoryName"],
+            "SubCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "SubCategoryName" :this.rejectedList[i]["subCategoryName"],
+            "POIName" :this.rejectedList[i]["name"],
+            "Address":this.rejectedList[i]["address"],
+            "City": this.rejectedList[i]["city"],
+            "Country" :this.rejectedList[i]["country"],
+            "Zipcode" : this.rejectedList[i]["zipcode"],
+            "Latitude" :this.rejectedList[i]["latitude"],
+            "Longitude" :this.rejectedList[i]["longitude"],
+            "Distance" :this.rejectedList[i]["distance"],
+            "State" :this.rejectedList[i]["state"],
+            "Type" :this.rejectedList[i]["type"],
             "returnMessage" :this.rejectedList[i]["returnMessage"]
           }
         )
       }
     }
     this.displayPopup(populateRejectedList);
-    
-     
   }
 
  
@@ -688,7 +687,7 @@ export class CommonImportComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {};
-
+   
     dialogConfig.data = {
       tableData: populateRejectedList,
       colsList: this.tableColumnList,
