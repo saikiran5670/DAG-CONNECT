@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.organization.repository
                               a.id preferenceId,
                               o.id ,
                               o.org_id ,
-                              coalesce(o.name, '(' || o.org_id || ')') as name,                             
+                              coalesce(o.name, '') as name,                             
                               o.city ,                             
                               o.street ,
                               o.street_number ,

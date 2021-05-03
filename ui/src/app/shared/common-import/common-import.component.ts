@@ -6,6 +6,8 @@ import { Workbook } from 'exceljs';
 import * as XLSX from 'xlsx';
 import { packageModel } from '../../models/package.model';
 import { PackageService } from '../../services/package.service';
+import { POIService } from '../../services/poi.service';
+
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 
@@ -42,10 +44,15 @@ export class CommonImportComponent implements OnInit {
   @Input() tableColumnList : any;
   @Input() tableColumnName : any;
   @Input() tableTitle : string;
+  fileExtension = '.csv';
 
-  constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog) { }
+  constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
+    private poiService: POIService) { }
 
   ngOnInit(): void {
+    if(this.importFileComponent === 'poi'){
+      this.fileExtension = '.xlsx';
+    }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
         undefined,
@@ -145,6 +152,10 @@ export class CommonImportComponent implements OnInit {
       this.excelEmptyMsg = false;
       if(this.importFileComponent === 'package'){
         this.preparePackageDataToImport(removableInput);
+      }
+      else if(this.importFileComponent === 'poi'){
+        this.preparePOIDataToImport(removableInput);
+
       }
       //removableInput.clear();
     }
@@ -313,10 +324,163 @@ export class CommonImportComponent implements OnInit {
     }
   }
 
+
+  // POI import functions
+  preparePOIDataToImport(removableInput){
+    let packagesToImport = [];//new packageModel().importPackage;
+    for(let i = 0; i < this.filelist.length ; i++){
+      packagesToImport.push(
+        {
+          
+            "organizationId": this.filelist[i]["OrganizationId"],
+            "categoryId": this.filelist[i]["CategoryId"],
+            "categoryName":this.filelist[i]["CategoryName"],
+            "subCategoryId":this.filelist[i]["SubCategoryId"],
+            "subCategoryName": this.filelist[i]["SubCategoryName"],
+            "name": this.filelist[i]["POIName"],
+            "address": this.filelist[i]["Address"],
+            "city": this.filelist[i]["City"],
+            "country": this.filelist[i]["Country"],
+            "zipcode": this.filelist[i]["Zipcode"],
+            "latitude": this.filelist[i]["Latitude"],
+            "longitude": this.filelist[i]["Longitude"],
+            "distance": this.filelist[i]["Distance"],
+            "state": this.filelist[i]["State"],
+            "type": this.filelist[i]["Type"]
+        
+        }
+      )
+    }
+ 
+    this.validatePOIData(packagesToImport,removableInput);
+  }
+
+  validatePOIData(packagesToImport,removableInput){
+    let validData: any = [];
+    let invalidData: any = [];
+    let orgFlag = false, categoryFlag = false, subcategoryFlag = false,nameFlag= false,longitudeFlag=false,latitudeFlag=false;
+    packagesToImport.forEach((item: any) => {
+      for (const [key, value] of Object.entries(item)) {
+        switch (key) {
+          case 'organizationId':{
+            let objData: any = this.basicValidation(value,'code'); 
+            orgFlag = objData.status;
+            if(!orgFlag){
+              item.returnMessage = objData.reason;
+            }
+            break;
+          }
+          case 'categoryId':{
+            let objData: any = this.basicValidation(value,'categoryId'); 
+            categoryFlag = objData.status;
+            if(!categoryFlag){
+              item.returnMessage = objData.reason;
+            }
+            break;
+          }
+          case 'subCategoryId':{
+            let objData: any = this.basicValidation(value,'subCategoryId'); 
+            subcategoryFlag = objData.status;
+            if(!subcategoryFlag){
+              item.returnMessage = objData.reason;
+            }
+            break;
+          }
+          case 'name':{
+            let objData: any = this.basicValidation(value,'name'); 
+            nameFlag = objData.status;
+            if(!nameFlag){
+              item.returnMessage = objData.reason;
+            }
+            // if(validData.length > 0){
+            //   for(var i in validData){
+            //     if(validData[i]["name"] === value){
+            //       nameFlag = false;
+            //       item.returnMessage = "Duplicate POI"
+            //     }
+            //   }
+            // }
+            break;
+          }
+          case 'latitude':{
+            let objData: any = this.basicValidation(value,'latitude'); 
+            latitudeFlag = objData.status;
+            if(!latitudeFlag){
+              item.returnMessage = objData.reason;
+            }
+            break;
+          }
+          case 'longitude':{
+            let objData: any = this.basicValidation(value,'longitude'); 
+            longitudeFlag = objData.status;
+            if(!longitudeFlag){
+              item.returnMessage = objData.reason;
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      }
+      
+         
+    if(orgFlag && categoryFlag && subcategoryFlag && nameFlag && longitudeFlag && latitudeFlag){
+      validData.push(item);
+    }
+    else{
+      invalidData.push(item);
+    }
+    });
+   
+    
+    this.callPOIImportAPI(validData,invalidData,removableInput)
+  
+    //console.log(validData , invalidData)
+    //return { validDriverList: validData, invalidDriverList: invalidData };
+  }
+
+  
+  callPOIImportAPI(validData,invalidData,removableInput){
+    this.rejectedPackageList = invalidData;
+    this.rejectedPackagesCount = invalidData.length;
+    this.importedPackagesCount = 0;
+    this.packageCodeError = false;
+    if(validData.length > 0){
+        this.poiService.importPOIExcel(validData).subscribe((resultData)=>{
+          this.showImportStatus = true;
+          removableInput.clear();
+          if(resultData["poiUploadedList"].length >0){
+            this.importedPackagesCount = resultData["poiUploadedList"].length;
+          }
+          if(resultData["poiDuplicateList"].length >0){
+            this.rejectedPackageList.push(...resultData["poiDuplicateList"]);
+            this.updateDuplicateErrorMsg()
+            this.rejectedPackagesCount =  this.rejectedPackageList.length;  
+          }
+        },
+        (err)=>{
+          removableInput.clear();
+          this.showImportStatus = true;
+
+          if(err.status === 409){
+           
+          }
+        })
+    }
+    else{
+      removableInput.clear();
+      this.showImportStatus = true;
+    }
+  }
+
+  updateDuplicateErrorMsg(){
+
+  }
   onClose(){
     this.showImportStatus = false;
   }
 
+  // Package Validation
   codeValidation(value: any,type:any){
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
@@ -445,6 +609,24 @@ export class CommonImportComponent implements OnInit {
     return obj;
   }
 
+  //POI validation
+  basicValidation(value: any,type:any){
+    let obj: any = { status: true, reason: 'correct data'};
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
+    if(!value || value == ''){
+      obj.status = false;
+      obj.reason = this.importTranslationData.input1mandatoryReason;
+      return obj;
+    }
+    if(!SpecialCharRegex.test(value)){
+      obj.status = false;
+      obj.reason = this.importTranslationData.specialCharNotAllowedReason;
+      return obj;
+    }
+    return obj;
+  }
+
+
   getValidateMsg(type: any, typeTrans: any, maxLength?: any){
     if(typeTrans){
       if(maxLength){
@@ -474,11 +656,44 @@ export class CommonImportComponent implements OnInit {
         )
       }
     }
+    else if(this.importFileComponent === 'poi'){
+      for(var i in rejectedPackageList){
+        populateRejectedList.push(
+          {
+            "organisionId":this.rejectedPackageList[i]["organizationId"],
+            "categoryId": this.rejectedPackageList[i]["categoryId"],
+            "categoryName" :this.rejectedPackageList[i]["categoryName"],
+            "subCategoryId" : this.rejectedPackageList[i]["subCategoryId"],
+            "subCategoryName" :this.rejectedPackageList[i]["subCategoryName"],
+            "name" :this.rejectedPackageList[i]["name"],
+            "address":this.rejectedPackageList[i]["address"],
+            "city": this.rejectedPackageList[i]["city"],
+            "country" :this.rejectedPackageList[i]["country"],
+            "zipcode" : this.rejectedPackageList[i]["zipcode"],
+            "latitude" :this.rejectedPackageList[i]["latitude"],
+            "longitude" :this.rejectedPackageList[i]["longitude"],
+            "distance" :this.rejectedPackageList[i]["distance"],
+            "state" :this.rejectedPackageList[i]["state"],
+            "returnMessage" :this.rejectedPackageList[i]["returnMessage"]
+          }
+        )
+      }
+    }
     this.displayPopup(populateRejectedList);
     
      
   }
 
+  // populate rejected list for POI
+  // showPOIRejectedPopup(rejectedPackageList){
+  //   let populateRejectedList=[];
+  //   if(this.importFileComponent === 'poi'){
+      
+  //   }
+  //   this.displayPopup(populateRejectedList);
+    
+     
+  // }
   displayPopup(populateRejectedList){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
