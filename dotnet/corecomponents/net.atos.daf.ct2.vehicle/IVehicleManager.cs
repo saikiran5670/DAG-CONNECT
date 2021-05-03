@@ -2,6 +2,7 @@ using System;
 using net.atos.daf.ct2.vehicle.entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.vehicle.response;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -29,8 +30,12 @@ namespace net.atos.daf.ct2.vehicle
         // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
 
         #region Vehicle Mileage Data
-        Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype);            
-         #endregion
+        Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype);
+        #endregion
+
+        #region Vehicle Namelist Data
+        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric);
+        #endregion
 
     }
 }
