@@ -475,7 +475,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.importedFileDetails= this.translationData.lblImportedFileDetails || 'Imported file details';
       this.importTranslationData.new= this.translationData.lblNew || 'new';
       this.importTranslationData.fileType= this.translationData.lblPPOI || 'POI';
-      this.importTranslationData.fileTypeMultiple= this.translationData.lblPackage || 'packages';
+      this.importTranslationData.fileTypeMultiple= this.translationData.lblPPOI || 'POI';
       this.importTranslationData.imported= this.translationData.lblimport || 'Imported';
       this.importTranslationData.rejected= this.translationData.lblrejected|| 'Rejected';
       this.importTranslationData.existError = this.translationData.lblPackagecodealreadyexists  || 'Package code already exists';
@@ -490,12 +490,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.packageStatusReason = this.translationData.lblPackageStatusValue || 'Package status can be Active or Inactive';
       this.importTranslationData.featureemptyReason = this.translationData.lblFeatureCannotbeEmpty|| "Features should be comma separated and cannot be empty";
       this.importTranslationData.featureinvalidReason = this.translationData.lblFeatureInvalid|| "Feature is invalid";
-      this.tableTitle = this.translationData.lblTableTitle || 'Rejected Driver Details';
-      this.tableColumnName = [this.translationData.lblId || 'Id',
-                              this.translationData.lblName ||'Name',
-                              this.translationData.lblCategory || 'Category',
-                              this.translationData.lblAddress || 'Address',
-                              this.translationData.lblFailReason || 'Fail Reason'];
+      this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
     }
   }
 
