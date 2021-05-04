@@ -183,7 +183,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     // Create the default UI components
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
     var searchbox = ui.getControl("searchbox");
-    if (this.actionType == 'edit') {
+    if (this.actionType == 'edit' || this.actionType == 'view') {
       let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
       let getSelectedLongitude = this.poiFormGroup.get("longitude").value;
       this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
