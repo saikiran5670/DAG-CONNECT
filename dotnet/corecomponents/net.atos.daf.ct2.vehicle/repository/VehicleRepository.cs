@@ -1770,7 +1770,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         //{
         //    string sTimezone = "UTC";
         //    string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";          
-           
+
         //    Vehicles vehicles=new Vehicles();
         //    vehicles.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(record.evt_timestamp, sTimezone, targetdateformat); 
         //    vehicles.VIN =record.vin;
@@ -1781,8 +1781,39 @@ namespace net.atos.daf.ct2.vehicle.repository
         //    return vehicles;
         //}
 
-       
 
+
+        #endregion
+
+        #region Vehicle Namelist Data
+        public async Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate)
+        {
+            try
+            {
+                var QueryStatement = @"select 
+                                         id                                       
+                                        ,vin 
+                                        ,name
+                                        ,regNo                                       
+                                        from master.vehicle 
+                                        where";
+
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@start_at", startDate);
+                parameter.Add("@end_at", endDate);
+                //Need to modified where condition
+                QueryStatement = QueryStatement + " modified_at >= @start_at AND modified_at <= @end_at";
+
+                IEnumerable<dtoVehicleNamelist> namelistData = await DataMartdataAccess.QueryAsync<dtoVehicleNamelist>(QueryStatement, parameter);
+
+                return namelistData;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
     }

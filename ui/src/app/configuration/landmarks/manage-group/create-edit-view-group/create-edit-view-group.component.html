@@ -24,7 +24,7 @@
               <div *ngIf="actionType != 'view'">
                 <mat-form-field appearance="outline" class="full-width">
                   <input placeholder="{{ translationData.lblEnterNewGroupName || 'Enter New Group Name' }}" matInput
-                    formControlName="landmarkGroupName" required maxlength="50">
+                    formControlName="landmarkGroupName" required maxlength="100">
                 </mat-form-field>
                 <mat-error *ngIf="landmarkGroupForm.get('landmarkGroupName').hasError('required')">
                   {{translationData.lblPleaseEnterNewGroupName || 'Please enter new Group name' }}

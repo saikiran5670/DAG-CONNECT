@@ -1,0 +1,33 @@
+<div>
+    <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutAlign="start space-around"
+          style='padding: 10px 20px !important; background: #65c3f8; color: #fff;'>
+          <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='custom-font'>{{ data.title}}</span>
+          </div>
+          <div class='half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center flex-end">
+            <mat-icon (click)='cancel()' style='cursor: pointer; color: #000 !important;'>close</mat-icon>
+          </div>
+        </div>
+        <div *ngIf="data.delMessage != ''" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" style="padding: 20px 50px 10px 50px;">
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='custom-font'>{{ deleteMsg }}</span>
+            <!-- <span class='custom-font'>{{ data.deleteCatList }}</span> -->
+          </div>
+        </div>
+        <div *ngIf="data.noDelMessage != ''" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" [ngStyle]="{'padding': (data.delMessage != '') ? '0px 50px 0px 50px' : '20px 50px 10px 50px'}">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <span class='custom-font'>{{ data.noDelMessage }}</span>
+              <span style='font-style: italic;' class='custom-font'>{{ data.noDeleteCatList }}</span>
+            </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions fxLayoutAlign="center center" class='no-margin' style="padding: 0px 20px;">
+        <div fxLayout="row" fxLayoutAlign="center center" class="areaWidth full-width">
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='cancel()'>{{ data.cancelText }}</button>
+            <button *ngIf="data.confirmText != 'hide-btn'" (click)="confirm()" class='confirmBtnColor no-margin' mat-raised-button color="primary">{{ data.confirmText }}</button>
+        </div>
+    </mat-card-actions>
+    </mat-card>
+  </div>
