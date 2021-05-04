@@ -42,8 +42,9 @@
     </div>
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <mat-form-field appearance="outline">
-        <mat-select  (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-        <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+        <mat-select  (selectionChange)="applyFilterOnCategory($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+          <mat-option value="all">--All--</mat-option>
+          <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
             {{ rer.name }}
         </mat-option>
         </mat-select>
@@ -51,8 +52,9 @@
     </div>
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <mat-form-field appearance="outline">
-      <mat-select (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-      <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+      <mat-select (selectionChange)="applyFilterOnSubCategory($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+        <mat-option value="all">--All--</mat-option>
+        <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
           {{ rer.name }}
       </mat-option>
       </mat-select>

@@ -75,6 +75,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   selectedSubCategoryId = null;
   allCategoryPOIData : any;
   defaultGpx : any;
+  allCategoryData : any =[];
 
   constructor( 
     private dialogService: ConfirmDialogService,
@@ -204,6 +205,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
       this.hideloader();
       //let data = this.createImageData(categoryData.categories);
+      this.allCategoryData = categoryData.categories;
     }, (error) => {
       this.hideloader();
       this.initData = [];
@@ -214,6 +216,32 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.selectedCategoryId = _event.value;
     this.updateSelectionData();
   }
+
+  applyFilterOnCategory(_event){
+    this.selectedCategoryId = _event.value;
+    if(this.selectedCategoryId == "all"){
+      this.poidataSource.filter = '';
+    }
+    else{
+    this.poidataSource.filterPredicate = function(data, filter: any): boolean {
+      return data.categoryId == filter;
+    }; this.poidataSource.filter = this.selectedCategoryId; 
+      }
+    
+  }
+
+  applyFilterOnSubCategory(_event){
+    this.selectedSubCategoryId = _event.value;
+    if(this.selectedSubCategoryId == "all"){
+      this.poidataSource.filter = '';
+    }
+    else{
+    this.poidataSource.filterPredicate = function(data, filter: any): boolean {
+      return data.subCategoryId == filter;
+    }; this.poidataSource.filter = this.selectedSubCategoryId; 
+      }
+  }
+
 
   onSubCategoryChange(_event) {
     this.selectedSubCategoryId = _event.value;

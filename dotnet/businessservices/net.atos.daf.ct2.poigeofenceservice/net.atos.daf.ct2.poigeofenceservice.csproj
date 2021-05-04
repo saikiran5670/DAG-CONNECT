@@ -15,7 +15,8 @@
     <!--<Protobuf Include="Protos\poigeofence.proto" GrpcServices="Server" />-->
 	<Protobuf Include="Protos\geofence.proto" GrpcServices="Server" />
 	<Protobuf Include="Protos\category.proto" GrpcServices="Server" />
-	  
+    <Protobuf Include="Protos\corridor.proto" GrpcServices="Server" />
+
   </ItemGroup>
 
   <ItemGroup>
