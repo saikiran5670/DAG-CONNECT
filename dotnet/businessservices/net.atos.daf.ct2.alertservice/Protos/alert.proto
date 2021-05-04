@@ -44,3 +44,51 @@ message AlertLandmarkRefRequest
  string CreatedAt = 8;
  string ModifiedAt = 9;
 }
+
+message NotificationAvailabilityPeriodRequest
+{
+	int32 Id=1;
+	int32 NotificationId=2;
+	string AvailabilityPeriodType=3;
+	string PeriodType=4;
+	int32 StartTime=5;
+	int32 EndTime=6;
+	string State=7;
+	int32 CreatedAt=8;
+	int32 ModifiedAt=9;
+}
+
+message NotificationLimitRequest
+{
+	int32 Id=1;
+	int32 NotificationId=2;
+	string NotificationModeType=3;
+	int32 MaxLimit=4;
+	string NotificationPeriodType=5;
+	int32 PeriodLimit=6;
+	string State=7;
+	int32 CreatedAt=8;
+	int32 ModifiedAt=9;
+}
+
+message NotificationRecipient
+{
+	int32 Id=1;
+	int32 NotificationId=2;
+	string RecipientLabel=3;
+	int32 AccountGroupId=4;
+	string NotificationModeType=5;
+	string PhoneNo=6;
+	string Sms=7;
+	string EmailId=8;
+	string EmailSub=9;
+	string EmailText=10;
+	string WsUrl=11;
+	string WsType=12;
+	string WsText=13;
+	string WsLogin=14;
+	string WsPassword=15;
+	string State=16;
+	int32 CreatedAt=17;
+	int32 ModifiedAt=18;
+}
