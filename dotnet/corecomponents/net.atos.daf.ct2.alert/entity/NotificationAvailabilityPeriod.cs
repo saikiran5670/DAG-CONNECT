@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int StartTime { get; set; }
         public int EndTime { get; set; }
         public string State { get; set; }
-        public int CreatedAt { get; set; }
-        public int ModifiedAt { get; set; }
+        public long CreatedAt { get; set; }
+        public long ModifiedAt { get; set; }
     }
 }

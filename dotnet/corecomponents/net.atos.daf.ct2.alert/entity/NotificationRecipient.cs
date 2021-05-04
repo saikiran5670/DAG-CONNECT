@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.alert.entity
         public string WsLogin { get; set; }
         public string WsPassword { get; set; }
         public string State { get; set; }
-        public int CreatedAt { get; set; }
-        public int ModifiedAt { get; set; }
+        public long CreatedAt { get; set; }
+        public long ModifiedAt { get; set; }
     }
 }
