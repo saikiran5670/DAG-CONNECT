@@ -189,7 +189,9 @@ export class CreateEditViewPoiComponent implements OnInit {
       this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
       this.map.addObject(this.selectedMarker);
     }
+    if(this.actionType != 'view'){
     this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this);
+    }
   }
 
   setUpClickListener(map, behavior, selectedMarker, here, poiFlag, data, thisRef) {
