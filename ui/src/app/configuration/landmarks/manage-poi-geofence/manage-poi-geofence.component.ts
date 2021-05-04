@@ -12,6 +12,7 @@ import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -47,7 +48,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   categoryList: any = [];
   subCategoryList: any = [];
-  private _snackBar: any;
+  // private _snackBar: any;
   initData: any[];
   importPOIClicked: boolean = false;
   importClicked: boolean = false;
@@ -66,15 +67,17 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Output() showImportCSV: EventEmitter<any> = new EventEmitter();
   selectedCategoryId = null;
   selectedSubCategoryId = null;
-  allCategoryPOIData: any;
-  constructor(
+  allCategoryPOIData : any;
+
+  constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
-    private landmarkCategoryService: LandmarkCategoryService
-  ) {
-
-  }
+    private landmarkCategoryService: LandmarkCategoryService,
+    private _snackBar: MatSnackBar
+    ) {
+    
+   }
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
@@ -92,7 +95,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
       this.poiInitData = data;
-      console.log("poiData=" + this.poiInitData);
+      // console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
@@ -322,7 +325,33 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  deleteGeofence(rowData: any) {
+  deleteMultiplePoi()
+  {
+    let poiId = 
+    { 
+      id: this.selectedpois.selected.map(item=>item.id)
+    }
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    let name = this.selectedpois.selected[0].name;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.poiService.deletePoi(poiId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadPoiData();
+      })
+        this.successMsgBlink(this.getDeletMsg(name));
+      }
+    });
+  }
+
+
+  deleteGeofence(rowData: any){
     let GeofenceId = rowData.geofenceId;
     const options = {
       title: this.translationData.lblDelete || "Delete",
