@@ -8,6 +8,7 @@ import { LandmarkCategoryService } from '../../../services/landmarkCategory.serv
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonTableComponent } from '../../../shared/common-table/common-table.component'; 
 import { SelectionModel } from '@angular/cdk/collections';
+import { DeleteCategoryPopupComponent } from './delete-category-popup/delete-category-popup.component';
 
 @Component({
   selector: 'app-manage-category',
@@ -34,6 +35,7 @@ export class ManageCategoryComponent implements OnInit {
   selectedRowData: any = [];
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   dialogRef: MatDialogRef<CommonTableComponent>;
+  dialogRefForDelete: MatDialogRef<DeleteCategoryPopupComponent>;
   selectedCategory = new SelectionModel(true, []);
   allCategoryData : any =[];
   userType: any= "";
@@ -172,39 +174,67 @@ export class ManageCategoryComponent implements OnInit {
   deleteCategory(rowData: any){
     let deleteText: any;
     let deleteMsg: any;
-    let search = this.initData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
-    if(search.length > 1) { //-- having sub category
-      deleteText = 'hide-btn'; 
-      deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "The '$' contains a sub-category. You can not delete this category if it has a sub-category. To remove this category, first remove connected sub-category.";
-    }else{
+    let delType: any = '';
+    let name = '';
+    if(rowData.subCategoryId > 0){ //-- delete sub-cat
+      name = rowData.subCategoryName;
+      delType = 'subcategory';
       deleteText = this.translationData.lblDelete || 'Delete';
-      deleteMsg = this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?";
+      deleteMsg = this.translationData.lblAreyousureyouwanttodeletesubcategory || "Are you sure you want to delete subcategory '$'?";
+    }else{ //-- delete cat
+      let search = this.allCategoryData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
+      if(search.length > 1 || rowData.noOfPOI > 0 || rowData.noOfGeofence > 0) { //-- having sub-cat/POI/geofence
+        name = rowData.parentCategoryName;
+        delType = '';
+        deleteText = 'hide-btn'; 
+        deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "'$' category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+      }else{ //-- No sub-cat/POI/Geofence
+        name = rowData.parentCategoryName;
+        delType = 'category';
+        deleteText = this.translationData.lblDelete || 'Delete';
+        deleteMsg = this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?";
+      }
     }
-
+    
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: deleteMsg,
       cancelText: this.translationData.lblCancel || 'Cancel',
       confirmText: deleteText 
     };
-    let name = rowData.parentCategoryName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if(res){
-        this.landmarkCategoryService.deleteLandmarkCategory(rowData.parentCategoryId).subscribe((deletedData: any) => {
-          this.successMsgBlink(this.getDeletMsg(name));
-          this.loadLandmarkCategoryData();
-        });
+        if(delType == 'category' || delType == 'subcategory'){
+          let bulkDeleteObj: any = {
+            category_SubCategory_s: [{
+              categoryId : rowData.parentCategoryId, 
+              subCategoryId : rowData.subCategoryId
+            }]
+          }
+          this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
+            this.successMsgBlink(this.getDeletMsg(name, delType));
+            this.loadLandmarkCategoryData();
+            this.selectedCategory = new SelectionModel(true, []);
+          });
+        }
       }
-     });
+    });
   }
 
-  getDeletMsg(categoryName?: any){
+  getDeletMsg(categoryName?: any, delType?: any){
     if(categoryName){
-      if(this.translationData.lblLandmarkCategoryDelete)
-        return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
-      else
-        return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+      if(delType == 'category'){
+        if(this.translationData.lblLandmarkCategoryDelete)
+          return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
+        else
+          return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+      }else if(delType == 'subcategory'){
+        if(this.translationData.lblLandmarkSubCategoryDelete)
+          return this.translationData.lblLandmarkSubCategoryDelete.replace('$', categoryName);
+        else
+          return ("Landmark sub-category '$' was successfully deleted").replace('$', categoryName);
+      }
     }
     else{
       return this.translationData.lblBulkLandmarkCategoryDelete ? this.translationData.lblBulkLandmarkCategoryDelete : "Landmark category was successfully deleted";
@@ -375,33 +405,120 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onBulkDeleteCategory(){
-    let bulkCategories= [];
-    const options = {
-      title: this.translationData.lblDeleteGroup || 'Bulk Delete Category',
-      message: this.translationData.lblBulkDeleteMessage || "Deleting Parent category will delete all of its sub-categories also. Are you sure you want to delete?",
-      cancelText: this.translationData.lblCancel || 'Cancel',
-      confirmText: this.translationData.lblDelete || 'Delete'
-    };
-    this.dialogService.DeleteModelOpen(options);
-    this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-      // let filterIds: any = this.selectedCategory.selected.map(item => item.parentCategoryId)
-      // .filter((value, index, self) => self.indexOf(value) === index)
+    let filterCat: any = [];
+    let deleteCatMsg: any = '';
+    let noDeleteCatMsg: any = '';
+    let bulkDeleteObj: any; 
+    let bulkCategories: any = [];
+    let delCatList: any = '';
+    let noDelCatList: any = '';
+    let deleteText: any;
+    let delCatCount: any = 0;
+    let noDelCatCount: any = 0;
 
-      
-      this.selectedCategory.selected.forEach(item => {
-        bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+    filterCat = this.selectedCategory.selected.filter(item => item.subCategoryId == 0);
+    
+    if(filterCat.length == this.selectedCategory.selected.length){ //- delete cat
+      filterCat.forEach(item => {
+        let filterId = this.allCategoryData.filter(i => i.parentCategoryId == item.parentCategoryId);
+        if(filterId.length > 1 || filterId[0].noOfPOI > 0 || filterId[0].noOfGeofence > 0){ //-- cat having sub-cat/POI/Geofence
+          noDelCatCount++;
+          noDelCatList += item.parentCategoryName + ", ";
+        }else{
+          delCatCount++;
+          delCatList += item.parentCategoryName + ", ";
+          bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+        }
       });
-
-      let bulkDeleteObj: any = {
-        category_SubCategory_s: bulkCategories
+      if(delCatCount == this.selectedCategory.selected.length){ //-- all are cat, having no sub-cat/POI/Geofence
+        deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+        noDeleteCatMsg = '';
+        deleteText = this.translationData.lblDelete || 'Delete';
+      }else if(noDelCatCount == this.selectedCategory.selected.length){
+        deleteCatMsg = '';
+        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+        deleteText = 'hide-btn'; 
+      }else{
+        deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+        deleteText = this.translationData.lblDelete || 'Delete';
       }
-      this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
-        this.successMsgBlink(this.getDeletMsg());
-        this.loadLandmarkCategoryData();
-        this.selectedCategory = new SelectionModel(true, []);
-      });
     }
-   });    
+    else{ //-- delete sub-cat
+      let filterSubCat: any;
+      filterSubCat = this.selectedCategory.selected.filter(item => item.subCategoryId > 0);
+      if(filterSubCat.length == this.selectedCategory.selected.length){ //-- only sub-cat
+        filterSubCat.forEach(item => {
+          delCatCount++;
+          delCatList += item.subCategoryName + ", ";
+          bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+        });
+        deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+        noDeleteCatMsg = '';
+        deleteText = this.translationData.lblDelete || 'Delete';
+      }else if(filterSubCat.length > 0 && filterCat.length > 0){
+        filterCat.forEach(item => {
+          let filterId = this.allCategoryData.filter(i => i.parentCategoryId == item.parentCategoryId);
+          if(filterId.length > 1 || filterId[0].noOfPOI > 0 || filterId[0].noOfGeofence > 0){ //-- cat having sub-cat
+            noDelCatCount++;
+            noDelCatList += item.parentCategoryName + ", ";
+          }else{
+            delCatCount++;
+            delCatList += item.parentCategoryName + ", ";
+            bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+          }
+        });
+
+        filterSubCat.forEach(item => {
+          delCatCount++;
+          delCatList += item.subCategoryName + ", ";
+          bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+        });
+
+        if(delCatCount > 0 && noDelCatCount == 0){ //-- cat & sub-cat
+          deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+          noDeleteCatMsg = '';
+          deleteText = this.translationData.lblDelete || 'Delete';
+        }else{ //-- sub-cat & cat having sub-cat
+          deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+          noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+          deleteText = this.translationData.lblDelete || 'Delete';
+        }
+      }
+    }
+
+    if(delCatList != ''){
+      delCatList = delCatList.slice(0, -2);
+    }
+    if(noDelCatList != ''){
+      noDelCatList = noDelCatList.slice(0, -2);
+    }
+
+    bulkDeleteObj = {
+      category_SubCategory_s: bulkCategories
+    }
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      title: this.translationData.lblDelete || 'Delete',
+      delMessage: deleteCatMsg,
+      noDelMessage: noDeleteCatMsg,
+      deleteCatList: delCatList,
+      noDeleteCatList: noDelCatList,
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: deleteText
+    }
+    this.dialogRefForDelete = this.dialog.open(DeleteCategoryPopupComponent, dialogConfig);
+    this.dialogRefForDelete.afterClosed().subscribe(res => {
+      if(res){ //--delete
+        this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
+          this.successMsgBlink(this.getDeletMsg());
+          this.loadLandmarkCategoryData();
+          this.selectedCategory = new SelectionModel(true, []);
+        });
+      }
+    });    
   }
 }

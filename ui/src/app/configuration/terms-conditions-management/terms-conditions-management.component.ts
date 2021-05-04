@@ -40,6 +40,7 @@ export class TermsConditionsManagementComponent implements OnInit {
   userType: any = localStorage.getItem("userType");
   uploadFileErrorCode: number;
   downloadPDFErrorCode: number;
+  greaterVersionPresentMsg: string;
   
   constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private translationService: TranslationService) { 
       this.defaultTranslation();
@@ -112,6 +113,7 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   uploadTermsAndConditions(){ 
     let languageData = [];
+    
    
     let tncObj= {
       "start_date": "",
@@ -122,10 +124,16 @@ export class TermsConditionsManagementComponent implements OnInit {
 
     this.translationService.uploadTermsAndConditions(tncObj).subscribe(data => {
       if(data){
-        let msg= this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded ? this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded : "Terms and Conditions file successfully uploaded";
-        this.successMsgBlink(msg);
-        this.filelist= [];
-        this.uploadTermsConditionsFormGroup.controls.uploadFile.setValue("");
+        if(data[0].action.includes("No action")){
+          let latestVersion = (data[0]["action"].split(":")[1]).split("_")[0];
+          this.greaterVersionPresentMsg = "T&C with greater version is already present for this language. Latest version is : "+latestVersion;
+        }
+        else{
+          let msg= this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded ? this.translationData.lblTermsAndConditionsFileSuccessfullyUploaded : "Terms and Conditions file successfully uploaded";
+          this.successMsgBlink(msg);
+          this.filelist= [];
+          this.uploadTermsConditionsFormGroup.controls.uploadFile.setValue("");
+        }
       }
     }, (error) => {
       this.uploadFileErrorCode = error.status;
@@ -150,6 +158,7 @@ export class TermsConditionsManagementComponent implements OnInit {
 
   addfile(event)     
   {    
+    this.greaterVersionPresentMsg= "";
     this.uploadFileErrorCode = 0;
     for(let i= 0; i < event.target.files.length; i++){
 
