@@ -43,7 +43,8 @@
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <mat-form-field appearance="outline">
         <mat-select  (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-        <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+          <mat-option value="0">--All--</mat-option>
+          <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
             {{ rer.name }}
         </mat-option>
         </mat-select>
@@ -52,7 +53,8 @@
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <mat-form-field appearance="outline">
       <mat-select (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-      <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+        <mat-option value="0">--All--</mat-option>
+        <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
           {{ rer.name }}
       </mat-option>
       </mat-select>

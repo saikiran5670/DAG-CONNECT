@@ -186,7 +186,7 @@ selectedMarker: any;
   // Create the default UI components
   var ui = H.ui.UI.createDefault(this.map, defaultLayers);
   var searchbox = ui.getControl("searchbox");
-  if(this.actionType == 'edit'){
+  if(this.actionType == 'edit' || this.actionType == 'view'){
     let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
     let getSelectedLongitude = this.poiFormGroup.get("longitude").value;
      this.selectedMarker = new H.map.Marker({lat:getSelectedLatitude, lng:getSelectedLongitude});
@@ -208,7 +208,7 @@ selectedMarker: any;
 
         if(this.actionType= 'edit'){
           console.log("----when edit selected marker--",selectedMarker)
-          map.removeObject(selectedMarker);
+          // map.removeObject(selectedMarker);
           // map.removeObjects(searchMarkers);
         }
       var coord = map.screenToGeo(evt.currentPointer.viewportX,
@@ -399,9 +399,7 @@ console.log("poiformgroup=" +this.poiFormGroup);
     this.poiFormGroup.get("longitude").setValue(this.selectedElementData.longitude);
     this.poiFormGroup.get("country").setValue(this.selectedElementData.country);
     this.poiFormGroup.get("category").setValue(this.selectedElementData.categoryId);
-    this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryId);
-
-  
+    this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryId);  
   }
 
   onCreatePoi(){
