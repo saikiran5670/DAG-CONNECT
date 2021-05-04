@@ -13,6 +13,10 @@ import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { createGpx } from 'gps-to-gpx';
+import { NgxXml2jsonService } from 'ngx-xml2json';
+
+const createGpx = require('gps-to-gpx').default;
 
 @Component({
   selector: 'app-manage-poi-geofence',
@@ -51,9 +55,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
   // private _snackBar: any;
   initData: any[];
   importPOIClicked: boolean = false;
+  importGeofenceClicked : boolean = false;
   importClicked: boolean = false;
   impportTitle = "Import POI";
   importTranslationData: any = {};
+  xmlObject : any = {};
   templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
     'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -68,13 +74,15 @@ export class ManagePoiGeofenceComponent implements OnInit {
   selectedCategoryId = null;
   selectedSubCategoryId = null;
   allCategoryPOIData : any;
+  defaultGpx : any;
 
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
     private geofenceService: GeofenceService,
     private landmarkCategoryService: LandmarkCategoryService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private ngxXml2jsonService: NgxXml2jsonService
     ) {
     
    }
@@ -481,16 +489,68 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   updateImportView(_event) {
     this.importPOIClicked = _event;
+    this.importGeofenceClicked = _event;
     this.tabVisibility.emit(true);
+    this.importClicked = _event;
 
   }
 
   importPOIExcel() {
+    this.importClicked = true;
     this.importPOIClicked = true;
     this.showImportCSV.emit(true);
     this.tabVisibility.emit(false);
 
     this.processTranslationForImport();
+  }
+
+  importGeofence(){
+    this.importClicked = true;
+    this.importGeofenceClicked = true;
+    this.showImportCSV.emit(true);
+    this.tabVisibility.emit(false);
+    this.generateGPXFile();
+    //this.processTranslationForImportGeofence();
+  }
+
+  generateGPXFile(){
+    
+    // const gpx = createGpx(xmlObject.waypoints, {
+    //   activityName: xmlObject.activityType,
+    //   startTime: xmlObject.startTime,
+    //   id: xmlObject.id,
+    // });
+     
+    this.defaultGpx = `<?xml version="1.0" encoding="UTF-8"?>
+    <gpx version="1.1">
+      <metadata>
+        <id>156</id>
+        <organizationId>6</organizationId>,
+        <categoryId>0</categoryId>,
+        <subCategoryId>0</subCategoryId>,
+        <geofencename>Test Geofence1</geofencename>,
+        <type>O</type>,
+        <address>Pune</address>,
+        <city>Pune</city>,
+        <country>India</country>,
+        <zipcode>400501</zipcode>,
+        <latitude>18.52050580488341</latitude>,
+        <longitude>73.86056772285173</longitude>,
+        <distance>0</distance>,
+        <tripId>0</tripId>,
+        <createdBy>0</createdBy>,
+      </metadata>
+      <trk>
+        <name>RUN</name>
+        <trkseg>
+          <trkpt lat="18.52050580488341" lon="73.86056772285173"></trkpt>
+          <trkpt lat="18.560710817234337" lon="74.30724364900217"></trkpt>
+        </trkseg>
+      </trk>
+    </gpx>`
+    // const parser = new DOMParser();
+    // const xml = parser.parseFromString(dummyObject, 'text/xml');
+    // const obj = this.ngxXml2jsonService.xmlToJson(xml);
   }
 
   processTranslationForImport() {
