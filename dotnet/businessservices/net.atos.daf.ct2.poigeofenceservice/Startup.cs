@@ -49,7 +49,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddTransient<IGeofenceRepository, GeofenceRepository>();
             services.AddTransient<ILandmarkGroupManager, LandmarkGroupManager>();
             services.AddTransient<ILandmarkgroupRepository, LandmarkgroupRepository>();
-
+            services.AddTransient<ICorridorManger, CorridorManger>();
+            services.AddTransient<ICorridorRepository, CorridorRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
