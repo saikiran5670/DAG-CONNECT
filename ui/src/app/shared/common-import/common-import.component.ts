@@ -44,6 +44,7 @@ export class CommonImportComponent implements OnInit {
   @Input() tableColumnList : any;
   @Input() tableColumnName : any;
   @Input() tableTitle : string;
+  @Input() defaultGpx:any;
   fileExtension = '.csv';
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
@@ -52,6 +53,9 @@ export class CommonImportComponent implements OnInit {
   ngOnInit(): void {
     if(this.importFileComponent === 'poi'){
       this.fileExtension = '.xlsx';
+    }
+    else if(this.importFileComponent === 'geofence'){
+      this.fileExtension = '.gpx';
     }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -113,6 +117,11 @@ export class CommonImportComponent implements OnInit {
         let blob = new Blob([data], { type: EXCEL_TYPE });
         FileSaver.saveAs(blob, this.templateFileName);
       });
+    }
+    else if(this.importFileComponent === 'geofence'){
+      this.templateFileName = 'geofenceData.gpx';
+      let blob = new Blob([this.defaultGpx], { type: 'xml;charset=utf-8;' });
+      FileSaver.saveAs(blob, this.templateFileName);
     }
     else{
       workbook.csv.writeBuffer().then((data) => {
