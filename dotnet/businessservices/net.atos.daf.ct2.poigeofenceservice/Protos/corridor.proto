@@ -1,0 +1,20 @@
+
+
+syntax = "proto3";
+option csharp_namespace = "net.atos.daf.ct2.poigeofences";
+
+package corridor;
+
+service CorridorService{
+
+//rpc AddCorridor (CorridorAddRequest) returns (CorridorAddResponse);
+
+    }
+
+
+enum Responsecode{
+  Success = 0;
+  Failed = 1;
+  Conflict = 2;
+  NotFound = 3;
+}
