@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     {
                         return StatusCode((int)order.Item1, string.Empty);
                     }
-                    logger.LogInformation($"Subscription data has been Inserted, order ID - {Objunsubs.OrderID}");
+                    logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
                     return Ok(order.Item2);
                 }
                 else

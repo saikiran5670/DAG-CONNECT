@@ -96,8 +96,15 @@ export class ManageGroupComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data); 
     } 
+    this.dataSource = new MatTableDataSource(this.initData);
+    this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.name.toString().toLowerCase().includes(filter) ||
+        data.poiCount.toString().toLowerCase().includes(filter) ||
+        data.geofenceCount.toString().toLowerCase().includes(filter)
+      );
+    };
     setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
@@ -285,5 +292,6 @@ exportAsPdf() {
       PDF.output('dataurlnewwindow');
   });     
 }
+
 
 }

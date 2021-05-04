@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.alertservice";
+
+package alert;
+
+service AlertService {
+  
+}
+
+enum ResponseCode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message NotificationRequest
+{
+ int32 Id = 1;
+ int32 AlertId=2;
+ string AlertUrgencyLevelType=3;
+ string FrequencyType=4;
+ int32 FrequencyThreshholdValue=5;
+ string ValidityType=6;
+ string State=7;
+ string CreatedAt=8;
+ int32 CreatedBy=9;
+ string ModifiedAt=10;
+ int32 ModifiedBy=11;
+}
+
+message AlertLandmarkRefRequest
+{
+ int32 Id = 1;
+ int32 AlertId=2;
+ string LandmarkType=3;
+ int32 RefId = 4;
+ double Distance = 5;
+ string UnitType = 6;
+ string State = 7;
+ string CreatedAt = 8;
+ string ModifiedAt = 9;
+}

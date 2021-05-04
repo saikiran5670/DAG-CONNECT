@@ -123,6 +123,10 @@ namespace net.atos.daf.ct2.vehicledataservice
                     AccessPolicies.MainMileageAccessPolicy,
                     policy => policy.RequireAuthenticatedUser()
                                     .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainMileageAccessPolicy)));
+                options.AddPolicy(
+                   AccessPolicies.MainNamelistAccessPolicy,
+                   policy => policy.RequireAuthenticatedUser()
+                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainNamelistAccessPolicy)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();

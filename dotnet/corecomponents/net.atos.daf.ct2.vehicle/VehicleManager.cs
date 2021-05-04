@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using  net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle.response;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -14,10 +15,10 @@ namespace net.atos.daf.ct2.vehicle
         IVehicleRepository vehicleRepository;
         IAuditTraillib auditlog;
 
-        public VehicleManager(IVehicleRepository _vehicleRepository,IAuditTraillib _auditlog)
+        public VehicleManager(IVehicleRepository _vehicleRepository, IAuditTraillib _auditlog)
         {
             vehicleRepository = _vehicleRepository;
-             auditlog = _auditlog;
+            auditlog = _auditlog;
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId)
@@ -41,7 +42,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                 //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
+                //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await vehicleRepository.Update(vehicle);
             }
             catch (Exception ex)
@@ -98,11 +99,11 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
-        public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId)
+        public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)
         {
             try
             {
-                return await vehicleRepository.GetVehicleGroup(organizationId,vehicleId);
+                return await vehicleRepository.GetVehicleGroup(organizationId, vehicleId);
             }
             catch (Exception ex)
             {
@@ -187,7 +188,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                return await vehicleRepository.GetDynamicVisibleVehicle(OrganizationId,VehicleGroupId, RelationShipId);
+                return await vehicleRepository.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
             }
             catch (Exception ex)
             {
@@ -232,8 +233,8 @@ namespace net.atos.daf.ct2.vehicle
         }
 
         #region Vehicle Mileage Data
-        public async Task<VehicleMileage> GetVehicleMileage(string since,bool isnumeric,string contenttype)
-        {            
+        public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype)
+        {
             try
             {
                 long startDate = 0;
@@ -247,36 +248,36 @@ namespace net.atos.daf.ct2.vehicle
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-               
-                IEnumerable<dtoVehicleMileage> vehiclemileageList= await vehicleRepository.GetVehicleMileage(startDate, endDate);
-                
+
+                IEnumerable<dtoVehicleMileage> vehiclemileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate);
+
                 VehicleMileage vehicleMileage = new VehicleMileage();
-                vehicleMileage.Vehicles = new List<Vehicles>();
+                vehicleMileage.Vehicles = new List<entity.Vehicles>();
                 vehicleMileage.VehiclesCSV = new List<VehiclesCSV>();
                 string sTimezone = "UTC";
                 string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
 
-                if (vehiclemileageList!=null)
+                if (vehiclemileageList != null)
                 {
                     foreach (var item in vehiclemileageList)
                     {
                         if (contenttype == "text/csv")
                         {
                             VehiclesCSV vehiclesCSV = new VehiclesCSV();
-                            vehiclesCSV.EvtDateTime =item.evt_timestamp>0? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat):string.Empty; 
+                            vehiclesCSV.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty;
                             vehiclesCSV.VIN = item.vin;
-                            vehiclesCSV.TachoMileage = item.odo_distance > 0?item.odo_distance:0;
-                            vehiclesCSV.RealMileage = item.real_distance > 0 ? item.real_distance:0;
+                            vehiclesCSV.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0;
+                            vehiclesCSV.RealMileage = item.real_distance > 0 ? item.real_distance : 0;
                             vehiclesCSV.RealMileageAlgorithmVersion = "1.2";
-                            vehicleMileage.VehiclesCSV.Add(vehiclesCSV); 
+                            vehicleMileage.VehiclesCSV.Add(vehiclesCSV);
                         }
                         else
                         {
-                            Vehicles vehiclesobj = new Vehicles();
+                            entity.Vehicles vehiclesobj = new entity.Vehicles();
                             vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty; ;
                             vehiclesobj.VIN = item.vin;
-                            vehiclesobj.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0; 
-                            vehiclesobj.GPSMileage = item.real_distance>0 ? item.real_distance :0;
+                            vehiclesobj.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0;
+                            vehiclesobj.GPSMileage = item.real_distance > 0 ? item.real_distance : 0;
                             vehiclesobj.RealMileageAlgorithmVersion = "1.2";
                             vehicleMileage.Vehicles.Add(vehiclesobj);
                         }
@@ -284,7 +285,7 @@ namespace net.atos.daf.ct2.vehicle
                 }
                 return vehicleMileage;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -300,6 +301,54 @@ namespace net.atos.daf.ct2.vehicle
         }
 
         #endregion
+
+        #region Vehicle Namelist Data
+        public async Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric)
+        {
+            try
+            {
+                long startDate = 0;
+                long endDate = 0;
+
+                if (string.IsNullOrEmpty(since) || since == "yesterday")
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                else if (since == "today")
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                else if (isnumeric)
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+
+                endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+
+                IEnumerable<dtoVehicleNamelist> dtovehicleNameList = await vehicleRepository.GetVehicleNamelist(startDate, endDate);
+
+                VehicleNamelistResponse vehicleNamelist = new VehicleNamelistResponse();
+                vehicleNamelist.Vehicles = new List<response.Vehicles>();
+
+                if (vehicleNamelist != null)
+                {
+                    foreach (var item in dtovehicleNameList)
+                    {
+
+                        response.Vehicles vehiclesobj = new response.Vehicles();
+
+                        vehiclesobj.VIN = item.vin;
+                        vehiclesobj.Name = item.name;
+                        vehiclesobj.RegNo = item.regno;
+
+                        vehicleNamelist.Vehicles.Add(vehiclesobj);
+                    }
+                }
+
+                return vehicleNamelist;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
         //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
         // {
         //     try
