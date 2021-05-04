@@ -155,6 +155,9 @@ export class CommonImportComponent implements OnInit {
         this.preparePOIDataToImport(removableInput);
 
       }
+      else if(this.importFileComponent === 'geofence'){
+        this.prepareGeofenceDataToImport(removableInput);
+      }
       //removableInput.clear();
     }
     else{
@@ -469,6 +472,12 @@ export class CommonImportComponent implements OnInit {
       removableInput.clear();
       this.showImportStatus = true;
     }
+  }
+
+  //import Geofence function
+
+  prepareGeofenceDataToImport(removableInput){
+
   }
 
   updateDuplicateErrorMsg(){

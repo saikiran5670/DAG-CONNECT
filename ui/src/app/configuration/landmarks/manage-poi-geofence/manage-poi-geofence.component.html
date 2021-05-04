@@ -60,11 +60,11 @@
     </div>
     <div>
       <button mat-flat-button (click)="importPOIExcel()">
-        {{ translationData.lblImport || 'Import' }}<mat-icon>file_download</mat-icon>
+        <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
       </button>
     </div>
     <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="left">
-      <button mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+      <button mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon></button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="exportAsExcelFile()">Excel</button>
       </mat-menu>
@@ -181,7 +181,7 @@
 </mat-form-field>
   </div>
   <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
-    <button mat-button  [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+    <button mat-button  [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon></button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="exportGeofenceAsExcelFile()">Excel</button>
     </mat-menu>
@@ -254,6 +254,8 @@
 </div>
 
 <div class='bgtrans' *ngIf = "importPOIClicked">
+  <div>Home / Configuration / Landmark / Import POI</div>
+
   <app-common-import [importFileComponent]="'poi'" (showImportCSV)="updateImportView($event)"  [importTranslationData] = "importTranslationData" 
                       [templateTitle]="templateTitle" [templateValue] ="templateValue" [tableColumnList] = "tableColumnList" [tableColumnName]="tableColumnName"
                       [tableTitle]='tableTitle'></app-common-import>
