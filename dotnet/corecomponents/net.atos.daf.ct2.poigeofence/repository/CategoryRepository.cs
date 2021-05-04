@@ -447,7 +447,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             ) 
                             select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
                             (select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id is null or sub_category_id=r.Subcategory_id) and type in ('C','O') and state ='A' ) as No_of_Geofence,
-                            (select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id is null or sub_category_id=r.Subcategory_id) and type in ('P') and state ='N') as No_of_POI,
+                            (select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id is null or sub_category_id=r.Subcategory_id) and type in ('P') and state ='A') as No_of_POI,
                             r.Parent_category_Icon As IconId,
                             (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
 							r.description,r.created_at,r.Icon_Name,r.organization_id

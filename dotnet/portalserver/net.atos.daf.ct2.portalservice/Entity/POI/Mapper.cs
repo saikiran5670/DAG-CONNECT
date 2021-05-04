@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
                     landmarktype = LandmarkType.CircularGeofence;
                     break;
                 case "R":
-                    landmarktype = LandmarkType.Corridor;
+                    landmarktype = LandmarkType.RouteCorridor;
                     break;
                 case "N":
                     landmarktype = LandmarkType.None;
