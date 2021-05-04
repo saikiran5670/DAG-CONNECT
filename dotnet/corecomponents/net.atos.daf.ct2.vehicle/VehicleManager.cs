@@ -319,14 +319,14 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                IEnumerable<dtoVehicleNamelist> vehiclemileageList = await vehicleRepository.GetVehicleNamelist(startDate, endDate);
+                IEnumerable<dtoVehicleNamelist> dtovehicleNameList = await vehicleRepository.GetVehicleNamelist(startDate, endDate);
 
                 VehicleNamelistResponse vehicleNamelist = new VehicleNamelistResponse();
                 vehicleNamelist.Vehicles = new List<response.Vehicles>();
 
                 if (vehicleNamelist != null)
                 {
-                    foreach (var item in vehiclemileageList)
+                    foreach (var item in dtovehicleNameList)
                     {
 
                         response.Vehicles vehiclesobj = new response.Vehicles();
