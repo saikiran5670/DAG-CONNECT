@@ -38,6 +38,27 @@ export class GeofenceService {
       .pipe(catchError(this.handleError));
   }
 
+  getGeofenceById(orgId: any, geoId: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.GeofenceServiceUrl}/getgeofencebygeofenceid?OrganizationId=${orgId}&GeofenceId=${geoId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getGeofenceDetails(orgId: any, geoId: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.GeofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}&Id=${geoId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+  
+
 //   createGeofence(data): Observable<any> {
 //     let headerObj = this.generateHeader();
 //     const headers = {
@@ -81,13 +102,10 @@ export class GeofenceService {
 //   }
 
   private handleError(errResponse: HttpErrorResponse) {
-    if (errResponse.error instanceof ErrorEvent) {
-      console.error('Client side error', errResponse.error.message);
-    } else {
-      console.error('Server side error', errResponse);
-    }
+    console.error('Error : ', errResponse.error);
     return throwError(
-      errResponse
+        errResponse
     );
-  };
+  }
+
 }
