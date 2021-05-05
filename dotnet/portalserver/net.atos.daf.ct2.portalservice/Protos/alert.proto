@@ -5,7 +5,9 @@ option csharp_namespace = "net.atos.daf.ct2.alertservice";
 package alert;
 
 service AlertService {
-  
+  rpc SuspendAlert (IdRequest) returns (AlertResponse);
+  rpc ActivateAlert (IdRequest) returns (AlertResponse);
+  rpc DeleteAlert (IdRequest) returns (AlertResponse);
 }
 
 enum ResponseCode{
@@ -15,4 +17,13 @@ enum ResponseCode{
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;
+}
+
+message IdRequest {
+  int32 AlertId = 1;
+}
+
+message AlertResponse{   
+    ResponseCode Code=1;
+    string message = 2;
 }

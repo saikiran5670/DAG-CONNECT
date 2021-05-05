@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.alert.repository
 {
-    public class AlertRepository:IAlertRepository
+    public class AlertRepository : IAlertRepository
     {
         private readonly IDataAccess dataAccess;
         public AlertRepository(IDataAccess _dataAccess)
@@ -22,7 +22,13 @@ namespace net.atos.daf.ct2.alert.repository
         {
             throw new NotImplementedException();
         }
+        #endregion
 
+        #region Update Alert State
+        public Task<bool> UpdateAlertState(int alertId, char state)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }
