@@ -266,4 +266,12 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     }
   }
 
+  toBack() {
+    let emitObj = {
+      stepFlag: false,
+      msg: ""
+    }
+    this.backToPage.emit(emitObj);
+  }
+
 }
