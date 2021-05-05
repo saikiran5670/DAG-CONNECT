@@ -1722,7 +1722,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
 
         #region Vehicle Mileage Data
-        public async Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate)
+        public async Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter)
         {            
             try
             {
@@ -1734,14 +1734,16 @@ namespace net.atos.daf.ct2.vehicle.repository
                                         ,odo_distance
                                         ,real_distance
                                         ,vin
-                                        from mileage.vehiclemileage  
-                                        where";
+                                        from mileage.vehiclemileage";
 
-                var parameter = new DynamicParameters();
-              
-                parameter.Add("@start_at", startDate);
-                parameter.Add("@end_at", endDate);
-                QueryStatement = QueryStatement + " modified_at >= @start_at AND modified_at <= @end_at";
+                DynamicParameters parameter = null;
+                if(!noFilter)
+                {
+                    parameter = new DynamicParameters();
+                    parameter.Add("@start_at", startDate);
+                    parameter.Add("@end_at", endDate);
+                    QueryStatement = QueryStatement + " where modified_at >= @start_at AND modified_at <= @end_at";
+                }                
                
                 IEnumerable<dtoVehicleMileage> mileageData = await DataMartdataAccess.QueryAsync<dtoVehicleMileage>(QueryStatement, parameter);
                 

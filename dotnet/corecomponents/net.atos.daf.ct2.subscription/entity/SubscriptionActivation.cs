@@ -35,8 +35,25 @@ namespace net.atos.daf.ct2.subscription.entity
 		public int id { get; set; }
 		public string state { get; set; }
 	}
-	
 	public class SubscriptionResponse
+	{
+        public SubscriptionResponse()
+        {
+			Response = new SubscriptionSubResponse();
+		}
+		public SubscriptionResponse(string code, string message)
+		{
+			ErrorMessage = message;
+			ErrorCode = code;
+		}
+
+		public SubscriptionSubResponse Response { get; set; }
+		public string ErrorCode { get; set; }
+		public string ErrorMessage { get; set; }
+	}
+
+
+	public class SubscriptionSubResponse
 	{
 		public string orderId { get; set; }//M
 		public int numberOfVehicles { get; set; }//M
