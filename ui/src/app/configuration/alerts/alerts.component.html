@@ -1,3 +1,50 @@
-<div class="bgtrans">
-  <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
+<div>
+  <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
+      style='padding:10px; color:#fff; background: #5dc24e;'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ displayMessage }}
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+      </div>
+  </div>
+  <div *ngIf='!createViewEditStatus'>
+      <mat-card class='mat-elevation-z'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAlertDetails || 'All Alert Details' }}
+                  <!-- ({{ dataSource.filteredData.length }}) -->
+              </span>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <div fxLayout="row" class='areaWidth'>
+                    <!-- <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+                    <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+                        <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+                    </mat-menu>
+                    </div> -->
+                    <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                        <button mat-flat-button color="primary" (click)="onClickNewAlert()">
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAlert || 'New Alert'}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+      </mat-card>
+  </div>
+  <div *ngIf='createViewEditStatus'>
+      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData" (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
+  </div>
 </div>
