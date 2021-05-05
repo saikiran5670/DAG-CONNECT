@@ -1,7 +1,9 @@
-﻿using net.atos.daf.ct2.alert.repository;
+﻿using net.atos.daf.ct2.alert.entity;
+using net.atos.daf.ct2.alert.repository;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.alert
 {
@@ -13,5 +15,9 @@ namespace net.atos.daf.ct2.alert
             alertRepository = _alertRepository;
         }
 
+        public async Task<Alert> UpdateAlert(Alert alert)
+        {
+            return await alertRepository.UpdateAlert(alert);
+        }
     }
 }
