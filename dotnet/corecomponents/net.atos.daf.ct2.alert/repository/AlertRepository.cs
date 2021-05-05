@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.alert.repository
 
         public async Task<Alert> UpdateAlert(Alert alert)
         {
+            //Begin transaction scope for master.vehicle table
             var QueryStatement = @" UPDATE master.alert
                                         SET 
                                          name=@name                                        
@@ -55,8 +56,11 @@ namespace net.atos.daf.ct2.alert.repository
             int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             alert.Id = alertId;
 
+            bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+
             return alert;
         }
+
         #endregion
 
         #region Update Alert State
@@ -123,6 +127,24 @@ namespace net.atos.daf.ct2.alert.repository
                 throw ex;
             }
         }
+        #endregion
+
+        #region Private method
+
+        private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId)
+        {
+            char deleteChar = 'D';
+            await dataAccess.ExecuteAsync("UPDATE master.alertfilterref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.alertlandmarkref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationavailabilityperiod SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationtemplate SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            return true;
+        }
+
         #endregion
     }
 }
