@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.data
         /// <summary>
         /// The SQL connection object
         /// </summary>
-        public IDbConnection connection;
+        private readonly IDbConnection connection;
 
         #endregion Members
 
