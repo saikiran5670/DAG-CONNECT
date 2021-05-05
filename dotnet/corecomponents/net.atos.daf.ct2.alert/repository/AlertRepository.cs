@@ -100,5 +100,29 @@ namespace net.atos.daf.ct2.alert.repository
 
 
         #endregion
+
+        #region Alert Category
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                var QueryStatement = @"SELECT                                     
+                                    id as Id, 
+                                    type as Type, 
+                                    enum as Enum, 
+                                    parent_enum as ParentEnum, 
+                                    key as Key
+                                    FROM translation.enumtranslation;";
+
+                IEnumerable<EnumTranslation> enumtranslationlist = await dataAccess.QueryAsync<EnumTranslation>(QueryStatement, null);
+
+                return enumtranslationlist;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }

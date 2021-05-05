@@ -41,6 +41,20 @@ namespace net.atos.daf.ct2.alert
         public async Task<Alert> UpdateAlert(Alert alert)
         {
             return await alertRepository.UpdateAlert(alert);
-        }        
+        }
+
+        #region Alert Category
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                return await alertRepository.GetAlertCategory();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
