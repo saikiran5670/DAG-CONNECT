@@ -20,4 +20,10 @@
     <ProjectReference Include="..\..\net.atos.daf.ct2.alert\net.atos.daf.ct2.alert.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.Test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

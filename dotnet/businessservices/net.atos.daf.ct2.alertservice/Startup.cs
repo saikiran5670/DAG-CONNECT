@@ -59,8 +59,7 @@ namespace net.atos.daf.ct2.alertservice
             app.UseCors();
 
             app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGrpcService<GreeterService>();
+            {                
                 endpoints.MapGrpcService<AlertManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 

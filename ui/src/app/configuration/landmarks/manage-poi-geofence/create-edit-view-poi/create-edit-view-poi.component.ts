@@ -60,6 +60,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   state: any;
   selectedMarker: any;
   // UpdatedPoiFlag: any;
+  searchData: any = [];
 
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
@@ -165,6 +166,9 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
+
+
+
     let defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
     this.map = new H.Map(this.mapElement.nativeElement,
@@ -182,11 +186,7 @@ export class CreateEditViewPoiComponent implements OnInit {
 
     // Create the default UI components
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
-    var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-      content: '<b>Click on map to create POI position</b>'
-  });
-  // Add info bubble to the UI:
-  ui.addBubble(bubble);
+   
     var searchbox = ui.getControl("searchbox");
     if (this.actionType == 'edit' || this.actionType == 'view') {
       let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
@@ -195,8 +195,33 @@ export class CreateEditViewPoiComponent implements OnInit {
       this.map.addObject(this.selectedMarker);
     }
     if(this.actionType != 'view'){
+      var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
+        content: '<b>Click on map to create POI position</b>'
+    });
+    // Add info bubble to the UI:
+    ui.addBubble(bubble);
     this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
     }
+  }
+
+  searchValue(event: any) {
+    console.log("----search value called--",event.target.value);
+    let inputData = event.target.value;
+          // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+
+      this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
+     let newData = res.results;
+          this.searchData = newData;
+       });
+       
+  }
+
+  SearchListItems(item){
+console.log("you clicked on:" +item.title);
+console.log(item.position);
+this.map.setCenter({lat:item.position[0], lng:item.position[1]});
+this.map.setZoom(14);
   }
 
   setUpClickListener(map, behavior, selectedMarker, here, poiFlag, data, thisRef, bubble, ui) {
@@ -206,7 +231,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     map.addEventListener('tap', function (evt) {
       // let selectedMakerOnClick = selectedMarker;
       // console.log("----UpdatedPoiFlag---",thisRef.poiFlag)
-      console.log(ui.getBubbles());
+      // console.log(ui.getBubbles());
       ui.removeBubble(bubble);
       if (thisRef.poiFlag) {
         thisRef.setNewMapMarker(map, behavior, selectedMarker, here, poiFlag, data, thisRef, evt)
@@ -354,7 +379,7 @@ export class CreateEditViewPoiComponent implements OnInit {
 
   setAddressValues(addressVal, positions) {
     //     console.log("this is in setAddress()");
-    // console.log(addressVal);
+    console.log(addressVal);
     this.address = addressVal.Label;
     this.zip = addressVal.PostalCode;
     this.city = addressVal.City;

@@ -1,14 +1,99 @@
 
 
 syntax = "proto3";
-option csharp_namespace = "net.atos.daf.ct2.poigeofences";
+option csharp_namespace = "net.atos.daf.ct2.corridorservice";
 
-package corridor;
+package corridorservice;
 
 service CorridorService{
-
-//rpc AddCorridor (CorridorAddRequest) returns (CorridorAddResponse);
-
+ rpc GetCorridorList (CorridorRequest) returns (CorridorResponseList);
+ rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
     }
 
+message CorridorRequest{
+    int32 OrganizationId = 1;
+    int32 CorridorId = 2;
+}
 
+message CorridorResponse{
+    int32 Id =1;
+    int32 OrganizationId =2;
+    string CorridoreName =3;
+    string StartPoint=4;
+    double StartLat=5;
+    double StartLong=6;
+    string EndPoint=7;
+     double EndLat=8;
+    double EndLong=9;
+    double Distance=10;
+    double Width=11;
+     int32 CreatedBy = 12;
+    int64 CreatedAt = 13;
+     int32 ModifiedBy = 14;
+    int64 ModifiedAt = 15;
+}
+
+message CorridorResponseList  {
+  repeated CorridorResponse CorridorList = 1;
+  Responsecode code = 2;
+  string message = 3;
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+
+    message RouteCorridorAddRequest
+    {
+         int32 Id =1;
+         int32  OrganizationId =2;
+         string CorridorType =3;
+         string CorridorLabel =4;
+         string StartAddress =5;
+         string EndAddress =6;
+         int32 Width =7;
+         int32 Trailer =8;
+         bool TransportData =9;
+         bool TrafficFlow =10;
+         bool Explosive =11;
+         bool Gas =12;
+         bool Flammable =13;
+         bool Combustible =14;
+         bool organic =15;
+         bool poision =16;
+         bool RadioActive =17;
+         bool Corrosive =18;
+         bool PoisonousInhalation =19;
+         bool WaterHarm =20;
+         bool Other =21;
+         string TollRoad =22;
+         string Mortorway =23;
+         string BoatFerries =24;
+         string RailFerries =25;
+         string Tunnels =26;
+         string DirtRoad =27;
+         int32 VehicleSizeHeight =28;
+         int32 VehicleSizeWidth =29;
+         int32 VehicleSizeLength =30;
+         int32 VehicleSizeLimitedWeight =31;
+         int32 VehicleSizeWeightPerAxle =32;
+         string State =33;
+         int64 Created_At =34;
+         int32 Created_By =35;
+         int64 Modified_At =36;
+         int32 Modified_By =37;
+    }
+
+    
+message RouteCorridorAddResponse
+{
+  Responsecode Code=1;
+  string Message = 2;  
+  int32 CorridorID =3;
+}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.data;
 using System;
@@ -23,6 +24,29 @@ namespace net.atos.daf.ct2.alert.test
             _dataAccess = new PgSQLDataAccess(connectionString);
             _alertRepository = new AlertRepository(_dataAccess);
             _ialertManager = new AlertManager(_alertRepository);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Activate Alert Success")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void ActivateAlertSuccess()
+        {
+            //Provide the Alert Id which has suspended State in Database
+            var ExcepteId = 1;
+            var Id =  _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active)).Result;
+            Assert.AreEqual(ExcepteId, Id);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Activate Alert Failure")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void ActivateAlertfailure()
+        {
+            var ExcepteId = 0;
+            var Id = _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active)).Result;
+            Assert.AreEqual(ExcepteId, Id);
         }
     }
 }

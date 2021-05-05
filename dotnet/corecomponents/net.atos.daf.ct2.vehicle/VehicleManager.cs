@@ -240,7 +240,7 @@ namespace net.atos.daf.ct2.vehicle
                 long startDate = 0;
                 long endDate = 0;
 
-                if (string.IsNullOrEmpty(since) || since == "yesterday")
+                if (since == "yesterday")
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
                 else if (since == "today")
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
@@ -249,7 +249,7 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                IEnumerable<dtoVehicleMileage> vehiclemileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate);
+                IEnumerable<dtoVehicleMileage> vehiclemileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since));
 
                 VehicleMileage vehicleMileage = new VehicleMileage();
                 vehicleMileage.Vehicles = new List<entity.Vehicles>();

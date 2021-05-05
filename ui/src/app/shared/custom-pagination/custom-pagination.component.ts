@@ -11,8 +11,6 @@ import {MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator
 export class CustomPaginationComponent extends MatPaginatorIntl {
   @Input()
   showFirstLastButtons: boolean;
-  items = [];
-  pageOfItems: Array<any>;
   constructor() { 
     super()
   // this.nextPageLabel = ' My new label for next page';
