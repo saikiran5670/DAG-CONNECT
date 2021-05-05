@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.relevantcodes.extentreports.ExtentReports;
 
 import modules.CommonAPI;
@@ -34,6 +32,7 @@ public class DriverScript
 	public static int TestLastStep;	
 	public static String PageObject;
 	public static String TestCaseID;
+	public static String TestCaseDesc;
 	public static String RunMode;
 	public static String ActionKeyword;	
 	public static CommonFunctionLib commfunction;
@@ -72,7 +71,7 @@ public class DriverScript
 	        mergedArray.addAll(Arrays.asList(methodUSR));
 	        mergedArray.addAll(Arrays.asList(methodRol));
 	        method = mergedArray;
-	        System.out.println(method.toString());
+	        //System.out.println(method.toString());
 	      //=================
 		 }
 	
@@ -82,7 +81,7 @@ public class DriverScript
 		try 
         {
 		  String localDir = System.getProperty("user.dir");
-		  System.out.println(localDir + Constants.OR_Path);
+		 // System.out.println(localDir + Constants.OR_Path);
 		  File file;		
 		  file = new File(localDir + Constants.OR_Path);	
 		  FileInputStream fileInput = null;	  
@@ -90,7 +89,7 @@ public class DriverScript
 	      prop = new Properties(System.getProperties());			
 	      prop.load(fileInput);	      
 	      String path =  localDir + Constants.Path_TestData;
-		  System.out.println(path);
+		  //System.out.println(path);
 		  ExcelSheet.setExccelFile(path);	
 		  DriverScript startEngine = new DriverScript();
 		  startEngine.executeTestCase();
@@ -108,16 +107,19 @@ public class DriverScript
     		 String dateName = new SimpleDateFormat("ddMMMyyyyHHmmss").format(new Date());    
     		 CommonFunctionLib.reports = new ExtentReports(System.getProperty("user.dir") + "/HtmlReport/Result_"+ dateName +".html", true);	
     		 //This loop will execute number times = number of test cases
+    		 
     		 for (int iTestcase = 1; iTestcase <= TotalTestCases-1; iTestcase++)
              {
 	            bResult = true;
 	            TestCaseID = ExcelSheet.getCellData(iTestcase, Constants.Col_TestCaseID, Constants.Sheet_TestCases);
+	            TestCaseDesc = ExcelSheet.getCellData(iTestcase, Constants.Col_TestCaseDesc, Constants.Sheet_TestCases); 
 	            RunMode = ExcelSheet.getCellData(iTestcase, Constants.Col_RunMode, Constants.Sheet_TestCases);	 
 	            if (RunMode.equals("Yes"))
 	             {
 		             TestStep = ExcelSheet.getRowContains(TestCaseID, Constants.Col_TestCaseID, Constants.Sheet_TestSteps);
 		             TestLastStep = ExcelSheet.getStepCount(Constants.Sheet_TestSteps, TestCaseID, TestStep);		 
-		             Log.startTestCase(TestCaseID);	    
+		           //  Log.startTestCase(TestCaseID);
+		             Log.startTestCases(TestCaseID,TestCaseDesc);
 		             bResult = true; 
 	                 for (; TestStep < TestLastStep; TestStep++)
 	                  {
