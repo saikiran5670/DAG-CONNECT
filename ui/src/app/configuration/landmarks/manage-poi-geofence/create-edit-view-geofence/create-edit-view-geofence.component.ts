@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { Form, FormGroup, Validators } from '@angular/forms';
+import { Form, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
 import { FormBuilder } from '@angular/forms';
@@ -54,6 +54,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   circularGeofence: boolean = false;
   types = ['Regular', 'Global'];
   duplicateCircularGeofence: boolean = false;
+  duplicatePolygonGeofence: boolean = false;
   geoSelectionFlag: boolean = true;
 
   @ViewChild("map")
@@ -83,14 +84,13 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
     this.polygonGeofenceFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+      type: ['', []],
       category: ['', [Validators.required]],
-      sub_category: ['', [Validators.required]],
-      address: [''],
-      zip: [''],
-      city: [''],
-      country: [''],
-      lattitude: [''],
-      longitude: ['']
+      subCategory: ['', []],
+      address: new FormControl({value: null, disabled: true}),
+      zip: new FormControl({value: null, disabled: true}),
+      city: new FormControl({value: null, disabled: true}),
+      country: new FormControl({value: null, disabled: true})
     },
       {
         validator: [
@@ -108,8 +108,12 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     });
   }
 
-  setType() {
+  setCircularType() {
     this.circularGeofenceFormGroup.get('type').setValue(this.types[0]);
+  }
+
+  setPolygonType() {
+    this.polygonGeofenceFormGroup.get('type').setValue(this.types[0]);
   }
 
   getBreadcum(type: any) {
@@ -202,7 +206,15 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   }
 
-  onReset() {
+  onCreateUpdatePolygonGeofence() {
+
+  }
+
+  onCircularReset() {
+
+  }
+
+  onPolygonReset(){
 
   }
 
@@ -246,11 +258,20 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.geoSelectionFlag = false;
     if(type == 'circular'){
       this.circularGeofence = true;
-      this.setType();
+      this.setCircularType();
       this.updatePOIDatasource();
     }else{ //-- polygon
       this.polygoanGeofence = true;
+      this.setPolygonType();
     }
+  }
+
+  toBack() {
+    let emitObj = {
+      stepFlag: false,
+      msg: ""
+    }
+    this.backToPage.emit(emitObj);
   }
 
 }

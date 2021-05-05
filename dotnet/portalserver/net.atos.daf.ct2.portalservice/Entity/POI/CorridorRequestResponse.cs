@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace net.atos.daf.ct2.poigeofence.entity
+﻿
+namespace net.atos.daf.ct2.portalservice.Entity.POI
 {
     public class CorridorResponse
     {

@@ -60,6 +60,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   state: any;
   selectedMarker: any;
   // UpdatedPoiFlag: any;
+  searchData: any = [];
 
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
@@ -165,6 +166,9 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
+
+
+
     let defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
     this.map = new H.Map(this.mapElement.nativeElement,
@@ -198,6 +202,25 @@ export class CreateEditViewPoiComponent implements OnInit {
     ui.addBubble(bubble);
     this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
     }
+  }
+
+  searchValue(event: any) {
+    console.log("----search value called--",event.target.value);
+    let inputData = event.target.value;
+          // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+
+      this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
+        console.log("---service called here for search-- ",res.results);
+        let newData = res.results.map(item=>item.title);
+        console.log(newData);
+        this.searchData = newData;
+       });
+       
+  }
+
+  SearchListItems(item){
+console.log("you clicked on:" +item);
   }
 
   setUpClickListener(map, behavior, selectedMarker, here, poiFlag, data, thisRef, bubble, ui) {
