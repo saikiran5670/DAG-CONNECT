@@ -202,6 +202,7 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(landmarkservice);
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
