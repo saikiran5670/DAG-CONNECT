@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.alert.entity;
 using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.data;
@@ -47,6 +48,17 @@ namespace net.atos.daf.ct2.alert.test
             var ExcepteId = 0;
             var Id = _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active)).Result;
             Assert.AreEqual(ExcepteId, Id);
+        }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for create Alert")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void CreateAlertTest()
+        {
+            Alert alert = new Alert();
+            alert.Name = "Test";
+            var result = _ialertManager.CreateAlert(alert).Result;
+            Assert.IsTrue(result.Id > 0);
         }
     }
 }
