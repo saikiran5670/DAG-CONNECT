@@ -51,9 +51,10 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   polygoanGeofence: boolean = false;
-  circularGeofence: boolean = false; //false
+  circularGeofence: boolean = false;
   types = ['Regular', 'Global'];
   duplicateCircularGeofence: boolean = false;
+  geoSelectionFlag: boolean = true;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -97,10 +98,6 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         ]
       });
     this.breadcumMsg = this.getBreadcum(this.actionType);
-    if (this.circularGeofence) {
-      this.setType();
-      this.updatePOIDatasource();
-    }
   }
 
   updatePOIDatasource(){
@@ -212,7 +209,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   applyPOIFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // dataSourceForPOI defaults to lowercase matches
-    //this.dataSourceForPOI.filter = filterValue;
+    this.dataSourceForPOI.filter = filterValue;
   }
 
   masterToggleForPOI() {
@@ -243,6 +240,17 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   onSubCategoryChange(event: any){
 
+  }
+
+  geoSelection(type: any){
+    this.geoSelectionFlag = false;
+    if(type == 'circular'){
+      this.circularGeofence = true;
+      this.setType();
+      this.updatePOIDatasource();
+    }else{ //-- polygon
+      this.polygoanGeofence = true;
+    }
   }
 
 }
