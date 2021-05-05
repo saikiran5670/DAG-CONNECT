@@ -34,6 +34,7 @@ using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.alertservice;
+using net.atos.daf.ct2.corridorservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
