@@ -103,17 +103,41 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       if(this.selectedElementData && this.selectedElementData.type == 'C'){ //-- circular geofence
-        if(this.actionType == 'view'){
-          this.displayedColumns = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
-        }
         this.circularGeofence = true;
         this.setDefaultCircularGeofenceFormValue();
-        this.updatePOIDatasource();
+        this.loadGridData(this.poiData);
       }else{ //-- polygon geofence
         this.polygoanGeofence = true;
         this.setDefaultPolygonGeofenceFormValue();
       }
     }
+  }
+
+  loadGridData(tableData: any){
+    let selectedGeofenceList: any = [];
+    if(this.actionType == 'view'){
+      tableData.forEach((row: any) => {
+        let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
+        if (search.length > 0) {
+          selectedGeofenceList.push(row);
+        }
+      });
+      tableData = selectedGeofenceList;
+      this.displayedColumns = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
+    }
+    this.updatePOIDatasource(tableData);
+    if(this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
+
+  selectTableRows(){
+    this.dataSourceForPOI.data.forEach((row: any) => {
+      let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
+      if (search.length > 0) {
+        this.selectedPOI.select(row);
+      }
+    });
   }
 
   setDefaultCircularGeofenceFormValue(){
@@ -133,8 +157,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.polygonGeofenceFormGroup.get('country').setValue(this.selectedElementData.country);
   }
 
-  updatePOIDatasource(){
-    this.dataSourceForPOI = new MatTableDataSource(this.poiData);
+  updatePOIDatasource(tableData: any){
+    this.dataSourceForPOI = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSourceForPOI.paginator = this.paginator;
       this.dataSourceForPOI.sort = this.sort;
@@ -292,7 +316,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     if(type == 'circular'){
       this.circularGeofence = true;
       this.setCircularType();
-      this.updatePOIDatasource();
+      this.updatePOIDatasource(this.poiData);
     }else{ //-- polygon
       this.polygoanGeofence = true;
       this.setPolygonType();
