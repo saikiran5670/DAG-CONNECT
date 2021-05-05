@@ -182,11 +182,7 @@ export class CreateEditViewPoiComponent implements OnInit {
 
     // Create the default UI components
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
-    var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-      content: '<b>Click on map to create POI position</b>'
-  });
-  // Add info bubble to the UI:
-  ui.addBubble(bubble);
+   
     var searchbox = ui.getControl("searchbox");
     if (this.actionType == 'edit' || this.actionType == 'view') {
       let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
@@ -195,6 +191,11 @@ export class CreateEditViewPoiComponent implements OnInit {
       this.map.addObject(this.selectedMarker);
     }
     if(this.actionType != 'view'){
+      var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
+        content: '<b>Click on map to create POI position</b>'
+    });
+    // Add info bubble to the UI:
+    ui.addBubble(bubble);
     this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
     }
   }
