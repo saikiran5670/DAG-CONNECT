@@ -7,6 +7,8 @@ namespace net.atos.daf.ct2.data
 {
     public interface IDataAccess : IDisposable
     {
+        IDbConnection connection { get; set; }
+
         #region Sync Methods
 
         int Execute(
