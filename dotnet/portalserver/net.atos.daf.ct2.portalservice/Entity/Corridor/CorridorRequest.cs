@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public int OrganizationId { get; set; }
         [Required]
         [StringLength(1)]
-        public char CorridorType { get; set; }
+        public string CorridorType { get; set; }
         [Required]
         public string CorridorLabel { get; set; }
         [Required]
@@ -35,12 +35,18 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public bool PoisonousInhalation { get; set; }
         public bool WaterHarm { get; set; }
         public bool Other { get; set; }
-        public char TollRoad { get; set; }
-        public char Mortorway { get; set; }
-        public char BoatFerries { get; set; }
-        public char RailFerries { get; set; }
-        public char Tunnels { get; set; }
-        public char DirtRoad { get; set; }
+        [StringLength(1)]
+        public string TollRoad { get; set; }
+        [StringLength(1)]
+        public string Mortorway { get; set; }
+        [StringLength(1)]
+        public string BoatFerries { get; set; }
+        [StringLength(1)]
+        public string RailFerries { get; set; }
+        [StringLength(1)]
+        public string Tunnels { get; set; }
+        [StringLength(1)]
+        public string DirtRoad { get; set; }
         public int VehicleSizeHeight { get; set; }
         public int VehicleSizeWidth { get; set; }
         public int VehicleSizeLength { get; set; }
