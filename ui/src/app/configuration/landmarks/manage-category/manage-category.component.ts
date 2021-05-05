@@ -181,14 +181,14 @@ export class ManageCategoryComponent implements OnInit {
       delType = 'subcategory';
       deleteText = this.translationData.lblDelete || 'Delete';
       deleteMsg = this.translationData.lblAreyousureyouwanttodeletesubcategory || "Are you sure you want to delete subcategory '$'?";
-    }else{
+    }else{ //-- delete cat
       let search = this.allCategoryData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
-      if(search.length > 1) { //-- having sub category
+      if(search.length > 1 || rowData.noOfPOI > 0 || rowData.noOfGeofence > 0) { //-- having sub-cat/POI/geofence
         name = rowData.parentCategoryName;
         delType = '';
         deleteText = 'hide-btn'; 
-        deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "The '$' contains a sub-category. You can not delete this category if it has a sub-category. To remove this category, first remove connected sub-category.";
-      }else{ //-- No sub-cat
+        deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "'$' category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+      }else{ //-- No sub-cat/POI/Geofence
         name = rowData.parentCategoryName;
         delType = 'category';
         deleteText = this.translationData.lblDelete || 'Delete';
@@ -205,13 +205,6 @@ export class ManageCategoryComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if(res){
-        // if(delType == 'category'){
-        //   this.landmarkCategoryService.deleteLandmarkCategory(rowData.parentCategoryId).subscribe((deletedData: any) => {
-        //     this.successMsgBlink(this.getDeletMsg(name, delType));
-        //     this.loadLandmarkCategoryData();
-        //     this.selectedCategory = new SelectionModel(true, []);
-        //   });
-        // }
         if(delType == 'category' || delType == 'subcategory'){
           let bulkDeleteObj: any = {
             category_SubCategory_s: [{
@@ -428,7 +421,7 @@ export class ManageCategoryComponent implements OnInit {
     if(filterCat.length == this.selectedCategory.selected.length){ //- delete cat
       filterCat.forEach(item => {
         let filterId = this.allCategoryData.filter(i => i.parentCategoryId == item.parentCategoryId);
-        if(filterId.length > 1){ //-- cat having sub-cat
+        if(filterId.length > 1 || filterId[0].noOfPOI > 0 || filterId[0].noOfGeofence > 0){ //-- cat having sub-cat/POI/Geofence
           noDelCatCount++;
           noDelCatList += item.parentCategoryName + ", ";
         }else{
@@ -437,17 +430,17 @@ export class ManageCategoryComponent implements OnInit {
           bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
         }
       });
-      if(delCatCount == this.selectedCategory.selected.length){ //-- all are cat, having no sub-cat
+      if(delCatCount == this.selectedCategory.selected.length){ //-- all are cat, having no sub-cat/POI/Geofence
         deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
         noDeleteCatMsg = '';
         deleteText = this.translationData.lblDelete || 'Delete';
       }else if(noDelCatCount == this.selectedCategory.selected.length){
         deleteCatMsg = '';
-        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist.";
+        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
         deleteText = 'hide-btn'; 
       }else{
         deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
-        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist.";
+        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
         deleteText = this.translationData.lblDelete || 'Delete';
       }
     }
@@ -466,7 +459,7 @@ export class ManageCategoryComponent implements OnInit {
       }else if(filterSubCat.length > 0 && filterCat.length > 0){
         filterCat.forEach(item => {
           let filterId = this.allCategoryData.filter(i => i.parentCategoryId == item.parentCategoryId);
-          if(filterId.length > 1){ //-- cat having sub-cat
+          if(filterId.length > 1 || filterId[0].noOfPOI > 0 || filterId[0].noOfGeofence > 0){ //-- cat having sub-cat
             noDelCatCount++;
             noDelCatList += item.parentCategoryName + ", ";
           }else{
@@ -488,7 +481,7 @@ export class ManageCategoryComponent implements OnInit {
           deleteText = this.translationData.lblDelete || 'Delete';
         }else{ //-- sub-cat & cat having sub-cat
           deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
-          noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist.";
+          noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
           deleteText = this.translationData.lblDelete || 'Delete';
         }
       }

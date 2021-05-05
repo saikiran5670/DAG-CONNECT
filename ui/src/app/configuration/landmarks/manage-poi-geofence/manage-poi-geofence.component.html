@@ -1,4 +1,4 @@
-<div  *ngIf = "!importPOIClicked">
+<div  *ngIf = "!importClicked">
 <div class='bgtrans'>
   <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
     style='padding:10px; color:#fff; background: #5dc24e;'>
@@ -182,6 +182,11 @@
     </mat-select>
 </mat-form-field>
   </div>
+  <!-- <div>
+    <button mat-flat-button (click)="importGeofence()">
+      <mat-icon>file_download</mat-icon>{{ translationData.lblImport || 'Import' }}
+    </button>
+  </div> -->
   <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
     <button mat-button  [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon></button>
     <mat-menu #menu="matMenu">
@@ -261,4 +266,11 @@
   <app-common-import [importFileComponent]="'poi'" (showImportCSV)="updateImportView($event)"  [importTranslationData] = "importTranslationData" 
                       [templateTitle]="templateTitle" [templateValue] ="templateValue" [tableColumnList] = "tableColumnList" [tableColumnName]="tableColumnName"
                       [tableTitle]='tableTitle'></app-common-import>
+</div>
+<div class='bgtrans' *ngIf = "importGeofenceClicked">
+  <div>Home / Configuration / Landmark / Import Geofence</div>
+
+  <app-common-import [importFileComponent]="'geofence'" (showImportCSV)="updateImportView($event)"  [importTranslationData] = "importTranslationData" 
+                      [templateTitle]="templateTitle" [templateValue] ="templateValue" [tableColumnList] = "tableColumnList" [tableColumnName]="tableColumnName"
+                      [tableTitle]='tableTitle' [defaultGpx]="defaultGpx"></app-common-import>
 </div>
