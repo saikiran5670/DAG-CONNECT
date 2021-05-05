@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string StartAddress { get; set; }
         public string EndAddress { get; set; }
         public int Width { get; set; }
-        public char Trailer { get; set; }
+        public int Trailer { get; set; }
         public bool TransportData { get; set; }
         public bool TrafficFlow { get; set; }
         public bool Explosive { get; set; }

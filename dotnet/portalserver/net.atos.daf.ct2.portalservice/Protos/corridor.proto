@@ -57,7 +57,7 @@ enum Responsecode{
          string StartAddress =5;
          string EndAddress =6;
          int32 Width =7;
-         string Trailer =8;
+         int32 Trailer =8;
          bool TransportData =9;
          bool TrafficFlow =10;
          bool Explosive =11;

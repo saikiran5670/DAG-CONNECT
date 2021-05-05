@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.StartAddress = request.StartAddress;
             obj.EndAddress = request.EndAddress;
             obj.Width = request.Width;
-            obj.Trailer = Convert.ToString(request.Trailer);
+            obj.Trailer = request.Trailer;
             obj.TransportData = request.TransportData;
             obj.TrafficFlow = request.TrafficFlow;
 

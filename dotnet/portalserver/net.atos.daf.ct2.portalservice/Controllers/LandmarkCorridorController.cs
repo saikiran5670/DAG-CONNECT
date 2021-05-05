@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
         [HttpPost]
-        [Route("addcategory")]
+        [Route("addroutecorridor")]
 
         public async Task<IActionResult> AddRouteCorridor(Entity.Corridor.CorridorRequest request)
         {

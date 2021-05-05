@@ -1641,7 +1641,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 int VehicleDataMartID = await DataMartdataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicledatamart.VIN });
                 var QueryStatement = "";
-
+                bool isNameOrRegUpdated = false;
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@name", string.IsNullOrEmpty(vehicledatamart.Name) ? "" : vehicledatamart.Name);
@@ -1651,11 +1651,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@engine_type", string.IsNullOrEmpty(vehicledatamart.Engine_Type) ? "" : vehicledatamart.Engine_Type);
                 parameter.Add("@model_type", string.IsNullOrEmpty(vehicledatamart.Model_Type) ? "" : vehicledatamart.Model_Type);
                 parameter.Add("@vid", string.IsNullOrEmpty(vehicledatamart.Vid) ? "" : vehicledatamart.Vid);
-
+                parameter.Add("@created_modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
 
                 if (VehicleDataMartID == 0)
                 {
-
                     QueryStatement = @"INSERT INTO master.vehicle
                                       (
                                         vin
@@ -1664,7 +1663,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,registration_no 
                                        ,type 
                                        ,engine_type
-                                       ,model_type) 
+                                       ,model_type
+                                       ,created_at
+                                       ,modified_at) 
                             	VALUES(
                                        @vin
                                        ,@name
@@ -1673,11 +1674,19 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        ,@type 
                                        ,@engine_type
                                        ,@model_type
+                                       ,@created_modified_at
+                                       ,@created_modified_at
                                       ) RETURNING id";
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == true)
                 {
+                    //check for old values for vehicle namelist modified_at update
                     parameter.Add("@id", VehicleDataMartID);
+                    var vehicleNamelist = await DataMartdataAccess.QueryFirstAsync<VehicleNamelist>
+                        ("Select name as Name, registration_no as RegistrationNo from master.vehicle where id=@id", parameter);
+
+                    isNameOrRegUpdated = !vehicleNamelist.RegistrationNo.Equals(vehicledatamart.Registration_No);
+
                     QueryStatement = @" UPDATE master.vehicle
                                     SET                                  
                                     registration_no=@registration_no
@@ -1689,25 +1698,36 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == false && vehicledatamart.Vid=="")
                 {
+                    //check for old values for vehicle namelist modified_at update
                     parameter.Add("@id", VehicleDataMartID);
-                    QueryStatement = @" UPDATE master.vehicle
-                                    SET                                  
-                                        registration_no=@registration_no
-                                        ,name=@name
-                                     WHERE id = @id
-                                     RETURNING id;";
+                    var vehicleNamelist = await DataMartdataAccess.QueryFirstAsync<VehicleNamelist>
+                        ("Select name as Name, registration_no as RegistrationNo from master.vehicle where id=@id", parameter);
+
+                    isNameOrRegUpdated = (!vehicleNamelist.RegistrationNo.Equals(vehicledatamart.Registration_No) ||
+                                          !vehicleNamelist.Name.Equals(vehicledatamart.Name));
+
+                    QueryStatement = @"UPDATE master.vehicle
+                                        SET registration_no=@registration_no, name=@name
+                                        WHERE id = @id RETURNING id;";
                 }
                 else
                 {
+                    //TCU condition
                     parameter.Add("@id", VehicleDataMartID);
-                    QueryStatement = @" UPDATE master.vehicle
-                                     SET                                  
-                                     vid=@vid
-                                     WHERE id = @id
-                                     RETURNING id;";
+                    QueryStatement = @"UPDATE master.vehicle
+                                         SET vid=@vid
+                                         WHERE id = @id RETURNING id;";
                 }
 
                 int vehicleID = await DataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+
+                if(isNameOrRegUpdated)
+                    await DataMartdataAccess.ExecuteScalarAsync<int>(
+                                     @"UPDATE master.vehicle
+                                     SET                                  
+                                     modified_at=@created_modified_at
+                                     WHERE id = @id", parameter);
+
                 vehicledatamart.ID = vehicleID;
                 return vehicledatamart;
             }
@@ -1716,7 +1736,6 @@ namespace net.atos.daf.ct2.vehicle.repository
                 throw ex;
             }
         }
-
 
         #endregion
 

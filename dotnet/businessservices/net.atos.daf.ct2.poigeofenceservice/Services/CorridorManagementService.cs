@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             RouteCorridorAddResponse response = new RouteCorridorAddResponse();
             try
             {
-                _logger.Info("Add Category .");
+                _logger.Info("Add Corridor .");
                 poigeofence.entity.RouteCorridor obj = new poigeofence.entity.RouteCorridor();
                 obj.OrganizationId = request.OrganizationId;
                 obj.CorridorType = Convert.ToChar(request.CorridorType);
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 var result = await _corridorManger.AddRouteCorridor(obj);
                 if (result.Id == -1)
                 {
-                    response.Message = "Category Name is " + obj.CorridorLabel + " already exists ";
+                    response.Message = "Corridor Name is " + obj.CorridorLabel + " already exists ";
                     response.Code = Responsecode.Conflict;
                     response.CorridorID = result.Id;
 

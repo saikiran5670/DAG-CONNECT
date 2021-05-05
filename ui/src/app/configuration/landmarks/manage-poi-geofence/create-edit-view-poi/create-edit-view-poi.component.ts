@@ -60,6 +60,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   state: any;
   selectedMarker: any;
   // UpdatedPoiFlag: any;
+  searchData: any = [];
 
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
@@ -210,8 +211,17 @@ export class CreateEditViewPoiComponent implements OnInit {
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
 
       this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
-        console.log("---service called here for search-- ",res)
+     let newData = res.results;
+          this.searchData = newData;
        });
+       
+  }
+
+  SearchListItems(item){
+console.log("you clicked on:" +item.title);
+console.log(item.position);
+this.map.setCenter({lat:item.position[0], lng:item.position[1]});
+this.map.setZoom(14);
   }
 
   setUpClickListener(map, behavior, selectedMarker, here, poiFlag, data, thisRef, bubble, ui) {
@@ -221,7 +231,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     map.addEventListener('tap', function (evt) {
       // let selectedMakerOnClick = selectedMarker;
       // console.log("----UpdatedPoiFlag---",thisRef.poiFlag)
-      console.log(ui.getBubbles());
+      // console.log(ui.getBubbles());
       ui.removeBubble(bubble);
       if (thisRef.poiFlag) {
         thisRef.setNewMapMarker(map, behavior, selectedMarker, here, poiFlag, data, thisRef, evt)
@@ -369,7 +379,7 @@ export class CreateEditViewPoiComponent implements OnInit {
 
   setAddressValues(addressVal, positions) {
     //     console.log("this is in setAddress()");
-    // console.log(addressVal);
+    console.log(addressVal);
     this.address = addressVal.Label;
     this.zip = addressVal.PostalCode;
     this.city = addressVal.City;
