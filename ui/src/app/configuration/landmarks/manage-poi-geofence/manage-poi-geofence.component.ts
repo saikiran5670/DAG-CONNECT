@@ -314,6 +314,17 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.createEditViewPoiFlag = true;
   }
 
+  editViewGeofence(rowData: any, type: any) {
+    this.geofenceService.getGeofenceDetails(this.accountOrganizationId, rowData.geofenceId).subscribe((geoData: any) => {
+      this.selectedElementData = geoData[0];
+      this.actionType = type;
+      this.tabVisibility.emit(false);
+      this.createEditViewGeofenceFlag = true;
+    }, (error) => {
+      console.log('Not valid geofence data...')
+    });
+  }
+
   successMsgBlink(msg: any) {
     this.titleVisible = true;
     this.poiCreatedMsg = msg;
@@ -411,12 +422,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.geofenceName);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.geofenceService.deleteGeofence(GeofenceId).subscribe((data) => {
-          this.openSnackBar('Item delete', 'dismiss');
+        this.geofenceService.deleteGeofence(GeofenceId).subscribe((delData: any) => {
+          this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
           this.loadGeofenceData();
           this.loadPoiData();
-        })
-        this.successMsgBlink(this.getDeletMsg(rowData.geofenceName));
+        });
       }
     });
   }

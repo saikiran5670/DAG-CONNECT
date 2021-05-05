@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using net.atos.daf.ct2.alert.entity;
+using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.data;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace net.atos.daf.ct2.alert.repository
             dataAccess = _dataAccess;
 
         }
+
 
         #region Update Alert
 
@@ -62,9 +64,68 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Update Alert State
-        public Task<bool> UpdateAlertState(int alertId, char state)
+        public async Task<int> UpdateAlertState(int alertId, char state)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", alertId);
+                parameter.Add("@state", state);
+                parameter.Add("@checkstate", state == ((char)AlertState.Active) ? ((char)AlertState.Suspend) : ((char)AlertState.Active));
+                var query = $"update master.Alert set state = @state where id=@id and state=@checkstate RETURNING id";
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> AlertStateToDelete(int alertId, char state)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", alertId);
+                parameter.Add("@state", state);
+                var query = $"update master.Alert set state = @state where id=@id";
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Task<bool> CheckIsNotificationExitForAlert(int alertId)
         {
             throw new NotImplementedException();
+        }
+
+
+        #endregion
+
+        #region Alert Category
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                var QueryStatement = @"SELECT                                     
+                                    id as Id, 
+                                    type as Type, 
+                                    enum as Enum, 
+                                    parent_enum as ParentEnum, 
+                                    key as Key
+                                    FROM translation.enumtranslation;";
+
+                IEnumerable<EnumTranslation> enumtranslationlist = await dataAccess.QueryAsync<EnumTranslation>(QueryStatement, null);
+
+                return enumtranslationlist;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         #endregion
 

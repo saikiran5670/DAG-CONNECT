@@ -55,7 +55,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   types = ['Regular', 'Global'];
   duplicateCircularGeofence: boolean = false;
   duplicatePolygonGeofence: boolean = false;
-  geoSelectionFlag: boolean = true;
+  geoSelectionFlag: boolean = false;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -92,12 +92,45 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       city: new FormControl({value: null, disabled: true}),
       country: new FormControl({value: null, disabled: true})
     },
-      {
-        validator: [
-          CustomValidators.specialCharValidationForName('name'),
-        ]
-      });
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('name'),
+      ]
+    });
     this.breadcumMsg = this.getBreadcum(this.actionType);
+    if(this.actionType == 'create'){
+      this.geoSelectionFlag = true;
+    }
+    if(this.actionType == 'view' || this.actionType == 'edit'){
+      if(this.selectedElementData && this.selectedElementData.type == 'C'){ //-- circular geofence
+        if(this.actionType == 'view'){
+          this.displayedColumns = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
+        }
+        this.circularGeofence = true;
+        this.setDefaultCircularGeofenceFormValue();
+        this.updatePOIDatasource();
+      }else{ //-- polygon geofence
+        this.polygoanGeofence = true;
+        this.setDefaultPolygonGeofenceFormValue();
+      }
+    }
+  }
+
+  setDefaultCircularGeofenceFormValue(){
+    this.circularGeofenceFormGroup.get('circularName').setValue(this.selectedElementData.name);
+    this.circularGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.circularGeofenceFormGroup.get('radius').setValue(this.selectedElementData.distance);
+  }
+
+  setDefaultPolygonGeofenceFormValue(){
+    this.polygonGeofenceFormGroup.get('name').setValue(this.selectedElementData.name);
+    this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.polygonGeofenceFormGroup.get('category').setValue(this.selectedElementData.categoryId);
+    this.polygonGeofenceFormGroup.get('subCategory').setValue(this.selectedElementData.subCategoryId);
+    this.polygonGeofenceFormGroup.get('address').setValue(this.selectedElementData.address);
+    this.polygonGeofenceFormGroup.get('zip').setValue(this.selectedElementData.zipcode);
+    this.polygonGeofenceFormGroup.get('city').setValue(this.selectedElementData.city);
+    this.polygonGeofenceFormGroup.get('country').setValue(this.selectedElementData.country);
   }
 
   updatePOIDatasource(){
@@ -117,7 +150,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   getBreadcum(type: any) {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewPOI ? this.translationData.lblViewPOI : 'View POI Details') : (type == 'edit') ? (this.translationData.lblEditPOI ? this.translationData.lblEditPOI : 'Edit POI Details') : (this.translationData.lblPOIDetails ? this.translationData.lblPOIDetails : 'Add New POI')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewGeofenceDetails ? this.translationData.lblViewGeofenceDetails : 'View Geofence Details') : (type == 'edit') ? (this.translationData.lblEditGeofenceDetails ? this.translationData.lblEditGeofenceDetails : 'Edit Geofence Details') : (this.translationData.lblAddNewGeofence ? this.translationData.lblAddNewGeofence : 'Add New Geofence')}`;
   }
 
   public ngAfterViewInit() {

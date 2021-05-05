@@ -16,26 +16,45 @@ namespace net.atos.daf.ct2.alert
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
-        public async Task<bool> ActivateAlert(int alertId, char state)
+        public async Task<int> ActivateAlert(int alertId, char state)
         {
             return await alertRepository.UpdateAlertState(alertId,state);
         }
 
-        public async Task<bool> SuspendAlert(int alertId, char state)
+        public async Task<int> SuspendAlert(int alertId, char state)
         {
             return await alertRepository.UpdateAlertState(alertId, state);
         }
 
-        public async Task<bool> DeleteAlert(int alertId, char state)
+        public async Task<int> DeleteAlert(int alertId, char state)
         {
-            return await alertRepository.UpdateAlertState(alertId, state);
+            return await alertRepository.AlertStateToDelete(alertId, state);
         }
 
+        public async Task<bool> CheckIsNotificationExitForAlert(int alertId)
+        {
+            return await alertRepository.CheckIsNotificationExitForAlert(alertId);
+        }
+        
         #endregion
 
         public async Task<Alert> UpdateAlert(Alert alert)
         {
             return await alertRepository.UpdateAlert(alert);
         }
+
+        #region Alert Category
+        public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
+        {
+            try
+            {
+                return await alertRepository.GetAlertCategory();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
