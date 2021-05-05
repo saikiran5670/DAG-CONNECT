@@ -13,8 +13,7 @@
 <mat-card class='mat-elevation-z'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAddNewGeofence ||
-        'Add New Geofence'}}</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'create') ? (translationData.lblAddNewGeofence || 'Add New Geofence') : (actionType == 'edit') ? (translationData.lblEditGeofenceDetails || 'Edit Geofence Details') : (translationData.lblViewGeofenceDetails || 'View Geofence Details') }}</span>
     </div>
   </div>
   <div *ngIf='geoSelectionFlag' class="selectGroContainer">
@@ -322,13 +321,14 @@
             <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
               [checked]='selectedPOI.hasValue() && isAllSelectedForPOI()'
               [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
-              [aria-label]='checkboxLabelForPOI()'>
+              [aria-label]='checkboxLabelForPOI()' 
+              [disabled]="actionType != 'create'">
             </mat-checkbox>
             <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null'
-              [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
+              [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' [disabled]="actionType != 'create'">
             </mat-checkbox>
           </mat-cell>
         </ng-container>
