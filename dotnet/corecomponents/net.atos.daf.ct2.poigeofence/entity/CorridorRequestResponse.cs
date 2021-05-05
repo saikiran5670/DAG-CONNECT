@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     {
         public int Id { get; set; }
         public int OrganizationId { get; set; }
-        public string Name { get; set; }
+        public string CorridoreName { get; set; }
         public string StartPoint { get; set; }
         public double StartLat { get; set; }
         public double StartLong { get; set; }

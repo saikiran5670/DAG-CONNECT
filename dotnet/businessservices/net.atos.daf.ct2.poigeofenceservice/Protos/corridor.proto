@@ -1,14 +1,48 @@
 
 
 syntax = "proto3";
-option csharp_namespace = "net.atos.daf.ct2.poigeofences";
+option csharp_namespace = "net.atos.daf.ct2.corridorservice";
 
-package corridor;
+package corridorservice;
 
 service CorridorService{
-
-//rpc AddCorridor (CorridorAddRequest) returns (CorridorAddResponse);
-
+ rpc GetCorridorList (CorridorRequest) returns (CorridorResponseList);
     }
 
+message CorridorRequest{
+    int32 OrganizationId = 1;
+    int32 CorridorId = 2;
+}
 
+message CorridorResponse{
+    int32 Id =1;
+    int32 OrganizationId =2;
+    string CorridoreName =3;
+    string StartPoint=4;
+    double StartLat=5;
+    double StartLong=6;
+    string EndPoint=7;
+     double EndLat=8;
+    double EndLong=9;
+    double Distance=10;
+    double Width=11;
+     int32 CreatedBy = 12;
+    int64 CreatedAt = 13;
+     int32 ModifiedBy = 14;
+    int64 ModifiedAt = 15;
+}
+
+message CorridorResponseList  {
+  repeated CorridorResponse CorridorList = 1;
+  Responsecode code = 2;
+  string message = 3;
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
