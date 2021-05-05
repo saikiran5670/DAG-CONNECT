@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { packageModel } from '../../models/package.model';
 import { PackageService } from '../../services/package.service';
 import { POIService } from '../../services/poi.service';
+import { GeofenceService } from '../../services/landmarkGeofence.service';
 
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
@@ -49,7 +50,7 @@ export class CommonImportComponent implements OnInit {
   parsedGPXData : any;
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
-    private poiService: POIService,private ngxXml2jsonService : NgxXml2jsonService) { }
+    private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
 
   ngOnInit(): void {
     if(this.importFileComponent === 'poi'){
@@ -556,20 +557,17 @@ export class CommonImportComponent implements OnInit {
           "nodes": nodeArraySet[i]
         })
       }
+      this.filelist = organizedGPXData;
       
-      // this.poiService.importGeofenceGpx(organizedGPXData).subscribe((resultData)=>{
-
-      // })
       console.log(organizedGPXData)
       console.log(nodeArray)
   }
 
   prepareGeofenceDataToImport(removableInput){
-    console.log(removableInput)
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(removableInput, 'text/xml');
-    const obj = this.ngxXml2jsonService.xmlToJson(xml);
-    console.log(obj)
+  //   this.geofenceService.importGeofence(this.filelist).subscribe((resultData)=>{
+  //    // this.validateImportData = 
+
+  // })
 
   }
 
