@@ -21,9 +21,9 @@ export class AccountService {
   generateHeader(){
     let genericHeader : object = {
       'Content-Type' : 'application/json',
-      'accountId' : localStorage.getItem('accountId'),
-      'orgId' : localStorage.getItem('accountOrganizationId'),
-      'roleId' : localStorage.getItem('accountRoleId')
+      'accountId' : localStorage.getItem('accountId') ? localStorage.getItem('accountId') : 0,
+      'orgId' : localStorage.getItem('accountOrganizationId') ? localStorage.getItem('accountOrganizationId') : 0,
+      'roleId' : localStorage.getItem('accountRoleId') ? localStorage.getItem('accountRoleId') : 0
     }
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;

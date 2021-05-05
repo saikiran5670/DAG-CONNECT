@@ -20,7 +20,13 @@ public class Log
 		
 		CommonFunctionLib.test = CommonFunctionLib.reports.startTest(TestCaseName);
 	}
-
+	public static void startTestCases(String testName, String description) {
+		Log.info("*************************************************************************************");
+		Log.info("***************************" + testName + "**************************************");
+		Log.info("*************************************************************************************");
+		
+		CommonFunctionLib.test = CommonFunctionLib.reports.startTest(testName,description);
+	}
 	
     public static void endTestCase (String TestCaseName) 
     {
@@ -31,6 +37,8 @@ public class Log
 		
 		 CommonFunctionLib.reports.endTest(CommonFunctionLib.test);
 	}
+  
+    
 	
     public static void info(String message) 
     {

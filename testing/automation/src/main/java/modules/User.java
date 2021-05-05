@@ -37,7 +37,7 @@ public class User extends CommonFunctionLib{
 			String GRPTBL = getTextFromOR("GRP_STEP2_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
-			String CELL = "/div";
+			String CELL = "/div/div";
 			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL);
 			
 				

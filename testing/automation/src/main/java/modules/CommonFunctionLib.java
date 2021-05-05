@@ -45,9 +45,7 @@ public class CommonFunctionLib
 	public static Vehicles vehi;
 	public CommonFunctionLib() {
 		
-			URL="DEV";
-			System.out.println(URL);
-			//vehi = new Vehicles();
+			
 		}
 //*********************UI Automation************************************************************
 //*********************OPEN BROWSER************************************************************	
@@ -1296,7 +1294,7 @@ try
 	System.out.println("Value found in expected column");
 	test.log(LogStatus.PASS,  "Value found in expected column");
 	Log.info("Value found in expected column");	
-	if (column.equals("Role Name")) {
+	if (column.equals("Name")) {
 		String Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("ROLE_DELETE");
 		System.out.println(RowPart + j + Btn_Delete);
 		driver.findElement(By.xpath(RowPart + j + Btn_Delete)).click();
@@ -1528,18 +1526,18 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	for (int k = 1; k <= Page_No; k++) 
 	{
 	waitForLoadingImage();
-	if (driver.findElement(getLocator("TABLE")).isDisplayed());
+	if (driver.findElement(By.xpath(GRPTBL)).isDisplayed());
 	{
 	System.out.println(" Next Page button is working");
 	Thread.sleep(3000);
-	List<WebElement> options1 = driver.findElements(getLocator("GRP_ROW"));
+	List<WebElement> options1 = driver.findElements(By.xpath(GRP_ROW));
 	Thread.sleep(3000);
 	for (int j = 1; j <= options1.size(); j++) 
 	{
-	String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
-	String rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getText();
+	//String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
+	String rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]")).getText();
 	String[] str;
-	if(column.equals("Vehicle Group")||column.equals("Vehicle Group/Vehicle")) {
+	if(column.equals("Vehicle Group")||column.equals("Vehicle")) {
 		 str = rowvalueF.split("\\r?\\n");
 		 rowvalueF = str[0];
 	}
@@ -1552,8 +1550,8 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	test.log(LogStatus.PASS,  "Value found in expected column");
 	Log.info("Value found in expected column");	
 	String Btn_View = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("VIEW");
-	System.out.println(RowPart + j + Btn_View);
-	driver.findElement(By.xpath(RowPart + j + Btn_View)).click();
+	System.out.println(GRPTBL + GRP_ROW+"["  + j + Btn_View);
+	driver.findElement(By.xpath(GRPTBL + GRP_ROW+"["  + j + Btn_View)).click();
 	System.out.println("Successfully clicked on View button.");
 	test.log(LogStatus.PASS,  "Successfully clicked on View button.");
 	Log.info("Successfully clicked on View button.");
@@ -1660,12 +1658,12 @@ System.out.println("Value found in expected column");
 test.log(LogStatus.PASS,  "Value found in expected column");
 Log.info("Value found in expected column");	
 
-if(column.equals("Role Name")) {
-	String Btn_EditR = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("ROLE_EDIT");
+if(column.equals("Name")) {
+	String Btn_EditR = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("GRP_EDIT");//"ROLE_EDIT");
 	System.out.println(RowPart + j + Btn_EditR);
 	driver.findElement(By.xpath(RowPart + j + Btn_EditR)).click();
 }else {
-	String Btn_Edit = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("GRP_EDIT");
+	String Btn_Edit = getTextFromOR("GRP_EDIT1")+ ActionColNo + "]"+ getTextFromOR("GRP_EDIT_PEN");
 	System.out.println(RowPart + j + Btn_Edit);
 	driver.findElement(By.xpath(RowPart + j + Btn_Edit)).click();
 }
