@@ -8,9 +8,10 @@ namespace net.atos.daf.ct2.alert
 {
     public interface IAlertManager
     {
-        Task<bool> ActivateAlert(int alertId, char state);
-        Task<bool> DeleteAlert(int alertId, char state);
-        Task<bool> SuspendAlert(int alertId, char state);
+        Task<int> ActivateAlert(int alertId, char state);
+        Task<int> DeleteAlert(int alertId, char state);
+        Task<int> SuspendAlert(int alertId, char state);
+        Task<bool> CheckIsNotificationExitForAlert(int alertId);
         Task<Alert> UpdateAlert(Alert alert);
     }
 }
