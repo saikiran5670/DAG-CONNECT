@@ -44,43 +44,62 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         {
             try
             {
-
                 long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
+                var isValid = ValidateParameter(ref since, out bool isNumeric);
+                if (!isValid)
+                {
+                    VehicleNamelistResponse vehiclenamelist = new VehicleNamelistResponse();
+                    vehiclenamelist = await vehicleManager.GetVehicleNamelist(since, isNumeric);
 
-                bool isNumeric = long.TryParse(since, out long n);
-                if (isNumeric)
-                {
-                    string sTimezone = "UTC";
-                    DateTime dDate;
-                    string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
-                    if (!DateTime.TryParse(converteddatetime, out dDate))
-                    {
-                        return StatusCode(400, string.Empty);
-                    }
-                    else
-                    {
-                        since = converteddatetime;
-                    }
+                    vehiclenamelist.RequestTimestamp = currentdatetime;
+                    return Ok(vehiclenamelist);
                 }
-                else if (!(string.IsNullOrEmpty(since) || since.Equals("yesterday") || since.Equals("today")))
-                {
-                    return StatusCode(400, string.Empty);
-                }
-                VehicleNamelistResponse vehiclenamelist = new VehicleNamelistResponse();
-                vehiclenamelist = await vehicleManager.GetVehicleNamelist(since, isNumeric);
-                if (vehiclenamelist.Vehicles.Count == 0)
-                {
-                    return StatusCode(404, string.Empty);
-                }
-                vehiclenamelist.RequestTimestamp = currentdatetime;
-                return Ok(vehiclenamelist);
+
+                return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(since));
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
                 return StatusCode(500, string.Empty);
             }
+        }
+
+        private bool ValidateParameter(ref string since, out bool isNumeric)
+        {
+            isNumeric = long.TryParse(since, out _);
+            if (isNumeric)
+            {
+                string sTimezone = "UTC";
+                DateTime dDate;
+                try
+                {
+                    string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
+                    if (!DateTime.TryParse(converteddatetime, out dDate))
+                        return false;
+                    else
+                        since = converteddatetime;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (!(string.IsNullOrEmpty(since) || since.Equals("yesterday") || since.Equals("today")))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string parameter)
+        {
+            return StatusCode((int)statusCode, new ErrorResponse()
+            {
+                ResponseCode = ((int)statusCode).ToString(),
+                Message = "INVALID_PARAMETER",
+                Value = parameter + " parameter has an invalid value."
+            });
         }
     }
 }

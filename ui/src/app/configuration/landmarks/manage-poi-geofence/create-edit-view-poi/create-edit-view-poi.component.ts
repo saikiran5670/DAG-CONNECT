@@ -60,6 +60,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   state: any;
   selectedMarker: any;
   // UpdatedPoiFlag: any;
+  searchData: any = [];
 
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
@@ -210,8 +211,16 @@ export class CreateEditViewPoiComponent implements OnInit {
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
 
       this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
-        console.log("---service called here for search-- ",res)
+        console.log("---service called here for search-- ",res.results);
+        let newData = res.results.map(item=>item.title);
+        console.log(newData);
+        this.searchData = newData;
        });
+       
+  }
+
+  SearchListItems(item){
+console.log("you clicked on:" +item);
   }
 
   setUpClickListener(map, behavior, selectedMarker, here, poiFlag, data, thisRef, bubble, ui) {

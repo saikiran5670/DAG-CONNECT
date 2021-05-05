@@ -44,8 +44,8 @@ namespace net.atos.daf.ct2.vehicle.repository
             Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
             Task<VehicleDataMart> CreateAndUpdateVehicleInDataMart(VehicleDataMart vehicledatamart);
 
-            #region Vehicle Mileage Data
-            Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate);
+        #region Vehicle Mileage Data
+        Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter);
 
         #endregion
 
