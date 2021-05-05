@@ -41,7 +41,7 @@ public class Vehicles extends CommonFunctionLib{
 		try {
 				String GRPTBL = getTextFromOR("GRP_STEP1_TBL"); 
 				String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
-				String ColDiv = "]/div";
+				String ColDiv = "]/div/div[1]";
 				CommonFunctionLib.verifyColInTable(GRPTBL, COLHEAD, ColDiv, "Main");
 				}catch (Exception e) {
 				test.log(LogStatus.FAIL, e.getMessage());
@@ -52,6 +52,26 @@ public class Vehicles extends CommonFunctionLib{
 				DriverScript.bResult = false;				
 				}	
 	}
+	
+	public static void viewVehicle() throws Exception {
+		try {
+				String GRPTBL = getTextFromOR("GRP_STEP1_TBL"); 
+				String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
+				//String ColDiv = "]/div/div[1]";
+				String GRP_ROW =getTextFromOR("VEH_TBL_ROW");
+				String CELL = getTextFromOR("VEH_TBL_CELL");
+				viewRecord(GRPTBL, COLHEAD, GRP_ROW, CELL);
+				}catch (Exception e) {
+				test.log(LogStatus.FAIL, e.getMessage());
+				Log.error("Data is not present in table..." + e.getMessage());
+				String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+				test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+				ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+				DriverScript.bResult = false;				
+				}	
+	}
+	
+	
 	public static void selectVehicle() throws Exception {
 		Thread.sleep(3000);
 		try 
