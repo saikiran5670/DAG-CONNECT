@@ -14,6 +14,12 @@ namespace net.atos.daf.ct2.poigeofence
         {
             _corridorRepository = corridorRepository;
         }
+
+        public async Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor)
+        {
+            return await _corridorRepository.AddRouteCorridor(routeCorridor);
+        }
+
         public async Task<List<CorridorResponse>> GetCorridorList(CorridorRequest objCorridorRequest)
         {
             return await _corridorRepository.GetCorridorList(objCorridorRequest);
