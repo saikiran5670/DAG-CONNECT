@@ -422,12 +422,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.geofenceName);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.geofenceService.deleteGeofence(GeofenceId).subscribe((data) => {
-          this.openSnackBar('Item delete', 'dismiss');
+        this.geofenceService.deleteGeofence(GeofenceId).subscribe((delData: any) => {
+          this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
           this.loadGeofenceData();
           this.loadPoiData();
-        })
-        this.successMsgBlink(this.getDeletMsg(rowData.geofenceName));
+        });
       }
     });
   }
