@@ -64,7 +64,6 @@ namespace net.atos.daf.ct2.portalservice
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
             var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
-           
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
