@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,13 +9,19 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
     public class CorridorRequest
     {
         public int Id { get; set; }
+        [Required]
         public int OrganizationId { get; set; }
+        [Required]
+        [StringLength(1)]
         public char CorridorType { get; set; }
+        [Required]
         public string CorridorLabel { get; set; }
+        [Required]
         public string StartAddress { get; set; }
+        [Required]
         public string EndAddress { get; set; }
         public int Width { get; set; }
-        public char Trailer { get; set; }
+        public int Trailer { get; set; }
         public bool TransportData { get; set; }
         public bool TrafficFlow { get; set; }
         public bool Explosive { get; set; }
