@@ -30,12 +30,25 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string EndPoint { get; set; }
         public List<Nodepoint> NodePoints { get; set; }
     } 
-    public class ExistingCorridor
+    public class ExistingTripCorridor
     {
+        public int Id { get; set; }
+        public int? OrganizationId { get; set; }
         public string CorridorType { get; set; }
         public string CorridorLabel { get; set; }
+        public double Width { get; set; }
+        public long CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public long ModifiedAt { get; set; }
+        public int ModifiedBy { get; set; }
+        public string Description { get; set; }
+
+        // public string Name { get; set; }
+
         [Column("distance")]
         public string Distance { get; set; }
         public List<ExistingTrip> ExistingTrips { get; set; }
+
+
     }
 }
