@@ -23,14 +23,14 @@
           </mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName || 'Enter Vehicle Name' }}" matInput
-                formControlName="vehicleName" required> -->
               <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName || 'Enter Vehicle Name' }}" matInput
-                formControlName="vehicleName">
+                formControlName="vehicleName" required>
+              <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleName || 'Enter Vehicle Name' }}" matInput
+                formControlName="vehicleName"> -->
             </mat-form-field>
-            <!-- <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('required')">
+            <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('required')">
               {{ translationData.lblPleaseEnterVehicleName || 'Please Enter Vehicle Name' }}
-            </mat-error> -->
+            </mat-error>
             <mat-error *ngIf="vehicleForm.get('vehicleName').hasError('whitespace')">
               {{ translationData.lblVehicleNamecannotcontainonlywhitespace || 'Vehicle Name cannot contain only whitespace' }}
             </mat-error>
@@ -39,7 +39,7 @@
             </mat-error> -->
             <mat-error *ngIf="duplicateVehicleMsg">
               {{ translationData.lblDuplicateVehicleName || 'Duplicate Vehicle Name' }}
-            </mat-error>
+            </mat-error>            
           </div>
           <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{ selectedRowData.name ? selectedRowData.name : '--' }}</span>
@@ -51,14 +51,14 @@
           </mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
-                formControlName="registrationNumber">
-                <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
-                formControlName="registrationNumber" required> -->
+              <!-- <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
+                formControlName="registrationNumber"> -->
+                <input maxlength="50" placeholder="{{ translationData.lblEnterRegistrationNumber || 'Enter Registration Number' }}" matInput
+                formControlName="registrationNumber" required>
             </mat-form-field>
-            <!-- <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('required')">
+            <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('required')">
               {{ translationData.lblPleaseEnterRegistrationNumber || 'Please Enter Registration Number' }}
-            </mat-error> -->
+            </mat-error>
             <mat-error *ngIf="vehicleForm.get('registrationNumber').hasError('whitespace')">
               {{ translationData.lblRegistrationNumbercannotcontainonlywhitespace || 'Registration Number cannot contain only whitespace' }}
             </mat-error>
