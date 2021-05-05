@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleResponce
                 {
-                    Message = "Vehicle Updation Faile due to - " + ex.Message,
+                    Message = "Vehicle Updation Failed due to - " + ex.Message,
                     Code = Responcecode.Failed,
                     Vehicle = null
                 });
