@@ -165,6 +165,9 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
+
+
+
     let defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
     this.map = new H.Map(this.mapElement.nativeElement,
@@ -182,11 +185,7 @@ export class CreateEditViewPoiComponent implements OnInit {
 
     // Create the default UI components
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
-    var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-      content: '<b>Click on map to create POI position</b>'
-  });
-  // Add info bubble to the UI:
-  ui.addBubble(bubble);
+   
     var searchbox = ui.getControl("searchbox");
     if (this.actionType == 'edit' || this.actionType == 'view') {
       let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
@@ -195,8 +194,24 @@ export class CreateEditViewPoiComponent implements OnInit {
       this.map.addObject(this.selectedMarker);
     }
     if(this.actionType != 'view'){
+      var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
+        content: '<b>Click on map to create POI position</b>'
+    });
+    // Add info bubble to the UI:
+    ui.addBubble(bubble);
     this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
     }
+  }
+
+  searchValue(event: any) {
+    console.log("----search value called--",event.target.value);
+    let inputData = event.target.value;
+          // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+
+      this.POIService.getAutoSuggestMap(inputData).subscribe((res: any) => {
+        console.log("---service called here for search-- ",res)
+       });
   }
 
   setUpClickListener(map, behavior, selectedMarker, here, poiFlag, data, thisRef, bubble, ui) {

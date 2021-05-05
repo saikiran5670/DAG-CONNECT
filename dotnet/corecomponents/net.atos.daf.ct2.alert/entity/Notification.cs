@@ -13,9 +13,12 @@ namespace net.atos.daf.ct2.alert.entity
         public int FrequencyThreshholdValue { get; set; }
         public string ValidityType { get; set; }
         public string State { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+        public List<NotificationRecipient> NotificationRecipients { get; set; }
+        public List<NotificationLimit> NotificationLimits { get; set; }
+        public List<NotificationAvailabilityPeriod> NotificationAvailabilityPeriods { get; set; }
     }
 }

@@ -335,6 +335,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.loadPoiData();
   }
 
+  checkCreationForGeofence(item: any) {
+    this.tabVisibility.emit(true);
+    this.createEditViewGeofenceFlag = item.stepFlag;
+    if(item.successMsg) {
+      this.successMsgBlink(item.successMsg);
+    }
+    if(item.tableData) {
+      this.geoInitData = item.tableData;
+    }
+    //this.loadGeofenceData();
+    this.updatedGeofenceTableData(this.geoInitData);
+  }
+
   onClose() {
 
   }
