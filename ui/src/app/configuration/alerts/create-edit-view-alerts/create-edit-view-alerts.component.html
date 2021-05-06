@@ -1,0 +1,237 @@
+
+<div class='bgtrans'>
+<div *ngIf="actionType == 'create'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span>&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+
+
+<!-- New alert -->
+<form [formGroup]="alertForm">
+<mat-card class='mat-elevation-z'>
+<mat-expansion-panel class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNewAlert || 'New Alert' }}</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+        <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px"></div>
+        <div fxLayout="column" class="areaWidth min-width-50-per" fxLayoutGap="3px" fxLayoutAlign="end">
+            <span style='color: red;'>*{{ translationData.lblAllDetailsAreMandatory || 'All details are mandatory' }}</span>
+        </div>
+    </div> 
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblAlertName || 'Alert Name' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <input placeholder="{{ translationData.lblEnterAlertName || 'Enter Alert Name' }}"  matInput formControlName="alertName" maxlength="50">
+            </mat-form-field>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" formControlName="alertCategory">
+                    <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
+                        {{usrGrp}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblAlertType || 'Alert Type' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType">
+                    <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
+                    <!-- <mat-option *ngFor="let role of roles" [ value]="role">
+                        {{role}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblApplyOn || 'Apply On' }} <span class='mandatoryColor'>*</span></mat-label>
+            <div>
+                <mat-radio-group (change)='onApplyOnChange($event)' formControlName="applyOn">
+                    <mat-radio-button style='margin-right: 20px;' value="vehicle_group">
+                        {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
+                    </mat-radio-button>
+                    <mat-radio-button style='margin-right: 20px;' value="vehicle">
+                        {{ translationData.lblVehicle || 'Vehicle' }}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblFilterVehiclesByGroup || 'Filter Vehicles By Group' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" formControlName="vehicleGroup" >
+                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
+                        {{usrGrp}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div *ngIf="selectedApplyOn == 'vehicle'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
+                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
+                    <!-- <mat-option *ngFor="let role of roles" [ value]="role">
+                        {{role}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div *ngIf="selectedApplyOn != 'vehicle'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblStatusMode || 'Status Mode' }} <span class='mandatoryColor'>*</span></mat-label>
+            <div>
+                <mat-radio-group formControlName="statusMode">
+                    <mat-radio-button style='margin-right: 20px;' value="active">
+                        {{ translationData.lblActive || 'Active' }}
+                    </mat-radio-button>
+                    <mat-radio-button style='margin-right: 20px;' value="suspended">
+                        {{ translationData.lblSuspended || 'Suspended' }}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+
+    <div *ngIf="openAdvancedFilter" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
+                <mat-panel-title>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
+                </mat-panel-title>
+                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
+                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint4</p>
+                </div>   
+            </mat-card>
+        </div>
+    </div>
+  </mat-expansion-panel>
+</mat-card>
+</form>
+  <!-- Filters details -->
+  <mat-card class='mat-elevation-z'>
+  <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFiltersdetails || 'Filters Details' }}</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblName || 'Name' }}</mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <input placeholder="{{ translationData.lblSearchName || 'Search Name' }}"  matInput>
+            </mat-form-field>
+        </div>
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+                {{ translationData.lblGroup || 'Group' }}
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectUserGroup || 'Select User Group' }}" >
+                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
+                        {{usrGrp}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+                {{ translationData.lblRole || 'Role' }}
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select User Role' }}">
+                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
+                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
+                    <!-- <mat-option *ngFor="let role of roles" [value]="role">
+                        {{role}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+  </mat-expansion-panel>
+</mat-card>
+  <!-- Notification details -->
+  <mat-card class='mat-elevation-z'>
+  <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNotificationDetails || 'Notification details' }}</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblName || 'Name' }}</mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <input placeholder="{{ translationData.lblSearchName || 'Search Name' }}"  matInput>
+            </mat-form-field>
+        </div>
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+                {{ translationData.lblGroup || 'Group' }}
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectUserGroup || 'Select User Group' }}" >
+                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
+                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
+                        {{usrGrp}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label style='display: flex; place-content: space-between;'>
+                {{ translationData.lblRole || 'Role' }}
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select User Role' }}">
+                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
+                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
+                    <!-- <mat-option *ngFor="let role of roles" [value]="role">
+                        {{role}}
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+  </mat-expansion-panel>
+</mat-card>
+</div>

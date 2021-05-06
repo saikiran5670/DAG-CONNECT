@@ -17,9 +17,4 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
     }
-
-    public class AlertUrgencyLevelRef
-    {
-
-    }
 }

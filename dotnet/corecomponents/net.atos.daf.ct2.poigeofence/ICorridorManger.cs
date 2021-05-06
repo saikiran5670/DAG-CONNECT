@@ -8,7 +8,9 @@ namespace net.atos.daf.ct2.poigeofence
 {
    public interface ICorridorManger
     {
-        Task<List<CorridorResponse>> GetCorridorList(CorridorRequest objCorridorRequest);
+        Task<CorridorLookUp> GetCorridorList(CorridorRequest objCorridorRequest);
         Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor);
+        Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor);
+        Task<CorridorID> DeleteCorridor(int CorridorId);
     }
 }

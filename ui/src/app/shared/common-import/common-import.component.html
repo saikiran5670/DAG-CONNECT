@@ -29,7 +29,7 @@
                             <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                 <mat-label>{{this.importTranslationData.selectUpdatedFile || 'Select Updated File'}} <span class='mandatoryColor'>*</span></mat-label>
                                 <mat-form-field appearance="outline">
-                                    <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="fileExtension" formControlName="uploadFile" placeholder="Upload CSV File" ></ngx-mat-file-input>
+                                    <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="fileExtension" formControlName="uploadFile" placeholder="Upload File" ></ngx-mat-file-input>
                                     <button mat-flat-button color="primary" matSuffix>{{ this.importTranslationData.browse || 'Browse' }}</button>
                                 </mat-form-field>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('required')">

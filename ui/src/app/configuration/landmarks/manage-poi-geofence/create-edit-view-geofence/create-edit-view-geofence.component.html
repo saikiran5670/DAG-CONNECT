@@ -13,8 +13,7 @@
 <mat-card class='mat-elevation-z'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAddNewGeofence ||
-        'Add New Geofence'}}</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'create') ? (translationData.lblAddNewGeofence || 'Add New Geofence') : (actionType == 'edit') ? (translationData.lblEditGeofenceDetails || 'Edit Geofence Details') : (translationData.lblViewGeofenceDetails || 'View Geofence Details') }}</span>
     </div>
   </div>
   <div *ngIf='geoSelectionFlag' class="selectGroContainer">
@@ -57,7 +56,9 @@
                 {{ translationData.lblDuplicatePolygonGeofenceName || 'Duplicate Polygon Geofence Name' }}
               </mat-error>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
+            </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
@@ -72,7 +73,7 @@
                 </mat-form-field>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ '--' }}</span>
+                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -92,7 +93,9 @@
                 {{translationData.lblPleaseSelectCategory || 'Please Select Category' }}
               </mat-error>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--'  }}</span>
+            </div>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
@@ -109,7 +112,9 @@
                 </mat-select>
               </mat-form-field>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
+            </div>
           </div>
           <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
             <mat-label>
@@ -121,7 +126,9 @@
                   matInput formControlName="address">
               </mat-form-field>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.address ? selectedElementData.address : '--' }}</span>
+            </div>
           </div>
           <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
             <mat-label><span>{{ translationData.lblZipCode || 'Zip-Code' }}</span></mat-label>
@@ -131,7 +138,9 @@
                   formControlName="zip">
               </mat-form-field>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.zipcode ? selectedElementData.zipcode : '--' }}</span>
+            </div>
           </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
@@ -145,7 +154,9 @@
                   formControlName="city">
               </mat-form-field>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.city ? selectedElementData.city : '--'  }}</span>
+            </div>
           </div>
           <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
             <mat-label><span>{{ translationData.lblCountry || 'Country' }}</span></mat-label>
@@ -155,19 +166,19 @@
                   formControlName="country">
               </mat-form-field>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.country ? selectedElementData.country : '--' }}</span>
+            </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'>
-          <!-- <div fxLayout="row" class='areaWidth'> -->
+        <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end" class='areaWidth'>
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onPolygonReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button class='no-margin' [disabled]="!polygonGeofenceFormGroup.valid" mat-raised-button color="primary"
               (click)='onCreateUpdatePolygonGeofence()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
               (translationData.lblConfirm || 'Confirm') }}</button>
-          <!-- </div> -->
         </div>
       </form>
     </div>
@@ -198,7 +209,9 @@
                 {{ translationData.lblDuplicateCircularGeofenceName || 'Duplicate Circular Geofence Name' }}
               </mat-error>
             </div>
-            <div *ngIf="actionType == 'view'">{{ '--' }}</div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
+            </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
@@ -207,13 +220,13 @@
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select formControlName="type">
                       <mat-option *ngFor="let type of types" [value]="type">
-                          {{type}}
+                          {{ type }}
                       </mat-option>
                   </mat-select>
                 </mat-form-field>
               </div>
               <div *ngIf="actionType == 'view'">
-                <span style='font-weight: 500!important;'>{{ '--' }}</span>
+                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
               </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -224,7 +237,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input type='number' placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
+                <input (change)="onChangeRadius($event)" type='number' placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
                   formControlName="radius">
               </mat-form-field>
               <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('required')">
@@ -237,9 +250,12 @@
                   {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
               </mat-error>
             </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.distance ? selectedElementData.distance : '--' }}</span>
+            </div>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="space-between">
+        <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between">
           <div fxLayout="column" fxLayoutAlign="left">
             <div fxLayout="row" fxLayoutAlign='center center'>
               <mat-icon class='margin-right-10'>info</mat-icon>
@@ -305,13 +321,14 @@
             <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
               [checked]='selectedPOI.hasValue() && isAllSelectedForPOI()'
               [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
-              [aria-label]='checkboxLabelForPOI()'>
+              [aria-label]='checkboxLabelForPOI()' 
+              [disabled]="actionType != 'create'">
             </mat-checkbox>
             <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null'
-              [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
+            <mat-checkbox (click)='$event.stopPropagation()' (change)='onChangeCheckbox($event, row)'
+              [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' [disabled]="actionType != 'create'">
             </mat-checkbox>
           </mat-cell>
         </ng-container>

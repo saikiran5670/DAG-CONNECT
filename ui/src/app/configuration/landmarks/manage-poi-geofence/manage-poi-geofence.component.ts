@@ -13,8 +13,6 @@ import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { createGpx } from 'gps-to-gpx';
-import { NgxXml2jsonService } from 'ngx-xml2json';
 
 const createGpx = require('gps-to-gpx').default;
 
@@ -65,10 +63,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
   templateValue = [
     [36, 10, 'CategoryName', 8, 'SubCategoryName', "PoiTest",
       'Pune', 'Pune', 'India', '411057', 51.07, 57.07, 12, 'Active', 'POI']];
-  tableColumnList = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
-    'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type', 'Fail Reason'];
-  tableColumnName = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
-    'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Fail Reason'];
+  tableColumnList = ['organizationId', 'categoryId',  'subCategoryId', 
+    'poiName', 'latitude', 'longitude', 'returnMessage'];
+  tableColumnName = ['OrganizationId', 'CategoryId',  'SubCategoryId',
+    'POIName', 'Latitude', 'Longitude', 'Fail Reason'];
   tableTitle = 'Rejected POI Details';
   @Output() showImportCSV: EventEmitter<any> = new EventEmitter();
   selectedCategoryId = null;
@@ -82,8 +80,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private poiService: POIService,
     private geofenceService: GeofenceService,
     private landmarkCategoryService: LandmarkCategoryService,
-    private _snackBar: MatSnackBar,
-    private ngxXml2jsonService: NgxXml2jsonService
+    private _snackBar: MatSnackBar
     ) {
     
    }
@@ -314,6 +311,17 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.createEditViewPoiFlag = true;
   }
 
+  editViewGeofence(rowData: any, type: any) {
+    this.geofenceService.getGeofenceDetails(this.accountOrganizationId, rowData.geofenceId).subscribe((geoData: any) => {
+      this.selectedElementData = geoData[0];
+      this.actionType = type;
+      this.tabVisibility.emit(false);
+      this.createEditViewGeofenceFlag = true;
+    }, (error) => {
+      console.log('Not valid geofence data...')
+    });
+  }
+
   successMsgBlink(msg: any) {
     this.titleVisible = true;
     this.poiCreatedMsg = msg;
@@ -326,25 +334,30 @@ export class ManagePoiGeofenceComponent implements OnInit {
     // this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
     this.tabVisibility.emit(true);
     this.createEditViewPoiFlag = item.stepFlag;
-    if (item.successMsg) {
+    if (item.successMsg && item.successMsg != '') {
       this.successMsgBlink(item.successMsg);
     }
     if (item.tableData) {
       this.poiInitData = item.tableData;
     }
-    this.loadPoiData();
+    //this.loadPoiData();
+    this.allCategoryPOIData = this.poiInitData;
+    this.updatedPOITableData(this.poiInitData);
+    this.updatedGeofenceTableData(this.geoInitData);
   }
 
   checkCreationForGeofence(item: any) {
     this.tabVisibility.emit(true);
     this.createEditViewGeofenceFlag = item.stepFlag;
-    if(item.successMsg) {
+    if(item.successMsg && item.successMsg != '') {
       this.successMsgBlink(item.successMsg);
     }
     if(item.tableData) {
       this.geoInitData = item.tableData;
     }
     //this.loadGeofenceData();
+    this.allCategoryPOIData = this.poiInitData;
+    this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
   }
 
@@ -411,12 +424,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.geofenceName);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.geofenceService.deleteGeofence(GeofenceId).subscribe((data) => {
-          this.openSnackBar('Item delete', 'dismiss');
+        this.geofenceService.deleteGeofence(GeofenceId).subscribe((delData: any) => {
+          this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
           this.loadGeofenceData();
           this.loadPoiData();
-        })
-        this.successMsgBlink(this.getDeletMsg(rowData.geofenceName));
+        });
       }
     });
   }
@@ -551,17 +563,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showImportCSV.emit(true);
     this.tabVisibility.emit(false);
     this.generateGPXFile();
-    //this.processTranslationForImportGeofence();
+    this.processTranslationForImportGeofence();
   }
 
   generateGPXFile(){
-    
-    // const gpx = createGpx(xmlObject.waypoints, {
-    //   activityName: xmlObject.activityType,
-    //   startTime: xmlObject.startTime,
-    //   id: xmlObject.id,
-    // });
-     
     this.defaultGpx = `<?xml version="1.0" encoding="UTF-8"?>
     <gpx version="1.1">
       <metadata>
@@ -589,9 +594,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
         </trkseg>
       </trk>
     </gpx>`
-    // const parser = new DOMParser();
-    // const xml = parser.parseFromString(dummyObject, 'text/xml');
-    // const obj = this.ngxXml2jsonService.xmlToJson(xml);
   }
 
   processTranslationForImport() {
@@ -607,30 +609,57 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';
       this.importTranslationData.importedFileDetails = this.translationData.lblImportedFileDetails || 'Imported file details';
       this.importTranslationData.new = this.translationData.lblNew || 'new';
-      this.importTranslationData.fileType = this.translationData.lblPPOI || 'POI';
-      this.importTranslationData.fileTypeMultiple = this.translationData.lblPPOI || 'POI';
+      this.importTranslationData.fileType = this.translationData.lblPOI || 'POI';
+      this.importTranslationData.fileTypeMultiple = this.translationData.lblPOI || 'POI';
       this.importTranslationData.imported = this.translationData.lblimport || 'Imported';
       this.importTranslationData.rejected = this.translationData.lblrejected || 'Rejected';
-      this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'Geofence name already exists';
-      this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || 'Geofence name is mandatory input';
+      this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
+      this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryId || 'CategoryId',
-                              this.translationData.lblCategoryName || 'CategoryName',
                               this.translationData.lblSubCategoryId || 'SubCategoryId',
-                              this.translationData.lblSubCategoryName || 'SubCategoryName',
                               this.translationData.lblPOIName || 'POIName',
-                              this.translationData.lblAddress || 'Address',
-                              this.translationData.lblCity || 'City',
-                              this.translationData.lblCountry || 'Country',
-                              this.translationData.lblZipcode || 'Zipcode',
                               this.translationData.lblLatitude || 'Latitude',
                               this.translationData.lblLongitude || 'Longitude',
-                              this.translationData.lblDistance || 'Distance',
-                              this.translationData.lblState || 'State',
                               this.translationData.lblFailReason || 'Fail Reason'];
     }
   }
 
+  processTranslationForImportGeofence() {
+    this.tableColumnList = ['organizationId', 'geofenceName', 'type', 'latitude', 'longitude', 'distance', 'returnMessage'];
+
+    if (this.translationData) {
+      this.importTranslationData.importTitle = this.translationData.lblImportGeofence || 'Import Geofence';
+      this.importTranslationData.downloadTemplate = this.translationData.lbldownloadTemplate || 'Download a Template';
+      this.importTranslationData.downloadTemplateInstruction = this.translationData.lbldownloadTemplateInstruction || 'Please fill required details and upload updated file again.';
+      this.importTranslationData.selectUpdatedFile = this.translationData.lblselectUpdatedGeofenceFile || 'Upload Updated .GPX File';
+      this.importTranslationData.browse = this.translationData.lblbrowse || 'Browse';
+      this.importTranslationData.uploadButtonText = this.translationData.lbluploadPackage || 'Upload';
+      this.importTranslationData.selectFile = this.translationData.lblPleaseSelectAFile || 'Please select a file';
+      this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
+      this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';
+      this.importTranslationData.importedFileDetails = this.translationData.lblImportedFileDetails || 'Imported file details';
+      this.importTranslationData.new = this.translationData.lblNew || 'new';
+      this.importTranslationData.fileType = this.translationData.lblGeofence || 'Geofence';
+      this.importTranslationData.fileTypeMultiple = this.translationData.lblGeofence || 'Geofences';
+      this.importTranslationData.imported = this.translationData.lblimport || 'Imported';
+      this.importTranslationData.rejected = this.translationData.lblrejected || 'Rejected';
+      this.importTranslationData.existError = this.translationData.lblGeofenceNamealreadyexists || 'Geofence name already exists';
+      this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || "$ is mandatory input";
+      this.importTranslationData.valueCannotExceed = this.translationData.lblValueCannotExceed || 'Geofence name can be upto 50 characters';
+      this.importTranslationData.distanceGreaterThanZero = this.translationData.lbldistanceGreaterThanZero || 'Distance should be greater than zero';
+      this.importTranslationData.nodesAreRequired = this.translationData.lblnodesAreRequired || 'Nodes are required';
+      this.importTranslationData.typeCanEitherBeCorO = this.translationData.lbltypeCanEitherBeCorO || 'Geofence type can either be C or O';
+      this.tableTitle = this.translationData.lblGeofenceTableTitle || 'Rejected Geofence Details';
+      this.tableColumnName = [this.translationData.lblOrganizationId || 'Organization Id',
+                              this.translationData.lblGeofenceName|| 'Geofence Name',
+                              this.translationData.lblGeofenceType|| 'Type',
+                              this.translationData.lblLatitude || 'Latitude',
+                              this.translationData.lblLongitude || 'Longitude',
+                              this.translationData.lblDistance || 'Distance',
+                              this.translationData.lblFailReason || 'Fail Reason'];
+    }
+  }
 }
 
