@@ -14,5 +14,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
         List<Nodepoint> GetTripNodes(string tripid);
         Task<List<CorridorResponse>> GetExistingTripCorridorListByOrganization(CorridorRequest objCorridorRequest);
         Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor);
+        Task<CorridorID> DeleteCorridor(int CorridorId);
+        Task<IEnumerable<RouteCorridor>> GetRouteCorridor(RouteCorridorFilter routeCorridorFilter);
+        Task<int> GetAssociateAlertbyId(int CorridorId);
+        Task<bool> CheckRouteCorridorIsexist(string Name, int? OrganizationId, int id);
     }
 }

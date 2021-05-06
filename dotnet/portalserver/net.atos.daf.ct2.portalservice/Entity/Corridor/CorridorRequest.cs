@@ -97,4 +97,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
 
     }
+    public class DeleteCorridorIdRequest
+    {
+        public int Id { get; set; }
+    }
+
 }
