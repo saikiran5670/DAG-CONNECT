@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.entity
@@ -8,11 +9,21 @@ namespace net.atos.daf.ct2.poigeofence.entity
     {
 
         public int Id { get; set; }
+        
+        [Column("organization_id")]
         public int ? OrganizationId { get; set; }
+        [Column("type")]
         public char CorridorType { get; set; }
+        [Column("name")]
         public string CorridorLabel { get; set; }
+        [Column("address")]
         public string StartAddress { get; set; }
+        public double StartLatitude { get; set; }
+        public double StartLongitude { get; set; }
         public string EndAddress { get; set; }
+        public double EndLatitude { get; set; }
+        public double EndLongitude { get; set; }
+        [Column("width")]
         public int Width { get; set; }
         public int Trailer { get; set; }
         public bool TransportData { get; set; }
@@ -39,10 +50,20 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int VehicleSizeLength { get; set; }
         public int VehicleSizeLimitedWeight { get; set; }
         public int VehicleSizeWeightPerAxle { get; set; }
+        [Column("state")]
         public string State { get; set; }
         public long Created_At { get; set; }
         public int Created_By { get; set; }
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
+        public List<ViaRoute> ViaRoutDetails { get; set; }
+        public int Distance { get; set; }
+    }
+
+    public class ViaRoute
+    {
+        public string ViaStopName { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

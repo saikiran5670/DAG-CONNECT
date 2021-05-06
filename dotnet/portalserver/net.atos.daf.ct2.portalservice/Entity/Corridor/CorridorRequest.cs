@@ -15,26 +15,57 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         [StringLength(1)]
         public string CorridorType { get; set; }
         [Required]
+        [StringLength(50)]
         public string CorridorLabel { get; set; }
         [Required]
+        [StringLength(100)]
         public string StartAddress { get; set; }
         [Required]
+        public double StartLatitude { get; set; }
+        [Required]
+        public double StartLongitude { get; set; }
+        [Required]
         public string EndAddress { get; set; }
+        [Required]
+        public double EndLatitude { get; set; }
+        [Required]
+        public double EndLongitude { get; set; }
         public int Width { get; set; }
-        public int Trailer { get; set; }
+        public int Distance { get; set; }
+        public List<ViaStopDetails> ViaAddressDetails { get; set; }
         public bool TransportData { get; set; }
         public bool TrafficFlow { get; set; }
-        public bool Explosive { get; set; }
-        public bool Gas { get; set; }
-        public bool Flammable { get; set; }
-        public bool Combustible { get; set; }
-        public bool organic { get; set; }
-        public bool poision { get; set; }
-        public bool RadioActive { get; set; }
-        public bool Corrosive { get; set; }
-        public bool PoisonousInhalation { get; set; }
-        public bool WaterHarm { get; set; }
-        public bool Other { get; set; }
+        [StringLength(1)]
+        public string State { get; set; }
+        public long Created_At { get; set; }
+        public int Created_By { get; set; }
+        public long Modified_At { get; set; }
+        public int Modified_By { get; set; }
+        public Attribute attribute { get; set; }
+        public Exclusion exclusion { get; set; }
+        public VehicleSize vehicleSize { get; set; }
+        
+    }
+
+    public class ViaStopDetails
+    {
+        [StringLength(100)]
+        public string ViaRoutName { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+    }
+
+    public class VehicleSize
+    {
+        public int VehicleSizeHeight { get; set; }
+        public int VehicleSizeWidth { get; set; }
+        public int VehicleSizeLength { get; set; }
+        public int VehicleSizeLimitedWeight { get; set; }
+        public int VehicleSizeWeightPerAxle { get; set; }
+    }
+
+    public class Exclusion
+    {
         [StringLength(1)]
         public string TollRoad { get; set; }
         [StringLength(1)]
@@ -47,15 +78,23 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public string Tunnels { get; set; }
         [StringLength(1)]
         public string DirtRoad { get; set; }
-        public int VehicleSizeHeight { get; set; }
-        public int VehicleSizeWidth { get; set; }
-        public int VehicleSizeLength { get; set; }
-        public int VehicleSizeLimitedWeight { get; set; }
-        public int VehicleSizeWeightPerAxle { get; set; }
-        public string State { get; set; }
-        public long Created_At { get; set; }
-        public int Created_By { get; set; }
-        public long Modified_At { get; set; }
-        public int Modified_By { get; set; }
+    }
+
+    public class Attribute
+    {
+        public int IsTrailer { get; set; }
+        public bool IsExplosive { get; set; }
+        public bool IsGas { get; set; }
+        public bool IsFlammable { get; set; }
+        public bool IsCombustible { get; set; }
+        public bool Isorganic { get; set; }
+        public bool Ispoision { get; set; }
+        public bool IsRadioActive { get; set; }
+        public bool IsCorrosive { get; set; }
+        public bool IsPoisonousInhalation { get; set; }
+        public bool IsWaterHarm { get; set; }
+        public bool IsOther { get; set; }
+
+
     }
 }

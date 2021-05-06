@@ -16,11 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entity\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.alert\net.atos.daf.ct2.alert.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
   </ItemGroup>
 
 </Project>

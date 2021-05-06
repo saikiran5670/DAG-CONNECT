@@ -231,6 +231,18 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
+        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid)
+        {
+            try
+            {
+                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
         #region Vehicle Mileage Data
         public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype)

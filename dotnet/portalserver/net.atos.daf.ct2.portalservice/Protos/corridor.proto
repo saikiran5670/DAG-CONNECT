@@ -49,45 +49,60 @@ enum Responsecode{
 }
 
  message RouteCorridorAddRequest
-    {
+ {
          int32 Id =1;
          int32  OrganizationId =2;
          string CorridorType =3;
          string CorridorLabel =4;
          string StartAddress =5;
-         string EndAddress =6;
-         int32 Width =7;
-         int32 Trailer =8;
-         bool TransportData =9;
-         bool TrafficFlow =10;
-         bool Explosive =11;
-         bool Gas =12;
-         bool Flammable =13;
-         bool Combustible =14;
-         bool organic =15;
-         bool poision =16;
-         bool RadioActive =17;
-         bool Corrosive =18;
-         bool PoisonousInhalation =19;
-         bool WaterHarm =20;
-         bool Other =21;
-         string TollRoad =22;
-         string Mortorway =23;
-         string BoatFerries =24;
-         string RailFerries =25;
-         string Tunnels =26;
-         string DirtRoad =27;
-         int32 VehicleSizeHeight =28;
-         int32 VehicleSizeWidth =29;
-         int32 VehicleSizeLength =30;
-         int32 VehicleSizeLimitedWeight =31;
-         int32 VehicleSizeWeightPerAxle =32;
-         string State =33;
-         int64 Created_At =34;
-         int32 Created_By =35;
-         int64 Modified_At =36;
-         int32 Modified_By =37;
-    }
+         double StartLatitude=6;
+         double StartLongitude=7;
+         string EndAddress =8;
+         double EndLatitude=9;
+         double EndLongitude=10;
+         int32 Width =11;
+         int32 Distance =12;
+         repeated ViaDetails ViaAddressDetails = 13;
+         int32 Trailer =14;
+         bool IsTransportData =15;
+         bool IsTrafficFlow =16;
+         bool IsExplosive =17;
+         bool IsGas =18;
+         bool IsFlammable =19;
+         bool IsCombustible =20;
+         bool Isorganic =21;
+         bool Ispoision =22;
+         bool IsRadioActive =23;
+         bool IsCorrosive =24;
+         bool IsPoisonousInhalation =25;
+         bool IsWaterHarm =26;
+         bool IsOther =27;
+         string TollRoad =28;
+         string Mortorway =29;
+         string BoatFerries =30;
+         string RailFerries =31;
+         string Tunnels =32;
+         string DirtRoad =33;
+         int32 VehicleSizeHeight =34;
+         int32 VehicleSizeWidth =35;
+         int32 VehicleSizeLength =36;
+         int32 VehicleSizeLimitedWeight =37;
+         int32 VehicleSizeWeightPerAxle =38;
+         string State =39;
+         int64 Created_At =40;
+         int32 Created_By =41;
+         int64 Modified_At =42;
+         int32 Modified_By =43;
+ }
+
+
+ message ViaDetails
+{
+double Latitude=1;
+double Longitude=2;
+string ViaName =3;
+
+}
 
     
 message RouteCorridorAddResponse
