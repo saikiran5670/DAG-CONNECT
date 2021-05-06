@@ -242,13 +242,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@latitude", poi.Latitude);
                 parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
-                parameter.Add("@trip_id", poi.TripId);
+              //  parameter.Add("@trip_id", poi.TripId);
                 parameter.Add("@state", 'A');
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", poi.CreatedBy);
 
-                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance,  state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance,  @state, @created_at, @created_by) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 poi.Id = id;
