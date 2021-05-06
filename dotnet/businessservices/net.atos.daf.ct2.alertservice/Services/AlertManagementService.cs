@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle;
-
+using net.atos.daf.ct2.alertservice.Entity;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -17,11 +17,13 @@ namespace net.atos.daf.ct2.alertservice.Services
         private ILog _logger;
         private readonly IAlertManager _alertManager;
         private readonly IVehicleManager _vehicelManager;
+        private readonly Mapper _mapper;
         public AlertManagementService(IAlertManager alertManager, IVehicleManager vehicelManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _alertManager = alertManager;
             _vehicelManager = vehicelManager;
+            _mapper = new Mapper();
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -66,7 +68,7 @@ namespace net.atos.daf.ct2.alertservice.Services
         #endregion
 
         #region Alert Category
-        public override async Task<AlertCategoryResponse> GetAlertCategory(AccountIdRequest request , ServerCallContext context)
+        public override async Task<AlertCategoryResponse> GetAlertCategory(AccountIdRequest request, ServerCallContext context)
         {
             try
             {
@@ -76,22 +78,11 @@ namespace net.atos.daf.ct2.alertservice.Services
                 AlertCategoryResponse response = new AlertCategoryResponse();
                 foreach (var item in enumTranslationList)
                 {
-                    EnumTranslation enumtrans = new EnumTranslation();
-                    enumtrans.Id = item.Id;
-                    enumtrans.Type = item.Type;
-                    enumtrans.Enum = item.Enum;
-                    enumtrans.ParentEnum = item.ParentEnum;
-                    enumtrans.Key = item.Key;
-                    response.EnumTranslation.Add(enumtrans);
+                    response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
                 foreach (var item in VehicleGroupList)
                 {
-                    VehicleGroup vehiclegroup = new VehicleGroup();
-                    vehiclegroup.VehicleGroupId = item.VehicleGroupId;
-                    vehiclegroup.Vin = item.Vin;
-                    vehiclegroup.VehicleId = item.VehicleId;
-                    vehiclegroup.VehicleName = item.VehicleName;   
-                    response.VehicleGroup.Add(vehiclegroup);
+                    response.VehicleGroup.Add(_mapper.MapVehicleGroup(item));
                 }
                 response.Message = "Alert Category data retrieved";
                 response.Code = ResponseCode.Success;
@@ -110,7 +101,7 @@ namespace net.atos.daf.ct2.alertservice.Services
         }
         #endregion
 
-        
+
         #region Update Alert
 
 
