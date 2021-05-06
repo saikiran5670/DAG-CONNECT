@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.alert.repository
     {
         Task<Alert> CreateAlert(Alert alert);
         Task<Alert> UpdateAlert(Alert alert);
-        Task<int> UpdateAlertState(int alertId, char state);
+        Task<int> UpdateAlertState(int alertId, char state, char checkState);
         Task<int> AlertStateToDelete(int alertId, char state);
         Task<bool> CheckIsNotificationExitForAlert(int alertId);
         #region Alert Category

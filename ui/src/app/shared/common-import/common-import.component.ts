@@ -8,7 +8,6 @@ import { packageModel } from '../../models/package.model';
 import { PackageService } from '../../services/package.service';
 import { POIService } from '../../services/poi.service';
 import { GeofenceService } from '../../services/landmarkGeofence.service';
-
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
 import { NgxXml2jsonService } from 'ngx-xml2json';
@@ -136,7 +135,9 @@ export class CommonImportComponent implements OnInit {
 
 
   addfile(event: any){ 
-    if (this.fileExtension === 'csv' || this.fileExtension === 'xlsx') {
+    this.filelist = [];
+
+    if (this.fileExtension === '.csv' || this.fileExtension === '.xlsx') {
       this.excelEmptyMsg = false;
       this.file = event.target.files[0];
       let fileReader = new FileReader();
@@ -391,7 +392,7 @@ export class CommonImportComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {
           case 'organizationId':{
-            let objData: any = this.basicValidation(value,'code'); 
+            let objData: any = this.basicValidation(value,'organizationId'); 
             orgFlag = objData.status;
             if(!orgFlag){
               item.returnMessage = objData.reason;
@@ -482,7 +483,6 @@ export class CommonImportComponent implements OnInit {
           }
           if(resultData["poiDuplicateList"].length >0){
             this.rejectedList.push(...resultData["poiDuplicateList"]);
-            this.updateDuplicateErrorMsg()
             this.rejectedCount =  this.rejectedList.length;  
           }
         },
@@ -507,8 +507,8 @@ export class CommonImportComponent implements OnInit {
     let gpxData = this.parsedGPXData;
     let gpxInfo = gpxData["gpx"]["metadata"];
     let nodeInfo = gpxData["gpx"]["trk"];
-    console.log(gpxInfo);
-    console.log(nodeInfo)
+    //console.log(gpxInfo);
+    //console.log(nodeInfo)
     let organizedGPXData = [];
     let nodeArray = [],nodeObj ={};
       
@@ -524,8 +524,8 @@ export class CommonImportComponent implements OnInit {
             "id": 0,
             "landmarkId": 0,
             "seqNo": j+1,
-            "latitude": nodeArray[i][j]["@attributes"]["lat"],
-            "longitude": nodeArray[i][j]["@attributes"]["lon"],
+            "latitude": Number(nodeArray[i][j]["@attributes"]["lat"]),
+            "longitude": Number(nodeArray[i][j]["@attributes"]["lon"]),
             "createdBy": 0
 
           })
@@ -533,37 +533,107 @@ export class CommonImportComponent implements OnInit {
       nodeArraySet.push(nodeArrayForEach)
     }
 
-    console.log("nodeArraySet");
-    console.log(nodeArraySet)
+   // console.log("nodeArraySet");
+    //console.log(nodeArraySet)
     for(let i = 0; i < gpxInfo.length ; i++){
       
       organizedGPXData.push(
         {
-          "id": gpxInfo[i].id,
-          "organizationId": gpxInfo[i].organizationId,
-          "categoryId": gpxInfo[i].categoryId,
-          "subCategoryId": gpxInfo[i].subCategoryId,
+          "id": Number(gpxInfo[i].id),
+          "organizationId": Number(gpxInfo[i].organizationId),
+          "categoryId": Number(gpxInfo[i].categoryId),
+          "subCategoryId": Number(gpxInfo[i].subCategoryId),
           "name": gpxInfo[i].geofencename,
           "type": gpxInfo[i].type,
           "address": gpxInfo[i].address,
           "city": gpxInfo[i].city,
           "country": gpxInfo[i].country,
           "zipcode": gpxInfo[i].zipcode,
-          "latitude": gpxInfo[i].latitude,
-          "longitude": gpxInfo[i].longitude,
-          "distance": gpxInfo[i].distance,
-          "tripId": gpxInfo[i].tripId,
-          "createdBy":gpxInfo[i].createdBy,
+          "latitude": Number(gpxInfo[i].latitude),
+          "longitude":Number( gpxInfo[i].longitude),
+          "distance": Number(gpxInfo[i].distance),
+          "tripId":Number(gpxInfo[i].tripId),
+          "createdBy":Number(gpxInfo[i].createdBy),
           "nodes": nodeArraySet[i]
         })
       }
       this.filelist = organizedGPXData;
       
-      console.log(organizedGPXData)
-      console.log(nodeArray)
+      //console.log(organizedGPXData)
+      //console.log(nodeArray)
   }
 
   prepareGeofenceDataToImport(removableInput){
+    let validData: any = [];
+    let invalidData: any = [];
+    let typeFlag = false, latFlag = false, longFlag = false,nameFlag= false,distanceFlag=false,nodeFlag=false;
+    let _geofenceType : any;
+    this.filelist.forEach((item: any) => {
+      for (const [key, value] of Object.entries(item)) {
+        switch (key) {
+          case 'type':{
+            _geofenceType = value;
+            let objData: any = this.basicValidation(value,'type'); 
+            typeFlag = objData.status;
+            if(!typeFlag){
+              item.message = objData.reason;
+            }
+            break;
+          }
+            case 'name':{
+            let objData: any = this.basicValidation(value,'Geofence Name'); 
+            nameFlag = objData.status;
+            if(!nameFlag){
+              item.message = objData.reason;
+            }
+            break;
+          }
+          case 'latitude':{
+            let objData: any = this.basicValidation(value,'latitude'); 
+            latFlag = objData.status;
+            if(!latFlag){
+              item.message = objData.reason;
+            }
+            break;
+          }
+          case 'longitude':{
+            let objData: any = this.basicValidation(value,'longitude'); 
+            longFlag = objData.status;
+            if(!longFlag){
+              item.message = objData.reason;
+            }
+            break;
+          }
+          case 'distance':{
+            let objData: any = this.distanceValidation(value,_geofenceType,'distance'); 
+            distanceFlag = objData.status;
+            if(!distanceFlag){
+              item.message = objData.reason;
+            }
+            break;
+          }
+          case 'nodes':{
+            let objData: any = this.distanceValidation(value,_geofenceType,'nodes'); 
+            nodeFlag = objData.status;
+            if(!nodeFlag){
+              item.message = objData.reason;
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      }
+      if(typeFlag && latFlag && longFlag && nameFlag && distanceFlag && nodeFlag){
+        validData.push(item);
+      }
+      else{
+        invalidData.push(item);
+      }
+    });
+
+    this.callImportGeofenceAPI(validData,invalidData,removableInput)
+  
   //   this.geofenceService.importGeofence(this.filelist).subscribe((resultData)=>{
   //    // this.validateImportData = 
 
@@ -571,7 +641,41 @@ export class CommonImportComponent implements OnInit {
 
   }
 
-  updateDuplicateErrorMsg(){
+  callImportGeofenceAPI(validData,invalidData,removableInput){
+    this.rejectedList = invalidData;
+    this.rejectedCount = invalidData.length;
+    this.importedCount = 0;
+    if(validData.length > 0){
+        this.geofenceService.importGeofenceGpx(validData).subscribe((resultData)=>{
+         // console.log(resultData)
+          this.showImportStatus = true;
+          removableInput.clear();
+          // if(resultData["poiUploadedList"].length >0){
+          //   this.importedCount = resultData["poiUploadedList"].length;
+          // }
+          this.importedCount = resultData.addedCount;
+          if(resultData["failureResult"].length >0){
+            this.updateDuplicateErrorMsg(resultData["failureResult"]);
+            this.rejectedList.push(...resultData["failureResult"]);
+            this.rejectedCount =  this.rejectedList.length;  
+          }
+        },
+        (err)=>{
+          removableInput.clear();
+          this.showImportStatus = true;
+
+          if(err.status === 409){
+           
+          }
+        })
+    }
+    else{
+      removableInput.clear();
+      this.showImportStatus = true;
+    }
+  }
+  
+  updateDuplicateErrorMsg(_failureList){
 
   }
   onClose(){
@@ -713,8 +817,22 @@ export class CommonImportComponent implements OnInit {
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     if(!value || value == ''){
       obj.status = false;
-      obj.reason = this.importTranslationData.input1mandatoryReason;
+      obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
       return obj;
+    }
+    if(type === 'type'){
+      if(value!= 'C' && value!= 'O'){
+        obj.status = false;
+        obj.reason = this.importTranslationData.typeCanEitherBeCorO;
+        return obj;
+      }
+    }
+    if(type === 'Geofence Name'){
+      if((!value || value == '') && value.length <= 50){
+        obj.status = false;
+        obj.reason = this.importTranslationData.valueCannotExceed;
+        return obj;
+      }
     }
     if(!SpecialCharRegex.test(value)){
       obj.status = false;
@@ -724,6 +842,39 @@ export class CommonImportComponent implements OnInit {
     return obj;
   }
 
+  distanceValidation(value,_geofenceType,type){
+    let obj: any = { status: true, reason: 'correct data'};
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
+    
+      if(_geofenceType === 'C'){
+        
+        if(value == ''){
+          obj.status = false;
+          obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
+          return obj;
+        }
+        if(value == 0){
+          obj.status = false;
+          obj.reason = this.importTranslationData.distanceGreaterThanZero;
+          return obj;
+        }
+      }
+      else if(_geofenceType === 'O'){
+        if((!value || value == '') && value.length < 1){
+          obj.status = false;
+          obj.reason = this.importTranslationData.nodesAreRequired;
+          return obj;
+        }
+      }
+      
+      if(!SpecialCharRegex.test(value)){
+        obj.status = false;
+        obj.reason = this.importTranslationData.specialCharNotAllowedReason;
+        return obj;
+      }
+      return obj;
+
+  }
 
   getValidateMsg(type: any, typeTrans: any, maxLength?: any){
     if(typeTrans){
@@ -734,6 +885,13 @@ export class CommonImportComponent implements OnInit {
       else{
         return typeTrans.replace('$', type);
       }
+    }
+  }
+
+  getUpdatedMessage(type:any,typeTrans:any){
+    if(typeTrans){
+      return typeTrans.replace('$', type);
+      
     }
   }
 
@@ -758,22 +916,28 @@ export class CommonImportComponent implements OnInit {
       for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "OrganizationId":this.rejectedList[i]["organizationId"],
-            "CategoryId": this.rejectedList[i]["categoryId"],
-            "CategoryName" :this.rejectedList[i]["categoryName"],
-            "SubCategoryId" : this.rejectedList[i]["subCategoryId"],
-            "SubCategoryName" :this.rejectedList[i]["subCategoryName"],
-            "POIName" :this.rejectedList[i]["name"],
-            "Address":this.rejectedList[i]["address"],
-            "City": this.rejectedList[i]["city"],
-            "Country" :this.rejectedList[i]["country"],
-            "Zipcode" : this.rejectedList[i]["zipcode"],
-            "Latitude" :this.rejectedList[i]["latitude"],
-            "Longitude" :this.rejectedList[i]["longitude"],
-            "Distance" :this.rejectedList[i]["distance"],
-            "State" :this.rejectedList[i]["state"],
-            "Type" :this.rejectedList[i]["type"],
+            "organizationId":this.rejectedList[i]["organizationId"],
+            "categoryId": this.rejectedList[i]["categoryId"],
+            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "poiName" :this.rejectedList[i]["name"],
+            "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
+            "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
             "returnMessage" :this.rejectedList[i]["returnMessage"]
+          }
+        )
+      }
+    }
+    else if(this.importFileComponent === 'geofence'){
+      for(var i in rejectedList){
+        populateRejectedList.push(
+          {
+            "organizationId":this.rejectedList[i]["organizationId"],
+            "geofenceName" :this.rejectedList[i]["name"],
+            "type" :this.rejectedList[i]["type"],
+            "latitude" :(this.rejectedList[i]["latitude"]).toFixed(2),
+            "longitude" :this.rejectedList[i]["longitude"].toFixed(2),
+            "distance" :this.rejectedList[i]["distance"],
+            "returnMessage" :this.rejectedList[i]["message"]
           }
         )
       }

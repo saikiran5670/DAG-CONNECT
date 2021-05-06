@@ -57,6 +57,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
         public List<ViaRoute> ViaRoutDetails { get; set; }
+        public int Distance { get; set; }
     }
 
     public class ViaRoute
@@ -64,5 +65,10 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string ViaStopName { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+    }
+
+    public class CorridorID
+    {
+        public int Id { get; set; }
     }
 }

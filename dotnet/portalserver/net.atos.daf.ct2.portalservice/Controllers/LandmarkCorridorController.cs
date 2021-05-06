@@ -89,9 +89,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
-                    if (!hasRights)
-                        return StatusCode(400, "You cannot create global Corridor.");
+                    //bool hasRights = await HasAdminPrivilege();
+                    //if (!hasRights)
+                     return StatusCode(400, "Organization_Id Required .");
                 }
                 if (request.ViaAddressDetails.Count >5)
                 {
@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (data != null && data.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
-                                           "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "AddRouteCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
                                             Request);
                     return Ok(data);
@@ -120,9 +120,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Category Component",
-                                         "Category service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                         "AddCategory method in Landmark Category controller", 0, 0, JsonConvert.SerializeObject(request),
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "AddRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           Request);
 
                 _logger.Error(null, ex);
@@ -147,6 +147,49 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Result = false;
             }
             return Result;
+        }
+        [HttpDelete]
+        [Route("deletecorridor")]
+
+        public async Task<IActionResult> DeleteCategory([FromQuery] Entity.Corridor.DeleteCorridorIdRequest request)
+        {
+            try
+            {
+                bool hasRights = await HasAdminPrivilege();
+
+                if (request.Id <= 0)
+                {
+                    return StatusCode(400, "Corridor id is required.");
+                }
+                var MapRequest = _corridorMapper.MapId(request);
+                var data = await _corridorServiceClient.DeleteCorridorAsync(MapRequest);
+                if (data != null && data.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                         "DeleteCorridor method in Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                    return Ok(data);
+                }
+                else if (data != null && data.Code == Responsecode.NotFound)
+                {
+                    return StatusCode(404, data.Message);
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "DeleteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
         }
 
     }
