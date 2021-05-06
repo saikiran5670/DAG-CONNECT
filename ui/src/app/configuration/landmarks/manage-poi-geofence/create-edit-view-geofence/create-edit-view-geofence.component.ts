@@ -7,6 +7,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { GeofenceService } from '../../../../services/landmarkGeofence.service';
 declare var H: any;
 
 @Component({
@@ -60,7 +61,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   @ViewChild("map")
   public mapElement: ElementRef;
 
-  constructor(private here: HereService, private _formBuilder: FormBuilder) {
+  constructor(private here: HereService, private _formBuilder: FormBuilder, private geofenceService: GeofenceService) {
     this.query = "starbucks";
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -115,6 +116,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   loadGridData(tableData: any){
     let selectedGeofenceList: any = [];
+    // this.selectedElementData.latitude= 48.8569817;
+    // this.selectedElementData.longitude= 2.4509036;
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
         let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
@@ -260,19 +263,120 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   onCreateUpdateCircularGeofence() {
+    if(this.actionType == 'create'){ //-- create
+      let cirGeoCreateObjData: any = [
+        {
+          id: 0,
+          organizationId: 0,
+          categoryId: 0,
+          subCategoryId: 0,
+          name: "string",
+          type: "string",
+          address: "string",
+          city: "string",
+          country: "string",
+          zipcode: "string",
+          latitude: 0,
+          longitude: 0,
+          distance: 0,
+          tripId: 0,
+          createdBy: 0
+        }
+      ];
 
+      this.geofenceService.createCircularGeofence(cirGeoCreateObjData).subscribe((cirGeoCreateData: any) => {
+
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicateCircularGeofence = true;
+        }
+      });
+    }
+    else{ //-- update
+      let cirGeoUpdateObjData: any = {
+        id: 0,
+        categoryId: 0,
+        subCategoryId: 0,
+        name: "string",
+        modifiedBy: 0,
+        organizationId: 0
+      };
+      this.geofenceService.updateCircularGeofence(cirGeoUpdateObjData).subscribe((cirGeoUpdateData: any) => {
+
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicateCircularGeofence = true;
+        }
+      });
+    }
   }
 
   onCreateUpdatePolygonGeofence() {
+    if(this.actionType == 'create'){ //-- create
+      let polyCreateObjData: any = {
+        id: 0,
+        organizationId: 0,
+        categoryId: 0,
+        subCategoryId: 0,
+        name: "string",
+        type: "string",
+        address: "string",
+        city: "string",
+        country: "string",
+        zipcode: "string",
+        latitude: 0,
+        longitude: 0,
+        distance: 0,
+        tripId: 0,
+        createdBy: 0,
+        nodes: [
+          {
+            id: 0,
+            landmarkId: 0,
+            seqNo: 0,
+            latitude: 0,
+            longitude: 0,
+            createdBy: 0
+          }
+        ]
+      };
+
+      this.geofenceService.createPolygonGeofence(polyCreateObjData).subscribe((createPolyData: any) => {
+
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicatePolygonGeofence = true;
+        }
+      });
+    }else{ //-- update
+      let polyUpdateObjData: any = {
+        id: 0,
+        categoryId: 0,
+        subCategoryId: 0,
+        name: "string",
+        modifiedBy: 0,
+        organizationId: 0
+      };
+
+      this.geofenceService.updatePolygonGeofence(polyUpdateObjData).subscribe((updatePolyData: any) => {
+
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicatePolygonGeofence = true;
+        }
+      });
+    }
 
   }
 
   onCircularReset() {
-
+    this.selectedPOI.clear();
+    this.setDefaultCircularGeofenceFormValue();
+    this.selectTableRows();
   }
 
   onPolygonReset(){
-
+    this.setDefaultPolygonGeofenceFormValue();
   }
 
   applyPOIFilter(filterValue: string) {

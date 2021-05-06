@@ -48,9 +48,10 @@ message EnumTranslation{
 }
 message VehicleGroup{
     int32 VehicleGroupId= 1;
-    string Vin=2;
+    string VehicleGroupName=2;
     int32 VehicleId=3;
-    string VehicleName=4;   
+    string VehicleName=4;  
+	string Vin=5;
 }
 
 
