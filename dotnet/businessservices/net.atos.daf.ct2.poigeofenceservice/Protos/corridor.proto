@@ -8,6 +8,7 @@ package corridorservice;
 service CorridorService{
  rpc GetCorridorList (CorridorRequest) returns (CorridorResponseList);
  rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
+ rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
     }
 
 message CorridorRequest{
@@ -179,6 +180,18 @@ string ViaName =3;
 message RouteCorridorAddResponse
 {
   Responsecode Code=1;
+  string Message = 2;  
+  int32 CorridorID =3;
+}
+
+
+message DeleteCorridorRequest
+{
+    int32 CorridorID=1;
+}
+message DeleteCorridorResponse
+{
+    Responsecode Code=1;
   string Message = 2;  
   int32 CorridorID =3;
 }

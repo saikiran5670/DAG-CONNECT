@@ -249,5 +249,40 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             return await Task.FromResult(response);
         }
+        public override async Task<DeleteCorridorResponse> DeleteCorridor(DeleteCorridorRequest request, ServerCallContext context)
+        {
+            DeleteCorridorResponse response = new DeleteCorridorResponse();
+            try
+            {
+                _logger.Info("Delete Corridor .");
+
+
+                var result = await _corridorManger.DeleteCorridor(request.CorridorID);
+                if (result.Id >= 0)
+                {
+                    response.Message = "Delete successfully";
+                    response.Code = Responsecode.Success;
+                    response.CorridorID = request.CorridorID;
+
+                }
+                else if (result.Id == -1)
+                {
+                    response.Message = "You can not delete the corridor, it is associated with alert ";
+                    response.Code = Responsecode.Failed;
+                }
+                else
+                {
+                    response.Message = "Corridor Not found";
+                    response.Code = Responsecode.NotFound;
+                }
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
     }
 }
