@@ -7,6 +7,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { GeofenceService } from '../../../../services/landmarkGeofence.service';
 declare var H: any;
 
 @Component({
@@ -56,11 +57,13 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   duplicateCircularGeofence: boolean = false;
   duplicatePolygonGeofence: boolean = false;
   geoSelectionFlag: boolean = false;
+  hereMap: any;
+  markerArray: any = [];
 
   @ViewChild("map")
   public mapElement: ElementRef;
 
-  constructor(private here: HereService, private _formBuilder: FormBuilder) {
+  constructor(private here: HereService, private _formBuilder: FormBuilder, private geofenceService: GeofenceService) {
     this.query = "starbucks";
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -87,35 +90,37 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       type: ['', []],
       category: ['', [Validators.required]],
       subCategory: ['', []],
-      address: new FormControl({value: null, disabled: true}),
-      zip: new FormControl({value: null, disabled: true}),
-      city: new FormControl({value: null, disabled: true}),
-      country: new FormControl({value: null, disabled: true})
+      address: new FormControl({ value: null, disabled: true }),
+      zip: new FormControl({ value: null, disabled: true }),
+      city: new FormControl({ value: null, disabled: true }),
+      country: new FormControl({ value: null, disabled: true })
     },
-    {
-      validator: [
-        CustomValidators.specialCharValidationForName('name'),
-      ]
-    });
+      {
+        validator: [
+          CustomValidators.specialCharValidationForName('name'),
+        ]
+      });
     this.breadcumMsg = this.getBreadcum(this.actionType);
-    if(this.actionType == 'create'){
+    if (this.actionType == 'create') {
       this.geoSelectionFlag = true;
     }
-    if(this.actionType == 'view' || this.actionType == 'edit'){
-      if(this.selectedElementData && this.selectedElementData.type == 'C'){ //-- circular geofence
+    if (this.actionType == 'view' || this.actionType == 'edit') {
+      if (this.selectedElementData && this.selectedElementData.type == 'C') { //-- circular geofence
         this.circularGeofence = true;
         this.setDefaultCircularGeofenceFormValue();
         this.loadGridData(this.poiData);
-      }else{ //-- polygon geofence
+      } else { //-- polygon geofence
         this.polygoanGeofence = true;
         this.setDefaultPolygonGeofenceFormValue();
       }
     }
   }
 
-  loadGridData(tableData: any){
+  loadGridData(tableData: any) {
     let selectedGeofenceList: any = [];
-    if(this.actionType == 'view'){
+    this.selectedElementData.latitude = 48.8569817;
+    this.selectedElementData.longitude = 2.4509036;
+    if (this.actionType == 'view') {
       tableData.forEach((row: any) => {
         let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
         if (search.length > 0) {
@@ -126,12 +131,12 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       this.displayedColumns = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
     }
     this.updatePOIDatasource(tableData);
-    if(this.actionType == 'edit' ){
+    if (this.actionType == 'edit') {
       this.selectTableRows();
     }
   }
 
-  selectTableRows(){
+  selectTableRows() {
     this.dataSourceForPOI.data.forEach((row: any) => {
       let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
       if (search.length > 0) {
@@ -140,13 +145,13 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     });
   }
 
-  setDefaultCircularGeofenceFormValue(){
+  setDefaultCircularGeofenceFormValue() {
     this.circularGeofenceFormGroup.get('circularName').setValue(this.selectedElementData.name);
     this.circularGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
     this.circularGeofenceFormGroup.get('radius').setValue(this.selectedElementData.distance);
   }
 
-  setDefaultPolygonGeofenceFormValue(){
+  setDefaultPolygonGeofenceFormValue() {
     this.polygonGeofenceFormGroup.get('name').setValue(this.selectedElementData.name);
     this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
     this.polygonGeofenceFormGroup.get('category').setValue(this.selectedElementData.categoryId);
@@ -157,7 +162,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.polygonGeofenceFormGroup.get('country').setValue(this.selectedElementData.country);
   }
 
-  updatePOIDatasource(tableData: any){
+  updatePOIDatasource(tableData: any) {
     this.dataSourceForPOI = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSourceForPOI.paginator = this.paginator;
@@ -175,28 +180,6 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   getBreadcum(type: any) {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewGeofenceDetails ? this.translationData.lblViewGeofenceDetails : 'View Geofence Details') : (type == 'edit') ? (this.translationData.lblEditGeofenceDetails ? this.translationData.lblEditGeofenceDetails : 'Edit Geofence Details') : (this.translationData.lblAddNewGeofence ? this.translationData.lblAddNewGeofence : 'Add New Geofence')}`;
-  }
-
-  public ngAfterViewInit() {
-    let defaultLayers = this.platform.createDefaultLayers();
-    //Step 2: initialize a map - this map is centered over Europe
-    let map = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
-      center: { lat: 50, lng: 5 },
-      zoom: 4,
-      pixelRatio: window.devicePixelRatio || 1
-    });
-    // add a resize listener to make sure that the map occupies the whole container
-    window.addEventListener('resize', () => map.getViewPort().resize());
-
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-
-    // Create the default UI components
-    var ui = H.ui.UI.createDefault(map, defaultLayers);
-
-    this.setUpClickListener(map, this.here, this.poiFlag);
-
   }
 
   setUpClickListener(map, here, poiFlag) {
@@ -260,19 +243,120 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   onCreateUpdateCircularGeofence() {
+    if (this.actionType == 'create') { //-- create
+      let cirGeoCreateObjData: any = [
+        {
+          id: 0,
+          organizationId: 0,
+          categoryId: 0,
+          subCategoryId: 0,
+          name: "string",
+          type: "string",
+          address: "string",
+          city: "string",
+          country: "string",
+          zipcode: "string",
+          latitude: 0,
+          longitude: 0,
+          distance: 0,
+          tripId: 0,
+          createdBy: 0
+        }
+      ];
 
+      this.geofenceService.createCircularGeofence(cirGeoCreateObjData).subscribe((cirGeoCreateData: any) => {
+
+      }, (error) => {
+        if (error.status == 409) {
+          this.duplicateCircularGeofence = true;
+        }
+      });
+    }
+    else { //-- update
+      let cirGeoUpdateObjData: any = {
+        id: 0,
+        categoryId: 0,
+        subCategoryId: 0,
+        name: "string",
+        modifiedBy: 0,
+        organizationId: 0
+      };
+      this.geofenceService.updateCircularGeofence(cirGeoUpdateObjData).subscribe((cirGeoUpdateData: any) => {
+
+      }, (error) => {
+        if (error.status == 409) {
+          this.duplicateCircularGeofence = true;
+        }
+      });
+    }
   }
 
   onCreateUpdatePolygonGeofence() {
+    if (this.actionType == 'create') { //-- create
+      let polyCreateObjData: any = {
+        id: 0,
+        organizationId: 0,
+        categoryId: 0,
+        subCategoryId: 0,
+        name: "string",
+        type: "string",
+        address: "string",
+        city: "string",
+        country: "string",
+        zipcode: "string",
+        latitude: 0,
+        longitude: 0,
+        distance: 0,
+        tripId: 0,
+        createdBy: 0,
+        nodes: [
+          {
+            id: 0,
+            landmarkId: 0,
+            seqNo: 0,
+            latitude: 0,
+            longitude: 0,
+            createdBy: 0
+          }
+        ]
+      };
+
+      this.geofenceService.createPolygonGeofence(polyCreateObjData).subscribe((createPolyData: any) => {
+
+      }, (error) => {
+        if (error.status == 409) {
+          this.duplicatePolygonGeofence = true;
+        }
+      });
+    } else { //-- update
+      let polyUpdateObjData: any = {
+        id: 0,
+        categoryId: 0,
+        subCategoryId: 0,
+        name: "string",
+        modifiedBy: 0,
+        organizationId: 0
+      };
+
+      this.geofenceService.updatePolygonGeofence(polyUpdateObjData).subscribe((updatePolyData: any) => {
+
+      }, (error) => {
+        if (error.status == 409) {
+          this.duplicatePolygonGeofence = true;
+        }
+      });
+    }
 
   }
 
   onCircularReset() {
-
+    this.selectedPOI.clear();
+    this.setDefaultCircularGeofenceFormValue();
+    this.selectTableRows();
   }
 
-  onPolygonReset(){
-
+  onPolygonReset() {
+    this.setDefaultPolygonGeofenceFormValue();
   }
 
   applyPOIFilter(filterValue: string) {
@@ -282,11 +366,22 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   masterToggleForPOI() {
-    this.isAllSelectedForPOI()
-      ? this.selectedPOI.clear()
-      : this.dataSourceForPOI.data.forEach((row) =>
-        this.selectedPOI.select(row)
-      );
+    // this.isAllSelectedForPOI()
+    //   ? this.selectedPOI.clear()
+    //   : this.dataSourceForPOI.data.forEach((row) =>
+    //     this.selectedPOI.select(row)
+    //   );
+    this.markerArray = [];
+    if(this.isAllSelectedForPOI()){
+      this.selectedPOI.clear();
+    }
+    else{
+      this.dataSourceForPOI.data.forEach((row: any) =>{
+        this.selectedPOI.select(row);
+        this.markerArray.push(row);
+      });
+    }
+    this.addMarkerOnMap();
   }
 
   isAllSelectedForPOI() {
@@ -303,21 +398,21 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         } row`;
   }
 
-  onCategoryChange(event: any){
+  onCategoryChange(event: any) {
 
   }
 
-  onSubCategoryChange(event: any){
+  onSubCategoryChange(event: any) {
 
   }
 
-  geoSelection(type: any){
+  geoSelection(type: any) {
     this.geoSelectionFlag = false;
-    if(type == 'circular'){
+    if (type == 'circular') {
       this.circularGeofence = true;
       this.setCircularType();
       this.updatePOIDatasource(this.poiData);
-    }else{ //-- polygon
+    } else { //-- polygon
       this.polygoanGeofence = true;
       this.setPolygonType();
     }
@@ -329,6 +424,197 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       msg: ""
     }
     this.backToPage.emit(emitObj);
+  }
+
+  public ngAfterViewInit() {
+    this.initMap();
+  }
+  
+  initMap(){
+    let defaultLayers = this.platform.createDefaultLayers();
+    //Step 2: initialize a map - this map is centered over Europe
+    this.hereMap = new H.Map(this.mapElement.nativeElement,
+      defaultLayers.vector.normal.map, {
+      center: { lat: 50, lng: 5 },
+      //center:{lat:41.881944, lng:-87.627778},
+      zoom: 4,
+      pixelRatio: window.devicePixelRatio || 1
+    });
+
+    // var svgMarkup = '<svg  width="210" height="24" xmlns="http://www.w3.org/2000/svg">' +
+    //   '<rect stroke="black" fill="${FILL}" x="1" y="1" width="220" height="220" />' +
+    //   '<text x="12" y="18" font-size="12pt" font-family="Arial" font-weight="bold" ' +
+    //   'text-anchor="start" fill="${STROKE}" >Create Polygon Geofence</text></svg>';
+    // // Add the first marker
+    // var bearsIcon = new H.map.Icon(
+    //   svgMarkup.replace('${FILL}', '#E5CDC7').replace('${STROKE}', '#393C49')),
+    //   bearsMarker = new H.map.Marker({ lat: 60, lng: 5 },
+    //     { icon: bearsIcon });
+
+    // map.addObject(bearsMarker);
+
+
+    // add a resize listener to make sure that the map occupies the whole container
+    window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
+
+    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
+
+    //===added code here=======
+    /*
+    //Step 4, initilize drag for map objects.
+    map.addEventListener('dragstart', (ev) => {
+      const target = ev.target;
+      if (target instanceof H.map.Circle) {
+          behavior.disable();
+      }
+    }, false);
+    map.addEventListener('drag', (ev) => {
+      const target = ev.target,
+          pointer = ev.currentPointer;
+      if (target instanceof H.map.Circle) {
+          target.setCenter(map.screenToGeo(pointer.viewportX, pointer.viewportY));
+      }
+    }, false);
+    
+    map.addEventListener('dragend', (ev) => {
+      const target = ev.target;
+      if (target instanceof H.map.Circle) {
+          behavior.enable();
+      }
+    }, false);  */
+    //=========end========
+
+    // Create the default UI components
+    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+  }
+
+  createResizableCircle(_radius: any, rowData: any) {
+    var circle = new H.map.Circle(
+      // The central point of the circle
+      { lat: rowData.latitude, lng: rowData.longitude },
+      // The radius of the circle in meters
+      _radius,//85000,
+      {
+        style: { fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 0 }
+      }
+    ),
+      circleOutline = new H.map.Polyline(
+        circle.getGeometry().getExterior(),
+        {
+          style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+        }
+      ),
+      circleGroup = new H.map.Group({
+        volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+        objects: [circle, circleOutline]
+      }),
+      circleTimeout;
+
+    // ensure that the objects can receive drag events
+    circle.draggable = true;
+    circleOutline.draggable = true;
+
+    // extract first point of the circle outline polyline's LineString and
+    // push it to the end, so the outline has a closed geometry
+    circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
+
+    // add group with circle and it's outline (polyline)
+    //this.hereMap.removeObjects(this.hereMap.getObjects());
+    this.hereMap.addObject(circleGroup);
+
+    // event listener for circle group to show outline (polyline) if moved in with mouse (or touched on touch devices)
+    // circleGroup.addEventListener('pointerenter', function (evt) {
+    //   var currentStyle = circleOutline.getStyle(),
+    //     newStyle = currentStyle.getCopy({
+    //       strokeColor: 'rgb(255, 0, 0)'
+    //     });
+
+    //   if (circleTimeout) {
+    //     clearTimeout(circleTimeout);
+    //     circleTimeout = null;
+    //   }
+    //   // show outline
+    //   circleOutline.setStyle(newStyle);
+    // }, true);
+
+    // event listener for circle group to hide outline if moved out with mouse (or released finger on touch devices)
+    // the outline is hidden on touch devices after specific timeout
+    // circleGroup.addEventListener('pointerleave', function (evt) {
+    //   var currentStyle = circleOutline.getStyle(),
+    //     newStyle = currentStyle.getCopy({
+    //       strokeColor: 'rgba(255, 0, 0, 0)'
+    //     }),
+    //     timeout = (evt.currentPointer.type == 'touch') ? 1000 : 0;
+
+    //   circleTimeout = setTimeout(function () {
+    //     circleOutline.setStyle(newStyle);
+    //   }, timeout);
+    //   document.body.style.cursor = 'default';
+    // }, true);
+
+    // event listener for circle group to change the cursor if mouse position is over the outline polyline (resizing is allowed)
+    // circleGroup.addEventListener('pointermove', function (evt) {
+    //   if (evt.target instanceof H.map.Polyline) {
+    //     document.body.style.cursor = 'pointer';
+    //   } else {
+    //     document.body.style.cursor = 'default'
+    //   }
+    // }, true);
+    //   map.addEventListener('dragstart', (ev) => {
+    //     const target = ev.target;
+    //     if (target instanceof H.map.Circle) {
+    //         behavior.disable();
+    //     }
+    // }, false);
+    // event listener for circle group to resize the geo circle object if dragging over outline polyline
+    // circleGroup.addEventListener('drag', function (evt) {
+    //   var pointer = evt.currentPointer,
+    //     distanceFromCenterInMeters = circle.getCenter().distance(this.hereMap.screenToGeo(pointer.viewportX, pointer.viewportY));
+
+    //   // if resizing is alloved, set the circle's radius
+    //   if (evt.target instanceof H.map.Polyline) {
+    //     circle.setRadius(distanceFromCenterInMeters);
+
+    //     // use circle's updated geometry for outline polyline
+    //     var outlineLinestring = circle.getGeometry().getExterior();
+
+    //     // extract first point of the outline LineString and push it to the end, so the outline has a closed geometry
+    //     outlineLinestring.pushPoint(outlineLinestring.extractPoint(0));
+    //     circleOutline.setGeometry(outlineLinestring);
+
+    //     // prevent event from bubling, so map doesn't receive this event and doesn't pan
+    //     evt.stopPropagation();
+    //   }
+    // }, true);
+  }
+
+  onChangeRadius(event: any){
+    if(this.markerArray.length > 0){
+      this.addMarkerOnMap();
+    }
+  }
+
+  onChangeCheckbox(event: any, row: any){
+    if(event){
+      this.selectedPOI.toggle(row);
+    }
+    if(event.checked){ //-- add new marker
+      this.markerArray.push(row);
+    }else{ //-- remove existing marker
+      let arr = this.markerArray.filter(item => item.id != row.id);
+      this.markerArray = arr;
+    }
+    this.addMarkerOnMap();
+  }
+
+  addMarkerOnMap(){
+    this.hereMap.removeObjects(this.hereMap.getObjects());
+    this.markerArray.forEach(element => {
+      var marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude });
+      this.hereMap.addObject(marker);
+      this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
+    });
   }
 
 }

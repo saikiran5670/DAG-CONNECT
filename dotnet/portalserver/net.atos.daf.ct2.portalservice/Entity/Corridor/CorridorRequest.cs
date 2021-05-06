@@ -31,6 +31,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         [Required]
         public double EndLongitude { get; set; }
         public int Width { get; set; }
+        public int Distance { get; set; }
         public List<ViaStopDetails> ViaAddressDetails { get; set; }
         public bool TransportData { get; set; }
         public bool TrafficFlow { get; set; }
@@ -43,6 +44,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public Attribute attribute { get; set; }
         public Exclusion exclusion { get; set; }
         public VehicleSize vehicleSize { get; set; }
+        
     }
 
     public class ViaStopDetails
@@ -80,18 +82,18 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class Attribute
     {
-        public int Trailer { get; set; }
-        public bool Explosive { get; set; }
-        public bool Gas { get; set; }
-        public bool Flammable { get; set; }
-        public bool Combustible { get; set; }
-        public bool organic { get; set; }
-        public bool poision { get; set; }
-        public bool RadioActive { get; set; }
-        public bool Corrosive { get; set; }
-        public bool PoisonousInhalation { get; set; }
-        public bool WaterHarm { get; set; }
-        public bool Other { get; set; }
+        public int IsTrailer { get; set; }
+        public bool IsExplosive { get; set; }
+        public bool IsGas { get; set; }
+        public bool IsFlammable { get; set; }
+        public bool IsCombustible { get; set; }
+        public bool Isorganic { get; set; }
+        public bool Ispoision { get; set; }
+        public bool IsRadioActive { get; set; }
+        public bool IsCorrosive { get; set; }
+        public bool IsPoisonousInhalation { get; set; }
+        public bool IsWaterHarm { get; set; }
+        public bool IsOther { get; set; }
 
 
     }

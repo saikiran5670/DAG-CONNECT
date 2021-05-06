@@ -29,6 +29,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int ModifiedBy { get; set; }
         public string Description { get; set; }
         public List<ViaAddressDetail> ViaAddressDetails { get; set; }
+        public List<ExistingTrip> CorridoreTrips { get; set; }
+        
     }
     public class CorridorRequest
     {
@@ -73,10 +75,10 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string DirtRoadType { get; set; }
 
         public int VehicleHeight { get; set; }
-        public int vehicleWidth { get; set; }
-        public int vehicleLength { get; set; }
-        public int vehicleLimitedWeight { get; set; }
-        public int vehicleWeightPerAxle { get; set; }
+        public int VehicleWidth { get; set; }
+        public int VehicleLength { get; set; }
+        public int VehicleLimitedWeight { get; set; }
+        public int VehicleWeightPerAxle { get; set; }
     }
 
 

@@ -30,35 +30,110 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.OrganizationId = request.OrganizationId;
                 obj.CorridorId = request.CorridorId;
                 var data = await _corridorManger.GetCorridorList(obj);
-                #region CorridorGridView
-                foreach (var item in data.GridView)
+
+                #region CorridorEditView
+                if (data.EditView != null && data.EditView.Count > 0)
                 {
-                    CorridorResponse objCorridorResponse = new CorridorResponse();
-                    objCorridorResponse.Id = item.Id;
-                    objCorridorResponse.OrganizationId = item.OrganizationId;
-                    objCorridorResponse.CorridoreName = CheckNull(item.CorridoreName);
-                    objCorridorResponse.StartPoint = CheckNull(item.StartPoint);
-                    objCorridorResponse.StartLat = item.StartLat;
-                    objCorridorResponse.StartLong = item.StartLong;
-                    objCorridorResponse.EndPoint = CheckNull(item.EndPoint);
-                    objCorridorResponse.EndLat = item.EndLat;
-                    objCorridorResponse.EndLong = item.EndLong;
-                    objCorridorResponse.Distance = item.Distance;
-                    objCorridorResponse.Width = item.Width;
-                    objCorridorResponse.CreatedAt = item.CreatedAt;
-                    objCorridorResponse.CreatedBy = item.CreatedBy;
-                    objCorridorResponse.ModifiedAt = item.ModifiedAt;
-                    objCorridorResponse.ModifiedBy = item.ModifiedBy;
-                    for (int i = 0; i < item.ViaAddressDetails.Count; i++)
+                    foreach (var item in data.EditView)
                     {
-                        ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
-                        objViaAddressDetail.CorridorViaStopId = item.ViaAddressDetails[i].CorridorViaStopId;
-                        objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
-                        objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
-                        objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
-                        objCorridorResponse.ViaAddressDetail.Add(objViaAddressDetail);
+                        CorridorEditViewResponse objCorridorEditViewResponse = new CorridorEditViewResponse();
+                        objCorridorEditViewResponse.Id = item.Id;
+                        objCorridorEditViewResponse.OrganizationId = item.OrganizationId;
+                        objCorridorEditViewResponse.CorridoreName = CheckNull(item.CorridoreName);
+                        objCorridorEditViewResponse.StartPoint = CheckNull(item.StartPoint);
+                        objCorridorEditViewResponse.StartLat = item.StartLat;
+                        objCorridorEditViewResponse.StartLong = item.StartLong;
+                        objCorridorEditViewResponse.EndPoint = CheckNull(item.EndPoint);
+                        objCorridorEditViewResponse.EndLat = item.EndLat;
+                        objCorridorEditViewResponse.EndLong = item.EndLong;
+                        objCorridorEditViewResponse.Distance = item.Distance;
+                        objCorridorEditViewResponse.Width = item.Width;
+                        objCorridorEditViewResponse.CreatedAt = item.CreatedAt;
+                        objCorridorEditViewResponse.CreatedBy = item.CreatedBy;
+                        objCorridorEditViewResponse.ModifiedAt = item.ModifiedAt;
+                        objCorridorEditViewResponse.ModifiedBy = item.ModifiedBy;
+                        for (int i = 0; i < item.ViaAddressDetails.Count; i++)
+                        {
+                            ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
+                            objViaAddressDetail.CorridorViaStopId = item.ViaAddressDetails[i].CorridorViaStopId;
+                            objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
+                            objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
+                            objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                            objCorridorEditViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
+                        }
+                        objCorridorEditViewResponse.CorridorProperties = new CorridorProperties();
+                        objCorridorEditViewResponse.CorridorProperties.CorridorPropertiesId = item.CorridorPropertiesId;
+                        objCorridorEditViewResponse.CorridorProperties.IsTransportData = item.IsTransportData;
+                        objCorridorEditViewResponse.CorridorProperties.IsTrafficFlow = item.IsTrafficFlow;
+                        objCorridorEditViewResponse.CorridorProperties.CreatedAtForCP = item.CreatedAtForCP;
+                        objCorridorEditViewResponse.CorridorProperties.ModifiedAtForCP = item.ModifiedAtForCP;
+
+                        objCorridorEditViewResponse.CorridorProperties.Attribute = new corridorservice.Attribute();
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.NoOfTrailers = item.NoOfTrailers;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsExplosive = item.IsExplosive;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsGas = item.IsGas;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsCombustible = item.IsCombustible;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsOrganic = item.IsOrganic;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsPoision = item.IsPoision;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsRadioActive = item.IsRadioActive;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsCorrosive = item.IsCorrosive;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsPoisonousInhalation = item.IsPoisonousInhalation;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsWaterHarm = item.IsWaterHarm;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsOther = item.IsOther;
+                        objCorridorEditViewResponse.CorridorProperties.Attribute.IsFlammable = item.IsFlammable;
+
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion = new Exclusion();
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion.TollRoadType = CheckNull(item.TollRoadType);
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion.Mortorway = CheckNull(item.Mortorway);
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion.BoatFerriesType = CheckNull(item.BoatFerriesType);
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion.RailFerriesType = CheckNull(item.RailFerriesType);
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion.TunnelsType = CheckNull(item.TunnelsType);
+                        objCorridorEditViewResponse.CorridorProperties.Exclusion.DirtRoadType = CheckNull(item.DirtRoadType);
+
+                        objCorridorEditViewResponse.CorridorProperties.VehicleSize = new VehicleSize();
+                        objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleHeight = item.VehicleHeight;
+                        objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleWidth = item.VehicleWidth;
+                        objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleLength = item.VehicleLength;
+                        objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleLimitedWeight = item.VehicleLimitedWeight;
+                        objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleWeightPerAxle = item.VehicleWeightPerAxle;
+
+                        objCorridorResponseList.CorridorEditViewList.Add(objCorridorEditViewResponse);
                     }
-                    objCorridorResponseList.CorridorList.Add(objCorridorResponse);
+                }
+                #endregion
+
+                #region CorridorGridView
+                else
+                {
+                    foreach (var item in data.GridView)
+                    {
+                        CorridorGridViewResponse objCorridorGridViewResponse = new CorridorGridViewResponse();
+                        objCorridorGridViewResponse.Id = item.Id;
+                        objCorridorGridViewResponse.OrganizationId = item.OrganizationId;
+                        objCorridorGridViewResponse.CorridoreName = CheckNull(item.CorridoreName);
+                        objCorridorGridViewResponse.StartPoint = CheckNull(item.StartPoint);
+                        objCorridorGridViewResponse.StartLat = item.StartLat;
+                        objCorridorGridViewResponse.StartLong = item.StartLong;
+                        objCorridorGridViewResponse.EndPoint = CheckNull(item.EndPoint);
+                        objCorridorGridViewResponse.EndLat = item.EndLat;
+                        objCorridorGridViewResponse.EndLong = item.EndLong;
+                        objCorridorGridViewResponse.Distance = item.Distance;
+                        objCorridorGridViewResponse.Width = item.Width;
+                        objCorridorGridViewResponse.CreatedAt = item.CreatedAt;
+                        objCorridorGridViewResponse.CreatedBy = item.CreatedBy;
+                        objCorridorGridViewResponse.ModifiedAt = item.ModifiedAt;
+                        objCorridorGridViewResponse.ModifiedBy = item.ModifiedBy;
+                        for (int i = 0; i < item.ViaAddressDetails.Count; i++)
+                        {
+                            ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
+                            objViaAddressDetail.CorridorViaStopId = item.ViaAddressDetails[i].CorridorViaStopId;
+                            objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
+                            objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
+                            objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                            objCorridorGridViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
+                        }
+                        objCorridorResponseList.CorridorGridViewList.Add(objCorridorGridViewResponse);
+                    }
                 }
                 #endregion
                 objCorridorResponseList.Message = "CorridorList data retrieved";
@@ -99,24 +174,25 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.EndLatitude = request.EndLatitude;
                 obj.EndLongitude = request.EndLongitude;
                 obj.Width = request.Width;
+                obj.Distance = request.Distance;
                 obj.Trailer = Convert.ToChar(request.Trailer);
-                obj.TransportData = request.TransportData;
-                obj.TrafficFlow = request.TrafficFlow;
+                obj.TransportData = request.IsTransportData;
+                obj.TrafficFlow = request.IsTrafficFlow;
 
 
-                obj.Explosive = request.Explosive;
-                obj.Gas = request.Gas;
-                obj.Flammable = request.Flammable;
-                obj.Combustible = request.Combustible;
-                obj.organic = request.Organic;
-                obj.poision = request.Poision;
-                obj.RadioActive = request.RadioActive;
-                obj.Corrosive = request.Corrosive;
-                obj.PoisonousInhalation = request.PoisonousInhalation;
+                obj.Explosive = request.IsExplosive;
+                obj.Gas = request.IsGas;
+                obj.Flammable = request.IsFlammable;
+                obj.Combustible = request.IsCombustible;
+                obj.organic = request.Isorganic;
+                obj.poision = request.Ispoision;
+                obj.RadioActive = request.IsRadioActive;
+                obj.Corrosive = request.IsCorrosive;
+                obj.PoisonousInhalation = request.IsPoisonousInhalation;
 
 
-                obj.WaterHarm = request.WaterHarm;
-                obj.Other = request.Other;
+                obj.WaterHarm = request.IsWaterHarm;
+                obj.Other = request.IsOther;
                 obj.TollRoad = Convert.ToChar(request.TollRoad);
                 obj.Mortorway = Convert.ToChar(request.Mortorway);
                 obj.BoatFerries = Convert.ToChar(request.BoatFerries);

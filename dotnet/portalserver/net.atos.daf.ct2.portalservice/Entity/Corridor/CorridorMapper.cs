@@ -26,24 +26,25 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.EndLatitude = request.EndLatitude;
             obj.EndLongitude = request.EndLongitude;
             obj.Width = request.Width;
-            obj.Trailer = request.attribute.Trailer;
-            obj.TransportData = request.TransportData;
-            obj.TrafficFlow = request.TrafficFlow;
+            obj.Distance = request.Distance;
+            obj.Trailer = request.attribute.IsTrailer;
+            obj.IsTransportData = request.TransportData;
+            obj.IsTrafficFlow = request.TrafficFlow;
 
 
-            obj.Explosive = request.attribute.Explosive;
-            obj.Gas = request.attribute.Gas;
-            obj.Flammable = request.attribute.Flammable;
-            obj.Combustible = request.attribute.Combustible;
-            obj.Organic = request.attribute.organic;
-            obj.Poision = request.attribute.poision;
-            obj.RadioActive = request.attribute.RadioActive;
-            obj.Corrosive = request.attribute.Corrosive;
-            obj.PoisonousInhalation = request.attribute.PoisonousInhalation;
+            obj.IsExplosive = request.attribute.IsExplosive;
+            obj.IsGas = request.attribute.IsGas;
+            obj.IsFlammable = request.attribute.IsFlammable;
+            obj.IsCombustible = request.attribute.IsCombustible;
+            obj.Isorganic = request.attribute.Isorganic;
+            obj.Ispoision = request.attribute.Ispoision;
+            obj.IsRadioActive = request.attribute.IsRadioActive;
+            obj.IsCorrosive = request.attribute.IsCorrosive;
+            obj.IsPoisonousInhalation = request.attribute.IsPoisonousInhalation;
 
 
-            obj.WaterHarm = request.attribute.WaterHarm;
-            obj.Other = request.attribute.Other;
+            obj.IsWaterHarm = request.attribute.IsWaterHarm;
+            obj.IsOther = request.attribute.IsOther;
             obj.TollRoad = Convert.ToString(request.exclusion.TollRoad);
             obj.Mortorway = Convert.ToString(request.exclusion.Mortorway);
             obj.BoatFerries = Convert.ToString(request.exclusion.BoatFerries);
