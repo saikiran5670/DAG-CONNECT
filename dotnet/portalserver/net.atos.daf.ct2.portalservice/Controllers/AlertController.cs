@@ -65,11 +65,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, "Unknown: There was error while processing the request. please try again later. If issue persist, then contact DAF support team.");
+                return StatusCode(500, $"Exception Occurred, Activate Alert Failed for id:- {alertId}.");
             }
         }
 
-        
+        [HttpPut]
+        [Route("SuspendAlert")]
+        public async Task<IActionResult> SuspendAlert(int alertId)
+        {
+            try
+            {
+                if (alertId == 0) return BadRequest("Alert id cannot be zero.");
+                var response = await _AlertServiceClient.SuspendAlertAsync(new IdRequest { AlertId = alertId });
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"SuspendAlert method Failed", 1, 2, Convert.ToString(alertId),
+                  Request);
+                //_logger.Error(null, ex);
+                // check for fk violation
+                if (ex.Message.Contains(FK_Constraint))
+                {
+                    return StatusCode(500, "Internal Server Error.(01)");
+                }
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for id:- {alertId}.");
+            }
+        }
         #endregion
     }
 }

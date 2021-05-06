@@ -3,6 +3,7 @@ using log4net;
 using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.poigeofence;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -29,7 +30,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.OrganizationId = request.OrganizationId;
                 obj.CorridorId = request.CorridorId;
                 var data = await _corridorManger.GetCorridorList(obj);
-                foreach (var item in data)
+                #region CorridorGridView
+                foreach (var item in data.GridView)
                 {
                     CorridorResponse objCorridorResponse = new CorridorResponse();
                     objCorridorResponse.Id = item.Id;
@@ -47,8 +49,18 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objCorridorResponse.CreatedBy = item.CreatedBy;
                     objCorridorResponse.ModifiedAt = item.ModifiedAt;
                     objCorridorResponse.ModifiedBy = item.ModifiedBy;
+                    for (int i = 0; i < item.ViaAddressDetails.Count; i++)
+                    {
+                        ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
+                        objViaAddressDetail.CorridorViaStopId = item.ViaAddressDetails[i].CorridorViaStopId;
+                        objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
+                        objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
+                        objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                        objCorridorResponse.ViaAddressDetail.Add(objViaAddressDetail);
+                    }
                     objCorridorResponseList.CorridorList.Add(objCorridorResponse);
                 }
+                #endregion
                 objCorridorResponseList.Message = "CorridorList data retrieved";
                 objCorridorResponseList.Code = Responsecode.Success;
                 _logger.Info("GetCorridorList method in CorridorManagement service called.");
@@ -81,7 +93,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.CorridorType = Convert.ToChar(request.CorridorType);
                 obj.CorridorLabel = request.CorridorLabel;
                 obj.StartAddress = request.StartAddress;
+                obj.StartLatitude = request.StartLatitude;
+                obj.StartLongitude = request.StartLongitude;
                 obj.EndAddress = request.EndAddress;
+                obj.EndLatitude = request.EndLatitude;
+                obj.EndLongitude = request.EndLongitude;
                 obj.Width = request.Width;
                 obj.Trailer = Convert.ToChar(request.Trailer);
                 obj.TransportData = request.TransportData;
@@ -114,6 +130,20 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.VehicleSizeLength = request.VehicleSizeLength;
                 obj.VehicleSizeLimitedWeight = request.VehicleSizeLimitedWeight;
                 obj.VehicleSizeWeightPerAxle = request.VehicleSizeWeightPerAxle;
+                obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
+
+                if (request != null && request.ViaAddressDetails != null)
+                {
+                    foreach (var item in request.ViaAddressDetails)
+                    {
+                        var trans = new poigeofence.entity.ViaRoute();
+                        trans.ViaStopName = item.ViaName;
+                        trans.Latitude = item.Longitude;
+                        trans.Longitude = item.Longitude;
+                        obj.ViaRoutDetails.Add(trans);
+                       
+                    }
+                }
 
                 var result = await _corridorManger.AddRouteCorridor(obj);
                 if (result.Id == -1)

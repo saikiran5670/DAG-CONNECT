@@ -1,8 +1,5 @@
 ﻿using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofence.repository;
-//using net.atos.daf.ct2.poigeofence.entity;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofence
@@ -20,9 +17,34 @@ namespace net.atos.daf.ct2.poigeofence
             return await _corridorRepository.AddRouteCorridor(routeCorridor);
         }
 
-        public async Task<List<CorridorResponse>> GetCorridorList(CorridorRequest objCorridorRequest)
+        //public async Task<List<CorridorResponse>> GetCorridorList(CorridorRequest objCorridorRequest)
+        //{
+        //    return await _corridorRepository.GetCorridorList(objCorridorRequest);
+        //}
+
+        public async Task<CorridorLookUp> GetCorridorList(CorridorRequest objCorridorRequest)
         {
-            return await _corridorRepository.GetCorridorList(objCorridorRequest);
+            CorridorLookUp objCorridorLookUp = new CorridorLookUp();
+
+            if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId > 0)
+            {
+                objCorridorLookUp.EditView = await _corridorRepository.GetCorridorListByOrgIdAndCorriId(objCorridorRequest);
+                for (int i = 0; i < objCorridorLookUp.EditView.Count; i++)
+                {
+                    objCorridorLookUp.EditView[i].ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView[i].Id);
+                }
+            }
+
+            if (objCorridorRequest.OrganizationId > 0)
+            {
+                objCorridorLookUp.GridView = await _corridorRepository.GetCorridorListByOrganization(objCorridorRequest);
+                for (int i = 0; i < objCorridorLookUp.GridView.Count; i++)
+                {
+                    objCorridorLookUp.GridView[i].ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.GridView[i].Id);
+                }
+            }
+            
+            return objCorridorLookUp;
         }
     }
 }

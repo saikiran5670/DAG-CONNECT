@@ -43,6 +43,10 @@ spec:
       - backend:
           serviceName: portalservice
           servicePort: 80
+        path: /alert
+      - backend:
+          serviceName: portalservice
+          servicePort: 80
         path: /organization
       - backend:
           serviceName: portalservice
