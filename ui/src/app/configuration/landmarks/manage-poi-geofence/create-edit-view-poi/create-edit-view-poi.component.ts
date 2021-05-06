@@ -61,7 +61,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   selectedMarker: any;
   // UpdatedPoiFlag: any;
   searchData: any = [];
-
+  activeSearchList: any = false;
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
   @ViewChild("map")
@@ -205,6 +205,10 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   searchValue(event: any) {
+    this.activeSearchList = true;
+    if(event.target.value == "") {
+      this.activeSearchList = false;
+    }
     console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -218,8 +222,9 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   SearchListItems(item){
-console.log("you clicked on:" +item.title);
-console.log(item.position);
+   
+// console.log("you clicked on:" +item.title);
+// console.log(item.position);
 this.map.setCenter({lat:item.position[0], lng:item.position[1]});
 this.map.setZoom(14);
   }
