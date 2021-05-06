@@ -10,7 +10,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int Id { get; set; }
        
         public int LandmarkId { get; set; }
-
+        [Column("trip_id")]
+        public string TripId { get; set; }
 
         [Column("seq_no")]
         public int SequenceNumber { get; set; }
@@ -35,7 +36,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int LandmarkId { get; set; }
 
         [Column("trip_id")]
-        public string TripId { get; set; } //datatype  need to confirm
+        public string TripId { get; set; } 
         [Column("start_date")]
         public double StartDdate { get; set; }
         [Column("end_date")]
@@ -51,7 +52,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double EndLatitude { get; set; }
         public double EndLongitude { get; set; }
         public string EndPosition { get; set; }
-        public int distance { get; set; }
+        public int Distance { get; set; }
 
         public List<Nodepoint> NodePoints { get; set; }
     } 

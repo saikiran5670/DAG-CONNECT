@@ -10,7 +10,7 @@ using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
-   public class CorridorRepository : ICorridorRepository
+    public class CorridorRepository : ICorridorRepository
     {
         private readonly IDataAccess _dataAccess;
         private static readonly log4net.ILog log =
@@ -32,26 +32,26 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"select l.id 
-                                ,l.organization_id as OrganizationId
-	                            ,l.name as CorridoreName
-	                            ,l.address as StartPoint
-	                            ,l.latitude as StartLat
-	                            ,l.longitude as StartLong
-	                            ,n.address as EndPoint
-	                            ,n.latitude as EndLat
-	                            ,n.longitude as EndLong
-	                            ,l.distance as Distance
-	                            ,l.distance as Width
-                                ,l.state as State
-                                ,l.type as CorridorType
-	                            ,l.created_at as Created_At
-	                            ,l.created_by as CreatedBy
-	                            ,l.modified_at as ModifiedAt
-	                            ,l.modified_by as ModifiedBy
-                        FROM       master.landmark l
-                        LEFT JOIN master.nodes n on l.id = n.landmark_id
-                        WHERE      l.type IN ('E','R')
-                        AND        l.organization_id = @organization_id";
+								,l.organization_id as OrganizationId
+								,l.name as CorridoreName
+								,l.address as StartPoint
+								,l.latitude as StartLat
+								,l.longitude as StartLong
+								,n.address as EndPoint
+								,n.latitude as EndLat
+								,n.longitude as EndLong
+								,l.distance as Distance
+								,l.distance as Width
+								,l.state as State
+								,l.type as CorridorType
+								,l.created_at as Created_At
+								,l.created_by as CreatedBy
+								,l.modified_at as ModifiedAt
+								,l.modified_by as ModifiedBy
+						FROM       master.landmark l
+						LEFT JOIN master.nodes n on l.id = n.landmark_id
+						WHERE      l.type IN ('E','R')
+						AND        l.organization_id = @organization_id";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 var data = await _dataAccess.QueryAsync<CorridorResponse>(query, parameter);
@@ -70,20 +70,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"select l.id 
-                                ,l.organization_id as OrganizationId
-	                            ,l.name as CorridoreName
-	                            ,l.address as StartPoint
-	                            ,l.latitude as StartLat
-	                            ,l.longitude as StartLong
-	                            ,n.address as EndPoint
-	                            ,n.latitude as EndLat
-	                            ,n.longitude as EndLong
-	                            ,l.distance as Distance
-	                            ,l.distance as Width
-	                            ,l.created_at as CreatedAt
-	                            ,l.created_by as CreatedBy
-	                            ,l.modified_at as ModifiedAt
-	                            ,l.modified_by as ModifiedBy
+								,l.organization_id as OrganizationId
+								,l.name as CorridoreName
+								,l.address as StartPoint
+								,l.latitude as StartLat
+								,l.longitude as StartLong
+								,n.address as EndPoint
+								,n.latitude as EndLat
+								,n.longitude as EndLong
+								,l.distance as Distance
+								,l.distance as Width
+								,l.created_at as CreatedAt
+								,l.created_by as CreatedBy
+								,l.modified_at as ModifiedAt
+								,l.modified_by as ModifiedBy
 								,cp.id as CorridorPropertiesId
 								, cp.landmark_id
 								, cp.is_transport_data as IsTransportData
@@ -113,12 +113,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								, cp.vehicle_weight_per_axle as vehicleWeightPerAxle
 								, cp.created_at as CreatedAtForCP
 								, cp.modified_at as ModifiedAtForCP
-                        FROM       master.landmark l
-                        LEFT JOIN master.nodes n on l.id = n.landmark_id
+						FROM       master.landmark l
+						LEFT JOIN master.nodes n on l.id = n.landmark_id
 						LEFT JOIN master.corridorproperties cp on l.id = cp.landmark_id
-                        WHERE      l.type IN ('E','R')
-                        AND        l.organization_id = @organization_id
-                        AND        l.id = @id";
+						WHERE      l.type IN ('E','R')
+						AND        l.organization_id = @organization_id
+						AND        l.id = @id";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 parameter.Add("@id", objCorridorRequest.CorridorId);
@@ -138,11 +138,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"select id as CorridorViaStopId
-                                 ,name as CorridorViaStopName
-                                 ,latitude
-                                 ,longitude
-                          FROM MASTER.CORRIDORVIASTOP WHERE
-                          landmark_id=@landmark_id";
+								 ,name as CorridorViaStopName
+								 ,latitude
+								 ,longitude
+						  FROM MASTER.CORRIDORVIASTOP WHERE
+						  landmark_id=@landmark_id";
 
                 parameter.Add("@landmark_id", Id);
                 var data = await _dataAccess.QueryAsync<ViaAddressDetail>(query, parameter);
@@ -167,20 +167,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     if (!isExist)
                     {
                         var insertIntoLandmark = @"INSERT INTO master.landmark(
-                                          organization_id, name, address, type,distance, Width, state, latitude, longitude, created_at, created_by)
-                                            VALUES (@OrganizationId, @CorridorLabel, @StartAddress, @CorridorType,@Distance, @Width, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By)RETURNING id";
+										  organization_id, name, address, type,distance, Width, state, latitude, longitude, created_at, created_by)
+											VALUES (@OrganizationId, @CorridorLabel, @StartAddress, @CorridorType,@Distance, @Width, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By)RETURNING id";
 
 
                         var insertIntoNodes = @"INSERT INTO master.nodes(
-                                          landmark_id, state, latitude, longitude, created_at, created_by, address)
-                                            VALUES (@LandmarkId, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
+										  landmark_id, state, latitude, longitude, created_at, created_by, address)
+											VALUES (@LandmarkId, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
 
                         var insertIntoCorridorProperties = @"INSERT INTO master.corridorproperties(
-                                          landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
-                                           VALUES (@LandmarkId, @TransportData, @TrafficFlow, @Trailer, @Explosive, @Gas, @Flammable, @Combustible, @organic, @poision, @RadioActive, @Corrosive, @PoisonousInhalation, @WaterHarm, @Other, @TollRoad, @Mortorway, @BoatFerries, @RailFerries, @Tunnels, @DirtRoad, @VehicleSizeHeight, @VehicleSizeWidth, @VehicleSizeLength, @VehicleSizeLimitedWeight, @VehicleSizeWeightPerAxle, @Created_At) RETURNING id";
+										  landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
+										   VALUES (@LandmarkId, @TransportData, @TrafficFlow, @Trailer, @Explosive, @Gas, @Flammable, @Combustible, @organic, @poision, @RadioActive, @Corrosive, @PoisonousInhalation, @WaterHarm, @Other, @TollRoad, @Mortorway, @BoatFerries, @RailFerries, @Tunnels, @DirtRoad, @VehicleSizeHeight, @VehicleSizeWidth, @VehicleSizeLength, @VehicleSizeLimitedWeight, @VehicleSizeWeightPerAxle, @Created_At) RETURNING id";
 
 
-                       
+
 
 
                         parameter.Add("@OrganizationId", routeCorridor.OrganizationId != 0 ? routeCorridor.OrganizationId : null);
@@ -253,14 +253,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                 parameter.Add("@ViaStopName", temp.ViaStopName);
 
                                 var insertIntoCorridorViaStop = @"INSERT INTO master.corridorviastop(
-                                          landmark_id, latitude, longitude, name)
-                                            VALUES (@LandmarkId, @Latitude, @Longitude ,@ViaStopName) RETURNING id";
+										  landmark_id, latitude, longitude, name)
+											VALUES (@LandmarkId, @Latitude, @Longitude ,@ViaStopName) RETURNING id";
 
                                 await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorViaStop, parameter);
 
                             }
 
-                            
+
 
                         }
                     }
@@ -303,7 +303,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var parameter = new DynamicParameters();
-                
+
                 List<RouteCorridor> routeCorridors = new List<RouteCorridor>();
                 string getQuery = string.Empty;
 
@@ -355,5 +355,228 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw ex;
             }
         }
+
+
+
+
+        public async Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        {
+            try
+            {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+
+
+                    //string queryduplicate = string.Empty;
+                    //var parameterduplicate = new DynamicParameters();
+                    //parameterduplicate.Add("@name", existingTripCorridor.CorridorLabel);
+
+                    //if (existingTripCorridor.OrganizationId > 0)
+                    //{
+                    //    parameterduplicate.Add("@organization_id", existingTripCorridor.OrganizationId);
+                    //    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and organization_id=@organization_id;";
+                    //}
+                    //else
+                    //    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
+
+                    //int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+                    var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id);
+
+                    if (isExist)
+                        {
+                            existingTripCorridor.Id = -1;// Corridor is already exist with same name.
+                            return existingTripCorridor;
+                        }
+
+                       
+
+//                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, 
+//latitude, longitude, distance,  state, created_at, created_by)
+//	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance,
+// @state, @created_at, @created_by) RETURNING id";
+
+//                        var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+//                        poi.Id = id;
+                    
+                  
+
+
+
+
+
+
+
+                    var insertIntoLandmark = @"INSERT INTO master.landmark(
+										       organization_id, name, address,city, country, zipcode, type, distance,width, state, created_at, created_by
+											VALUES (@organization_id, @corridorLabel, @address,@city, @country, @zipcode, @corridorType, @distance,@width, @state, @created_at, @created_by)RETURNING id";
+
+
+
+
+
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@organization_id", existingTripCorridor.OrganizationId != 0 ? existingTripCorridor.OrganizationId : null);
+                   // parameter.Add("@category_id", poi.CategoryId);
+                   // parameter.Add("@sub_category_id", poi.SubCategoryId);
+                    parameter.Add("@corridorLabel", existingTripCorridor.CorridorLabel);
+                    parameter.Add("@address", existingTripCorridor.Address);
+                    parameter.Add("@city", existingTripCorridor.City);
+                    parameter.Add("@country", existingTripCorridor.Country);
+                    parameter.Add("@zipcode", existingTripCorridor.Zipcode);
+                    parameter.Add("@corridorType", MapLandmarkTypeToChar(existingTripCorridor.CorridorType));
+                  //  parameter.Add("@latitude", existingTripCorridor.Latitude);
+                  //  parameter.Add("@longitude", existingTripCorridor.Longitude);
+                    parameter.Add("@distance", existingTripCorridor.Distance);
+                    parameter.Add("@width", existingTripCorridor.Width);
+
+                    parameter.Add("@state", 'A');
+                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@created_by", existingTripCorridor.CreatedBy);
+
+
+                  
+                   
+
+                    parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@Created_By", existingTripCorridor.CreatedBy);
+                    parameter.Add("@state", "A");
+
+
+                    var id = await _dataAccess.ExecuteScalarAsync<int>(insertIntoLandmark, parameter);
+                    if (id > 0)
+                    {
+                        existingTripCorridor.Id = id;
+                     var tripDetails=   AddToExistingTropCorridor(existingTripCorridor);
+                      //  existingTripCorridor.ExistingTrips = tripDetails;
+                    }
+
+                    transactionScope.Complete();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Info("AddExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
+                log.Error(ex.ToString());
+                // throw ex;
+            }
+            return existingTripCorridor;
+        }
+        private async Task<List<ExistingTrip>> AddToExistingTropCorridor(ExistingTripCorridor existingTripCorridor)
+        {
+            var tripList = new List<ExistingTrip>();
+            foreach (var existingTrip in existingTripCorridor.ExistingTrips)
+            {
+                existingTrip.LandmarkId = existingTripCorridor.Id;
+                var insertIntoCorridorTrips = @"INSERT INTO master.corridortrips(
+										  landmark_id, trip_id, start_date, end_date, driver_id1, driver_id2, start_latitude, 
+										  start_longitude, end_latitude,end_longitude, start_position, end_position, distance)
+										  VALUES (@LandmarkId,@TripId, @StartDate, @EndDate, @DriverId1, @DriverId2, @StartLatitude, 
+										  @StartLongitude, @EndLatitude,@EndLongitude, @StartPosition, @EndPosition, @Distance) RETURNING id";
+
+                if (existingTrip.LandmarkId > 0)
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@LandmarkId", existingTrip.LandmarkId);
+                    parameter.Add("@TripId", existingTrip.LandmarkId);
+
+                    parameter.Add("@StartDate", existingTrip.StartDdate);
+
+                    parameter.Add("@EndDate", existingTrip.EndDate);
+
+                    parameter.Add("@DriverId1", existingTrip.DriverId1);
+
+                    parameter.Add("@DriverId2", existingTrip.DriverId2);
+
+                    parameter.Add("@StartLatitude", existingTrip.StartLatitude);
+
+                    parameter.Add("@StartLongitude", existingTrip.StartLongitude);
+
+                    parameter.Add("@EndLatitude", existingTrip.EndLatitude);
+
+                    parameter.Add("@EndLongitude", existingTrip.EndLongitude);
+
+                    parameter.Add("@StartPosition", existingTrip.StartPosition);
+
+                    parameter.Add("@EndPosition", existingTrip.EndPosition);
+
+                    parameter.Add("@Distance", existingTrip.Distance);
+                    var id = await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorTrips, parameter);
+                    existingTrip.Id = Convert.ToInt32(id);
+                    if (existingTrip.Id>0)
+                    {
+                        existingTripCorridor.Id = id;
+                        var inseredNodesDetails = InsertToNodes(existingTrip.NodePoints, existingTrip.LandmarkId);
+                    }
+
+                    tripList.Add(existingTrip);
+                }
+            }
+            return tripList;
+
+
+        }
+
+
+        private async Task<List<Nodepoint>> InsertToNodes(List<Nodepoint> nodePoints,int landmarkId)
+        {
+            var tripNodes = new List<Nodepoint>();
+            foreach (var nodePoint in nodePoints)
+            {
+                nodePoint.LandmarkId = landmarkId;
+                var insertIntoNodes = @"INSERT INTO master.nodes(
+								        landmark_id,seq_no,latitude,longitude, state, created_at, created_by, address,trip_id)
+										VALUES (@LandmarkId,@SequenceNumber,@Latitude,@Longitude, @State, @Created_At, @Created_By,
+                                        @NodeAddress,@TripId) RETURNING id";               
+                                        
+
+                if (nodePoint.LandmarkId > 0)
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@LandmarkId", nodePoint.LandmarkId);
+                    parameter.Add("@TripId", nodePoint.TripId);
+                    parameter.Add("@SequenceNumber", nodePoint.SequenceNumber);
+                    parameter.Add("@Latitude", nodePoint.Latitude);
+                    parameter.Add("@Longitude", nodePoint.Longitude);
+                    parameter.Add("@State", "A");
+                    parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@Created_By", nodePoint.CreatedBy);
+                    parameter.Add("@Address", nodePoint.Address);
+                    var result = await _dataAccess.ExecuteScalarAsync<int>(insertIntoNodes, parameter);
+                    nodePoint.Id = Convert.ToInt32(result);
+                    tripNodes.Add(nodePoint);
+                }
+            }
+            return tripNodes;
+
+
+        }
+        private char MapLandmarkTypeToChar(string type)
+        {
+            char ptype = 'N';
+            switch (type)
+            {
+                case "None":
+                    ptype = 'N';
+                    break;
+                case "POI":
+                    ptype = 'P';
+                    break;
+                case "CircularGeofence":
+                    ptype = 'C';
+                    break;
+                case "PolygonGeofence":
+                    ptype = 'O';
+                    break;
+                case "Corridor":
+                    ptype = 'R';
+                    break;
+                case "Route":
+                    ptype = 'U';
+                    break;
+            }
+            return ptype;
+        }
+
     }
 }
