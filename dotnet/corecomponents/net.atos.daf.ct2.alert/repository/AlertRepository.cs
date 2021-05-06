@@ -23,8 +23,13 @@ namespace net.atos.daf.ct2.alert.repository
 
         public async Task<Alert> UpdateAlert(Alert alert)
         {
-            //Begin transaction scope for master.vehicle table
-            var QueryStatement = @" UPDATE master.alert
+            //Begin transaction scope for master.alert table
+            dataAccess.connection.Open();
+            var transactionScope = dataAccess.connection.BeginTransaction();
+            try
+            {
+
+                var QueryStatement = @" UPDATE master.alert
                                         SET 
                                          name=@name                                        
         	                            ,validity_period_type=@validity_period_type
@@ -36,27 +41,37 @@ namespace net.atos.daf.ct2.alert.repository
                                          WHERE id = @id
                                          RETURNING id;";
 
-            var parameter = new DynamicParameters();
-            parameter.Add("@id", alert.Id);
-            parameter.Add("@name", alert.Name);
-            parameter.Add("@validity_period_type", alert.ValidityPeriodType);
-            if (alert.ValidityPeriodType.ToUpper().ToString() == ((char)ValidityPeriodType.Custom).ToString())
-            {
-                parameter.Add("@validity_start_date", alert.ValidityStartDate);
-                parameter.Add("@validity_end_date", alert.ValidityEndDate);
-            }
-            else
-            {
-                parameter.Add("@validity_start_date", null);
-                parameter.Add("@validity_end_date", null);
-            }
-            parameter.Add("@vehicle_group_id", alert.VehicleGroupId);
-            parameter.Add("@modified_at", alert.ModifiedAt);
-            parameter.Add("@modified_by", alert.ModifiedBy);
-            int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-            alert.Id = alertId;
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", alert.Id);
+                parameter.Add("@name", alert.Name);
+                parameter.Add("@validity_period_type", alert.ValidityPeriodType);
+                if (alert.ValidityPeriodType.ToUpper().ToString() == ((char)ValidityPeriodType.Custom).ToString())
+                {
+                    parameter.Add("@validity_start_date", alert.ValidityStartDate);
+                    parameter.Add("@validity_end_date", alert.ValidityEndDate);
+                }
+                else
+                {
+                    parameter.Add("@validity_start_date", null);
+                    parameter.Add("@validity_end_date", null);
+                }
+                parameter.Add("@vehicle_group_id", alert.VehicleGroupId);
+                parameter.Add("@modified_at", alert.ModifiedAt);
+                parameter.Add("@modified_by", alert.ModifiedBy);
+                int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                alert.Id = alertId;
 
-            bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+            }
+            catch (Exception ex)
+            {
+                transactionScope.Rollback();
+                throw ex;
+            }
+            finally
+            {
+                dataAccess.connection.Close();
+            }
 
             return alert;
         }

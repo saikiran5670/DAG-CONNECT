@@ -27,3 +27,140 @@ message AlertResponse{
     ResponseCode Code=1;
     string message = 2;
 }
+
+message AlertRequest
+{
+	int32 Id=1;
+	int32 OrganizationId=2;
+	string Name=3;
+	string Category=4;
+	string Type=5;
+	string ValidityPeriodType=6;
+	int64 ValidityStartDate=7;
+	int64 ValidityEndDate=8;
+	int32 VehicleGroupId=9;
+	string State=10;
+	int64 CreatedAt=11;
+	int32 CreatedBy=12;
+	int64 ModifiedAt=13;
+	int32 ModifiedBy=14;
+	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=15;
+	repeated AlertFilterRefRequest AlertFilterRefs=16;
+	repeated NotificationRequest Notifications=17;
+	repeated AlertLandmarkRefRequest AlertLandmarkRefs=18;
+}
+
+message AlertFilterRefRequest
+{
+	int32 Id=1;
+	int32 AlertId=2;
+	int32 AlertUrgencyLevelId=3;
+	string FilterType=4;
+	double ThresholdValue=5;
+	string UnitType=6;
+	string LandmarkType=7;
+	int32 RefId=8;
+	string PositionType=9;
+	repeated bool DayType=10;
+	string PeriodType=11;
+	int64 FilterStartDate=12;
+	int64 FilterEndDate=13;
+	string State=14;
+	int64 CreatedAt=15;
+	int64 ModifiedAt=16;
+}
+
+message AlertLandmarkRefRequest
+{
+	int32 Id = 1;
+	int32 AlertId=2;
+	string LandmarkType=3;
+	int32 RefId = 4;
+	double Distance = 5;
+	string UnitType = 6;
+	string State = 7;
+	int64 CreatedAt = 8;
+	int64 ModifiedAt = 9;
+}
+
+message AlertUrgencyLevelRefRequest
+{
+	int32 Id=1;
+	int32 AlertId=2;
+	string UrgencyLevelType=3;
+	double ThresholdValue=4;
+	string UnitType=5;
+	repeated bool DayType=6;
+	string PeriodType=7;
+	int64 UrgencylevelStartDate=8;
+	int64 UrgencylevelEndDate=9;
+	string State=10;
+	int64 CreatedAt=11;
+	int64 ModifiedAt=12;
+}
+
+message NotificationRequest
+{
+	int32 Id = 1;
+	int32 AlertId=2;
+	string AlertUrgencyLevelType=3;
+	string FrequencyType=4;
+	int32 FrequencyThreshholdValue=5;
+	string ValidityType=6;
+	string State=7;
+	int64 CreatedAt=8;
+	int32 CreatedBy=9;
+	int64 ModifiedAt=10;
+	int32 ModifiedBy=11;
+	repeated NotificationRecipientRequest NotificationRecipients=12;
+	repeated NotificationLimitRequest NotificationLimits=13;
+	repeated NotificationAvailabilityPeriodRequest NotificationAvailabilityPeriods=14;
+}
+
+message NotificationAvailabilityPeriodRequest
+{
+	int32 Id=1;
+	int32 NotificationId=2;
+	string AvailabilityPeriodType=3;
+	string PeriodType=4;
+	int32 StartTime=5;
+	int32 EndTime=6;
+	string State=7;
+	int64 CreatedAt=8;
+	int64 ModifiedAt=9;
+}
+
+message NotificationLimitRequest
+{
+	int32 Id=1;
+	int32 NotificationId=2;
+	string NotificationModeType=3;
+	int32 MaxLimit=4;
+	string NotificationPeriodType=5;
+	int32 PeriodLimit=6;
+	string State=7;
+	int64 CreatedAt=8;
+	int64 ModifiedAt=9;
+}
+
+message NotificationRecipientRequest
+{
+	int32 Id=1;
+	int32 NotificationId=2;
+	string RecipientLabel=3;
+	int32 AccountGroupId=4;
+	string NotificationModeType=5;
+	string PhoneNo=6;
+	string Sms=7;
+	string EmailId=8;
+	string EmailSub=9;
+	string EmailText=10;
+	string WsUrl=11;
+	string WsType=12;
+	string WsText=13;
+	string WsLogin=14;
+	string WsPassword=15;
+	string State=16;
+	int64 CreatedAt=17;
+	int64 ModifiedAt=18;
+}
