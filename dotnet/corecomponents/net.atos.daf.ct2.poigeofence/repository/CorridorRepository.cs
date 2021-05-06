@@ -507,7 +507,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         existingTrip.Id = Convert.ToInt32(id);
                         if (existingTrip.Id > 0)
                         {
-                            existingTripCorridor.Id = id;
                             var inseredNodesDetails =await InsertToNodes(existingTrip.NodePoints, existingTrip.LandmarkId);
                         }
 
