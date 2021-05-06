@@ -356,7 +356,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 // {
 
 
-                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id);
+                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id).Result;
 
                 if (isExist)
                 {
