@@ -578,5 +578,148 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return ptype;
         }
 
+        #region GetExistingTripCorridore
+        public async Task<List<CorridorEditViewResponse>> GetExistingtripCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest)
+        {
+            List<CorridorEditViewResponse> objCorridorEditViewResponse1 = new List<CorridorEditViewResponse>();
+            try
+            {
+                string query = string.Empty; var parameter = new DynamicParameters();
+                query = @"select l.id 
+                                ,l.organization_id as OrganizationId
+	                            ,l.name as CorridoreName
+	                            ,l.address as StartPoint
+	                            ,l.latitude as StartLat
+	                            ,l.longitude as StartLong
+	                            ,n.address as EndPoint
+	                            ,n.latitude as EndLat
+	                            ,n.longitude as EndLong
+	                            ,l.distance as Distance
+	                            ,l.distance as Width
+	                            ,l.created_at as CreatedAt
+	                            ,l.created_by as CreatedBy
+	                            ,l.modified_at as ModifiedAt
+	                            ,l.modified_by as ModifiedBy
+								
+                        FROM       master.landmark l
+                        LEFT JOIN master.nodes n on l.id = n.landmark_id						
+                        WHERE      l.type = 'E'  
+                        AND        l.organization_id = @organization_id
+                        AND        l.id = @id";
+                //getting type R records only to avoid existing trip nodes mismatch
+                parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
+                parameter.Add("@id", objCorridorRequest.CorridorId);
+                var data = await _dataAccess.QueryAsync<CorridorEditViewResponse>(query, parameter);
+                return objCorridorEditViewResponse1 = data.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<CorridorResponse>> GetExistingTripCorridorListByOrganization(CorridorRequest objCorridorRequest)
+        {
+            List<CorridorResponse> objCorridorResponseList = new List<CorridorResponse>();
+            try
+            {
+                string query = string.Empty; var parameter = new DynamicParameters();
+                query = @"select l.id 
+                                ,l.organization_id as OrganizationId
+	                            ,l.name as CorridoreName
+	                            ,l.address as StartPoint
+	                            ,l.latitude as StartLat
+	                            ,l.longitude as StartLong
+	                            ,n.address as EndPoint
+	                            ,n.latitude as EndLat
+	                            ,n.longitude as EndLong
+	                            ,l.distance as Distance
+	                            ,l.distance as Width
+                                ,l.state as State
+                                ,l.type as CorridorType
+	                            ,l.created_at as Created_At
+	                            ,l.created_by as CreatedBy
+	                            ,l.modified_at as ModifiedAt
+	                            ,l.modified_by as ModifiedBy
+                        FROM       master.landmark l
+                        WHERE      l.type IN ('E')
+                        AND        l.organization_id = @organization_id";
+
+                parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
+                var data = await _dataAccess.QueryAsync<CorridorResponse>(query, parameter);
+                return objCorridorResponseList = data.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<ExistingTrip> GetExistingtripListByCorridorId(int corridoreid)
+        {
+            List<ExistingTrip> objCorridorResponseList = new List<ExistingTrip>();
+            try
+            {
+                string query = string.Empty; var parameter = new DynamicParameters();
+                query = @"SELECT id, 
+                        landmark_id, 
+                        trip_id, 
+                        start_date, 
+                        end_date, 
+                        driver_id1, 
+                        driver_id2, 
+                        start_latitude, 
+                        start_longitude, 
+                        end_latitude, 
+                        end_longitude, 
+                        start_position, 
+                        end_position, 
+                        distance
+	                    FROM master.corridortrips
+                        WHERE      landmark_id = @landmark_id";
+
+                parameter.Add("@landmark_id", corridoreid);
+                var data = _dataAccess.Query<ExistingTrip>(query, parameter);
+                return objCorridorResponseList = data.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<Nodepoint> GetTripNodes(string tripid)
+        {
+            List<Nodepoint> objCorridorNodes = new List<Nodepoint>();
+            try
+            {
+                string query = string.Empty; var parameter = new DynamicParameters();
+                query = @"SELECT id,
+                            landmark_id,
+                            seq_no,
+                            latitude,
+                            longitude,
+                            state,
+                            created_at,
+                            created_by,
+                            modified_at,
+                            modified_by,
+                            address,
+                            trip_id
+                            FROM master.nodes
+                            where trip_id = @trip_id";
+
+                parameter.Add("@trip_id", tripid);
+                var data = _dataAccess.Query<Nodepoint>(query, parameter);
+                return objCorridorNodes = data.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
     }
 }

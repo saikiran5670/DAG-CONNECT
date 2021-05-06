@@ -29,6 +29,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int ModifiedBy { get; set; }
         public string Description { get; set; }
         public List<ViaAddressDetail> ViaAddressDetails { get; set; }
+        public List<ExistingTrip> CorridoreTrips { get; set; }
+        
     }
     public class CorridorRequest
     {
