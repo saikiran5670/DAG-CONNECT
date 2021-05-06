@@ -22,7 +22,7 @@ export class ManageCorridorComponent implements OnInit {
 
   }
 
-  // onBackToPage(_eventObj) {
-  //   this.tabVisibility.emit(_eventObj.booleanFlag);
-  // }
+  onBackToPage(_eventObj) {
+    this.tabVisibility.emit(_eventObj.booleanFlag);
+  }
 }
