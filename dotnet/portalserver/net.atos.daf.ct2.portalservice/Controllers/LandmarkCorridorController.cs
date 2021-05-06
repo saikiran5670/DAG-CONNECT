@@ -54,24 +54,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objCorridorRequest.OrganizationId = request.OrganizationId;
                 objCorridorRequest.CorridorId = request.CorridorId;//non mandatory field
                 var data = await _corridorServiceClient.GetCorridorListAsync(objCorridorRequest);
+
                 if (data != null && data.Code == net.atos.daf.ct2.corridorservice.Responsecode.Success)
                 {
-                    if (data.CorridorList != null && data.CorridorList.Count > 0)
+                    if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId > 0)
                     {
-                        return Ok(data.CorridorList);
+                        if (data.CorridorEditViewList != null && data.CorridorEditViewList.Count > 0)
+                        {
+                            return Ok(data.CorridorEditViewList);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "Corridor details are not found");
+                        }
                     }
                     else
                     {
-                        return StatusCode(404, "Global POI details are not found");
+                        if (data.CorridorGridViewList != null && data.CorridorGridViewList.Count > 0)
+                        {
+                            return Ok(data.CorridorGridViewList);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "Corridor details are not found");
+                        }
                     }
                 }
                 else
                 {
                     return StatusCode(500, data.Message);
                 }
-
             }
-
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
