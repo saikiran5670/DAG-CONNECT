@@ -1685,16 +1685,19 @@ namespace net.atos.daf.ct2.vehicle.repository
                     var vehicleNamelist = await DataMartdataAccess.QueryFirstAsync<VehicleNamelist>
                         ("Select name as Name, registration_no as RegistrationNo from master.vehicle where id=@id", parameter);
 
-                    isNameOrRegUpdated = !vehicleNamelist.RegistrationNo.Equals(vehicledatamart.Registration_No);
+                    if(!string.IsNullOrEmpty(vehicleNamelist.RegistrationNo))
+                        isNameOrRegUpdated = !vehicleNamelist.RegistrationNo.Equals(vehicledatamart.Registration_No);
+                    if (string.IsNullOrEmpty(vehicleNamelist.RegistrationNo) && !string.IsNullOrEmpty(vehicledatamart.Registration_No))
+                        isNameOrRegUpdated = true;
 
                     QueryStatement = @" UPDATE master.vehicle
-                                    SET                                  
-                                    registration_no=@registration_no
-                                    ,type=@type
-                                    ,engine_type=@engine_type
-                                    ,model_type=@model_type
-                                     WHERE id = @id
-                                     RETURNING id;";
+                                        SET                                  
+                                        registration_no=@registration_no
+                                        ,type=@type
+                                        ,engine_type=@engine_type
+                                        ,model_type=@model_type
+                                            WHERE id = @id
+                                            RETURNING id;";
                 }
                 else if (VehicleDataMartID > 0 && vehicledatamart.IsIPPS == false && vehicledatamart.Vid=="")
                 {
@@ -1703,8 +1706,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                     var vehicleNamelist = await DataMartdataAccess.QueryFirstAsync<VehicleNamelist>
                         ("Select name as Name, registration_no as RegistrationNo from master.vehicle where id=@id", parameter);
 
-                    isNameOrRegUpdated = (!vehicleNamelist.RegistrationNo.Equals(vehicledatamart.Registration_No) ||
+                    if (!string.IsNullOrEmpty(vehicleNamelist.RegistrationNo) && 
+                        !string.IsNullOrEmpty(vehicleNamelist.Name))
+                        isNameOrRegUpdated = (!vehicleNamelist.RegistrationNo.Equals(vehicledatamart.Registration_No) ||
                                           !vehicleNamelist.Name.Equals(vehicledatamart.Name));
+
+                    if ((string.IsNullOrEmpty(vehicleNamelist.RegistrationNo) && !string.IsNullOrEmpty(vehicledatamart.Registration_No)) ||
+                        string.IsNullOrEmpty(vehicleNamelist.Name) && !string.IsNullOrEmpty(vehicledatamart.Name))
+                        isNameOrRegUpdated = true;
 
                     QueryStatement = @"UPDATE master.vehicle
                                         SET registration_no=@registration_no, name=@name
