@@ -262,7 +262,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
                 Distance = x.Distance,
-                TripId = x.TripId,
+               // TripId = x.TripId,
                 State = x.State,
                 CreatedBy = x.CreatedBy
             }).ToList());
@@ -290,7 +290,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                          Latitude = x.Latitude,
                                          Longitude = x.Longitude,
                                          Distance = x.Distance,
-                                         TripId = x.TripId,
+                                         //TripId = x.TripId,
                                          State = x.State,
                                          CreatedBy = x.CreatedBy
                                      }).ToList());
@@ -310,7 +310,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                         Latitude = x.Latitude,
                                         Longitude = x.Longitude,
                                         Distance = x.Distance,
-                                        TripId = x.TripId,
+                                      //  TripId = x.TripId,
                                         State = x.State,
                                         CreatedBy = x.CreatedBy
                                     }).ToList());
