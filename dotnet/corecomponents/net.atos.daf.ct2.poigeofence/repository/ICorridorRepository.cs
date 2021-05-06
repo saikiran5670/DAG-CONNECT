@@ -18,5 +18,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<IEnumerable<RouteCorridor>> GetRouteCorridor(RouteCorridorFilter routeCorridorFilter);
         Task<int> GetAssociateAlertbyId(int CorridorId);
         Task<bool> CheckRouteCorridorIsexist(string Name, int? OrganizationId, int id);
+
+        Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor routeCorridor);
     }
 }

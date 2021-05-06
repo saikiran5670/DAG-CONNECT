@@ -336,5 +336,102 @@ namespace net.atos.daf.ct2.poigeofenceservice
             return await Task.FromResult(response);
         }
 
+        public override async Task<UpdateRouteCorridorResponse> UpdateRouteCorridor(UpdateRouteCorridorRequest objRequest, ServerCallContext context)
+        {
+            UpdateRouteCorridorResponse objResponse = new UpdateRouteCorridorResponse();
+            try
+            {
+                _logger.Info("UpdateRouteCorridor method in CorridorManagement service called.");
+                poigeofence.entity.RouteCorridor obj = new poigeofence.entity.RouteCorridor();
+                obj.OrganizationId = objRequest.Request.OrganizationId;
+                obj.CorridorType = Convert.ToChar(objRequest.Request.CorridorType);
+                obj.CorridorLabel = objRequest.Request.CorridorLabel;
+                obj.StartAddress = objRequest.Request.StartAddress;
+                obj.StartLatitude = objRequest.Request.StartLatitude;
+                obj.StartLongitude = objRequest.Request.StartLongitude;
+                obj.EndAddress = objRequest.Request.EndAddress;
+                obj.EndLatitude = objRequest.Request.EndLatitude;
+                obj.EndLongitude = objRequest.Request.EndLongitude;
+                obj.Width = objRequest.Request.Width;
+                obj.Distance = objRequest.Request.Distance;
+                obj.Trailer = Convert.ToChar(objRequest.Request.Trailer);
+                obj.TransportData = objRequest.Request.IsTransportData;
+                obj.TrafficFlow = objRequest.Request.IsTrafficFlow;
+
+
+                obj.Explosive = objRequest.Request.IsExplosive;
+                obj.Gas = objRequest.Request.IsGas;
+                obj.Flammable = objRequest.Request.IsFlammable;
+                obj.Combustible = objRequest.Request.IsCombustible;
+                obj.organic = objRequest.Request.Isorganic;
+                obj.poision = objRequest.Request.Ispoision;
+                obj.RadioActive = objRequest.Request.IsRadioActive;
+                obj.Corrosive = objRequest.Request.IsCorrosive;
+                obj.PoisonousInhalation = objRequest.Request.IsPoisonousInhalation;
+
+
+                obj.WaterHarm = objRequest.Request.IsWaterHarm;
+                obj.Other = objRequest.Request.IsOther;
+                obj.TollRoad = Convert.ToChar(objRequest.Request.TollRoad);
+                obj.Mortorway = Convert.ToChar(objRequest.Request.Mortorway);
+                obj.BoatFerries = Convert.ToChar(objRequest.Request.BoatFerries);
+                obj.RailFerries = Convert.ToChar(objRequest.Request.RailFerries);
+                obj.Tunnels = Convert.ToChar(objRequest.Request.Tunnels);
+                obj.DirtRoad = Convert.ToChar(objRequest.Request.DirtRoad);
+                obj.VehicleSizeHeight = objRequest.Request.VehicleSizeHeight;
+
+
+                obj.VehicleSizeWidth = objRequest.Request.VehicleSizeWidth;
+                obj.VehicleSizeLength = objRequest.Request.VehicleSizeLength;
+                obj.VehicleSizeLimitedWeight = objRequest.Request.VehicleSizeLimitedWeight;
+                obj.VehicleSizeWeightPerAxle = objRequest.Request.VehicleSizeWeightPerAxle;
+                obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
+
+                if (objRequest.Request != null && objRequest.Request.ViaAddressDetails != null)
+                {
+                    foreach (var item in objRequest.Request.ViaAddressDetails)
+                    {
+                        var trans = new poigeofence.entity.ViaRoute();
+                        trans.ViaStopName = item.ViaName;
+                        trans.Latitude = item.Longitude;
+                        trans.Longitude = item.Longitude;
+                        trans.ViaStopId = item.ViaStopId;
+                        obj.ViaRoutDetails.Add(trans);
+
+                    }
+                }
+
+                var result = await _corridorManger.AddRouteCorridor(obj);
+                if (result.Id == -1)
+                {
+                    objResponse.Response.Message = $"Corridor Name  {obj.CorridorLabel} already exists ";
+                    objResponse.Response.Code = Responsecode.Conflict;
+                    objResponse.Response.CorridorID = result.Id;
+
+                }
+                else if (result != null && result.Id > 0)
+                {
+                    objResponse.Response.Message = "Added successfully";
+                    objResponse.Response.Code = Responsecode.Success;
+                    objResponse.Response.CorridorID = result.Id;
+                }
+                else
+                {
+                    objResponse.Response.Message = "Update Route Corridor Fail";
+                    objResponse.Response.Code = Responsecode.Failed;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                UpdateRouteCorridorResponse objUpdateRouteCorridorResponse = new UpdateRouteCorridorResponse();
+                objUpdateRouteCorridorResponse.Response.Code = Responsecode.Failed;
+                objUpdateRouteCorridorResponse.Response.Message = $"Corridor Updation Failed due to - {ex.Message}";
+                return await Task.FromResult(objUpdateRouteCorridorResponse);
+            }
+            return await Task.FromResult(objResponse);
+        }
+
     }
 }

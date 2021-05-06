@@ -258,6 +258,51 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("update")]
+
+        public async Task<IActionResult> UpdateRouteCorridor(Entity.Corridor.CorridorRequest request)
+        {
+            try
+            {
+                if (request.OrganizationId == 0)
+                {
+                    return StatusCode(400, "Organization Id is required.");
+                }
+                if (request.ViaAddressDetails.Count > 5)
+                {
+                    return StatusCode(400, "You cannot enter more than 5 via Routes.");
+                }
+                var MapRequest = _corridorMapper.MapCorridor(request);
+                var data = await _corridorServiceClient.AddRouteCorridorAsync(MapRequest);
+                if (data != null && data.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                           "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "UpdateRouteCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
+                                            Request);
+                    return Ok(data);
+                }
+                else if (data != null && data.Code == Responsecode.Conflict)
+                {
+                    return StatusCode(409, data.Message);
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "UpdateRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
     }
 
 }
