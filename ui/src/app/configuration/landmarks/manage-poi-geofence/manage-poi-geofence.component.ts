@@ -334,25 +334,30 @@ export class ManagePoiGeofenceComponent implements OnInit {
     // this.createEditViewPoiFlag = !this.createEditViewPoiFlag;
     this.tabVisibility.emit(true);
     this.createEditViewPoiFlag = item.stepFlag;
-    if (item.successMsg) {
+    if (item.successMsg && item.successMsg != '') {
       this.successMsgBlink(item.successMsg);
     }
     if (item.tableData) {
       this.poiInitData = item.tableData;
     }
-    this.loadPoiData();
+    //this.loadPoiData();
+    this.allCategoryPOIData = this.poiInitData;
+    this.updatedPOITableData(this.poiInitData);
+    this.updatedGeofenceTableData(this.geoInitData);
   }
 
   checkCreationForGeofence(item: any) {
     this.tabVisibility.emit(true);
     this.createEditViewGeofenceFlag = item.stepFlag;
-    if(item.successMsg) {
+    if(item.successMsg && item.successMsg != '') {
       this.successMsgBlink(item.successMsg);
     }
     if(item.tableData) {
       this.geoInitData = item.tableData;
     }
     //this.loadGeofenceData();
+    this.allCategoryPOIData = this.poiInitData;
+    this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
   }
 
