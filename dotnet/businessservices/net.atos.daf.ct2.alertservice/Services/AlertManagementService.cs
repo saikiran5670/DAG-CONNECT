@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.alert;
+using net.atos.daf.ct2.alert.ENUM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.alertservice.Entity;
+using net.atos.daf.ct2.alert.entity;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -31,10 +33,10 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
-                var id = await _alertManager.ActivateAlert(request.AlertId, 'A');
+                var id = await _alertManager.ActivateAlert(request.AlertId, ((char)AlertState.Active), ((char)AlertState.Suspend));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? $"Alert is Activated successful for id:- {id}." : $"Activate Alert Failed for id:- {request.AlertId}.",
+                    Message = id > 0 ? String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -50,10 +52,38 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
-                var id = await _alertManager.SuspendAlert(request.AlertId, 'I');
+                var id = await _alertManager.SuspendAlert(request.AlertId, ((char)AlertState.Suspend), ((char)AlertState.Active));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? $"Alert is Suspended successful for id:- {id}." : $"Suspend Alert Failed for id:- {request.AlertId}.",
+                    Message = id > 0 ? String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId),                    
+                    Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                });
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                throw ex;
+            }
+        }
+
+        public override async Task<AlertResponse> DeleteAlert(IdRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                if (await _alertManager.CheckIsNotificationExitForAlert(request.AlertId))
+                    return await Task.FromResult(new AlertResponse
+                    {
+                        Message = String.Format(AlertConstants.DELETE_ALERT_NO_NOTIFICATION_MSG, request.AlertId),
+                        Code = ResponseCode.Conflict
+                    });
+
+
+                var id = await _alertManager.DeleteAlert(request.AlertId, ((char)AlertState.Delete));
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = id > 0 ? String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -104,26 +134,59 @@ namespace net.atos.daf.ct2.alertservice.Services
 
         #region Update Alert
 
-        public override async Task<AlertUpdateResponse> UpdateAlert(AlertRequest request, ServerCallContext context)
+        public override async Task<AlertResponse> UpdateAlert(AlertRequest request, ServerCallContext context)
         {
             try
             {
-                var id = await _alertManager.UpdateAlert(request.AlertId, 'A');
+                Alert alert = new Alert();
+                alert = _mapper.ToAlertEntity(request);
+                alert = await _alertManager.UpdateAlert(alert);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? $"Alert is updated successful for id:- {id}." : $"Activate Alert Failed for id:- {request.AlertId}.",
-                    Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                    Message = alert.Id > 0 ? $"Alert is updated successful for id:- {alert.Id}." : $"Activate Alert Failed for id:- {request.Id}.",
+                    Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed,
                 });
 
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed,
+                    AlertRequest = null
+                });
             }
         }
 
         #endregion
 
+        #region Create Alert
+        public override async Task<AlertResponse> CreateAlert(AlertRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Alert alert = new Alert();
+                alert = _mapper.ToAlertEntity(request);
+                alert = await _alertManager.CreateAlert(alert);
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}" ,
+                    Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed,
+                    AlertRequest = null
+                });
+            }
+        }
+        #endregion
     }
 }

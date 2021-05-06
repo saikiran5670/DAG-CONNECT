@@ -34,11 +34,9 @@ namespace net.atos.daf.ct2.alert.entity
 
         public int ModifiedBy { get; set; }
 
-        public List<AlertUrgencyLevelRef> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRef>();
-
-        public List<AlertFilterRef> AlertFilterRefs { get; set; } = new List<AlertFilterRef>();
-
         public List<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public List<AlertUrgencyLevelRef> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRef>();
 
         public List<AlertLandmarkRef> AlertLandmarkRefs { get; set; } = new List<AlertLandmarkRef>();
     }

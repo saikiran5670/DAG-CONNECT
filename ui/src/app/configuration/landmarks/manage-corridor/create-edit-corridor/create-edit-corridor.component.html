@@ -1,0 +1,30 @@
+
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg' (click)="backToCorridorList()">
+      <span class='custom-font' >
+        <span>&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<form [formGroup]="corridorForm">
+    <mat-card class='mat-elevation-z'>
+        <mat-card-content>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <span>{{ translationData.lblAddNewCorridor || 'Add New Corridor' }}</span>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-select formControlName="corridorType" required>
+                        <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                            {{ type.value }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</form>
+
