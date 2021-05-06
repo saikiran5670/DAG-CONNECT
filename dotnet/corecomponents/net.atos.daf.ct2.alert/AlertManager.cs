@@ -16,14 +16,14 @@ namespace net.atos.daf.ct2.alert
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
-        public async Task<int> ActivateAlert(int alertId, char state)
+        public async Task<int> ActivateAlert(int alertId, char state, char checkState)
         {
-            return await alertRepository.UpdateAlertState(alertId,state);
+            return await alertRepository.UpdateAlertState(alertId,state, checkState);
         }
 
-        public async Task<int> SuspendAlert(int alertId, char state)
+        public async Task<int> SuspendAlert(int alertId, char state, char checkState)
         {
-            return await alertRepository.UpdateAlertState(alertId, state);
+            return await alertRepository.UpdateAlertState(alertId, state, checkState);
         }
 
         public async Task<int> DeleteAlert(int alertId, char state)

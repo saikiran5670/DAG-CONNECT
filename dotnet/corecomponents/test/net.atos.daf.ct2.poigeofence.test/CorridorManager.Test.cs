@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                 Distance = 12,
                 StartLatitude = 51.07,
                 StartLongitude = 57.07,
-                CorridorLabel = "trip Test8",
+                CorridorLabel = "trip Test9",
                 State = "A",
                 // ModifiedAt =,
                 //  ModifiedBy =,
