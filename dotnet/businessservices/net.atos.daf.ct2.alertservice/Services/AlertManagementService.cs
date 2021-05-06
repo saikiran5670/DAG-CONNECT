@@ -110,10 +110,27 @@ namespace net.atos.daf.ct2.alertservice.Services
         }
         #endregion
 
-        
+
         #region Update Alert
 
+        public override async Task<AlertUpdateResponse> UpdateAlert(AlertRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var id = await _alertManager.UpdateAlert(request.AlertId, 'A');
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = id > 0 ? $"Alert is updated successful for id:- {id}." : $"Activate Alert Failed for id:- {request.AlertId}.",
+                    Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                });
 
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                throw ex;
+            }
+        }
 
         #endregion
 

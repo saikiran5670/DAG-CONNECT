@@ -4,6 +4,7 @@ using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -266,12 +267,14 @@ namespace net.atos.daf.ct2.alert.repository
                 throw ex;
             }
         }
+        
         #endregion
 
         #region Update Alert
 
         public async Task<Alert> UpdateAlert(Alert alert)
         {
+            int urgencylevelRefId = 0;
             //Begin transaction scope for master.alert table
             dataAccess.connection.Open();
             var transactionScope = dataAccess.connection.BeginTransaction();
@@ -311,6 +314,48 @@ namespace net.atos.daf.ct2.alert.repository
                 alert.Id = alertId;
 
                 bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+                if (IsRefDeleted)
+                {
+                    foreach (var landmark in alert.AlertLandmarkRefs)
+                    {
+                        landmark.AlertId = alertId;
+                        int landmarkRefId = await CreateAlertLandmarkRefs(landmark);
+                    }
+                    foreach (var urgencylevel in alert.AlertUrgencyLevelRefs)
+                    {
+                        urgencylevel.AlertId = alertId;
+                        urgencylevelRefId = await CreateAlertUrgencyLevelRef(urgencylevel);
+                    }
+                    foreach (var alertfilter in alert.AlertFilterRefs)
+                    {
+                        alertfilter.AlertId = alertId;
+                        alertfilter.AlertUrgencyLevelId = urgencylevelRefId;
+                        int alertfilterRefId = await CreateAlertFilterRef(alertfilter);
+                    }
+                    if (alert.Notifications.Count() > 0)
+                    {
+                        foreach (var notification in alert.Notifications)
+                        {
+                            notification.AlertId = alertId;
+                            int notificationId = await CreateNotification(notification);
+                            foreach (var availabilityPeriod in notification.NotificationAvailabilityPeriods)
+                            {
+                                availabilityPeriod.NotificationId = notificationId;
+                                int alertfilterRefId = await CreateNotificationAvailabilityPeriod(availabilityPeriod);
+                            }
+                            foreach (var limit in notification.NotificationLimits)
+                            {
+                                limit.NotificationId = notificationId;
+                                int alertfilterRefId = await CreateNotificationLimit(limit);
+                            }
+                            foreach (var notificationRecipient in notification.NotificationRecipients)
+                            {
+                                notificationRecipient.NotificationId = notificationId;
+                                int alertfilterRefId = await CreateNotificationrecipient(notificationRecipient);
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
