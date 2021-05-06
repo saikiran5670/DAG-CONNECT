@@ -15,6 +15,13 @@ message CorridorRequest{
     int32 CorridorId = 2;
 }
 
+    message ViaAddressDetail{
+    int32 CorridorViaStopId = 1;
+    int32 Latitude = 2;
+    int32 Longitude = 3;
+    string CorridorViaStopName = 4;
+}
+
 message CorridorResponse{
     int32 Id =1;
     int32 OrganizationId =2;
@@ -31,6 +38,7 @@ message CorridorResponse{
     int64 CreatedAt = 13;
      int32 ModifiedBy = 14;
     int64 ModifiedAt = 15;
+    repeated ViaAddressDetail viaAddressDetail = 16;
 }
 
 message CorridorResponseList  {
