@@ -12,21 +12,21 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 		public AlertRequest ToAlertRequest(PortalAlertEntity.Alert entity)
 		{
 			AlertRequest request = new AlertRequest();
-			//request.Id = entity.Id;
-			//request.OrganizationId = entity.OrganizationId;
-			request.Name = entity.Name;
+            //request.Id = entity.Id;
+            request.OrganizationId = entity.OrganizationId;
+            request.Name = entity.Name;
 			request.Category = entity.Category;
 			request.Type = entity.Type;
 			request.ValidityPeriodType = entity.ValidityPeriodType;
 			request.ValidityStartDate = entity.ValidityStartDate;
 			request.ValidityEndDate = entity.ValidityEndDate;
 			request.VehicleGroupId = entity.VehicleGroupId;
-			//request.CreatedAt = entity.CreatedAt;
-			//request.CreatedBy = entity.CreatedBy;
-			//request.ModifiedAt = entity.ModifiedAt;
-			//request.ModifiedBy = entity.ModifiedBy;
-			//request.AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>();
-			if (entity.AlertUrgencyLevelRefs.Count > 0)
+            //request.CreatedAt = entity.CreatedAt;
+            request.CreatedBy = entity.CreatedBy;
+            //request.ModifiedAt = entity.ModifiedAt;
+            //request.ModifiedBy = entity.ModifiedBy;
+            //request.AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>();
+            if (entity.AlertUrgencyLevelRefs.Count > 0)
 			{
 				foreach (var item in entity.AlertUrgencyLevelRefs)
 				{
