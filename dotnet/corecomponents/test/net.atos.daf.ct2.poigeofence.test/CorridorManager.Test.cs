@@ -27,10 +27,24 @@ namespace net.atos.daf.ct2.poigeofence.test
         }
 
         [TestCategory("Unit-Test-Case")]
-        [Description("Test for Get GetCorridor details using filter")]
+        [Description("Test for Get Corridor List By OrgId details using filter")]
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]
-        public void GetCorridorList()
+        public void GetCorridorListByOrgId()
+        {
+            CorridorRequest objCorridorRequest = new CorridorRequest();
+            objCorridorRequest.OrganizationId = 100;//orgid 5 ,100
+
+            var resultCorridorList = _iCorridorManger.GetCorridorList(objCorridorRequest).Result;
+            Assert.IsNotNull(resultCorridorList);
+            Assert.IsTrue(resultCorridorList.GridView.Count > 0);
+
+        }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get Corridor List By OrgId and CorriId details using filter")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void GetCorridorListByOrgIdandCorriId()
         {
             CorridorRequest objCorridorRequest = new CorridorRequest();
             objCorridorRequest.OrganizationId = 100;//orgid 5 ,100
@@ -38,7 +52,7 @@ namespace net.atos.daf.ct2.poigeofence.test
 
             var resultCorridorList = _iCorridorManger.GetCorridorList(objCorridorRequest).Result;
             Assert.IsNotNull(resultCorridorList);
-            Assert.IsTrue(resultCorridorList.Count > 0);
+            Assert.IsTrue(resultCorridorList.EditView.Count > 0);
 
         }
     }

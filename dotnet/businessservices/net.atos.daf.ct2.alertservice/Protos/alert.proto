@@ -8,6 +8,7 @@ service AlertService {
   rpc SuspendAlert (IdRequest) returns (AlertResponse);
   rpc ActivateAlert (IdRequest) returns (AlertResponse);
   rpc DeleteAlert (IdRequest) returns (AlertResponse);
+  rpc GetAlertCategory (AccountIdRequest) returns (AlertCategoryResponse);
 }
 
 enum ResponseCode{
@@ -26,6 +27,30 @@ message IdRequest {
 message AlertResponse{   
     ResponseCode Code=1;
     string message = 2;
+}
+
+message AlertCategoryResponse{
+    ResponseCode Code=1;
+    string message = 2;
+    repeated EnumTranslation EnumTranslation = 3;
+    repeated VehicleGroup VehicleGroup = 4;
+}
+message AccountIdRequest {
+  int32 AccountId = 1;
+}
+message EnumTranslation{
+    int32 Id= 1;
+    string Type=2;
+    string Enum=3;
+    string ParentEnum=4;
+    string Key=5; 
+}
+message VehicleGroup{
+    int32 VehicleGroupId= 1;
+    string Vin=2;
+    int32 VehicleId=3;
+    string VehicleName=4;   
+}
 }
 
 message AlertRequest

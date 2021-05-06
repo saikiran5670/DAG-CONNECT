@@ -35,13 +35,17 @@ namespace net.atos.daf.ct2.alert
         {
             return await alertRepository.CheckIsNotificationExitForAlert(alertId);
         }
-        
-        #endregion
 
+        #endregion
+        public async Task<Alert> CreateAlert(Alert alert)
+        {
+            return await alertRepository.CreateAlert(alert);
+        }
         public async Task<Alert> UpdateAlert(Alert alert)
         {
             return await alertRepository.UpdateAlert(alert);
         }
+
 
         #region Alert Category
         public async Task<IEnumerable<EnumTranslation>> GetAlertCategory()
