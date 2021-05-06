@@ -516,6 +516,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@category_id", geofence.CategoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);
                 parameter.Add("@name", geofence.Name);
+                parameter.Add("@distance", geofence.Distance);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@modified_by", geofence.ModifiedBy);
                 parameter.Add("@id", geofence.Id);
@@ -523,6 +524,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                SET category_id=@category_id
 	                                   ,sub_category_id=@sub_category_id
 	                                   ,name=@name
+                                       ,distance=@distance
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
