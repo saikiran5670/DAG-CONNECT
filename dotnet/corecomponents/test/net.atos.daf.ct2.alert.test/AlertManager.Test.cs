@@ -200,5 +200,16 @@ namespace net.atos.daf.ct2.alert.test
             var result = _ialertManager.CreateAlert(alert).Result;
             Assert.IsTrue(result.Id > 0);
         }
-}
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get Alert Category")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void UnT_Alert_GetAlertCategoryTest()
+        {
+            var result = _ialertManager.GetAlertCategory();
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+    }
 }
