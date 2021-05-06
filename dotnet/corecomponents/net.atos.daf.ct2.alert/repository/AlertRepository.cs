@@ -2,6 +2,7 @@
 using net.atos.daf.ct2.alert.entity;
 using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace net.atos.daf.ct2.alert.repository
                 }
                 parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
                 parameterAlert.Add("@state", 'A');
-                parameterAlert.Add("@created_at", alert.CreatedAt);
+                parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterAlert.Add("@created_by", alert.CreatedBy);
 
                 string queryAlert = @"INSERT INTO master.alert(organization_id, name, category, type, validity_period_type, validity_start_date, validity_end_date, vehicle_group_id, state, created_at, created_by)
@@ -122,7 +123,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterlandmarkref.Add("@distance", landmark.Distance);
                 parameterlandmarkref.Add("@unit_type", Convert.ToChar(landmark.UnitType));
                 parameterlandmarkref.Add("@state", 'A');
-                parameterlandmarkref.Add("@created_at", landmark.CreatedAt);
+                parameterlandmarkref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryLandmarkref = @"INSERT INTO master.alertlandmarkref(alert_id, landmark_type, ref_id, distance, unit_type, state, created_at)
                                                 VALUES (@alert_id, @landmark_type, @ref_id, @distance, @unit_type, @state, @created_at) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryLandmarkref, parameterlandmarkref);
@@ -147,7 +148,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterurgencylevelref.Add("@urgencylevel_start_date", urgencylevel.UrgencylevelStartDate);
                 parameterurgencylevelref.Add("@urgencylevel_end_date", urgencylevel.UrgencylevelEndDate);
                 parameterurgencylevelref.Add("@state", 'A');
-                parameterurgencylevelref.Add("@created_at", urgencylevel.CreatedAt);
+                parameterurgencylevelref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryUrgencylevel = @"INSERT INTO master.alerturgencylevelref(alert_id, urgency_level_type, threshold_value, unit_type, day_type, period_type, urgencylevel_start_date, urgencylevel_end_date, state, created_at)
 	                                                                            VALUES (@alert_id, @urgency_level_type, @threshold_value, @unit_type, @day_type, @period_type, @urgencylevel_start_date, @urgencylevel_end_date, @state, @created_at) RETURNING id";
                 int id = await dataAccess.ExecuteScalarAsync<int>(queryUrgencylevel, parameterurgencylevelref);
@@ -176,7 +177,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameteralertfilterref.Add("@filter_start_date", alertfilter.FilterStartDate);
                 parameteralertfilterref.Add("@filter_end_date", alertfilter.FilterEndDate);
                 parameteralertfilterref.Add("@state", 'A');
-                parameteralertfilterref.Add("@created_at", alertfilter.CreatedAt);
+                parameteralertfilterref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryAlertfilter = @"INSERT INTO master.alertfilterref(alert_id, alert_urgency_level_id, filter_type, threshold_value, unit_type, landmark_type, ref_id, position_type, day_type, period_type, filter_start_date, filter_end_date, state, created_at)
 	                                    VALUES (@alert_id, @alert_urgency_level_id, @filter_type, @threshold_value, @unit_type, @landmark_type, @ref_id, @position_type, @day_type, @period_type, @filter_start_date, @filter_end_date, @state, @created_at) RETURNING id";
                 int id = await dataAccess.ExecuteScalarAsync<int>(queryAlertfilter, parameteralertfilterref);
@@ -198,7 +199,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameternotification.Add("@frequency_threshhold_value", notification.FrequencyThreshholdValue);
                 parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType));
                 parameternotification.Add("@state", 'A');
-                parameternotification.Add("@created_at", notification.CreatedAt);
+                parameternotification.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameternotification.Add("@created_by", notification.CreatedBy);
                 string queryNotification = @"INSERT INTO master.notification(alert_id, alert_urgency_level_type, frequency_type, frequency_threshhold_value, validity_type,state, created_at,created_by)
 	                                    VALUES (@alert_id, @alert_urgency_level_type, @frequency_type, @frequency_threshhold_value, @validity_type,@state, @created_at,@created_by) RETURNING id";
@@ -221,7 +222,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameteravailabilityperiod.Add("@start_time", availabilityperiod.StartTime);
                 parameteravailabilityperiod.Add("@end_time", availabilityperiod.EndTime);
                 parameteravailabilityperiod.Add("@state", 'A');
-                parameteravailabilityperiod.Add("@created_at", availabilityperiod.CreatedAt);
+                parameteravailabilityperiod.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryAvailabilityperiod = @"INSERT INTO master.notificationavailabilityperiod(notification_id, availability_period_type, period_type, start_time, end_time, state, created_at)
 	                                    VALUES (@notification_id, @availability_period_type, @period_type, @start_time, @end_time, @state, @created_at) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryAvailabilityperiod, parameteravailabilityperiod);
@@ -243,7 +244,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterlimit.Add("@notification_period_type", Convert.ToChar(limit.NotificationPeriodType));
                 parameterlimit.Add("@period_limit", limit.PeriodLimit);
                 parameterlimit.Add("@state", 'A');
-                parameterlimit.Add("@created_at", limit.CreatedAt);
+                parameterlimit.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryLimit = @"INSERT INTO master.notificationlimit(notification_id, notification_mode_type, max_limit, notification_period_type, period_limit, state, created_at)
 	                                                            VALUES (@notification_id, @notification_mode_type, @max_limit, @notification_period_type, @period_limit, @state, @created_at) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryLimit, parameterlimit);
@@ -274,7 +275,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterrecipient.Add("@ws_login", recipient.WsLogin);
                 parameterrecipient.Add("@ws_password", recipient.WsPassword);
                 parameterrecipient.Add("@state", 'A');
-                parameterrecipient.Add("@created_at", recipient.CreatedAt);
+                parameterrecipient.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryRecipient = @"INSERT INTO master.notificationrecipient(notification_id, recipient_label, account_group_id, notification_mode_type, phone_no, sms, email_id, email_sub, email_text, ws_url, ws_type, ws_text, ws_login, ws_password, state, created_at)
                                     VALUES (@notification_id, @recipient_label, @account_group_id, @notification_mode_type, @phone_no, @sms, @email_id, @email_sub, @email_text, @ws_url, @ws_type, @ws_text, @ws_login, @ws_password, @state, @created_at) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryRecipient, parameterrecipient);
