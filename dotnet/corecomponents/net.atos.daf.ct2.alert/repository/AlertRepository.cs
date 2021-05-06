@@ -391,14 +391,14 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Update Alert State
-        public async Task<int> UpdateAlertState(int alertId, char state)
+        public async Task<int> UpdateAlertState(int alertId, char state, char checkState)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", alertId);
                 parameter.Add("@state", state);
-                parameter.Add("@checkstate", state == ((char)AlertState.Active) ? ((char)AlertState.Suspend) : ((char)AlertState.Active));
+                parameter.Add("@checkstate", checkState);
                 var query = $"update master.Alert set state = @state where id=@id and state=@checkstate RETURNING id";
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
@@ -415,7 +415,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", alertId);
                 parameter.Add("@state", state);
-                var query = $"update master.Alert set state = @state where id=@id";
+                var query = $"update master.Alert set state = @state where id=@id  RETURNING id";
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
@@ -424,9 +424,26 @@ namespace net.atos.daf.ct2.alert.repository
             }
         }
 
-        public Task<bool> CheckIsNotificationExitForAlert(int alertId)
+        public async Task<bool> CheckIsNotificationExitForAlert(int alertId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@alert_id", alertId);
+                parameter.Add("@state", ((char)AlertState.Active));
+
+                var query = @"SELECT EXISTS (
+		                                      SELECT 1
+		                                      FROM master.notification
+		                                      where alert_id = @alert_id and state = @state
+				                            );";
+                return await dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
