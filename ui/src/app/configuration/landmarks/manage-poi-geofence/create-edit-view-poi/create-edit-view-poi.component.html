@@ -62,7 +62,7 @@
                   formControlName="name">
               </mat-form-field>
               <mat-error *ngIf="duplicatePOIName">
-                {{ lblDuplicatePOINameMsg }}
+                {{ duplicatePOINameMsg }}
               </mat-error>
               <mat-error *ngIf="poiFormGroup.get('name').hasError('required')">
                 {{ translationData.lblPleasenterPoiName || 'Please enter Poi Name'}}
