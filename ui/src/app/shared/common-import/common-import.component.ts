@@ -7,10 +7,11 @@ import * as XLSX from 'xlsx';
 import { packageModel } from '../../models/package.model';
 import { PackageService } from '../../services/package.service';
 import { POIService } from '../../services/poi.service';
+import { GeofenceService } from '../../services/landmarkGeofence.service';
 
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { CommonTableComponent } from '../.././shared/common-table/common-table.component';
-
+import { NgxXml2jsonService } from 'ngx-xml2json';
 
 
 @Component({
@@ -46,9 +47,10 @@ export class CommonImportComponent implements OnInit {
   @Input() tableTitle : string;
   @Input() defaultGpx:any;
   fileExtension = '.csv';
+  parsedGPXData : any;
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
-    private poiService: POIService) { }
+    private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
 
   ngOnInit(): void {
     if(this.importFileComponent === 'poi'){
@@ -76,7 +78,6 @@ export class CommonImportComponent implements OnInit {
   downloadTemplate(){
     const header = this.templateTitle;//['PackageCode','PackageName','Description','PackageType','PackageStatus','FeatureId'];
     const data = this.templateValue;
-    console.log(this.templateValue)
     const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
     let workbook = new Workbook();
@@ -135,23 +136,40 @@ export class CommonImportComponent implements OnInit {
 
 
   addfile(event: any){ 
-    this.excelEmptyMsg = false;   
-    this.file = event.target.files[0];     
-    let fileReader = new FileReader();    
-    fileReader.readAsArrayBuffer(this.file);     
-    fileReader.onload = (e) => {    
-        this.arrayBuffer = fileReader.result;    
-        var data = new Uint8Array(this.arrayBuffer);   
-        var arr = new Array();    
-        for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        var bstr = arr.join("");    
-        var workbook = XLSX.read(bstr, {type:"binary"});    
-        var first_sheet_name = workbook.SheetNames[0];    
-        var worksheet = workbook.Sheets[first_sheet_name];     
-        var arraylist = XLSX.utils.sheet_to_json(worksheet,{raw:true});     
+    if (this.fileExtension === 'csv' || this.fileExtension === 'xlsx') {
+      this.excelEmptyMsg = false;
+      this.file = event.target.files[0];
+      let fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(this.file);
+      fileReader.onload = (e) => {
+        this.arrayBuffer = fileReader.result;
+        var data = new Uint8Array(this.arrayBuffer);
+        var arr = new Array();
+        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join("");
+        var workbook = XLSX.read(bstr, { type: "binary" });
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[first_sheet_name];
+        var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
         this.filelist = [];
-        this.filelist = arraylist;    
-    }    
+        this.filelist = arraylist;
+      }
+    }
+    else{
+      this.file = event.target.files[0];
+
+      let fileReader = new FileReader();
+      fileReader.readAsText(this.file);
+      let text : any;
+      fileReader.onload = (e) => {
+        text = fileReader.result;
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+        this.parsedGPXData = this.ngxXml2jsonService.xmlToJson(xml);
+        this.formatGPXData();
+
+      }
+    }
   }
   
   importNewFile(removableInput){
@@ -485,7 +503,71 @@ export class CommonImportComponent implements OnInit {
 
   //import Geofence function
 
+  formatGPXData(){
+    let gpxData = this.parsedGPXData;
+    let gpxInfo = gpxData["gpx"]["metadata"];
+    let nodeInfo = gpxData["gpx"]["trk"];
+    console.log(gpxInfo);
+    console.log(nodeInfo)
+    let organizedGPXData = [];
+    let nodeArray = [],nodeObj ={};
+      
+    for(var i in nodeInfo){
+      nodeArray.push(nodeInfo[i]["trkseg"]["trkpt"]);
+    }
+    let nodeArraySet = [];
+
+    for(let i = 0; i < nodeArray.length ; i++){
+      let nodeArrayForEach = [];
+      for(let j = 0; j < nodeArray[i].length ; j++){
+        nodeArrayForEach.push({
+            "id": 0,
+            "landmarkId": 0,
+            "seqNo": j+1,
+            "latitude": nodeArray[i][j]["@attributes"]["lat"],
+            "longitude": nodeArray[i][j]["@attributes"]["lon"],
+            "createdBy": 0
+
+          })
+      }
+      nodeArraySet.push(nodeArrayForEach)
+    }
+
+    console.log("nodeArraySet");
+    console.log(nodeArraySet)
+    for(let i = 0; i < gpxInfo.length ; i++){
+      
+      organizedGPXData.push(
+        {
+          "id": gpxInfo[i].id,
+          "organizationId": gpxInfo[i].organizationId,
+          "categoryId": gpxInfo[i].categoryId,
+          "subCategoryId": gpxInfo[i].subCategoryId,
+          "name": gpxInfo[i].geofencename,
+          "type": gpxInfo[i].type,
+          "address": gpxInfo[i].address,
+          "city": gpxInfo[i].city,
+          "country": gpxInfo[i].country,
+          "zipcode": gpxInfo[i].zipcode,
+          "latitude": gpxInfo[i].latitude,
+          "longitude": gpxInfo[i].longitude,
+          "distance": gpxInfo[i].distance,
+          "tripId": gpxInfo[i].tripId,
+          "createdBy":gpxInfo[i].createdBy,
+          "nodes": nodeArraySet[i]
+        })
+      }
+      this.filelist = organizedGPXData;
+      
+      console.log(organizedGPXData)
+      console.log(nodeArray)
+  }
+
   prepareGeofenceDataToImport(removableInput){
+  //   this.geofenceService.importGeofence(this.filelist).subscribe((resultData)=>{
+  //    // this.validateImportData = 
+
+  // })
 
   }
 

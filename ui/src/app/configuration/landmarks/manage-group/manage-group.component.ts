@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -34,7 +34,7 @@ export class ManageGroupComponent implements OnInit {
   rowsData: any;
   createStatus: boolean;
   titleText: string;
-  translationData: any;
+  @Input() translationData: any;
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;

@@ -26,6 +26,7 @@ import { CreateEditViewCategoryComponent } from './landmarks/manage-category/cre
 import { CreateEditViewGroupComponent } from './landmarks/manage-group/create-edit-view-group/create-edit-view-group.component';
 import { CreateEditViewGeofenceComponent } from './landmarks/manage-poi-geofence/create-edit-view-geofence/create-edit-view-geofence.component';
 import { DeleteCategoryPopupComponent } from './landmarks/manage-category/delete-category-popup/delete-category-popup.component';
+import { CreateEditViewAlertsComponent } from './alerts/create-edit-view-alerts/create-edit-view-alerts.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,7 @@ import { DeleteCategoryPopupComponent } from './landmarks/manage-category/delete
     CreateEditViewGroupComponent,
     CreateEditViewGeofenceComponent,
     DeleteCategoryPopupComponent
-  ],
+   ],
   imports: [
     CommonModule,
     ConfigurationRoutingModule,

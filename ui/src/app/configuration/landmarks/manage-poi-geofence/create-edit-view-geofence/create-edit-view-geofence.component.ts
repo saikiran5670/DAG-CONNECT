@@ -55,7 +55,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   types = ['Regular', 'Global'];
   duplicateCircularGeofence: boolean = false;
   duplicatePolygonGeofence: boolean = false;
-  geoSelectionFlag: boolean = true;
+  geoSelectionFlag: boolean = false;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -92,16 +92,73 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       city: new FormControl({value: null, disabled: true}),
       country: new FormControl({value: null, disabled: true})
     },
-      {
-        validator: [
-          CustomValidators.specialCharValidationForName('name'),
-        ]
-      });
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('name'),
+      ]
+    });
     this.breadcumMsg = this.getBreadcum(this.actionType);
+    if(this.actionType == 'create'){
+      this.geoSelectionFlag = true;
+    }
+    if(this.actionType == 'view' || this.actionType == 'edit'){
+      if(this.selectedElementData && this.selectedElementData.type == 'C'){ //-- circular geofence
+        this.circularGeofence = true;
+        this.setDefaultCircularGeofenceFormValue();
+        this.loadGridData(this.poiData);
+      }else{ //-- polygon geofence
+        this.polygoanGeofence = true;
+        this.setDefaultPolygonGeofenceFormValue();
+      }
+    }
   }
 
-  updatePOIDatasource(){
-    this.dataSourceForPOI = new MatTableDataSource(this.poiData);
+  loadGridData(tableData: any){
+    let selectedGeofenceList: any = [];
+    if(this.actionType == 'view'){
+      tableData.forEach((row: any) => {
+        let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
+        if (search.length > 0) {
+          selectedGeofenceList.push(row);
+        }
+      });
+      tableData = selectedGeofenceList;
+      this.displayedColumns = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
+    }
+    this.updatePOIDatasource(tableData);
+    if(this.actionType == 'edit' ){
+      this.selectTableRows();
+    }
+  }
+
+  selectTableRows(){
+    this.dataSourceForPOI.data.forEach((row: any) => {
+      let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
+      if (search.length > 0) {
+        this.selectedPOI.select(row);
+      }
+    });
+  }
+
+  setDefaultCircularGeofenceFormValue(){
+    this.circularGeofenceFormGroup.get('circularName').setValue(this.selectedElementData.name);
+    this.circularGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.circularGeofenceFormGroup.get('radius').setValue(this.selectedElementData.distance);
+  }
+
+  setDefaultPolygonGeofenceFormValue(){
+    this.polygonGeofenceFormGroup.get('name').setValue(this.selectedElementData.name);
+    this.polygonGeofenceFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
+    this.polygonGeofenceFormGroup.get('category').setValue(this.selectedElementData.categoryId);
+    this.polygonGeofenceFormGroup.get('subCategory').setValue(this.selectedElementData.subCategoryId);
+    this.polygonGeofenceFormGroup.get('address').setValue(this.selectedElementData.address);
+    this.polygonGeofenceFormGroup.get('zip').setValue(this.selectedElementData.zipcode);
+    this.polygonGeofenceFormGroup.get('city').setValue(this.selectedElementData.city);
+    this.polygonGeofenceFormGroup.get('country').setValue(this.selectedElementData.country);
+  }
+
+  updatePOIDatasource(tableData: any){
+    this.dataSourceForPOI = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSourceForPOI.paginator = this.paginator;
       this.dataSourceForPOI.sort = this.sort;
@@ -117,7 +174,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   getBreadcum(type: any) {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewPOI ? this.translationData.lblViewPOI : 'View POI Details') : (type == 'edit') ? (this.translationData.lblEditPOI ? this.translationData.lblEditPOI : 'Edit POI Details') : (this.translationData.lblPOIDetails ? this.translationData.lblPOIDetails : 'Add New POI')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewGeofenceDetails ? this.translationData.lblViewGeofenceDetails : 'View Geofence Details') : (type == 'edit') ? (this.translationData.lblEditGeofenceDetails ? this.translationData.lblEditGeofenceDetails : 'Edit Geofence Details') : (this.translationData.lblAddNewGeofence ? this.translationData.lblAddNewGeofence : 'Add New Geofence')}`;
   }
 
   public ngAfterViewInit() {
@@ -259,7 +316,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     if(type == 'circular'){
       this.circularGeofence = true;
       this.setCircularType();
-      this.updatePOIDatasource();
+      this.updatePOIDatasource(this.poiData);
     }else{ //-- polygon
       this.polygoanGeofence = true;
       this.setPolygonType();
