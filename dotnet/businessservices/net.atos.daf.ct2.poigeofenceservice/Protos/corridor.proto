@@ -195,3 +195,39 @@ message DeleteCorridorResponse
   string Message = 2;  
   int32 CorridorID =3;
 }
+
+
+message ExistingTrip
+{
+int32 Id = 1;
+int32 LandmarkId =  2;      
+string TripId =   3;     
+double StartDate =    4;   
+double EndDate =   5;    
+string DriverId1 =6;       
+string DriverId2 =7;
+double StartLatitude =8;
+double StartLongitude =9;
+string StartPosition =10;
+double EndLatitude =11;
+double EndLongitude =12;
+string EndPosition =13;
+int32 Distance =15;
+}
+
+
+message TripNodes
+{
+        int Id =1;       
+        int LandmarkId =2;        
+        string TripId =3;        
+        int SequenceNumber =4;        
+        double Latitude =5;        
+        double Longitude =6;
+        string State =7;        
+        string Address =8;
+        long CreatedAt =9;
+        int CreatedBy =10;
+        long ModifiedAt =11;
+        int ModifiedBy =12;
+}
