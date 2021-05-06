@@ -306,13 +306,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@id", routeCorridorFilter.ID);
                         getQuery = getQuery + " and id=@id ";
                     }
-                    // Category Type Filter
+                   
                     if (routeCorridorFilter.CorridorType != null)
                     {
                         parameter.Add("@type", routeCorridorFilter.CorridorType);
                         getQuery = getQuery + " and type= @type ";
                     }
-                    // Category Name Filter
+                    
                     if (!string.IsNullOrEmpty(routeCorridorFilter.CorridorLabel))
                     {
                         parameter.Add("@Name", routeCorridorFilter.CorridorLabel);
@@ -320,7 +320,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                     if (routeCorridorFilter.OrganizationId > 0)
                     {
-                        //It will return organization specific category/subcategory
+                       
                         parameter.Add("@organization_id", routeCorridorFilter.OrganizationId);
                         getQuery = getQuery + " and organization_id=@organization_id  ";
                     }
