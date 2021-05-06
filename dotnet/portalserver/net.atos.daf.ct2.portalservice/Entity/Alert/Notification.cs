@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public string FrequencyType { get; set; }
         public int FrequencyThreshholdValue { get; set; }
         public string ValidityType { get; set; }
-        public string State { get; set; }
+        //public string State { get; set; }
         //public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         //public long ModifiedAt { get; set; }

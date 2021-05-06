@@ -403,52 +403,6 @@ export class CreateEditViewGroupComponent implements OnInit {
         } row`;
   }
 
-  // onCategoryChange(landmarkName ,_event){
-  //   if(_event.value == 0){
-  //     this.updatePOIDataSource(this.poiGridData);
-  //   }
-  //   else{
-  //     this.selectedCategoryId = _event.value;
-  //     let selectedId = this.selectedCategoryId;
-  //     let selectedSubId = this.selectedSubCategoryId;
-  //     if(landmarkName == 'POI'){
-  //       let categoryData = this.poiGridData.filter(function(e) {
-  //         return e.categoryId === selectedId;
-  //       });
-  //       if(selectedSubId){
-  //         categoryData = this.poiGridData.filter(function(e) {
-  //           return (e.categoryId === selectedId && e.subCategoryId === selectedSubId);
-  //         });
-  //       }
-  //       this.updatePOIDataSource(categoryData);
-  //     }
-  //     else{//landmarkName= "Geofence"
-  //       //Pending because categoryId and subcategoryId fields not present in getallgeofence api response.
-  //     }
-  //   }
-    
-  // }
-
-  // onSubCategoryChange(landmarkName, _event){
-  //   this.selectedSubCategoryId = _event.value;
-  //   let selectedId = this.selectedCategoryId;
-  //   let selectedSubId = this.selectedSubCategoryId;
-  //   if(landmarkName == 'POI'){
-  //     let subCategoryData = this.poiGridData.filter(function(e) {
-  //       return (e.subCategoryId === selectedSubId);
-  //     });
-  //     if(this.selectedCategoryId){
-  //       subCategoryData = this.poiGridData.filter(function(e) {
-  //         return (e.categoryId === selectedId && e.subCategoryId === selectedSubId);
-  //       });
-  //     }
-  //     this.updatePOIDataSource(subCategoryData);
-  //   }
-  //   else{ //landmarkName= "Geofence"
-  //     //Pending because categoryId and subcategoryId fields not present in getallgeofence api response.
-  //   }
-  // }
-
   onCategoryChange(landmarkName, _event: any){
     this.categorySelection = parseInt(_event.value);
     if(this.categorySelection == 0 && this.subCategorySelection == 0){
@@ -568,6 +522,5 @@ export class CreateEditViewGroupComponent implements OnInit {
       }
     }
   }
-
 
 }

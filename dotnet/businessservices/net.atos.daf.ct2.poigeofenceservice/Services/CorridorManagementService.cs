@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 #endregion
 
                 #region CorridorGridView
-                else
+                else if (data.GridView != null && data.GridView.Count > 0)
                 {
                     foreach (var item in data.GridView)
                     {
