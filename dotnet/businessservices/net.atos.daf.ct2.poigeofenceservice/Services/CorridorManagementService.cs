@@ -81,7 +81,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.CorridorType = Convert.ToChar(request.CorridorType);
                 obj.CorridorLabel = request.CorridorLabel;
                 obj.StartAddress = request.StartAddress;
+                obj.StartLatitude = request.StartLatitude;
+                obj.StartLongitude = request.StartLongitude;
                 obj.EndAddress = request.EndAddress;
+                obj.EndLatitude = request.EndLatitude;
+                obj.EndLongitude = request.EndLongitude;
                 obj.Width = request.Width;
                 obj.Trailer = Convert.ToChar(request.Trailer);
                 obj.TransportData = request.TransportData;

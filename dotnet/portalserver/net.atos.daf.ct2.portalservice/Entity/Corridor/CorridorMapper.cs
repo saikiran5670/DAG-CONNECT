@@ -18,39 +18,45 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.CorridorType = Convert.ToString(request.CorridorType);
             obj.CorridorLabel = request.CorridorLabel;
             obj.StartAddress = request.StartAddress;
+            obj.StartLatitude = request.StartLatitude;
+            obj.StartLongitude = request.StartLongitude;
+
+
             obj.EndAddress = request.EndAddress;
+            obj.EndLatitude = request.EndLatitude;
+            obj.EndLongitude = request.EndLongitude;
             obj.Width = request.Width;
-            obj.Trailer = request.Trailer;
+            obj.Trailer = request.attribute.Trailer;
             obj.TransportData = request.TransportData;
             obj.TrafficFlow = request.TrafficFlow;
 
 
-            obj.Explosive = request.Explosive;
-            obj.Gas = request.Gas;
-            obj.Flammable = request.Flammable;
-            obj.Combustible = request.Combustible;
-            obj.Organic = request.organic;
-            obj.Poision = request.poision;
-            obj.RadioActive = request.RadioActive;
-            obj.Corrosive = request.Corrosive;
-            obj.PoisonousInhalation = request.PoisonousInhalation;
+            obj.Explosive = request.attribute.Explosive;
+            obj.Gas = request.attribute.Gas;
+            obj.Flammable = request.attribute.Flammable;
+            obj.Combustible = request.attribute.Combustible;
+            obj.Organic = request.attribute.organic;
+            obj.Poision = request.attribute.poision;
+            obj.RadioActive = request.attribute.RadioActive;
+            obj.Corrosive = request.attribute.Corrosive;
+            obj.PoisonousInhalation = request.attribute.PoisonousInhalation;
 
 
-            obj.WaterHarm = request.WaterHarm;
-            obj.Other = request.Other;
-            obj.TollRoad = Convert.ToString(request.TollRoad);
-            obj.Mortorway = Convert.ToString(request.Mortorway);
-            obj.BoatFerries = Convert.ToString(request.BoatFerries);
-            obj.RailFerries = Convert.ToString(request.RailFerries);
-            obj.Tunnels = Convert.ToString(request.Tunnels);
-            obj.DirtRoad = Convert.ToString(request.DirtRoad);
-            obj.VehicleSizeHeight = request.VehicleSizeHeight;
+            obj.WaterHarm = request.attribute.WaterHarm;
+            obj.Other = request.attribute.Other;
+            obj.TollRoad = Convert.ToString(request.exclusion.TollRoad);
+            obj.Mortorway = Convert.ToString(request.exclusion.Mortorway);
+            obj.BoatFerries = Convert.ToString(request.exclusion.BoatFerries);
+            obj.RailFerries = Convert.ToString(request.exclusion.RailFerries);
+            obj.Tunnels = Convert.ToString(request.exclusion.Tunnels);
+            obj.DirtRoad = Convert.ToString(request.exclusion.DirtRoad);
 
 
-            obj.VehicleSizeWidth = request.VehicleSizeWidth;
-            obj.VehicleSizeLength = request.VehicleSizeLength;
-            obj.VehicleSizeLimitedWeight = request.VehicleSizeLimitedWeight;
-            obj.VehicleSizeWeightPerAxle = request.VehicleSizeWeightPerAxle;
+            obj.VehicleSizeHeight = request.vehicleSize.VehicleSizeHeight;
+            obj.VehicleSizeWidth = request.vehicleSize.VehicleSizeWidth;
+            obj.VehicleSizeLength = request.vehicleSize.VehicleSizeLength;
+            obj.VehicleSizeLimitedWeight = request.vehicleSize.VehicleSizeLimitedWeight;
+            obj.VehicleSizeWeightPerAxle = request.vehicleSize.VehicleSizeWeightPerAxle;
 
             return obj;
 

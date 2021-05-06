@@ -12,7 +12,11 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public char CorridorType { get; set; }
         public string CorridorLabel { get; set; }
         public string StartAddress { get; set; }
+        public double StartLatitude { get; set; }
+        public double StartLongitude { get; set; }
         public string EndAddress { get; set; }
+        public double EndLatitude { get; set; }
+        public double EndLongitude { get; set; }
         public int Width { get; set; }
         public int Trailer { get; set; }
         public bool TransportData { get; set; }
