@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.poigeofence
                 
             }
 
-            if (objCorridorRequest.OrganizationId > 0)
+           else if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId <= 0)
             {
                 objCorridorLookUp.GridView = await _corridorRepository.GetCorridorListByOrganization(objCorridorRequest);
                 for (int i = 0; i < objCorridorLookUp.GridView.Count; i++)
