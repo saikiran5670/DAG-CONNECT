@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<List<ViaAddressDetail>> GetCorridorViaStopById(int Id);
         Task<List<CorridorEditViewResponse>> GetCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest);
         Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor);
+        Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor);
     }
 }

@@ -55,5 +55,26 @@ namespace net.atos.daf.ct2.poigeofence.test
             Assert.IsTrue(resultCorridorList.EditView.Count > 0);
 
         }
+
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test to create ExistingTripCorridor ")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void AddExistingTripCorridorTest()
+        {
+            var existingTripCorridor = new ExistingTripCorridor();
+           // objCorridorRequest.OrganizationId = 100;//orgid 5 ,100
+           // objCorridorRequest.CorridorId = 172; //landmark table id 109, 172
+
+            var resultCorridorList = _iCorridorManger.AddExistingTripCorridor(existingTripCorridor).Result;
+            Assert.IsNotNull(resultCorridorList);
+            Assert.IsTrue(resultCorridorList.ExistingTrips.Count > 0);
+
+        }
+
+
+
+
     }
 }

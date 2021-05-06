@@ -12,6 +12,11 @@ namespace net.atos.daf.ct2.poigeofence
             _corridorRepository = corridorRepository;
         }
 
+        public async Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        {
+            return await _corridorRepository.AddExistingTripCorridor(existingTripCorridor);
+        }
+
         public async Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor)
         {
             return await _corridorRepository.AddRouteCorridor(routeCorridor);
