@@ -331,7 +331,7 @@ namespace net.atos.daf.ct2.alert.repository
                 int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 alert.Id = alertId;
 
-                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id,alert.ModifiedBy);
                 if (IsRefDeleted)
                 {
                     foreach (var landmark in alert.AlertLandmarkRefs)
@@ -374,6 +374,7 @@ namespace net.atos.daf.ct2.alert.repository
                         }
                     }
                 }
+                transactionScope.Commit();
             }
             catch (Exception ex)
             {
@@ -475,17 +476,17 @@ namespace net.atos.daf.ct2.alert.repository
 
         #region Private method
 
-        private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId)
+        private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId,int ModifiedBy)
         {
             char deleteChar = 'D';
-            await dataAccess.ExecuteAsync("UPDATE master.alertfilterref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.alertlandmarkref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.notificationavailabilityperiod SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
-            await dataAccess.ExecuteAsync("UPDATE master.notificationtemplate SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId });
+            char activeState = 'A';
+            await dataAccess.ExecuteAsync("UPDATE master.alertfilterref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+            await dataAccess.ExecuteAsync("UPDATE master.alertlandmarkref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+            await dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+            await dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at, modified_by=@modified_by WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, modified_by= ModifiedBy, alert_id = alertId, activeState = activeState });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationavailabilityperiod SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+            await dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             return true;
         }
 

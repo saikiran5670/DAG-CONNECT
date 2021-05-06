@@ -166,5 +166,34 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region Create Alert
+        //[HttpPost]
+        //[Route("create")]
+        //public override async Task<ActionResult> CreateAlert(AlertRequest request)
+        //{
+        //    try
+        //    {
+        //        Alert alert = new Alert();
+        //        alert = _mapper.ToAlertEntity(request);
+        //        alert = await _alertManager.CreateAlert(alert);
+        //        return await Task.FromResult(new AlertResponse
+        //        {
+        //            Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}",
+        //            Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(null, ex);
+        //        return await Task.FromResult(new AlertResponse
+        //        {
+        //            Message = "Exception :-" + ex.Message,
+        //            Code = ResponseCode.Failed,
+        //            AlertRequest = null
+        //        });
+        //    }
+        //}
+        #endregion
     }
 }

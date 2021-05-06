@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.poigeofence
                 {
                     if ((LandmarkType)item.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
-                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
+                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id);
                         foreach (var trips in item.CorridoreTrips)
                         {
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId);

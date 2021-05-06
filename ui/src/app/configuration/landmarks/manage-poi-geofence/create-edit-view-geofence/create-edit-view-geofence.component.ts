@@ -59,6 +59,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   geoSelectionFlag: boolean = false;
   hereMap: any;
   markerArray: any = [];
+  accountId: any = 0;
+  polygonPointArray: any = [];
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -73,6 +75,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.accountId = parseInt(localStorage.getItem("accountId"));
     this.circularGeofenceFormGroup = this._formBuilder.group({
       circularName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       type: ['', []],
@@ -100,26 +103,34 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           CustomValidators.specialCharValidationForName('name'),
         ]
       });
+    //this.initMap();
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if (this.actionType == 'create') {
       this.geoSelectionFlag = true;
     }
-    if (this.actionType == 'view' || this.actionType == 'edit') {
-      if (this.selectedElementData && this.selectedElementData.type == 'C') { //-- circular geofence
-        this.circularGeofence = true;
-        this.setDefaultCircularGeofenceFormValue();
-        this.loadGridData(this.poiData);
-      } else { //-- polygon geofence
-        this.polygoanGeofence = true;
-        this.setDefaultPolygonGeofenceFormValue();
-      }
-    }
+    // if (this.actionType == 'view' || this.actionType == 'edit') {
+    //   if (this.selectedElementData && this.selectedElementData.type == 'C') { //-- circular geofence
+    //     this.circularGeofence = true;
+    //     this.setDefaultCircularGeofenceFormValue();
+    //     this.loadGridData(this.poiData);
+    //     this.drawCircularGeofence();
+    //   } else { //-- polygon geofence
+    //     this.polygoanGeofence = true;
+    //     this.setDefaultPolygonGeofenceFormValue();
+    //   }
+    // }
+  }
+
+  drawCircularGeofence(){
+    this.markerArray = [];
+    this.markerArray.push(this.selectedElementData);
+    this.addMarkerOnMap();
   }
 
   loadGridData(tableData: any) {
     let selectedGeofenceList: any = [];
-    this.selectedElementData.latitude = 48.8569817;
-    this.selectedElementData.longitude = 2.4509036;
+    // this.selectedElementData.latitude = 42.02308;
+    // this.selectedElementData.longitude = 12.46952;
     if (this.actionType == 'view') {
       tableData.forEach((row: any) => {
         let search = [this.selectedElementData].filter((item: any) => (item.latitude == row.latitude) && (item.longitude == row.longitude));
@@ -244,28 +255,30 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   onCreateUpdateCircularGeofence() {
     if (this.actionType == 'create') { //-- create
-      let cirGeoCreateObjData: any = [
-        {
+      let cirGeoCreateObjData: any = [];
+      this.selectedPOI.selected.forEach(item => {
+        let obj: any = {
           id: 0,
-          organizationId: 0,
-          categoryId: 0,
-          subCategoryId: 0,
-          name: "string",
-          type: "string",
-          address: "string",
-          city: "string",
-          country: "string",
-          zipcode: "string",
-          latitude: 0,
-          longitude: 0,
-          distance: 0,
+          organizationId: this.circularGeofenceFormGroup.controls.type.value == 'Regular' ? this.organizationId : 0,
+          categoryId: item.categoryId,
+          subCategoryId: item.subCategoryId,
+          name: this.circularGeofenceFormGroup.controls.circularName.value.trim(),
+          type: "C", //- for circular geofence
+          address: item.address,
+          city: item.city,
+          country: item.country,
+          zipcode: item.zipcode,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          distance: parseInt(this.circularGeofenceFormGroup.controls.radius.value),
           tripId: 0,
-          createdBy: 0
-        }
-      ];
+          createdBy: this.accountId //-- login account-id
+        };
+        cirGeoCreateObjData.push(obj);
+      });
 
       this.geofenceService.createCircularGeofence(cirGeoCreateObjData).subscribe((cirGeoCreateData: any) => {
-
+        this.getAllGeofenceData();
       }, (error) => {
         if (error.status == 409) {
           this.duplicateCircularGeofence = true;
@@ -273,16 +286,19 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       });
     }
     else { //-- update
-      let cirGeoUpdateObjData: any = {
-        id: 0,
-        categoryId: 0,
-        subCategoryId: 0,
-        name: "string",
-        modifiedBy: 0,
-        organizationId: 0
-      };
+      let cirGeoUpdateObjData: any; 
+      this.selectedPOI.selected.forEach(item => {
+        cirGeoUpdateObjData = {
+          id: this.selectedElementData.id, //-- circular geoId
+          categoryId: item.categoryId,
+          subCategoryId: item.subCategoryId,
+          name: this.circularGeofenceFormGroup.controls.circularName.value.trim(),
+          modifiedBy: this.accountId,
+          organizationId: this.circularGeofenceFormGroup.controls.type.value == 'Regular' ? this.organizationId : 0
+        };
+      });
       this.geofenceService.updateCircularGeofence(cirGeoUpdateObjData).subscribe((cirGeoUpdateData: any) => {
-
+        this.getAllGeofenceData();
       }, (error) => {
         if (error.status == 409) {
           this.duplicateCircularGeofence = true;
@@ -291,38 +307,89 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     }
   }
 
+  getAllGeofenceData(){
+    this.geofenceService.getAllGeofences(this.organizationId).subscribe((geoData: any) => {
+      let geoInitData = geoData["geofenceList"];
+      geoInitData = geoInitData.filter(item => item.type == "C" || item.type == "O");
+      let geofenceCreatedUpdateMsg = this.circularGeofence ? this.getCircularGeofenceCreatedUpdatedMessage() : this.getPolygonGeofenceCreatedUpdatedMessage();
+      let emitObj = { stepFlag: false, gridData: geoInitData, successMsg: geofenceCreatedUpdateMsg };
+      this.backToPage.emit(emitObj);
+    }, (error)=>{
+      let emitObj = { stepFlag: false, successMsg: '' };
+      this.backToPage.emit(emitObj);
+    });
+  }
+
+  getCircularGeofenceCreatedUpdatedMessage() {
+    let geoName = `${this.circularGeofenceFormGroup.controls.circularName.value}`;
+    if(this.actionType == 'create') {
+      if(this.translationData.lblCircularGeofenceCreatedSuccessfully)
+        return this.translationData.lblCircularGeofenceCreatedSuccessfully.replace('$', geoName);
+      else
+        return ("Circular Geofence '$' Created Successfully").replace('$', geoName);
+    }else if(this.actionType == 'edit') {
+      if (this.translationData.lblCircularGeofenceUpdatedSuccessfully)
+        return this.translationData.lblCircularGeofenceUpdatedSuccessfully.replace('$', geoName);
+      else
+        return ("Circular Geofence '$' Updated Successfully").replace('$', geoName);
+    }
+    else{
+      return '';
+    }
+  }
+
+  getPolygonGeofenceCreatedUpdatedMessage() {
+    let geoName = `${this.polygonGeofenceFormGroup.controls.name.value}`;
+    if(this.actionType == 'create') {
+      if(this.translationData.lblPolygonGeofenceCreatedSuccessfully)
+        return this.translationData.lblPolygonGeofenceCreatedSuccessfully.replace('$', geoName);
+      else
+        return ("Polygon Geofence '$' Created Successfully").replace('$', geoName);
+    }else if(this.actionType == 'edit') {
+      if (this.translationData.lblPolygonGeofenceUpdatedSuccessfully)
+        return this.translationData.lblPolygonGeofenceUpdatedSuccessfully.replace('$', geoName);
+      else
+        return ("Polygon Geofence '$' Updated Successfully").replace('$', geoName);
+    }
+    else{
+      return '';
+    }
+  }
+
   onCreateUpdatePolygonGeofence() {
     if (this.actionType == 'create') { //-- create
+      let nodePoints: any = [];
+      this.polygonPointArray.forEach(element => {
+        nodePoints.push({
+          id: 0,
+          landmarkId: 0,
+          seqNo: element.seqNo, //-- node seq. number
+          latitude: element.latitude, //-- node lat
+          longitude: element.longitude, //-- node lng
+          createdBy: this.accountId //-- login account-id
+        });
+      });
       let polyCreateObjData: any = {
         id: 0,
-        organizationId: 0,
-        categoryId: 0,
-        subCategoryId: 0,
-        name: "string",
-        type: "string",
-        address: "string",
-        city: "string",
-        country: "string",
-        zipcode: "string",
-        latitude: 0,
-        longitude: 0,
+        organizationId: this.polygonGeofenceFormGroup.controls.type.value == 'Regular' ? this.organizationId : 0,
+        categoryId: parseInt(this.polygonGeofenceFormGroup.controls.category.value),
+        subCategoryId: parseInt(this.polygonGeofenceFormGroup.controls.subCategory.value),
+        name: this.polygonGeofenceFormGroup.controls.name.value.trim(),
+        type: "O", //-- polygon geofence
+        address: this.polygonGeofenceFormGroup.controls.address.value.trim(),
+        city: this.polygonGeofenceFormGroup.controls.city.value.trim(),
+        country: this.polygonGeofenceFormGroup.controls.country.value.trim(),
+        zipcode: this.polygonGeofenceFormGroup.controls.zip.value.trim(),
+        latitude: 0, //-- first node lat
+        longitude: 0, //-- first node lng
         distance: 0,
         tripId: 0,
-        createdBy: 0,
-        nodes: [
-          {
-            id: 0,
-            landmarkId: 0,
-            seqNo: 0,
-            latitude: 0,
-            longitude: 0,
-            createdBy: 0
-          }
-        ]
+        createdBy: this.accountId,
+        nodes: nodePoints
       };
 
       this.geofenceService.createPolygonGeofence(polyCreateObjData).subscribe((createPolyData: any) => {
-
+        this.getAllGeofenceData();
       }, (error) => {
         if (error.status == 409) {
           this.duplicatePolygonGeofence = true;
@@ -330,16 +397,16 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       });
     } else { //-- update
       let polyUpdateObjData: any = {
-        id: 0,
-        categoryId: 0,
-        subCategoryId: 0,
-        name: "string",
-        modifiedBy: 0,
-        organizationId: 0
+        id: this.selectedElementData.id, //-- polygon geoId
+        categoryId: parseInt(this.polygonGeofenceFormGroup.controls.category.value),
+        subCategoryId: parseInt(this.polygonGeofenceFormGroup.controls.subCategory.value),
+        name: this.polygonGeofenceFormGroup.controls.name.value.trim(),
+        modifiedBy: this.accountId,
+        organizationId: this.polygonGeofenceFormGroup.controls.type.value == 'Regular' ? this.organizationId : 0,
       };
 
       this.geofenceService.updatePolygonGeofence(polyUpdateObjData).subscribe((updatePolyData: any) => {
-
+        this.getAllGeofenceData();
       }, (error) => {
         if (error.status == 409) {
           this.duplicatePolygonGeofence = true;
@@ -353,6 +420,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     this.selectedPOI.clear();
     this.setDefaultCircularGeofenceFormValue();
     this.selectTableRows();
+    this.drawCircularGeofence();
   }
 
   onPolygonReset() {
@@ -428,6 +496,17 @@ export class CreateEditViewGeofenceComponent implements OnInit {
 
   public ngAfterViewInit() {
     this.initMap();
+    if (this.actionType == 'view' || this.actionType == 'edit') {
+      if (this.selectedElementData && this.selectedElementData.type == 'C') { //-- circular geofence
+        this.circularGeofence = true;
+        this.setDefaultCircularGeofenceFormValue();
+        this.loadGridData(this.poiData);
+        this.drawCircularGeofence();
+      } else { //-- polygon geofence
+        this.polygoanGeofence = true;
+        this.setDefaultPolygonGeofenceFormValue();
+      }
+    }
   }
   
   initMap(){

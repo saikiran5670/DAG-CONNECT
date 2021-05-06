@@ -241,5 +241,157 @@ namespace net.atos.daf.ct2.alert.test
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for update Alert")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void UpdateAlertTest()
+        {
+            #region Test Data
+            Alert alert = new Alert
+            {
+                Id = 14,
+                OrganizationId = 10,
+                Name = "TestAlertUpdate1",
+                Category = "L",
+                Type = "N",
+                ValidityPeriodType = "A",
+                ValidityStartDate = 1620272821,
+                ValidityEndDate = 1620272821,
+                VehicleGroupId = 12,
+                State = "A",
+                //CreatedAt = 1620272821,
+                //CreatedBy = 10,
+                ModifiedAt = 1620272821,
+                ModifiedBy = 5,
+                AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>(),
+                Notifications = new List<Notification>(),
+                AlertLandmarkRefs = new List<AlertLandmarkRef>(),
+            };
+            Notification notification = new Notification
+            {
+                Id =10,
+                AlertId =14,
+                AlertUrgencyLevelType = "W",
+                FrequencyType = "O",
+                FrequencyThreshholdValue = 5,
+                ValidityType = "A",
+                State = "A",
+                //CreatedAt = 1620272821,
+                //CreatedBy = 10,
+                ModifiedAt = 1620272821,
+                ModifiedBy =10,
+                NotificationRecipients = new List<NotificationRecipient>(),
+                NotificationLimits = new List<NotificationLimit>(),
+                NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
+            };
+            NotificationRecipient notificationRecipient = new NotificationRecipient
+            {
+                Id =3,
+                NotificationId =10,
+                RecipientLabel = "Test notification 01",
+                AccountGroupId = 12,
+                NotificationModeType = "E",
+                PhoneNo = string.Empty,
+                Sms = string.Empty,
+                EmailId = "testmanage01r@atos.net",
+                EmailSub = "Email Notification ",
+                EmailText = "Hello Text update",
+                WsUrl = string.Empty,
+                WsType = "X",
+                WsText = string.Empty,
+                WsLogin = string.Empty,
+                WsPassword = string.Empty,
+                State = "A",
+                //CreatedAt = 1620272821,
+                ModifiedAt = 1620272821
+            };
+            NotificationLimit notificationLimit = new NotificationLimit
+            {
+                Id =6,
+                NotificationId =10,
+                NotificationModeType = "E",
+                MaxLimit = 100,
+                NotificationPeriodType = "D",
+                PeriodLimit = 50,
+                State = "A",
+                //CreatedAt = 1620272821,
+                ModifiedAt = 1620272821
+            };
+            NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod
+            {
+                Id =6,
+                NotificationId =10,
+                AvailabilityPeriodType = "A",
+                PeriodType = "D",
+                StartTime = 1620272821,
+                EndTime = 1620272821,
+                State = "A",
+                //CreatedAt = 1620272821,
+                ModifiedAt = 1620272821
+            };
+            AlertUrgencyLevelRef alertUrgencyLevelRef = new AlertUrgencyLevelRef
+            {
+                Id =14,
+                AlertId =14,
+                UrgencyLevelType = "C",
+                ThresholdValue = 2,
+                UnitType = "C",
+                DayType = new bool[7] { true, true, true, true, true, true, true },
+                PeriodType = "D",
+                UrgencylevelStartDate = 1620272821,
+                UrgencylevelEndDate = 1620272821,
+                State = "A",
+                //CreatedAt = 1620272821,
+                ModifiedAt = 1620272821,
+                AlertFilterRefs = new List<AlertFilterRef>()
+
+            };
+            AlertLandmarkRef alertLandmarkRef = new AlertLandmarkRef
+            {
+                Id =13,
+                AlertId =14,
+                LandmarkType = "P",
+                RefId = 170,
+                Distance = 20,
+                UnitType = "X",
+                State = "A",
+                //CreatedAt = 1620272821,
+                ModifiedAt = 1620272821
+            };
+            AlertFilterRef alertFilterRef = new AlertFilterRef
+            {
+                Id =10,
+                AlertId =14,
+                //AlertUrgencyLevelId =,
+                FilterType = "O",
+                ThresholdValue = 50,
+                UnitType = "M",
+                LandmarkType = "G",
+                RefId = 171,
+                PositionType = "E",
+                DayType = new bool[7] { true, true, true, true, true, true, true },
+                PeriodType = "D",
+                FilterStartDate = 1620272821,
+                FilterEndDate = 1620272821,
+                State = "A",
+                //CreatedAt = 1620272821,
+                ModifiedAt = 1620272821
+            };
+            #endregion
+
+            notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
+            notification.NotificationLimits.Add(notificationLimit);
+            notification.NotificationRecipients.Add(notificationRecipient);
+
+            alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
+
+            alert.AlertLandmarkRefs.Add(alertLandmarkRef);
+            alert.AlertUrgencyLevelRefs.Add(alertUrgencyLevelRef);
+            alert.Notifications.Add(notification);
+            var result = _ialertManager.UpdateAlert(alert).Result;
+            Assert.IsTrue(result.Id > 0);
+        }
     }
 }
