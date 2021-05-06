@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.alert.entity
 
         public string UrgencyLevelType { get; set; }
 
-        public decimal ThresholdValue { get; set; }
+        public double ThresholdValue { get; set; }
 
         public string UnitType { get; set; }
 

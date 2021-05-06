@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.alertservice.Entity;
+using net.atos.daf.ct2.alert.entity;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -108,18 +109,25 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
-                var id = await _alertManager.UpdateAlert(request.AlertId, 'A');
-                return await Task.FromResult(new AlertResponse
+                Alert alert = new Alert();
+                alert = _mapper.ToAlertEntity(request);
+                alert = await _alertManager.UpdateAlert(alert);
+                return await Task.FromResult(new AlertUpdateResponse
                 {
-                    Message = id > 0 ? $"Alert is updated successful for id:- {id}." : $"Activate Alert Failed for id:- {request.AlertId}.",
-                    Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                    Message = alert.Id > 0 ? $"Alert is updated successful for id:- {alert.Id}." : $"Activate Alert Failed for id:- {request.Id}.",
+                    Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertUpdateResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed,
+                    AlertRequest = null
+                });
             }
         }
 
