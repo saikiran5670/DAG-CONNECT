@@ -70,5 +70,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             return obj;
 
         }
+        public DeleteCorridorRequest MapId(DeleteCorridorIdRequest request)
+        {
+            var obj = new DeleteCorridorRequest();
+            obj.CorridorID = request.Id;
+            return obj;
+        }
+
     }
 }

@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         [Column("trip_id")]
         public string TripId { get; set; } 
         [Column("start_date")]
-        public double StartDdate { get; set; }
+        public double StartDate { get; set; }
         [Column("end_date")]
         public double EndDate { get; set; }
         [Column("driver_id1")]

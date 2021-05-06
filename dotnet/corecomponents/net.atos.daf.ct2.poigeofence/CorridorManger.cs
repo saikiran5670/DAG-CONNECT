@@ -19,7 +19,38 @@ namespace net.atos.daf.ct2.poigeofence
 
         public async Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor)
         {
-            return await _corridorRepository.AddRouteCorridor(routeCorridor);
+            RouteCorridor routeCorridor1 = new RouteCorridor();
+            var isExist = _corridorRepository.CheckRouteCorridorIsexist(routeCorridor.CorridorLabel, routeCorridor.OrganizationId, routeCorridor.Id);
+            if (!await isExist)
+            {
+                var corridorID = await _corridorRepository.AddRouteCorridor(routeCorridor);
+                if (corridorID.Id > 0)
+                    routeCorridor1.Id = corridorID.Id;
+            }
+            else
+                routeCorridor1.Id = -1;
+            return routeCorridor1;
+        }
+
+        public async Task<CorridorID> DeleteCorridor(int CorridorId)
+        {
+            CorridorID corridorID = new CorridorID();
+            var isAlertExist = await _corridorRepository.GetAssociateAlertbyId(CorridorId);
+
+            if (isAlertExist <= 0)
+            {
+                var deleteID = await _corridorRepository.DeleteCorridor(CorridorId);
+                if (deleteID.Id > 0)
+                    corridorID.Id = deleteID.Id;
+                else
+                    corridorID.Id = -2;
+            }
+            else
+            {
+                corridorID.Id = -1;
+            }
+            return corridorID;
+
         }
 
         //public async Task<List<CorridorResponse>> GetCorridorList(CorridorRequest objCorridorRequest)

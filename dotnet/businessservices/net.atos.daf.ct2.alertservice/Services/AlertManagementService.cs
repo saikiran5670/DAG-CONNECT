@@ -105,24 +105,24 @@ namespace net.atos.daf.ct2.alertservice.Services
 
         #region Update Alert
 
-        public override async Task<AlertUpdateResponse> UpdateAlert(AlertRequest request, ServerCallContext context)
+        public override async Task<AlertResponse> UpdateAlert(AlertRequest request, ServerCallContext context)
         {
             try
             {
                 Alert alert = new Alert();
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.UpdateAlert(alert);
-                return await Task.FromResult(new AlertUpdateResponse
+                return await Task.FromResult(new AlertResponse
                 {
                     Message = alert.Id > 0 ? $"Alert is updated successful for id:- {alert.Id}." : $"Activate Alert Failed for id:- {request.Id}.",
-                    Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                    Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed,
                 });
 
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new AlertUpdateResponse
+                return await Task.FromResult(new AlertResponse
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = ResponseCode.Failed,
@@ -133,5 +133,31 @@ namespace net.atos.daf.ct2.alertservice.Services
 
         #endregion
 
+        #region Create Alert
+        public override async Task<AlertResponse> CreateAlert(AlertRequest request, ServerCallContext context)
+        {
+            try
+            {
+                Alert alert = new Alert();
+                alert = _mapper.ToAlertEntity(request);
+                alert = await _alertManager.CreateAlert(alert);
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}" ,
+                    Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = ResponseCode.Failed,
+                    AlertRequest = null
+                });
+            }
+        }
+        #endregion
     }
 }
