@@ -593,6 +593,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 case "Route":
                     ptype = 'U';
                     break;
+                case "E":
+                    ptype = 'E';
+                    break;
             }
             return ptype;
         }

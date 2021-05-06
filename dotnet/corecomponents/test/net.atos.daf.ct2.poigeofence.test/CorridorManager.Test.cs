@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                 OrganizationId = 100,
                 // SubCategoryId = 8,
                 //TripId = 10,
-                CorridorType = "V",
+                CorridorType = "E",
                 Zipcode = "411057",
                 CreatedBy = 1,
                 ExistingTrips = new List<ExistingTrip>() {
