@@ -363,96 +363,53 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                // using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                // {
+
+
+                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id);
+
+                if (isExist)
                 {
-
-
-                    //string queryduplicate = string.Empty;
-                    //var parameterduplicate = new DynamicParameters();
-                    //parameterduplicate.Add("@name", existingTripCorridor.CorridorLabel);
-
-                    //if (existingTripCorridor.OrganizationId > 0)
-                    //{
-                    //    parameterduplicate.Add("@organization_id", existingTripCorridor.OrganizationId);
-                    //    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name and organization_id=@organization_id;";
-                    //}
-                    //else
-                    //    queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
-
-                    //int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
-                    var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id);
-
-                    if (isExist)
-                        {
-                            existingTripCorridor.Id = -1;// Corridor is already exist with same name.
-                            return existingTripCorridor;
-                        }
-
-                       
-
-//                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, 
-//latitude, longitude, distance,  state, created_at, created_by)
-//	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance,
-// @state, @created_at, @created_by) RETURNING id";
-
-//                        var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-//                        poi.Id = id;
-                    
-                  
-
-
-
-
-
-
-
-                    var insertIntoLandmark = @"INSERT INTO master.landmark(
-										       organization_id, name, address,city, country, zipcode, type,latitude, longitude, distance,width, state, created_at, created_by)
-											VALUES (@organization_id, @corridorLabel, @address,@city, @country, @zipcode, @corridorType, @latitude, @longitude, @distance,@width, @state, @created_at, @created_by)RETURNING id";
-
-
-
-
-
-                    var parameter = new DynamicParameters();
-                    parameter.Add("@organization_id", existingTripCorridor.OrganizationId != 0 ? existingTripCorridor.OrganizationId : null);
-                   // parameter.Add("@category_id", poi.CategoryId);
-                   // parameter.Add("@sub_category_id", poi.SubCategoryId);
-                    parameter.Add("@corridorLabel", existingTripCorridor.CorridorLabel);
-                    parameter.Add("@address", existingTripCorridor.Address);
-                    parameter.Add("@city", existingTripCorridor.City);
-                    parameter.Add("@country", existingTripCorridor.Country);
-                    parameter.Add("@zipcode", existingTripCorridor.Zipcode);
-                    parameter.Add("@corridorType", MapLandmarkTypeToChar(existingTripCorridor.CorridorType));
-                    parameter.Add("@latitude", existingTripCorridor.StartLatitude);
-                    parameter.Add("@longitude", existingTripCorridor.StartLongitude);
-                    parameter.Add("@distance", existingTripCorridor.Distance);
-                    parameter.Add("@width", existingTripCorridor.Width);
-
-                    parameter.Add("@state", 'A');
-                    parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                    parameter.Add("@created_by", existingTripCorridor.CreatedBy);
-
-
-                  
-                   
-
-                    parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                    parameter.Add("@Created_By", existingTripCorridor.CreatedBy);
-                    parameter.Add("@state", "A");
-
-
-                    var id = await _dataAccess.ExecuteScalarAsync<int>(insertIntoLandmark, parameter);
-                    if (id > 0)
-                    {
-                        existingTripCorridor.Id = id;
-                     var tripDetails= await AddToExistingTropCorridor(existingTripCorridor);
-                      //  existingTripCorridor.ExistingTrips = tripDetails;
-                    }
-
-                    transactionScope.Complete();
-
+                    existingTripCorridor.Id = -1;// Corridor is already exist with same name.
+                    return existingTripCorridor;
                 }
+
+                var insertIntoLandmark = @"INSERT INTO master.landmark(
+										             organization_id, name, address,city, country, zipcode, type,latitude, longitude, distance,width, state, created_at, created_by)
+											VALUES (@organization_id, @corridorLabel, @address,@city, @country, @zipcode, @corridorType, @latitude, @longitude, @distance,@width,
+                                                    @state, @created_at, @created_by)RETURNING id";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@organization_id", existingTripCorridor.OrganizationId != 0 ? existingTripCorridor.OrganizationId : null);               
+                parameter.Add("@corridorLabel", existingTripCorridor.CorridorLabel);
+                parameter.Add("@address", existingTripCorridor.Address);
+                parameter.Add("@city", existingTripCorridor.City);
+                parameter.Add("@country", existingTripCorridor.Country);
+                parameter.Add("@zipcode", existingTripCorridor.Zipcode);
+                parameter.Add("@corridorType", MapLandmarkTypeToChar(existingTripCorridor.CorridorType));
+                parameter.Add("@latitude", existingTripCorridor.StartLatitude);
+                parameter.Add("@longitude", existingTripCorridor.StartLongitude);
+                parameter.Add("@distance", existingTripCorridor.Distance);
+                parameter.Add("@width", existingTripCorridor.Width);
+                parameter.Add("@state", 'A');
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@created_by", existingTripCorridor.CreatedBy);
+                parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@Created_By", existingTripCorridor.CreatedBy);
+                parameter.Add("@state", "A");
+
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(insertIntoLandmark, parameter);
+                if (id > 0)
+                {
+                    existingTripCorridor.Id = id;
+                    var tripDetails = await AddToExistingTripCorridor(existingTripCorridor);
+                }
+
+                //  transactionScope.Complete();
+
+                // }
             }
             catch (Exception ex)
             {
@@ -462,8 +419,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             return existingTripCorridor;
         }
-        private async Task<List<ExistingTrip>> AddToExistingTropCorridor(ExistingTripCorridor existingTripCorridor)
-        {            
+        private async Task<List<ExistingTrip>> AddToExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        {
             var tripList = new List<ExistingTrip>();
             try
             {
@@ -507,7 +464,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         existingTrip.Id = Convert.ToInt32(id);
                         if (existingTrip.Id > 0)
                         {
-                            var inseredNodesDetails =await InsertToNodes(existingTrip.NodePoints, existingTrip.LandmarkId);
+                            var inseredNodesDetails = await InsertToNodes(existingTrip.NodePoints, existingTrip.LandmarkId, existingTrip.TripId);
                         }
 
                         tripList.Add(existingTrip);
@@ -525,7 +482,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
 
 
-        private async Task<List<Nodepoint>> InsertToNodes(List<Nodepoint> nodePoints,int landmarkId)
+        private async Task<List<Nodepoint>> InsertToNodes(List<Nodepoint> nodePoints, int landmarkId, string tripId)
         {
             var tripNodes = new List<Nodepoint>();
 
@@ -535,6 +492,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 foreach (var nodePoint in nodePoints)
                 {
                     nodePoint.LandmarkId = landmarkId;
+                    nodePoint.TripId = tripId; // parent trip id for all nodes
                     var insertIntoNodes = @"INSERT INTO master.nodes(
 								        landmark_id,seq_no,latitude,longitude, state, created_at, created_by, address,trip_id)
 										VALUES (@LandmarkId,@SequenceNumber,@Latitude,@Longitude, @State, @Created_At, @Created_By,
@@ -561,9 +519,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-              //  log.Info("AddExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
                 log.Error(ex.ToString());
-                // throw ex;
             }
             return tripNodes;
 
