@@ -99,24 +99,25 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.EndLatitude = request.EndLatitude;
                 obj.EndLongitude = request.EndLongitude;
                 obj.Width = request.Width;
+                obj.Distance = request.Distance;
                 obj.Trailer = Convert.ToChar(request.Trailer);
-                obj.TransportData = request.TransportData;
-                obj.TrafficFlow = request.TrafficFlow;
+                obj.TransportData = request.IsTransportData;
+                obj.TrafficFlow = request.IsTrafficFlow;
 
 
-                obj.Explosive = request.Explosive;
-                obj.Gas = request.Gas;
-                obj.Flammable = request.Flammable;
-                obj.Combustible = request.Combustible;
-                obj.organic = request.Organic;
-                obj.poision = request.Poision;
-                obj.RadioActive = request.RadioActive;
-                obj.Corrosive = request.Corrosive;
-                obj.PoisonousInhalation = request.PoisonousInhalation;
+                obj.Explosive = request.IsExplosive;
+                obj.Gas = request.IsGas;
+                obj.Flammable = request.IsFlammable;
+                obj.Combustible = request.IsCombustible;
+                obj.organic = request.Isorganic;
+                obj.poision = request.Ispoision;
+                obj.RadioActive = request.IsRadioActive;
+                obj.Corrosive = request.IsCorrosive;
+                obj.PoisonousInhalation = request.IsPoisonousInhalation;
 
 
-                obj.WaterHarm = request.WaterHarm;
-                obj.Other = request.Other;
+                obj.WaterHarm = request.IsWaterHarm;
+                obj.Other = request.IsOther;
                 obj.TollRoad = Convert.ToChar(request.TollRoad);
                 obj.Mortorway = Convert.ToChar(request.Mortorway);
                 obj.BoatFerries = Convert.ToChar(request.BoatFerries);
