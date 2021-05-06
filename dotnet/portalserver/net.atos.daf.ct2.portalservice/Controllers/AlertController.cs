@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Activate Alert Failed for id:- {alertId}.");
+                return StatusCode(500, $"Exception Occurred, Activate Alert Failed for Id:- {alertId}.");
             }
         }
 
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for id:- {alertId}.");
+                return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for Id:- {alertId}.");
             }
         }
 
@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Delete Alert Failed for id:- {alertId}.");
+                return StatusCode(500, $"Exception Occurred, Delete Alert Failed for Id:- {alertId}.");
             }
         }
 
