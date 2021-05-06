@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                 Distance = 12,
                 StartLatitude = 51.07,
                 StartLongitude = 57.07,
-                CorridorLabel = "trip Test7",
+                CorridorLabel = "trip Test8",
                 State = "A",
                 // ModifiedAt =,
                 //  ModifiedBy =,
@@ -87,10 +87,46 @@ namespace net.atos.daf.ct2.poigeofence.test
                                         Distance=10, DriverId1="d1", DriverId2="d2", EndDate=121323, EndLatitude=51.07,
                                         EndPosition="End address", EndLongitude=51.07,
                                         StartDate=11313, StartPosition="start address",
-                                        StartLatitude=43.34, StartLongitude=12.34, TripId="211dsd",
+                                        StartLatitude=43.34, StartLongitude=12.34, TripId="trip13",
                                         NodePoints=new List<Nodepoint>()
                                                        { new Nodepoint()
-                                                             { Latitude=12.34, TripId="sdd", Address="Node address",
+                                                             { Latitude=12.34, TripId="trip13", Address="Node address",
+                                                               CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
+                                                             }
+                                                       }
+                                    },
+                                    new ExistingTrip() {
+                                        Distance=16, DriverId1="d2", DriverId2="d2", EndDate=121323, EndLatitude=51.07,
+                                        EndPosition="End address", EndLongitude=51.07,
+                                        StartDate=11313, StartPosition="start address",
+                                        StartLatitude=43.34, StartLongitude=12.34, TripId="trip11",
+                                        NodePoints=new List<Nodepoint>()
+                                                       { new Nodepoint()
+                                                             { Latitude=12.34, TripId="trip11", Address="Node address11",
+                                                               CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
+                                                             },
+                                                             new Nodepoint()
+                                                             { Latitude=12.34, TripId="trip11", Address="Node address11",
+                                                               CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
+                                                             }
+                                                       }
+                                    },
+                                    new ExistingTrip() {
+                                        Distance=13, DriverId1="d3", DriverId2="d2", EndDate=121323, EndLatitude=51.07,
+                                        EndPosition="End address", EndLongitude=51.07,
+                                        StartDate=11313, StartPosition="start address",
+                                        StartLatitude=43.34, StartLongitude=12.34, TripId="trip12",
+                                        NodePoints=new List<Nodepoint>()
+                                                       { new Nodepoint()
+                                                             { Latitude=12.34, TripId="trip12", Address="Node address12",
+                                                               CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
+                                                             },
+                                                             new Nodepoint()
+                                                             { Latitude=12.34, TripId="trip12", Address="Node address122",
+                                                               CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
+                                                             },
+                                                             new Nodepoint()
+                                                             { Latitude=12.34, TripId="trip12", Address="Node address123",
                                                                CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
                                                              }
                                                        }
