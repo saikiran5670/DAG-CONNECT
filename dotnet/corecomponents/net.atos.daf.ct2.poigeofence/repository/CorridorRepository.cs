@@ -651,9 +651,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            ,l.address as StartPoint
 	                            ,l.latitude as StartLat
 	                            ,l.longitude as StartLong
-	                            ,n.address as EndPoint
-	                            ,n.latitude as EndLat
-	                            ,n.longitude as EndLong
 	                            ,l.distance as Distance
 	                            ,l.distance as Width
                                 ,l.state as State
@@ -683,18 +680,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"SELECT id, 
-                        landmark_id, 
-                        trip_id, 
-                        start_date, 
-                        end_date, 
-                        driver_id1, 
-                        driver_id2, 
-                        start_latitude, 
-                        start_longitude, 
-                        end_latitude, 
-                        end_longitude, 
-                        start_position, 
-                        end_position, 
+                        landmark_id as LandmarkId, 
+                        trip_id as TripId, 
+                        start_date as StartDate, 
+                        end_date as EndDate, 
+                        driver_id1 as DriverId1, 
+                        driver_id2 as DriverId2, 
+                        start_latitude as StartLatitude, 
+                        start_longitude as StartLongitude, 
+                        end_latitude as EndLatitude, 
+                        end_longitude as EndLongitude, 
+                        start_position as StartPosition, 
+                        end_position as EndPosition, 
                         distance
 	                    FROM master.corridortrips
                         WHERE      landmark_id = @landmark_id";
@@ -716,8 +713,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
                 query = @"SELECT id,
-                            landmark_id,
-                            seq_no,
+                            landmark_id as LandmarkId,
+                            seq_no as SequenceNumber,
                             latitude,
                             longitude,
                             state,
@@ -726,7 +723,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             modified_at,
                             modified_by,
                             address,
-                            trip_id
+                            trip_id as TripId
                             FROM master.nodes
                             where trip_id = @trip_id";
 
