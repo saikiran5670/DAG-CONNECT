@@ -61,6 +61,9 @@
                 <input maxlength="20" placeholder="{{ translationData.lblEnterPoiName|| 'Enter Poi Name' }}" matInput
                   formControlName="name">
               </mat-form-field>
+              <mat-error *ngIf="duplicatePOIName">
+                {{ lblDuplicatePOINameMsg }}
+              </mat-error>
               <mat-error *ngIf="poiFormGroup.get('name').hasError('required')">
                 {{ translationData.lblPleasenterPoiName || 'Please enter Poi Name'}}
             </mat-error>
