@@ -89,9 +89,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (request.OrganizationId == 0)
                 {
-                    bool hasRights = await HasAdminPrivilege();
-                    if (!hasRights)
-                        return StatusCode(400, "You cannot create global Corridor.");
+                    //bool hasRights = await HasAdminPrivilege();
+                    //if (!hasRights)
+                     return StatusCode(400, "Organization_Id Required .");
                 }
                 if (request.ViaAddressDetails.Count >5)
                 {

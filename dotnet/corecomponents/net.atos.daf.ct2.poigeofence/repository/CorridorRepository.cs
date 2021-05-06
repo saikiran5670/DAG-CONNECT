@@ -167,8 +167,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     if (!isExist)
                     {
                         var insertIntoLandmark = @"INSERT INTO master.landmark(
-                                          organization_id, category_id, name, address,city, type, Width, state, latitude, longitude, created_at, created_by)
-                                            VALUES (@OrganizationId,@category_id, @CorridorLabel, @StartAddress,@City, @CorridorType, @Width, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By)RETURNING id";
+                                          organization_id, name, address, type,distance, Width, state, latitude, longitude, created_at, created_by)
+                                            VALUES (@OrganizationId, @CorridorLabel, @StartAddress, @CorridorType,@Distance, @Width, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By)RETURNING id";
 
 
                         var insertIntoNodes = @"INSERT INTO master.nodes(
@@ -184,8 +184,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
 
                         parameter.Add("@OrganizationId", routeCorridor.OrganizationId != 0 ? routeCorridor.OrganizationId : null);
-                        parameter.Add("@category_id", 50);
-                        parameter.Add("@City", "Pune");
+                        parameter.Add("@Distance", routeCorridor.Distance);
                         parameter.Add("@CorridorType", routeCorridor.CorridorType);
                         parameter.Add("@CorridorLabel", routeCorridor.CorridorLabel);
 
