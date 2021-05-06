@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         [Required]
         public double EndLongitude { get; set; }
         public int Width { get; set; }
-        public List<ViaDetails> ViaAddressDetails { get; set; }
+        public List<ViaStopDetails> ViaAddressDetails { get; set; }
         public bool TransportData { get; set; }
         public bool TrafficFlow { get; set; }
         [StringLength(1)]
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public VehicleSize vehicleSize { get; set; }
     }
 
-    public class ViaDetails
+    public class ViaStopDetails
     {
         [StringLength(100)]
         public string ViaRoutName { get; set; }

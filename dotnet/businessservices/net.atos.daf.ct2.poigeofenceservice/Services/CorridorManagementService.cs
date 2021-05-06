@@ -3,6 +3,7 @@ using log4net;
 using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.poigeofence;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -129,6 +130,20 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.VehicleSizeLength = request.VehicleSizeLength;
                 obj.VehicleSizeLimitedWeight = request.VehicleSizeLimitedWeight;
                 obj.VehicleSizeWeightPerAxle = request.VehicleSizeWeightPerAxle;
+                obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
+
+                if (request != null && request.ViaAddressDetails != null)
+                {
+                    foreach (var item in request.ViaAddressDetails)
+                    {
+                        var trans = new poigeofence.entity.ViaRoute();
+                        trans.ViaStopName = item.ViaName;
+                        trans.Latitude = item.Longitude;
+                        trans.Longitude = item.Longitude;
+                        obj.ViaRoutDetails.Add(trans);
+                       
+                    }
+                }
 
                 var result = await _corridorManger.AddRouteCorridor(obj);
                 if (result.Id == -1)

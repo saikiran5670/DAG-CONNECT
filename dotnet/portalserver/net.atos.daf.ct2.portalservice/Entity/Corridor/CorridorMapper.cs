@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
         public RouteCorridorAddRequest MapCorridor(CorridorRequest request)
         {
-
+            var mapvia = new ViaDetails();
             var obj = new RouteCorridorAddRequest();
             obj.Id = request.Id;
             obj.OrganizationId = request.OrganizationId;
@@ -58,6 +58,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.VehicleSizeLimitedWeight = request.vehicleSize.VehicleSizeLimitedWeight;
             obj.VehicleSizeWeightPerAxle = request.vehicleSize.VehicleSizeWeightPerAxle;
 
+           
+            if (request != null && request.ViaAddressDetails != null)
+            {
+                foreach (var item in request.ViaAddressDetails)
+                {
+                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude,Longitude=item.Longitude });
+                }
+            }
             return obj;
 
         }

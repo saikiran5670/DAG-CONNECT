@@ -97,8 +97,8 @@ enum Responsecode{
 
  message ViaDetails
 {
-double StartLatitude=1;
-double StartLongitude=2;
+double Latitude=1;
+double Longitude=2;
 string ViaName =3;
 
 }

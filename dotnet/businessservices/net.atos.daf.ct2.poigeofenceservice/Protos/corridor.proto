@@ -14,8 +14,7 @@ message CorridorRequest{
     int32 OrganizationId = 1;
     int32 CorridorId = 2;
 }
-
-    message ViaAddressDetail{
+  message ViaAddressDetail{
     int32 CorridorViaStopId = 1;
     int32 Latitude = 2;
     int32 Longitude = 3;
@@ -105,8 +104,8 @@ enum Responsecode{
 
  message ViaDetails
 {
-double StartLatitude=1;
-double StartLongitude=2;
+double Latitude=1;
+double Longitude=2;
 string ViaName =3;
 
 }

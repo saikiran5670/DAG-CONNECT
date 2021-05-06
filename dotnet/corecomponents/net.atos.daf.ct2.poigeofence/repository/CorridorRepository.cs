@@ -180,6 +180,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                            VALUES (@LandmarkId, @TransportData, @TrafficFlow, @Trailer, @Explosive, @Gas, @Flammable, @Combustible, @organic, @poision, @RadioActive, @Corrosive, @PoisonousInhalation, @WaterHarm, @Other, @TollRoad, @Mortorway, @BoatFerries, @RailFerries, @Tunnels, @DirtRoad, @VehicleSizeHeight, @VehicleSizeWidth, @VehicleSizeLength, @VehicleSizeLimitedWeight, @VehicleSizeWeightPerAxle, @Created_At) RETURNING id";
 
 
+                       
+
 
                         parameter.Add("@OrganizationId", routeCorridor.OrganizationId != 0 ? routeCorridor.OrganizationId : null);
                         parameter.Add("@category_id", 50);
@@ -238,6 +240,28 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             await _dataAccess.ExecuteScalarAsync<int>(insertIntoNodes, parameter);
 
                             await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorProperties, parameter);
+
+                            ViaRoute routeObj = new ViaRoute();
+                            foreach (var item in routeCorridor.ViaRoutDetails)
+                            {
+                                var temp = new ViaRoute();
+                                temp.ViaStopName = item.ViaStopName;
+                                temp.Latitude = item.Latitude;
+                                temp.Longitude = item.Longitude;
+
+                                parameter.Add("@Latitude", temp.Latitude);
+                                parameter.Add("@Longitude", temp.Longitude);
+                                parameter.Add("@ViaStopName", temp.ViaStopName);
+
+                                var insertIntoCorridorViaStop = @"INSERT INTO master.corridorviastop(
+                                          landmark_id, latitude, longitude, name)
+                                            VALUES (@LandmarkId, @Latitude, @Longitude ,@ViaStopName) RETURNING id";
+
+                                await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorViaStop, parameter);
+
+                            }
+
+                            
 
                         }
                     }
