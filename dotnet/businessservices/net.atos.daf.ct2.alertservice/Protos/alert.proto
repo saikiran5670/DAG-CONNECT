@@ -51,7 +51,7 @@ message VehicleGroup{
     int32 VehicleId=3;
     string VehicleName=4;   
 }
-}
+
 
 message AlertRequest
 {
