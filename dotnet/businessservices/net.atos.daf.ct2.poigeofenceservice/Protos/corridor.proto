@@ -9,6 +9,7 @@ service CorridorService{
  rpc GetCorridorList (CorridorRequest) returns (CorridorResponseList);
  rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
  rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
+ rpc AddExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
     }
 
 message CorridorRequest{
@@ -195,7 +196,7 @@ message DeleteCorridorResponse
   string Message = 2;  
   int32 CorridorID =3;
 }
-message ExistingTripCorridor{
+message ExistingTripCorridorRequest{
    
     int32 OrganizationId=1;
     string CorridorType=2;
@@ -216,6 +217,13 @@ message ExistingTripCorridor{
     string State =17;
     repeated ExistingTrip ExistingTrips=18;
      int32 Id=19;
+}
+message ExistingTripCorridorResponse{
+    Responsecode Code=1;
+    string Message = 2;  
+    int32 CorridorID =3;
+    ExistingTripCorridorRequest ExistingTripCorridor=4;
+
 }
 
 message ExistingTrip
