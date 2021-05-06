@@ -5,6 +5,7 @@ using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -294,7 +295,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             var response = new ExistingTripCorridorResponse();
             try
             {
-                _logger.Info("Add Corridor .");
+                _logger.Info("Add Existing Trip Corridor .");
                var existingTripEntity= _corridorMapper.ToExistingTripCorridorEntity(request);
               
 
@@ -308,9 +309,18 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else if (result != null && result.Id > 0)
                 {
-                    response.Message = "Added successfully";
-                    response.Code = Responsecode.Success;
-                    response.CorridorID = result.Id;
+                    var isTransactionDone = result.ExistingTrips.Any(x => x.Id != 0);
+                    if (isTransactionDone)
+                    {
+                        response.Message = "Added successfully";
+                        response.Code = Responsecode.Success;
+                        response.CorridorID = result.Id;
+                    }
+                    else {
+                        response.Message = "Transaction failed";
+                        response.Code = Responsecode.Failed;
+                        response.CorridorID = result.Id;
+                    }                    
                 }
                 else
                 {
