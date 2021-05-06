@@ -46,11 +46,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.OrganizationId))
                     {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.SubscribeEvent.OrganizationId));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.OrganizationId));
                     }
                     else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.packageId))
                     {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.SubscribeEvent.packageId));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.packageId));
                     }                    
 
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 
                     try
                     {
-                        if (objsubscriptionActivation.SubscribeEvent.StartDateTime != string.Empty)
+                        if (!string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.StartDateTime))
                             Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime));
                         else
                             Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);                     
@@ -71,21 +71,19 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     catch (Exception)
                     {
                         logger.LogInformation($"Not valid date in subscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.SubscribeEvent.StartDateTime), "INVALID_PARAMETER");
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.StartDateTime);
                     }
 
                     var order = await subscriptionManager.Subscribe(Objsubs);
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
-                        if(order.Item2 == null)
-                            return GenerateErrorResponse(order.Item1, "VINs");
+                        if (order.Item2.Value is string[])
+                            return GenerateErrorResponse(order.Item1, typeof(string[]), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                         else
-                            return GenerateErrorResponse(order.Item1, "VINs", errorCode: order.Item2.ErrorCode);
+                            return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                     }                        
                     else if (order.Item1 == HttpStatusCode.NotFound)
-                        return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, description: order.Item2.ErrorMessage);
-                    else if (order.Item1 == HttpStatusCode.Conflict)
-                        return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, description: order.Item2.ErrorMessage);
+                        return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);                    
 
                     logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.orderId}");
                     return Ok(order.Item2.Response);
@@ -95,11 +93,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.OrganizationID))
                     {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.UnsubscribeEvent.OrganizationID));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrganizationID));
                     }
                     else if (objsubscriptionActivation.UnsubscribeEvent.OrderID <= 0)
                     {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
                     }
                     UnSubscription Objunsubs = new UnSubscription();
                     Objunsubs.OrganizationID = objsubscriptionActivation.UnsubscribeEvent.OrganizationID;
@@ -111,39 +109,35 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     
                     try
                     {
-                        if (objsubscriptionActivation.UnsubscribeEvent.EndDateTime != string.Empty)
-                        {
+                        if (!string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.EndDateTime))
                             Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime));
-                        }
                         else
-                        {
                             Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                        }
                     }
                     catch (Exception)
                     {
-                        logger.LogInformation($"Not valid date in unsubcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.UnsubscribeEvent.EndDateTime), "INVALID_PARAMETER");
+                        logger.LogInformation($"Not valid date in unsubscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.EndDateTime);
                     }
 
                     var order = await subscriptionManager.Unsubscribe(Objunsubs);
 
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
-                        if (order.Item2 == null)
-                            return GenerateErrorResponse(order.Item1, "VINs");
+                        if (order.Item2.Value is string[])
+                            return GenerateErrorResponse(order.Item1, typeof(string[]), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                         else
-                            return GenerateErrorResponse(order.Item1, "VINs", errorCode: order.Item2.ErrorCode);
+                            return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                     }
                     else if (order.Item1 == HttpStatusCode.NotFound)
-                        return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, description: order.Item2.ErrorMessage);
+                        return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                    
                     logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
                     return Ok(order.Item2.Response);
                 }
                 else
                 {
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, nameof(objsubscriptionActivation.SubscribeEvent) + " or " + nameof(objsubscriptionActivation.UnsubscribeEvent));
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string[]), value: new string[] { nameof(objsubscriptionActivation.SubscribeEvent), nameof(objsubscriptionActivation.UnsubscribeEvent) });
                 }               
             }
             catch (Exception ex)
@@ -153,32 +147,31 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             }
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string parameter= null, string errorCode = null, string description = null)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, Type type, string errorCode = "", object value = null)
         {
             switch (statusCode)
             {
-                case HttpStatusCode.BadRequest:
-                    if (string.IsNullOrEmpty(errorCode))
-                        return StatusCode((int)statusCode, new ErrorResponse()
-                        {
-                            ResponseCode = ((int)statusCode).ToString(),
-                            Message = "MISSING_PARAMETER",
-                            Value = "A mandatory field " + parameter + " was not provided."
-                        });
-                    else
-                        return StatusCode((int)statusCode, new ErrorResponse()
+                case HttpStatusCode.BadRequest:                    
+                    if (!string.IsNullOrEmpty(errorCode))
+                        return StatusCode((int)statusCode, new
                         {
                             ResponseCode = ((int)statusCode).ToString(),
                             Message = errorCode,
-                            Value = parameter + " parameter has an invalid value."
+                            Value = value
+                        });
+                    else
+                        return StatusCode((int)statusCode, new
+                        {
+                            ResponseCode = ((int)statusCode).ToString(),
+                            Message = "MISSING_PARAMETER",
+                            Value = value
                         });
                 case HttpStatusCode.NotFound:
-                case HttpStatusCode.Conflict:
-                    return StatusCode((int)statusCode, new ErrorResponse()
+                    return StatusCode((int)statusCode, new
                     {
                         ResponseCode = ((int)statusCode).ToString(),
                         Message = errorCode,
-                        Value = description
+                        Value = value
                     });
                 default:
                     return null;

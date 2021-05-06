@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         //public int Id { get; set; }
 
-        //public int OrganizationId { get; set; }
+        public int OrganizationId { get; set; }
 
         public string Name { get; set; }
 
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     public class AlertEdit: Alert
     {
         public int Id { get; set; }
-        public int OrganizationId { get; set; }
+        //public int OrganizationId { get; set; }
         public string State { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }

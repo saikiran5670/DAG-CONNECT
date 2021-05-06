@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (geofence.Exists)
                 {
                     if (IsBulkImport && geofence.CategoryId > 0)
-                    {
+                    {                        
                         return await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.PolygonGeofence).ToString());
                     }
                     else
@@ -544,6 +544,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                if (geofence.OrganizationId <= 0)
+                {
+                    geofence.IsFailed = true;
+                    geofence.Message = "Organization Id is not available.";
+                    return geofence;
+                }
                 var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { State = "A", CategoryID = geofence.CategoryId });
                 var categoryId = categoryList.FirstOrDefault()?.Id ?? 0;
                 if (!(categoryId > 0))
@@ -560,10 +566,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     parameter.Add("@sub_category_id", null);
                 parameter.Add("@name", geofence.Name);
-                if (geofence.OrganizationId > 0)
-                    parameter.Add("@organization_id", geofence.OrganizationId);
-                else
-                    parameter.Add("@organization_id", null);
+                parameter.Add("@organization_id", geofence.OrganizationId);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@modified_by", geofence.ModifiedBy);
                 parameter.Add("@type", type);
