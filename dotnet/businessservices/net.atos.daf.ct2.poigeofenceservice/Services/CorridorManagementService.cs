@@ -2,6 +2,7 @@
 using log4net;
 using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.poigeofence;
+using net.atos.daf.ct2.poigeofenceservice.entity;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -9,15 +10,17 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
-    public class CorridorManagementService: CorridorService.CorridorServiceBase
+    public class CorridorManagementService : CorridorService.CorridorServiceBase
     {
 
         private ILog _logger;
         private readonly ICorridorManger _corridorManger;
+        private readonly CorridorMapper _corridorMapper;
         public CorridorManagementService(ICorridorManger corridorManger)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorManger = corridorManger;
+            _corridorMapper = new CorridorMapper();
 
         }
 
@@ -217,7 +220,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         trans.Latitude = item.Longitude;
                         trans.Longitude = item.Longitude;
                         obj.ViaRoutDetails.Add(trans);
-                       
+
                     }
                 }
 
@@ -284,5 +287,44 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }
             return await Task.FromResult(response);
         }
+
+
+        public override async Task<ExistingTripCorridorResponse> AddExistingTripCorridor(ExistingTripCorridorRequest request, ServerCallContext context)
+        {
+            var response = new ExistingTripCorridorResponse();
+            try
+            {
+                _logger.Info("Add Corridor .");
+               var existingTripEntity= _corridorMapper.ToExistingTripCorridorEntity(request);
+              
+
+                var result = await _corridorManger.AddExistingTripCorridor(existingTripEntity);
+                if (result.Id == -1)
+                {
+                    response.Message = "Corridor Name is " + existingTripEntity.CorridorLabel + " already exists ";
+                    response.Code = Responsecode.Conflict;
+                    response.CorridorID = result.Id;
+
+                }
+                else if (result != null && result.Id > 0)
+                {
+                    response.Message = "Added successfully";
+                    response.Code = Responsecode.Success;
+                    response.CorridorID = result.Id;
+                }
+                else
+                {
+                    response.Message = "Add Existing Trip Corridor Fail";
+                    response.Code = Responsecode.Failed;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
+
     }
 }
