@@ -72,7 +72,6 @@ message AlertRequest
 	int64 ModifiedAt=13;
 	int32 ModifiedBy=14;
 	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=15;
-	repeated AlertFilterRefRequest AlertFilterRefs=16;
 	repeated NotificationRequest Notifications=17;
 	repeated AlertLandmarkRefRequest AlertLandmarkRefs=18;
 }
@@ -124,6 +123,7 @@ message AlertUrgencyLevelRefRequest
 	string State=10;
 	int64 CreatedAt=11;
 	int64 ModifiedAt=12;
+	repeated AlertFilterRefRequest AlertFilterRefs=13;
 }
 
 message NotificationRequest
@@ -195,5 +195,5 @@ message NotificationRecipientRequest
 message AlertUpdateResponse{   
 	AlertRequest AlertRequest=1;
     ResponseCode Code=2;
-    string message = 3;
+    string Message = 3;
 }

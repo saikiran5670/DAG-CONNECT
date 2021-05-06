@@ -52,17 +52,9 @@ namespace net.atos.daf.ct2.alertservice.Entity
             {
                 foreach (var item in request.AlertUrgencyLevelRefs)
                 {
-                    alert.AlertUrgencyLevelRefs.Add(ToAlertUrgencyLevelRefEntity(item));
+                    alert.AlertUrgencyLevelRefs.Add(ToAlertUrgencyLevelRefEntity(item));                    
                 }
-            }
-            alert.AlertFilterRefs = new List<AlertFilterRef>();
-            if (request.AlertFilterRefs.Count > 0)
-            {
-                foreach (var item in request.AlertFilterRefs)
-                {
-                    alert.AlertFilterRefs.Add(ToAlertFilterRefEntity(item));
-                }
-            }
+            }            
             alert.Notifications = new List<Notification>();
             if (request.Notifications.Count > 0)
             {
@@ -97,6 +89,14 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertUrgencyLevelRef.State = request.State;
             alertUrgencyLevelRef.CreatedAt = request.CreatedAt;
             alertUrgencyLevelRef.ModifiedAt = request.ModifiedAt;
+            alertUrgencyLevelRef.AlertFilterRefs = new List<AlertFilterRef>();
+            if (request.AlertFilterRefs.Count > 0)
+            {
+                foreach (var item in request.AlertFilterRefs)
+                {
+                    alertUrgencyLevelRef.AlertFilterRefs.Add(ToAlertFilterRefEntity(item));
+                }
+            }
             return alertUrgencyLevelRef;
         }
 
