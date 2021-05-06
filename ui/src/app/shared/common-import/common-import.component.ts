@@ -392,7 +392,7 @@ export class CommonImportComponent implements OnInit {
       for (const [key, value] of Object.entries(item)) {
         switch (key) {
           case 'organizationId':{
-            let objData: any = this.basicValidation(value,'code'); 
+            let objData: any = this.basicValidation(value,'organizationId'); 
             orgFlag = objData.status;
             if(!orgFlag){
               item.returnMessage = objData.reason;
@@ -507,8 +507,8 @@ export class CommonImportComponent implements OnInit {
     let gpxData = this.parsedGPXData;
     let gpxInfo = gpxData["gpx"]["metadata"];
     let nodeInfo = gpxData["gpx"]["trk"];
-    console.log(gpxInfo);
-    console.log(nodeInfo)
+    //console.log(gpxInfo);
+    //console.log(nodeInfo)
     let organizedGPXData = [];
     let nodeArray = [],nodeObj ={};
       
@@ -533,8 +533,8 @@ export class CommonImportComponent implements OnInit {
       nodeArraySet.push(nodeArrayForEach)
     }
 
-    console.log("nodeArraySet");
-    console.log(nodeArraySet)
+   // console.log("nodeArraySet");
+    //console.log(nodeArraySet)
     for(let i = 0; i < gpxInfo.length ; i++){
       
       organizedGPXData.push(
@@ -647,7 +647,7 @@ export class CommonImportComponent implements OnInit {
     this.importedCount = 0;
     if(validData.length > 0){
         this.geofenceService.importGeofenceGpx(validData).subscribe((resultData)=>{
-          console.log(resultData)
+         // console.log(resultData)
           this.showImportStatus = true;
           removableInput.clear();
           // if(resultData["poiUploadedList"].length >0){
@@ -916,12 +916,12 @@ export class CommonImportComponent implements OnInit {
       for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "OrganizationId":this.rejectedList[i]["organizationId"],
-            "CategoryId": this.rejectedList[i]["categoryId"],
-            "SubCategoryId" : this.rejectedList[i]["subCategoryId"],
-            "POIName" :this.rejectedList[i]["name"],
-            "Latitude" :this.rejectedList[i]["latitude"].toFixed(2),
-            "Longitude" :this.rejectedList[i]["longitude"].toFixed(2),
+            "organizationId":this.rejectedList[i]["organizationId"],
+            "categoryId": this.rejectedList[i]["categoryId"],
+            "subCategoryId" : this.rejectedList[i]["subCategoryId"],
+            "poiName" :this.rejectedList[i]["name"],
+            "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
+            "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
             "returnMessage" :this.rejectedList[i]["returnMessage"]
           }
         )
@@ -931,12 +931,12 @@ export class CommonImportComponent implements OnInit {
       for(var i in rejectedList){
         populateRejectedList.push(
           {
-            "OrganizationId":this.rejectedList[i]["organizationId"],
-            "GeofenceName" :this.rejectedList[i]["name"],
-            "Type" :this.rejectedList[i]["type"],
-            "Latitude" :(this.rejectedList[i]["latitude"]).toFixed(2),
-            "Longitude" :this.rejectedList[i]["longitude"].toFixed(2),
-            "Distance" :this.rejectedList[i]["distance"],
+            "organizationId":this.rejectedList[i]["organizationId"],
+            "geofenceName" :this.rejectedList[i]["name"],
+            "type" :this.rejectedList[i]["type"],
+            "latitude" :(this.rejectedList[i]["latitude"]).toFixed(2),
+            "longitude" :this.rejectedList[i]["longitude"].toFixed(2),
+            "distance" :this.rejectedList[i]["distance"],
             "returnMessage" :this.rejectedList[i]["message"]
           }
         )

@@ -35,20 +35,50 @@ namespace net.atos.daf.ct2.alert.test
         {
             //Provide the Alert Id which has suspended State in Database
             var ExcepteId = 1;
-            var Id = _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active)).Result;
+            var Id =  _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active), ((char)AlertState.Suspend)).Result;
             Assert.AreEqual(ExcepteId, Id);
         }
 
         [TestCategory("Unit-Test-Case")]
-        [Description("Test for Activate Alert Failure")]
+        [Description("Test for Suspend Alert Success")]
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]
-        public void ActivateAlertfailure()
+        public void SuspendAlertSuccess()
         {
-            var ExcepteId = 0;
-            var Id = _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active)).Result;
+            //Provide the Alert Id which has Active State
+            var ExcepteId = 1;
+            var Id = _ialertManager.SuspendAlert(ExcepteId, ((char)AlertState.Suspend), ((char)AlertState.Active)).Result;
             Assert.AreEqual(ExcepteId, Id);
         }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Delete Alert Success, Provide the Alert Id which has a active notification")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void DeleteAlertSucess()
+        {
+            //Provide the Alert Id which has a active notification
+            var ExcepteId = 8;
+            int Id = 0;
+            if (_ialertManager.CheckIsNotificationExitForAlert(ExcepteId).Result)
+                Id = _ialertManager.DeleteAlert(ExcepteId, ((char)AlertState.Suspend)).Result;
+            Assert.AreEqual(ExcepteId, Id);
+         }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Delete Alert Falied, Provide the Alert Id which has a no active notification")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void DeleteAlertFailure()
+        {
+            //Provide the Alert Id which has a no active notification
+            var ExcepteId = 0;
+            int Id = 0;
+            if (_ialertManager.CheckIsNotificationExitForAlert(2).Result)
+                Id = _ialertManager.DeleteAlert(2, ((char)AlertState.Suspend)).Result;
+            Assert.AreEqual(ExcepteId, Id);
+        }
+
         [TestCategory("Unit-Test-Case")]
         [Description("Test for create Alert")]
         [TestMethod]

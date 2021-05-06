@@ -108,16 +108,6 @@ export class GeofenceService {
       .pipe(catchError(this.handleError));
   }
 
-  importGeofence(data: any): Observable<any> {
-    let headerObj = this.generateHeader();
-    const headers = {
-      headers: new HttpHeaders({ headerObj }),
-    };
-    return this.httpClient
-      .post<any>(`${this.GeofenceServiceUrl}/BulkImportGeofence`, data, headers)
-      .pipe(catchError(this.handleError));
-  }
-
   importGeofenceGpx(data): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -127,6 +117,7 @@ export class GeofenceService {
       .post<any>(`${this.GeofenceServiceUrl}/BulkImportGeofence`,data,headers)
       .pipe(catchError(this.handleError));
   }
+  
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(

@@ -62,6 +62,8 @@ export class CreateEditViewPoiComponent implements OnInit {
   // UpdatedPoiFlag: any;
   searchData: any = [];
   activeSearchList: any = false;
+  duplicatePOIName: any = false;
+  duplicatePOINameMsg: any = '';
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
   @ViewChild("map")
@@ -446,6 +448,13 @@ this.map.setZoom(14);
     this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryId);
   }
 
+  getDuplicateCategoryMsg(poiName: any){
+    if(this.translationData.lblDuplicatePOINameMsg)
+      this.duplicatePOINameMsg = this.translationData.lblDuplicatePOINameMsg.replace('$', poiName);
+    else
+      this.duplicatePOINameMsg = ("Category Name '$' already exists.").replace('$', poiName);
+  }
+
   onCreatePoi() {
     let objData = {
       id: 0,
@@ -478,6 +487,11 @@ this.map.setZoom(14);
           this.backToPage.emit(emitObj);
 
         });
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicatePOIName = true;
+          this.getDuplicateCategoryMsg(this.poiFormGroup.controls.name.value.trim());
+        }
       });
     }
     else {
