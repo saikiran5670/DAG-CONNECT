@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("alert")]
     public class AlertController : ControllerBase
@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
 
-        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker,IHttpContextAccessor _httpContextAccessor)
+        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
         {
             _AlertServiceClient = AlertServiceClient;
             _auditHelper = auditHelper;
@@ -97,6 +97,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
                 return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for id:- {alertId}.");
+            }
+        }
+        #endregion
+
+        #region Alert Category
+        [HttpGet]
+        [Route("GetAlertCategory")]
+        public async Task<IActionResult> GetAlertCategory(int accountId)
+        {
+            try
+            {
+                if (accountId == 0) return BadRequest("Account id cannot be null.");
+                AlertCategoryResponse response = new AlertCategoryResponse();
+                response = await _AlertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
+                if (response.EnumTranslation != null && response.VehicleGroup != null)
+                {
+                    response.Code = ResponseCode.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(404, "Alert Category are not found.");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"Get alert category method Failed", 1, 2, Convert.ToString(accountId),
+                  Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
         #endregion
