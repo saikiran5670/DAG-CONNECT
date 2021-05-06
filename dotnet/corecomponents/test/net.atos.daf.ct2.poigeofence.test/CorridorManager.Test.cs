@@ -63,9 +63,43 @@ namespace net.atos.daf.ct2.poigeofence.test
         [Timeout(TestTimeout.Infinite)]
         public void AddExistingTripCorridorTest()
         {
-            var existingTripCorridor = new ExistingTripCorridor();
-           // objCorridorRequest.OrganizationId = 100;//orgid 5 ,100
-           // objCorridorRequest.CorridorId = 172; //landmark table id 109, 172
+            var existingTripCorridor = new ExistingTripCorridor()
+            {
+                Address = "Pune",
+                //  CategoryId = 10,
+                City = "Pune",
+                Country = "India",
+                Distance = 12,
+                StartLatitude = 51.07,
+                StartLongitude = 57.07,
+                CorridorLabel = "trip Test7",
+                State = "A",
+                // ModifiedAt =,
+                //  ModifiedBy =,
+                OrganizationId = 100,
+                // SubCategoryId = 8,
+                //TripId = 10,
+                CorridorType = "V",
+                Zipcode = "411057",
+                CreatedBy = 1,
+                ExistingTrips = new List<ExistingTrip>() {
+                                    new ExistingTrip() {
+                                        Distance=10, DriverId1="d1", DriverId2="d2", EndDate=121323, EndLatitude=51.07,
+                                        EndPosition="End address", EndLongitude=51.07,
+                                        StartDate=11313, StartPosition="start address",
+                                        StartLatitude=43.34, StartLongitude=12.34, TripId="211dsd",
+                                        NodePoints=new List<Nodepoint>()
+                                                       { new Nodepoint()
+                                                             { Latitude=12.34, TripId="sdd", Address="Node address",
+                                                               CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"
+                                                             }
+                                                       }
+                                    }
+                                },
+
+            };
+            // objCorridorRequest.OrganizationId = 100;//orgid 5 ,100
+            // objCorridorRequest.CorridorId = 172; //landmark table id 109, 172
 
             var resultCorridorList = _iCorridorManger.AddExistingTripCorridor(existingTripCorridor).Result;
             Assert.IsNotNull(resultCorridorList);
