@@ -982,7 +982,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                var QueryStatement = @"select grp.id as VehicleGroupId,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
+                var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
                                     from master.group grp 
 									inner join master.groupref vgrpref
 									on  grp.id=vgrpref.group_id and grp.object_type='V'                                    

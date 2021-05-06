@@ -4,6 +4,7 @@ using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -266,14 +267,21 @@ namespace net.atos.daf.ct2.alert.repository
                 throw ex;
             }
         }
+        
         #endregion
 
         #region Update Alert
 
         public async Task<Alert> UpdateAlert(Alert alert)
         {
-            //Begin transaction scope for master.vehicle table
-            var QueryStatement = @" UPDATE master.alert
+            int urgencylevelRefId = 0;
+            //Begin transaction scope for master.alert table
+            dataAccess.connection.Open();
+            var transactionScope = dataAccess.connection.BeginTransaction();
+            try
+            {
+
+                var QueryStatement = @" UPDATE master.alert
                                         SET 
                                          name=@name                                        
         	                            ,validity_period_type=@validity_period_type
@@ -285,27 +293,79 @@ namespace net.atos.daf.ct2.alert.repository
                                          WHERE id = @id
                                          RETURNING id;";
 
-            var parameter = new DynamicParameters();
-            parameter.Add("@id", alert.Id);
-            parameter.Add("@name", alert.Name);
-            parameter.Add("@validity_period_type", alert.ValidityPeriodType);
-            if (alert.ValidityPeriodType.ToUpper().ToString() == ((char)ValidityPeriodType.Custom).ToString())
-            {
-                parameter.Add("@validity_start_date", alert.ValidityStartDate);
-                parameter.Add("@validity_end_date", alert.ValidityEndDate);
-            }
-            else
-            {
-                parameter.Add("@validity_start_date", null);
-                parameter.Add("@validity_end_date", null);
-            }
-            parameter.Add("@vehicle_group_id", alert.VehicleGroupId);
-            parameter.Add("@modified_at", alert.ModifiedAt);
-            parameter.Add("@modified_by", alert.ModifiedBy);
-            int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-            alert.Id = alertId;
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", alert.Id);
+                parameter.Add("@name", alert.Name);
+                parameter.Add("@validity_period_type", alert.ValidityPeriodType);
+                if (alert.ValidityPeriodType.ToUpper().ToString() == ((char)ValidityPeriodType.Custom).ToString())
+                {
+                    parameter.Add("@validity_start_date", alert.ValidityStartDate);
+                    parameter.Add("@validity_end_date", alert.ValidityEndDate);
+                }
+                else
+                {
+                    parameter.Add("@validity_start_date", null);
+                    parameter.Add("@validity_end_date", null);
+                }
+                parameter.Add("@vehicle_group_id", alert.VehicleGroupId);
+                parameter.Add("@modified_at", alert.ModifiedAt);
+                parameter.Add("@modified_by", alert.ModifiedBy);
+                int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                alert.Id = alertId;
 
-            bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id);
+                if (IsRefDeleted)
+                {
+                    foreach (var landmark in alert.AlertLandmarkRefs)
+                    {
+                        landmark.AlertId = alertId;
+                        int landmarkRefId = await CreateAlertLandmarkRefs(landmark);
+                    }
+                    foreach (var urgencylevel in alert.AlertUrgencyLevelRefs)
+                    {
+                        urgencylevel.AlertId = alertId;
+                        urgencylevelRefId = await CreateAlertUrgencyLevelRef(urgencylevel);
+                    }
+                    foreach (var alertfilter in alert.AlertFilterRefs)
+                    {
+                        alertfilter.AlertId = alertId;
+                        alertfilter.AlertUrgencyLevelId = urgencylevelRefId;
+                        int alertfilterRefId = await CreateAlertFilterRef(alertfilter);
+                    }
+                    if (alert.Notifications.Count() > 0)
+                    {
+                        foreach (var notification in alert.Notifications)
+                        {
+                            notification.AlertId = alertId;
+                            int notificationId = await CreateNotification(notification);
+                            foreach (var availabilityPeriod in notification.NotificationAvailabilityPeriods)
+                            {
+                                availabilityPeriod.NotificationId = notificationId;
+                                int alertfilterRefId = await CreateNotificationAvailabilityPeriod(availabilityPeriod);
+                            }
+                            foreach (var limit in notification.NotificationLimits)
+                            {
+                                limit.NotificationId = notificationId;
+                                int alertfilterRefId = await CreateNotificationLimit(limit);
+                            }
+                            foreach (var notificationRecipient in notification.NotificationRecipients)
+                            {
+                                notificationRecipient.NotificationId = notificationId;
+                                int alertfilterRefId = await CreateNotificationrecipient(notificationRecipient);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                transactionScope.Rollback();
+                throw ex;
+            }
+            finally
+            {
+                dataAccess.connection.Close();
+            }
 
             return alert;
         }
