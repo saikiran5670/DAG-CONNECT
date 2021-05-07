@@ -133,6 +133,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             log.Error(ex.ToString());
                             item.IsFailed = true;
                             item.Message = $"There was an error inserting node data";
+                            if (!IsBulkImport) throw ex;
                         }
                     }
                 }
@@ -144,6 +145,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 log.Error(ex.ToString());
                 geofence.IsFailed = true;
                 geofence.Message = $"There was an error inserting polygon data";
+                if (!IsBulkImport) throw ex;
             }
             return geofence;
         }

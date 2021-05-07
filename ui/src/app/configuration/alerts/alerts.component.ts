@@ -9,6 +9,7 @@ import { UserDetailTableComponent } from '../../admin/user-management/new-user-s
 import { MatSort } from '@angular/material/sort';
 import { VehicleService } from '../../services/vehicle.service';
 import { PackageService } from 'src/app/services/package.service';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-alerts',
@@ -29,15 +30,21 @@ export class AlertsComponent implements OnInit {
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
-  
   rowsData: any;
   createStatus: boolean;
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   accountOrganizationId: any;
+  accountId: any;
   EmployeeDataService : any= [];  
   packageCreatedMsg : any = '';
   titleVisible : boolean = false;
+  alertCategoryList: any= [];
+  alertTypeList: any= [];
+  vehicleGroupList: any= [];
+  vehicleList: any= [];
+  alertCriticalityList: any= [];
+  alertStatusList: any= [];
 
   stringifiedData: any;  
   parsedJson: any;  
@@ -50,14 +57,16 @@ export class AlertsComponent implements OnInit {
 
   constructor(
     private translationService: TranslationService,
-    private alertService: AccountService,
+    private accountService: AccountService,
     private packageService: PackageService, 
     private dialog: MatDialog,
-    private vehicleService: VehicleService,) { }
+    private vehicleService: VehicleService,
+    private alertService: AlertService ) { }
  
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -65,10 +74,11 @@ export class AlertsComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 18 //-- for landmark
+      menuId: 17 //-- for alerts
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.loadFiltersData();
       this.loadAlertsData();
     });
     
@@ -77,6 +87,21 @@ export class AlertsComponent implements OnInit {
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
+  }
+
+  loadFiltersData(){
+    this.alertService.getAlertFilterData(this.accountId).subscribe((data) => {
+      let filterData = data["enumTranslation"];
+      filterData.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
+      });
+      this.alertCategoryList= filterData.filter(item => item.type == 'C');
+      this.alertTypeList= filterData.filter(item => item.type == 'T');
+      this.alertCriticalityList= filterData.filter(item => item.type == 'U');
+      this.vehicleList= data["vehicleGroup"];
+    }, (error) => {
+
+    })
   }
 
   onClickNewAlert(){

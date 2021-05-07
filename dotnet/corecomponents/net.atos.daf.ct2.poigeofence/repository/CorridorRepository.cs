@@ -530,20 +530,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
 
                 var updateIntoLandmark = @"update master.landmark set 
-                                                            organization_id=@organization_id,
-                                                            name=@corridorLabel, 
-                                                            address=@address,
-                                                            city=@city,
-                                                            country=@country, 
-                                                            zipcode=@zipcode, 
-                                                            type=@corridorType,
-                                                            latitude=@latitude,
-                                                            longitude=@longitude, 
-                                                            distance=@distance,
-                                                            width=@width,                                                          
-                                                            modified_at=@,
-                                                            modified_by =@
-                                                            where id = @Id RETURNING id";
+                                                    organization_id=@organization_id,
+                                                    name=@corridorLabel, 
+                                                    address=@address,
+                                                    city=@city,
+                                                    country=@country, 
+                                                    zipcode=@zipcode, 
+                                                    type=@corridorType,
+                                                    latitude=@latitude,
+                                                    longitude=@longitude, 
+                                                    distance=@distance,
+                                                    width=@width,                                                          
+                                                    modified_at=@,
+                                                    modified_by =@
+                                                    where id = @Id RETURNING id";
 
 
                
@@ -573,7 +573,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (id > 0)
                 {
                     existingTripCorridor.Id = id;
-                    var tripDetails = await UpdateToExistingTripCorridor(existingTripCorridor);
+                    var tripDetails = await UpdateToExistingTripsCorridor(existingTripCorridor);
                 }
 
                 //  transactionScope.Complete();
@@ -591,7 +591,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
 
 
-        private async Task<List<ExistingTrip>> UpdateToExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        private async Task<List<ExistingTrip>> UpdateToExistingTripsCorridor(ExistingTripCorridor existingTripCorridor)
         {
             var tripList = new List<ExistingTrip>();
             try
@@ -602,28 +602,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
 
                     var updateIntoCorridorTrips = @"update master.corridortrips set 
-                                                                landmark_id,
-                                                                trip_id,
-                                                                start_date,
-                                                                end_date,
-                                                                driver_id1,
-                                                                driver_id2,
-                                                                start_latitude, 
-										                        start_longitude, 
-                                                                end_latitude,
-                                                                end_longitude, 
-                                                                start_position,
-                                                                end_position,
-                                                                distance
-                                                                where id = @Id RETURNING id";
-
-
-
-            //        var insertIntoCorridorTrips = @"INSERT INTO master.corridortrips(
-										  //landmark_id, trip_id, start_date, end_date, driver_id1, driver_id2, start_latitude, 
-										  //start_longitude, end_latitude,end_longitude, start_position, end_position, distance)
-										  //VALUES (@LandmarkId,@TripId, @StartDate, @EndDate, @DriverId1, @DriverId2, @StartLatitude, 
-										  //@StartLongitude, @EndLatitude,@EndLongitude, @StartPosition, @EndPosition, @Distance) RETURNING id";
+                                                                landmark_id=@LandmarkId,
+                                                                trip_id=@TripId,
+                                                                start_date=@StartDate,
+                                                                end_date=@EndDate,
+                                                                driver_id1=@DriverId1,
+                                                                driver_id2=@DriverId2,
+                                                                start_latitude=@StartLatitude, 
+										                        start_longitude=@StartLongitude, 
+                                                                end_latitude=@EndLatitude,
+                                                                end_longitude=@EndLongitude, 
+                                                                start_position=@StartPosition,
+                                                                end_position=@EndPosition,
+                                                                distance=@Distance
+                                                                where id = @Id RETURNING id";          
 
                     if (existingTrip.LandmarkId > 0 && existingTrip.Id > 0)
                     {
@@ -688,10 +680,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     nodePoint.LandmarkId = landmarkId;
                     nodePoint.TripId = tripId; // parent trip id for all nodes
-                    var insertIntoNodes = @"INSERT INTO master.nodes(
-								        landmark_id,seq_no,latitude,longitude, state, created_at, created_by, address,trip_id)
-										VALUES (@LandmarkId,@SequenceNumber,@Latitude,@Longitude, @State, @Created_At, @Created_By,
-                                        @Address,@TripId) RETURNING id";
+
+                    var updateNodes = @"update master.nodes set 
+                                                                landmark_id=@LandmarkId,
+                                                                seq_no=@SequenceNumber,
+                                                                latitude=@Latitude,
+                                                                longitude=@Longitude,
+                                                                state=@State,
+                                                                modified_at=@Modified_At,
+                                                                modified_by=@Modified_By,
+                                                                address=@Address,
+                                                                trip_id=@TripId
+                                                                where id = @Id RETURNING id";                    
 
 
                     if (nodePoint.LandmarkId > 0 && nodePoint.Id > 0)
@@ -704,10 +704,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@Latitude", nodePoint.Latitude);
                         parameter.Add("@Longitude", nodePoint.Longitude);
                         parameter.Add("@State", "A");
-                        parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        parameter.Add("@Created_By", nodePoint.CreatedBy);
+                        parameter.Add("@Modified_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        parameter.Add("@Modified_By", nodePoint.ModifiedBy);
                         parameter.Add("@Address", nodePoint.Address);
-                        var result = await _dataAccess.ExecuteScalarAsync<int>(insertIntoNodes, parameter);
+                        var result = await _dataAccess.ExecuteScalarAsync<int>(updateNodes, parameter);
                         nodePoint.Id = Convert.ToInt32(result);
                         tripNodes.Add(nodePoint);
                     }

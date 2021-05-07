@@ -11,7 +11,7 @@
   <div *ngIf='!createViewEditStatus'>
       <mat-card class='mat-elevation-z'>
         <div>
-            <app-alerts-filter ></app-alerts-filter>
+            <app-alerts-filter  ></app-alerts-filter>
           </div>  
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -122,6 +122,7 @@
       </mat-card>
   </div>
   <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData" (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
+      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData"
+       [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [vehicleGroupList]='vehicleGroupList' [vehicleList]='vehicleList' (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
   </div>
 </div>
