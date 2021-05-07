@@ -14,20 +14,20 @@ namespace net.atos.daf.ct2.alertservice.Entity
         {
             EnumTranslation objenumtrans = new EnumTranslation();
             objenumtrans.Id = enumTrans.Id;
-            objenumtrans.Type = enumTrans.Type;
-            objenumtrans.Enum = enumTrans.Enum;
-            objenumtrans.ParentEnum = enumTrans.ParentEnum;
-            objenumtrans.Key = enumTrans.Key;
+            objenumtrans.Type = string.IsNullOrEmpty(enumTrans.Type) ? string.Empty : enumTrans.Type;
+            objenumtrans.Enum = string.IsNullOrEmpty(enumTrans.Enum) ? string.Empty : enumTrans.Enum;
+            objenumtrans.ParentEnum = string.IsNullOrEmpty(enumTrans.ParentEnum) ? string.Empty : enumTrans.ParentEnum;
+            objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
             return objenumtrans;
         }
         public VehicleGroup MapVehicleGroup(VehicleGroupList vehiclegroup)
         {
             VehicleGroup objvehiclegroup = new VehicleGroup();
             objvehiclegroup.VehicleGroupId = vehiclegroup.VehicleGroupId;
-            objvehiclegroup.VehicleGroupName = vehiclegroup.VehicleGroupName;
+            objvehiclegroup.VehicleGroupName = string.IsNullOrEmpty(vehiclegroup.VehicleGroupName) ? string.Empty : vehiclegroup.VehicleGroupName;
             objvehiclegroup.VehicleId = vehiclegroup.VehicleId;
-            objvehiclegroup.VehicleName = vehiclegroup.VehicleName; 
-            objvehiclegroup.Vin = vehiclegroup.Vin;
+            objvehiclegroup.VehicleName = string.IsNullOrEmpty(vehiclegroup.VehicleName) ? string.Empty : vehiclegroup.VehicleName;
+            objvehiclegroup.Vin = string.IsNullOrEmpty(vehiclegroup.Vin) ? string.Empty : vehiclegroup.Vin;
             return objvehiclegroup;
         }
 
@@ -52,17 +52,9 @@ namespace net.atos.daf.ct2.alertservice.Entity
             {
                 foreach (var item in request.AlertUrgencyLevelRefs)
                 {
-                    alert.AlertUrgencyLevelRefs.Add(ToAlertUrgencyLevelRefEntity(item));
+                    alert.AlertUrgencyLevelRefs.Add(ToAlertUrgencyLevelRefEntity(item));                    
                 }
-            }
-            alert.AlertFilterRefs = new List<AlertFilterRef>();
-            if (request.AlertFilterRefs.Count > 0)
-            {
-                foreach (var item in request.AlertFilterRefs)
-                {
-                    alert.AlertFilterRefs.Add(ToAlertFilterRefEntity(item));
-                }
-            }
+            }            
             alert.Notifications = new List<Notification>();
             if (request.Notifications.Count > 0)
             {
@@ -97,6 +89,14 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertUrgencyLevelRef.State = request.State;
             alertUrgencyLevelRef.CreatedAt = request.CreatedAt;
             alertUrgencyLevelRef.ModifiedAt = request.ModifiedAt;
+            alertUrgencyLevelRef.AlertFilterRefs = new List<AlertFilterRef>();
+            if (request.AlertFilterRefs.Count > 0)
+            {
+                foreach (var item in request.AlertFilterRefs)
+                {
+                    alertUrgencyLevelRef.AlertFilterRefs.Add(ToAlertFilterRefEntity(item));
+                }
+            }
             return alertUrgencyLevelRef;
         }
 

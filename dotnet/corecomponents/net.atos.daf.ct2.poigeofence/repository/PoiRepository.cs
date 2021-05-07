@@ -39,8 +39,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             l.type as type,
                             l.latitude as latitude,
                             l.longitude as longitude,
-                            l.distance as distance,
-                            l.trip_id as tripid,
+                            l.distance as distance,                           
                             l.state as state,
                             l.created_at as createdat,
                             l.created_by as createdby,
@@ -93,8 +92,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             l.type as type,
                             l.latitude as latitude,
                             l.longitude as longitude,
-                            l.distance as distance,
-                            l.trip_id as tripid,
+                            l.distance as distance,                            
                             l.state as state,
                             l.created_at as createdat,
                             l.created_by as createdby,
@@ -183,11 +181,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@longitude", poiFilter.Longitude);
                     query = query + " and l.longitude= @longitude ";
                 }
-                if (poiFilter.TripId > 0)
-                {
-                    parameter.Add("@trip_id", poiFilter.TripId);
-                    query = query + " and l.trip_id= @trip_id ";
-                }
+                //if (poiFilter.TripId > 0)
+                //{
+                //    parameter.Add("@trip_id", poiFilter.TripId);
+                //    query = query + " and l.trip_id= @trip_id ";
+                //}
                 if (poiFilter.CreatedAt > 0)
                 {
                     parameter.Add("@created_at", poiFilter.CreatedAt);
@@ -244,13 +242,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@latitude", poi.Latitude);
                 parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
-                parameter.Add("@trip_id", poi.TripId);
+              //  parameter.Add("@trip_id", poi.TripId);
                 parameter.Add("@state", 'A');
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", poi.CreatedBy);
 
-                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance,  state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance,  @state, @created_at, @created_by) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 poi.Id = id;
@@ -463,13 +461,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@latitude", poi.Latitude);
                         parameter.Add("@longitude", poi.Longitude);
                         parameter.Add("@distance", poi.Distance);
-                        parameter.Add("@trip_id", poi.TripId);
+                      //  parameter.Add("@trip_id", poi.TripId);
                         parameter.Add("@state", 'A');
                         parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                         parameter.Add("@created_by", poi.CreatedBy);
 
-                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @state, @created_at, @created_by) RETURNING id";
 
                         var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         poi.Id = id;
@@ -504,7 +502,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Latitude = Convert.ToDouble(record.latitude);
             poi.Longitude = Convert.ToDouble(record.longitude);
             poi.Distance = Convert.ToDouble(record.distance);
-            poi.TripId = record.tripid != null ? record.tripid : 0;
+          //  poi.TripId = record.tripid != null ? record.tripid : 0;
             poi.CreatedAt = record.createdat != null ? record.createdat : 0;
             poi.State = MapCharToLandmarkState(record.state);
             poi.CreatedBy = record.createdby != null ? record.createdby : 0;

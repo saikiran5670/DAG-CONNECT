@@ -231,6 +231,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
             geofence.ModifiedBy = geofenceRequest.ModifiedBy;
+            geofence.Distance = geofenceRequest.Distance;
             return geofence;
         }
         public GeofenceCircularUpdateRequest ToCircularGeofenceUpdateRequest(Geofence geofenceRequest)
@@ -242,6 +243,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
             geofence.ModifiedBy = geofenceRequest.ModifiedBy;
+            geofence.Distance = geofenceRequest.Distance;
             return geofence;
         }
 
@@ -262,7 +264,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
                 Distance = x.Distance,
-                TripId = x.TripId,
+               // TripId = x.TripId,
                 State = x.State,
                 CreatedBy = x.CreatedBy
             }).ToList());
@@ -290,7 +292,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                          Latitude = x.Latitude,
                                          Longitude = x.Longitude,
                                          Distance = x.Distance,
-                                         TripId = x.TripId,
+                                         //TripId = x.TripId,
                                          State = x.State,
                                          CreatedBy = x.CreatedBy
                                      }).ToList());
@@ -310,7 +312,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                         Latitude = x.Latitude,
                                         Longitude = x.Longitude,
                                         Distance = x.Distance,
-                                        TripId = x.TripId,
+                                      //  TripId = x.TripId,
                                         State = x.State,
                                         CreatedBy = x.CreatedBy
                                     }).ToList());

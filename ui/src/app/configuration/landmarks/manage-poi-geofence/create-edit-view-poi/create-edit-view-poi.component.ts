@@ -61,7 +61,9 @@ export class CreateEditViewPoiComponent implements OnInit {
   selectedMarker: any;
   // UpdatedPoiFlag: any;
   searchData: any = [];
-
+  activeSearchList: any = false;
+  duplicatePOIName: any = false;
+  duplicatePOINameMsg: any = '';
   @Output() createEditViewPOIEmit = new EventEmitter<object>();
 
   @ViewChild("map")
@@ -205,6 +207,10 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   searchValue(event: any) {
+    this.activeSearchList = true;
+    if(event.target.value == "") {
+      this.activeSearchList = false;
+    }
     console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -218,8 +224,9 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   SearchListItems(item){
-console.log("you clicked on:" +item.title);
-console.log(item.position);
+   
+// console.log("you clicked on:" +item.title);
+// console.log(item.position);
 this.map.setCenter({lat:item.position[0], lng:item.position[1]});
 this.map.setZoom(14);
   }
@@ -441,6 +448,13 @@ this.map.setZoom(14);
     this.poiFormGroup.get("subcategory").setValue(this.selectedElementData.subCategoryId);
   }
 
+  getDuplicateCategoryMsg(poiName: any){
+    if(this.translationData.lblDuplicatePOINameMsg)
+      this.duplicatePOINameMsg = this.translationData.lblDuplicatePOINameMsg.replace('$', poiName);
+    else
+      this.duplicatePOINameMsg = ("Category Name '$' already exists.").replace('$', poiName);
+  }
+
   onCreatePoi() {
     let objData = {
       id: 0,
@@ -473,6 +487,11 @@ this.map.setZoom(14);
           this.backToPage.emit(emitObj);
 
         });
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicatePOIName = true;
+          this.getDuplicateCategoryMsg(this.poiFormGroup.controls.name.value.trim());
+        }
       });
     }
     else {

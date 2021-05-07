@@ -62,8 +62,14 @@ namespace net.atos.daf.ct2.poigeofence.entity
 
     public class ViaRoute
     {
+        public int ViaStopId { get; set; }
         public string ViaStopName { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+    }
+
+    public class CorridorID
+    {
+        public int Id { get; set; }
     }
 }
