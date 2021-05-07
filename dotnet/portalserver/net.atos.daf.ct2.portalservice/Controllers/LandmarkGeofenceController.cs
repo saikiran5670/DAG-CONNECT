@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("createcircularofence")]
+        [Route("createcirculargeofence")]
         public async Task<IActionResult> CreateCircularGeofence(List<CircularGeofence> request)
         {
             _logger.Info("CreateCircularGeofence method in Geofence API called.");

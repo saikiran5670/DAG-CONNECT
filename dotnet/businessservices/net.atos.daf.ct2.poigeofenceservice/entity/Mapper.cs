@@ -66,9 +66,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.Longitude = geofenceRequest.Longitude;
             geofence.Distance = geofenceRequest.Distance;
             //geofence.State = Convert.ToChar(geofenceRequest.State);
-            geofence.TripId = geofenceRequest.TripId;
+            geofence.Width = geofenceRequest.Width;
             geofence.Nodes = new List<Nodes>();
-            foreach (var item in geofenceRequest.NodeRequest)
+            foreach (var item in geofenceRequest.Nodes)
             {
                 if (item != null)
                 {
@@ -89,6 +89,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Latitude = nodeRequest.Latitude;
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
+            nodes.Address = nodeRequest.Address;
+            nodes.TripId = nodeRequest.TripId;
             return nodes;
         }
         public POI ToPOIEntity(net.atos.daf.ct2.poiservice.POIRequest poiRequest)
@@ -119,7 +121,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0;
             poi.CategoryId = poiEntity.CategoryId;
             poi.CategoryName = CheckNull(poiEntity.CategoryName);
-            poi.SubCategoryId = poiEntity.SubCategoryId;
+            poi.SubCategoryId = poiEntity.SubCategoryId != null ? Convert.ToInt32(poiEntity.SubCategoryId) : 0;
             poi.SubCategoryName = CheckNull(poiEntity.SubCategoryName);
             poi.Name = CheckNull(poiEntity.Name);
             poi.Type = poiEntity.Type;
@@ -169,13 +171,13 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.Longitude = geofenceRequest.Longitude;
             geofence.Distance = geofenceRequest.Distance;
             geofence.State = !string.IsNullOrEmpty(geofenceRequest.State) ? geofenceRequest.State : string.Empty;
-            geofence.TripId = geofenceRequest.TripId;
+            geofence.Width = geofenceRequest.Width;
             //geofence.NodeRequest = new List<NodeRequest>();
             foreach (var item in geofenceRequest.Nodes)
             {
                 if (item != null)
                 {
-                    geofence.NodeRequest.Add(ToNodesRequest(item));
+                    geofence.Nodes.Add(ToNodesRequest(item));
                 }
             }
             geofence.CreatedBy = geofenceRequest.CreatedBy;
@@ -195,6 +197,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
             nodes.Message = nodeRequest.Message;
+            nodes.Address = nodeRequest.Address;
+            nodes.TripId = nodeRequest.TripId;
             return nodes;
         }
 

@@ -13,6 +13,7 @@ import { QueryList } from '@angular/core';
 import { ViewChildren } from '@angular/core';
 import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { isNgTemplate } from '@angular/compiler';
 
 const createGpx = require('gps-to-gpx').default;
 
@@ -359,6 +360,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
+    this.selectedgeofences.clear();
   }
 
   onClose() {
@@ -424,13 +426,56 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.geofenceName);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.geofenceService.deleteGeofence(GeofenceId).subscribe((delData: any) => {
+        let delObjData: any = {
+          id: [GeofenceId]
+        }
+        this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
           this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
           this.loadGeofenceData();
           this.loadPoiData();
+          this.selectedgeofences.clear();
         });
       }
     });
+  }
+
+  bulkDeleteGeofence(){
+    let geoId: any = []; // this.selectedgeofences.selected.map(item => item.geofenceId);
+    let geofencesList: any = '';
+    this.selectedgeofences.selected.forEach(item => {
+      geoId.push(item.geofenceId);
+      geofencesList += item.geofenceName + ', ';
+    });
+
+    if(geofencesList != ''){
+      geofencesList = geofencesList.slice(0, -2);
+    }
+
+    if(geoId.length > 0){ //- bulk delete geofences
+      const options = {
+        title: this.translationData.lblDelete || "Delete",
+        message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+        cancelText: this.translationData.lblCancel || "Cancel",
+        confirmText: this.translationData.lblDelete || "Delete"
+      };
+      this.dialogService.DeleteModelOpen(options, geofencesList);
+      this.dialogService.confirmedDel().subscribe((res) => {
+        if (res) {
+          let delObjData: any = {
+            id: geoId
+          }
+          this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
+            this.successMsgBlink(this.getDeletMsg(geofencesList)); 
+            this.loadGeofenceData();
+            this.loadPoiData();
+            this.selectedgeofences.clear();
+          });
+        }
+      });
+    }
+    else{
+      console.log("geofence id not found...");
+    }
   }
 
   openSnackBar(message: string, action: string) {
@@ -662,4 +707,3 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
   }
 }
-

@@ -50,16 +50,20 @@
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
             <ng-container matColumnDef="alertIcon">      
               <mat-header-cell *matHeaderCellDef style="max-width: 7%;"></mat-header-cell>     
-              <mat-cell *matCellDef="let row" style="max-width: 7%;">
+              <!-- <mat-cell *matCellDef="let row" style="max-width: 7%;">
                 <img src="{{row.alertIcon}}" style='width: 22px;height: 22px;'>
-              </mat-cell>
+              </mat-cell> -->
+              <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
+                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }">
+                  <img src="{{row.alertIcon}}" style='width: 22px;height: 22px;'>
+                </span> </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
-                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-                <!-- <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span> -->
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.name }} </span>
+                {{ row.name }}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
