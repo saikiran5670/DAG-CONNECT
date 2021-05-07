@@ -4,6 +4,7 @@ using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -143,7 +144,12 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterurgencylevelref.Add("@urgency_level_type", Convert.ToChar(urgencylevel.UrgencyLevelType));
                 parameterurgencylevelref.Add("@threshold_value", urgencylevel.ThresholdValue);
                 parameterurgencylevelref.Add("@unit_type", Convert.ToChar(urgencylevel.UnitType));
-                parameterurgencylevelref.Add("@day_type", null);
+                BitArray bitArray = new BitArray(7);
+                for (int i = 0; i < urgencylevel.DayType.Length; i++)
+                {
+                    bitArray.Set(i,urgencylevel.DayType[i]);
+                }
+                parameterurgencylevelref.Add("@day_type", bitArray);
                 parameterurgencylevelref.Add("@period_type", Convert.ToChar(urgencylevel.PeriodType));
                 parameterurgencylevelref.Add("@urgencylevel_start_date", urgencylevel.UrgencylevelStartDate);
                 parameterurgencylevelref.Add("@urgencylevel_end_date", urgencylevel.UrgencylevelEndDate);
@@ -172,7 +178,12 @@ namespace net.atos.daf.ct2.alert.repository
                 parameteralertfilterref.Add("@landmark_type", Convert.ToChar(alertfilter.LandmarkType));
                 parameteralertfilterref.Add("@ref_id", alertfilter.RefId);
                 parameteralertfilterref.Add("@position_type", Convert.ToChar(alertfilter.PositionType));
-                parameteralertfilterref.Add("@day_type", null);
+                BitArray bitArray = new BitArray(7);
+                for (int i = 0; i < alertfilter.DayType.Length; i++)
+                {
+                    bitArray.Set(i, alertfilter.DayType[i]);
+                }
+                parameteralertfilterref.Add("@day_type", bitArray);
                 parameteralertfilterref.Add("@period_type", Convert.ToChar(alertfilter.PeriodType));
                 parameteralertfilterref.Add("@filter_start_date", alertfilter.FilterStartDate);
                 parameteralertfilterref.Add("@filter_end_date", alertfilter.FilterEndDate);

@@ -43,6 +43,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alert.ValidityStartDate = request.ValidityStartDate;
             alert.ValidityEndDate = request.ValidityEndDate;
             alert.VehicleGroupId = request.VehicleGroupId;
+            alert.State= request.State;
             alert.CreatedAt = request.CreatedAt;
             alert.CreatedBy = request.CreatedBy;
             alert.ModifiedAt = request.ModifiedAt;
