@@ -262,7 +262,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			request.UrgencyLevelType = entity.UrgencyLevelType;
 			request.ThresholdValue = entity.ThresholdValue;
 			request.UnitType = entity.UnitType;
-			//request.DayType = entity.DayType.ToArray();
+			for (int i = 0; i < entity.DayType.Length; i++)
+			{
+				request.DayType.Add(entity.DayType[i]);
+			}
 			request.PeriodType = entity.PeriodType;
 			request.UrgencylevelStartDate = entity.UrgencylevelStartDate;
 			request.UrgencylevelEndDate = entity.UrgencylevelEndDate;
@@ -292,7 +295,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			request.LandmarkType = entity.LandmarkType;
 			request.RefId = entity.RefId;
 			request.PositionType = entity.PositionType;
-			//request.DayType = entity.DayType.ToArray();
+			for (int i = 0; i < entity.DayType.Length; i++)
+			{
+				request.DayType.Add(entity.DayType[i]);
+			}
 			request.PeriodType = entity.PeriodType;
 			request.FilterStartDate = entity.FilterStartDate;
 			request.FilterEndDate = entity.FilterEndDate;

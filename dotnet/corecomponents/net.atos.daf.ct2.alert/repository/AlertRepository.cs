@@ -24,8 +24,8 @@ namespace net.atos.daf.ct2.alert.repository
         public async Task<Alert> CreateAlert(Alert alert)
         {
             int urgencylevelRefId = 0;
-            //dataAccess.connection.Open();
-            //var transactionScope = dataAccess.connection.BeginTransaction();
+            dataAccess.connection.Open();
+            var transactionScope = dataAccess.connection.BeginTransaction();
             try
             {
                 var parameterAlert = new DynamicParameters();
@@ -100,17 +100,17 @@ namespace net.atos.daf.ct2.alert.repository
                     }
                 }
 
-                //transactionScope.Commit();
+                transactionScope.Commit();
             }
             catch (Exception ex)
             {
-                //transactionScope.Rollback();
+                transactionScope.Rollback();
                 throw ex;
             }
-            //finally
-            //{
-            //    dataAccess.connection.Close();
-            //}
+            finally
+            {
+                dataAccess.connection.Close();
+            }
             return alert;
         }
         private async Task<int> CreateAlertLandmarkRefs(AlertLandmarkRef landmark)
@@ -337,7 +337,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameter.Add("@validity_end_date", null);
                 }
                 parameter.Add("@vehicle_group_id", alert.VehicleGroupId);
-                parameter.Add("@modified_at", alert.ModifiedAt);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@modified_by", alert.ModifiedBy);
                 int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 alert.Id = alertId;
