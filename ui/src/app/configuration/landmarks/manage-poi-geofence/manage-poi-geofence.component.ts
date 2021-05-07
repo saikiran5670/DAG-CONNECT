@@ -442,7 +442,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     let geofencesList: any = '';
     this.selectedgeofences.selected.forEach(item => {
       geoId.push(item.geofenceId);
-      geofencesList += geofencesList + ', ';
+      geofencesList += item.geofenceName + ', ';
     });
 
     if(geofencesList != ''){
