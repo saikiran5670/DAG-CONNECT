@@ -92,13 +92,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@longitude", geofence.Longitude);
 
                 parameter.Add("@distance", geofence.Distance);
-                parameter.Add("@trip_id", geofence.TripId);
+                parameter.Add("@width", geofence.Width);
                 parameter.Add("@state", 'A');
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", geofence.CreatedBy);
 
-                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, width, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @width, @state, @created_at, @created_by) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
@@ -118,8 +118,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             nodeparameter.Add("@state", "A");
                             nodeparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                             nodeparameter.Add("@created_by", geofence.CreatedBy);
-                            string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by)
-	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by) RETURNING id";
+                            nodeparameter.Add("@address", item.Address);
+                            nodeparameter.Add("@trip_id", item.TripId);
+                            string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by,address,trip_id)
+	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by,@address,@trip_id) RETURNING id";
                             var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
                             item.Id = nodeId;
                             item.IsFailed = false;
@@ -357,13 +359,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@latitude", item.Latitude);
                         parameter.Add("@longitude", item.Longitude);
                         parameter.Add("@distance", item.Distance);
-                        parameter.Add("@trip_id", item.TripId);
+                        parameter.Add("@width", item.Width);
                         parameter.Add("@state", 'A');
                         parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                         parameter.Add("@created_by", item.CreatedBy);
 
-                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, width, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @width, @state, @created_at, @created_by) RETURNING id";
 
                         var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         item.Id = id;
@@ -718,10 +720,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@longitude", geofenceFilter.Longitude);
                     query = query + " and l.longitude= @longitude ";
                 }
-                if (geofenceFilter.TripId > 0)
+                if (geofenceFilter.Width > 0)
                 {
-                    parameter.Add("@trip_id", geofenceFilter.TripId);
-                    query = query + " and l.trip_id= @trip_id ";
+                    parameter.Add("@width", geofenceFilter.Width);
+                    query = query + " and l.width= @width ";
                 }
                 if (geofenceFilter.CreatedBy > 0)
                 {
@@ -805,7 +807,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             geofence.Latitude = Convert.ToDouble(record.latitude);
             geofence.Longitude = Convert.ToDouble(record.logitude);
             geofence.Distance = Convert.ToDouble(record.distance);
-            geofence.TripId = record.tripid != null ? record.tripid : 0;
+            geofence.Width = record.Width != null ? record.Width : 0;
             geofence.CreatedAt = record.createdat != null ? record.createdat : 0;
             geofence.State = record.state;
             geofence.CreatedBy = record.createdby != null ? record.createdby : 0;
