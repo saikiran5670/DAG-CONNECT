@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -11,6 +11,8 @@ import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { POIService } from 'src/app/services/poi.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+
+declare var H: any;
 
 @Component({
   selector: 'app-create-edit-view-alerts',
@@ -50,8 +52,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertTypeList: any;
   vehicleGroupList: any;
   vehicleList: any;
+  private platform: any;
+  map: any;
 
-  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
+  @ViewChild("map")
+  public mapElement: ElementRef;
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private dialog: MatDialog) 
+  {
+    this.platform = new H.service.Platform({
+      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    });
+   }
 
   ngOnInit(): void {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -252,6 +263,33 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.loadGroupData();
   }
 
+  public ngAfterViewInit() {
+    let defaultLayers = this.platform.createDefaultLayers();
+    this.map = new H.Map(
+        this.mapElement.nativeElement,
+        defaultLayers.vector.normal.map,
+        {
+          center: { lat: 50, lng: 5 },
+          zoom: 4,
+          pixelRatio: window.devicePixelRatio || 1
+        }
+    );
+    window.addEventListener('resize', () => this.map.getViewPort().resize());
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+}
+
+  checkboxClicked(row) {
+    // console.log(this.selectedGroup.isSelected);
+    
+    console.log("checkbox is clicked");
+    console.log(row.latitude);
+    console.log(row.longitude);
+    let marker = new H.map.Marker({lat:row.latitude, lng:row.longitude});
+    this.map.addObject(marker);
+    
+  }
+  
   setDefaultValue(){
     // this.landmarkGroupForm.get('landmarkGroupName').setValue(this.selectedRowData.name);
     // if(this.selectedRowData.description)
