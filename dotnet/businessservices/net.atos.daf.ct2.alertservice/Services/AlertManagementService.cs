@@ -17,14 +17,12 @@ namespace net.atos.daf.ct2.alertservice.Services
     public class AlertManagementService : AlertService.AlertServiceBase
     {
         private ILog _logger;
-        private readonly IAlertManager _alertManager;
-        private readonly IVehicleManager _vehicelManager;
+        private readonly IAlertManager _alertManager;       
         private readonly Mapper _mapper;
-        public AlertManagementService(IAlertManager alertManager, IVehicleManager vehicelManager)
+        public AlertManagementService(IAlertManager alertManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _alertManager = alertManager;
-            _vehicelManager = vehicelManager;
+            _alertManager = alertManager;            
             _mapper = new Mapper();
         }
 
@@ -104,16 +102,13 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 IEnumerable<net.atos.daf.ct2.alert.entity.EnumTranslation> enumTranslationList = await _alertManager.GetAlertCategory();
 
-                IEnumerable<VehicleGroupList> VehicleGroupList = await _vehicelManager.GetVehicleGroupbyAccountId(request.AccountId);
+                
                 AlertCategoryResponse response = new AlertCategoryResponse();
                 foreach (var item in enumTranslationList)
                 {
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
-                foreach (var item in VehicleGroupList)
-                {
-                    response.VehicleGroup.Add(_mapper.MapVehicleGroup(item));
-                }
+               
                 response.Message = "Alert Category data retrieved";
                 response.Code = ResponseCode.Success;
                 _logger.Info("Get method in alert service called.");

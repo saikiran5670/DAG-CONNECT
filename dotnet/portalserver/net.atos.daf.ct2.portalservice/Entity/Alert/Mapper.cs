@@ -1,4 +1,5 @@
 ﻿using net.atos.daf.ct2.alertservice;
+using net.atos.daf.ct2.vehicleservice;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -409,6 +410,29 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			//request.CreatedAt = entity.CreatedAt;
 			//request.ModifiedAt = entity.ModifiedAt;
 			return request;
+		}
+
+		public EnumTranslation MapEnumTranslation(net.atos.daf.ct2.alertservice.EnumTranslation enumTrans)
+		{
+			EnumTranslation objenumtrans = new EnumTranslation();
+			objenumtrans.Id = enumTrans.Id;
+			objenumtrans.Type = string.IsNullOrEmpty(enumTrans.Type) ? string.Empty : enumTrans.Type;
+			objenumtrans.Enum = string.IsNullOrEmpty(enumTrans.Enum) ? string.Empty : enumTrans.Enum;
+			objenumtrans.ParentEnum = string.IsNullOrEmpty(enumTrans.ParentEnum) ? string.Empty : enumTrans.ParentEnum;
+			objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
+			return objenumtrans;
+		}
+
+		public VehicleGroup MapVehicleGroup(VehicleGroupList vehiclegroup)
+		{
+			VehicleGroup objvehiclegroup = new VehicleGroup();
+			objvehiclegroup.VehicleGroupId = vehiclegroup.VehicleGroupId;
+			objvehiclegroup.VehicleGroupName = string.IsNullOrEmpty(vehiclegroup.VehicleGroupName) ? string.Empty : vehiclegroup.VehicleGroupName;
+			objvehiclegroup.VehicleId = vehiclegroup.VehicleId;
+			objvehiclegroup.VehicleName = string.IsNullOrEmpty(vehiclegroup.VehicleName) ? string.Empty : vehiclegroup.VehicleName;
+			objvehiclegroup.Vin = string.IsNullOrEmpty(vehiclegroup.Vin) ? string.Empty : vehiclegroup.Vin;
+			objvehiclegroup.SubcriptionStatus = vehiclegroup.SubcriptionStatus;
+			return objvehiclegroup;
 		}
 	}
 }
