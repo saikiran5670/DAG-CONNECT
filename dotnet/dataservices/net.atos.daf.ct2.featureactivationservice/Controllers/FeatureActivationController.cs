@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
     [ApiController]
     [Route("subscription")]
-    //[Authorize(Policy = AccessPolicies.MainAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
     public class FeatureActivationController : ControllerBase
     {
         private readonly ILogger<FeatureActivationController> logger;
