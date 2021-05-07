@@ -118,8 +118,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             nodeparameter.Add("@state", "A");
                             nodeparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                             nodeparameter.Add("@created_by", geofence.CreatedBy);
-                            nodeparameter.Add("@address", item.Address);
-                            nodeparameter.Add("@trip_id", item.TripId);
+                            nodeparameter.Add("@address", string.IsNullOrEmpty(item.Address) ? null : item.Address);
+                            nodeparameter.Add("@trip_id", string.IsNullOrEmpty(item.TripId) ? null : item.TripId);
                             string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by,address,trip_id)
 	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by,@address,@trip_id) RETURNING id";
                             var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
