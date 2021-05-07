@@ -24,7 +24,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 
         public int VehicleGroupId { get; set; }
 
-        //public string State { get; set; }
+        public string State { get; set; }
+        public string ApplyOn { get; set; }
 
         //public long CreatedAt { get; set; }
 
