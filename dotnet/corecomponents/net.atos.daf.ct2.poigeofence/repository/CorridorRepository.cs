@@ -173,7 +173,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                     var insertIntoNodes = @"INSERT INTO master.nodes(
                                           landmark_id, state, latitude, longitude, created_at, created_by, address)
-                                            VALUES (@LandmarkId, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
+                                            VALUES (@LandmarkId, @state, @EndLatitude ,@EndLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
 
                     var insertIntoCorridorProperties = @"INSERT INTO master.corridorproperties(
                                           landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
