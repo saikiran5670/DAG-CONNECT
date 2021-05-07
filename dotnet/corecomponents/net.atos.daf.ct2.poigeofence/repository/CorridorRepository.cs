@@ -271,21 +271,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return routeCorridor;
         }
 
-        public async Task<bool> CheckRouteCorridorIsexist(string CorridorName, int? OrganizationId, int Id)
+        public async Task<bool> CheckRouteCorridorIsexist(string CorridorName, int? OrganizationId, int Id, char Type)
         {
-            RouteCorridorFilter routeCorridorFilter = new RouteCorridorFilter();
-            routeCorridorFilter.CorridorLabel = CorridorName;
-            routeCorridorFilter.OrganizationId = OrganizationId;
+            var parameterduplicate = new DynamicParameters();
+            parameterduplicate.Add("@organization_id", OrganizationId);
+            parameterduplicate.Add("@name", CorridorName);
+            parameterduplicate.Add("@type", Type);
+            var queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = @type  and name=@name and organization_id=@organization_id;";
 
-            var corridores = GetRouteCorridor(routeCorridorFilter);
+            int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
-            var nameExistsForInsert = corridores.Result.Where(t => t.CorridorLabel == CorridorName && t.Id != Id).Count();
-            if (nameExistsForInsert == 0)
-                return false;
-            else if (nameExistsForInsert > 0)
-                return true;
-            else
-                return nameExistsForInsert == 0 ? false : true;
+             return corridorExist == 0 ? false : true;
         }
 
         public async Task<IEnumerable<RouteCorridor>> GetRouteCorridor(RouteCorridorFilter routeCorridorFilter)
@@ -357,7 +353,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 // {
 
 
-                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id).Result;
+                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id, Convert.ToChar(existingTripCorridor.CorridorType)).Result;
 
                 if (isExist)
                 {
