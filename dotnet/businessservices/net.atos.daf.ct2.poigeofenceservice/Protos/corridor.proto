@@ -10,6 +10,7 @@ service CorridorService{
  rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
  rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
  rpc AddExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
+ rpc UpdateRouteCorridor (UpdateRouteCorridorRequest) returns (UpdateRouteCorridorResponse);
     }
 
 message CorridorRequest{
@@ -112,6 +113,13 @@ message CorridorResponseList  {
   string message = 4;
 }
 
+message UpdateRouteCorridorRequest{
+ RouteCorridorAddRequest Request = 1;
+}
+message UpdateRouteCorridorResponse{
+ RouteCorridorAddResponse Response = 1;
+}
+
 enum Responsecode{
   None = 0;
   Success = 200;
@@ -121,8 +129,7 @@ enum Responsecode{
   InternalServerError = 500;
 }
 
- message RouteCorridorAddRequest
- {
+ message RouteCorridorAddRequest {
          int32 Id =1;
          int32  OrganizationId =2;
          string CorridorType =3;
@@ -174,7 +181,7 @@ enum Responsecode{
 double Latitude=1;
 double Longitude=2;
 string ViaName =3;
-
+int32 ViaStopId = 4;
 }
 
     

@@ -29,8 +29,7 @@ import { POIService } from './services/poi.service';
 import { LandmarkCategoryService } from './services/landmarkCategory.service';
 import { GeofenceService } from './services/landmarkGeofence.service';
 import { CreateEditViewAlertsComponent } from './configuration/alerts/create-edit-view-alerts/create-edit-view-alerts.component';
-
-
+import { AlertsFilterComponent } from './configuration/alerts/alerts-filter/alerts-filter.component';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -38,7 +37,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
 }
 
 @NgModule({
-    declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent],
+    declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

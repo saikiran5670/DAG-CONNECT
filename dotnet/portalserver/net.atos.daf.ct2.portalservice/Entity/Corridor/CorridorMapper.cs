@@ -77,5 +77,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             return obj;
         }
 
+        public ExistingTripCorridorRequest MapExistingTripCorridorRequest(ExistingTripCorridor existingTripCorridor) {
+            var ExistingTripCorridorRequest = new ExistingTripCorridorRequest();
+            return ExistingTripCorridorRequest;
+
+
+        }
+
     }
 }
