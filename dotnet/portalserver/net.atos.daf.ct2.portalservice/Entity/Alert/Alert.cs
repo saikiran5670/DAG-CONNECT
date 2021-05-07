@@ -10,8 +10,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         //public int Id { get; set; }
         public int OrganizationId { get; set; }
+        [IsEmpty(ErrorMessage = "Name should not be null or empty.")]
         public string Name { get; set; }
-        [AlertCategoryCheck]
+        [AlertCategory]
         public string Category { get; set; }
 
         public string Type { get; set; }
@@ -23,7 +24,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public long ValidityEndDate { get; set; }
 
         public int VehicleGroupId { get; set; }
-        [StateCheck]
+        [State]
         public string State { get; set; }
         public string ApplyOn { get; set; }
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
 {
-    public class AlertCategoryCheck: ValidationAttribute
+    public class AlertCategoryAttribute: ValidationAttribute
     {
-        public AlertCategoryCheck()
+        public AlertCategoryAttribute()
             : base("Invalid alert {0}")
         {
 

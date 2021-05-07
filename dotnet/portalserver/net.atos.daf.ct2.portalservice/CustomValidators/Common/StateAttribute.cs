@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.CustomValidators.Common
 {
-    public class StateCheck: ValidationAttribute
+    public class StateAttribute : ValidationAttribute
     {
-        public StateCheck()
+        public StateAttribute()
         : base("Invalid {0}")
         {
 
