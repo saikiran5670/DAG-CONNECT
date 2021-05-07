@@ -372,6 +372,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                             liveFleetPosition.GpsHeading = item.GpsHeading;
                             liveFleetPosition.GpsLatitude = item.GpsLatitude;
                             liveFleetPosition.GpsLongitude = item.GpsLongitude;
+                            liveFleetPosition.Id = item.Id;
                             response.LiveFleetPosition.Add(liveFleetPosition);
                         }
                     }
