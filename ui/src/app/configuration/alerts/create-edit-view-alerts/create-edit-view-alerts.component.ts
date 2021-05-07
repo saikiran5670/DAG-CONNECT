@@ -45,7 +45,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   poiGridData = [];
   geofenceGridData = [];
   groupGridData = [];
-  
+  isDuplicateAlert: boolean= false;
+
   constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -449,5 +450,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else
       return `${this.selectedGroup.isSelected(row) ? 'deselect' : 'select'
         } row`;
+  }
+
+  onGroupSelect(event: any, row: any){
+    console.log("Event = "+event);
   }
 }
