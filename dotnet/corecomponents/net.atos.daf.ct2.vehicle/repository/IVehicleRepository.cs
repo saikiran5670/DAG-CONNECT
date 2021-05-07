@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
+        Task<IEnumerable<Vehicle>> GetDynamicOEMVehicles(int vehicleGroupId);
         Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
         Task<VehicleDataMart> CreateAndUpdateVehicleInDataMart(VehicleDataMart vehicledatamart);
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid);
@@ -51,7 +52,20 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Namelist Data
-        Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate);
+        Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+        #endregion
+
+        #region Vehicle Visibility
+
+        Task<string> GetVehicleForVisibility(int Vehicle_Id);
+        Task<IEnumerable<string>> GetDynamicAllVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<string>> GetDynamicVisibleVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<string>> GetDynamicOwnedVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<string>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId);
+        Task<IEnumerable<int>> GetVehicleGroupsViaAccessRelationship(int accountId);
+        Task<VehicleGroupDetails> GetVehicleGroupDetails(int vehicleGroupId);
+        Task<IEnumerable<string>> GetGroupTypeVehicles(int vehicleGroupId);
+
         #endregion
 
         // Task<bool> SetConnectionStatus(char Status);

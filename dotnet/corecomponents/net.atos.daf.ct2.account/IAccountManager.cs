@@ -18,6 +18,7 @@ namespace net.atos.daf.ct2.account
         Task<IEnumerable<Account>> Get(AccountFilter filter);
         Task<int> GetCount(int organization_id);
         Task<Account> AddAccountToOrg(Account account);
+        Task<Account> GetAccountByEmailId(string emailId);
         Task<AccountBlob> CreateBlob(AccountBlob accountBlob);
         Task<AccountBlob> GetBlob(int blobId);
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);    
