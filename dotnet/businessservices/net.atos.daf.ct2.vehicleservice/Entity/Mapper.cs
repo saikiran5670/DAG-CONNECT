@@ -164,10 +164,10 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
                 {
                     entity.GroupType = Group.GroupType.Dynamic;
                 }
-                //else if (type == 's' || type == 'S')
-                //{
-                //    entity.GroupType = Group.GroupType.Single;
-                //}
+                else if (type == 's' || type == 'S')
+                {
+                    entity.GroupType = Group.GroupType.Single;
+                }
                 else if (type == 'g' || type == 'G')
                 {
                     entity.GroupType = Group.GroupType.Group;

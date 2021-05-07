@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.Alert;
+using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -22,6 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private ILog _logger;
         private readonly AlertService.AlertServiceClient _AlertServiceClient;
+        private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
@@ -29,7 +31,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly HeaderObj _userDetails;
         private readonly Entity.Alert.Mapper _mapper;
 
-        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
+        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, VehicleBusinessService.VehicleService.VehicleServiceClient vehicleServiceClient)
         {
             _AlertServiceClient = AlertServiceClient;
             _auditHelper = auditHelper;
@@ -37,6 +39,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             _mapper = new Entity.Alert.Mapper();
+            _vehicleClient = vehicleServiceClient;
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -223,12 +226,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Update Alert
         [HttpPut]
         [Route("update")]
-        public async Task<IActionResult> UpdateAlert(PortalAlertEntity.AlertEdit request)
+        public async Task<IActionResult> UpdateAlert([FromBody]PortalAlertEntity.AlertEdit request)
         {
             try
             {
                 var alertRequest = new AlertRequest();
                 alertRequest = _mapper.ToAlertEditRequest(request);
+                // create single vehicle group with selected vehicle  
+                if (request.ApplyOn.ToLower() == "s")
+                {
+                    var VehicleGroupRequest = new VehicleBusinessService.VehicleGroupRequest();
+                    VehicleGroupRequest.Name = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
+                    VehicleGroupRequest.GroupType = "S";
+                    VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
+                    VehicleGroupRequest.FunctionEnum = "N";
+                    VehicleGroupRequest.OrganizationId = alertRequest.OrganizationId;
+                    VehicleGroupRequest.Description = "Single vehicle group for alert:-" + alertRequest.Name + "org:-" + alertRequest.OrganizationId;
+                    VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                    alertRequest.VehicleGroupId = response.VehicleGroup.Id;
+                }
                 alertservice.AlertResponse alertResponse = await _AlertServiceClient.UpdateAlertAsync(alertRequest);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
@@ -267,6 +284,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         #endregion
     }
 }
