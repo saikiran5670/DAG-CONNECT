@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Entity
     {
         public string OrganizationID { get; set; }//M
         public string PackageId { get; set; }//M
-        public long OrderID { get; set; }
+        public string OrderID { get; set; }
         public List<string> VINs { get; set; }
         public string EndDateTime { get; set; }
 

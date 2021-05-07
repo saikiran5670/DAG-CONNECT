@@ -5,10 +5,10 @@ namespace net.atos.daf.ct2.vehicle.entity
 {
     public class VehicleGroup
     {
-        public int Id{get;set;}
-        public int Group_Id{get;set;}
+        public int Id { get; set; }
+        public int Group_Id { get; set; }
         public string Name { get; set; }
-        
+
         //  public int VehicleGroupID { get; set; }
         // public int OrganizationID { get; set; }       
         // public string Name { get; set; }
@@ -23,5 +23,14 @@ namespace net.atos.daf.ct2.vehicle.entity
         // public bool IsUserDefindGroup { get; set; }
         // public List<Vehicle> Vehicles { get; set; }
         // public string VehicleOrgIds { get; set; }
+    }
+
+    public class VehicleGroupDetails
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public char GroupType { get; set; }
+        public char GroupMethod { get; set; }
+        public int RefId { get; set; }
     }
 }

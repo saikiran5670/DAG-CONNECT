@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AlertService } from 'src/app/services/alert.service';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { POIService } from 'src/app/services/poi.service';
@@ -54,10 +55,18 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isDuplicateAlert: boolean= false;
   private platform: any;
   map: any;
+  alertTypeByCategoryList: any= [];
+  vehicleByVehGroupList: any= [];
 
   @ViewChild("map")
   public mapElement: ElementRef;
-  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private dialog: MatDialog) 
+  constructor(private _formBuilder: FormBuilder,
+              private poiService: POIService,
+              private geofenceService: GeofenceService, 
+              private landmarkGroupService: LandmarkGroupService, 
+              private domSanitizer: DomSanitizer, 
+              private dialog: MatDialog,
+              private alertService: AlertService) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -90,7 +99,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
     }
-    console.log(this.alertCategoryList);
+
+    this.alertTypeByCategoryList= this.alertTypeList;
+    this.vehicleByVehGroupList= this.vehicleList;
 
     this.vehicleGroupList= [
       {
@@ -158,6 +169,35 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
+    if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
+      this.loadFiltersData();
+    if(this.vehicleGroupList.length == 0)
+      this.loadVehicleGroupData(); 
+  }
+
+  loadFiltersData(){
+    this.alertService.getAlertFilterData(this.accountId).subscribe((data) => {
+      let filterData = data["enumTranslation"];
+      filterData.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
+      });
+      this.alertCategoryList= filterData.filter(item => item.type == 'C');
+      this.alertTypeList= filterData.filter(item => item.type == 'T');
+      this.vehicleList= data["vehicleGroup"];
+      this.alertTypeByCategoryList= this.alertTypeList;
+      this.vehicleByVehGroupList= this.vehicleList;
+
+    }, (error) => {
+
+    })
+  }
+
+  loadVehicleGroupData(){
+
+  }
+
+  onChangeAlertCategory(event){
+    this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == event.value);
   }
 
   public ngAfterViewInit() {

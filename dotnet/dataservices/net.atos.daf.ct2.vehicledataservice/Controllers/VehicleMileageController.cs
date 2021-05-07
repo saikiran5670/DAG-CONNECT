@@ -15,6 +15,8 @@ using System.Linq;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using net.atos.daf.ct2.account;
+using System.Security.Claims;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
@@ -25,11 +27,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
     {
         private readonly ILogger<VehicleMileageController> logger;
         private readonly IVehicleManager vehicleManager;
-        private readonly IAuditTraillib AuditTrail;
-        public VehicleMileageController(IVehicleManager _vehicleManager, ILogger<VehicleMileageController> _logger, IAuditTraillib _AuditTrail)
+        private readonly IAccountManager accountManager;
+        private readonly IAuditTraillib auditTrail;
+        public VehicleMileageController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleMileageController> _logger, IAuditTraillib _AuditTrail)
         {
             vehicleManager = _vehicleManager;
-            AuditTrail = _AuditTrail;
+            accountManager = _accountManager;
+            auditTrail = _AuditTrail;
             logger = _logger;
         }
 
@@ -49,7 +53,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept header");
 
-                await AuditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
+                await auditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
 
                 if (acceptHeader.Any(x => x.Trim().Equals(VehicleMileageResponseTypeConstants.CSV, StringComparison.CurrentCultureIgnoreCase)))
                     selectedType = VehicleMileageResponseTypeConstants.CSV;
@@ -61,8 +65,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     var isValid = ValidateParameter(ref since, out bool isNumeric);
                     if (isValid)
                     {
+                        var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+                        var account = await accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+
+                        var orgs = await accountManager.GetAccountOrg(account.Id);
+
                         VehicleMileage vehicleMileage = new VehicleMileage();
-                        vehicleMileage = await vehicleManager.GetVehicleMileage(since, isNumeric, selectedType);
+                        vehicleMileage = await vehicleManager.GetVehicleMileage(since, isNumeric, selectedType, account.Id, orgs.First().Id);
 
                         if (selectedType.Equals(VehicleMileageResponseTypeConstants.CSV))
                         {
