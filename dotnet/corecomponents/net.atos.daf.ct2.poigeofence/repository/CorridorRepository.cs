@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using net.atos.daf.ct2.utilities;
+using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
@@ -50,7 +51,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.modified_by as ModifiedBy
 						FROM       master.landmark l
 						LEFT JOIN master.nodes n on l.id = n.landmark_id
-						WHERE      l.type IN ('E','R')
+						WHERE      l.type IN ('R')
 						AND        l.organization_id = @organization_id";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
@@ -63,9 +64,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public async Task<List<CorridorEditViewResponse>> GetCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest)
+        public async Task<CorridorEditViewResponse> GetCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest)
         {
-            List<CorridorEditViewResponse> objCorridorEditViewResponse1 = new List<CorridorEditViewResponse>();
+            CorridorEditViewResponse objCorridorEditViewResponse1 = new CorridorEditViewResponse();
             try
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
@@ -75,6 +76,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.address as StartPoint
 								,l.latitude as StartLat
 								,l.longitude as StartLong
+                                ,l.type as CorridorType
 								,n.address as EndPoint
 								,n.latitude as EndLat
 								,n.longitude as EndLong
@@ -123,7 +125,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 parameter.Add("@id", objCorridorRequest.CorridorId);
                 var data = await _dataAccess.QueryAsync<CorridorEditViewResponse>(query, parameter);
-                return objCorridorEditViewResponse1 = data.ToList();
+                return objCorridorEditViewResponse1 = data.FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -270,21 +272,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return routeCorridor;
         }
 
-        public async Task<bool> CheckRouteCorridorIsexist(string CorridorName, int? OrganizationId, int Id)
+        public async Task<bool> CheckRouteCorridorIsexist(string CorridorName, int? OrganizationId, int Id, char Type)
         {
-            RouteCorridorFilter routeCorridorFilter = new RouteCorridorFilter();
-            routeCorridorFilter.CorridorLabel = CorridorName;
-            routeCorridorFilter.OrganizationId = OrganizationId;
+            var parameterduplicate = new DynamicParameters();
+            parameterduplicate.Add("@organization_id", OrganizationId);
+            parameterduplicate.Add("@name", CorridorName);
+            parameterduplicate.Add("@type", Type);
+            var queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = @type  and name=@name and organization_id=@organization_id;";
 
-            var corridores = GetRouteCorridor(routeCorridorFilter);
+            int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
-            var nameExistsForInsert = corridores.Result.Where(t => t.CorridorLabel == CorridorName && t.Id != Id).Count();
-            if (nameExistsForInsert == 0)
-                return false;
-            else if (nameExistsForInsert > 0)
-                return true;
-            else
-                return nameExistsForInsert == 0 ? false : true;
+             return corridorExist == 0 ? false : true;
         }
 
         public async Task<IEnumerable<RouteCorridor>> GetRouteCorridor(RouteCorridorFilter routeCorridorFilter)
@@ -356,7 +354,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 // {
 
 
-                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id).Result;
+                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id, Convert.ToChar(existingTripCorridor.CorridorType)).Result;
 
                 if (isExist)
                 {
@@ -651,7 +649,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public List<Nodepoint> GetTripNodes(string tripid)
+        public List<Nodepoint> GetTripNodes(string tripid,int landmarkid)
         {
             List<Nodepoint> objCorridorNodes = new List<Nodepoint>();
             try
@@ -670,9 +668,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             address,
                             trip_id as TripId
                             FROM master.nodes
-                            where trip_id = @trip_id";
+                            where trip_id = @trip_id and landmark_id=@landmark_id";
 
                 parameter.Add("@trip_id", tripid);
+                parameter.Add("@landmark_id", landmarkid);
                 var data = _dataAccess.Query<Nodepoint>(query, parameter);
                 return objCorridorNodes = data.ToList();
             }
@@ -736,5 +735,177 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+        public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor routeCorridor)
+        {
+            try
+            {
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    RouteCorridor obj = new RouteCorridor();
+                    var parameter = new DynamicParameters();
+
+                    StringBuilder queryForUpdateCorridor = new StringBuilder();
+                    queryForUpdateCorridor.Append("UPDATE master.landmark set organization_id=@OrganizationId");
+                    parameter.Add("@OrganizationId", routeCorridor.OrganizationId);
+                    if (!string.IsNullOrEmpty(obj.CorridorLabel))
+                    {
+                        parameter.Add("@name", routeCorridor.CorridorLabel);
+                        queryForUpdateCorridor.Append(", name=@name");
+                    }
+                    if (!string.IsNullOrEmpty(obj.StartAddress))
+                    {
+                        parameter.Add("@address", routeCorridor.CorridorLabel);
+                        queryForUpdateCorridor.Append(", address=@address");
+                    }
+                    if (!string.IsNullOrEmpty(obj.StartAddress))
+                    {
+                        parameter.Add("@type", routeCorridor.CorridorType);
+                        queryForUpdateCorridor.Append(", type=@type");
+                    }
+                    if (obj.Distance > 0 )
+                    {
+                        parameter.Add("@distance", routeCorridor.Distance);
+                        queryForUpdateCorridor.Append(", distance=@distance");
+                    }
+                    if (obj.Width > 0)
+                    {
+                        parameter.Add("@Width", routeCorridor.Width);
+                        queryForUpdateCorridor.Append(", Width=@Width");
+                    }
+                    if (!string.IsNullOrEmpty(obj.State))
+                    {
+                        parameter.Add("@state", routeCorridor.State);
+                        queryForUpdateCorridor.Append(", state=@state");
+                    }
+                    if (obj.StartLatitude > 0)
+                    {
+                        parameter.Add("@latitude", routeCorridor.StartLatitude);
+                        queryForUpdateCorridor.Append(", latitude=@latitude");
+                    }
+                    if (obj.StartLongitude > 0)
+                    {
+                        parameter.Add("@longitude", routeCorridor.StartLongitude);
+                        queryForUpdateCorridor.Append(", longitude=@longitude");
+                    }
+                   
+                    if (obj.Modified_By > 0)
+                    {
+                        parameter.Add("@modified_by", routeCorridor.Modified_By);
+                        queryForUpdateCorridor.Append(", modified_by=@modified_by");
+                    }
+                   
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        queryForUpdateCorridor.Append(", modified_at=@modified_at");
+                    parameter.Add("@id", routeCorridor.Id);
+                    queryForUpdateCorridor.Append(" where id=@id and type = 'E' RETURNING id");
+
+                    //var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridor.ToString(), parameter);
+                    //if (id > 0)
+                    //    routeCorridor.Id = id;
+                    //else
+                    //    routeCorridor.Id = 0;
+
+
+                    var insertIntoNodes = @"INSERT INTO master.nodes(
+                                          landmark_id, state, latitude, longitude, created_at, created_by, address)
+                                            VALUES (@LandmarkId, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
+
+                    var insertIntoCorridorProperties = @"INSERT INTO master.corridorproperties(
+                                          landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
+                                           VALUES (@LandmarkId, @TransportData, @TrafficFlow, @Trailer, @Explosive, @Gas, @Flammable, @Combustible, @organic, @poision, @RadioActive, @Corrosive, @PoisonousInhalation, @WaterHarm, @Other, @TollRoad, @Mortorway, @BoatFerries, @RailFerries, @Tunnels, @DirtRoad, @VehicleSizeHeight, @VehicleSizeWidth, @VehicleSizeLength, @VehicleSizeLimitedWeight, @VehicleSizeWeightPerAxle, @Created_At) RETURNING id";
+
+
+                    
+                    parameter.Add("@Distance", routeCorridor.Distance);
+                    parameter.Add("@CorridorType", routeCorridor.CorridorType);
+                    
+
+                    parameter.Add("@StartAddress", routeCorridor.StartAddress);
+                    parameter.Add("@StartLatitude", routeCorridor.StartLatitude);
+                    parameter.Add("@StartLongitude", routeCorridor.StartLongitude);
+
+                    parameter.Add("@EndAddress", routeCorridor.EndAddress);
+                    parameter.Add("@EndLatitude", routeCorridor.EndLatitude);
+                    parameter.Add("@EndLongitude", routeCorridor.EndLongitude);
+
+                    parameter.Add("@Width", routeCorridor.Width);
+                    parameter.Add("@TransportData", routeCorridor.TransportData);
+                    parameter.Add("@TrafficFlow", routeCorridor.TrafficFlow);
+                    parameter.Add("@Trailer", routeCorridor.Trailer);
+                    parameter.Add("@Explosive", routeCorridor.Explosive);
+                    parameter.Add("@Gas", routeCorridor.Gas);
+
+                    parameter.Add("@Flammable", routeCorridor.Flammable);
+                    parameter.Add("@Combustible", routeCorridor.Combustible);
+                    parameter.Add("@organic", routeCorridor.organic);
+                    parameter.Add("@poision", routeCorridor.poision);
+                    parameter.Add("@RadioActive", routeCorridor.RadioActive);
+                    parameter.Add("@Corrosive", routeCorridor.Corrosive);
+                    parameter.Add("@PoisonousInhalation", routeCorridor.PoisonousInhalation);
+                    parameter.Add("@WaterHarm", routeCorridor.WaterHarm);
+                    parameter.Add("@Other", routeCorridor.Other);
+
+                    parameter.Add("@TollRoad", routeCorridor.TollRoad);
+                    parameter.Add("@Mortorway", routeCorridor.Mortorway);
+                    parameter.Add("@BoatFerries", routeCorridor.BoatFerries);
+                    parameter.Add("@RailFerries", routeCorridor.RailFerries);
+                    parameter.Add("@Tunnels", routeCorridor.Tunnels);
+                    parameter.Add("@DirtRoad", routeCorridor.DirtRoad);
+                    parameter.Add("@VehicleSizeHeight", routeCorridor.VehicleSizeHeight);
+                    parameter.Add("@VehicleSizeWidth", routeCorridor.VehicleSizeWidth);
+                    parameter.Add("@VehicleSizeLength", routeCorridor.VehicleSizeLength);
+                    parameter.Add("@VehicleSizeLimitedWeight", routeCorridor.VehicleSizeLimitedWeight);
+                    parameter.Add("@VehicleSizeWeightPerAxle", routeCorridor.VehicleSizeWeightPerAxle);
+
+                    parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    parameter.Add("@Created_By", routeCorridor.Created_By);
+                    parameter.Add("@state", "A");
+
+
+                    var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridor.ToString(), parameter);
+                    if (id > 0)
+                    {
+                        routeCorridor.Id = id;
+                        parameter.Add("@LandmarkId", routeCorridor.Id);
+
+                        await _dataAccess.ExecuteScalarAsync<int>(insertIntoNodes, parameter);
+
+                        await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorProperties, parameter);
+
+                        ViaRoute routeObj = new ViaRoute();
+                        foreach (var item in routeCorridor.ViaRoutDetails)
+                        {
+                            var temp = new ViaRoute();
+                            temp.ViaStopName = item.ViaStopName;
+                            temp.Latitude = item.Latitude;
+                            temp.Longitude = item.Longitude;
+
+                            parameter.Add("@Latitude", temp.Latitude);
+                            parameter.Add("@Longitude", temp.Longitude);
+                            parameter.Add("@ViaStopName", temp.ViaStopName);
+                            parameter.Add("@id", temp.ViaStopId);
+
+                            var updateIntoCorridorViaStop = @"UPDATE master.corridorviastop set 
+                                          landmark_id=@LandmarkId, latitude=@Latitude, longitude=@Longitude, name=@ViaStopName
+                                           where id=@id RETURNING id";
+
+                            await _dataAccess.ExecuteScalarAsync<int>(updateIntoCorridorViaStop, parameter);
+
+                        }
+
+                    }
+
+                    transactionScope.Complete();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Info("AddRouteCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(routeCorridor.Id));
+                log.Error(ex.ToString());
+                // throw ex;
+            }
+            return routeCorridor;
+        }
     }
 }

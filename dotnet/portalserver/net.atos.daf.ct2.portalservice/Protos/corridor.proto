@@ -10,6 +10,7 @@ service CorridorService{
  rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
  rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
  rpc AddExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
+ rpc UpdateRouteCorridor (UpdateRouteCorridorRequest) returns (UpdateRouteCorridorResponse);
     }
 
 message CorridorRequest{
@@ -112,6 +113,12 @@ message CorridorResponseList  {
   string message = 4;
 }
 
+message UpdateRouteCorridorRequest{
+ RouteCorridorAddRequest Request = 1;
+}
+message UpdateRouteCorridorResponse{
+ RouteCorridorAddResponse Response = 1;
+}
 enum Responsecode{
   None = 0;
   Success = 200;

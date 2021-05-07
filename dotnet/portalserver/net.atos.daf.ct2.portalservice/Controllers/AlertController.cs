@@ -218,5 +218,55 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+
+        #region Update Alert
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> UpdateAlert(PortalAlertEntity.AlertEdit request)
+        {
+            try
+            {
+                var alertRequest = new AlertRequest();
+                alertRequest = _mapper.ToAlertEditRequest(request);
+                alertservice.AlertResponse alertResponse = await _AlertServiceClient.UpdateAlertAsync(alertRequest);
+
+                if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, "There is an error while updating alert.");
+                }
+                else if (alertResponse != null && alertResponse.Code == ResponseCode.Conflict)
+                {
+                    return StatusCode(409, alertResponse.Message);
+                }
+                else if (alertResponse != null && alertResponse.Code == ResponseCode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                    "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "Update method in Alert controller", alertRequest.Id, alertRequest.Id, JsonConvert.SerializeObject(request),
+                    Request);
+                    return Ok(alertResponse.Message);
+                }
+                else
+                {
+                    return StatusCode(404, "Alert Response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Create  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
+                  Request);
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }

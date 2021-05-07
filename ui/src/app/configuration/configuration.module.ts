@@ -28,6 +28,7 @@ import { CreateEditViewGeofenceComponent } from './landmarks/manage-poi-geofence
 import { DeleteCategoryPopupComponent } from './landmarks/manage-category/delete-category-popup/delete-category-popup.component';
 import { CreateEditViewAlertsComponent } from './alerts/create-edit-view-alerts/create-edit-view-alerts.component';
 import { CreateEditCorridorComponent } from './landmarks/manage-corridor/create-edit-corridor/create-edit-corridor.component';
+import { AlertsFilterComponent } from './alerts/alerts-filter/alerts-filter.component';
 
 @NgModule({
   declarations: [

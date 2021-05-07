@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-//using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
 using net.atos.daf.ct2.featureactivationservice.Entity;
@@ -25,14 +23,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         private readonly ILogger<FeatureActivationController> logger;
         private readonly ISubscriptionManager subscriptionManager;
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
-        //private readonly IPreferenceManager preferencemanager;
         private readonly IAuditTraillib AuditTrail;
-        public FeatureActivationController(ILogger<FeatureActivationController> _logger, IAuditTraillib _AuditTrail, ISubscriptionManager _subscriptionManager, AccountComponent.IAccountIdentityManager _accountIdentityManager)// IPreferenceManager _preferencemanager,
+        public FeatureActivationController(ILogger<FeatureActivationController> _logger, IAuditTraillib _AuditTrail, ISubscriptionManager _subscriptionManager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             logger = _logger;
             AuditTrail = _AuditTrail;
             subscriptionManager = _subscriptionManager;
-            //preferencemanager = _preferencemanager;
             accountIdentityManager = _accountIdentityManager;
         }
         
@@ -45,13 +41,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 if (objsubscriptionActivation.SubscribeEvent != null)
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.OrganizationId))
-                    {
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.OrganizationId));
-                    }
                     else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.packageId))
-                    {
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.packageId));
-                    }                    
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.packageId));                
 
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
                     Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
@@ -92,13 +84,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 if (objsubscriptionActivation.UnsubscribeEvent != null)
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.OrganizationID))
-                    {
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrganizationID));
-                    }
+
                     else if (objsubscriptionActivation.UnsubscribeEvent.OrderID <= 0)
-                    {
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
-                    }
+
                     UnSubscription Objunsubs = new UnSubscription();
                     Objunsubs.OrganizationID = objsubscriptionActivation.UnsubscribeEvent.OrganizationID;
                     Objunsubs.OrderID = objsubscriptionActivation.UnsubscribeEvent.OrderID;
