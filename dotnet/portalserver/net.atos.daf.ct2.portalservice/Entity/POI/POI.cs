@@ -31,4 +31,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         //public int TripId { get; set; }
         public int CreatedBy { get; set; }
     }
+    public class TripEntityRequest
+    {
+        public long StartDateTime { get; set; }
+        public long EndDateTime { get; set; }
+        public string VIN { get; set; }
+    }
 }

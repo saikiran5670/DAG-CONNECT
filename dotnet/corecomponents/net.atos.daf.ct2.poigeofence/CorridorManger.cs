@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.poigeofence
         public async Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor)
         {
             RouteCorridor routeCorridor1 = new RouteCorridor();
-            var isExist = _corridorRepository.CheckRouteCorridorIsexist(routeCorridor.CorridorLabel, routeCorridor.OrganizationId, routeCorridor.Id);
+            var isExist = _corridorRepository.CheckRouteCorridorIsexist(routeCorridor.CorridorLabel, routeCorridor.OrganizationId, routeCorridor.Id, routeCorridor.CorridorType);
             if (!await isExist)
             {
                 var corridorID = await _corridorRepository.AddRouteCorridor(routeCorridor);
