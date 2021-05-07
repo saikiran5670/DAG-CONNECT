@@ -109,6 +109,11 @@ namespace net.atos.daf.ct2.poigeofence
             return objCorridorLookUp;
         }
 
+        public async Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        {
+          return  await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);
+        }
+
         #region GetExitingTrip
 
 

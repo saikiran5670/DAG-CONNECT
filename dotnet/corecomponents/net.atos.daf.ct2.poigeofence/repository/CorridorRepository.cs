@@ -530,20 +530,20 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
 
                 var updateIntoLandmark = @"update master.landmark set 
-                                                            organization_id=@organization_id,
-                                                            name=@corridorLabel, 
-                                                            address=@address,
-                                                            city=@city,
-                                                            country=@country, 
-                                                            zipcode=@zipcode, 
-                                                            type=@corridorType,
-                                                            latitude=@latitude,
-                                                            longitude=@longitude, 
-                                                            distance=@distance,
-                                                            width=@width,                                                          
-                                                            modified_at=@,
-                                                            modified_by =@
-                                                            where id = @Id RETURNING id";
+                                                    organization_id=@organization_id,
+                                                    name=@corridorLabel, 
+                                                    address=@address,
+                                                    city=@city,
+                                                    country=@country, 
+                                                    zipcode=@zipcode, 
+                                                    type=@corridorType,
+                                                    latitude=@latitude,
+                                                    longitude=@longitude, 
+                                                    distance=@distance,
+                                                    width=@width,                                                          
+                                                    modified_at=@,
+                                                    modified_by =@
+                                                    where id = @Id RETURNING id";
 
 
                
@@ -573,7 +573,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (id > 0)
                 {
                     existingTripCorridor.Id = id;
-                    var tripDetails = await UpdateToExistingTripCorridor(existingTripCorridor);
+                    var tripDetails = await UpdateToExistingTripsCorridor(existingTripCorridor);
                 }
 
                 //  transactionScope.Complete();
@@ -591,7 +591,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
 
 
-        private async Task<List<ExistingTrip>> UpdateToExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        private async Task<List<ExistingTrip>> UpdateToExistingTripsCorridor(ExistingTripCorridor existingTripCorridor)
         {
             var tripList = new List<ExistingTrip>();
             try
@@ -681,7 +681,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     nodePoint.LandmarkId = landmarkId;
                     nodePoint.TripId = tripId; // parent trip id for all nodes
 
-                    var updateNodes = @"update master.corridortrips set 
+                    var updateNodes = @"update master.nodes set 
                                                                 landmark_id=@LandmarkId,
                                                                 seq_no=@SequenceNumber,
                                                                 latitude=@Latitude,
