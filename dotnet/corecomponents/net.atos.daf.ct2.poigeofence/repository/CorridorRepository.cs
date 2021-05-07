@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.modified_by as ModifiedBy
 						FROM       master.landmark l
 						LEFT JOIN master.nodes n on l.id = n.landmark_id
-						WHERE      l.type IN ('E','R')
+						WHERE      l.type IN ('R')
 						AND        l.organization_id = @organization_id";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
@@ -64,9 +64,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public async Task<List<CorridorEditViewResponse>> GetCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest)
+        public async Task<CorridorEditViewResponse> GetCorridorListByOrgIdAndCorriId(CorridorRequest objCorridorRequest)
         {
-            List<CorridorEditViewResponse> objCorridorEditViewResponse1 = new List<CorridorEditViewResponse>();
+            CorridorEditViewResponse objCorridorEditViewResponse1 = new CorridorEditViewResponse();
             try
             {
                 string query = string.Empty; var parameter = new DynamicParameters();
@@ -76,6 +76,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.address as StartPoint
 								,l.latitude as StartLat
 								,l.longitude as StartLong
+                                ,l.type as CorridorType
 								,n.address as EndPoint
 								,n.latitude as EndLat
 								,n.longitude as EndLong
@@ -124,7 +125,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 parameter.Add("@id", objCorridorRequest.CorridorId);
                 var data = await _dataAccess.QueryAsync<CorridorEditViewResponse>(query, parameter);
-                return objCorridorEditViewResponse1 = data.ToList();
+                return objCorridorEditViewResponse1 = data.FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -652,7 +653,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public List<Nodepoint> GetTripNodes(string tripid)
+        public List<Nodepoint> GetTripNodes(string tripid,int landmarkid)
         {
             List<Nodepoint> objCorridorNodes = new List<Nodepoint>();
             try
@@ -671,9 +672,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             address,
                             trip_id as TripId
                             FROM master.nodes
-                            where trip_id = @trip_id";
+                            where trip_id = @trip_id and landmark_id=@landmark_id";
 
                 parameter.Add("@trip_id", tripid);
+                parameter.Add("@landmark_id", landmarkid);
                 var data = _dataAccess.Query<Nodepoint>(query, parameter);
                 return objCorridorNodes = data.ToList();
             }
