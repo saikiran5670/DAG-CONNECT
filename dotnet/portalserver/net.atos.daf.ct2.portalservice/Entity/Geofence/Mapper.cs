@@ -84,6 +84,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.SubCategoryId = geofence.SubCategoryId;
             geofenceRequest.Name = geofence.Name;
             geofenceRequest.ModifiedBy = geofence.ModifiedBy;
+            geofenceRequest.Distance = geofence.Distance;
+            geofenceRequest.OrganizationId = geofence.OrganizationId;
             return geofenceRequest;
         }
     }

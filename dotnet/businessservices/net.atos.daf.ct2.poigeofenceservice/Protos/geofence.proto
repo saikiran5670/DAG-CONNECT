@@ -167,6 +167,7 @@ message GeofenceCircularUpdateRequest{
  string Name =5;
  bool Exists=6;
  int32 ModifiedBy = 7;
+ double Distance = 8;
 }
 
 message GeofenceCircularUpdateResponce{
