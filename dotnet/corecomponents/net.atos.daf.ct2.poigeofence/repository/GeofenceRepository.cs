@@ -289,6 +289,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         foreach (var geofence in geofences)
                         {
+                            geofence.Exists = true;
                             if (geofence.CategoryId > 0)
                                 await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.CircularGeofence).ToString());
                             else
