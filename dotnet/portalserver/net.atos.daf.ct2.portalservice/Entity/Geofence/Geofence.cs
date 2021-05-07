@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public double Distance { get; set; }
-        public int TripId { get; set; }
+        public int Width { get; set; }
         public int CreatedBy { get; set; }
         public List<Nodes> Nodes { get; set; }
     }
@@ -34,6 +34,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public int CreatedBy { get; set; }
+        [MaxLength(100)]
+        public string Address { get; set; }
+        [MaxLength(50)]
+        public string TripId { get; set; }
     }
 
     public class CircularGeofence
@@ -54,7 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         [Required(ErrorMessage ="Geofence radius is required")]
         [Range(1, double.MaxValue, ErrorMessage = "Please enter a radius bigger than {1}")]
         public double Distance { get; set; }
-        public int TripId { get; set; }
+        public int Width { get; set; }
         public int CreatedBy { get; set; }
     }
 
@@ -67,6 +71,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public string Name { get; set; }
         public int ModifiedBy { get; set; }
         public int OrganizationId { get; set; }
+        public double Distance { get; set; }
     }
 
     public class GeofenceEntity

@@ -74,7 +74,7 @@ export class GeofenceService {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .post<any>(`${this.GeofenceServiceUrl}/createcircularofence`, data, headers)
+      .post<any>(`${this.GeofenceServiceUrl}/createcirculargeofence`, data, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -98,13 +98,23 @@ export class GeofenceService {
       .pipe(catchError(this.handleError));
   }
 
-  deleteGeofence(geoId: number): Observable<void> {
+  // deleteGeofence(geoId: number): Observable<void> {
+  //   let headerObj = this.generateHeader();
+  //   const headers = {
+  //     headers: new HttpHeaders({ headerObj }),
+  //   };
+  //  return this.httpClient
+  //     .delete<any>(`${this.GeofenceServiceUrl}/deletegeofence?GeofenceId=${geoId}`, headers)
+  //     .pipe(catchError(this.handleError));
+  // }
+
+  deleteGeofence(geoIds: any): Observable<void> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-   return this.httpClient
-      .delete<any>(`${this.GeofenceServiceUrl}/deletegeofence?GeofenceId=${geoId}`, headers)
+    return this.httpClient
+      .put<any>(`${this.GeofenceServiceUrl}/deletegeofence`, geoIds, headers)
       .pipe(catchError(this.handleError));
   }
 

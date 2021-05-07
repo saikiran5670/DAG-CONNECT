@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double Longitude { get; set; }
         public double Distance { get; set; }
         public string State { get; set; }
-        public int TripId { get; set; }
+        public int Width { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }

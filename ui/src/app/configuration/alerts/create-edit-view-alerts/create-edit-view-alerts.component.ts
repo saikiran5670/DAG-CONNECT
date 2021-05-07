@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -12,6 +12,8 @@ import { POIService } from 'src/app/services/poi.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
+declare var H: any;
+
 @Component({
   selector: 'app-create-edit-view-alerts',
   templateUrl: './create-edit-view-alerts.component.html',
@@ -22,6 +24,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() actionType: any;
   @Input() translationData: any = [];
   @Input() selectedRowData: any;
+  @Input() alertCategoryList: any;
+  @Input() alertTypeList: any;
+  @Input() vehicleGroupList: any;
+  @Input() vehicleList: any;
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName'];
   groupDisplayedColumns: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
@@ -46,8 +52,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
   geofenceGridData = [];
   groupGridData = [];
   isDuplicateAlert: boolean= false;
+  private platform: any;
+  map: any;
 
-  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private dialog: MatDialog) { }
+  @ViewChild("map")
+  public mapElement: ElementRef;
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private dialog: MatDialog) 
+  {
+    this.platform = new H.service.Platform({
+      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    });
+   }
 
   ngOnInit(): void {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -75,11 +90,103 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
     }
+    console.log(this.alertCategoryList);
+
+    this.vehicleGroupList= [
+      {
+        id: 1,
+        value: 'Vehicle Group 001'
+      },
+      {
+        id: 2,
+        value: 'Vehicle Group 002'
+      },
+      {
+        id: 3,
+        value: 'Vehicle Group 003'
+      }
+    ];
+
+    this.vehicleList= [
+      {
+        id: 1,
+        value: 'Vehicle 1',
+        vehicleGroupId: 1
+      },
+      {
+        id: 2,
+        value: 'Vehicle 2',
+        vehicleGroupId: 1
+      },
+      {
+        id: 3,
+        value: 'Vehicle 3',
+        vehicleGroupId: 1
+      },
+      {
+        id: 4,
+        value: 'Vehicle 4',
+        vehicleGroupId: 2
+      },
+      {
+        id: 5,
+        value: 'Vehicle 5',
+        vehicleGroupId: 2
+      },
+      {
+        id: 6,
+        value: 'Vehicle 6',
+        vehicleGroupId: 2
+      },
+      {
+        id: 7,
+        value: 'Vehicle 7',
+        vehicleGroupId: 3
+      },
+      {
+        id: 8,
+        value: 'Vehicle 8',
+        vehicleGroupId: 3
+      },
+      {
+        id: 9,
+        value: 'Vehicle 9',
+        vehicleGroupId: 3
+      }
+    ]
+
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
   }
 
+  public ngAfterViewInit() {
+    let defaultLayers = this.platform.createDefaultLayers();
+    this.map = new H.Map(
+        this.mapElement.nativeElement,
+        defaultLayers.vector.normal.map,
+        {
+          center: { lat: 50, lng: 5 },
+          zoom: 4,
+          pixelRatio: window.devicePixelRatio || 1
+        }
+    );
+    window.addEventListener('resize', () => this.map.getViewPort().resize());
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+}
+
+  checkboxClicked(row) {
+    // console.log(this.selectedGroup.isSelected);
+    
+    console.log("checkbox is clicked");
+    console.log(row.latitude);
+    console.log(row.longitude);
+    let marker = new H.map.Marker({lat:row.latitude, lng:row.longitude});
+    this.map.addObject(marker);
+    
+  }
+  
   setDefaultValue(){
     // this.landmarkGroupForm.get('landmarkGroupName').setValue(this.selectedRowData.name);
     // if(this.selectedRowData.description)
@@ -98,9 +205,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(poilist.length > 0){
         poilist.forEach(element => {
           if(element.icon && element.icon != '' && element.icon.length > 0){
-            // let TYPED_ARRAY = new Uint8Array(element.icon);
-            // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-            // let base64String = btoa(STRING_CHAR);
             element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
           }else{
             element.icon = '';
@@ -129,13 +233,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updatePOIDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
-      this.selectPOITableRows();
+      this.selectPOITableRows(this.selectedRowData);
     }
   }
 
-  selectPOITableRows(){
+  selectPOITableRows(rowData: any){
     this.poiDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
       if (search.length > 0) {
         this.selectedPOI.select(row);
       }
@@ -167,13 +271,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updateGeofenceDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
-      this.selectGeofenceTableRows();
+      this.selectGeofenceTableRows(this.selectedRowData);
     }
   }
 
-  selectGeofenceTableRows(){
+  selectGeofenceTableRows(rowData: any){
     this.geofenceDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
       if (search.length > 0) {
         this.selectedGeofence.select(row);
       }
@@ -208,14 +312,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.displayedColumnsGeofence= ['name', 'poiCount', 'geofenceCount'];
       this.updateGroupDatasource(tableData);
     }
-    else if(this.actionType == 'edit' ){
+    else if(this.actionType == 'edit'){
       this.selectGroupTableRows();
     }
   }
 
   selectGroupTableRows(){
     this.groupDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+      let search = this.selectedRowData.landmarks.filter(item => item.groupId == row.id);
       if (search.length > 0) {
         this.selectedGroup.select(row);
       }
@@ -263,8 +367,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       );
     };
     setTimeout(()=>{
-      this.groupDataSource.paginator = this.paginator.toArray()[1];
-      this.groupDataSource.sort = this.sort.toArray()[1];
+      this.groupDataSource.paginator = this.paginator.toArray()[2];
+      this.groupDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -325,8 +429,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   onReset(){ //-- Reset
     this.selectedPOI.clear();
     this.selectedGeofence.clear();
-    this.selectPOITableRows();
-    this.selectGeofenceTableRows();
+    this.selectPOITableRows(this.selectedRowData);
+    this.selectGeofenceTableRows(this.selectedRowData);
     this.setDefaultValue();
   }
 
@@ -453,6 +557,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onGroupSelect(event: any, row: any){
-    console.log("Event = "+event);
+    let groupDetails= [];
+    let objData = { 
+      organizationid : this.accountOrganizationId,
+      groupid : row.id
+    };
+    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
+      groupDetails = groupData["groups"][0];
+      this.selectPOITableRows(groupDetails);
+      this.selectGeofenceTableRows(groupDetails);
+    });
   }
 }

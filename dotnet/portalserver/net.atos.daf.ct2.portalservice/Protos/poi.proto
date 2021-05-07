@@ -14,6 +14,7 @@ rpc DeletePOI (POIRequest) returns (POIResponse);
 rpc DeletePOIBulk (POIDeleteBulkRequest) returns (POIResponse);
 rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
 rpc UploadPOIExcel (POIUploadRequest) returns (POIUploadResponse);
+rpc GetAllTripDetails (TripRequest) returns (TripResponce);
     }
 
  message POIUploadRequest{
@@ -29,7 +30,7 @@ message POIUploadResponse  {
 }
 message POIEntityRequest{
     int32 CategoryId = 1;
-    int32 SubCategoryId = 2;
+     google.protobuf.Int32Value SubCategoryId = 2;
 }
 enum Responsecode{
   None = 0;
@@ -44,7 +45,7 @@ message POIRequest{
     int32 Id =1;
     google.protobuf.Int32Value OrganizationId=2;
     int32 CategoryId = 3;
-    int32 SubCategoryId = 4;
+     google.protobuf.Int32Value SubCategoryId = 4;
     string Name =5;
     string Type=6;
     string Address=7;
@@ -64,7 +65,7 @@ message POIData{
     int32 Id =1;
     google.protobuf.Int32Value OrganizationId=2;
     int32 CategoryId = 3;
-    int32 SubCategoryId = 4;
+     google.protobuf.Int32Value SubCategoryId = 4;
     string CategoryName = 5;
     string SubCategoryName = 6;
     string Name =7;
@@ -97,4 +98,42 @@ message DownloadPOIRequest{
 }
 message POIDeleteBulkRequest {
   repeated int32 Id= 1;
+}
+
+message TripRequest {
+  string VIN= 1;
+  int64 StartDateTime= 2;
+  int64 EndDateTime= 3;
+}
+
+message TripResponce {
+         repeated TripData TripData=1;   
+         Responsecode code = 2;
+         string message = 3;
+}
+message TripData {
+        int32 Id =1;
+        string TripId=2;
+         string VIN=3;
+         string DriverFirstName=4;
+         string DriverLastName=5; 
+         string DriverId1=6;
+         string DriverId2=7;
+         int32 Distance=8; 
+         string StartAddress=9;
+         string EndAddress=10;
+         double StartPositionlattitude=11;
+         double StartPositionLongitude=12;
+         double EndPositionLattitude=13;
+         double EndPositionLongitude=14;
+         int64 StartTimeStamp=15;
+         int64 EndTimeStamp=16;
+         repeated LiveFleetPosition LiveFleetPosition=17;
+}
+message LiveFleetPosition {
+         int64 GpsAltitude=1;
+         int64 GpsHeading=2; 
+         int64 GpsLatitude=3;
+         int64 GpsLongitude=4; 
+         int32 Id=5;
 }

@@ -194,8 +194,8 @@
       </mat-menu>
     </div>
     <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-      <button mat-flat-button color="warn">
-        <mat-icon>deleteicon</mat-icon> Delete
+      <button [disabled]='selectedgeofences.selected.length == 0' mat-flat-button color="warn" (click)="bulkDeleteGeofence()">
+        <mat-icon>deleteicon</mat-icon>{{ translationData.lblDelete || 'Delete' }}
       </button>
     </div>
   </div>

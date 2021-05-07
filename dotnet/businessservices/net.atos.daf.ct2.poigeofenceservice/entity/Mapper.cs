@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             {
                 objResponse.GeofenceName = request.geofenceName;
             }
-            if (request.type!=null)
+            if (request.type != null)
             {
                 objResponse.Type = request.type;
             }
@@ -66,9 +66,9 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.Longitude = geofenceRequest.Longitude;
             geofence.Distance = geofenceRequest.Distance;
             //geofence.State = Convert.ToChar(geofenceRequest.State);
-            geofence.TripId = geofenceRequest.TripId;
+            geofence.Width = geofenceRequest.Width;
             geofence.Nodes = new List<Nodes>();
-            foreach (var item in geofenceRequest.NodeRequest)
+            foreach (var item in geofenceRequest.Nodes)
             {
                 if (item != null)
                 {
@@ -89,6 +89,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Latitude = nodeRequest.Latitude;
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
+            nodes.Address = nodeRequest.Address;
+            nodes.TripId = nodeRequest.TripId;
             return nodes;
         }
         public POI ToPOIEntity(net.atos.daf.ct2.poiservice.POIRequest poiRequest)
@@ -119,7 +121,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.OrganizationId = poiEntity.OrganizationId != null ? Convert.ToInt32(poiEntity.OrganizationId) : 0;
             poi.CategoryId = poiEntity.CategoryId;
             poi.CategoryName = CheckNull(poiEntity.CategoryName);
-            poi.SubCategoryId = poiEntity.SubCategoryId;
+            poi.SubCategoryId = poiEntity.SubCategoryId != null ? Convert.ToInt32(poiEntity.SubCategoryId) : 0;
             poi.SubCategoryName = CheckNull(poiEntity.SubCategoryName);
             poi.Name = CheckNull(poiEntity.Name);
             poi.Type = poiEntity.Type;
@@ -169,17 +171,18 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.Longitude = geofenceRequest.Longitude;
             geofence.Distance = geofenceRequest.Distance;
             geofence.State = !string.IsNullOrEmpty(geofenceRequest.State) ? geofenceRequest.State : string.Empty;
-            geofence.TripId = geofenceRequest.TripId;
+            geofence.Width = geofenceRequest.Width;
             //geofence.NodeRequest = new List<NodeRequest>();
             foreach (var item in geofenceRequest.Nodes)
             {
                 if (item != null)
                 {
-                    geofence.NodeRequest.Add(ToNodesRequest(item));
+                    geofence.Nodes.Add(ToNodesRequest(item));
                 }
             }
             geofence.CreatedBy = geofenceRequest.CreatedBy;
             geofence.Message = geofenceRequest.Message;
+            geofence.Exists = geofenceRequest.Exists;
             return geofence;
         }
 
@@ -195,6 +198,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
             nodes.Message = nodeRequest.Message;
+            nodes.Address = nodeRequest.Address;
+            nodes.TripId = nodeRequest.TripId;
             return nodes;
         }
 
@@ -231,6 +236,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
             geofence.ModifiedBy = geofenceRequest.ModifiedBy;
+            geofence.Distance = geofenceRequest.Distance;
             return geofence;
         }
         public GeofenceCircularUpdateRequest ToCircularGeofenceUpdateRequest(Geofence geofenceRequest)
@@ -242,6 +248,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             geofence.SubCategoryId = geofenceRequest.SubCategoryId;
             geofence.Name = geofenceRequest.Name;
             geofence.ModifiedBy = geofenceRequest.ModifiedBy;
+            geofence.Distance = geofenceRequest.Distance;
             return geofence;
         }
 
@@ -315,6 +322,73 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                         CreatedBy = x.CreatedBy
                                     }).ToList());
             return poiResponse;
-        }        
+        }
+
+        public net.atos.daf.ct2.poiservice.TripData ToTripResponce(net.atos.daf.ct2.poigeofence.entity.TripEntityResponce entity)
+        {
+            try
+            {
+                net.atos.daf.ct2.poiservice.TripData response = new TripData();
+                response.Id = entity.Id;
+                if (entity.StartAddress != null)
+                {
+                    response.StartAddress = entity.StartAddress;
+                }
+                response.StartPositionlattitude = entity.StartPositionlattitude;
+                response.StartPositionLongitude = entity.StartPositionLongitude;
+                response.StartTimeStamp = entity.StartTimeStamp;
+                if (entity.VIN != null)
+                {
+                    response.VIN = entity.VIN;
+                }
+                response.Distance = entity.Distance;
+                if (entity.DriverFirstName != null)
+                {
+                    response.DriverFirstName = entity.DriverFirstName;
+                }
+                if (entity.DriverLastName != null)
+                {
+                    response.DriverLastName = entity.DriverLastName;
+                }
+                if (entity.DriverId1 != null)
+                {
+                    response.DriverId1 = entity.DriverId1;
+                }
+                if (entity.DriverId2 != null)
+                {
+                    response.DriverId2 = entity.DriverId2;
+                }
+                if (entity.EndAddress != null)
+                {
+                    response.EndAddress = entity.EndAddress;
+                }
+                if (entity.StartAddress != null)
+                {
+                    response.StartAddress = entity.StartAddress;
+                }
+                if (entity.LiveFleetPosition != null)
+                {
+                    if (entity.LiveFleetPosition.Count() > 0)
+                    {
+                        net.atos.daf.ct2.poiservice.LiveFleetPosition liveFleetPosition = new poiservice.LiveFleetPosition();
+                        foreach (var item in entity.LiveFleetPosition)
+                        {
+                            liveFleetPosition.GpsAltitude = item.GpsAltitude;
+                            liveFleetPosition.GpsHeading = item.GpsHeading;
+                            liveFleetPosition.GpsLatitude = item.GpsLatitude;
+                            liveFleetPosition.GpsLongitude = item.GpsLongitude;
+                            liveFleetPosition.Id = item.Id;
+                            response.LiveFleetPosition.Add(liveFleetPosition);
+                        }
+                    }
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
     }
 }
