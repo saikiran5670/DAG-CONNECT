@@ -24,6 +24,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() actionType: any;
   @Input() translationData: any = [];
   @Input() selectedRowData: any;
+  @Input() alertCategoryList: any;
+  @Input() alertTypeList: any;
+  @Input() vehicleGroupList: any;
+  @Input() vehicleList: any;
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName'];
   groupDisplayedColumns: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
@@ -48,10 +52,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
   geofenceGridData = [];
   groupGridData = [];
   isDuplicateAlert: boolean= false;
-  alertCategoryList: any;
-  alertTypeList: any;
-  vehicleGroupList: any;
-  vehicleList: any;
   private platform: any;
   map: any;
 
@@ -90,110 +90,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
     }
-
-    //mock data
-    this.alertCategoryList=[
-      {
-        id: 1,
-        value: 'Logistics alerts'
-      },
-      {
-        id: 2,
-        value: 'Repair and maintenance'
-      },
-      {
-        id: 3,
-        value: 'Fuel & Driver performance'
-      }
-    ];
-
-    this.alertTypeList= [
-      {
-        id: 1,
-        value: 'Entering Zone',
-        categoryId: 1
-      },
-      {
-        id: 2,
-        value: 'Exiting Zone',
-        categoryId: 1
-      },
-      {
-        id: 3,
-        value: 'Exiting Corridor',
-        categoryId: 1
-      },
-      {
-        id: 4,
-        value: 'Excessive Under Utilisation In Days (Batch)',
-        categoryId: 1
-      },
-      {
-        id: 5,
-        value: 'Excessive Under Utilisation In Hours (Batch)',
-        categoryId: 1
-      },
-      {
-        id: 6,
-        value: 'Excessive Distance Done (Trip)',
-        categoryId: 1
-      },
-      {
-        id: 7,
-        value: 'Excessive Driving Duration (Trip)',
-        categoryId: 1
-      },
-      {
-        id: 8,
-        value: 'Excessive Global Mileage (Trip)',
-        categoryId: 1
-      },
-      {
-        id: 9,
-        value: 'Hours of Service (Realtime)',
-        categoryId: 1
-      },
-      {
-        id: 10,
-        value: 'Status Change to Stop Now',
-        categoryId: 2
-      },
-      {
-        id: 11,
-        value: 'Status Change to Service Now',
-        categoryId: 2
-      },
-      {
-        id: 12,
-        value: 'Excessive Average Speed (Realtime)',
-        categoryId: 3
-      },
-      {
-        id: 13,
-        value: 'Excessive Average Idling (Realtime)',
-        categoryId: 3
-      },
-      {
-        id: 14,
-        value: 'Fuel Consumed',
-        categoryId: 3
-      },
-      {
-        id: 15,
-        value: 'Fuel Increase During Stop (Realtime)',
-        categoryId: 3
-      },
-      {
-        id: 16,
-        value: 'Fuel Loss During Stop (Realtime)',
-        categoryId: 3
-      },
-      {
-        id: 17,
-        value: 'Fuel Loss During Trip (Realtime)',
-        categoryId: 3
-      }
-    ];
+    console.log(this.alertCategoryList);
 
     this.vehicleGroupList= [
       {

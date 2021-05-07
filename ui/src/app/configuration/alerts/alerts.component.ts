@@ -39,12 +39,12 @@ export class AlertsComponent implements OnInit {
   EmployeeDataService : any= [];  
   packageCreatedMsg : any = '';
   titleVisible : boolean = false;
-  alertCategoryList: any;
-  alertTypeList: any;
-  vehicleGroupList: any;
-  vehicleList: any;
-  alertCriticalityList: any;
-  alertStatusList: any;
+  alertCategoryList: any= [];
+  alertTypeList: any= [];
+  vehicleGroupList: any= [];
+  vehicleList: any= [];
+  alertCriticalityList: any= [];
+  alertStatusList: any= [];
 
   stringifiedData: any;  
   parsedJson: any;  
