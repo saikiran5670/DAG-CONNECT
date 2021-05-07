@@ -47,11 +47,10 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" formControlName="alertCategory">
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
-                        {{usrGrp}}
-                    </mat-option> -->
+                <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" (selectionChange)="onChangeAlertCategory($event)" formControlName="alertCategory">
+                    <mat-option *ngFor="let category of alertCategoryList" [value]="category.enum">
+                        {{category.value}}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-error *ngIf="alertForm.get('alertCategory').hasError('required') && alertForm.get('alertCategory').touched">
@@ -62,11 +61,9 @@
             <mat-label>{{ translationData.lblAlertType || 'Alert Type' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType">
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
-                    <!-- <mat-option *ngFor="let role of roles" [ value]="role">
-                        {{role}}
-                    </mat-option> -->
+                    <mat-option *ngFor="let type of alertTypeByCategoryList" [value]="type.enum">
+                        {{type.value}}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-error *ngIf="alertForm.get('alertType').hasError('required') && alertForm.get('alertType').touched">
@@ -94,11 +91,9 @@
             <mat-label>{{ translationData.lblFilterVehiclesByGroup || 'Filter Vehicles By Group' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" formControlName="vehicleGroup" >
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
-                        {{usrGrp}}
-                    </mat-option> -->
+                    <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.enum">
+                        {{vehGrp.value}}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-error *ngIf="alertForm.get('vehicleGroup').hasError('required') && alertForm.get('vehicleGroup').touched">
@@ -109,11 +104,9 @@
             <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
-                    <!-- <mat-option *ngFor="let role of roles" [ value]="role">
-                        {{role}}
-                    </mat-option> -->
+                    <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.enum">
+                        {{vehicle.value}}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-error *ngIf="alertForm.get('vehicle').hasError('required') && alertForm.get('vehicle').touched">
