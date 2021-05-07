@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -26,6 +27,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
+        private readonly Entity.Alert.Mapper _mapper;
 
         public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
         {
@@ -34,6 +36,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _mapper = new Entity.Alert.Mapper();
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -65,7 +68,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Activate Alert Failed for id:- {alertId}.");
+                return StatusCode(500, $"Exception Occurred, Activate Alert Failed for Id:- {alertId}.");
             }
         }
 
@@ -96,7 +99,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for id:- {alertId}.");
+                return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for Id:- {alertId}.");
             }
         }
 
@@ -127,7 +130,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Delete Alert Failed for id:- {alertId}.");
+                return StatusCode(500, $"Exception Occurred, Delete Alert Failed for Id:- {alertId}.");
             }
         }
 
@@ -168,32 +171,52 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Create Alert
-        //[HttpPost]
-        //[Route("create")]
-        //public override async Task<ActionResult> CreateAlert(AlertRequest request)
-        //{
-        //    try
-        //    {
-        //        Alert alert = new Alert();
-        //        alert = _mapper.ToAlertEntity(request);
-        //        alert = await _alertManager.CreateAlert(alert);
-        //        return await Task.FromResult(new AlertResponse
-        //        {
-        //            Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}",
-        //            Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error(null, ex);
-        //        return await Task.FromResult(new AlertResponse
-        //        {
-        //            Message = "Exception :-" + ex.Message,
-        //            Code = ResponseCode.Failed,
-        //            AlertRequest = null
-        //        });
-        //    }
-        //}
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> CreateAlert(PortalAlertEntity.Alert request)
+        {
+            try
+            {
+                var alertRequest = new AlertRequest();
+                alertRequest = _mapper.ToAlertRequest(request);
+                alertservice.AlertResponse alertResponse = await _AlertServiceClient.CreateAlertAsync(alertRequest);
+
+                if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, "There is an error while creating alert.");
+                }
+                else if (alertResponse != null && alertResponse.Code == ResponseCode.Conflict)
+                {
+                    return StatusCode(409, alertResponse.Message);
+                }
+                else if (alertResponse != null && alertResponse.Code == ResponseCode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                    "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                    "Create method in Alert controller", alertRequest.Id, alertRequest.Id, JsonConvert.SerializeObject(request),
+                    Request);
+                    return Ok(alertResponse.Message);
+                }
+                else
+                {
+                    return StatusCode(404, "Alert Response is null");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Create  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
+                  Request);
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

@@ -53,11 +53,6 @@ namespace net.atos.daf.ct2.poigeofence
 
         }
 
-        //public async Task<List<CorridorResponse>> GetCorridorList(CorridorRequest objCorridorRequest)
-        //{
-        //    return await _corridorRepository.GetCorridorList(objCorridorRequest);
-        //}
-
         public async Task<CorridorLookUp> GetCorridorList(CorridorRequest objCorridorRequest)
         {
             CorridorLookUp objCorridorLookUp = new CorridorLookUp();
@@ -65,45 +60,20 @@ namespace net.atos.daf.ct2.poigeofence
             if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId > 0)
             {
                 objCorridorLookUp.EditView = await _corridorRepository.GetCorridorListByOrgIdAndCorriId(objCorridorRequest);
-                    //loop to get existing trip corridore details.
-                    foreach (var item in objCorridorLookUp.EditView)
-                    {
-                        item.ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(item.Id);
-                        if ((LandmarkType)item.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
-                        {
-                            item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
-                            foreach (var trips in item.CorridoreTrips)
-                            {
-                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId);
-                            }
-                        }
-                    }
-                    
-                
+                //loop to get existing trip corridore details.
+                for (int i = 0; i < objCorridorLookUp.EditView.Count; i++)
+                {
+                    objCorridorLookUp.EditView[i].ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView[i].Id);
+                }
             }
-
-           else if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId <= 0)
+            else if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId <= 0)
             {
                 objCorridorLookUp.GridView = await _corridorRepository.GetCorridorListByOrganization(objCorridorRequest);
                 for (int i = 0; i < objCorridorLookUp.GridView.Count; i++)
                 {
                     objCorridorLookUp.GridView[i].ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.GridView[i].Id);
                 }
-                //get existing trip corridore
-                var existingtripcoridor = await _corridorRepository.GetExistingTripCorridorListByOrganization(objCorridorRequest);
-                foreach (var item in existingtripcoridor)
-                {
-                    if ((LandmarkType)item.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
-                    {
-                        item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id);
-                        foreach (var trips in item.CorridoreTrips)
-                        {
-                            trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId);
-                        }
-                    }
-                }
             }
-            
             return objCorridorLookUp;
         }
 
