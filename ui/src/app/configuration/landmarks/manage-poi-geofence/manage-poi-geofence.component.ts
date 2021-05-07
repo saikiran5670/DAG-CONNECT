@@ -360,6 +360,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
+    this.selectedgeofences.clear();
   }
 
   onClose() {
@@ -432,6 +433,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
           this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
           this.loadGeofenceData();
           this.loadPoiData();
+          this.selectedgeofences.clear();
         });
       }
     });
@@ -466,6 +468,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(geofencesList)); 
             this.loadGeofenceData();
             this.loadPoiData();
+            this.selectedgeofences.clear();
           });
         }
       });
