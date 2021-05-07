@@ -11,7 +11,7 @@
   <div *ngIf='!createViewEditStatus'>
       <mat-card class='mat-elevation-z'>
         <div>
-            <app-alerts-filter ></app-alerts-filter>
+            <app-alerts-filter  ></app-alerts-filter>
           </div>  
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -80,10 +80,11 @@
               </ng-container>
               <ng-container matColumnDef="vehicleGroup">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" matTooltip={{row.vehicleGroup}}> <span [ngClass]="row.vehicleGroup !=0 ? 'row-hover' : '' "
-                  (click)="row.vehicleGroup !=0 ? onVehicleGroupClick(row) : ''">{{row.vehicleGroup}}</span> </mat-cell>
-                <!-- <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate"> {{ row.vehicleGroup }} </span></mat-cell> -->
-              </ng-container>
+                <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleGroup != '' ? 'row-hover' : ''"
+                  (click)="row.vehicleGroup != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                  {{ row.vehicleGroup }}</span>
+                </mat-cell>
+             </ng-container>
             <ng-container matColumnDef="status">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
@@ -97,13 +98,16 @@
             <ng-container matColumnDef="action">
               <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
               <mat-cell *matCellDef="let row" class="action">
-                <button class='actionBtn' mat-flat-button (click)="editViewUser(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                <button class='actionBtn' mat-flat-button (click)="editViewAlertData(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewUser(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAlertData(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                   <mat-icon>create</mat-icon>
                 </button>
-                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteUser(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                <button class='actionBtn'  mat-flat-button (click)="editAlertData(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate || 'Duplicate' }}">
+                  <mat-icon>content_copy</mat-icon>
+              </button>
+                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAlertData(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon class="deleteIcon">delete_outline</mat-icon>
                 </button>
               </mat-cell>
@@ -118,6 +122,7 @@
       </mat-card>
   </div>
   <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData" (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
+      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData"
+       [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [vehicleGroupList]='vehicleGroupList' [vehicleList]='vehicleList' (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
   </div>
 </div>

@@ -5,8 +5,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { UserDetailTableComponent } from '../../admin/user-management/new-user-step/user-detail-table/user-detail-table.component';
 import { MatSort } from '@angular/material/sort';
+import { VehicleService } from '../../services/vehicle.service';
 import { PackageService } from 'src/app/services/package.service';
+import { AlertService } from 'src/app/services/alert.service';
 
 @Component({
   selector: 'app-alerts',
@@ -27,28 +30,43 @@ export class AlertsComponent implements OnInit {
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
+  rowsData: any;
+  createStatus: boolean;
+  editFlag: boolean = false;
+  duplicateFlag: boolean = false;
   accountOrganizationId: any;
+  accountId: any;
   EmployeeDataService : any= [];  
   packageCreatedMsg : any = '';
   titleVisible : boolean = false;
+  alertCategoryList: any= [];
+  alertTypeList: any= [];
+  vehicleGroupList: any= [];
+  vehicleList: any= [];
+  alertCriticalityList: any= [];
+  alertStatusList: any= [];
 
   stringifiedData: any;  
   parsedJson: any;  
 
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
 
   constructor(
     private translationService: TranslationService,
-    private alertService: AccountService,
+    private accountService: AccountService,
     private packageService: PackageService, 
-    private dialog: MatDialog,) { }
+    private dialog: MatDialog,
+    private vehicleService: VehicleService,
+    private alertService: AlertService ) { }
  
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -56,10 +74,11 @@ export class AlertsComponent implements OnInit {
       name: "",
       value: "",
       filter: "",
-      menuId: 18 //-- for landmark
+      menuId: 17 //-- for alerts
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.loadFiltersData();
       this.loadAlertsData();
     });
     
@@ -68,6 +87,21 @@ export class AlertsComponent implements OnInit {
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
     //console.log("process translationData:: ", this.translationData)
+  }
+
+  loadFiltersData(){
+    this.alertService.getAlertFilterData(this.accountId).subscribe((data) => {
+      let filterData = data["enumTranslation"];
+      filterData.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
+      });
+      this.alertCategoryList= filterData.filter(item => item.type == 'C');
+      this.alertTypeList= filterData.filter(item => item.type == 'T');
+      this.alertCriticalityList= filterData.filter(item => item.type == 'U');
+      this.vehicleList= data["vehicleGroup"];
+    }, (error) => {
+
+    })
   }
 
   onClickNewAlert(){
@@ -193,7 +227,7 @@ export class AlertsComponent implements OnInit {
     return newTrueData;
   }
 
-  deleteUser(item: any) {
+  deleteAlertData(item: any) {
     const options = {
       title: this.translationData.lblDeleteAccount || "Delete Account",
       message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' account?",
@@ -206,9 +240,21 @@ export class AlertsComponent implements OnInit {
   OpenDialog(options: any, flag: any, item: any) {
    
   }
-  editViewUser(element: any, type: any) {
+  editViewAlertData(element: any, type: any) {
    
-   }
+  }
+
+  editAlertData(row: any, action : string) {
+    this.duplicateFlag = false;
+    if(action == 'duplicate'){
+      this.duplicateFlag = true;
+    }
+    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Alert" : this.translationData.lblEditUserRoleDetails || "Edit Alert Details";
+    this.rowsData = [];
+    this.rowsData.push(row);
+    this.editFlag = true;
+    this.createStatus = false;    
+  }
 
    successMsgBlink(msg: any){
     this.titleVisible = true;
@@ -251,7 +297,36 @@ export class AlertsComponent implements OnInit {
   }
 
   onVehicleGroupClick(data: any) {   
+    const colsList = ['name','vin','licensePlateNumber'];
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'Group Name', this.translationData.lblRegistrationNumber || 'Status'];
+    const tableTitle =`${data.vehicleGroup} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    let objData = {
+      // groupId: data.groupId,
+      // groupType: data.groupType,
+      // functionEnum: data.functionEnum,
+      // organizationId: data.organizationId
+      groupId: 97,
+      groupType: 'G',
+      functionEnum: 'A',
+      organizationId: 36
+    }
+    this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
+      this.callToCommonTable(vehList, colsList, colsName, tableTitle);
+    });
   }
+  callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      tableData: tableData,
+      colsList: colsList,
+      colsName:colsName,
+      tableTitle: tableTitle
+    }
+    this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
+  }
+
    myData =[ 
     {
       id: 1,
@@ -347,7 +422,7 @@ export class AlertsComponent implements OnInit {
       category:"Repair And Maintenance",
       alertType:"Excessive Average Speed",
       threshold:"63.1347mph",
-      vehicleGroup:"Test Group 9",
+      vehicleGroup:"veh002 grp",
       status:"Active",
       alertIcon:"https://www.vhv.rs/dpng/d/467-4679073_free-png-warning-vectors-and-icons-transparent-background.png",
       createdAt: new Date().getTime()

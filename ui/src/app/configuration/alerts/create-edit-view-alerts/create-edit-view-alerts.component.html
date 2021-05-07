@@ -48,7 +48,6 @@
             <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" formControlName="alertCategory">
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
                     <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
                     <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
                         {{usrGrp}}
@@ -192,7 +191,7 @@
                 <p style="color: darkgray;">Choose appropriate urgency level for this alert</p>
             </div>
         </div>
-
+        <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
         <div>
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
@@ -223,7 +222,7 @@
                     <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null'
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; checkboxClicked(row)'
                       [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
                     </mat-checkbox>
                   </mat-cell>
