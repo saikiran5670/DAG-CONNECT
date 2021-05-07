@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             {
                 objResponse.GeofenceName = request.geofenceName;
             }
-            if (request.type!=null)
+            if (request.type != null)
             {
                 objResponse.Type = request.type;
             }
@@ -315,6 +315,72 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                         CreatedBy = x.CreatedBy
                                     }).ToList());
             return poiResponse;
-        }        
+        }
+
+        public net.atos.daf.ct2.poiservice.TripData ToTripResponce(net.atos.daf.ct2.poigeofence.entity.TripEntityResponce entity)
+        {
+            try
+            {
+                net.atos.daf.ct2.poiservice.TripData response = new TripData();
+                response.Id = entity.Id;
+                if (entity.StartAddress != null)
+                {
+                    response.StartAddress = entity.StartAddress;
+                }
+                response.StartPositionlattitude = entity.StartPositionlattitude;
+                response.StartPositionLongitude = entity.StartPositionLongitude;
+                response.StartTimeStamp = entity.StartTimeStamp;
+                if (entity.VIN != null)
+                {
+                    response.VIN = entity.VIN;
+                }
+                response.Distance = entity.Distance;
+                if (entity.DriverFirstName != null)
+                {
+                    response.DriverFirstName = entity.DriverFirstName;
+                }
+                if (entity.DriverLastName != null)
+                {
+                    response.DriverLastName = entity.DriverLastName;
+                }
+                if (entity.DriverId1 != null)
+                {
+                    response.DriverId1 = entity.DriverId1;
+                }
+                if (entity.DriverId2 != null)
+                {
+                    response.DriverId2 = entity.DriverId2;
+                }
+                if (entity.EndAddress != null)
+                {
+                    response.EndAddress = entity.EndAddress;
+                }
+                if (entity.StartAddress != null)
+                {
+                    response.StartAddress = entity.StartAddress;
+                }
+                if (entity.LiveFleetPosition != null)
+                {
+                    if (entity.LiveFleetPosition.Count() > 0)
+                    {
+                        net.atos.daf.ct2.poiservice.LiveFleetPosition liveFleetPosition = new poiservice.LiveFleetPosition();
+                        foreach (var item in entity.LiveFleetPosition)
+                        {
+                            liveFleetPosition.GpsAltitude = item.GpsAltitude;
+                            liveFleetPosition.GpsHeading = item.GpsHeading;
+                            liveFleetPosition.GpsLatitude = item.GpsLatitude;
+                            liveFleetPosition.GpsLongitude = item.GpsLongitude;
+                            response.LiveFleetPosition.Add(liveFleetPosition);
+                        }
+                    }
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
     }
 }
