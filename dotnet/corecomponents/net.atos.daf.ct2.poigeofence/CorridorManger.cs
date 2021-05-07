@@ -1,5 +1,6 @@
 ﻿using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofence.repository;
+using System;
 using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofence
@@ -14,6 +15,20 @@ namespace net.atos.daf.ct2.poigeofence
 
         public async Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
+
+            //var _existingTripCorridor = new ExistingTripCorridor();
+            //var isExist = _corridorRepository.CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id,
+            //                                                           Convert.ToChar(existingTripCorridor.CorridorType));
+            //if (!await isExist)
+            //{
+            //     _existingTripCorridor = await _corridorRepository.AddExistingTripCorridor(existingTripCorridor);
+            //    //if (corridorID.Id > 0)
+            //    //    _existingTripCorridor.Id = corridorID.Id;
+            //}
+            //else
+            //    _existingTripCorridor.Id = -1;
+            //return _existingTripCorridor;
+
             return await _corridorRepository.AddExistingTripCorridor(existingTripCorridor);
         }
 
