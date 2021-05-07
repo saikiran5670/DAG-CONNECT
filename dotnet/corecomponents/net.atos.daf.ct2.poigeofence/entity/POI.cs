@@ -65,5 +65,6 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long GpsHeading { get; set; }
         public long GpsLatitude { get; set; }
         public long GpsLongitude { get; set; }
+        public int Id { get; set; }
     }
 }
