@@ -135,4 +135,5 @@ message LiveFleetPosition {
          int64 GpsHeading=2; 
          int64 GpsLatitude=3;
          int64 GpsLongitude=4; 
+         int32 Id=5;
 }

@@ -644,7 +644,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                               gps_latitude,
                               gps_longitude
                               from livefleet.livefleet_position_statistics
-                              where vin=@vin and trip_id = @trip_id";
+                              where vin=@vin and trip_id = @trip_id order by id desc";
                     var PositionData = await dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
                     List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
                    
@@ -657,6 +657,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             objLiveFleetPosition.GpsHeading = positionData.GpsHeading;
                             objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
                             objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
+                            objLiveFleetPosition.Id = positionData.Id;
                             lstLiveFleetPosition.Add(objLiveFleetPosition);                            
                         }
                         item.LiveFleetPosition = lstLiveFleetPosition;
