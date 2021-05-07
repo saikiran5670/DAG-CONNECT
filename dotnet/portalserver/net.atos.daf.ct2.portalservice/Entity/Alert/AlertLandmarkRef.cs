@@ -21,6 +21,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public int Id { get; set; }
         public int AlertId { get; set; }
         public string State { get; set; }
-        public long ModifiedAt { get; set; }
+        //public long ModifiedAt { get; set; }
     }
 }
