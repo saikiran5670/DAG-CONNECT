@@ -16,6 +16,8 @@
       "poiRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poi",
       "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence",
       "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence",
-      "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert"
+      "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
+      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor"
+
     }
 }
