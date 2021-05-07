@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 POIResponseList objPOIResponseList = new POIResponseList();
                 net.atos.daf.ct2.poigeofence.entity.POIEntityRequest obj = new poigeofence.entity.POIEntityRequest();
                 obj.CategoryId = request.CategoryId;
-                obj.SubCategoryId = request.SubCategoryId;
+                obj.SubCategoryId = request.SubCategoryId != null ? Convert.ToInt32(request.SubCategoryId) : 0;
                 var data = await _poiManager.GetAllGobalPOI(obj);
                 foreach (var item in data)
                 {
@@ -303,6 +303,38 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     Message = "POI Creation Failed due to - " + ex.Message,
                 });
             }
+        }
+
+        public override async Task<TripResponce> GetAllTripDetails(TripRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetAllTripDetails.");
+                TripResponce response = new TripResponce();
+                TripEntityRequest objTripEntityRequest = new TripEntityRequest();
+                objTripEntityRequest.VIN = request.VIN;              
+                objTripEntityRequest.StartDateTime = request.StartDateTime;
+                objTripEntityRequest.EndDateTime = request.EndDateTime;
+
+                var result = await _poiManager.GetAllTripDetails(objTripEntityRequest);
+                if (result.Count > 0)
+                {
+                    foreach (net.atos.daf.ct2.poigeofence.entity.TripEntityResponce entity in result)
+                    {
+                        response.TripData.Add(_mapper.ToTripResponce(entity));
+                    }
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new TripResponce
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetAllTripDetails get faile due to - " + ex.Message                    
+                });
+            }           
         }
     }
 }

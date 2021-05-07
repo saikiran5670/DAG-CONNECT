@@ -24,7 +24,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 
         public int VehicleGroupId { get; set; }
 
-        //public string State { get; set; }
+        public string State { get; set; }
+        public string ApplyOn { get; set; }
 
         //public long CreatedAt { get; set; }
 
@@ -45,7 +46,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public int Id { get; set; }
         //public int OrganizationId { get; set; }
         public string State { get; set; }
-        public long ModifiedAt { get; set; }
+        //public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public new List<NotificationEdit> Notifications { get; set; } = new List<NotificationEdit>();
         public new List<AlertUrgencyLevelRefEdit> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRefEdit>();

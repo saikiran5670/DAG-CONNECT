@@ -43,5 +43,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.UploadPOI(uploadPOIExcel);
         }
+        
+        public async Task<List<TripEntityResponce>> GetAllTripDetails(TripEntityRequest tripEntityRequest)
+        {
+            return await _poiRepository.GetAllTripDetails(tripEntityRequest);
+        }
     }
 }

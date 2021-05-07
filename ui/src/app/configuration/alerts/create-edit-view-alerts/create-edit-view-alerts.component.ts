@@ -98,9 +98,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(poilist.length > 0){
         poilist.forEach(element => {
           if(element.icon && element.icon != '' && element.icon.length > 0){
-            // let TYPED_ARRAY = new Uint8Array(element.icon);
-            // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-            // let base64String = btoa(STRING_CHAR);
             element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
           }else{
             element.icon = '';
@@ -129,13 +126,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updatePOIDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
-      this.selectPOITableRows();
+      this.selectPOITableRows(this.selectedRowData);
     }
   }
 
-  selectPOITableRows(){
+  selectPOITableRows(rowData: any){
     this.poiDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
       if (search.length > 0) {
         this.selectedPOI.select(row);
       }
@@ -167,13 +164,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updateGeofenceDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
-      this.selectGeofenceTableRows();
+      this.selectGeofenceTableRows(this.selectedRowData);
     }
   }
 
-  selectGeofenceTableRows(){
+  selectGeofenceTableRows(rowData: any){
     this.geofenceDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
       if (search.length > 0) {
         this.selectedGeofence.select(row);
       }
@@ -208,14 +205,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.displayedColumnsGeofence= ['name', 'poiCount', 'geofenceCount'];
       this.updateGroupDatasource(tableData);
     }
-    else if(this.actionType == 'edit' ){
+    else if(this.actionType == 'edit'){
       this.selectGroupTableRows();
     }
   }
 
   selectGroupTableRows(){
     this.groupDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+      let search = this.selectedRowData.landmarks.filter(item => item.groupId == row.id);
       if (search.length > 0) {
         this.selectedGroup.select(row);
       }
@@ -263,8 +260,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       );
     };
     setTimeout(()=>{
-      this.groupDataSource.paginator = this.paginator.toArray()[1];
-      this.groupDataSource.sort = this.sort.toArray()[1];
+      this.groupDataSource.paginator = this.paginator.toArray()[2];
+      this.groupDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -325,8 +322,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   onReset(){ //-- Reset
     this.selectedPOI.clear();
     this.selectedGeofence.clear();
-    this.selectPOITableRows();
-    this.selectGeofenceTableRows();
+    this.selectPOITableRows(this.selectedRowData);
+    this.selectGeofenceTableRows(this.selectedRowData);
     this.setDefaultValue();
   }
 
@@ -453,6 +450,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onGroupSelect(event: any, row: any){
-    console.log("Event = "+event);
+    let groupDetails= [];
+    let objData = { 
+      organizationid : this.accountOrganizationId,
+      groupid : row.id
+    };
+    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
+      groupDetails = groupData["groups"][0];
+      this.selectPOITableRows(groupDetails);
+      this.selectGeofenceTableRows(groupDetails);
+    });
   }
 }
