@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class CorridorLookUp
     {
         public List<CorridorResponse> GridView { get; set; }
-        public List<CorridorEditViewResponse> EditView { get; set; }
+        public CorridorEditViewResponse EditView { get; set; }
     }
     public class CorridorResponse
     {

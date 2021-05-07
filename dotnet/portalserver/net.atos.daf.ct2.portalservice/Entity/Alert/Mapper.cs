@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			request.ValidityStartDate = entity.ValidityStartDate;
 			request.ValidityEndDate = entity.ValidityEndDate;
 			request.VehicleGroupId = entity.VehicleGroupId;
+            request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             request.CreatedBy = entity.CreatedBy;
             //request.ModifiedAt = entity.ModifiedAt;
@@ -59,8 +60,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			request.UrgencyLevelType = entity.UrgencyLevelType;
 			request.ThresholdValue = entity.ThresholdValue;
 			request.UnitType = entity.UnitType;
-			//request.DayType = entity.DayType.ToArray();
-			request.PeriodType = entity.PeriodType;
+			for (int i = 0; i < entity.DayType.Length; i++)
+			{
+				request.DayType.Add(entity.DayType[i]);
+			}
+            request.PeriodType = entity.PeriodType;
 			request.UrgencylevelStartDate = entity.UrgencylevelStartDate;
 			request.UrgencylevelEndDate = entity.UrgencylevelEndDate;
 			//request.State = entity.State;
@@ -88,7 +92,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			request.LandmarkType = entity.LandmarkType;
 			request.RefId = entity.RefId;
 			request.PositionType = entity.PositionType;
-			//request.DayType = entity.DayType.ToArray();
+			for (int i = 0; i < entity.DayType.Length; i++)
+			{
+				request.DayType.Add(entity.DayType[i]);
+			}
 			request.PeriodType = entity.PeriodType;
 			request.FilterStartDate = entity.FilterStartDate;
 			request.FilterEndDate = entity.FilterEndDate;

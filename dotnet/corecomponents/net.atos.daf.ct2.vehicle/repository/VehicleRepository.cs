@@ -1018,19 +1018,34 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
+                //       var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
+                //                           from master.group grp 
+                //inner join master.groupref vgrpref
+                //on  grp.id=vgrpref.group_id and grp.object_type='V'                                    
+                //inner join master.vehicle veh
+                //on vgrpref.ref_id=veh.id
+                //where grp.id in( 									
+                //select ass.vehicle_group_id from master.accessrelationship ass
+                //inner join master.group grp 
+                //on ass.account_group_id=grp.id and grp.object_type='A' 
+                //inner join master.groupref vgrpref
+                //on  grp.id=vgrpref.group_id
+                //where vgrpref.ref_id=@accountid)";
+
                 var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
-                                    from master.group grp 
-									inner join master.groupref vgrpref
-									on  grp.id=vgrpref.group_id and grp.object_type='V'                                    
-									inner join master.vehicle veh
-									on vgrpref.ref_id=veh.id
-									where grp.id in( 									
+									from master.vehicle veh
+                                    left join master.groupref vgrpref
+									on vgrpref.ref_id=veh.id									
+									left join master.group grp 
+									on  grp.id=vgrpref.group_id and grp.object_type='V'									
+									where veh.id not in (select vgrpref.ref_id from master.groupref vgrpref)
+									OR grp.id in( 									
 									select ass.vehicle_group_id from master.accessrelationship ass
 									inner join master.group grp 
 									on ass.account_group_id=grp.id and grp.object_type='A' 
 									inner join master.groupref vgrpref
 									on  grp.id=vgrpref.group_id
-									where vgrpref.ref_id=@accountid)";
+									where vgrpref.ref_id=@accountid) AND veh.status <>'T'";
 
                 var parameter = new DynamicParameters();
 

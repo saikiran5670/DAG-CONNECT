@@ -36,26 +36,66 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 var data = await _corridorManger.GetCorridorList(obj);
 
                 #region CorridorEditView
-                if (data.EditView != null && data.EditView.Count > 0)
+                if (data.EditView != null)
                 {
-                    foreach (var item in data.EditView)
+                    var item = data.EditView;
+
+                    CorridorEditViewResponse objCorridorEditViewResponse = new CorridorEditViewResponse();
+                    objCorridorEditViewResponse.Id = item.Id;
+                    objCorridorEditViewResponse.OrganizationId = item.OrganizationId;
+                    objCorridorEditViewResponse.CorridoreName = CheckNull(item.CorridoreName);
+                    objCorridorEditViewResponse.StartPoint = CheckNull(item.StartPoint);
+                    objCorridorEditViewResponse.StartLat = item.StartLat;
+                    objCorridorEditViewResponse.StartLong = item.StartLong;
+                    objCorridorEditViewResponse.EndPoint = CheckNull(item.EndPoint);
+                    objCorridorEditViewResponse.EndLat = item.EndLat;
+                    objCorridorEditViewResponse.EndLong = item.EndLong;
+                    objCorridorEditViewResponse.Distance = item.Distance;
+                    objCorridorEditViewResponse.Width = item.Width;
+                    objCorridorEditViewResponse.CreatedAt = item.CreatedAt;
+                    objCorridorEditViewResponse.CreatedBy = item.CreatedBy;
+                    objCorridorEditViewResponse.ModifiedAt = item.ModifiedAt;
+                    objCorridorEditViewResponse.ModifiedBy = item.ModifiedBy;
+
+                    if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
-                        CorridorEditViewResponse objCorridorEditViewResponse = new CorridorEditViewResponse();
-                        objCorridorEditViewResponse.Id = item.Id;
-                        objCorridorEditViewResponse.OrganizationId = item.OrganizationId;
-                        objCorridorEditViewResponse.CorridoreName = CheckNull(item.CorridoreName);
-                        objCorridorEditViewResponse.StartPoint = CheckNull(item.StartPoint);
-                        objCorridorEditViewResponse.StartLat = item.StartLat;
-                        objCorridorEditViewResponse.StartLong = item.StartLong;
-                        objCorridorEditViewResponse.EndPoint = CheckNull(item.EndPoint);
-                        objCorridorEditViewResponse.EndLat = item.EndLat;
-                        objCorridorEditViewResponse.EndLong = item.EndLong;
-                        objCorridorEditViewResponse.Distance = item.Distance;
-                        objCorridorEditViewResponse.Width = item.Width;
-                        objCorridorEditViewResponse.CreatedAt = item.CreatedAt;
-                        objCorridorEditViewResponse.CreatedBy = item.CreatedBy;
-                        objCorridorEditViewResponse.ModifiedAt = item.ModifiedAt;
-                        objCorridorEditViewResponse.ModifiedBy = item.ModifiedBy;
+
+                        foreach (var trip in item.CorridoreTrips)
+                        {
+                            ExistingTrip existingTrip = new ExistingTrip();
+                            existingTrip.Distance = trip.Distance;
+                            existingTrip.Id = trip.Id;
+                            existingTrip.LandmarkId = trip.LandmarkId;
+                            existingTrip.TripId = trip.TripId;
+                            existingTrip.StartDate = trip.StartDate;
+                            existingTrip.EndDate = trip.EndDate;
+                            existingTrip.DriverId1 = trip.DriverId1;
+                            existingTrip.StartLatitude = trip.StartLatitude;
+                            existingTrip.StartLongitude = trip.StartLongitude;
+                            existingTrip.StartPosition = trip.StartPosition;
+                            existingTrip.EndLatitude = trip.EndLatitude;
+                            existingTrip.EndLongitude = trip.EndLongitude;
+                            existingTrip.EndPosition = trip.EndPosition;
+                           
+                            foreach (var node in trip.NodePoints)
+                            {
+                                TripNodes nodes = new TripNodes();
+                                nodes.Id = node.Id;
+                                nodes.LandmarkId = node.LandmarkId;
+                                nodes.TripId = node.TripId;
+                                nodes.SequenceNumber = node.SequenceNumber;
+                                nodes.Latitude = node.Latitude;
+                                nodes.Longitude = node.Longitude;
+                                nodes.State = node.State;
+                                nodes.Address = node.Address;
+                                existingTrip.NodePoints.Add(nodes);
+                            }
+                            objCorridorEditViewResponse.Trips.Add(existingTrip);
+                        }
+
+                    }
+                    else
+                    {
                         for (int i = 0; i < item.ViaAddressDetails.Count; i++)
                         {
                             ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
@@ -101,8 +141,10 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleLimitedWeight = item.VehicleLimitedWeight;
                         objCorridorEditViewResponse.CorridorProperties.VehicleSize.VehicleWeightPerAxle = item.VehicleWeightPerAxle;
 
-                        objCorridorResponseList.CorridorEditViewList.Add(objCorridorEditViewResponse);
                     }
+
+                    objCorridorResponseList.CorridorEditViewList.Add(objCorridorEditViewResponse);
+
                 }
                 #endregion
 
@@ -127,15 +169,55 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         objCorridorGridViewResponse.CreatedBy = item.CreatedBy;
                         objCorridorGridViewResponse.ModifiedAt = item.ModifiedAt;
                         objCorridorGridViewResponse.ModifiedBy = item.ModifiedBy;
-                        for (int i = 0; i < item.ViaAddressDetails.Count; i++)
+                        if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor && item.CorridoreTrips != null)
                         {
-                            ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
-                            objViaAddressDetail.CorridorViaStopId = item.ViaAddressDetails[i].CorridorViaStopId;
-                            objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
-                            objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
-                            objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
-                            objCorridorGridViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
+                            
+                            foreach (var trip in item.CorridoreTrips)
+                            {
+                                ExistingTrip existingTrip = new ExistingTrip();
+                                existingTrip.Distance = trip.Distance;
+                                existingTrip.Id = trip.Id;
+                                existingTrip.LandmarkId = trip.LandmarkId;
+                                existingTrip.TripId = trip.TripId;
+                                existingTrip.StartDate = trip.StartDate;
+                                existingTrip.EndDate = trip.EndDate;
+                                existingTrip.DriverId1 = trip.DriverId1;
+                                existingTrip.StartLatitude = trip.StartLatitude;
+                                existingTrip.StartLongitude = trip.StartLongitude;
+                                existingTrip.StartPosition = trip.StartPosition;
+                                existingTrip.EndLatitude = trip.EndLatitude;
+                                existingTrip.EndLongitude = trip.EndLongitude;
+                                existingTrip.EndPosition = trip.EndPosition;
+                                
+                                foreach (var node in trip.NodePoints)
+                                {
+                                    TripNodes nodes = new TripNodes();
+                                    nodes.Id = node.Id;
+                                    nodes.LandmarkId = node.LandmarkId;
+                                    nodes.TripId = node.TripId;
+                                    nodes.SequenceNumber = node.SequenceNumber;
+                                    nodes.Latitude = node.Latitude;
+                                    nodes.Longitude = node.Longitude;
+                                    nodes.State = node.State;
+                                    nodes.Address = node.Address;
+                                    existingTrip.NodePoints.Add(nodes);
+                                }
+                                objCorridorGridViewResponse.Trips.Add(existingTrip);
+                            }
                         }
+                        else
+                        {
+                            for (int i = 0; i < item.ViaAddressDetails.Count; i++)
+                            {
+                                ViaAddressDetail objViaAddressDetail = new ViaAddressDetail();
+                                objViaAddressDetail.CorridorViaStopId = item.ViaAddressDetails[i].CorridorViaStopId;
+                                objViaAddressDetail.CorridorViaStopName = CheckNull(item.ViaAddressDetails[i].CorridorViaStopName);
+                                objViaAddressDetail.Latitude = item.ViaAddressDetails[i].Latitude;
+                                objViaAddressDetail.Longitude = item.ViaAddressDetails[i].Longitude;
+                                objCorridorGridViewResponse.ViaAddressDetail.Add(objViaAddressDetail);
+                            }
+                        }
+
                         objCorridorResponseList.CorridorGridViewList.Add(objCorridorGridViewResponse);
                     }
                 }
@@ -296,8 +378,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             try
             {
                 _logger.Info("Add Existing Trip Corridor .");
-               var existingTripEntity= _corridorMapper.ToExistingTripCorridorEntity(request);
-              
+                var existingTripEntity = _corridorMapper.ToExistingTripCorridorEntity(request);
+
 
                 var result = await _corridorManger.AddExistingTripCorridor(existingTripEntity);
                 if (result.Id == -1)
@@ -316,11 +398,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         response.Code = Responsecode.Success;
                         response.CorridorID = result.Id;
                     }
-                    else {
+                    else
+                    {
                         response.Message = "Transaction failed";
                         response.Code = Responsecode.Failed;
                         response.CorridorID = result.Id;
-                    }                    
+                    }
                 }
                 else
                 {
