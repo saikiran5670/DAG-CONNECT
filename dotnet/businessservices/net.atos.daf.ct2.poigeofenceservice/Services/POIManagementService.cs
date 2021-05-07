@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 POIResponseList objPOIResponseList = new POIResponseList();
                 net.atos.daf.ct2.poigeofence.entity.POIEntityRequest obj = new poigeofence.entity.POIEntityRequest();
                 obj.CategoryId = request.CategoryId;
-                obj.SubCategoryId = request.SubCategoryId;
+                obj.SubCategoryId = request.SubCategoryId != null ? Convert.ToInt32(request.SubCategoryId) : 0;
                 var data = await _poiManager.GetAllGobalPOI(obj);
                 foreach (var item in data)
                 {
