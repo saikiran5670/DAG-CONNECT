@@ -165,7 +165,8 @@
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFiltersdetails || 'Filters Details' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div *ngIf="(alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')) || 
+                    (alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C')" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
                 <div class="margin-bottom-sm">
@@ -183,9 +184,33 @@
                 </div>
                 <p style="color: darkgray;">Choose appropriate urgency level for this alert</p>
             </div>
-        </div>
-        <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
-        <div>
+          </div>
+
+          <div *ngIf="(alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'H' || alertForm.controls.alertType.value === 'Y'))"
+             fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+              <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
+                    <div class="margin-bottom-sm">
+                      <mat-selection-list formControlName="levelCheckbox">
+                        <mat-list-option *ngFor="let level of typesOfLevel" [value]="level.levelType">
+                          {{level.value}}
+                        </mat-list-option>
+                      </mat-selection-list>
+                    </div>
+                   </div> 
+                </div>
+             </div>
+           </div>
+          
+
+        <!-- Map -->
+        <div *ngIf="(alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')) ||
+                    (alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
+        
+        <!-- POI table -->
+        <div *ngIf="alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -252,8 +277,8 @@
           </mat-expansion-panel>
           </div>
          
-    
-          <div>
+          <!-- Geofence table -->
+          <div *ngIf="alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -309,7 +334,8 @@
           </mat-expansion-panel>
           </div>
 
-          <div>
+          <!-- Group table -->
+          <div *ngIf="alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -363,6 +389,68 @@
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="groupDisplayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: groupDisplayedColumns;">
+                </mat-row>
+              </mat-table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+          </mat-expansion-panel>
+          </div>
+
+        <!-- Corridor table -->
+          <div *ngIf="alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C'">
+            <div style='padding: 20px; position: relative;'>
+              <mat-divider></mat-divider>
+            </div>
+            <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
+              <mat-expansion-panel-header class="full-width">
+                <mat-panel-title>
+                  <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedCorridor || 'Selected Corridor') : (translationData.lblSelectCorridor || 'Select Corridor ') }}</span>  <span class='mandatoryColor'>*</span></span>
+                </mat-panel-title>
+                </mat-expansion-panel-header>
+            <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+              <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field appearance="outline">
+                    <input matInput (keyup)="applyFilterForCorridor($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <span matPrefix><mat-icon>search</mat-icon></span>
+                </mat-form-field>
+              </div>
+            </div>
+            <div>
+              <mat-table matTableExporter [dataSource]="corridorDataSource" matSort>
+                <ng-container matColumnDef="select">
+                  <mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)='$event ? masterToggleForCorridor() : null;'
+                      [checked]='selectedCorridor.hasValue() && isAllSelectedForCorridor()'
+                      [indeterminate]='selectedCorridor.hasValue() && !isAllSelectedForCorridor()'
+                      [aria-label]='checkboxLabelForCorridor()'>
+                    </mat-checkbox>
+                    <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedCorridor.toggle(row) : null;'
+                      [checked]='selectedCorridor.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)'>
+                    </mat-checkbox>
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name'}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <span>{{row.name}}</span> </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="poiCount">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPOI || 'POI'}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" matTooltip={{row.poiCount}}><span [ngClass]="row.poiCount !=0 ? 'row-hover' : '' "
+                        (click)="row.poiCount !=0 ? onPOIClick(row) : ''">{{row.poiCount}}</span></mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="geofenceCount">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGeofence || 'Geofence'}}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" matTooltip={{row.geofenceCount}}><span [ngClass]="row.geofenceCount !=0 ? 'row-hover' : '' "
+                    (click)="row.geofenceCount !=0 ? onGeofenceClick(row) : ''">{{row.geofenceCount}}</span></mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="corridorDisplayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: corridorDisplayedColumns;">
                 </mat-row>
               </mat-table>
               <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
@@ -426,7 +514,10 @@
           <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
           <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
             (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-          <button class='no-margin' [disabled]="!alertForm.valid || (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)" mat-raised-button color="primary"
+          <button class='no-margin' 
+              [disabled]="!alertForm.valid ||
+              (alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X') && (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)) ||
+              (alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C' && selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
