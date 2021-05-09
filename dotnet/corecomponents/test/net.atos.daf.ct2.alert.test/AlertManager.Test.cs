@@ -230,6 +230,35 @@ namespace net.atos.daf.ct2.alert.test
             var result = _ialertManager.CreateAlert(alert).Result;
             Assert.IsTrue(result.Id > 0);
         }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get Alert List")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void GetAlertListTest()
+        {
+            Alert alert = new Alert
+            {
+                //Id =,
+                OrganizationId = 10,
+                Name = "TestAlert1",
+                Category = "L",
+                Type = "N",
+                ValidityPeriodType = "A",
+                ValidityStartDate = 1620272821,
+                ValidityEndDate = 1620272821,
+                VehicleGroupId = 12,
+                State = "A",
+                CreatedAt = 1620272821,
+                CreatedBy = 10,
+                //ModifiedAt =,
+                //ModifiedBy =,
+                AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>(),
+                Notifications = new List<Notification>(),
+                AlertLandmarkRefs = new List<AlertLandmarkRef>(),
+            };
+            var result = _ialertManager.GetAlertList(alert).Result;
+            Assert.IsNotNull(result);
+        }
 
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Get Alert Category")]
