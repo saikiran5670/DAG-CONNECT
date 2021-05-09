@@ -435,6 +435,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.EndAddress = objRequest.Request.EndAddress;
                 obj.EndLatitude = objRequest.Request.EndLatitude;
                 obj.EndLongitude = objRequest.Request.EndLongitude;
+                obj.NodeId = objRequest.Request.NodeId;
+                obj.CorridorPropertiesId = objRequest.Request.CorridorPropertiesId;
                 obj.Width = objRequest.Request.Width;
                 obj.Distance = objRequest.Request.Distance;
                 obj.Trailer = Convert.ToChar(objRequest.Request.Trailer);
@@ -484,7 +486,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     }
                 }
 
-                var result = await _corridorManger.AddRouteCorridor(obj);
+                var result = await _corridorManger.UpdateRouteCorridor(obj);
                 if (result.Id == -1)
                 {
                     objResponse.Response.Message = $"Corridor Name  {obj.CorridorLabel} already exists ";
@@ -494,7 +496,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
                 else if (result != null && result.Id > 0)
                 {
-                    objResponse.Response.Message = "Added successfully";
+                    objResponse.Response.Message = "Updated successfully";
                     objResponse.Response.Code = Responsecode.Success;
                     objResponse.Response.CorridorID = result.Id;
                 }
