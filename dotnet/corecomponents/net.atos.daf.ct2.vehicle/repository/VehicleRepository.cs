@@ -1014,7 +1014,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid)
+        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
         {
             try
             {
@@ -1032,12 +1032,15 @@ namespace net.atos.daf.ct2.vehicle.repository
                 //on  grp.id=vgrpref.group_id
                 //where vgrpref.ref_id=@accountid)";
 
-                var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin
+                var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin,
+                                    (CASE WHEN sub.vehicle_id >0 AND sub.state='A' THEN true ELSE false END )as SubcriptionStatus
 									from master.vehicle veh
                                     left join master.groupref vgrpref
-									on vgrpref.ref_id=veh.id									
+									on vgrpref.ref_id=veh.id 									
 									left join master.group grp 
-									on  grp.id=vgrpref.group_id and grp.object_type='V'									
+									on  grp.id=vgrpref.group_id and grp.object_type='V'	
+									left join master.subscription sub
+									on veh.id= sub.vehicle_id
 									where veh.id not in (select vgrpref.ref_id from master.groupref vgrpref)
 									OR grp.id in( 									
 									select ass.vehicle_group_id from master.accessrelationship ass
@@ -1045,11 +1048,15 @@ namespace net.atos.daf.ct2.vehicle.repository
 									on ass.account_group_id=grp.id and grp.object_type='A' 
 									inner join master.groupref vgrpref
 									on  grp.id=vgrpref.group_id
-									where vgrpref.ref_id=@accountid) AND veh.status <>'T'";
+									where vgrpref.ref_id=125) AND veh.status <>'T'
+									AND veh.organization_id =@orgnizationid";
+                //Start date and end date need to be discuss in subscription
 
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@accountid", accountid);
+                parameter.Add("@orgnizationid", orgnizationid);
+                
 
                 IEnumerable<VehicleGroupList> vehiclegrouplist = await dataAccess.QueryAsync<VehicleGroupList>(QueryStatement, parameter);
 

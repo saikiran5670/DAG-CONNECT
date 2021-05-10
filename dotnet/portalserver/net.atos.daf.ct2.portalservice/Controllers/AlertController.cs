@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.vehicleservice;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,14 +31,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
         private readonly Entity.Alert.Mapper _mapper;
+        private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
-        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, VehicleBusinessService.VehicleService.VehicleServiceClient vehicleServiceClient)
+        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, VehicleService.VehicleServiceClient vehicleClient, IHttpContextAccessor _httpContextAccessor)
         {
             _AlertServiceClient = AlertServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _vehicleClient = vehicleClient;
             _mapper = new Entity.Alert.Mapper();
             _vehicleClient = vehicleServiceClient;
         }
@@ -142,16 +145,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Alert Category
         [HttpGet]
         [Route("GetAlertCategory")]
-        public async Task<IActionResult> GetAlertCategory(int accountId)
+        public async Task<IActionResult> GetAlertCategory(int accountId, int orgnizationid)
         {
             try
             {
                 if (accountId == 0) return BadRequest("Account id cannot be null.");
-                AlertCategoryResponse response = new AlertCategoryResponse();
-                response = await _AlertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
-                if (response.EnumTranslation != null && response.VehicleGroup != null)
+                net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
+                AlertCategoryResponse alertcategory = await _AlertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
+                VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                if (alertcategory.EnumTranslation != null)
                 {
-                    response.Code = ResponseCode.Success;
+                    foreach (var item in alertcategory.EnumTranslation)
+                    {
+                        response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
+                    }
+                    foreach (var item in vehicleGroup.VehicleGroupList)
+                    {
+                        response.VehicleGroup.Add(_mapper.MapVehicleGroup(item));
+                    }
                     return Ok(response);
                 }
                 else

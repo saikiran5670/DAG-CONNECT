@@ -153,19 +153,36 @@
                 </mat-expansion-panel-header>
 
                 <div fxLayout="row" fxLayoutGap="10px" class="full-width margin-bottom-sm">
-                    <mat-checkbox class="example-margin">Transaport Data</mat-checkbox>
-                    <mat-checkbox class="example-margin">Traffic Flow</mat-checkbox>
+                    <mat-checkbox class="example-margin" (change)="transportDataCheckedFn($event.checked)">Transaport Data</mat-checkbox>
+                    <mat-checkbox class="example-margin" (change)="trafficFlowCheckedFn($event.checked)">Traffic Flow</mat-checkbox>
                 </div>
-                    <mat-accordion class="example-headers-align" style="background-color:#7e7878;">
+                    <mat-accordion class="example-headers-align pt-2" style="background-color:#7e7878;">
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
                                 <mat-panel-title>
                                     Attributes
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
+                            <div fxLayout="row"  fxLayoutGap="100px" class="full-width margin-bottom-sm">
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'explosive')">Explosive</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'gas')">Gas</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'lammable')">Flammable</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'combustible')">Combustible</mat-checkbox>
+                             </div>
+                             <div fxLayout="row" fxLayoutGap="100px" class="full-width margin-bottom-sm">
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'organic')">Organic</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'poison')">Poison</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'radioactive')">Radio Active</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'corrosive')">Corrosive</mat-checkbox>
+                             </div>
+                             <div fxLayout="row" fxLayoutGap="100px" class="full-width margin-bottom-sm">
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'organic')">Poisonous Inhalation</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'poison')">Water Harm</mat-checkbox>
+                                <mat-checkbox class="example-margin" (change)="attributeCheck($event.checked,'radioactive')">Others</mat-checkbox>
+                             </div>
                         </mat-expansion-panel>
                         </mat-accordion>
-                    <mat-accordion class="example-headers-align" style="background-color:#7e7878;">
+                    <mat-accordion class="example-headers-align pt-2" style="background-color:#7e7878;">
 
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
@@ -173,9 +190,85 @@
                                     Exclusions
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
+                            <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblTollRoad|| 'Toll Road' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblMotorWay|| 'Motor Way' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblBoatFerries || 'Boat Ferries' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblRailFerries || 'Rail Ferries' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblTunnels|| 'Tunnels' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblDirtRoad || 'Dirt Road' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
                         </mat-expansion-panel>
                     </mat-accordion>
-                    <mat-accordion class="example-headers-align" style="background-color:#7e7878;">
+                    <mat-accordion class="example-headers-align pt-2" style="background-color:#7e7878;">
 
                         <mat-expansion-panel>
                             <mat-expansion-panel-header>
@@ -183,11 +276,87 @@
                                     Vehicle Size
                                 </mat-panel-title>
                             </mat-expansion-panel-header>
+                            <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblHeight|| 'Height' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblWidth|| 'Width' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblLength|| 'Length' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <div>
+                                        <mat-label><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}</span></mat-label>
+                                        <mat-form-field appearance="outline" class="full-width">
+                                            <mat-select formControlName="corridorType" required>
+                                                <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                                                    {{ type.value }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
                         </mat-expansion-panel>
                         </mat-accordion>
                
-
+                        <div class="example-button-row pt-2" fxLayoutAlign="right">
+                            <button mat-flat-button color="primary" (click)="backToCorridorList()" >
+                                <span>Reset</span>
+                            </button>
+                        </div>
             </mat-expansion-panel>
         </mat-accordion>
+        <div class="example-button-row pt-2" fxLayoutGap="20px">
+            <button mat-flat-button color="primary" class="float:right;" (click)="backToCorridorList()">
+                <span>Cancel</span>
+            </button>
+            <button mat-flat-button  color="primary" class="float:right;" (click)="backToCorridorList()">
+                <span>Create</span>
+            </button>
+        </div>
     </mat-card>
 </form>
