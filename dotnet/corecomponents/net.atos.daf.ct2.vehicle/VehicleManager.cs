@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using net.atos.daf.ct2.vehicle.entity;
@@ -7,6 +8,7 @@ using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.response;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -231,11 +233,11 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
-        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid)
+        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
         {
             try
             {
-                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid);
+                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid,orgnizationid);
             }
             catch (Exception ex)
             {
@@ -245,7 +247,7 @@ namespace net.atos.daf.ct2.vehicle
         }
 
         #region Vehicle Mileage Data
-        public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype)
+        public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contentType, int accountId, int orgid)
         {
             try
             {
@@ -261,7 +263,15 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                IEnumerable<dtoVehicleMileage> vehiclemileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since));
+                IEnumerable<dtoVehicleMileage> vehicleMileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since));
+
+                if(vehicleMileageList.Count() > 0)
+                {
+                    //Fetch visibility vehicles for the account
+                    var vehicles = await GetVisibilityVehicles(accountId, orgid);
+
+                    vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(veh => veh.VIN == mil.vin)).AsEnumerable();
+                }                
 
                 VehicleMileage vehicleMileage = new VehicleMileage();
                 vehicleMileage.Vehicles = new List<entity.Vehicles>();
@@ -269,11 +279,11 @@ namespace net.atos.daf.ct2.vehicle
                 string sTimezone = "UTC";
                 string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
 
-                if (vehiclemileageList != null)
+                if (vehicleMileageList != null)
                 {
-                    foreach (var item in vehiclemileageList)
+                    foreach (var item in vehicleMileageList)
                     {
-                        if (contenttype == "text/csv")
+                        if (contentType == "text/csv")
                         {
                             VehiclesCSV vehiclesCSV = new VehiclesCSV();
                             vehiclesCSV.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty;
@@ -286,11 +296,10 @@ namespace net.atos.daf.ct2.vehicle
                         else
                         {
                             entity.Vehicles vehiclesobj = new entity.Vehicles();
-                            vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty; ;
+                            vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty;
                             vehiclesobj.VIN = item.vin;
                             vehiclesobj.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0;
                             vehiclesobj.GPSMileage = item.real_distance > 0 ? item.real_distance : 0;
-                            vehiclesobj.RealMileageAlgorithmVersion = "1.2";
                             vehicleMileage.Vehicles.Add(vehiclesobj);
                         }
                     }
@@ -315,14 +324,14 @@ namespace net.atos.daf.ct2.vehicle
         #endregion
 
         #region Vehicle Namelist Data
-        public async Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric)
+        public async Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgId)
         {
             try
             {
                 long startDate = 0;
                 long endDate = 0;
 
-                if (string.IsNullOrEmpty(since) || since == "yesterday")
+                if (since == "yesterday")
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
                 else if (since == "today")
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
@@ -331,27 +340,34 @@ namespace net.atos.daf.ct2.vehicle
 
                 endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                IEnumerable<dtoVehicleNamelist> dtovehicleNameList = await vehicleRepository.GetVehicleNamelist(startDate, endDate);
+                IEnumerable<dtoVehicleNamelist> vehicleNameList = await vehicleRepository.GetVehicleNamelist(startDate, endDate, string.IsNullOrEmpty(since));
 
-                VehicleNamelistResponse vehicleNamelist = new VehicleNamelistResponse();
-                vehicleNamelist.Vehicles = new List<response.Vehicles>();
-
-                if (vehicleNamelist != null)
+                if(vehicleNameList.Count() > 0)
                 {
-                    foreach (var item in dtovehicleNameList)
+                    //Fetch visibility vehicles for the account
+                    var vehicles = await GetVisibilityVehicles(accountId, orgId);
+
+                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.vin)).AsEnumerable();
+                }                
+
+                VehicleNamelistResponse vehicleNamelistResponse = new VehicleNamelistResponse();
+                vehicleNamelistResponse.Vehicles = new List<response.Vehicles>();
+
+                if (vehicleNameList != null)
+                {
+                    foreach (var item in vehicleNameList)
                     {
+                        response.Vehicles vehiclesObj = new response.Vehicles();
 
-                        response.Vehicles vehiclesobj = new response.Vehicles();
+                        vehiclesObj.VIN = item.vin;
+                        vehiclesObj.Name = item.name;
+                        vehiclesObj.RegNo = item.regno;
 
-                        vehiclesobj.VIN = item.vin;
-                        vehiclesobj.Name = item.name;
-                        vehiclesobj.RegNo = item.regno;
-
-                        vehicleNamelist.Vehicles.Add(vehiclesobj);
+                        vehicleNamelistResponse.Vehicles.Add(vehiclesObj);
                     }
                 }
 
-                return vehicleNamelist;
+                return vehicleNamelistResponse;
             }
             catch (Exception ex)
             {
@@ -361,27 +377,92 @@ namespace net.atos.daf.ct2.vehicle
 
         #endregion
 
-        //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
-        // {
-        //     try
-        //     {
-        //         return await vehicleRepository.Update(vin,tcuId,tcuactivation,referenceDateTime);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw ex;
-        //     }
-        // }     
-        //  public async Task<int> Create(int orgId, string vin,string tcuId,string tcuactivation,string referenceDateTime)
-        // {
-        //     try
-        //     {
-        //         return await vehicleRepository.Create(orgId,vin,tcuId,tcuactivation,referenceDateTime);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw ex;
-        //     }
-        // }       
+        #region Vehicle Visibility
+
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId)
+        {
+            try
+            {
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                var vehicleGroupIds = await vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId);
+
+                foreach (var vehicleGroupId in vehicleGroupIds)
+                {
+                    var vehicleGroup = await vehicleRepository.GetVehicleGroupDetails(vehicleGroupId);
+
+                    switch (vehicleGroup.GroupType)
+                    {
+                        case 'S':
+                            //Single
+                            vehicles.Add(await vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId));
+                            break;
+                        case 'G':
+                            //Group
+                            vehicles.AddRange(await vehicleRepository.GetGroupTypeVehicles(vehicleGroupId));
+                            break;
+                        case 'D':
+                            //Dynamic
+                            switch (vehicleGroup.GroupMethod)
+                            {
+                                case 'A':
+                                    //All
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    break;
+                                case 'O':
+                                    //Owner
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    break;
+                                case 'V':
+                                    //Visible
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    break;
+                                case 'M':
+                                    //OEM
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroupId));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return vehicles.Distinct(new ObjectComparer()).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+    }
+
+    internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+    {
+        public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+        {
+            if (object.ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            if (object.ReferenceEquals(x, null) || object.ReferenceEquals(y, null))
+            {
+                return false;
+            }
+            return x.Id == y.Id && x.VIN == y.VIN;
+        }
+
+        public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+        {
+            if (obj == null)
+            {
+                return 0;
+            }
+            int idHashCode = obj.Id.GetHashCode();
+            int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+            return idHashCode ^ vinHashCode;
+        }
     }
 }

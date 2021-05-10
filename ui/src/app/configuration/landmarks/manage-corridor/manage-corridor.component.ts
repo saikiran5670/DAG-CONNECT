@@ -23,6 +23,8 @@ export class ManageCorridorComponent implements OnInit {
   }
 
   onBackToPage(_eventObj) {
-    this.tabVisibility.emit(_eventObj.booleanFlag);
+    this.createEditStatus = false;
+
+    this.tabVisibility.emit(true);
   }
 }

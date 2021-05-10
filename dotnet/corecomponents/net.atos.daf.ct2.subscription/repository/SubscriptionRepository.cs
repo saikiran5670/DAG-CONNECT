@@ -61,10 +61,10 @@ namespace net.atos.daf.ct2.subscription.repository
         }
 
         //to check Subscription Id exits or not
-        async Task<IEnumerable<subscriptionIdType>> SubscriptionIdExits(long orderId, int orgId)
+        async Task<IEnumerable<subscriptionIdType>> SubscriptionIdExits(string orderId, int orgId)
         {
             var parameterToGetSubscribeId = new DynamicParameters();
-            parameterToGetSubscribeId.Add("@subscription_id", orderId);
+            parameterToGetSubscribeId.Add("@subscription_id", Convert.ToInt64(orderId));
             parameterToGetSubscribeId.Add("@organization_id", orgId);
             var data = await dataAccess.QueryAsync<subscriptionIdType>
                              (@"SELECT id, type, state as State FROM master.subscription 
@@ -281,7 +281,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
                 SubscriptionResponse objSubscriptionResponse = new SubscriptionResponse();
 
-                if (!string.IsNullOrEmpty(objUnSubscription.OrganizationID) && Convert.ToInt32(objUnSubscription.OrderID) != 0)// for Organization
+                if (!string.IsNullOrEmpty(objUnSubscription.OrganizationID) && Convert.ToInt64(objUnSubscription.OrderID) != 0)// for Organization
                 {
                     //To Get Organizationid by orgcode
                     int orgid = await GetOrganizationIdByCode(objUnSubscription.OrganizationID);
@@ -511,14 +511,14 @@ namespace net.atos.daf.ct2.subscription.repository
             return vehicleIds;
         }
 
-        private async Task<Dictionary<string, int>> CheckVINsExistInSubscription(List<string> VINs, long orderId, int orgId)
+        private async Task<Dictionary<string, int>> CheckVINsExistInSubscription(List<string> VINs, string orderId, int orgId)
         {
             Dictionary<string, int> subscriptionIds = new Dictionary<string, int>();
             foreach (var item in VINs)
             {
                 var parameterToGetVehicleId = new DynamicParameters();
                 parameterToGetVehicleId.Add("@vin", item);
-                parameterToGetVehicleId.Add("@subscription_id", orderId);
+                parameterToGetVehicleId.Add("@subscription_id", Convert.ToInt64(orderId));
                 parameterToGetVehicleId.Add("@organization_id", orgId);
                 string query = @"SELECT sub.id,sub.state FROM master.subscription sub 
 		                                            left JOIN master.vehicle veh ON sub.vehicle_id = veh.id

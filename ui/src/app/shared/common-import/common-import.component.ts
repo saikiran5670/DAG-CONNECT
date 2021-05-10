@@ -47,11 +47,14 @@ export class CommonImportComponent implements OnInit {
   @Input() defaultGpx:any;
   fileExtension = '.csv';
   parsedGPXData : any;
+  accountOrganizationId: any = 0;
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
     private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
 
   ngOnInit(): void {
+    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+
     if(this.importFileComponent === 'poi'){
       this.fileExtension = '.xlsx';
     }
@@ -135,8 +138,6 @@ export class CommonImportComponent implements OnInit {
 
 
   addfile(event: any){ 
-    this.filelist = [];
-
     if (this.fileExtension === '.csv' || this.fileExtension === '.xlsx') {
       this.excelEmptyMsg = false;
       this.file = event.target.files[0];
@@ -361,7 +362,7 @@ export class CommonImportComponent implements OnInit {
       packagesToImport.push(
         {
           
-            "organizationId": this.filelist[i]["OrganizationId"],
+            "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
             "categoryId": this.filelist[i]["CategoryId"],
             "categoryName":this.filelist[i]["CategoryName"],
             "subCategoryId":this.filelist[i]["SubCategoryId"],
@@ -511,7 +512,7 @@ export class CommonImportComponent implements OnInit {
     //console.log(nodeInfo)
     let organizedGPXData = [];
     let nodeArray = [],nodeObj ={};
-      
+    
     for(var i in nodeInfo){
       nodeArray.push(nodeInfo[i]["trkseg"]["trkpt"]);
     }
@@ -540,7 +541,7 @@ export class CommonImportComponent implements OnInit {
       organizedGPXData.push(
         {
           "id": Number(gpxInfo[i].id),
-          "organizationId": Number(gpxInfo[i].organizationId),
+          "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
           "categoryId": Number(gpxInfo[i].categoryId),
           "subCategoryId": Number(gpxInfo[i].subCategoryId),
           "name": gpxInfo[i].geofencename,
@@ -819,6 +820,13 @@ export class CommonImportComponent implements OnInit {
       obj.status = false;
       obj.reason = this.getUpdatedMessage(type,this.importTranslationData.input1mandatoryReason);
       return obj;
+    }
+    if(type === 'organizationId'){
+      if(value === 0){
+        obj.status = false;
+        obj.reason = this.getUpdatedMessage(type,this.importTranslationData.organizationIdCannotbeZero);
+        return obj;
+      }
     }
     if(type === 'type'){
       if(value!= 'C' && value!= 'O'){

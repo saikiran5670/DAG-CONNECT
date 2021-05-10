@@ -26,17 +26,20 @@ namespace net.atos.daf.ct2.vehicle
         Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
-        Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid);
-        //  Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
-        // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
+        Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
 
         #region Vehicle Mileage Data
-        Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype);
+        Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype, int accountId, int orgid);
         #endregion
 
         #region Vehicle Namelist Data
-        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric);
+        Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgid);
         #endregion
 
+        #region Vehicle Visibility
+
+        Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId);
+        
+        #endregion
     }
 }

@@ -35,6 +35,7 @@ using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.vehicledataservice.Common;
 using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.vehicledataservice
 {  
@@ -78,6 +79,8 @@ namespace net.atos.daf.ct2.vehicledataservice
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
             services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
             services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.AddTransient<IAccountManager, AccountManager>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
             services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
             services.AddTransient<IGroupManager,GroupManager>();

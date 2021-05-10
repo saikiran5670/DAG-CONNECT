@@ -41,9 +41,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 if (objsubscriptionActivation.SubscribeEvent != null)
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.OrganizationId))
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.OrganizationId));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.SubscribeEvent.OrganizationId));
                     else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.packageId))
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.SubscribeEvent.packageId));                
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.SubscribeEvent.packageId));                
 
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
                     Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
@@ -63,19 +63,19 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     catch (Exception)
                     {
                         logger.LogInformation($"Not valid date in subscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.StartDateTime);
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.StartDateTime);
                     }
 
                     var order = await subscriptionManager.Subscribe(Objsubs);
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
                         if (order.Item2.Value is string[])
-                            return GenerateErrorResponse(order.Item1, typeof(string[]), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                            return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                         else
-                            return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                            return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                     }                        
                     else if (order.Item1 == HttpStatusCode.NotFound)
-                        return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);                    
+                        return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);                    
 
                     logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.orderId}");
                     return Ok(order.Item2.Response);
@@ -84,10 +84,14 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 if (objsubscriptionActivation.UnsubscribeEvent != null)
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.OrganizationID))
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrganizationID));
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrganizationID));
 
-                    else if (objsubscriptionActivation.UnsubscribeEvent.OrderID <= 0)
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
+                    if (string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.OrderID))
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
+
+
+                    if (!long.TryParse(objsubscriptionActivation.UnsubscribeEvent.OrderID, out _))
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
 
                     UnSubscription Objunsubs = new UnSubscription();
                     Objunsubs.OrganizationID = objsubscriptionActivation.UnsubscribeEvent.OrganizationID;
@@ -107,7 +111,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     catch (Exception)
                     {
                         logger.LogInformation($"Not valid date in unsubscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string), errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.EndDateTime);
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.EndDateTime);
                     }
 
                     var order = await subscriptionManager.Unsubscribe(Objunsubs);
@@ -115,19 +119,19 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
                         if (order.Item2.Value is string[])
-                            return GenerateErrorResponse(order.Item1, typeof(string[]), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                            return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                         else
-                            return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                            return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                     }
                     else if (order.Item1 == HttpStatusCode.NotFound)
-                        return GenerateErrorResponse(order.Item1, typeof(string), errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
+                        return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
                    
                     logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
                     return Ok(order.Item2.Response);
                 }
                 else
                 {
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, typeof(string[]), value: new string[] { nameof(objsubscriptionActivation.SubscribeEvent), nameof(objsubscriptionActivation.UnsubscribeEvent) });
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, value: new string[] { nameof(objsubscriptionActivation.SubscribeEvent), nameof(objsubscriptionActivation.UnsubscribeEvent) });
                 }               
             }
             catch (Exception ex)
@@ -137,7 +141,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             }
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, Type type, string errorCode = "", object value = null)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string errorCode = "", object value = null)
         {
             switch (statusCode)
             {

@@ -1,26 +1,19 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.vehiclerepository;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.vehicledataservice.Entity;
-using System.Configuration;
-using Microsoft.Extensions.Configuration;
-using System.Transactions;
-using net.atos.daf.ct2.vehicledataservice.Common;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.Enum;
-using Newtonsoft.Json;
 using System.Linq;
 using net.atos.daf.ct2.vehicle.response;
+using net.atos.daf.ct2.account;
+using System.Security.Claims;
+using net.atos.daf.ct2.audit.Enum;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
@@ -31,13 +24,16 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
     {
         private readonly ILogger<VehicleNamelistController> logger;
         private readonly IVehicleManager vehicleManager;
-        private readonly IAuditTraillib AuditTrail;
-        public VehicleNamelistController(IVehicleManager _vehicleManager, ILogger<VehicleNamelistController> _logger, IAuditTraillib _AuditTrail)
+        private readonly IAccountManager accountManager;
+        private readonly IAuditTraillib auditTrail;
+        public VehicleNamelistController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleNamelistController> _logger, IAuditTraillib _auditTrail)
         {
             vehicleManager = _vehicleManager;
-            AuditTrail = _AuditTrail;
+            accountManager = _accountManager;
+            auditTrail = _auditTrail;
             logger = _logger;
         }
+
         [HttpGet]
         [Route("namelist")]
         public async Task<IActionResult> GetVehicleNamelist(string since)
@@ -45,12 +41,18 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             try
             {
                 long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                await auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Vehicle namelist Service", "Vehicle namelist Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get namelist method vehicle namelist service", 1, 2, since, 0, 0);
 
                 var isValid = ValidateParameter(ref since, out bool isNumeric);
-                if (!isValid)
+                if (isValid)
                 {
+                    var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+                    var account = await accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+
+                    var orgs = await accountManager.GetAccountOrg(account.Id);
+
                     VehicleNamelistResponse vehiclenamelist = new VehicleNamelistResponse();
-                    vehiclenamelist = await vehicleManager.GetVehicleNamelist(since, isNumeric);
+                    vehiclenamelist = await vehicleManager.GetVehicleNamelist(since, isNumeric, account.Id, orgs.First().Id);
 
                     vehiclenamelist.RequestTimestamp = currentdatetime;
                     return Ok(vehiclenamelist);
@@ -60,7 +62,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                logger.LogError(ex, "Error occurred while processing Vehicle Namelist data.");
                 return StatusCode(500, string.Empty);
             }
         }
@@ -92,13 +94,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             return true;
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string parameter)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value)
         {
             return StatusCode((int)statusCode, new ErrorResponse()
             {
                 ResponseCode = ((int)statusCode).ToString(),
                 Message = "INVALID_PARAMETER",
-                Value = parameter + " parameter has an invalid value."
+                Value = value
             });
         }
     }

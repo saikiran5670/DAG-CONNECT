@@ -24,8 +24,8 @@ namespace net.atos.daf.ct2.alert.repository
         public async Task<Alert> CreateAlert(Alert alert)
         {
             int urgencylevelRefId = 0;
-            //dataAccess.connection.Open();
-            //var transactionScope = dataAccess.connection.BeginTransaction();
+            dataAccess.connection.Open();
+            var transactionScope = dataAccess.connection.BeginTransaction();
             try
             {
                 var parameterAlert = new DynamicParameters();
@@ -100,17 +100,17 @@ namespace net.atos.daf.ct2.alert.repository
                     }
                 }
 
-                //transactionScope.Commit();
+                transactionScope.Commit();
             }
             catch (Exception ex)
             {
-                //transactionScope.Rollback();
+                transactionScope.Rollback();
                 throw ex;
             }
-            //finally
-            //{
-            //    dataAccess.connection.Close();
-            //}
+            finally
+            {
+                dataAccess.connection.Close();
+            }
             return alert;
         }
         private async Task<int> CreateAlertLandmarkRefs(AlertLandmarkRef landmark)
@@ -337,7 +337,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameter.Add("@validity_end_date", null);
                 }
                 parameter.Add("@vehicle_group_id", alert.VehicleGroupId);
-                parameter.Add("@modified_at", alert.ModifiedAt);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@modified_by", alert.ModifiedBy);
                 int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 alert.Id = alertId;
@@ -485,6 +485,151 @@ namespace net.atos.daf.ct2.alert.repository
         }
         #endregion
 
+        #region Get Alert List
+        public async Task<IEnumerable<Alert>> GetAlertList(Alert alert)
+        {
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                var parameterAlert = new DynamicParameters();
+                parameterAlert.Add("@organization_id", alert.OrganizationId);
+                parameterAlert.Add("@name", alert.Name);
+                parameterAlert.Add("@category", alert.Category);
+                parameterAlert.Add("@type", Convert.ToChar(alert.Type));
+                parameterAlert.Add("@validity_period_type", Convert.ToChar(alert.ValidityPeriodType));
+                parameterAlert.Add("@validity_start_date", alert.ValidityStartDate);
+                parameterAlert.Add("@validity_end_date", alert.ValidityEndDate);
+                parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
+                parameterAlert.Add("@state", 'A');
+                parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterAlert.Add("@created_by", alert.CreatedBy);
+
+                string queryAlert = @"SELECT 
+                    ale.id as ale_id,
+                    ale.organization_id as ale_organization_id,
+                    ale.name as ale_name,
+                    ale.category as ale_category,
+                    ale.type as ale_type,
+                    ale.validity_period_type as ale_validity_period_type,
+                    ale.validity_start_date as ale_validity_start_date,
+                    ale.validity_end_date as ale_validity_end_date,
+                    ale.vehicle_group_id as ale_vehicle_group_id,
+                    ale.state as ale_state,
+                    ale.created_at as ale_created_at,
+                    ale.created_by as ale_created_by,
+                    ale.modified_at as ale_modified_at,
+                    ale.modified_by as ale_modified_by,
+                    aleurg.id as aleurg_id,
+                    aleurg.alert_id as aleurg_alert_id,
+                    aleurg.urgency_level_type as aleurg_urgency_level_type,
+                    aleurg.threshold_value as aleurg_threshold_value,
+                    aleurg.unit_type as aleurg_unit_type,
+                    aleurg.day_type as aleurg_day_type,
+                    aleurg.period_type as aleurg_period_type,
+                    aleurg.urgencylevel_start_date as aleurg_urgencylevel_start_date,
+                    aleurg.urgencylevel_end_date as aleurg_urgencylevel_end_date,
+                    aleurg.state as aleurg_state,
+                    aleurg.created_at as aleurg_created_at,
+                    aleurg.modified_at as aleurg_modified_at,
+                    alefil.id as alefil_id,
+                    alefil.alert_id as alefil_alert_id,
+                    alefil.alert_urgency_level_id as alefil_alert_urgency_level_id,
+                    alefil.filter_type as alefil_filter_type,
+                    alefil.threshold_value as alefil_threshold_value,
+                    alefil.unit_type as alefil_unit_type,
+                    alefil.landmark_type as alefil_landmark_type,
+                    alefil.ref_id as alefil_ref_id,
+                    alefil.position_type as alefil_position_type,
+                    alefil.day_type as alefil_day_type,
+                    alefil.period_type as alefil_period_type,
+                    alefil.filter_start_date as alefil_filter_start_date,
+                    alefil.filter_end_date as alefil_filter_end_date,
+                    alefil.state as alefil_state,
+                    alefil.created_at as alefil_created_at,
+                    alefil.modified_at as alefil_modified_at,
+                    alelan.id as alelan_id,
+                    alelan.alert_id as alelan_alert_id,
+                    alelan.landmark_type as alelan_landmark_type,
+                    alelan.ref_id as alelan_ref_id,
+                    alelan.distance as alelan_distance,
+                    alelan.unit_type as alelan_unit_type,
+                    alelan.state as alelan_state,
+                    alelan.created_at as alelan_created_at,
+                    alelan.modified_at as alelan_modified_at,
+                    noti.id as noti_id,
+                    noti.alert_id as noti_alert_id,
+                    noti.alert_urgency_level_type as noti_alert_urgency_level_type,
+                    noti.frequency_type as noti_frequency_type,
+                    noti.frequency_threshhold_value as noti_frequency_threshhold_value,
+                    noti.validity_type as noti_validity_type,
+                    noti.state as noti_state,
+                    noti.created_at as noti_created_at,
+                    noti.created_by as noti_created_by,
+                    noti.modified_at as noti_modified_at,
+                    noti.modified_by as noti_modified_by,
+                    notrec.id as notrec_id,
+                    notrec.notification_id as notrec_notification_id,
+                    notrec.recipient_label as notrec_recipient_label,
+                    notrec.account_group_id as notrec_account_group_id,
+                    notrec.notification_mode_type as notrec_notification_mode_type,
+                    notrec.phone_no as notrec_phone_no,
+                    notrec.sms as notrec_sms,
+                    notrec.email_id as notrec_email_id,
+                    notrec.email_sub as notrec_email_sub,
+                    notrec.email_text as notrec_email_text,
+                    notrec.ws_url as notrec_ws_url,
+                    notrec.ws_type as notrec_ws_type,
+                    notrec.ws_text as notrec_ws_text,
+                    notrec.ws_login as notrec_ws_login,
+                    notrec.ws_password as notrec_ws_password,
+                    notrec.state as notrec_state,
+                    notrec.created_at as notrec_created_at,
+                    notrec.modified_at as notrec_modified_at,
+                    notlim.id as notlim_id,
+                    notlim.notification_id as notlim_notification_id,
+                    notlim.notification_mode_type as notlim_notification_mode_type,
+                    notlim.max_limit as notlim_max_limit,
+                    notlim.notification_period_type as notlim_notification_period_type,
+                    notlim.period_limit as notlim_period_limit,
+                    notlim.state as notlim_state,
+                    notlim.created_at as notlim_created_at,
+                    notlim.modified_at as notlim_modified_at,
+                    notava.id as notava_id,
+                    notava.notification_id as notava_notification_id,
+                    notava.availability_period_type as notava_availability_period_type,
+                    notava.period_type as notava_period_type,
+                    notava.start_time as notava_start_time,
+                    notava.end_time as notava_end_time,
+                    notava.state as notava_state,
+                    notava.created_at as notava_created_at,
+                    notava.modified_at as notava_modified_at
+                    FROM master.alert ale
+                    inner join master.alerturgencylevelref aleurg
+                    on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
+                    inner join master.alertfilterref alefil
+                    on aleurg.id=alefil.alert_urgency_level_id and alefil.state in ('A','I')
+                    inner join master.alertlandmarkref alelan
+                    on ale.id=alelan.alert_id and alelan.state in ('A','I')
+                    inner join master.notification noti
+                    on ale.id=noti.alert_id and ale.state in ('A','I') and noti.state in ('A','I')
+                    inner join master.notificationrecipient notrec
+                    on noti.id=notrec.notification_id and notrec.state in ('A','I')
+                    inner join master.notificationlimit notlim
+                    on noti.id= notlim.notification_id and notlim.state in ('A','I')
+                    inner join master.notificationavailabilityperiod notava
+                    on noti.id= notava.notification_id and notava.state in ('A','I')
+                     ";
+                
+                IEnumerable<AlertResult> alertResult = await dataAccess.QueryAsync<AlertResult>(queryAlert, parameterAlert);
+                return repositoryMapper.GetAlertList(alertResult);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
         #region Private method
 
         private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId,int ModifiedBy)

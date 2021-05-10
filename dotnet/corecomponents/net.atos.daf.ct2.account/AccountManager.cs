@@ -185,6 +185,12 @@ namespace net.atos.daf.ct2.account
         {
             return await repository.AddAccountToOrg(account);
         }
+
+        public async Task<Account> GetAccountByEmailId(string emailId)
+        {
+            return await repository.GetAccountByEmailId(emailId);
+        }
+
         public async Task<AccountBlob> CreateBlob(AccountBlob accountBlob)
         {
             return await repository.CreateBlob(accountBlob);

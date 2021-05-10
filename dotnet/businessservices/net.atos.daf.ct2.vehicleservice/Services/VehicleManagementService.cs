@@ -977,8 +977,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-
-
         public override async Task<VehicleListResponce> GetRelationshipVehicles(OrgvehicleIdRequest request, ServerCallContext context)
         {
             try
@@ -1009,7 +1007,32 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
 
+        }
 
+        public override async Task<VehicleGroupResponse> GetVehicleGroupbyAccountId(VehicleGroupListRequest request, ServerCallContext context)
+        {
+            try
+            {
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupList> VehicleGroupList = await _vehicelManager.GetVehicleGroupbyAccountId(request.AccountId, request.OrganizationId);
+                VehicleGroupResponse response = new VehicleGroupResponse();
+                foreach (var item in VehicleGroupList)
+                {
+                    response.VehicleGroupList.Add(_mapper.MapVehicleGroup(item));
+                }
+                response.Message = "Vehicle Group data retrieved";
+                response.Code = Responcecode.Success;
+                _logger.Info("Get method in vehicle service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleGroupResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetVehicleGroupbyAccountId fail due to with reason : " + ex.Message
+                });
+            }
         }
 
     }
