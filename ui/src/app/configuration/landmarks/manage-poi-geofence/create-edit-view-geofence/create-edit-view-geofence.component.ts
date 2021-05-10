@@ -626,53 +626,55 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         }, timeout);
       }, true);
     
-      // event listener for vertice markers group to change the cursor to pointer
-      verticeGroup.addEventListener('pointerenter', function(evt) {
-        document.body.style.cursor = 'pointer';
-      }, true);
-    
-      // event listener for vertice markers group to change the cursor to default
-      verticeGroup.addEventListener('pointerleave', function(evt) {
-        document.body.style.cursor = 'default';
-      }, true);
-    
-      // event listener for vertice markers group to resize the geo polygon object if dragging over markers
-      verticeGroup.addEventListener('drag', function(evt) {
-        var pointer = evt.currentPointer,
-            geoLineString = polygon.getGeometry().getExterior(),
-            geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
-            //console.log('geoPoint:',geoPoint);
-            //console.log('geoLineString:',geoLineString);
-        // set new position for vertice marker
-        evt.target.setGeometry(geoPoint);
-    
-        // set new position for polygon's vertice
-        geoLineString.removePoint(evt.target.getData()['verticeIndex']);
-        geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
-        polygon.setGeometry(new H.geo.Polygon(geoLineString));
-    
-        // stop propagating the drag event, so the map doesn't move
-        evt.stopPropagation();
-      }, true);
+      if(thisRef.actionType == 'create'){ //-- only for create polygon geofence
+        // event listener for vertice markers group to change the cursor to pointer
+        verticeGroup.addEventListener('pointerenter', function(evt) {
+          document.body.style.cursor = 'pointer';
+        }, true);
+      
+        // event listener for vertice markers group to change the cursor to default
+        verticeGroup.addEventListener('pointerleave', function(evt) {
+          document.body.style.cursor = 'default';
+        }, true);
+      
+        // event listener for vertice markers group to resize the geo polygon object if dragging over markers
+        verticeGroup.addEventListener('drag', function(evt) {
+          var pointer = evt.currentPointer,
+              geoLineString = polygon.getGeometry().getExterior(),
+              geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
+              //console.log('geoPoint:',geoPoint);
+              //console.log('geoLineString:',geoLineString);
+          // set new position for vertice marker
+          evt.target.setGeometry(geoPoint);
+      
+          // set new position for polygon's vertice
+          geoLineString.removePoint(evt.target.getData()['verticeIndex']);
+          geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
+          polygon.setGeometry(new H.geo.Polygon(geoLineString));
+      
+          // stop propagating the drag event, so the map doesn't move
+          evt.stopPropagation();
+        }, true);
 
-      verticeGroup.addEventListener('dragend', function (ev) {
-        var coordinate = map.screenToGeo(ev.currentPointer.viewportX,
-          ev.currentPointer.viewportY);
-          let nodeIndex = ev.target.getData()['verticeIndex'];
-        //console.log("index:: ", ev.target.getData()['verticeIndex']);
-        let _position = Math.abs(coordinate.lat.toFixed(4)) + "," + Math.abs(coordinate.lng.toFixed(4));
-          if(_position){
-            thisRef.hereService.getAddressFromLatLng(_position).then(result => {
-              let locations = <Array<any>>result;
-              let data = locations[0].Location.Address;
-              let pos = locations[0].Location.DisplayPosition;
-              thisRef.setAddressValues('updatePoint', data, pos, nodeIndex);
-            }, error => {
-              // console.error(error);
-            });
-          }
+        verticeGroup.addEventListener('dragend', function (ev) {
+          var coordinate = map.screenToGeo(ev.currentPointer.viewportX,
+            ev.currentPointer.viewportY);
+            let nodeIndex = ev.target.getData()['verticeIndex'];
+          //console.log("index:: ", ev.target.getData()['verticeIndex']);
+          let _position = Math.abs(coordinate.lat.toFixed(4)) + "," + Math.abs(coordinate.lng.toFixed(4));
+            if(_position){
+              thisRef.hereService.getAddressFromLatLng(_position).then(result => {
+                let locations = <Array<any>>result;
+                let data = locations[0].Location.Address;
+                let pos = locations[0].Location.DisplayPosition;
+                thisRef.setAddressValues('updatePoint', data, pos, nodeIndex);
+              }, error => {
+                // console.error(error);
+              });
+            }
 
-      }, false);
+        }, false);
+      }
   }
 
   showCreatePolygonButton(map: any, points: any){
