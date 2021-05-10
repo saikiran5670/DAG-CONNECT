@@ -1017,60 +1017,162 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     //    routeCorridor.Id = 0;
 
 
-                    var insertIntoNodes = @"INSERT INTO master.nodes(
-                                          landmark_id, state, latitude, longitude, created_at, created_by, address)
-                                            VALUES (@LandmarkId, @state, @StartLatitude ,@StartLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
+                    //var insertIntoNodes = @"INSERT INTO master.nodes(
+                    //                      landmark_id, latitude, longitude, created_at, created_by, address)
+                    //                        VALUES (@LandmarkId, @StartLatitude ,@StartLongitude, @Created_At, @Created_By, @EndAddress) RETURNING id";
 
-                    var insertIntoCorridorProperties = @"INSERT INTO master.corridorproperties(
-                                          landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
-                                           VALUES (@LandmarkId, @TransportData, @TrafficFlow, @Trailer, @Explosive, @Gas, @Flammable, @Combustible, @organic, @poision, @RadioActive, @Corrosive, @PoisonousInhalation, @WaterHarm, @Other, @TollRoad, @Mortorway, @BoatFerries, @RailFerries, @Tunnels, @DirtRoad, @VehicleSizeHeight, @VehicleSizeWidth, @VehicleSizeLength, @VehicleSizeLimitedWeight, @VehicleSizeWeightPerAxle, @Created_At) RETURNING id";
+                    StringBuilder queryForUpdateCorridorNodes = new StringBuilder();
+                    queryForUpdateCorridorNodes.Append("UPDATE master.nodes set landmark_id=@landmark_id");
+                    parameter.Add("@landmark_id", routeCorridor.Id);
+                    if (obj.EndLatitude > 0)
+                    {
+                        parameter.Add("@latitude", routeCorridor.EndLatitude);
+                        queryForUpdateCorridorNodes.Append(", latitude=@latitude");
+                    }
+                    if (obj.EndLongitude > 0)
+                    {
+                        parameter.Add("@longitude", routeCorridor.EndLongitude);
+                        queryForUpdateCorridorNodes.Append(", longitude=@longitude");
+                    }
+                    if (!string.IsNullOrEmpty(obj.StartAddress))
+                    {
+                        parameter.Add("@address", routeCorridor.EndAddress);
+                        queryForUpdateCorridorNodes.Append(", address=@address");
+                    }
+                    if (obj.Modified_By > 0)
+                    {
+                        parameter.Add("@modified_by", routeCorridor.Modified_By);
+                        queryForUpdateCorridorNodes.Append(", modified_by=@modified_by");
+                    }
+                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    queryForUpdateCorridorNodes.Append(", modified_at=@modified_at");
+                    parameter.Add("@id", routeCorridor.NodeId);
+                    queryForUpdateCorridorNodes.Append(" where id=@id RETURNING id");
+
+                    //var insertIntoCorridorProperties = @"INSERT INTO master.corridorproperties(
+                    //                      landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
+                    //                       VALUES (@LandmarkId, @TransportData, @TrafficFlow, @Trailer, @Explosive, @Gas, @Flammable, @Combustible, @organic, @poision, @RadioActive, @Corrosive, @PoisonousInhalation, @WaterHarm, @Other, @TollRoad, @Mortorway, @BoatFerries, @RailFerries, @Tunnels, @DirtRoad, @VehicleSizeHeight, @VehicleSizeWidth, @VehicleSizeLength, @VehicleSizeLimitedWeight, @VehicleSizeWeightPerAxle, @Created_At) RETURNING id";
+
+                    StringBuilder queryToUpdateCorridorProperties = new StringBuilder();
+                    queryToUpdateCorridorProperties.Append("UPDATE master.corridorproperties set landmark_id=@landmark_id");
+                    parameter.Add("@landmark_id", routeCorridor.Id);
+
+                    parameter.Add("@is_transport_data", routeCorridor.TransportData);
+                    queryToUpdateCorridorProperties.Append(", is_transport_data=@is_transport_data");
+
+                    parameter.Add("@is_traffic_flow", routeCorridor.TrafficFlow);
+                    queryToUpdateCorridorProperties.Append(", is_traffic_flow=@is_traffic_flow");
+                    if (routeCorridor.Trailer > 0)
+                    {
+                        parameter.Add("@no_of_trailers", routeCorridor.Trailer);
+                        queryToUpdateCorridorProperties.Append(", no_of_trailers=@no_of_trailers");
+                    }
+                    parameter.Add("@is_explosive", routeCorridor.Explosive);
+                    queryToUpdateCorridorProperties.Append(", is_explosive=@is_explosive");
+
+                    parameter.Add("@is_gas", routeCorridor.Gas);
+                    queryToUpdateCorridorProperties.Append(", is_gas=@is_gas");
+
+                    parameter.Add("@is_flammable", routeCorridor.Flammable);
+                    queryToUpdateCorridorProperties.Append(", is_flammable=@is_flammable");
+
+                    parameter.Add("@is_combustible", routeCorridor.Combustible);
+                    queryToUpdateCorridorProperties.Append(", is_combustible=@is_combustible");
+
+                    parameter.Add("@is_organic", routeCorridor.organic);
+                    queryToUpdateCorridorProperties.Append(", is_organic=@is_organic");
+
+                    parameter.Add("@is_poison", routeCorridor.poision);
+                    queryToUpdateCorridorProperties.Append(", is_poison=@is_poison");
+
+                    parameter.Add("@is_radio_active", routeCorridor.RadioActive);
+                    queryToUpdateCorridorProperties.Append(", is_radio_active=@is_radio_active");
+
+                    parameter.Add("@is_corrosive", routeCorridor.Corrosive);
+                    queryToUpdateCorridorProperties.Append(", is_corrosive=@is_corrosive");
+
+                    parameter.Add("@is_poisonous_inhalation", routeCorridor.PoisonousInhalation);
+                    queryToUpdateCorridorProperties.Append(", is_poisonous_inhalation=@is_poisonous_inhalation");
+
+                    parameter.Add("@is_warm_harm", routeCorridor.WaterHarm);
+                    queryToUpdateCorridorProperties.Append(", is_warm_harm=@is_warm_harm");
+
+                    parameter.Add("@is_other", routeCorridor.Other);
+                    queryToUpdateCorridorProperties.Append(", is_other=@is_other");
 
 
+                    if (routeCorridor.TollRoad != null)
+                    {
+                        parameter.Add("@toll_road_type", routeCorridor.TollRoad);
+                        queryToUpdateCorridorProperties.Append(", toll_road_type=@toll_road_type");
+                    }
+                    if (routeCorridor.Mortorway != null)
+                    {
+                        parameter.Add("@motorway_type", routeCorridor.Mortorway);
+                        queryToUpdateCorridorProperties.Append(", motorway_type=@motorway_type");
+                    }
+                    if (routeCorridor.BoatFerries != null)
+                    {
+                        parameter.Add("@boat_ferries_type", routeCorridor.BoatFerries);
+                        queryToUpdateCorridorProperties.Append(", boat_ferries_type=@boat_ferries_type");
+                    }
+                    if (routeCorridor.RailFerries != null)
+                    {
+                        parameter.Add("@rail_ferries_type", routeCorridor.RailFerries);
+                        queryToUpdateCorridorProperties.Append(", rail_ferries_type=@rail_ferries_type");
+                    }
+                    if (routeCorridor.Tunnels != null)
+                    {
+                        parameter.Add("@tunnels_type", routeCorridor.Tunnels);
+                        queryToUpdateCorridorProperties.Append(", is_transport_data=@is_transport_data");
+                    }
+                    if (routeCorridor.DirtRoad != null)
+                    {
+                        parameter.Add("@dirt_road_type", routeCorridor.DirtRoad);
+                        queryToUpdateCorridorProperties.Append(", dirt_road_type=@dirt_road_type");
+                    }
 
-                    parameter.Add("@Distance", routeCorridor.Distance);
-                    parameter.Add("@CorridorType", routeCorridor.CorridorType);
 
+                    if (routeCorridor.Trailer > 0)
+                    {
+                        parameter.Add("@no_of_trailers", routeCorridor.Trailer);
+                        queryToUpdateCorridorProperties.Append(", no_of_trailers=@no_of_trailers");
+                    }
+                    if (routeCorridor.VehicleSizeHeight > 0)
+                    {
+                        parameter.Add("@vehicle_height", routeCorridor.VehicleSizeHeight);
+                        queryToUpdateCorridorProperties.Append(", vehicle_height=@vehicle_height");
+                    }
+                    if (routeCorridor.VehicleSizeWidth > 0)
+                    {
+                        parameter.Add("@vehicle_width", routeCorridor.VehicleSizeWidth);
+                        queryToUpdateCorridorProperties.Append(", vehicle_width=@vehicle_width");
+                    }
+                    if (routeCorridor.VehicleSizeLength > 0)
+                    {
+                        parameter.Add("@vehicle_length", routeCorridor.VehicleSizeLength);
+                        queryToUpdateCorridorProperties.Append(", vehicle_length=@vehicle_length");
+                    }
+                    if (routeCorridor.Trailer > 0)
+                    {
+                        parameter.Add("@vehicle_limited_weight", routeCorridor.VehicleSizeLimitedWeight);
+                        queryToUpdateCorridorProperties.Append(", vehicle_limited_weight=@vehicle_limited_weight");
+                    }
+                    if (routeCorridor.VehicleSizeWeightPerAxle > 0)
+                    {
+                        parameter.Add("@vehicle_weight_per_axle", routeCorridor.Trailer);
+                        queryToUpdateCorridorProperties.Append(", vehicle_weight_per_axle=@vehicle_weight_per_axle");
+                    }
 
-                    parameter.Add("@StartAddress", routeCorridor.StartAddress);
-                    parameter.Add("@StartLatitude", routeCorridor.StartLatitude);
-                    parameter.Add("@StartLongitude", routeCorridor.StartLongitude);
-
-                    parameter.Add("@EndAddress", routeCorridor.EndAddress);
-                    parameter.Add("@EndLatitude", routeCorridor.EndLatitude);
-                    parameter.Add("@EndLongitude", routeCorridor.EndLongitude);
-
-                    parameter.Add("@Width", routeCorridor.Width);
-                    parameter.Add("@TransportData", routeCorridor.TransportData);
-                    parameter.Add("@TrafficFlow", routeCorridor.TrafficFlow);
-                    parameter.Add("@Trailer", routeCorridor.Trailer);
-                    parameter.Add("@Explosive", routeCorridor.Explosive);
-                    parameter.Add("@Gas", routeCorridor.Gas);
-
-                    parameter.Add("@Flammable", routeCorridor.Flammable);
-                    parameter.Add("@Combustible", routeCorridor.Combustible);
-                    parameter.Add("@organic", routeCorridor.organic);
-                    parameter.Add("@poision", routeCorridor.poision);
-                    parameter.Add("@RadioActive", routeCorridor.RadioActive);
-                    parameter.Add("@Corrosive", routeCorridor.Corrosive);
-                    parameter.Add("@PoisonousInhalation", routeCorridor.PoisonousInhalation);
-                    parameter.Add("@WaterHarm", routeCorridor.WaterHarm);
-                    parameter.Add("@Other", routeCorridor.Other);
-
-                    parameter.Add("@TollRoad", routeCorridor.TollRoad);
-                    parameter.Add("@Mortorway", routeCorridor.Mortorway);
-                    parameter.Add("@BoatFerries", routeCorridor.BoatFerries);
-                    parameter.Add("@RailFerries", routeCorridor.RailFerries);
-                    parameter.Add("@Tunnels", routeCorridor.Tunnels);
-                    parameter.Add("@DirtRoad", routeCorridor.DirtRoad);
-                    parameter.Add("@VehicleSizeHeight", routeCorridor.VehicleSizeHeight);
-                    parameter.Add("@VehicleSizeWidth", routeCorridor.VehicleSizeWidth);
-                    parameter.Add("@VehicleSizeLength", routeCorridor.VehicleSizeLength);
-                    parameter.Add("@VehicleSizeLimitedWeight", routeCorridor.VehicleSizeLimitedWeight);
-                    parameter.Add("@VehicleSizeWeightPerAxle", routeCorridor.VehicleSizeWeightPerAxle);
-
-                    parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                    parameter.Add("@Created_By", routeCorridor.Created_By);
-                    parameter.Add("@state", "A");
+                    if (obj.Modified_By > 0)
+                    {
+                        parameter.Add("@modified_by", routeCorridor.Modified_By);
+                        queryToUpdateCorridorProperties.Append(", modified_by = @modified_by");
+                    }
+                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    queryToUpdateCorridorProperties.Append(", modified_at=@modified_at");
+                    parameter.Add("@id", routeCorridor.CorridorPropertiesId);
+                    queryToUpdateCorridorProperties.Append(" where id=@id RETURNING id");
 
 
                     var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridor.ToString(), parameter);
@@ -1079,9 +1181,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         routeCorridor.Id = id;
                         parameter.Add("@LandmarkId", routeCorridor.Id);
 
-                        await _dataAccess.ExecuteScalarAsync<int>(insertIntoNodes, parameter);
+                        await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridorNodes.ToString(), parameter);
 
-                        await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorProperties, parameter);
+                        await _dataAccess.ExecuteScalarAsync<int>(queryToUpdateCorridorProperties.ToString(), parameter);
 
                         ViaRoute routeObj = new ViaRoute();
                         foreach (var item in routeCorridor.ViaRoutDetails)
@@ -1101,20 +1203,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                            where id=@id RETURNING id";
 
                             await _dataAccess.ExecuteScalarAsync<int>(updateIntoCorridorViaStop, parameter);
-
                         }
-
                     }
-
                     transactionScope.Complete();
-
                 }
             }
             catch (Exception ex)
             {
                 log.Info("AddRouteCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(routeCorridor.Id));
                 log.Error(ex.ToString());
-                // throw ex;
+                throw ex;
             }
             return routeCorridor;
         }

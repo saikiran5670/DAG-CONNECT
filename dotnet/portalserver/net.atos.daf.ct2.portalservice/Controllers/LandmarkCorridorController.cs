@@ -260,7 +260,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("update")]
-
         public async Task<IActionResult> UpdateRouteCorridor(Entity.Corridor.CorridorRequest request)
         {
             try
@@ -273,23 +272,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
-                var MapRequest = _corridorMapper.MapCorridor(request);
-                var data = await _corridorServiceClient.AddRouteCorridorAsync(MapRequest);
-                if (data != null && data.Code == Responsecode.Success)
+                
+                UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
+                objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);
+                var data = await _corridorServiceClient.UpdateRouteCorridorAsync(objUpdateRouteCorridorRequest);
+                if (data != null && data.Response.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
                                            "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                           "UpdateRouteCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
+                                           "UpdateRouteCorridor method in Landmark Corridor controller", data.Response.CorridorID, data.Response.CorridorID, JsonConvert.SerializeObject(request),
                                             Request);
                     return Ok(data);
                 }
-                else if (data != null && data.Code == Responsecode.Conflict)
+                else if (data != null && data.Response.Code == Responsecode.Conflict)
                 {
-                    return StatusCode(409, data.Message);
+                    return StatusCode(409, data.Response.Message);
                 }
                 else
                 {
-                    return StatusCode(500, data.Message);
+                    return StatusCode(500, data.Response.Message);
                 }
             }
             catch (Exception ex)
@@ -299,7 +300,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                          "UpdateRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
                                           Request);
                 _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
             }
         }
 

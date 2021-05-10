@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
+using net.atos.daf.ct2.portalservice.CustomValidators.Common;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
     public class AlertBase
     {
         //public int Id { get; set; }
-
         public int OrganizationId { get; set; }
-
+        [IsEmpty(ErrorMessage = "Name should not be null or empty.")]
         public string Name { get; set; }
-
+        [AlertCategory]
         public string Category { get; set; }
 
         public string Type { get; set; }
@@ -23,7 +24,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public long ValidityEndDate { get; set; }
 
         public int VehicleGroupId { get; set; }
-
+        [State]
         public string State { get; set; }
         public string ApplyOn { get; set; }
 
