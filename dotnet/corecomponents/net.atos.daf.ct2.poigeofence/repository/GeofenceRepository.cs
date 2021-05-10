@@ -157,12 +157,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 if (objGeofenceDeleteEntity.GeofenceId.Count > 0)
                 {
+                    long updatedTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
                     foreach (var item in objGeofenceDeleteEntity.GeofenceId)
                     {
                         var parameter = new DynamicParameters();
                         parameter.Add("@id", item);
                         parameter.Add("@modified_by", objGeofenceDeleteEntity.ModifiedBy);
-                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        parameter.Add("@modified_at", updatedTime);
                         var queryLandmark = @"update master.landmark set state='D',modified_at=@modified_at,modified_by=@modified_by where id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
 
