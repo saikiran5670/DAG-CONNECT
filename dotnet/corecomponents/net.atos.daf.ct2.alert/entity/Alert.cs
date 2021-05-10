@@ -39,5 +39,6 @@ namespace net.atos.daf.ct2.alert.entity
         public List<AlertUrgencyLevelRef> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRef>();
 
         public List<AlertLandmarkRef> AlertLandmarkRefs { get; set; } = new List<AlertLandmarkRef>();
+        public bool Exists { get; set; }
     }
 }

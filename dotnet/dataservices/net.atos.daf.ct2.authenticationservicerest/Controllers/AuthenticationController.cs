@@ -75,8 +75,6 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                             authToken.access_token = response.AccessToken;
                             authToken.expires_in = response.ExpiresIn;
                             authToken.token_type = response.TokenType;
-                            authToken.session_state = response.SessionState;
-                            authToken.scope = response.Scope;
                             return Ok(authToken);
                         }
                         else

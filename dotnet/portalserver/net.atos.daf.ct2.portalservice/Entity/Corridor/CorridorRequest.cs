@@ -15,7 +15,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         [StringLength(1)]
         public string CorridorType { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
+        [RegularExpression(@"^[^!@#$%&*]+$")]
         public string CorridorLabel { get; set; }
         [Required]
         [StringLength(100)]

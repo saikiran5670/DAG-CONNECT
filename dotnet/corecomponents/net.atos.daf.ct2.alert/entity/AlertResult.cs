@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.alert.entity
         public string ale_state { get; set; }
         public long ale_created_at { get; set; }
         public int ale_created_by { get; set; }
-        public int ale_modified_at { get; set; }
+        public long ale_modified_at { get; set; }
         public int ale_modified_by { get; set; }
         public int aleurg_id { get; set; }
         public int aleurg_alert_id { get; set; }

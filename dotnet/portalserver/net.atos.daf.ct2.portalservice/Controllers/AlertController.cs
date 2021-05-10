@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Create  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
+                 "Update  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))
