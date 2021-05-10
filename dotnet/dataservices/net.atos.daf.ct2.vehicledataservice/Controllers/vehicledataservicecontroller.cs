@@ -8,8 +8,9 @@ using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicledataservice.Entity;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization;
-using AccountComponent = net.atos.daf.ct2.account;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
