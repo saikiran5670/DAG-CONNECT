@@ -36,6 +36,8 @@ export class CreateEditCorridorComponent implements OnInit {
   hereMap: any;
   distanceinKM = 0;
   viaRouteCount : boolean = false;
+  transportDataChecked : boolean= false;
+  trafficFlowChecked : boolean = false;
 
   constructor(private here: HereService,private formBuilder: FormBuilder) {
     this.platform = new H.service.Platform({
@@ -109,6 +111,30 @@ export class CreateEditCorridorComponent implements OnInit {
     this.viaRouteCount = false;
 
   }
+
+  transportDataCheckedFn(_checked){
+    this.transportDataChecked = _checked;
+    console.log(this.transportDataChecked)
+  }
+
+  
+  trafficFlowCheckedFn(_checked){
+    this.trafficFlowChecked = _checked;
+  }
+
+  explosiveChecked :boolean = false;
+  attributeCheck(_checked,type){
+    switch (type) {
+      case 'explosive':
+        this.explosiveChecked = _checked;
+        console.log(this.explosiveChecked)
+        break;
+    
+      default:
+        break;
+    }
+  }
+
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 

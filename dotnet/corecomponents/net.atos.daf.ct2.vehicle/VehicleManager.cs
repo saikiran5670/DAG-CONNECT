@@ -233,11 +233,11 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
-        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid)
+        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
         {
             try
             {
-                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid);
+                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid,orgnizationid);
             }
             catch (Exception ex)
             {
