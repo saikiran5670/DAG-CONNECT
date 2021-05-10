@@ -165,11 +165,12 @@
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFiltersdetails || 'Filters Details' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-        <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'C'))" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'C' || alert_type_selected === 'S')) ||
+                    (alert_category_selected === 'R')" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
                 <div class="margin-bottom-sm">
-                    <mat-radio-group formControlName="alertLevel">
+                    <mat-radio-group [disabled]="alert_category_selected === 'R'" formControlName="alertLevel">
                         <mat-radio-button style='margin-right: 20px;' value="critical">
                             {{ translationData.lblCritical || 'Critical' }}
                         </mat-radio-button>
@@ -181,7 +182,8 @@
                         </mat-radio-button>
                     </mat-radio-group>
                 </div>
-                <p style="color: darkgray;">Choose appropriate urgency level for this alert</p>
+                <p *ngIf="alert_category_selected != 'R'" style="color: darkgray;">Choose appropriate urgency level for this alert</p>
+                <p *ngIf="alert_category_selected == 'R'" style="color: darkgray;">It's default selection for all '{{alertTypeName}}' alerts</p>
             </div>
           </div>
 
@@ -211,7 +213,7 @@
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="50">
+                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="50"> Days
                     </mat-form-field>
                   </div>
                 </div>
@@ -234,7 +236,8 @@
 
         <!-- Map -->
         <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
-                    (alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
+                    (alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" > 
+        </div>
                             
         <!-- POI table -->
         <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
@@ -484,6 +487,38 @@
             </div>
           </mat-expansion-panel>
           </div>
+
+          <!-- Calender selction -->
+
+          <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'S'"
+             fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+              <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblSelectCalender || 'Select Calender' }} <span class='mandatoryColor'>*</span></mat-label>  
+                <div appearance="outline">
+                  <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-checkbox (change)="onChangeMondaySelection($event)">Monday</mat-checkbox>
+                    </div> 
+                    <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-radio-group [disabled]="!isMondaySelected" formControlName="mondayPeriod">
+                        <mat-radio-button style='margin-right: 20px;' value="full_day">
+                            {{ translationData.lblFullDay || 'Full Day' }}
+                        </mat-radio-button>
+                        <mat-radio-button style='margin-right: 20px;' value="custom">
+                            {{ translationData.lblCustomPeriod || 'Custom Period' }}
+                        </mat-radio-button>
+                      </mat-radio-group>
+                    </div> 
+                  </div>
+                  <div *ngIf="alertForm.controls['mondayPeriod'].value == 'custom'"   fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput>
+                    </mat-form-field>
+                  </div>
+                </div>
+             </div>
+           </div>
+          
     </mat-expansion-panel>
 </mat-card>
 </form>
