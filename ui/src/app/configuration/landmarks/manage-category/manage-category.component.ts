@@ -250,22 +250,58 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onPOIClick(rowData: any){
+    let id: any; 
+    if(rowData.subCategoryId == 0){ // parent-cat
+      id = rowData.parentCategoryId;
+      this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+        this.nextStepforPOI(poiData);
+      });
+    }else{ // sub-cat
+      id = rowData.subCategoryId;
+      this.landmarkCategoryService.getSubCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+        this.nextStepforPOI(poiData);
+      });
+    }
+  }
+
+  onGeofenceClick(rowData: any){
+    let id: any; 
+    if(rowData.subCategoryId == 0){ // parent-cat
+      id = rowData.parentCategoryId;
+      this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+        this.nextStepforGeofence(geofenceData);
+      });
+    }else{ // sub-cat
+      id = rowData.subCategoryId; 
+      this.landmarkCategoryService.getSubCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+        this.nextStepforGeofence(geofenceData);
+      });
+    }
+  }
+
+  nextStepforPOI(poiData: any){
     const colsList = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
     const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
     const tableTitle = this.translationData.lblPOI || 'POI';
-    this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, rowData.parentCategoryId).subscribe((poiData: any) => {
-      poiData.forEach(element => {
-        if(element.icon && element.icon != ''){
-          // let TYPED_ARRAY = new Uint8Array(element.icon);
-          // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-          // let base64String = btoa(STRING_CHAR);
-          element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
-        }else{
-          element.icon = '';
-        }
-      });
-      this.callToCommonTable(poiData, colsList, colsName, tableTitle);
+    poiData.forEach(element => {
+      if(element.icon && element.icon != ''){
+        // let TYPED_ARRAY = new Uint8Array(element.icon);
+        // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+        // let base64String = btoa(STRING_CHAR);
+        element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
+      }else{
+        element.icon = '';
+      }
     });
+    this.callToCommonTable(poiData, colsList, colsName, tableTitle);
+  }
+
+  nextStepforGeofence(geofenceData: any){
+    const colsList = ['geofenceName', 'categoryName', 'subCategoryName'];
+    const colsName = [this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
+    const tableTitle = this.translationData.lblGeofence || 'Geofence';
+    let filterGeoData: any = geofenceData.geofenceList.filter(item => item.type == 'C' || item.type == 'O');
+    this.callToCommonTable(filterGeoData, colsList, colsName, tableTitle);
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
@@ -279,15 +315,6 @@ export class ManageCategoryComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
-  }
-
-  onGeofenceClick(rowData: any){
-    const colsList = ['geofenceName', 'categoryName', 'subCategoryName'];
-    const colsName = [this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
-    const tableTitle = this.translationData.lblGeofence || 'Geofence';
-    this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, rowData.parentCategoryId).subscribe((geofenceData: any) => {
-      this.callToCommonTable(geofenceData.geofenceList, colsList, colsName, tableTitle);
-    });
   }
 
   onCategoryChange(_event: any){

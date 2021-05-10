@@ -309,6 +309,12 @@ namespace net.atos.daf.ct2.alert.repository
             var transactionScope = dataAccess.connection.BeginTransaction();
             try
             {
+                alert = await Exists(alert);
+                // duplicate alert name
+                if (alert.Exists)
+                {
+                    return alert;
+                }
 
                 var QueryStatement = @" UPDATE master.alert
                                         SET 
@@ -342,7 +348,7 @@ namespace net.atos.daf.ct2.alert.repository
                 int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 alert.Id = alertId;
 
-                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id,alert.ModifiedBy);
+                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id, alert.ModifiedBy);
                 if (IsRefDeleted)
                 {
                     foreach (var landmark in alert.AlertLandmarkRefs)
@@ -630,6 +636,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
         }
         #endregion
+        
         #region Private method
 
         private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId,int ModifiedBy)
@@ -644,6 +651,48 @@ namespace net.atos.daf.ct2.alert.repository
             await dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             await dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             return true;
+        }
+
+        private async Task<Alert> Exists(Alert alert)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select id from master.alert where 1=1 ";
+                if (alert != null)
+                {
+
+                    // id
+                    if (Convert.ToInt32(alert.Id) > 0)
+                    {
+                        parameter.Add("@id", alert.Id);
+                        query = query + " and id!=@id";
+                    }
+                    // name
+                    if (!string.IsNullOrEmpty(alert.Name))
+                    {
+                        parameter.Add("@name", alert.Name);
+                        query = query + " and name=@name";
+                    }
+                    // organization id filter
+                    if (alert.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", alert.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                }
+                var alertId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (alertId > 0)
+                {
+                    alert.Exists = true;
+                    alert.Id = alertId;
+                }
+                return alert;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         #endregion

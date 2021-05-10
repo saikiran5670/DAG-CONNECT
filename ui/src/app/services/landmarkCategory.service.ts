@@ -105,6 +105,16 @@ export class LandmarkCategoryService {
         .pipe(catchError(this.handleError));
     }
 
+    getSubCategoryPOI(orgId : any, subCategoryId: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.poiServiceUrl}/get?OrganizationId=${orgId}&SubCategoryId=${subCategoryId}`,headers)
+        .pipe(catchError(this.handleError));
+    }
+
     getCategoryGeofences(orgId: any, categoryId: any): Observable<any[]> {
       let headerObj = this.generateHeader();
       const headers = {
@@ -112,6 +122,16 @@ export class LandmarkCategoryService {
       };
       return this.httpClient
         .get<any[]>(`${this.geofenceServiceUrl}/getallgeofence?OrganizationId=${orgId}&CategoryId=${categoryId}`, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    getSubCategoryGeofences(orgId: any, subCategoryId: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.geofenceServiceUrl}/getallgeofence?OrganizationId=${orgId}&SubCategoryId=${subCategoryId}`, headers)
         .pipe(catchError(this.handleError));
     }
 

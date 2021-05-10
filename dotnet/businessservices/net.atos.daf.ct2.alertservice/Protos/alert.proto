@@ -11,6 +11,7 @@ service AlertService {
   rpc GetAlertCategory (AccountIdRequest) returns (AlertCategoryResponse);
   rpc UpdateAlert (AlertRequest) returns (AlertResponse);
   rpc CreateAlert (AlertRequest) returns (AlertResponse);
+  rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
 }
 
 enum ResponseCode{
@@ -31,7 +32,11 @@ message AlertResponse{
     string message = 2;
 	AlertRequest AlertRequest=3;
 }
-
+message AlertListResponse{   
+    ResponseCode Code=1;
+    string message = 2;
+	repeated AlertRequest AlertRequest=3;
+}
 message AlertCategoryResponse{
     ResponseCode Code=1;
     string message = 2;
@@ -39,6 +44,11 @@ message AlertCategoryResponse{
 }
 message AccountIdRequest {
   int32 AccountId = 1;
+}
+
+message AlertListRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
 }
 message EnumTranslation{
     int32 Id= 1;
@@ -67,6 +77,7 @@ message AlertRequest
 	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=15;
 	repeated NotificationRequest Notifications=17;
 	repeated AlertLandmarkRefRequest AlertLandmarkRefs=18;
+	bool Exists=19;
 }
 
 message AlertFilterRefRequest
