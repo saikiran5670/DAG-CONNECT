@@ -133,9 +133,20 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
+                AlertResponse response = new AlertResponse();
+                response.AlertRequest = new AlertRequest();
                 Alert alert = new Alert();
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.UpdateAlert(alert);
+                // check for exists
+                response.AlertRequest.Exists = false;
+                if (alert.Exists)
+                {
+                    response.AlertRequest.Exists = true;
+                    response.Message = "Duplicate Group";
+                    response.Code = ResponseCode.Conflict;
+                    return response;
+                }
                 return await Task.FromResult(new AlertResponse
                 {
                     Message = alert.Id > 0 ? $"Alert is updated successful for id:- {alert.Id}." : $"Activate Alert Failed for id:- {request.Id}.",

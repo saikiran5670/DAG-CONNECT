@@ -161,10 +161,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         var parameter = new DynamicParameters();
                         parameter.Add("@id", item);
-                        var queryLandmark = @"update master.landmark set state='D' where id=@id";
+                        parameter.Add("@modified_by", objGeofenceDeleteEntity.ModifiedBy);
+                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        var queryLandmark = @"update master.landmark set state='D',modified_at=@modified_at,modified_by=@modified_by where id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
 
-                        var queryNodes = @"update master.nodes set state='D' where landmark_id=@id";
+                        var queryNodes = @"update master.nodes set state='D',modified_at=@modified_at,modified_by=@modified_by where landmark_id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
                     }
                 }
@@ -509,14 +511,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
-
-                // duplicate Geofence
-                if (geofence.Exists)
+                string dbCirGeofenceName = await dataAccess.QuerySingleAsync<string>("SELECT name FROM master.landmark where id=@id", new { id = geofence.Id });
+                if (!String.Equals(dbCirGeofenceName, geofence.Name))
                 {
-                    return geofence;
+                    geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
+                    // duplicate Geofence
+                    if (geofence.Exists)
+                    {
+                        return geofence;
+                    }
                 }
-
                 var parameter = new DynamicParameters();
                 parameter.Add("@category_id", geofence.CategoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);

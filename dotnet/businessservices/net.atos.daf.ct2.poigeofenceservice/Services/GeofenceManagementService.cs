@@ -40,6 +40,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
                 objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
+                objGeofenceDeleteEntity.ModifiedBy = request.ModifiedBy;
                 bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
                 {
