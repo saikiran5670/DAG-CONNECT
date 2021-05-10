@@ -28,7 +28,7 @@
     </div>
   </div>
   <div *ngIf='createPolyButtonFlag' class='createPolyBtn'>
-    <button class='no-margin' mat-raised-button color="primary" (click)='createPolygon()'>{{ translationData.lblCreatePolygon || 'Create Polygon' }}</button>
+    <button class='no-margin' mat-raised-button color="primary" (click)='drawPolygon()'>{{ translationData.lblCreatePolygon || 'Create Polygon' }}</button>
   </div>
   <div #map style="width: 100%; height: 450px; margin-bottom: 25px" [ngClass]="{'opacity-0-5': geoSelectionFlag}"></div>
 
@@ -64,7 +64,7 @@
             </div>
           </div>
           <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
+            <mat-label>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
             </mat-label>
               <div *ngIf="actionType != 'view'">
                 <mat-form-field appearance="outline" class="full-width">
@@ -97,7 +97,7 @@
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--'  }}</span>
+              <span style='font-weight: 500!important;'>{{ selectedCategoryData.categoryName ? selectedCategoryData.categoryName : '--'  }}</span>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@
               </mat-form-field>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
+              <span style='font-weight: 500!important;'>{{ selectedCategoryData.subCategoryName ? selectedCategoryData.subCategoryName : '--' }}</span>
             </div>
           </div>
           <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
