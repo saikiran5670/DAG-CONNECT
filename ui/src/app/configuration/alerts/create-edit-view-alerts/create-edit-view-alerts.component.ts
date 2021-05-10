@@ -63,6 +63,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
   alert_type_selected: string= '';
+  isCriticalLevelSelected: boolean= false;
+  isWarningLevelSelected: boolean= false;
+  isAdvisoryLevelSelected: boolean= false;
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -106,7 +109,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
       vehicle: [''],
       statusMode: ['active', [Validators.required]],
       alertLevel: ['critical', [Validators.required]],
-      levelCheckbox: ['', [Validators.required]]
+      criticalLevel: [''],
+      criticalLevelThreshold: [''],
+      warningLevel: [''],
+      warningLevelThreshold: [''],
+      advisoryLevel: [''],
+      advisoryLevelThreshold: ['']
     },
     {
       validator: [
@@ -187,10 +195,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     // this.alertTypeByCategoryList= this.alertTypeList;
     // this.vehicleByVehGroupList= this.vehicleList;
 
-    this.loadPOIData();
-    this.loadGeofenceData();
-    this.loadGroupData();
-    this.loadCorridorData();
+    
 
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
       this.loadFiltersData();
@@ -227,6 +232,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeAlertType(event){
     this.alert_type_selected= event.value;
+    if(this.alert_category_selected === 'L'){
+      if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
+        this.loadPOIData();
+        this.loadGeofenceData();
+        this.loadGroupData();
+      }
+      else if(this.alert_type_selected === 'C'){
+        this.loadCorridorData();
+      }
+    }
+    
   }
 
   public ngAfterViewInit() {
@@ -551,6 +567,37 @@ export class CreateEditViewAlertsComponent implements OnInit {
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
   }
+
+  onChangeCriticalLevel(event){
+    if(event.checked){
+      this.isCriticalLevelSelected= true;
+    }
+    else{
+      this.isCriticalLevelSelected= false;
+      this.alertForm.get('criticalLevelThreshold').value == '';
+    }
+  }
+  
+  onChangeWarningLevel(event){
+    if(event.checked){
+      this.isWarningLevelSelected= true;
+    }
+    else{
+      this.isWarningLevelSelected= false;
+      this.alertForm.get('warningLevelThreshold').value == '';
+    }
+  }
+
+  onChangeAdvisoryLevel(event){
+    if(event.checked){
+      this.isAdvisoryLevelSelected= true;
+    }
+    else{
+      this.isAdvisoryLevelSelected= false;
+      this.alertForm.get('advisoryLevelThreshold').value == '';
+    }
+  }
+
 
 
   onReset(){ //-- Reset
