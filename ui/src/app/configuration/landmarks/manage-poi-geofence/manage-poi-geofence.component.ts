@@ -32,6 +32,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   poidataSource: any;
   geofencedataSource: any;
   accountOrganizationId: any = 0;
+  accountId: any = 0;
   localStLanguage: any;
   poiInitData: any = [];
   geoInitData: any = [];
@@ -89,6 +90,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   ngOnInit(): void {
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+    this.accountId = parseInt(localStorage.getItem("accountId"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     // this.initData = this.mockData();
@@ -319,7 +321,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.tabVisibility.emit(false);
       this.createEditViewGeofenceFlag = true;
     }, (error) => {
-      console.log('Not valid geofence data...')
+      console.log('Invalid geofence data...')
     });
   }
 
@@ -427,7 +429,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
         let delObjData: any = {
-          id: [GeofenceId]
+          geofenceIds: [GeofenceId],
+          modifiedBy: this.accountId
         }
         this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
           this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
@@ -462,7 +465,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.dialogService.confirmedDel().subscribe((res) => {
         if (res) {
           let delObjData: any = {
-            id: geoId
+            geofenceIds: geoId,
+            modifiedBy: this.accountId
           }
           this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
             this.successMsgBlink(this.getDeletMsg(geofencesList)); 

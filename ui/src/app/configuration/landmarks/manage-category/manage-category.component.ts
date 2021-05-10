@@ -176,18 +176,25 @@ export class ManageCategoryComponent implements OnInit {
     let deleteMsg: any;
     let delType: any = '';
     let name = '';
-    if(rowData.subCategoryId > 0){ //-- delete sub-cat
-      name = rowData.subCategoryName;
-      delType = 'subcategory';
-      deleteText = this.translationData.lblDelete || 'Delete';
-      deleteMsg = this.translationData.lblAreyousureyouwanttodeletesubcategory || "Are you sure you want to delete subcategory '$'?";
+    if(rowData.subCategoryId > 0){
+      if(rowData.noOfPOI > 0 || rowData.noOfGeofence > 0){ //- sub-cat can not delete having POI/Geofence
+        name = rowData.subCategoryName;
+        delType = '';
+        deleteText = 'hide-btn'; 
+        deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "'$' sub-category can not be deleted as they have child relationship exist(POI/Geofence). To remove this category, first remove connected POI/Geofence.";
+      }else{ //-- delete sub-cat
+        name = rowData.subCategoryName;
+        delType = 'subcategory';
+        deleteText = this.translationData.lblDelete || 'Delete';
+        deleteMsg = this.translationData.lblAreyousureyouwanttodeletesubcategory || "Are you sure you want to delete subcategory '$'?";
+      }
     }else{ //-- delete cat
       let search = this.allCategoryData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
       if(search.length > 1 || rowData.noOfPOI > 0 || rowData.noOfGeofence > 0) { //-- having sub-cat/POI/geofence
         name = rowData.parentCategoryName;
         delType = '';
         deleteText = 'hide-btn'; 
-        deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "'$' category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+        deleteMsg = this.translationData.lblCategoryDeleteMsg || "'$' category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
       }else{ //-- No sub-cat/POI/Geofence
         name = rowData.parentCategoryName;
         delType = 'category';
