@@ -13,6 +13,7 @@ using System.Linq;
 using net.atos.daf.ct2.vehicle.response;
 using net.atos.daf.ct2.account;
 using System.Security.Claims;
+using net.atos.daf.ct2.audit.Enum;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
@@ -24,14 +25,15 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
         private readonly ILogger<VehicleNamelistController> logger;
         private readonly IVehicleManager vehicleManager;
         private readonly IAccountManager accountManager;
-        private readonly IAuditTraillib AuditTrail;
-        public VehicleNamelistController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleNamelistController> _logger, IAuditTraillib _AuditTrail)
+        private readonly IAuditTraillib auditTrail;
+        public VehicleNamelistController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleNamelistController> _logger, IAuditTraillib _auditTrail)
         {
             vehicleManager = _vehicleManager;
             accountManager = _accountManager;
-            AuditTrail = _AuditTrail;
+            auditTrail = _auditTrail;
             logger = _logger;
         }
+
         [HttpGet]
         [Route("namelist")]
         public async Task<IActionResult> GetVehicleNamelist(string since)
@@ -39,6 +41,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             try
             {
                 long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                await auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Vehicle namelist Service", "Vehicle namelist Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get namelist method vehicle namelist service", 1, 2, since, 0, 0);
 
                 var isValid = ValidateParameter(ref since, out bool isNumeric);
                 if (isValid)
@@ -59,7 +62,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                logger.LogError(ex, "Error occurred while processing Vehicle Namelist data.");
                 return StatusCode(500, string.Empty);
             }
         }
@@ -91,13 +94,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             return true;
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string parameter)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value)
         {
             return StatusCode((int)statusCode, new ErrorResponse()
             {
                 ResponseCode = ((int)statusCode).ToString(),
                 Message = "INVALID_PARAMETER",
-                Value = parameter + " parameter has an invalid value."
+                Value = value
             });
         }
     }

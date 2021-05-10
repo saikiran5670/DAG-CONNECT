@@ -8,6 +8,7 @@ using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.response;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -269,7 +270,7 @@ namespace net.atos.daf.ct2.vehicle
                     //Fetch visibility vehicles for the account
                     var vehicles = await GetVisibilityVehicles(accountId, orgid);
 
-                    vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(vin => vin == mil.vin)).AsEnumerable();
+                    vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(veh => veh.VIN == mil.vin)).AsEnumerable();
                 }                
 
                 VehicleMileage vehicleMileage = new VehicleMileage();
@@ -295,11 +296,10 @@ namespace net.atos.daf.ct2.vehicle
                         else
                         {
                             entity.Vehicles vehiclesobj = new entity.Vehicles();
-                            vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty; ;
+                            vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty;
                             vehiclesobj.VIN = item.vin;
                             vehiclesobj.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0;
                             vehiclesobj.GPSMileage = item.real_distance > 0 ? item.real_distance : 0;
-                            vehiclesobj.RealMileageAlgorithmVersion = "1.2";
                             vehicleMileage.Vehicles.Add(vehiclesobj);
                         }
                     }
@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.vehicle
                     //Fetch visibility vehicles for the account
                     var vehicles = await GetVisibilityVehicles(accountId, orgId);
 
-                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(vin => vin == nl.vin)).AsEnumerable();
+                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.vin)).AsEnumerable();
                 }                
 
                 VehicleNamelistResponse vehicleNamelistResponse = new VehicleNamelistResponse();
@@ -379,11 +379,11 @@ namespace net.atos.daf.ct2.vehicle
 
         #region Vehicle Visibility
 
-        public async Task<List<string>> GetVisibilityVehicles(int accountId, int orgId)
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId)
         {
             try
             {
-                List<string> vehicles = new List<string>();
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
                 var vehicleGroupIds = await vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId);
 
                 foreach (var vehicleGroupId in vehicleGroupIds)
@@ -428,13 +428,41 @@ namespace net.atos.daf.ct2.vehicle
                             break;
                     }
                 }
-                return vehicles.Distinct().ToList();
+                return vehicles.Distinct(new ObjectComparer()).ToList();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+
         #endregion
+    }
+
+    internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+    {
+        public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+        {
+            if (object.ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            if (object.ReferenceEquals(x, null) || object.ReferenceEquals(y, null))
+            {
+                return false;
+            }
+            return x.Id == y.Id && x.VIN == y.VIN;
+        }
+
+        public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+        {
+            if (obj == null)
+            {
+                return 0;
+            }
+            int idHashCode = obj.Id.GetHashCode();
+            int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+            return idHashCode ^ vinHashCode;
+        }
     }
 }
