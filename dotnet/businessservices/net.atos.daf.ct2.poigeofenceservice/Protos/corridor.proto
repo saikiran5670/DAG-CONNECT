@@ -42,7 +42,8 @@ message CorridorGridViewResponse{
      int32 ModifiedBy = 14;
     int64 ModifiedAt = 15;
     repeated ViaAddressDetail viaAddressDetail = 16;
-    repeated ExistingTrip Trips=18;
+    repeated ExistingTrip Trips=17;
+    string CorridorType =18;
 }
 
 message CorridorEditViewResponse{
@@ -64,6 +65,7 @@ message CorridorEditViewResponse{
     repeated ViaAddressDetail viaAddressDetail = 16;
     CorridorProperties corridorProperties =17;
     repeated ExistingTrip Trips=18;
+    string CorridorType =19;
 }
 
 message CorridorProperties{

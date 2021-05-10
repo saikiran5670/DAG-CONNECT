@@ -82,7 +82,8 @@ namespace net.atos.daf.ct2.poigeofence
                 //}
                 objCorridorLookUp.EditView = await _corridorRepository.GetCorridorListByOrgIdAndCorriId(objCorridorRequest);
                 //loop to get existing trip corridore details.
-
+                if (objCorridorLookUp.EditView != null)
+                {
                     objCorridorLookUp.EditView.ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView.Id);
                     if ((LandmarkType)objCorridorLookUp.EditView.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
@@ -92,7 +93,11 @@ namespace net.atos.daf.ct2.poigeofence
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, objCorridorLookUp.EditView.Id);
                         }
                     }
-                
+                }
+                else
+                {
+                    return objCorridorLookUp;
+                }
             }
             else if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId <= 0)
             {

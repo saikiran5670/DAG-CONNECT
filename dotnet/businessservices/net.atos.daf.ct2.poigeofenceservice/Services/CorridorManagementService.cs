@@ -47,6 +47,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objCorridorEditViewResponse.StartPoint = CheckNull(item.StartPoint);
                     objCorridorEditViewResponse.StartLat = item.StartLat;
                     objCorridorEditViewResponse.StartLong = item.StartLong;
+                    objCorridorEditViewResponse.CorridorType = item.CorridorType;
                     objCorridorEditViewResponse.EndPoint = CheckNull(item.EndPoint);
                     objCorridorEditViewResponse.EndLat = item.EndLat;
                     objCorridorEditViewResponse.EndLong = item.EndLong;
@@ -160,6 +161,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         objCorridorGridViewResponse.StartPoint = CheckNull(item.StartPoint);
                         objCorridorGridViewResponse.StartLat = item.StartLat;
                         objCorridorGridViewResponse.StartLong = item.StartLong;
+                        objCorridorGridViewResponse.CorridorType = item.CorridorType;
                         objCorridorGridViewResponse.EndPoint = CheckNull(item.EndPoint);
                         objCorridorGridViewResponse.EndLat = item.EndLat;
                         objCorridorGridViewResponse.EndLong = item.EndLong;

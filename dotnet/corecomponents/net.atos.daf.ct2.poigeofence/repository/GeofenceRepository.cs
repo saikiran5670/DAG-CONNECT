@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (geofence.Exists)
                 {
                     if (IsBulkImport && geofence.CategoryId > 0)
-                    {                        
+                    {
                         return await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.PolygonGeofence).ToString());
                     }
                     else
@@ -301,6 +301,14 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             }
                         }
                     }
+                    else
+                    {
+                        foreach (var geofence in geofences)
+                        {
+                            geofence.IsFailed = true;
+                            geofence.Message = "Circular Geofence already exist in database.";
+                        }
+                    }
                     return geofences;
                 }
                 if (IsBulkImport)
@@ -333,7 +341,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 {
                     try
                     {
-                        if (IsBulkImport && !(item.Distance > 0))
+                        if (!(item.Distance > 0))
                         {
                             item.IsFailed = true;
                             item.Message = $"Please enter a radius bigger than zero.";

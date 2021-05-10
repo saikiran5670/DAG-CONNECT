@@ -183,5 +183,38 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
         }
         #endregion
+
+        #region Get Alert List
+        public override async Task<AlertListResponse>  GetAlertList(AlertListRequest request,ServerCallContext context)
+        {
+            try
+            {
+                Alert objalert = new Alert();
+                objalert.OrganizationId = request.OrganizationId;
+                objalert.CreatedBy = request.AccountId;
+                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(objalert);
+
+                AlertListResponse response = new AlertListResponse();
+                foreach (var item in alertList)
+                {
+                    response.AlertRequest.Add(_mapper.MapAlertEntity(item));
+                }
+
+                response.Message = "Alert data retrieved";
+                response.Code = ResponseCode.Success;
+                _logger.Info("Get method in alert service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AlertListResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get alert list fail : " + ex.Message
+                });
+            }
+        }
+        #endregion
     }
 }

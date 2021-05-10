@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.poigeofence.test
 
             var resultCorridorList = _iCorridorManger.GetCorridorList(objCorridorRequest).Result;
             Assert.IsNotNull(resultCorridorList);
-            Assert.IsTrue(resultCorridorList.EditView.Count > 0);
+            Assert.IsTrue(resultCorridorList.EditView != null);
 
         }
 
