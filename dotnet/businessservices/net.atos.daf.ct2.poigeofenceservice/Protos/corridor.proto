@@ -9,6 +9,8 @@ service CorridorService{
  rpc GetCorridorList (CorridorRequest) returns (CorridorResponseList);
  rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
  rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
+ rpc AddExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
+ rpc UpdateRouteCorridor (UpdateRouteCorridorRequest) returns (UpdateRouteCorridorResponse);
     }
 
 message CorridorRequest{
@@ -40,6 +42,7 @@ message CorridorGridViewResponse{
      int32 ModifiedBy = 14;
     int64 ModifiedAt = 15;
     repeated ViaAddressDetail viaAddressDetail = 16;
+    repeated ExistingTrip Trips=18;
 }
 
 message CorridorEditViewResponse{
@@ -60,6 +63,7 @@ message CorridorEditViewResponse{
     int64 ModifiedAt = 15;
     repeated ViaAddressDetail viaAddressDetail = 16;
     CorridorProperties corridorProperties =17;
+    repeated ExistingTrip Trips=18;
 }
 
 message CorridorProperties{
@@ -111,6 +115,13 @@ message CorridorResponseList  {
   string message = 4;
 }
 
+message UpdateRouteCorridorRequest{
+ RouteCorridorAddRequest Request = 1;
+}
+message UpdateRouteCorridorResponse{
+ RouteCorridorAddResponse Response = 1;
+}
+
 enum Responsecode{
   None = 0;
   Success = 200;
@@ -120,8 +131,7 @@ enum Responsecode{
   InternalServerError = 500;
 }
 
- message RouteCorridorAddRequest
- {
+ message RouteCorridorAddRequest {
          int32 Id =1;
          int32  OrganizationId =2;
          string CorridorType =3;
@@ -165,6 +175,8 @@ enum Responsecode{
          int32 Created_By =41;
          int64 Modified_At =42;
          int32 Modified_By =43;
+          int32 NodeId =44;
+         int32 CorridorPropertiesId =45;
  }
 
 
@@ -173,7 +185,7 @@ enum Responsecode{
 double Latitude=1;
 double Longitude=2;
 string ViaName =3;
-
+int32 ViaStopId = 4;
 }
 
     
@@ -194,4 +206,69 @@ message DeleteCorridorResponse
     Responsecode Code=1;
   string Message = 2;  
   int32 CorridorID =3;
+}
+message ExistingTripCorridorRequest{
+   
+    int32 OrganizationId=1;
+    string CorridorType=2;
+    string CorridorLabel=3;
+    int32 Width=4;
+    int64 CreatedAt=5;
+    int32 CreatedBy=6;
+    int64 ModifiedAt=7;
+    int32 ModifiedBy=8;
+    string Description=9;
+    string Address=10;
+    string City=11;
+    string Country=12;
+    string Zipcode=13;
+    double StartLatitude=14;
+    double StartLongitude=15;
+    double Distance=16;
+    string State =17;
+    repeated ExistingTrip ExistingTrips=18;
+     int32 Id=19;
+}
+message ExistingTripCorridorResponse{
+    Responsecode Code=1;
+    string Message = 2;  
+    int32 CorridorID =3;
+    ExistingTripCorridorRequest ExistingTripCorridor=4;
+
+}
+
+message ExistingTrip
+{
+ int32 Id = 1;
+int32 LandmarkId =  2;      
+string TripId =   3;     
+double StartDate =    4;   
+double EndDate =   5;    
+string DriverId1 =6;       
+string DriverId2 =7;
+double StartLatitude =8;
+double StartLongitude =9;
+string StartPosition =10;
+double EndLatitude =11;
+double EndLongitude =12;
+string EndPosition =13;
+int32 Distance =15;
+repeated TripNodes NodePoints=16;
+}
+
+
+message TripNodes
+{
+        int32 Id =1;       
+        int32 LandmarkId =2;        
+        string TripId =3;        
+        int32 SequenceNumber =4;        
+        double Latitude =5;        
+        double Longitude =6;
+        string State =7;        
+        string Address =8;
+        int64 CreatedAt =9;
+        int32 CreatedBy =10;
+        int64 ModifiedAt =11;
+        int32 ModifiedBy =12;
 }

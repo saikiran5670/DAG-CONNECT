@@ -19,5 +19,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string Message { get; set; }
         public bool IsFailed { get; set; }
         public bool IsAdded { get; set; }
+        public string Address { get; set; }
+        public string TripId { get; set; }
     }
 }

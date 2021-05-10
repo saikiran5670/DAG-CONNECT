@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int? OrganizationId { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
-        public int SubCategoryId { get; set; }
+        public int? SubCategoryId { get; set; }
         public string SubCategoryName { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
@@ -30,5 +30,41 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public byte[] icon { get; set; }
+    }
+
+    public class TripEntityRequest
+    {       
+        public long StartDateTime { get; set; }
+        public long EndDateTime { get; set; }
+        public string VIN { get; set; }
+    }
+
+    public class TripEntityResponce
+    {
+        public int Id { get; set; }
+        public string TripId { get; set; }
+        public string VIN { get; set; }
+        public string DriverFirstName { get; set; }
+        public string DriverLastName { get; set; }
+        public string DriverId1 { get; set; }
+        public string DriverId2 { get; set; }
+        public int Distance { get; set; }
+        public string StartAddress { get; set; }
+        public string EndAddress { get; set; }
+        public double StartPositionlattitude { get; set; }
+        public double StartPositionLongitude { get; set; }
+        public double EndPositionLattitude { get; set; }
+        public double EndPositionLongitude { get; set; }
+        public long StartTimeStamp { get; set; }
+        public long EndTimeStamp { get; set; }
+        public List<LiveFleetPosition> LiveFleetPosition { get; set; }        
+    }
+    public class LiveFleetPosition
+    {
+        public long GpsAltitude { get; set; }
+        public long GpsHeading { get; set; }
+        public long GpsLatitude { get; set; }
+        public long GpsLongitude { get; set; }
+        public int Id { get; set; }
     }
 }

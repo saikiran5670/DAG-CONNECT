@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.subscription.entity
 	{
 		public int id { get; set; }
 		public string type { get; set; }
+		public char State { get; set; }
 	}
 
 	public class subscriptionIdStatus
@@ -41,17 +42,16 @@ namespace net.atos.daf.ct2.subscription.entity
         {
 			Response = new SubscriptionSubResponse();
 		}
-		public SubscriptionResponse(string code, string message)
+		public SubscriptionResponse(string code, object value)
 		{
-			ErrorMessage = message;
+			Value = value;
 			ErrorCode = code;
 		}
 
 		public SubscriptionSubResponse Response { get; set; }
 		public string ErrorCode { get; set; }
-		public string ErrorMessage { get; set; }
+		public object Value { get; set; }
 	}
-
 
 	public class SubscriptionSubResponse
 	{

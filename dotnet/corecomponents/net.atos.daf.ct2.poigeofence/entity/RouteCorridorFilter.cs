@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     {
         public int ID { get; set; }
         public string Search { get; set; }
-        public string CorridorType { get; set; }
+        public char CorridorType { get; set; }
         public string CorridorLabel { get; set; }
         public string State { get; set; }
         public int? OrganizationId { get; set; }

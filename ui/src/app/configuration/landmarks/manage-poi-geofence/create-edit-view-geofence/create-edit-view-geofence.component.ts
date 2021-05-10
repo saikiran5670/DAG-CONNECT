@@ -483,6 +483,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     } else { //-- polygon
       this.polygoanGeofence = true;
       this.setPolygonType();
+      this.createResizablePolygon(this.hereMap);
     }
   }
 
@@ -713,6 +714,97 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     //let icon = new H.map.Icon(markup.replace('${COLOR}', '#55b242'));
     let icon = new H.map.Icon(locMarkup);
     return icon;
+  }
+
+  createResizablePolygon(map: any) {
+    var svgCircle = '<svg width="50" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
+        '</svg>',
+        polygon = new H.map.Polygon(
+          new H.geo.Polygon(new H.geo.LineString([51.2, 21.51, 0, 51.2, 25.6, 0, 49.2, 25.9, 0, 48.7, 22.5, 0])),
+          {
+            style: {fillColor: 'rgba(150, 100, 0, .8)', lineWidth: 0}
+          }
+        ),
+        verticeGroup = new H.map.Group({
+          visibility: false
+        }),
+        mainGroup = new H.map.Group({
+          volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+          objects: [polygon, verticeGroup]
+        }),
+        polygonTimeout;
+  
+    // ensure that the polygon can receive drag events
+    polygon.draggable = true;
+  
+    // create markers for each polygon's vertice which will be used for dragging
+    polygon.getGeometry().getExterior().eachLatLngAlt(function(lat, lng, alt, index) {
+      var vertice = new H.map.Marker(
+        {lat, lng},
+        {
+          icon: new H.map.Icon(svgCircle, {anchor: {x: 10, y: 10}})
+        }
+      );
+      vertice.draggable = true;
+      vertice.setData({'verticeIndex': index})
+      verticeGroup.addObject(vertice);
+  
+    });
+  
+    // add group with polygon and it's vertices (markers) on the map
+    map.addObject(mainGroup);
+  
+    // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
+    mainGroup.addEventListener('pointerenter', function(evt) {
+      if (polygonTimeout) {
+        clearTimeout(polygonTimeout);
+        polygonTimeout = null;
+      }
+  
+      // show vertice markers
+      verticeGroup.setVisibility(true);
+    }, true);
+  
+    // event listener for main group to hide vertice markers if moved out with mouse (or released finger on touch devices)
+    // the vertice markers are hidden on touch devices after specific timeout
+    mainGroup.addEventListener('pointerleave', function(evt) {
+      var timeout = (evt.currentPointer.type == 'touch') ? 1000 : 0;
+  
+      // hide vertice markers
+      polygonTimeout = setTimeout(function() {
+        verticeGroup.setVisibility(false);
+      }, timeout);
+    }, true);
+  
+    // event listener for vertice markers group to change the cursor to pointer
+    verticeGroup.addEventListener('pointerenter', function(evt) {
+      document.body.style.cursor = 'pointer';
+    }, true);
+  
+    // event listener for vertice markers group to change the cursor to default
+    verticeGroup.addEventListener('pointerleave', function(evt) {
+      document.body.style.cursor = 'default';
+    }, true);
+  
+    // event listener for vertice markers group to resize the geo polygon object if dragging over markers
+    verticeGroup.addEventListener('drag', function(evt) {
+      var pointer = evt.currentPointer,
+          geoLineString = polygon.getGeometry().getExterior(),
+          geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
+          console.log('geoPoint:',geoPoint);
+          console.log('geoLineString:',geoLineString);
+      // set new position for vertice marker
+      evt.target.setGeometry(geoPoint);
+  
+      // set new position for polygon's vertice
+      geoLineString.removePoint(evt.target.getData()['verticeIndex']);
+      geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
+      polygon.setGeometry(new H.geo.Polygon(geoLineString));
+  
+      // stop propagating the drag event, so the map doesn't move
+      evt.stopPropagation();
+    }, true);
   }
 
 }

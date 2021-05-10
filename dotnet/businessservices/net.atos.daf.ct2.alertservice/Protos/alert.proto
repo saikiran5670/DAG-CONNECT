@@ -35,8 +35,7 @@ message AlertResponse{
 message AlertCategoryResponse{
     ResponseCode Code=1;
     string message = 2;
-    repeated EnumTranslation EnumTranslation = 3;
-    repeated VehicleGroup VehicleGroup = 4;
+    repeated EnumTranslation EnumTranslation = 3;   
 }
 message AccountIdRequest {
   int32 AccountId = 1;
@@ -48,13 +47,7 @@ message EnumTranslation{
     string ParentEnum=4;
     string Key=5; 
 }
-message VehicleGroup{
-    int32 VehicleGroupId= 1;
-    string VehicleGroupName=2;
-    int32 VehicleId=3;
-    string VehicleName=4;  
-	string Vin=5;
-}
+
 message AlertRequest
 {
 	int32 Id=1;

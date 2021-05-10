@@ -59,12 +59,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.VehicleSizeLimitedWeight = request.vehicleSize.VehicleSizeLimitedWeight;
             obj.VehicleSizeWeightPerAxle = request.vehicleSize.VehicleSizeWeightPerAxle;
 
-           
+
             if (request != null && request.ViaAddressDetails != null)
             {
                 foreach (var item in request.ViaAddressDetails)
                 {
-                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude,Longitude=item.Longitude });
+                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
                 }
             }
             return obj;
@@ -75,6 +75,71 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             var obj = new DeleteCorridorRequest();
             obj.CorridorID = request.Id;
             return obj;
+        }
+        string CheckNull(string param)
+        {
+            return !string.IsNullOrEmpty(param) ? param : string.Empty;
+        }
+        public ExistingTripCorridorRequest MapExistingTripCorridorRequest(ExistingTripCorridor request)
+        {
+            var ExistingTripCorridorRequest = new ExistingTripCorridorRequest()
+            {
+
+                OrganizationId = request.OrganizationId != null ? request.OrganizationId.Value : 0,
+                CorridorType = request.CorridorType != null ? request.CorridorType : "E",
+                CorridorLabel = CheckNull(request.CorridorLabel),
+                Address = CheckNull(request.Address),
+                StartLatitude = request.StartLatitude,
+                StartLongitude = request.StartLongitude,
+                Width = request.Width,
+                Distance = request.Distance,
+                City = CheckNull(request.City),
+                Country = CheckNull(request.Country),
+                Description = CheckNull(request.Description),
+                Zipcode = CheckNull(request.Zipcode),
+                CreatedBy = request.CreatedBy,
+                State = "A"
+            };
+            foreach (var trip in request.ExistingTrips)
+            {
+                var existingTrip = new corridorservice.ExistingTrip()
+                {
+                    Distance = trip.Distance,
+                    DriverId1 = CheckNull(trip.DriverId1),
+                    DriverId2 = CheckNull(trip.DriverId2),
+                    EndDate = trip.EndDate,
+                    EndLatitude = trip.EndLatitude,
+                    EndPosition = trip.EndPosition,
+                    EndLongitude = trip.EndLongitude,
+                    StartDate = trip.StartDate,
+                    StartPosition = trip.StartPosition,
+                    StartLatitude = trip.StartLatitude,
+                    StartLongitude = trip.StartLongitude,
+                    TripId = CheckNull(trip.TripId)
+                };
+
+                foreach (var node in trip.NodePoints) {
+                    var tripNode = new TripNodes()
+                    {
+                        Latitude = node.Latitude,
+                        TripId = node.TripId,
+                        Address = CheckNull(node.Address),
+                        CreatedBy = node.CreatedBy,
+                        Longitude = node.Longitude,
+                        SequenceNumber = node.SequenceNumber,
+                        State = "A"
+
+                    };
+                    existingTrip.NodePoints.Add(tripNode);
+                }
+
+                ExistingTripCorridorRequest.ExistingTrips.Add(existingTrip);
+
+            }
+
+            return ExistingTripCorridorRequest;
+
+
         }
 
     }

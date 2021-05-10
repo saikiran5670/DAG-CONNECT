@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter,OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-manage-corridor',
@@ -8,9 +8,23 @@ import { Component, Input, OnInit } from '@angular/core';
 
 export class ManageCorridorComponent implements OnInit {
   @Input() translationData: any;
-  
+  @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
+  createEditStatus = false;
+  actionType : string;
   constructor() { }
 
   ngOnInit(){ }
 
+  onNewCorridor(){
+    this.actionType = "create";
+    this.createEditStatus = true;
+    this.tabVisibility.emit(false);
+
+  }
+
+  onBackToPage(_eventObj) {
+    this.createEditStatus = false;
+
+    this.tabVisibility.emit(true);
+  }
 }

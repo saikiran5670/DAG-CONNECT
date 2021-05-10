@@ -54,24 +54,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objCorridorRequest.OrganizationId = request.OrganizationId;
                 objCorridorRequest.CorridorId = request.CorridorId;//non mandatory field
                 var data = await _corridorServiceClient.GetCorridorListAsync(objCorridorRequest);
+
                 if (data != null && data.Code == net.atos.daf.ct2.corridorservice.Responsecode.Success)
                 {
-                    if (data.CorridorList != null && data.CorridorList.Count > 0)
+                    if (objCorridorRequest.OrganizationId > 0 && objCorridorRequest.CorridorId > 0)
                     {
-                        return Ok(data.CorridorList);
+                        if (data.CorridorEditViewList != null && data.CorridorEditViewList.Count > 0)
+                        {
+                            return Ok(data.CorridorEditViewList);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "Corridor details are not found");
+                        }
                     }
                     else
                     {
-                        return StatusCode(404, "Global POI details are not found");
+                        if (data.CorridorGridViewList != null && data.CorridorGridViewList.Count > 0)
+                        {
+                            return Ok(data.CorridorGridViewList);
+                        }
+                        else
+                        {
+                            return StatusCode(404, "Corridor details are not found");
+                        }
                     }
                 }
                 else
                 {
                     return StatusCode(500, data.Message);
                 }
-
             }
-
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
@@ -129,6 +142,59 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+
+        [HttpPost]
+        [Route("addexistingtripcorridor")]
+
+        public async Task<IActionResult> AddExistingTripCorridor(ExistingTripCorridor request)
+        {
+            try
+            {
+                if (request.OrganizationId == 0)
+                {
+                    //bool hasRights = await HasAdminPrivilege();
+                    //if (!hasRights)
+                    return StatusCode(400, "Organization_Id Required .");
+                }
+                if (request.ExistingTrips.Count ==0 )
+                {
+                    return StatusCode(400, "ExistingTrips required");
+                }
+                var MapRequest = _corridorMapper.MapExistingTripCorridorRequest(request);
+                var data = await _corridorServiceClient.AddExistingTripCorridorAsync(MapRequest);
+                if (data != null && data.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                           "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "AddExistingTripCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
+                                            Request);
+                    return Ok(data);
+                }
+                else if (data != null && data.Code == Responsecode.Conflict)
+                {
+                    return StatusCode(409, data.Message);
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "AddExistingTripCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+
 
         [NonAction]
         public async Task<bool> HasAdminPrivilege()
@@ -189,6 +255,52 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("update")]
+        public async Task<IActionResult> UpdateRouteCorridor(Entity.Corridor.CorridorRequest request)
+        {
+            try
+            {
+                if (request.OrganizationId == 0)
+                {
+                    return StatusCode(400, "Organization Id is required.");
+                }
+                if (request.ViaAddressDetails.Count > 5)
+                {
+                    return StatusCode(400, "You cannot enter more than 5 via Routes.");
+                }
+                
+                UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
+                objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);
+                var data = await _corridorServiceClient.UpdateRouteCorridorAsync(objUpdateRouteCorridorRequest);
+                if (data != null && data.Response.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                           "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "UpdateRouteCorridor method in Landmark Corridor controller", data.Response.CorridorID, data.Response.CorridorID, JsonConvert.SerializeObject(request),
+                                            Request);
+                    return Ok(data);
+                }
+                else if (data != null && data.Response.Code == Responsecode.Conflict)
+                {
+                    return StatusCode(409, data.Response.Message);
+                }
+                else
+                {
+                    return StatusCode(500, data.Response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "UpdateRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
             }
         }
 

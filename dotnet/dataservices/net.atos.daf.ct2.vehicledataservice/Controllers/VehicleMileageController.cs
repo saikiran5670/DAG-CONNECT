@@ -15,6 +15,8 @@ using System.Linq;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using net.atos.daf.ct2.account;
+using System.Security.Claims;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
@@ -25,11 +27,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
     {
         private readonly ILogger<VehicleMileageController> logger;
         private readonly IVehicleManager vehicleManager;
-        private readonly IAuditTraillib AuditTrail;
-        public VehicleMileageController(IVehicleManager _vehicleManager, ILogger<VehicleMileageController> _logger, IAuditTraillib _AuditTrail)
+        private readonly IAccountManager accountManager;
+        private readonly IAuditTraillib auditTrail;
+        public VehicleMileageController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleMileageController> _logger, IAuditTraillib _AuditTrail)
         {
             vehicleManager = _vehicleManager;
-            AuditTrail = _AuditTrail;
+            accountManager = _accountManager;
+            auditTrail = _AuditTrail;
             logger = _logger;
         }
 
@@ -47,9 +51,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 
                 if (!this.Request.Headers.ContainsKey("Accept") ||
                     (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept header");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept");
 
-                await AuditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.SUCCESS, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
+                await auditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
 
                 if (acceptHeader.Any(x => x.Trim().Equals(VehicleMileageResponseTypeConstants.CSV, StringComparison.CurrentCultureIgnoreCase)))
                     selectedType = VehicleMileageResponseTypeConstants.CSV;
@@ -61,8 +65,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     var isValid = ValidateParameter(ref since, out bool isNumeric);
                     if (isValid)
                     {
+                        var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+                        var account = await accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+
+                        var orgs = await accountManager.GetAccountOrg(account.Id);
+
                         VehicleMileage vehicleMileage = new VehicleMileage();
-                        vehicleMileage = await vehicleManager.GetVehicleMileage(since, isNumeric, selectedType);
+                        vehicleMileage = await vehicleManager.GetVehicleMileage(since, isNumeric, selectedType, account.Id, orgs.First().Id);
 
                         if (selectedType.Equals(VehicleMileageResponseTypeConstants.CSV))
                         {
@@ -79,7 +88,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                                 vehiclesobj.VIN = item.VIN;
                                 vehiclesobj.TachoMileage = item.TachoMileage;
                                 vehiclesobj.GPSMileage = item.GPSMileage;
-                                vehiclesobj.RealMileageAlgorithmVersion = item.RealMileageAlgorithmVersion;
                                 vehicleMileageResponse.Vehicles.Add(vehiclesobj);
                             }
                             vehicleMileageResponse.RequestTimestamp = currentdatetime;
@@ -91,12 +99,12 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 }
                 else
                 {
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept header");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                logger.LogError(ex, "Error occurred while processing Vehicle Mileage data.");
                 return StatusCode(500, string.Empty);
             }
         }
@@ -128,13 +136,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             return true;
         }
 
-        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string parameter)
+        private IActionResult GenerateErrorResponse(HttpStatusCode statusCode, string value)
         {
             return StatusCode((int)statusCode, new ErrorResponse()
             {
                 ResponseCode = ((int)statusCode).ToString(),
                 Message = "INVALID_PARAMETER",
-                Value = parameter + " parameter has an invalid value."
+                Value = value
             });
         }
     }

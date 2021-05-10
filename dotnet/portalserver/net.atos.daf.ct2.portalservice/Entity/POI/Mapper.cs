@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poi.Id = poiResponseData.Id;
             poi.OrganizationId = poiResponseData.OrganizationId != null ? poiResponseData.OrganizationId.Value : 0;
             poi.CategoryId = poiResponseData.CategoryId;
-            poi.SubCategoryId = poiResponseData.SubCategoryId;
+            poi.SubCategoryId = poiResponseData.SubCategoryId != null ? poiResponseData.SubCategoryId.Value : 0; 
             poi.Name = poiResponseData.Name;
             poi.SubCategoryName = poiResponseData.SubCategoryName;
             poi.CategoryName = poiResponseData.CategoryName;

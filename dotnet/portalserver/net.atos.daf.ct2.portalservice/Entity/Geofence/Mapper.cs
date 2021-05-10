@@ -24,11 +24,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.Latitude = geofence.Latitude;
             geofenceRequest.Longitude = geofence.Longitude;
             geofenceRequest.Distance = geofence.Distance;
-            geofenceRequest.TripId = geofence.TripId;
+            geofenceRequest.Width = geofence.Width;
             geofenceRequest.CreatedBy = geofence.CreatedBy;
             foreach (var item in geofence.Nodes)
             {
-                geofenceRequest.NodeRequest.Add(ToNodeRequest(item));
+                geofenceRequest.Nodes.Add(ToNodeRequest(item));
             }
             return geofenceRequest;
         }
@@ -41,6 +41,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             nodeRequest.SeqNo = nodes.SeqNo;
             nodeRequest.Latitude = nodes.Latitude;
             nodeRequest.Longitude = nodes.Longitude;
+            nodeRequest.Address = nodes.Address;
+            nodeRequest.TripId = nodes.TripId;
             return nodeRequest;
         }
 
@@ -60,7 +62,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.Latitude = geofence.Latitude;
             geofenceRequest.Longitude = geofence.Longitude;
             geofenceRequest.Distance = geofence.Distance;
-            geofenceRequest.TripId = geofence.TripId;
+            geofenceRequest.Width = geofence.Width;
             geofenceRequest.CreatedBy = geofence.CreatedBy;
             return geofenceRequest;
         }
@@ -84,6 +86,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
             geofenceRequest.SubCategoryId = geofence.SubCategoryId;
             geofenceRequest.Name = geofence.Name;
             geofenceRequest.ModifiedBy = geofence.ModifiedBy;
+            geofenceRequest.Distance = geofence.Distance;
+            geofenceRequest.OrganizationId = geofence.OrganizationId;
             return geofenceRequest;
         }
     }

@@ -41,9 +41,10 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<IEnumerable<Vehicle>> GetDynamicVisibleVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicOwnedVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
         Task<IEnumerable<Vehicle>> GetDynamicAllVehicle(int OrganizationId, int VehicleGroupId, int RelationShipId);
+        Task<IEnumerable<Vehicle>> GetDynamicOEMVehicles(int vehicleGroupId);
         Task<IEnumerable<Vehicle>> GetRelationshipVehicles(VehicleFilter vehiclefilter);
         Task<VehicleDataMart> CreateAndUpdateVehicleInDataMart(VehicleDataMart vehicledatamart);
-        Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid);
+        Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
 
         #region Vehicle Mileage Data
         Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter);
@@ -51,7 +52,20 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Namelist Data
-        Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate);
+        Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+        #endregion
+
+        #region Vehicle Visibility
+
+        Task<VisibilityVehicle> GetVehicleForVisibility(int Vehicle_Id);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicAllVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicVisibleVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId);
+        Task<IEnumerable<int>> GetVehicleGroupsViaAccessRelationship(int accountId);
+        Task<VehicleGroupDetails> GetVehicleGroupDetails(int vehicleGroupId);
+        Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId);
+
         #endregion
 
         // Task<bool> SetConnectionStatus(char Status);

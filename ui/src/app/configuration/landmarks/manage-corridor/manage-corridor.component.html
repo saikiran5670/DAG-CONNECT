@@ -1,1 +1,23 @@
-<p style="color: darkgray; padding: 10px; font-size: 1.5em; text-align: center;">This screen is part of services feature</p>
+<div>
+    <mat-card class='mat-elevation-z' *ngIf='!createEditStatus'>
+        <div class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView
+                    ||
+                    'Map View' }}</span>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <div fxLayout="row" class='areaWidth'>
+                    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                        <button mat-flat-button color="primary" (click)="onNewCorridor()">
+                            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCorridor || 'New Corridor'
+                            }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-card>
+    <app-create-edit-corridor *ngIf='createEditStatus' [translationData]='translationData' [actionType]='actionType' (backToPage)='onBackToPage($event)'></app-create-edit-corridor>
+
+</div>

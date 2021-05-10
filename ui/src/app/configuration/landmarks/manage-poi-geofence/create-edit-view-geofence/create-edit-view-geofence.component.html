@@ -235,7 +235,7 @@
               <span *ngIf="actionType != 'view'"
                 class='mandatoryColor'>*</span>&nbsp;<span>({{ translationData.lblMeter || 'Meter' }})</span>
             </mat-label>
-            <div *ngIf="actionType != 'view'">
+            <div *ngIf="actionType != 'view'" [ngClass]="{'pointer-events-none orgGrayDefault': actionType == 'edit'}">
               <mat-form-field appearance="outline" class="full-width">
                 <input (change)="onChangeRadius($event)" type='number' placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
                   formControlName="radius">

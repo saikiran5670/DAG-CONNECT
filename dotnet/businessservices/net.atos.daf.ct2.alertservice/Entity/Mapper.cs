@@ -20,16 +20,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             objenumtrans.Key = string.IsNullOrEmpty(enumTrans.Key) ? string.Empty : enumTrans.Key;
             return objenumtrans;
         }
-        public VehicleGroup MapVehicleGroup(VehicleGroupList vehiclegroup)
-        {
-            VehicleGroup objvehiclegroup = new VehicleGroup();
-            objvehiclegroup.VehicleGroupId = vehiclegroup.VehicleGroupId;
-            objvehiclegroup.VehicleGroupName = string.IsNullOrEmpty(vehiclegroup.VehicleGroupName) ? string.Empty : vehiclegroup.VehicleGroupName;
-            objvehiclegroup.VehicleId = vehiclegroup.VehicleId;
-            objvehiclegroup.VehicleName = string.IsNullOrEmpty(vehiclegroup.VehicleName) ? string.Empty : vehiclegroup.VehicleName;
-            objvehiclegroup.Vin = string.IsNullOrEmpty(vehiclegroup.Vin) ? string.Empty : vehiclegroup.Vin;
-            return objvehiclegroup;
-        }
+       
 
         public Alert ToAlertEntity(AlertRequest request)
         {
@@ -43,6 +34,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alert.ValidityStartDate = request.ValidityStartDate;
             alert.ValidityEndDate = request.ValidityEndDate;
             alert.VehicleGroupId = request.VehicleGroupId;
+            alert.State= request.State;
             alert.CreatedAt = request.CreatedAt;
             alert.CreatedBy = request.CreatedBy;
             alert.ModifiedAt = request.ModifiedAt;

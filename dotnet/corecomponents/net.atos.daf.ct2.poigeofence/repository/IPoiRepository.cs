@@ -13,6 +13,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<bool> DeletePOI(int poiId);
         Task<bool> DeletePOI(List<int> poiIds);
         Task<UploadPOIExcel> UploadPOI(UploadPOIExcel uploadPOIExcel);
-
+        Task<List<TripEntityResponce>> GetAllTripDetails(TripEntityRequest tripEntityRequest);
     }
 }

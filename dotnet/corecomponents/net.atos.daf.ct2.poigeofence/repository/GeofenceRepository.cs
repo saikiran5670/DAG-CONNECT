@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (geofence.Exists)
                 {
                     if (IsBulkImport && geofence.CategoryId > 0)
-                    {
+                    {                        
                         return await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.PolygonGeofence).ToString());
                     }
                     else
@@ -92,13 +92,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@longitude", geofence.Longitude);
 
                 parameter.Add("@distance", geofence.Distance);
-                parameter.Add("@trip_id", geofence.TripId);
+                parameter.Add("@width", geofence.Width);
                 parameter.Add("@state", 'A');
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", geofence.CreatedBy);
 
-                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, width, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @width, @state, @created_at, @created_by) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
@@ -118,8 +118,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             nodeparameter.Add("@state", "A");
                             nodeparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                             nodeparameter.Add("@created_by", geofence.CreatedBy);
-                            string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by)
-	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by) RETURNING id";
+                            nodeparameter.Add("@address", string.IsNullOrEmpty(item.Address) ? null : item.Address);
+                            nodeparameter.Add("@trip_id", string.IsNullOrEmpty(item.TripId) ? null : item.TripId);
+                            string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by,address,trip_id)
+	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by,@address,@trip_id) RETURNING id";
                             var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
                             item.Id = nodeId;
                             item.IsFailed = false;
@@ -131,6 +133,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             log.Error(ex.ToString());
                             item.IsFailed = true;
                             item.Message = $"There was an error inserting node data";
+                            if (!IsBulkImport) throw ex;
                         }
                     }
                 }
@@ -142,6 +145,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 log.Error(ex.ToString());
                 geofence.IsFailed = true;
                 geofence.Message = $"There was an error inserting polygon data";
+                if (!IsBulkImport) throw ex;
             }
             return geofence;
         }
@@ -287,6 +291,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         foreach (var geofence in geofences)
                         {
+                            geofence.Exists = true;
                             if (geofence.CategoryId > 0)
                                 await UpdateGeofenceForBulkImport(geofence, ((char)LandmarkType.CircularGeofence).ToString());
                             else
@@ -357,13 +362,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@latitude", item.Latitude);
                         parameter.Add("@longitude", item.Longitude);
                         parameter.Add("@distance", item.Distance);
-                        parameter.Add("@trip_id", item.TripId);
+                        parameter.Add("@width", item.Width);
                         parameter.Add("@state", 'A');
                         parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                         parameter.Add("@created_by", item.CreatedBy);
 
-                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, width, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @width, @state, @created_at, @created_by) RETURNING id";
 
                         var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         item.Id = id;
@@ -516,6 +521,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@category_id", geofence.CategoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);
                 parameter.Add("@name", geofence.Name);
+                parameter.Add("@distance", geofence.Distance);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@modified_by", geofence.ModifiedBy);
                 parameter.Add("@id", geofence.Id);
@@ -523,6 +529,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                SET category_id=@category_id
 	                                   ,sub_category_id=@sub_category_id
 	                                   ,name=@name
+                                       ,distance=@distance
 	                                   ,modified_at=@modified_at
 	                                   ,modified_by=@modified_by
 	                                WHERE id=@id
@@ -542,6 +549,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
+                if (geofence.OrganizationId <= 0)
+                {
+                    geofence.IsFailed = true;
+                    geofence.Message = "Organization Id is not available.";
+                    return geofence;
+                }
                 var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { State = "A", CategoryID = geofence.CategoryId });
                 var categoryId = categoryList.FirstOrDefault()?.Id ?? 0;
                 if (!(categoryId > 0))
@@ -558,10 +571,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     parameter.Add("@sub_category_id", null);
                 parameter.Add("@name", geofence.Name);
-                if (geofence.OrganizationId > 0)
-                    parameter.Add("@organization_id", geofence.OrganizationId);
-                else
-                    parameter.Add("@organization_id", null);
+                parameter.Add("@organization_id", geofence.OrganizationId);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@modified_by", geofence.ModifiedBy);
                 parameter.Add("@type", type);
@@ -713,10 +723,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@longitude", geofenceFilter.Longitude);
                     query = query + " and l.longitude= @longitude ";
                 }
-                if (geofenceFilter.TripId > 0)
+                if (geofenceFilter.Width > 0)
                 {
-                    parameter.Add("@trip_id", geofenceFilter.TripId);
-                    query = query + " and l.trip_id= @trip_id ";
+                    parameter.Add("@width", geofenceFilter.Width);
+                    query = query + " and l.width= @width ";
                 }
                 if (geofenceFilter.CreatedBy > 0)
                 {
@@ -800,7 +810,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             geofence.Latitude = Convert.ToDouble(record.latitude);
             geofence.Longitude = Convert.ToDouble(record.logitude);
             geofence.Distance = Convert.ToDouble(record.distance);
-            geofence.TripId = record.tripid != null ? record.tripid : 0;
+            geofence.Width = record.Width != null ? record.Width : 0;
             geofence.CreatedAt = record.createdat != null ? record.createdat : 0;
             geofence.State = record.state;
             geofence.CreatedBy = record.createdby != null ? record.createdby : 0;

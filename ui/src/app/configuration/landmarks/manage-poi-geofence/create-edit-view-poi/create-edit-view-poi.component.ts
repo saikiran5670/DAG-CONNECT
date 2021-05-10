@@ -456,18 +456,29 @@ this.map.setZoom(14);
   }
 
   onCreatePoi() {
+
+    let subcatId = this.poiFormGroup.controls.subcategory.value;
+    if(subcatId == "")
+    {
+      subcatId = 0;
+    }
+    let zip = this.poiFormGroup.controls.zip.value;
+    if(zip == null)
+    {
+      zip = "";
+    }
     let objData = {
       id: 0,
       organizationId: this.organizationId,
       categoryId: this.poiFormGroup.controls.category.value,
-      subCategoryId: this.poiFormGroup.controls.subcategory.value,
+      subCategoryId: subcatId,
       //  categoryId: 5,
       // subCategoryId: 7,
       name: this.poiFormGroup.controls.name.value,
       address: this.poiFormGroup.controls.address.value,
       city: this.poiFormGroup.controls.city.value,
       country: this.poiFormGroup.controls.country.value,
-      zipcode: this.poiFormGroup.controls.zip.value,
+      zipcode: zip,
       latitude: this.poiFormGroup.controls.lattitude.value,
       longitude: this.poiFormGroup.controls.longitude.value,
       state: this.state,
