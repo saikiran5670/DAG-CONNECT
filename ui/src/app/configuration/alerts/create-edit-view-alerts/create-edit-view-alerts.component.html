@@ -60,7 +60,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblAlertType || 'Alert Type' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType">
+                <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event)">
                     <mat-option *ngFor="let type of alertTypeByCategoryList" [value]="type.enum">
                         {{type.value}}
                     </mat-option>
@@ -165,8 +165,8 @@
         <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFiltersdetails || 'Filters Details' }}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-        <div *ngIf="(alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')) || 
-                    (alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C')" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) || 
+                    (alert_category_selected === 'L' && alert_type_selected === 'C')" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
                 <div class="margin-bottom-sm">
@@ -186,31 +186,50 @@
             </div>
           </div>
 
-          <div *ngIf="(alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'H' || alertForm.controls.alertType.value === 'Y'))"
+          <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'H' || alert_type_selected === 'Y'))"
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>  
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                 <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
-                    <div class="margin-bottom-sm">
-                      <mat-selection-list formControlName="levelCheckbox">
-                        <mat-list-option *ngFor="let level of typesOfLevel" [value]="level.levelType">
-                          {{level.value}}
-                        </mat-list-option>
-                      </mat-selection-list>
-                    </div>
-                   </div> 
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    
+                   
+                  </div> 
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    
+                   
+                  </div> 
+                </div>
+                <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    
+                   
+                  </div> 
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    
+                   
+                  </div> 
+                </div>
+                <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    
+                   
+                  </div> 
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    
+                   
+                  </div> 
                 </div>
              </div>
            </div>
           
 
         <!-- Map -->
-        <div *ngIf="(alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')) ||
-                    (alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
+        <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
+                    (alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
         
         <!-- POI table -->
-        <div *ngIf="alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')">
+        <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -278,7 +297,7 @@
           </div>
          
           <!-- Geofence table -->
-          <div *ngIf="alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -335,7 +354,7 @@
           </div>
 
           <!-- Group table -->
-          <div *ngIf="alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X')">
+          <div *ngIf="alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
@@ -397,7 +416,7 @@
           </div>
 
         <!-- Corridor table -->
-          <div *ngIf="alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C'">
+          <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'C'">
             <div style='padding: 20px; position: relative;'>
               <mat-divider></mat-divider>
             </div>
