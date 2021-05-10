@@ -392,31 +392,31 @@ namespace net.atos.daf.ct2.vehicle
 
                     switch (vehicleGroup.GroupType)
                     {
-                        case 'S':
+                        case "S":
                             //Single
                             vehicles.Add(await vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId));
                             break;
-                        case 'G':
+                        case "G":
                             //Group
                             vehicles.AddRange(await vehicleRepository.GetGroupTypeVehicles(vehicleGroupId));
                             break;
-                        case 'D':
+                        case "D":
                             //Dynamic
                             switch (vehicleGroup.GroupMethod)
                             {
-                                case 'A':
+                                case "A":
                                     //All
                                     vehicles.AddRange(await vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
                                     break;
-                                case 'O':
+                                case "O":
                                     //Owner
                                     vehicles.AddRange(await vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
                                     break;
-                                case 'V':
+                                case "V":
                                     //Visible
                                     vehicles.AddRange(await vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
                                     break;
-                                case 'M':
+                                case "M":
                                     //OEM
                                     vehicles.AddRange(await vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroupId));
                                     break;
