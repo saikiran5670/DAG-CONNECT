@@ -200,10 +200,10 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
-                Alert objalert = new Alert();
-                objalert.OrganizationId = request.OrganizationId;
-                objalert.CreatedBy = request.AccountId;
-                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(objalert);
+                //Alert objalert = new Alert();
+                //objalert.OrganizationId = request.OrganizationId;
+                //objalert.CreatedBy = request.AccountId;
+                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId,request.OrganizationId);
 
                 AlertListResponse response = new AlertListResponse();
                 foreach (var item in alertList)

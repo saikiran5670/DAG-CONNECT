@@ -11,6 +11,7 @@ service AlertService {
   rpc GetAlertCategory (AccountIdRequest) returns (AlertCategoryResponse);
   rpc UpdateAlert (AlertRequest) returns (AlertResponse);
   rpc CreateAlert (AlertRequest) returns (AlertResponse);
+  rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
 }
 
 enum ResponseCode{
@@ -183,4 +184,15 @@ message NotificationRecipientRequest
 	string State=16;
 	int64 CreatedAt=17;
 	int64 ModifiedAt=18;
+}
+
+message AlertListResponse{   
+    ResponseCode Code=1;
+    string message = 2;
+	repeated AlertRequest AlertRequest=3;
+}
+
+message AlertListRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
 }
