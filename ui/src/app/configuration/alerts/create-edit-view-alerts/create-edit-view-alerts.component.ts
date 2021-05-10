@@ -61,6 +61,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   map: any;
   alertTypeByCategoryList: any= [];
   vehicleByVehGroupList: any= [];
+  alert_category_selected: string= '';
+  alert_type_selected: string= '';
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -182,8 +184,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
     ]
 
-    this.alertTypeByCategoryList= this.alertTypeList;
-    this.vehicleByVehGroupList= this.vehicleList;
+    // this.alertTypeByCategoryList= this.alertTypeList;
+    // this.vehicleByVehGroupList= this.vehicleList;
 
     this.loadPOIData();
     this.loadGeofenceData();
@@ -205,8 +207,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.vehicleList= data["vehicleGroup"];
-      this.alertTypeByCategoryList= this.alertTypeList;
-      this.vehicleByVehGroupList= this.vehicleList;
+      // this.alertTypeByCategoryList= this.alertTypeList;
+      // this.vehicleByVehGroupList= this.vehicleList;
 
     }, (error) => {
 
@@ -218,7 +220,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeAlertCategory(event){
+    this.alert_category_selected= event.value;
+    this.alertForm.get('alertType').value == '';
     this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == event.value);
+  }
+
+  onChangeAlertType(event){
+    this.alert_type_selected= event.value;
   }
 
   public ngAfterViewInit() {

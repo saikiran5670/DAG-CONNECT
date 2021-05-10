@@ -224,12 +224,22 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 group = await _groupManager.Create(group);
                 // check for exists
                 response.VehicleGroup.Exists = false;
-                if (group.Exists)
+                request.Id = group.Id;
+                if (group.Exists && group.GroupType == Group.GroupType.Group)
                 {
                     response.VehicleGroup.Exists = true;
                     response.Message = "Duplicate Group";
                     response.Code = Responcecode.Conflict;
                     return response;
+                }
+                else
+                {
+                    response.VehicleGroup.Exists = true;
+                    response.Message = "Duplicate Group";
+                    response.Code = Responcecode.Conflict;
+                    response.VehicleGroup = request;
+                    return response;
+
                 }
                 // Add group reference.                               
                 if (group.Id > 0 && request.GroupRef != null && group.GroupType == Group.GroupType.Group)
@@ -242,7 +252,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     }
                     bool vehicleRef = await _groupManager.AddRefToGroups(group.GroupRef);
                 }
-                request.Id = group.Id;
+                
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Vehicle Group ", 1, 2, Convert.ToString(group.Id)).Result;
                 _logger.Info("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new VehicleGroupResponce

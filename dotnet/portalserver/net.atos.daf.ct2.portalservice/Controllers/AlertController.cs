@@ -16,7 +16,7 @@ using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    //[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("alert")]
     public class AlertController : ControllerBase
@@ -240,20 +240,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var alertRequest = new AlertRequest();
                 alertRequest = _mapper.ToAlertEditRequest(request);
-                //// create single vehicle group with selected vehicle  
-                //if (request.ApplyOn.ToLower() == "s")
-                //{
-                //    var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                //    VehicleGroupRequest.Name = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
-                //    if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
-                //    VehicleGroupRequest.GroupType = "S";
-                //    VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
-                //    VehicleGroupRequest.FunctionEnum = "N";
-                //    VehicleGroupRequest.OrganizationId = alertRequest.OrganizationId;
-                //    VehicleGroupRequest.Description = "Single vehicle group for alert:-" + alertRequest.Name + "org:-" + alertRequest.OrganizationId;
-                //    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
-                //    alertRequest.VehicleGroupId = response.VehicleGroup.Id;
-                //}
+                // create single vehicle group with selected vehicle  
+                if (request.ApplyOn.ToLower() == "s")
+                {
+                    var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                    VehicleGroupRequest.Name = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
+                    VehicleGroupRequest.GroupType = "S";
+                    VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
+                    VehicleGroupRequest.FunctionEnum = "N";
+                    VehicleGroupRequest.OrganizationId = alertRequest.OrganizationId;
+                    VehicleGroupRequest.Description = "Single vehicle group for alert:-  " + alertRequest.Name + "  org:- " + alertRequest.OrganizationId;
+                    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                    alertRequest.VehicleGroupId = response.VehicleGroup.Id;
+                }
                 alertservice.AlertResponse alertResponse = await _AlertServiceClient.UpdateAlertAsync(alertRequest);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
