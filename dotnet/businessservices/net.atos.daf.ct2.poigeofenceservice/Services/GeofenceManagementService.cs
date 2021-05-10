@@ -188,19 +188,12 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
-                geofence = await _geofenceManager.CreateCircularGeofence(geofence);
-                if (geofence[0].Exists)
-                {
-                    response.Message = "Duplicate Geofence Name";
-                    response.Code = Responsecode.Conflict;
-                    return response;
-                }
+                geofence = await _geofenceManager.CreateCircularGeofence(geofence);                
 
                 foreach (var item in geofence)
                 {
                     response.GeofenceRequest.Add(_mapper.ToGeofenceRequest(item));
-                }
-                response.Message = "Circular Geofence created with selected POI";
+                }                
                 response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
