@@ -57,14 +57,14 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle Visibility
 
-        Task<string> GetVehicleForVisibility(int Vehicle_Id);
-        Task<IEnumerable<string>> GetDynamicAllVehicleForVisibility(int OrganizationId);
-        Task<IEnumerable<string>> GetDynamicVisibleVehicleForVisibility(int OrganizationId);
-        Task<IEnumerable<string>> GetDynamicOwnedVehicleForVisibility(int OrganizationId);
-        Task<IEnumerable<string>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId);
+        Task<VisibilityVehicle> GetVehicleForVisibility(int Vehicle_Id);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicAllVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicVisibleVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int OrganizationId);
+        Task<IEnumerable<VisibilityVehicle>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId);
         Task<IEnumerable<int>> GetVehicleGroupsViaAccessRelationship(int accountId);
         Task<VehicleGroupDetails> GetVehicleGroupDetails(int vehicleGroupId);
-        Task<IEnumerable<string>> GetGroupTypeVehicles(int vehicleGroupId);
+        Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId);
 
         #endregion
 

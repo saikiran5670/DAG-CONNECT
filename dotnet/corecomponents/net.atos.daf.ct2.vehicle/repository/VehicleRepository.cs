@@ -1929,11 +1929,11 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle Visibility
 
-        public async Task<string> GetVehicleForVisibility(int Vehicle_Id)
+        public async Task<VisibilityVehicle> GetVehicleForVisibility(int Vehicle_Id)
         {
             try
             {
-                var QueryStatement = @"select vin from master.vehicle where ";
+                var QueryStatement = @"select id, vin from master.vehicle where ";
                 var parameter = new DynamicParameters();
 
                 // Vehicle Id 
@@ -1942,7 +1942,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter.Add("@id", Vehicle_Id);
                     QueryStatement = QueryStatement + " id=@id";
                 }
-                return await dataAccess.QueryFirstAsync<string>(QueryStatement, parameter);
+                return await dataAccess.QueryFirstAsync<VisibilityVehicle>(QueryStatement, parameter);
             }
             catch (Exception ex)
             {
@@ -1950,9 +1950,9 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        public async Task<IEnumerable<string>> GetDynamicAllVehicleForVisibility(int OrganizationId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicAllVehicleForVisibility(int OrganizationId)
         {
-            var QueryStatement = @"select distinct veh.vin	                               
+            var QueryStatement = @"select distinct veh.id, veh.vin	                               
 	                               from master.vehicle veh
                                     Inner join master.orgrelationshipmapping  orm
                                     on orm.vehicle_id=veh.id
@@ -1973,12 +1973,12 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             }
 
-            return await dataAccess.QueryAsync<string>(QueryStatement, parameter);
+            return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
         }
 
-        public async Task<IEnumerable<string>> GetDynamicVisibleVehicleForVisibility(int OrganizationId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicVisibleVehicleForVisibility(int OrganizationId)
         {
-            var QueryStatement = @"select distinct veh.vin	                               
+            var QueryStatement = @"select distinct veh.id, veh.vin	                               
 	                               from master.vehicle veh
                                     Inner join master.orgrelationshipmapping  orm
                                     on orm.vehicle_id=veh.id
@@ -1997,13 +1997,13 @@ namespace net.atos.daf.ct2.vehicle.repository
                 QueryStatement = QueryStatement + " and orm.target_org_id=@organization_id AND ors.code<>'Owner'";
             }
 
-            return await dataAccess.QueryAsync<string>(QueryStatement, parameter);
+            return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
         }
 
-        public async Task<IEnumerable<string>> GetDynamicOwnedVehicleForVisibility(int OrganizationId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int OrganizationId)
         {
 
-            var QueryStatement = @"select distinct veh.vin
+            var QueryStatement = @"select distinct veh.id, veh.vin
 	                                from master.vehicle veh
                                     Left join master.orgrelationshipmapping  orm
                                     on orm.vehicle_id=veh.id
@@ -2024,19 +2024,19 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             }
 
-            return await dataAccess.QueryAsync<string>(QueryStatement, parameter);
+            return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
         }
 
-        public async Task<IEnumerable<string>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetDynamicOEMVehiclesForVisibility(int vehicleGroupId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@vehicleGroupId", vehicleGroupId);
-            var QueryStatement = @"select veh.vin	                               
+            var QueryStatement = @"select veh.id, veh.vin	                               
 	                               from master.vehicle veh
                                    INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                    WHERE veh.oem_organisation_id=grp.organization_id";
 
-            return await dataAccess.QueryAsync<string>(QueryStatement, parameter);
+            return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
         }
 
         public async Task<IEnumerable<int>> GetVehicleGroupsViaAccessRelationship(int accountId)
@@ -2080,7 +2080,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
         }
 
-        public async Task<IEnumerable<string>> GetGroupTypeVehicles(int vehicleGroupId)
+        public async Task<IEnumerable<VisibilityVehicle>> GetGroupTypeVehicles(int vehicleGroupId)
         {
             try
             {
@@ -2088,12 +2088,12 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@vehicleGroupId", vehicleGroupId);
 
                 string query =
-                                @"select veh.vin	                               
+                                @"select veh.id, veh.vin	                               
 	                               from master.vehicle veh 
                                    INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                    INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id";
 
-                return await dataAccess.QueryAsync<string>(query, parameter);
+                return await dataAccess.QueryAsync<VisibilityVehicle>(query, parameter);
             }
             catch (Exception ex)
             {
