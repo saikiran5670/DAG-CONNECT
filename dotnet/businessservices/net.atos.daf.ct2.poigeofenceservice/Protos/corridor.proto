@@ -178,8 +178,6 @@ enum Responsecode{
          int32 Created_By =41;
          int64 Modified_At =42;
          int32 Modified_By =43;
-          int32 NodeId =44;
-         int32 CorridorPropertiesId =45;
  }
 
 

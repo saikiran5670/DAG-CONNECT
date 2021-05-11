@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             _corridorMapper = new CorridorMapper();
 
         }
-
+      
         public override async Task<CorridorResponseList> GetCorridorList(CorridorRequest request, ServerCallContext context)
         {
             try
@@ -57,6 +57,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objCorridorEditViewResponse.CreatedBy = item.CreatedBy;
                     objCorridorEditViewResponse.ModifiedAt = item.ModifiedAt;
                     objCorridorEditViewResponse.ModifiedBy = item.ModifiedBy;
+                    
 
                     if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
@@ -474,11 +475,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
         public override async Task<UpdateRouteCorridorResponse> UpdateRouteCorridor(UpdateRouteCorridorRequest objRequest, ServerCallContext context)
         {
-            UpdateRouteCorridorResponse objResponse = new UpdateRouteCorridorResponse();
+            
             try
             {
                 _logger.Info("UpdateRouteCorridor method in CorridorManagement service called.");
                 poigeofence.entity.RouteCorridor obj = new poigeofence.entity.RouteCorridor();
+                obj.Id = objRequest.Request.Id;
                 obj.OrganizationId = objRequest.Request.OrganizationId;
                 obj.CorridorType = Convert.ToChar(objRequest.Request.CorridorType);
                 obj.CorridorLabel = objRequest.Request.CorridorLabel;
@@ -488,8 +490,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.EndAddress = objRequest.Request.EndAddress;
                 obj.EndLatitude = objRequest.Request.EndLatitude;
                 obj.EndLongitude = objRequest.Request.EndLongitude;
-                obj.NodeId = objRequest.Request.NodeId;
-                obj.CorridorPropertiesId = objRequest.Request.CorridorPropertiesId;
+               
                 obj.Width = objRequest.Request.Width;
                 obj.Distance = objRequest.Request.Distance;
                 obj.Trailer = Convert.ToChar(objRequest.Request.Trailer);
@@ -523,6 +524,9 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.VehicleSizeLength = objRequest.Request.VehicleSizeLength;
                 obj.VehicleSizeLimitedWeight = objRequest.Request.VehicleSizeLimitedWeight;
                 obj.VehicleSizeWeightPerAxle = objRequest.Request.VehicleSizeWeightPerAxle;
+
+                obj.Modified_By = objRequest.Request.ModifiedBy;
+
                 obj.ViaRoutDetails = new List<poigeofence.entity.ViaRoute>();
 
                 if (objRequest.Request != null && objRequest.Request.ViaAddressDetails != null)
@@ -540,6 +544,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 }
 
                 var result = await _corridorManger.UpdateRouteCorridor(obj);
+                UpdateRouteCorridorResponse objResponse = new UpdateRouteCorridorResponse();
+                objResponse.Response = new RouteCorridorAddResponse();
                 if (result.Id == -1)
                 {
                     objResponse.Response.Message = $"Corridor Name  {obj.CorridorLabel} already exists ";
@@ -558,7 +564,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objResponse.Response.Message = "Update Route Corridor Fail";
                     objResponse.Response.Code = Responsecode.Failed;
                 }
-
+                return await Task.FromResult(objResponse);
             }
             catch (Exception ex)
             {
@@ -568,8 +574,6 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 objUpdateRouteCorridorResponse.Response.Message = $"Corridor Updation Failed due to - {ex.Message}";
                 return await Task.FromResult(objUpdateRouteCorridorResponse);
             }
-            return await Task.FromResult(objResponse);
         }
-
     }
 }

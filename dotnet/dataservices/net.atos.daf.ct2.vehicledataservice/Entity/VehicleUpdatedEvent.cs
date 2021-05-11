@@ -8,32 +8,40 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class VehicleID
     {
         [Required]
+        [StringLength(17, MinimumLength = 17)]
         public string VIN { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string LicensePlate { get; set; }
         public string ManufactureDate { get; set; }
     }
 
     public class VehicleClassification
     {
+        [StringLength(50, MinimumLength = 0)]
         public string Make { get; set; }
         public Series Series { get; set; }
         public Model Model { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string ModelYear{ get; set;}
         public Type Type { get; set; }
     }
 
     public class Series
     {
-        public string ID { get; set; } 
+        [StringLength(50, MinimumLength = 0)]
+        public string ID { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string vehicleRange{get; set;}
     }
 
     public class Model
     {
+        [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; } 
     }
     public class Type
     {
+        [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; } 
     }
 
@@ -48,15 +56,21 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     }
     public class Chassis
     {
+        [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; }
         public FuelTanks FuelTanks { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string SideSkirts { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string SideCollars { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string RearOverhang { get; set; }
     }
     public class Tank
     {
+        [StringLength(50, MinimumLength = 0)]
         public string nr { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Volume { get; set; }
     }
 
@@ -67,11 +81,17 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class Engine
     {
+        [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Power { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Coolant { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string EmissionLevel { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Fuel { get; set; }
     }
     public class Transmission
@@ -81,13 +101,16 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class GearBox
     {
+        [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
     }
 
    
     public class Tire
     {
+        [StringLength(50, MinimumLength = 0)]
         public string Size { get; set; }
     }
 
@@ -98,17 +121,24 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class FrontAxle
     {
+        [StringLength(50, MinimumLength = 0)]
         public string position { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Springs {get; set;}        
         public AxleSpecificWheels AxleSpecificWheels {get; set;}
     }
 
     public class RearAxle
     {
+        [StringLength(50, MinimumLength = 0)]
         public string position { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Load { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Ratio { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Springs {get; set;}
         public AxleSpecificWheels AxleSpecificWheels {get; set;}
     }
@@ -120,7 +150,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class DriveLine
     {
+        [StringLength(50, MinimumLength = 0)]
         public string AxleConfiguration { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string WheelBase { get; set; }
         public Wheels Wheels { get; set; }
         public FrontAxle[] FrontAxle { get; set; }
@@ -131,8 +163,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class Cabin
     {
+        [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string RoofSpoiler { get; set; }
     }
 
@@ -142,14 +177,19 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     }
     public class ElectronicControlUnit
     {
+        [StringLength(50, MinimumLength = 0)]
         public string type {get; set;}
+        [StringLength(50, MinimumLength = 0)]
         public string Name {get; set;}
     }
 
     public class Size
     {
+        [StringLength(50, MinimumLength = 0)]
         public string Length { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Width { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string Height { get; set; }
     }
 
@@ -159,7 +199,9 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     }
     public class Weight
     {
+        [StringLength(50, MinimumLength = 0)]
         public string type { get; set; }
+        [StringLength(50, MinimumLength = 0)]
         public string value { get; set; }
     }
 
@@ -184,10 +226,12 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public VehicleDelivery VehicleDelivery { get; set; }
     }
     public class VehicleUpdatedEvent    {
+        [Required]
         public Vehicle Vehicle { get; set; } 
     }
 
     public class Root  {
+        [Required]
         public VehicleUpdatedEvent VehicleUpdatedEvent { get; set; } 
     }
 

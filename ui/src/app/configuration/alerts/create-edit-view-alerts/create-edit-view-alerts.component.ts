@@ -64,9 +64,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
   alert_type_selected: string= '';
+  alertTypeName: string= '';
   isCriticalLevelSelected: boolean= false;
   isWarningLevelSelected: boolean= false;
   isAdvisoryLevelSelected: boolean= false;
+  isSundaySelected: boolean= false;
+  isMondaySelected: boolean= false;
+  isTuesdaySelected: boolean= false;
+  isWednesdaySelected: boolean= false;
+  isThursdaySelected: boolean= false;
+  isFridaySelected: boolean= false;
+  isSaturdaySelected: boolean= false;
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -82,8 +90,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
                       }
                     ];
 
+  
   @ViewChild("map")
-  public mapElement: ElementRef;
+  private mapElement: ElementRef;
+  
   constructor(private _formBuilder: FormBuilder,
               private poiService: POIService,
               private geofenceService: GeofenceService, 
@@ -115,7 +125,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       warningLevel: [''],
       warningLevelThreshold: [''],
       advisoryLevel: [''],
-      advisoryLevelThreshold: ['']
+      advisoryLevelThreshold: [''],
+      mondayPeriod: ['']
     },
     {
       validator: [
@@ -227,7 +238,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeAlertCategory(event){
     this.alert_category_selected= event.value;
-    this.alertForm.get('alertType').value == '';
+    this.alertForm.get('alertType').setValue('');
     this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == event.value);
   }
 
@@ -235,6 +246,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.alert_type_selected= event.value;
     if(this.alert_category_selected === 'L'){
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
+        this.loadMap();
         this.loadPOIData();
         this.loadGeofenceData();
         this.loadGroupData();
@@ -243,12 +255,22 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.loadCorridorData();
       }
     }
+    else if(this.alert_category_selected == 'R'){
+      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+      if(this.alert_type_selected === 'O'){
+        this.alertForm.get('alertLevel').setValue('critical');
+      }
+      else if(this.alert_type_selected === 'E'){
+        this.alertForm.get('alertLevel').setValue('warning');
+      }
+    }
     
   }
 
-  public ngAfterViewInit() {
+  loadMap() {
     let defaultLayers = this.platform.createDefaultLayers();
-    this.map = new H.Map(
+    setTimeout(() => {
+      this.map = new H.Map(
         this.mapElement.nativeElement,
         defaultLayers.vector.normal.map,
         {
@@ -256,10 +278,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
           zoom: 4,
           pixelRatio: window.devicePixelRatio || 1
         }
-    );
-    window.addEventListener('resize', () => this.map.getViewPort().resize());
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+      );
+      window.addEventListener('resize', () => this.map.getViewPort().resize());
+      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+      var ui = H.ui.UI.createDefault(this.map, defaultLayers);  
+    }, 1000);
+    
 }
 
 checkboxClicked(event: any, row: any) {
@@ -603,7 +627,7 @@ checkboxClicked(event: any, row: any) {
     }
     else{
       this.isCriticalLevelSelected= false;
-      this.alertForm.get('criticalLevelThreshold').value == '';
+      this.alertForm.get('criticalLevelThreshold').setValue('');
     }
   }
   
@@ -613,7 +637,7 @@ checkboxClicked(event: any, row: any) {
     }
     else{
       this.isWarningLevelSelected= false;
-      this.alertForm.get('warningLevelThreshold').value == '';
+      this.alertForm.get('warningLevelThreshold').setValue('');
     }
   }
 
@@ -623,11 +647,72 @@ checkboxClicked(event: any, row: any) {
     }
     else{
       this.isAdvisoryLevelSelected= false;
-      this.alertForm.get('advisoryLevelThreshold').value == '';
+      this.alertForm.get('advisoryLevelThreshold').setValue('');
     }
   }
 
+  onChangeSundaySelection(event){
+    if(event.checked){
+      this.isSundaySelected= true;
+    }
+    else{
+      this.isSundaySelected= false;
+    }
+  }
 
+  onChangeMondaySelection(event){
+    if(event.checked){
+      this.isMondaySelected= true;
+    }
+    else{
+      this.isMondaySelected= false;
+    }
+  }
+
+  onChangeTuesdaySelection(event){
+    if(event.checked){
+      this.isTuesdaySelected= true;
+    }
+    else{
+      this.isTuesdaySelected= false;
+    }
+  }
+
+  onChangeWednesdaySelection(event){
+    if(event.checked){
+      this.isWednesdaySelected= true;
+    }
+    else{
+      this.isWednesdaySelected= false;
+    }
+  }
+
+  onChangeThursdaySelection(event){
+    if(event.checked){
+      this.isThursdaySelected= true;
+    }
+    else{
+      this.isThursdaySelected= false;
+    }
+  }
+
+  onChangeFridaySelection(event){
+    if(event.checked){
+      this.isFridaySelected= true;
+    }
+    else{
+      this.isFridaySelected= false;
+    }
+  }
+
+  onChangeSaturdaySelection(event){
+    if(event.checked){
+      this.isSaturdaySelected= true;
+    }
+    else{
+      this.isSaturdaySelected= false;
+    }
+  }
 
   onReset(){ //-- Reset
     this.selectedPOI.clear();

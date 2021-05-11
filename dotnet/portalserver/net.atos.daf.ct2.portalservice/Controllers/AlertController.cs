@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Create  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
+                 "Update  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))
@@ -292,7 +292,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
+        #endregion
+
+        #region Get Alert List
+        [HttpGet]
+        [Route("GetAlerts")]
+        public async Task<IActionResult> GetAlerts(int accountId, int orgnizationid)
+        {
+            try
+            {
+
+                AlertListResponse response = await _AlertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
+
+                if (response != null)
+                {
+                    response.Code = ResponseCode.Success;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode(404, "Alerts are not found.");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"Get alerts method Failed", 1, 2, Convert.ToString(accountId),
+                  Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

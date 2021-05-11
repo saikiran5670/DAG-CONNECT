@@ -149,15 +149,22 @@ namespace net.atos.daf.ct2.poigeofence
         public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor objRouteCorridor)
         {
             RouteCorridor objRouteCorridorResponse = new RouteCorridor();
-            var isExist = await _corridorRepository.CheckRouteCorridorIsexist(objRouteCorridor.CorridorLabel, objRouteCorridor.OrganizationId, objRouteCorridor.Id, objRouteCorridor.CorridorType);
-            if (isExist)
+            try
             {
-                var corridorID = await _corridorRepository.UpdateRouteCorridor(objRouteCorridor);
-                if (corridorID.Id > 0)
-                    objRouteCorridorResponse.Id = corridorID.Id;
+                var isExist = await _corridorRepository.CheckRouteCorridorIsexist(objRouteCorridor.CorridorLabel, objRouteCorridor.OrganizationId, objRouteCorridor.Id, objRouteCorridor.CorridorType);
+                if (isExist)
+                {
+                    var corridorID = await _corridorRepository.UpdateRouteCorridor(objRouteCorridor);
+                    if (corridorID.Id > 0)
+                        objRouteCorridorResponse.Id = corridorID.Id;
+                }
+                else
+                    objRouteCorridorResponse.Id = -1;
             }
-            else
-                objRouteCorridorResponse.Id = -1;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
             return objRouteCorridorResponse;
         }
 

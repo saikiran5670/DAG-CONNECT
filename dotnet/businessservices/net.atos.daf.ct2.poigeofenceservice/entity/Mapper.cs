@@ -198,8 +198,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             nodes.Longitude = nodeRequest.Longitude;
             nodes.State = nodeRequest.State;
             nodes.Message = nodeRequest.Message;
-            nodes.Address = nodeRequest.Address;
-            nodes.TripId = nodeRequest.TripId;
+            nodes.Address = !string.IsNullOrEmpty(nodeRequest.Address) ? nodeRequest.Address : string.Empty;
+            nodes.TripId = !string.IsNullOrEmpty(nodeRequest.TripId) ? nodeRequest.TripId : string.Empty;
             return nodes;
         }
 

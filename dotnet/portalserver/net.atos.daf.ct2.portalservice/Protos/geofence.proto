@@ -27,7 +27,8 @@ enum Responsecode{
 }
 
 message DeleteRequest{
-   repeated int32 GeofenceId=1;  
+   repeated int32 GeofenceId=1;
+   int32 ModifiedBy = 2;
 }
 message GeofenceDeleteResponse {
   Responsecode Code=1;

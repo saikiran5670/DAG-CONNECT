@@ -21,7 +21,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.StartLatitude = request.StartLatitude;
             obj.StartLongitude = request.StartLongitude;
 
-
             obj.EndAddress = request.EndAddress;
             obj.EndLatitude = request.EndLatitude;
             obj.EndLongitude = request.EndLongitude;
@@ -30,7 +29,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.Trailer = request.attribute.IsTrailer;
             obj.IsTransportData = request.TransportData;
             obj.IsTrafficFlow = request.TrafficFlow;
-
 
             obj.IsExplosive = request.attribute.IsExplosive;
             obj.IsGas = request.attribute.IsGas;
@@ -59,12 +57,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.VehicleSizeLimitedWeight = request.vehicleSize.VehicleSizeLimitedWeight;
             obj.VehicleSizeWeightPerAxle = request.vehicleSize.VehicleSizeWeightPerAxle;
 
+            obj.ModifiedBy = request.Modified_By;
 
             if (request != null && request.ViaAddressDetails != null)
             {
                 foreach (var item in request.ViaAddressDetails)
                 {
-                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
+                    obj.ViaAddressDetails.Add(new ViaDetails() {ViaStopId=item.ViaStopId, ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
                 }
             }
             return obj;

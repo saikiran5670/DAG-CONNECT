@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
 using net.atos.daf.ct2.portalservice.CustomValidators.Common;
@@ -11,6 +12,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public int Id { get; set; }
         public int OrganizationId { get; set; }
         [IsEmpty(ErrorMessage = "Name should not be null or empty.")]
+        [StringLength(50, MinimumLength = 1,
+                  ErrorMessage = "Alert name should be between 1 and 50 characters")]
         public string Name { get; set; }
         [AlertCategory]
         public string Category { get; set; }
@@ -55,6 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     }
     public class AlertEdit: AlertBase
     {
+        [Required(ErrorMessage = "Alert id is Required")]
         public int Id { get; set; }
         //public int OrganizationId { get; set; }
         //public long ModifiedAt { get; set; }

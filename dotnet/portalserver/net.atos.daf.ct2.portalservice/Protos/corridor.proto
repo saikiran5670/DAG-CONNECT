@@ -178,8 +178,6 @@ enum Responsecode{
          int32 Created_By =41;
          int64 Modified_At =42;
          int32 Modified_By =43;
-         int32 NodeId =44;
-         int32 CorridorPropertiesId =45;
  }
 
 
@@ -188,7 +186,7 @@ enum Responsecode{
 double Latitude=1;
 double Longitude=2;
 string ViaName =3;
-
+int32 ViaStopId = 4;
 }
 
     
