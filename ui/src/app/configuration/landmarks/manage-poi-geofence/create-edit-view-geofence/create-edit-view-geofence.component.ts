@@ -248,7 +248,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       this.polygonGeofenceFormGroup.get("city").setValue(city);
       this.polygonGeofenceFormGroup.get("country").setValue(country);
     }
-    console.log("pointArray:: ", this.polygonPointArray)
+    //console.log("pointArray:: ", this.polygonPointArray)
   }
 
   onCancel() {
@@ -558,7 +558,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         }
         
         if(!thisRef.isPolyCreated && pointsArray.length >= 9){
-          console.log("show create polygon btn...");
+          //console.log("show create polygon btn...");
           thisRef.showCreatePolygonButton(map, pointsArray);
         }
       });
