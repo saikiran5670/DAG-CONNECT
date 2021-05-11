@@ -1,9 +1,5 @@
-﻿using net.atos.daf.ct2.portalservice.CustomValidators.Geofence;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Geofence
 {
@@ -102,4 +98,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Geofence
         public int OrganizationId { get; set; }
     }
 
+    public class DeleteGeofences
+    {
+        public List<int> GeofenceIds { get; set; }
+        public int ModifiedBy { get; set; }
+    }
 }

@@ -309,6 +309,12 @@ namespace net.atos.daf.ct2.alert.repository
             var transactionScope = dataAccess.connection.BeginTransaction();
             try
             {
+                alert = await Exists(alert);
+                // duplicate alert name
+                if (alert.Exists)
+                {
+                    return alert;
+                }
 
                 var QueryStatement = @" UPDATE master.alert
                                         SET 
@@ -342,7 +348,7 @@ namespace net.atos.daf.ct2.alert.repository
                 int alertId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 alert.Id = alertId;
 
-                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id,alert.ModifiedBy);
+                bool IsRefDeleted = await RemoveAlertRef(alert.ModifiedAt, alert.Id, alert.ModifiedBy);
                 if (IsRefDeleted)
                 {
                     foreach (var landmark in alert.AlertLandmarkRefs)
@@ -486,25 +492,25 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Get Alert List
-        public async Task<IEnumerable<Alert>> GetAlertList(Alert alert)
+        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
                 var parameterAlert = new DynamicParameters();
-                parameterAlert.Add("@organization_id", alert.OrganizationId);
-                parameterAlert.Add("@name", alert.Name);
-                parameterAlert.Add("@category", alert.Category);
-                parameterAlert.Add("@type", Convert.ToChar(alert.Type));
-                parameterAlert.Add("@validity_period_type", Convert.ToChar(alert.ValidityPeriodType));
-                parameterAlert.Add("@validity_start_date", alert.ValidityStartDate);
-                parameterAlert.Add("@validity_end_date", alert.ValidityEndDate);
-                parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
-                parameterAlert.Add("@state", 'A');
-                parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                parameterAlert.Add("@created_by", alert.CreatedBy);
+               
+                //parameterAlert.Add("@name", alert.Name);
+                //parameterAlert.Add("@category", alert.Category);
+                //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
+                //parameterAlert.Add("@validity_period_type", Convert.ToChar(alert.ValidityPeriodType));
+                //parameterAlert.Add("@validity_start_date", alert.ValidityStartDate);
+                //parameterAlert.Add("@validity_end_date", alert.ValidityEndDate);
+                //parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
+                //parameterAlert.Add("@state", 'A');
+                //parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                //parameterAlert.Add("@created_by", alert.CreatedBy);
 
-                string queryAlert = @"SELECT 
+                string queryAlert = @"SELECT distinct
                     ale.id as ale_id,
                     ale.organization_id as ale_organization_id,
                     ale.name as ale_name,
@@ -602,7 +608,9 @@ namespace net.atos.daf.ct2.alert.repository
                     notava.end_time as notava_end_time,
                     notava.state as notava_state,
                     notava.created_at as notava_created_at,
-                    notava.modified_at as notava_modified_at
+                    notava.modified_at as notava_modified_at,					
+					(CASE WHEN grp.group_type='S' THEN veh.name END) as vehiclename,
+					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname
                     FROM master.alert ale
                     inner join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
@@ -618,8 +626,26 @@ namespace net.atos.daf.ct2.alert.repository
                     on noti.id= notlim.notification_id and notlim.state in ('A','I')
                     inner join master.notificationavailabilityperiod notava
                     on noti.id= notava.notification_id and notava.state in ('A','I')
+					inner join master.group grp 
+					on ale.vehicle_group_id=grp.id
+					inner join master.groupref vgrpref
+					on  grp.id=vgrpref.group_id and grp.object_type='V'	
+					inner join master.vehicle veh
+					on vgrpref.ref_id=veh.id 
                      ";
-                
+
+                if (accountid > 0 && organizationid > 0)
+                {
+                    queryAlert = queryAlert + " where ale.created_by = @created_by AND ale.organization_id = @organization_id";
+                    parameterAlert.Add("@organization_id", organizationid);
+                    parameterAlert.Add("@created_by", accountid);
+                }
+                else if (accountid == 0 && organizationid > 0)
+                {
+                    queryAlert = queryAlert + " where ale.organization_id = @organization_id";
+                    parameterAlert.Add("@organization_id", organizationid);
+                }               
+
                 IEnumerable<AlertResult> alertResult = await dataAccess.QueryAsync<AlertResult>(queryAlert, parameterAlert);
                 return repositoryMapper.GetAlertList(alertResult);
 
@@ -630,6 +656,27 @@ namespace net.atos.daf.ct2.alert.repository
             }
         }
         #endregion
+
+        #region Duplicate Alert Type
+        public Task<DuplicateAlertType> DuplicateAlertType(int alertId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", alertId);
+                parameter.Add("@state", ((char)AlertState.Delete));
+                string query =
+                    @"SELECT id as Id, organization_id as OrganizationId, name as Name,category as Category, type as Type, validity_period_type as ValidityPeriodType, validity_start_date as ValidityStartDate, validity_end_date as ValidityEndDate, vehicle_group_id as VehicleGroupId, state as State	FROM master.alert WHERE id=@id and state<>@state";
+
+                return  dataAccess.QueryFirstOrDefaultAsync<DuplicateAlertType>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
         #region Private method
 
         private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId,int ModifiedBy)
@@ -645,6 +692,48 @@ namespace net.atos.daf.ct2.alert.repository
             await dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             return true;
         }
+
+        private async Task<Alert> Exists(Alert alert)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = @"select id from master.alert where 1=1 ";
+                if (alert != null)
+                {
+
+                    // id
+                    if (Convert.ToInt32(alert.Id) > 0)
+                    {
+                        parameter.Add("@id", alert.Id);
+                        query = query + " and id!=@id";
+                    }
+                    // name
+                    if (!string.IsNullOrEmpty(alert.Name))
+                    {
+                        parameter.Add("@name", alert.Name);
+                        query = query + " and name=@name";
+                    }
+                    // organization id filter
+                    if (alert.OrganizationId > 0)
+                    {
+                        parameter.Add("@organization_id", alert.OrganizationId);
+                        query = query + " and organization_id=@organization_id ";
+                    }
+                }
+                var alertId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                if (alertId > 0)
+                {
+                    alert.Exists = true;
+                    alert.Id = alertId;
+                }
+                return alert;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }        
 
         #endregion
     }

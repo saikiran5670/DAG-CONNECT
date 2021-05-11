@@ -80,8 +80,8 @@ export class AlertsComponent implements OnInit {
       this.processTranslation(data);
       this.loadFiltersData();
       this.loadAlertsData();
-    });
-    
+    });  
+  
   }
   
   processTranslation(transData: any) {
@@ -99,6 +99,16 @@ export class AlertsComponent implements OnInit {
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"];
+      this.alertStatusList=[{
+       id: 1,
+       status:"Active",
+       value:'Active'
+      },{
+        id: 2,
+        status:"Suspended",
+        value:'Suspended'
+       }
+    ]
     }, (error) => {
 
     })
@@ -169,6 +179,13 @@ export class AlertsComponent implements OnInit {
 
   loadAlertsData(){
     this.showLoadingIndicator = true;
+    // this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
+    //   data.forEach(element => {
+    //     let filterData = data;       
+    //   });      
+    // }, (error) => {
+    // })
+    
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -184,7 +201,11 @@ export class AlertsComponent implements OnInit {
    this.initData = this.parsedJson;  
    this.updateDatasource(this.initData);
  }
-
+ getFilteredValues(dataSource){
+  this.dataSource = dataSource;
+  this.dataSource.paginator = this.paginator;
+  this.dataSource.sort = this.sort;
+}
   updateDatasource(data){
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data); 
@@ -326,105 +347,104 @@ export class AlertsComponent implements OnInit {
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
   }
-
-   myData =[ 
+  myData =[ 
     {
       id: 1,
       name:"Test Alert 01",
-      category:"Fuel & Driver Performance",
+      category:"Fuel and Driver Performance",
       alertType:"Exiting Zone",
       threshold:"-",
       vehicleGroup:"Test Group 1",
       status:"Active",
-      alertIcon:"https://icon2.cleanpng.com/20180701/ffq/kisspng-computer-icons-royalty-free-clip-art-red-alert-5b38fb8f31e246.8917341215304610712043.jpg",
+      alertIcon:"#DC143C",
       createdAt: new Date().getTime()
     },
     {
       id: 2,
       name:"Test Alert 02",
-      category:"Logistics Alert",
+      category:"Logistics Alerts",
       alertType:"Fuel Loss During Trip",
       threshold:"25%",
       vehicleGroup:"Test Group 2",
       status:"Suspended",
-      alertIcon:"https://w7.pngwing.com/pngs/46/279/png-transparent-caution-logo-warning-sign-symbol-yellow-triangle-s-sign-signage-color-triangle.png",
+      alertIcon:"#FFD700",
       createdAt: new Date().getTime()
     },
     {
       id: 3,
       name:"Test Alert 03",
-      category:"Repair And Maintenance",
+      category:"Repair and Maintenance",
       alertType:"Excessive Average Speed",
       threshold:"63.1347mph",
       vehicleGroup:"Test Group 3",
       status:"Active",
-      alertIcon:"https://www.vhv.rs/dpng/d/467-4679073_free-png-warning-vectors-and-icons-transparent-background.png",
+      alertIcon:"#FF8C00",
       createdAt: new Date().getTime()
     },
     {
       id: 4,
       name:"Test Alert 04",
-      category:"Fuel & Driver Performance",
+      category:"Fuel and Driver Performance",
       alertType:"Exiting Zone",
       threshold:"-",
       vehicleGroup:"Test Group 4",
       status:"Active",
-      alertIcon:"https://icon2.cleanpng.com/20180701/ffq/kisspng-computer-icons-royalty-free-clip-art-red-alert-5b38fb8f31e246.8917341215304610712043.jpg",
+      alertIcon:"#DC143C",
       createdAt: new Date().getTime()
     },
     {
       id: 5,
       name:"Test Alert 05",
-      category:"Logistics Alert",
+      category:"Logistics Alerts",
       alertType:"Fuel Loss During Trip",
       threshold:"25%",
       vehicleGroup:"Test Group 5",
       status:"Suspended",
-      alertIcon:"https://w7.pngwing.com/pngs/46/279/png-transparent-caution-logo-warning-sign-symbol-yellow-triangle-s-sign-signage-color-triangle.png",
+      alertIcon:"#FFD700",
       createdAt: new Date().getTime()
     },
     {
       id: 6,
       name:"Test Alert 06",
-      category:"Repair And Maintenance",
+      category:"Repair and Maintenance",
       alertType:"Excessive Average Speed",
       threshold:"63.1347mph",
       vehicleGroup:"Test Group 6",
       status:"Active",
-      alertIcon:"https://www.vhv.rs/dpng/d/467-4679073_free-png-warning-vectors-and-icons-transparent-background.png",
+      alertIcon:"#FF8C00",
       createdAt: new Date().getTime()
     },
     {
       id: 7,
       name:"Test Alert 07",
-      category:"Fuel & Driver Performance",
+      category:"Fuel and Driver Performance",
       alertType:"Exiting Zone",
       threshold:"-",
       vehicleGroup:"Test Group 7",
       status:"Active",
-      alertIcon:"https://icon2.cleanpng.com/20180701/ffq/kisspng-computer-icons-royalty-free-clip-art-red-alert-5b38fb8f31e246.8917341215304610712043.jpg",
+      alertIcon:"#DC143C",
       createdAt: new Date().getTime()
     },
     {
       id: 8,
       name:"Test Alert 08",
-      category:"Logistics Alert",
+      category:"Logistics Alerts",
       alertType:"Fuel Loss During Trip",
       threshold:"25%",
       vehicleGroup:"Test Group 8",
       status:"Suspended",
-      alertIcon:"https://w7.pngwing.com/pngs/46/279/png-transparent-caution-logo-warning-sign-symbol-yellow-triangle-s-sign-signage-color-triangle.png",
+      alertIcon:"#FFD700",
       createdAt: new Date().getTime()
     },
     {
       id: 9,
       name:"Test Alert 09",
-      category:"Repair And Maintenance",
+      category:"Repair and Maintenance",
       alertType:"Excessive Average Speed",
       threshold:"63.1347mph",
       vehicleGroup:"veh002 grp",
       status:"Active",
-      alertIcon:"https://www.vhv.rs/dpng/d/467-4679073_free-png-warning-vectors-and-icons-transparent-background.png",
+      alertIcon:"#FF8C00",
       createdAt: new Date().getTime()
     }
 ];  

@@ -10,6 +10,7 @@
       </div>
     </div>
   </div>
+  <div *ngIf="showMap" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" >  </div>
   <div>
   <!-- <app-common-map *ngIf="mapFlag"></app-common-map> -->
   <div *ngIf='!createEditViewGeofenceFlag'>
@@ -190,7 +191,7 @@
     <div fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
       <button mat-button  [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon></button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="exportGeofenceAsExcelFile()">Excel</button>
+        <button mat-menu-item (click)="exportGeofenceAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
       </mat-menu>
     </div>
     <div class="areaWidth" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
@@ -199,7 +200,7 @@
       </button>
     </div>
   </div>
-  <div *ngIf='geoInitData.length == 0'>No Record Found</div>
+  <div *ngIf='geoInitData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
   <div *ngIf='geoInitData.length > 0'>
     <mat-table matTableExporter [dataSource]="geofencedataSource" [hiddenColumns]=[0,4] class="table-items" matSort>
       <ng-container matColumnDef="All">
@@ -209,7 +210,7 @@
             [indeterminate]='selectedgeofences.hasValue() && !isAllSelectedForGeo()'
             [aria-label]='checkboxLabelForGeo()'>
           </mat-checkbox>
-          <span style="margin: 5px 0px 0px 5px;">All</span>
+          <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
           <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
@@ -220,28 +221,28 @@
           </mat-checkbox>
         </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="geofenceName">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell>
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
       </ng-container>
       <ng-container matColumnDef="categoryName">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
         <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
       </ng-container>
       <ng-container matColumnDef="subCategoryName">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Sub-Category</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubCategory || 'Sub-Category' }}</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row.subCategoryName != '' ? row.subCategoryName : '-' }}</mat-cell>
       </ng-container>
       <ng-container matColumnDef="Actions">
-        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
         <mat-cell *matCellDef="let row">
-          <button class='actionBtn' mat-flat-button matTooltip='View' (click)="editViewGeofence(row, 'view')">
+          <button class='actionBtn' mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}" (click)="editViewGeofence(row, 'view')">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button matTooltip="Edit" (click)="editViewGeofence(row, 'edit')">
+          <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button matTooltip="{{ translationData.lblEdit || 'Edit' }}" (click)="editViewGeofence(row, 'edit')">
             <mat-icon>create</mat-icon>
           </button>
-          <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteGeofence(row)" matTooltip="Delete">
+          <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteGeofence(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
             <mat-icon class="deleteIcon">delete_outline</mat-icon>
           </button>
         </mat-cell>

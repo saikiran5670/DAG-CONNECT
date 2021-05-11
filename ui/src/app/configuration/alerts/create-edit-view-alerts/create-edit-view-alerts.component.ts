@@ -59,14 +59,27 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isDuplicateAlert: boolean= false;
   private platform: any;
   map: any;
+  geofenceData: any;
+  marker: any;
   markerArray: any = [];
+  geoMarkerArray: any = [];
   alertTypeByCategoryList: any= [];
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
   alert_type_selected: string= '';
+  alertTypeName: string= '';
   isCriticalLevelSelected: boolean= false;
   isWarningLevelSelected: boolean= false;
   isAdvisoryLevelSelected: boolean= false;
+  isSundaySelected: boolean= false;
+  isMondaySelected: boolean= false;
+  isTuesdaySelected: boolean= false;
+  isWednesdaySelected: boolean= false;
+  isThursdaySelected: boolean= false;
+  isFridaySelected: boolean= false;
+  isSaturdaySelected: boolean= false;
+  labelForThreshold: string= '';
+  unitForThreshold: string= '';
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -82,8 +95,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
                       }
                     ];
 
+  
   @ViewChild("map")
-  public mapElement: ElementRef;
+  private mapElement: ElementRef;
+  
   constructor(private _formBuilder: FormBuilder,
               private poiService: POIService,
               private geofenceService: GeofenceService, 
@@ -115,7 +130,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       warningLevel: [''],
       warningLevelThreshold: [''],
       advisoryLevel: [''],
-      advisoryLevelThreshold: ['']
+      advisoryLevelThreshold: [''],
+      mondayPeriod: ['']
     },
     {
       validator: [
@@ -227,14 +243,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeAlertCategory(event){
     this.alert_category_selected= event.value;
-    this.alertForm.get('alertType').value == '';
+    this.alertForm.get('alertType').setValue('');
     this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == event.value);
   }
 
   onChangeAlertType(event){
     this.alert_type_selected= event.value;
-    if(this.alert_category_selected === 'L'){
+    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
+        this.loadMap();
         this.loadPOIData();
         this.loadGeofenceData();
         this.loadGroupData();
@@ -243,12 +260,83 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.loadCorridorData();
       }
     }
+    else if(this.alert_category_selected == 'R'){
+      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+      if(this.alert_type_selected === 'O'){
+        this.alertForm.get('alertLevel').setValue('critical');
+      }
+      else if(this.alert_type_selected === 'E'){
+        this.alertForm.get('alertLevel').setValue('warning');
+      }
+    }
+    else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
+            (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
+
+      switch(this.alert_category_selected+this.alert_type_selected){
+        case "LY": { //Excessive under utilization in days
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+          this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
+          break;
+        }
+        case "LH": { //Excessive under utilization in hours
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          break;
+        }
+        case "LD": { //Excessive distance done
+          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
+          this.unitForThreshold= "" //km/miles
+          break;
+        }
+        case "LU": { //Excessive Driving duration
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
+          this.unitForThreshold= ""
+          break;
+        }
+        case "LG": { //Excessive Global Mileage
+          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
+          this.unitForThreshold= "" //km/miles
+          break;
+        }
+        case "FP": { //Fuel Increase During stop
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= "%";
+          break;
+        }
+        case "FL": { //Fuel loss during stop
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= "%"
+          break;
+        }
+        case "FT": { //Fuel loss during trip
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= ""
+          break;
+        }
+        case "FI": { //Excessive Average Idling
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
+          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          break;
+        }
+        case "FA": { //Excessive Average speed
+          this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
+          this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
+          break;
+        }
+        case "FF": { //Fuel Consumed
+          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
+          this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
+          break;
+        }
+      }
+    }
     
   }
 
-  public ngAfterViewInit() {
+  loadMap() {
     let defaultLayers = this.platform.createDefaultLayers();
-    this.map = new H.Map(
+    setTimeout(() => {
+      this.map = new H.Map(
         this.mapElement.nativeElement,
         defaultLayers.vector.normal.map,
         {
@@ -256,16 +344,20 @@ export class CreateEditViewAlertsComponent implements OnInit {
           zoom: 4,
           pixelRatio: window.devicePixelRatio || 1
         }
-    );
-    window.addEventListener('resize', () => this.map.getViewPort().resize());
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+      );
+      window.addEventListener('resize', () => this.map.getViewPort().resize());
+      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+      var ui = H.ui.UI.createDefault(this.map, defaultLayers);  
+    }, 1000);
+    
 }
 
 checkboxClicked(event: any, row: any) {
+  console.log(row);
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
   }else{ //-- remove existing marker
+    //It will filter out checked points only
     let arr = this.markerArray.filter(item => item.id != row.id);
     this.markerArray = arr;
   }
@@ -280,7 +372,73 @@ checkboxClicked(event: any, row: any) {
       this.map.addObject(marker);
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
     });
+    this.geoMarkerArray.forEach(element => {
+      this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(this.marker);
+      this.createResizableCircle(element.distance, element);
+
+  });
   }
+
+  geofenceCheckboxClicked(event: any, row: any) {
+    this.geofenceService.getGeofenceById(this.accountOrganizationId, row.geofenceId).subscribe((geoData: any) => {
+      this.geofenceData = geoData;
+    if(event.checked){ 
+      this.geoMarkerArray.push(geoData);
+    }else{ 
+      let arr = this.geoMarkerArray.filter(item => item.id != row.geofenceId);
+      this.geoMarkerArray = arr;
+      // this.map.removeObjects(this.map.getObjects());
+    }
+    this.addCircleOnMap(event);
+  });
+    }
+
+    addCircleOnMap(event: any){
+      if(event.checked == false){
+    this.map.removeObjects(this.map.getObjects());
+  }
+//adding circular geofence points on map
+    this.geoMarkerArray.forEach(element => {
+      this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(this.marker);
+      this.createResizableCircle(element.distance, element);
+
+  });
+  //adding poi geofence points on map
+  this.markerArray.forEach(element => {
+    let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+    this.map.addObject(marker);
+  });
+
+    }
+
+  createResizableCircle(_radius: any, rowData: any) {
+    var circle = new H.map.Circle(
+      { lat: rowData.latitude, lng: rowData.longitude },
+
+      _radius,//85000,
+      {
+        style: { fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 0 }
+      }
+    ),
+      circleOutline = new H.map.Polyline(
+        circle.getGeometry().getExterior(),
+        {
+          style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+        }
+      ),
+      circleGroup = new H.map.Group({
+        volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+        objects: [circle, circleOutline]
+      }),
+      circleTimeout;
+
+    circle.draggable = true;
+    circleOutline.draggable = true;
+    circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
+    this.map.addObject(circleGroup);
+    }
   
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
@@ -603,7 +761,7 @@ checkboxClicked(event: any, row: any) {
     }
     else{
       this.isCriticalLevelSelected= false;
-      this.alertForm.get('criticalLevelThreshold').value == '';
+      this.alertForm.get('criticalLevelThreshold').setValue('');
     }
   }
   
@@ -613,7 +771,7 @@ checkboxClicked(event: any, row: any) {
     }
     else{
       this.isWarningLevelSelected= false;
-      this.alertForm.get('warningLevelThreshold').value == '';
+      this.alertForm.get('warningLevelThreshold').setValue('');
     }
   }
 
@@ -623,11 +781,72 @@ checkboxClicked(event: any, row: any) {
     }
     else{
       this.isAdvisoryLevelSelected= false;
-      this.alertForm.get('advisoryLevelThreshold').value == '';
+      this.alertForm.get('advisoryLevelThreshold').setValue('');
     }
   }
 
+  onChangeSundaySelection(event){
+    if(event.checked){
+      this.isSundaySelected= true;
+    }
+    else{
+      this.isSundaySelected= false;
+    }
+  }
 
+  onChangeMondaySelection(event){
+    if(event.checked){
+      this.isMondaySelected= true;
+    }
+    else{
+      this.isMondaySelected= false;
+    }
+  }
+
+  onChangeTuesdaySelection(event){
+    if(event.checked){
+      this.isTuesdaySelected= true;
+    }
+    else{
+      this.isTuesdaySelected= false;
+    }
+  }
+
+  onChangeWednesdaySelection(event){
+    if(event.checked){
+      this.isWednesdaySelected= true;
+    }
+    else{
+      this.isWednesdaySelected= false;
+    }
+  }
+
+  onChangeThursdaySelection(event){
+    if(event.checked){
+      this.isThursdaySelected= true;
+    }
+    else{
+      this.isThursdaySelected= false;
+    }
+  }
+
+  onChangeFridaySelection(event){
+    if(event.checked){
+      this.isFridaySelected= true;
+    }
+    else{
+      this.isFridaySelected= false;
+    }
+  }
+
+  onChangeSaturdaySelection(event){
+    if(event.checked){
+      this.isSaturdaySelected= true;
+    }
+    else{
+      this.isSaturdaySelected= false;
+    }
+  }
 
   onReset(){ //-- Reset
     this.selectedPOI.clear();

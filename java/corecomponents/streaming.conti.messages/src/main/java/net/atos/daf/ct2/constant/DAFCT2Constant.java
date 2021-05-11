@@ -79,4 +79,8 @@ public class DAFCT2Constant {
 	public static final String HBASE_MASTER = "hbase.master";
 	public static final String HBASE_REGIONSERVER_PORT = "hbase.regionserver.port";
 	public static final String HBASE_ROOTDIR = "hbase.rootdir";
+	
+	//Vehicle Health
+    public static final String CONNECTED_OTA_OFF="C";
+    public static final String CONNECTED_OTA_ON="N";
 }

@@ -1,21 +1,22 @@
 package net.atos.daf.ct2.processing;
 
-import io.debezium.config.Configuration;
-import io.debezium.embedded.EmbeddedEngine;
-import net.atos.daf.ct2.exception.DAFCT2Exception;
-import net.atos.daf.ct2.utils.Operation;
-import org.apache.kafka.connect.data.Struct;
-import org.apache.kafka.connect.source.SourceRecord;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static io.debezium.data.Envelope.FieldName.AFTER;
+import static io.debezium.data.Envelope.FieldName.OPERATION;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static io.debezium.data.Envelope.FieldName.AFTER;
-import static io.debezium.data.Envelope.FieldName.OPERATION;
+import org.apache.kafka.connect.data.Struct;
+import org.apache.kafka.connect.source.SourceRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.debezium.config.Configuration;
+import io.debezium.embedded.EmbeddedEngine;
+import net.atos.daf.ct2.exception.DAFCT2Exception;
+import net.atos.daf.ct2.utils.Operation;
 
 public class MessageProcessing implements Runnable {
 
@@ -38,7 +39,6 @@ public class MessageProcessing implements Runnable {
 
   @Override
   public void run() {
-
     try {
       this.embeddedEngine =
           EmbeddedEngine.create().using(this.configuration).notifying(this::handleEvent).build();
@@ -82,7 +82,7 @@ public class MessageProcessing implements Runnable {
   private void handleEvent(SourceRecord sourceRecord) {
 
     Struct sourceRecordValue = (Struct) sourceRecord.value();
-
+    
     if (sourceRecordValue != null) {
       try {
         Operation operation = Operation.forCode((String) sourceRecordValue.get(OPERATION));
@@ -94,10 +94,14 @@ public class MessageProcessing implements Runnable {
         if (struct != null) {
           String vid = struct.get("vid").toString();
           String vin = struct.get("vin").toString();
+        
+          String status=struct.get("status").toString();
+          String vinStatus= vin +"-" + status;
+         
 
-          if (vid != null && vin != null) {
-            this.producer.publishMessage(vid, vin, this.properties);
-            System.out.println("VIN: "+vin);
+          if (vid != null && vin != null) {         
+            this.producer.publishMessage(vid, vinStatus, this.properties);
+            System.out.println("VINSTATUS: "+ vinStatus);
           }
         }
 

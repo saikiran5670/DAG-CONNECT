@@ -27,7 +27,8 @@ enum Responsecode{
 }
 
 message DeleteRequest{
-   repeated int32 GeofenceId=1;  
+   repeated int32 GeofenceId=1;
+   int32 ModifiedBy = 2;
 }
 message GeofenceDeleteResponse {
   Responsecode Code=1;
@@ -54,6 +55,8 @@ message GeofenceRequest{
     repeated NodeRequest Nodes=17;
     bool Exists=18;
     google.protobuf.StringValue Message =19;
+    google.protobuf.StringValue CategoryName =20;
+    google.protobuf.StringValue SubCategoryName =21;
 }
 message NodeRequest{
     int32 Id =1;

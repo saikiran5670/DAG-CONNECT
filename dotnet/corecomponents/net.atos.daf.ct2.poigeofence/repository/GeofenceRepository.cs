@@ -157,14 +157,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 if (objGeofenceDeleteEntity.GeofenceId.Count > 0)
                 {
+                    long updatedTime = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
                     foreach (var item in objGeofenceDeleteEntity.GeofenceId)
                     {
                         var parameter = new DynamicParameters();
                         parameter.Add("@id", item);
-                        var queryLandmark = @"update master.landmark set state='D' where id=@id";
+                        parameter.Add("@modified_by", objGeofenceDeleteEntity.ModifiedBy);
+                        parameter.Add("@modified_at", updatedTime);
+                        var queryLandmark = @"update master.landmark set state='D',modified_at=@modified_at,modified_by=@modified_by where id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
 
-                        var queryNodes = @"update master.nodes set state='D' where landmark_id=@id";
+                        var queryNodes = @"update master.nodes set state='D',modified_at=@modified_at,modified_by=@modified_by where landmark_id=@id";
                         await dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
                     }
                 }
@@ -188,11 +191,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = string.Empty;
                 query = @"select L.id geofenceID,
                                  L.name geofenceName, L.type ,L.category_id categoryID,L.sub_category_id subcategoryId,
-                                 case when C.type='P' then C.name end category,
-                                 case when C.type='S' then C.name end subCategory                                
+                                 C.name as category,
+								 s.name as subCategory                                 
                                  from master.landmark L
-	                             left join master.category C on L.category_id=C.id
-	                             where L.state='A'";
+	                             left join master.category C on L.category_id=C.id and L.state <>'D' and C.state <>'D'
+								 left join master.category s on L.sub_category_id = s.id and L.state <>'D' and s.state <>'D'
+	                             where L.state='A' and L.type in ('C','O')";
                 var parameter = new DynamicParameters();
                 if (geofenceEntityRequest.organization_id > 0)
                 {
@@ -517,14 +521,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
-
-                // duplicate Geofence
-                if (geofence.Exists)
+                string dbCirGeofenceName = await dataAccess.QuerySingleAsync<string>("SELECT name FROM master.landmark where id=@id", new { id = geofence.Id });
+                if (!String.Equals(dbCirGeofenceName, geofence.Name))
                 {
-                    return geofence;
+                    geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
+                    // duplicate Geofence
+                    if (geofence.Exists)
+                    {
+                        return geofence;
+                    }
                 }
-
                 var parameter = new DynamicParameters();
                 parameter.Add("@category_id", geofence.CategoryId);
                 parameter.Add("@sub_category_id", geofence.SubCategoryId);

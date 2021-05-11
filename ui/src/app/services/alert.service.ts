@@ -48,5 +48,15 @@ export class AlertService {
        .get<any[]>(`${this.alertServiceUrl}/GetAlertCategory?accountId=${id}`,headers)
        .pipe(catchError(this.handleError));
    }
+   
+  getAlertData(id, orgId): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     return this.httpClient
+       .get<any[]>(`${this.alertServiceUrl}/GetAlerts?accountId=${id}&orgnizationid=${orgId}`,headers)
+       .pipe(catchError(this.handleError));
+   }
 
 }

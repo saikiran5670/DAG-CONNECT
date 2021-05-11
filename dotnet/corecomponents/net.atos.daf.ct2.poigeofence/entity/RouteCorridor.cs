@@ -23,8 +23,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string EndAddress { get; set; }
         public double EndLatitude { get; set; }
         public double EndLongitude { get; set; }
-        public int NodeId { get; set; }
-        public int CorridorPropertiesId { get; set; }
+       
         [Column("width")]
         public int Width { get; set; }
         public int Trailer { get; set; }
@@ -64,7 +63,6 @@ namespace net.atos.daf.ct2.poigeofence.entity
 
     public class ViaRoute
     {
-        public int ViaStopId { get; set; }
         public string ViaStopName { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
