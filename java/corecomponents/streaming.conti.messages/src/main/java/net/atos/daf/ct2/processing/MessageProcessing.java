@@ -64,7 +64,8 @@ public class MessageProcessing<U, T> {
                   throws Exception {
                 boolean flag = false;
                 System.out.println("Single Record: " + value);
-
+                //System.out.println("ctx--:"+ ctx.getBroadcastState(broadcastStateDescriptor).immutableEntries());
+                		
                 String valueRecord =
                     JsonMapper.configuring()
                         .readTree((String) value.getValue())
@@ -79,18 +80,28 @@ public class MessageProcessing<U, T> {
                   System.out.println("Key: " + key);
 
                   if (key.equalsIgnoreCase(valueRecord)) {
-
                     String values = map.getValue().getValue().toString();
+                    String[] arrOfStr =values.split("-");
+               
                     System.out.println("Broadcats Values: " + values);
                     JsonNode jsonNode = 
 					    JsonMapper.configuring().readTree(value.getValue().toString());
-                    ((ObjectNode) jsonNode).put("VIN", values);
                    
+                    ((ObjectNode) jsonNode).put("VIN", arrOfStr[0]);
+                    ((ObjectNode) jsonNode).put("STATUS", arrOfStr[1]);
+                   
+                    
+                    System.out.println("VIN---=" + arrOfStr[0]);
+                    System.out.println("STATUS---=" + arrOfStr[1]);
+                    
                     KafkaRecord<U> kafkaRecord = new KafkaRecord<U>();
                     kafkaRecord.setKey(key);
                     kafkaRecord.setValue((U) JsonMapper.configuring().writeValueAsString(jsonNode));
                     System.out.println("New Values: " + kafkaRecord);
+
+                    if(arrOfStr[1].equals(DAFCT2Constant.CONNECTED_OTA_OFF) || arrOfStr[1].equals(DAFCT2Constant.CONNECTED_OTA_ON)){
                     out.collect(kafkaRecord);
+                    }
                     flag = true;
                     break;
                   }

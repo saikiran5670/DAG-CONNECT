@@ -194,11 +194,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.IsDuplicate)
                 {
                     alertservice.IdRequest idRequest = new IdRequest();
-                    idRequest.AlertId = request.Id
-                    alertservice.DuplicateAlertResponse alertResponse = await _AlertServiceClient.DuplicateAlertTypeAsync(alertRequest);
-                    if (alertResponse != null && alertResponse.Type.ToLower() != request.Type.ToLower())
+                    idRequest.AlertId = request.Id;
+                    alertservice.DuplicateAlertResponse duplicateAlertResponse = await _AlertServiceClient.DuplicateAlertTypeAsync(idRequest);
+                    if (duplicateAlertResponse != null && duplicateAlertResponse.Code == ResponseCode.Success)
                     {
-                        StatusCode(400, "Alert type should be same while duplicating the alert");
+                        if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
+                        {
+                            StatusCode(400, "Alert type should be same while duplicating the alert");
+                        }
+                    }
+                    else
+                    {
+                        return StatusCode(500, "Internal Server Error.(01)");
                     }
                 }
 

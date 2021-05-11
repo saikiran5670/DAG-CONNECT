@@ -28,7 +28,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @Input() translationData: any;
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   displayedColumnsPoi = ['All', 'Icon', 'name', 'categoryName', 'subCategoryName', 'address', 'Actions'];
-  displayedColumnsGeo = ['All', 'geofenceName', 'categoryName', 'subCategoryName', 'Actions'];
+  displayedColumnsGeo = ['All', 'name', 'categoryName', 'subCategoryName', 'Actions'];
   poidataSource: any;
   geofencedataSource: any;
   accountOrganizationId: any = 0;
@@ -75,7 +75,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
   selectedSubCategoryId = null;
   allCategoryPOIData : any;
   defaultGpx : any;
-  allCategoryData : any =[];
 
   constructor( 
     private dialogService: ConfirmDialogService,
@@ -126,8 +125,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   loadGeofenceData() {
     this.showLoadingIndicator = true;
-    this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((data: any) => {
-      this.geoInitData = data["geofenceList"];
+    this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geoListData: any) => {
+      this.geoInitData = geoListData;
       this.geoInitData = this.geoInitData.filter(item => item.type == "C" || item.type == "O");
       this.hideloader();
       this.updatedGeofenceTableData(this.geoInitData);
@@ -171,7 +170,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
   }
 
-
   loadLandmarkCategoryData() {
     this.showLoadingIndicator = true;
     let objData = {
@@ -194,21 +192,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
     this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
       this.subCategoryList = subCategoryData.categories;
-      this.getCategoryDetails();
     }, (error) => {
       this.subCategoryList = [];
-      this.getCategoryDetails();
-    });
-  }
-
-  getCategoryDetails() {
-    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
-      this.hideloader();
-      //let data = this.createImageData(categoryData.categories);
-      this.allCategoryData = categoryData.categories;
-    }, (error) => {
-      this.hideloader();
-      this.initData = [];
     });
   }
 
@@ -315,14 +300,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   editViewGeofence(rowData: any, type: any) {
-    this.geofenceService.getGeofenceDetails(this.accountOrganizationId, rowData.geofenceId).subscribe((geoData: any) => {
-      this.selectedElementData = geoData[0];
-      this.actionType = type;
-      this.tabVisibility.emit(false);
-      this.createEditViewGeofenceFlag = true;
-    }, (error) => {
-      console.log('Invalid geofence data...')
-    });
+    this.selectedElementData = rowData;
+    this.actionType = type;
+    this.tabVisibility.emit(false);
+    this.createEditViewGeofenceFlag = true;
   }
 
   successMsgBlink(msg: any) {
@@ -418,22 +399,22 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
 
   deleteGeofence(rowData: any){
-    let GeofenceId = rowData.geofenceId;
+    let geofenceId = rowData.id;
     const options = {
       title: this.translationData.lblDelete || "Delete",
       message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.dialogService.DeleteModelOpen(options, rowData.geofenceName);
+    this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
         let delObjData: any = {
-          geofenceIds: [GeofenceId],
+          geofenceIds: [geofenceId],
           modifiedBy: this.accountId
         }
         this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
-          this.successMsgBlink(this.getDeletMsg(rowData.geofenceName)); 
+          this.successMsgBlink(this.getDeletMsg(rowData.name)); 
           this.loadGeofenceData();
           this.loadPoiData();
           this.selectedgeofences.clear();
@@ -443,11 +424,11 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   bulkDeleteGeofence(){
-    let geoId: any = []; // this.selectedgeofences.selected.map(item => item.geofenceId);
+    let geoId: any = [];
     let geofencesList: any = '';
     this.selectedgeofences.selected.forEach(item => {
-      geoId.push(item.geofenceId);
-      geofencesList += item.geofenceName + ', ';
+      geoId.push(item.id);
+      geofencesList += item.name + ', ';
     });
 
     if(geofencesList != ''){

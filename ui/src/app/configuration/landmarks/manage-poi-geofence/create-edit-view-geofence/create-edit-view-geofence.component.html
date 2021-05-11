@@ -97,7 +97,7 @@
               </mat-error>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedCategoryData.categoryName ? selectedCategoryData.categoryName : '--'  }}</span>
+              <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--'  }}</span>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@
               </mat-form-field>
             </div>
             <div *ngIf="actionType == 'view'">
-              <span style='font-weight: 500!important;'>{{ selectedCategoryData.subCategoryName ? selectedCategoryData.subCategoryName : '--' }}</span>
+              <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
             </div>
           </div>
           <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
