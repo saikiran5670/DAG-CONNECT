@@ -146,7 +146,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (accountId == 0) return BadRequest("Account id cannot be null.");
+                if (accountId == 0 || orgnizationid==0) return BadRequest("Account id or Orgnization id cannot be null.");
                 net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
                 AlertCategoryResponse alertcategory = await _AlertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
                 VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = orgnizationid });

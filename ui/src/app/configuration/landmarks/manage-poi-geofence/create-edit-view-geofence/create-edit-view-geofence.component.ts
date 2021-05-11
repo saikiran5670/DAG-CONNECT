@@ -64,6 +64,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   polyPoints: any = [];
   createPolyButtonFlag: boolean = false;
   isPolyCreated: boolean = false;
+  uiElem: any;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -247,7 +248,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       this.polygonGeofenceFormGroup.get("city").setValue(city);
       this.polygonGeofenceFormGroup.get("country").setValue(country);
     }
-    console.log("pointArray:: ", this.polygonPointArray)
+    //console.log("pointArray:: ", this.polygonPointArray)
   }
 
   onCancel() {
@@ -490,17 +491,31 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       this.circularGeofence = true;
       this.setCircularType();
       this.updatePOIDatasource(this.poiData);
+      this.indicateBubble();
     } else { //-- polygon
       this.polygoanGeofence = true;
       this.setPolygonType();
-      this.getPolyPoint(this.hereMap, this);
+      this.indicateBubble();
     }
   }
 
-  getPolyPoint(map: any, thisRef: any){
+  indicateBubble(){
+    //if(this.actionType == 'create'){
+      var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
+        content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>select POI from below list to map with this Geofence</b>')
+      });
+      this.uiElem.addBubble(bubble);
+      if(this.polygoanGeofence){
+        this.getPolyPoint(this.hereMap, this, bubble);
+      }
+    //}
+  }
+
+  getPolyPoint(map: any, thisRef: any, bubble: any){
     let pointsArray = [];
     let nodeNo: any = 0;
       map.addEventListener('tap', function (evt) {
+        thisRef.uiElem.removeBubble(bubble); //- remove bubble
         var coord = map.screenToGeo(evt.currentPointer.viewportX,
                 evt.currentPointer.viewportY);
         if(!thisRef.isPolyCreated && pointsArray.length <= 12){ //-- Min-3 & Max-5
@@ -543,7 +558,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         }
         
         if(!thisRef.isPolyCreated && pointsArray.length >= 9){
-          console.log("show create polygon btn...");
+          //console.log("show create polygon btn...");
           thisRef.showCreatePolygonButton(map, pointsArray);
         }
       });
@@ -708,9 +723,11 @@ export class CreateEditViewGeofenceComponent implements OnInit {
     // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
     var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    this.uiElem = ui;
   }
 
   createResizableCircle(_radius: any, rowData: any) {
+    this.uiElem.getBubbles().forEach(bub => this.uiElem.removeBubble(bub));//-- remove bubble
     var circle = new H.map.Circle(
       // The central point of the circle
       { lat: rowData.latitude, lng: rowData.longitude },

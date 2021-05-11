@@ -355,7 +355,8 @@
                 </ng-container>
                 <ng-container matColumnDef="geofenceName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell>
+                    <!-- <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell> -->
+                    <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="categoryName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
