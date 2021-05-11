@@ -59,7 +59,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isDuplicateAlert: boolean= false;
   private platform: any;
   map: any;
+  geofenceData: any;
+  marker: any;
   markerArray: any = [];
+  geoMarkerArray: any = [];
   alertTypeByCategoryList: any= [];
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
@@ -350,9 +353,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
 }
 
 checkboxClicked(event: any, row: any) {
+  console.log(row);
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
   }else{ //-- remove existing marker
+    //It will filter out checked points only
     let arr = this.markerArray.filter(item => item.id != row.id);
     this.markerArray = arr;
   }
@@ -367,7 +372,73 @@ checkboxClicked(event: any, row: any) {
       this.map.addObject(marker);
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
     });
+    this.geoMarkerArray.forEach(element => {
+      this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(this.marker);
+      this.createResizableCircle(element.distance, element);
+
+  });
   }
+
+  geofenceCheckboxClicked(event: any, row: any) {
+    this.geofenceService.getGeofenceById(this.accountOrganizationId, row.geofenceId).subscribe((geoData: any) => {
+      this.geofenceData = geoData;
+    if(event.checked){ 
+      this.geoMarkerArray.push(geoData);
+    }else{ 
+      let arr = this.geoMarkerArray.filter(item => item.id != row.geofenceId);
+      this.geoMarkerArray = arr;
+      // this.map.removeObjects(this.map.getObjects());
+    }
+    this.addCircleOnMap(event);
+  });
+    }
+
+    addCircleOnMap(event: any){
+      if(event.checked == false){
+    this.map.removeObjects(this.map.getObjects());
+  }
+//adding circular geofence points on map
+    this.geoMarkerArray.forEach(element => {
+      this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(this.marker);
+      this.createResizableCircle(element.distance, element);
+
+  });
+  //adding poi geofence points on map
+  this.markerArray.forEach(element => {
+    let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+    this.map.addObject(marker);
+  });
+
+    }
+
+  createResizableCircle(_radius: any, rowData: any) {
+    var circle = new H.map.Circle(
+      { lat: rowData.latitude, lng: rowData.longitude },
+
+      _radius,//85000,
+      {
+        style: { fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 0 }
+      }
+    ),
+      circleOutline = new H.map.Polyline(
+        circle.getGeometry().getExterior(),
+        {
+          style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+        }
+      ),
+      circleGroup = new H.map.Group({
+        volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+        objects: [circle, circleOutline]
+      }),
+      circleTimeout;
+
+    circle.draggable = true;
+    circleOutline.draggable = true;
+    circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
+    this.map.addObject(circleGroup);
+    }
   
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +

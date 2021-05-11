@@ -186,7 +186,6 @@ enum Responsecode{
 double Latitude=1;
 double Longitude=2;
 string ViaName =3;
-int32 ViaStopId = 4;
 }
 
     

@@ -246,14 +246,15 @@ namespace net.atos.daf.ct2.alertservice.Services
             var alertResponse = new DuplicateAlertResponse();
             try
             {
-                alertResponse.DuplicateAlert = _mapper.ToDupliacteAlert(await _alertManager.DuplicateAlertType(request.AlertId));
-                alertResponse.Code = ResponseCode.Success;
-                alertResponse.Message = String.Format(AlertConstants.DUPLICATE_ALERT_SUCCESS_MSG, request.AlertId);
+                var duplicateAlert = await _alertManager.DuplicateAlertType(request.AlertId);
+                alertResponse.DuplicateAlert = duplicateAlert != null ? _mapper.ToDupliacteAlert(duplicateAlert) : null;
+                alertResponse.Code = duplicateAlert != null ?  ResponseCode.Success : ResponseCode.Failed;
+                alertResponse.Message = duplicateAlert != null ? String.Format(AlertConstants.DUPLICATE_ALERT_SUCCESS_MSG, request.AlertId) : String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                alertResponse.Code = ResponseCode.Failed;
+                alertResponse.Code = ResponseCode.InternalServerError;
                 alertResponse.Message = String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, ex.Message);
             }
             return alertResponse;
