@@ -537,9 +537,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         trans.ViaStopName = item.ViaName;
                         trans.Latitude = item.Longitude;
                         trans.Longitude = item.Longitude;
-                        trans.ViaStopId = item.ViaStopId;
                         obj.ViaRoutDetails.Add(trans);
-
                     }
                 }
 
@@ -570,6 +568,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 _logger.Error(null, ex);
                 UpdateRouteCorridorResponse objUpdateRouteCorridorResponse = new UpdateRouteCorridorResponse();
+                objUpdateRouteCorridorResponse.Response = new RouteCorridorAddResponse();
                 objUpdateRouteCorridorResponse.Response.Code = Responsecode.Failed;
                 objUpdateRouteCorridorResponse.Response.Message = $"Corridor Updation Failed due to - {ex.Message}";
                 return await Task.FromResult(objUpdateRouteCorridorResponse);

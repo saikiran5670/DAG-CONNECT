@@ -69,7 +69,7 @@
           <div *ngIf='initData.length > 0'>
             <mat-table matTableExporter [dataSource]="dataSource" matSort>
               <ng-container matColumnDef="select">
-                <mat-header-cell *matHeaderCellDef>
+                <mat-header-cell class="max-width-10-per" *matHeaderCellDef>
                   <mat-checkbox (change)='$event ? masterToggleForCategory() : null'
                     [checked]='selectedCategory.hasValue() && isAllSelectedForCategory()'
                     [indeterminate]='selectedCategory.hasValue() && !isAllSelectedForCategory()'
@@ -77,7 +77,7 @@
                   </mat-checkbox>
                   <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell class="max-width-10-per" *matCellDef="let row">
                   <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                   <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                   <span [ngClass]="{ 'marginLeft-14': row.newTag }">
@@ -88,9 +88,9 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="icon">
-                <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon'}}
+                <mat-header-cell *matHeaderCellDef class="max-width-8-per">{{ translationData.lblIcon || 'Icon'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row"> 
+                <mat-cell *matCellDef="let row" class="max-width-8-per"> 
                   <span>
                     <mat-icon *ngIf="row.imageUrl && row.imageUrl == ''">place</mat-icon>
                     <img *ngIf="row.imageUrl && row.imageUrl != ''" matTooltip={{row.iconName}} [src]='row.imageUrl' alt='' width='20px' height='20px'>
@@ -100,35 +100,35 @@
               <ng-container matColumnDef="parentCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.parentCategoryName }}</mat-cell>
+                <mat-cell *matCellDef="let row"><span matTooltip="{{ row.parentCategoryName }}">{{ row.parentCategoryName }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="subCategoryName">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubCategory || 'Sub-Category'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">{{ row.subCategoryName ? row.subCategoryName : '-' }}</mat-cell>
+                <mat-cell *matCellDef="let row"><span matTooltip="{{ row.subCategoryName }}">{{ row.subCategoryName ? row.subCategoryName : '-' }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="noOfPOI">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofPOI || 'Number of POI'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" matTooltip={{row.noOfPOI}}><span [ngClass]="row.noOfPOI != 0 ? 'row-hover' : '' "
+                <mat-cell *matCellDef="let row"><span matTooltip="{{ row.noOfPOI }}" [ngClass]="row.noOfPOI != 0 ? 'row-hover' : '' "
                     (click)="row.noOfPOI != 0 ? onPOIClick(row) : ''">{{ (row.noOfPOI < 10) ? '0' : '' }}{{ row.noOfPOI }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="noOfGeofence">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofGeofence || 'Number of Geofence'}}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" matTooltip={{row.noOfGeofence}}><span [ngClass]="row.noOfGeofence != 0 ? 'row-hover' : '' "
+                <mat-cell *matCellDef="let row"><span matTooltip="{{ row.noOfGeofence }}" [ngClass]="row.noOfGeofence != 0 ? 'row-hover' : '' "
                     (click)="row.noOfGeofence != 0 ? onGeofenceClick(row) : ''">{{ (row.noOfGeofence < 10) ? '0' : '' }}{{ row.noOfGeofence }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="action">
                 <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="View">
+                  <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="Edit">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="editViewCategory(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                     <mat-icon>create</mat-icon>
                   </button>
-                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="Delete">
+                  <button *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global') || (row.organizationId != undefined && row.organizationId > 0)" class='actionBtn' mat-flat-button (click)="deleteCategory(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                     <mat-icon class="deleteIcon">delete_outline</mat-icon>
                   </button>
                 </mat-cell>

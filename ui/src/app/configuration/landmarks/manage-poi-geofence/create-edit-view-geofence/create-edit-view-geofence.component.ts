@@ -558,7 +558,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
           polygon = new H.map.Polygon(
             new H.geo.Polygon(new H.geo.LineString(points)),
             {
-              style: {fillColor: 'rgba(150, 100, 0, .8)', lineWidth: 0}
+              style: {fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 1}
             }
           ),
           verticeGroup = new H.map.Group({
@@ -723,7 +723,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       circleOutline = new H.map.Polyline(
         circle.getGeometry().getExterior(),
         {
-          style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+          style: { lineWidth: 1, strokeColor: 'rgba(45, 93, 176, 0.7)' }
         }
       ),
       circleGroup = new H.map.Group({

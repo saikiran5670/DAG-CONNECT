@@ -54,7 +54,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public string ViaRoutName { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public int ViaStopId { get; set; }
     }
 
     public class VehicleSize

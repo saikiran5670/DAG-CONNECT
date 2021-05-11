@@ -203,6 +203,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             StatusCode(400, "Alert type should be same while duplicating the alert");
                         }
                     }
+                    else if(duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
+                    {
+                        return StatusCode((int)duplicateAlertResponse.Code, duplicateAlertResponse.Message);
+                    }
                     else
                     {
                         return StatusCode(500, "Internal Server Error.(01)");
