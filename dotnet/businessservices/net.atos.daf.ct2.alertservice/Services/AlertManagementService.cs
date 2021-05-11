@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (alert.Exists)
                 {
                     response.AlertRequest.Exists = true;
-                    response.Message = "Duplicate Group";
+                    response.Message = "Duplicate alert name";
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }

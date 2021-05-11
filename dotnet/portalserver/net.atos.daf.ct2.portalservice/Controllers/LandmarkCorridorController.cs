@@ -322,17 +322,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
-                if (request.ViaAddressDetails.Count > 5)
-                {
-                    foreach (var item in request.ViaAddressDetails)
-                    {
-                        if (item.ViaStopId ==0)
-                        {
-                            return StatusCode(400, $"Via Stop Id is not provided for {item.ViaRoutName}");
-                        }
-                    }
-                    
-                }
 
                 UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
                 objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);
@@ -364,7 +353,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
             }
         }
-
     }
 
 }

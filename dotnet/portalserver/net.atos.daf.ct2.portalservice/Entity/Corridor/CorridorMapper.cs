@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             {
                 foreach (var item in request.ViaAddressDetails)
                 {
-                    obj.ViaAddressDetails.Add(new ViaDetails() {ViaStopId=item.ViaStopId, ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
+                    obj.ViaAddressDetails.Add(new ViaDetails() { ViaName = item.ViaRoutName, Latitude = item.Latitude, Longitude = item.Longitude });
                 }
             }
             return obj;
