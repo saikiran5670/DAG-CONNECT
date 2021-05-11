@@ -14,7 +14,9 @@ import { ViewChildren } from '@angular/core';
 import { LandmarkCategoryService } from 'src/app/services/landmarkCategory.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { isNgTemplate } from '@angular/compiler';
+import { ElementRef } from '@angular/core';
 
+declare var H: any;
 const createGpx = require('gps-to-gpx').default;
 
 @Component({
@@ -42,6 +44,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   poiCreatedMsg: any = '';
   actionType: any;
   roleID: any;
+  platform: any;
+  showMap: boolean = false;
   createEditViewPoiFlag: boolean = false;
   createEditViewGeofenceFlag: boolean = false;
   mapFlag: boolean = false;
@@ -60,6 +64,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   impportTitle = "Import POI";
   importTranslationData: any = {};
   xmlObject : any = {};
+  map: any;
   templateTitle = ['OrganizationId', 'CategoryId', 'CategoryName', 'SubCategoryId', 'SubCategoryName',
     'POIName', 'Address', 'City', 'Country', 'Zipcode', 'Latitude', 'Longitude', 'Distance', 'State', 'Type'];
   templateValue = [
@@ -76,6 +81,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   allCategoryPOIData : any;
   defaultGpx : any;
 
+  @ViewChild("map")
+  public mapElement: ElementRef;
+  
   constructor( 
     private dialogService: ConfirmDialogService,
     private poiService: POIService,
@@ -83,7 +91,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
     private landmarkCategoryService: LandmarkCategoryService,
     private _snackBar: MatSnackBar
     ) {
-    
+      
+      this.platform = new H.service.Platform({
+        "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      });
    }
 
   ngOnInit(): void {
@@ -114,6 +125,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
+  public ngAfterViewInit() {
+    let defaultLayers = this.platform.createDefaultLayers();
+    this.map = new H.Map(this.mapElement.nativeElement,
+      defaultLayers.vector.normal.map, {
+      center: { lat: 50, lng: 5 },
+      zoom: 4,
+      pixelRatio: window.devicePixelRatio || 1
+    });
+    window.addEventListener('resize', () => this.map.getViewPort().resize());
+
+    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
+
+     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+  }
+  
   updatedPOITableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
     this.poidataSource = new MatTableDataSource(tableData);
