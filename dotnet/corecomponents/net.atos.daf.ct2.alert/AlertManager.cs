@@ -45,9 +45,9 @@ namespace net.atos.daf.ct2.alert
         {
             return await alertRepository.UpdateAlert(alert);
         }
-        public async Task<IEnumerable<Alert>> GetAlertList(Alert alert)
+        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid)
         {
-            return await alertRepository.GetAlertList(alert);
+            return await alertRepository.GetAlertList(accountid, organizationid);
         }
 
         #region Alert Category
