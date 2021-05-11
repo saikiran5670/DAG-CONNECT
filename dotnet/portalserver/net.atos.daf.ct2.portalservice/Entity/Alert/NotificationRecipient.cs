@@ -9,9 +9,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         //public int Id { get; set; }
         //public int NotificationId { get; set; }
-        [StringLength(50, MinimumLength = 1,ErrorMessage = "Notification recipient Label should be between 1 and 50 characters")]
+        [StringLength(50, MinimumLength = 0,ErrorMessage = "Notification recipient Label should be between 1 and 50 characters")]
         public string RecipientLabel { get; set; }
         public int AccountGroupId { get; set; }
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Notification mode type should be 1 character")]
         public string NotificationModeType { get; set; }
         [StringLength(100, MinimumLength = 0,ErrorMessage = "Notification PhoneNo should be between 1 and 100 characters")]
         public string PhoneNo { get; set; }

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
     public class AlertUrgencyLevelRefBase
     {
-        [StringLength(1, MinimumLength = 0, ErrorMessage = "Urgency level type should be 1 character")]
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Urgency level type should be 1 character")]
         public string UrgencyLevelType { get; set; }
 
         public double ThresholdValue { get; set; }

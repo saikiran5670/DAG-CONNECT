@@ -119,10 +119,16 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 var parameterlandmarkref = new DynamicParameters();
                 parameterlandmarkref.Add("@alert_id", landmark.AlertId);
-                parameterlandmarkref.Add("@landmark_type", Convert.ToChar(landmark.LandmarkType));
+                if (landmark.LandmarkType != null && landmark.LandmarkType.Length > 0)
+                    parameterlandmarkref.Add("@landmark_type", Convert.ToChar(landmark.LandmarkType));
+                else
+                    parameterlandmarkref.Add("@landmark_type", null);
                 parameterlandmarkref.Add("@ref_id", landmark.RefId);
                 parameterlandmarkref.Add("@distance", landmark.Distance);
-                parameterlandmarkref.Add("@unit_type", Convert.ToChar(landmark.UnitType));
+                if (landmark.UnitType != null && landmark.UnitType.Length > 0)
+                    parameterlandmarkref.Add("@unit_type", Convert.ToChar(landmark.UnitType));
+                else
+                    parameterlandmarkref.Add("@unit_type", null);
                 parameterlandmarkref.Add("@state", 'A');
                 parameterlandmarkref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryLandmarkref = @"INSERT INTO master.alertlandmarkref(alert_id, landmark_type, ref_id, distance, unit_type, state, created_at)
@@ -141,16 +147,25 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 var parameterurgencylevelref = new DynamicParameters();
                 parameterurgencylevelref.Add("@alert_id", urgencylevel.AlertId);
-                parameterurgencylevelref.Add("@urgency_level_type", Convert.ToChar(urgencylevel.UrgencyLevelType));
+                if (urgencylevel.UrgencyLevelType != null && urgencylevel.UrgencyLevelType.Length > 0)
+                    parameterurgencylevelref.Add("@urgency_level_type", Convert.ToChar(urgencylevel.UrgencyLevelType));
+                else
+                    parameterurgencylevelref.Add("@urgency_level_type", null);
                 parameterurgencylevelref.Add("@threshold_value", urgencylevel.ThresholdValue);
-                parameterurgencylevelref.Add("@unit_type", Convert.ToChar(urgencylevel.UnitType));
+                if (urgencylevel.UnitType != null && urgencylevel.UnitType.Length > 0)
+                    parameterurgencylevelref.Add("@unit_type", Convert.ToChar(urgencylevel.UnitType));
+                else
+                    parameterurgencylevelref.Add("@unit_type", null);
                 BitArray bitArray = new BitArray(7);
                 for (int i = 0; i < urgencylevel.DayType.Length; i++)
                 {
-                    bitArray.Set(i,urgencylevel.DayType[i]);
+                    bitArray.Set(i, urgencylevel.DayType[i]);
                 }
                 parameterurgencylevelref.Add("@day_type", bitArray);
-                parameterurgencylevelref.Add("@period_type", Convert.ToChar(urgencylevel.PeriodType));
+                if (urgencylevel.PeriodType != null && urgencylevel.PeriodType.Length > 0)
+                    parameterurgencylevelref.Add("@period_type", Convert.ToChar(urgencylevel.PeriodType));
+                else
+                    parameterurgencylevelref.Add("@period_type", null);
                 parameterurgencylevelref.Add("@urgencylevel_start_date", urgencylevel.UrgencylevelStartDate);
                 parameterurgencylevelref.Add("@urgencylevel_end_date", urgencylevel.UrgencylevelEndDate);
                 parameterurgencylevelref.Add("@state", 'A');
@@ -172,19 +187,34 @@ namespace net.atos.daf.ct2.alert.repository
                 var parameteralertfilterref = new DynamicParameters();
                 parameteralertfilterref.Add("@alert_id", alertfilter.AlertId);
                 parameteralertfilterref.Add("@alert_urgency_level_id", alertfilter.AlertUrgencyLevelId);
-                parameteralertfilterref.Add("@filter_type", Convert.ToChar(alertfilter.FilterType));
+                if (alertfilter.FilterType != null && alertfilter.FilterType.Length > 0)
+                    parameteralertfilterref.Add("@filter_type", Convert.ToChar(alertfilter.FilterType));
+                else
+                    parameteralertfilterref.Add("@filter_type", null);
                 parameteralertfilterref.Add("@threshold_value", alertfilter.ThresholdValue);
-                parameteralertfilterref.Add("@unit_type", Convert.ToChar(alertfilter.UnitType));
-                parameteralertfilterref.Add("@landmark_type", Convert.ToChar(alertfilter.LandmarkType));
+                if (alertfilter.UnitType != null && alertfilter.UnitType.Length > 0)
+                    parameteralertfilterref.Add("@unit_type", Convert.ToChar(alertfilter.UnitType));
+                else
+                    parameteralertfilterref.Add("@unit_type", null);
+                if (alertfilter.LandmarkType != null && alertfilter.LandmarkType.Length > 0)
+                    parameteralertfilterref.Add("@landmark_type", Convert.ToChar(alertfilter.LandmarkType));
+                else
+                    parameteralertfilterref.Add("@landmark_type", null);
                 parameteralertfilterref.Add("@ref_id", alertfilter.RefId);
-                parameteralertfilterref.Add("@position_type", Convert.ToChar(alertfilter.PositionType));
+                if (alertfilter.PositionType != null && alertfilter.PositionType.Length > 0)
+                    parameteralertfilterref.Add("@position_type", Convert.ToChar(alertfilter.PositionType));
+                else
+                    parameteralertfilterref.Add("@position_type", null);
                 BitArray bitArray = new BitArray(7);
                 for (int i = 0; i < alertfilter.DayType.Length; i++)
                 {
                     bitArray.Set(i, alertfilter.DayType[i]);
                 }
                 parameteralertfilterref.Add("@day_type", bitArray);
-                parameteralertfilterref.Add("@period_type", Convert.ToChar(alertfilter.PeriodType));
+                if (alertfilter.PeriodType != null && alertfilter.PeriodType.Length > 0)
+                    parameteralertfilterref.Add("@period_type", Convert.ToChar(alertfilter.PeriodType));
+                else
+                    parameteralertfilterref.Add("@period_type", null);
                 parameteralertfilterref.Add("@filter_start_date", alertfilter.FilterStartDate);
                 parameteralertfilterref.Add("@filter_end_date", alertfilter.FilterEndDate);
                 parameteralertfilterref.Add("@state", 'A');
@@ -205,10 +235,19 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 var parameternotification = new DynamicParameters();
                 parameternotification.Add("@alert_id", notification.AlertId);
-                parameternotification.Add("@alert_urgency_level_type", Convert.ToChar(notification.AlertUrgencyLevelType));
-                parameternotification.Add("@frequency_type", Convert.ToChar(notification.FrequencyType));
+                if (notification.AlertUrgencyLevelType != null && notification.AlertUrgencyLevelType.Length > 0)
+                    parameternotification.Add("@alert_urgency_level_type", Convert.ToChar(notification.AlertUrgencyLevelType));
+                else
+                    parameternotification.Add("@alert_urgency_level_type", null);
+                if (notification.FrequencyType != null && notification.FrequencyType.Length > 0)
+                    parameternotification.Add("@frequency_type", Convert.ToChar(notification.FrequencyType));
+                else
+                    parameternotification.Add("@frequency_type", null);
                 parameternotification.Add("@frequency_threshhold_value", notification.FrequencyThreshholdValue);
-                parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType));
+                if (notification.ValidityType != null && notification.ValidityType.Length > 0)
+                    parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType));
+                else
+                    parameternotification.Add("@validity_type", null);
                 parameternotification.Add("@state", 'A');
                 parameternotification.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameternotification.Add("@created_by", notification.CreatedBy);
@@ -228,8 +267,14 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 var parameteravailabilityperiod = new DynamicParameters();
                 parameteravailabilityperiod.Add("@notification_id", availabilityperiod.NotificationId);
-                parameteravailabilityperiod.Add("@availability_period_type", Convert.ToChar(availabilityperiod.AvailabilityPeriodType));
-                parameteravailabilityperiod.Add("@period_type", Convert.ToChar(availabilityperiod.PeriodType));
+                if (availabilityperiod.AvailabilityPeriodType != null && availabilityperiod.AvailabilityPeriodType.Length > 0)
+                    parameteravailabilityperiod.Add("@availability_period_type", Convert.ToChar(availabilityperiod.AvailabilityPeriodType));
+                else
+                    parameteravailabilityperiod.Add("@availability_period_type", null);
+                if (availabilityperiod.PeriodType != null && availabilityperiod.PeriodType.Length > 0)
+                    parameteravailabilityperiod.Add("@period_type", Convert.ToChar(availabilityperiod.PeriodType));
+                else
+                    parameteravailabilityperiod.Add("@period_type", null);
                 parameteravailabilityperiod.Add("@start_time", availabilityperiod.StartTime);
                 parameteravailabilityperiod.Add("@end_time", availabilityperiod.EndTime);
                 parameteravailabilityperiod.Add("@state", 'A');
@@ -250,9 +295,15 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 var parameterlimit = new DynamicParameters();
                 parameterlimit.Add("@notification_id", limit.NotificationId);
-                parameterlimit.Add("@notification_mode_type", Convert.ToChar(limit.NotificationModeType));
+                if (limit.NotificationModeType != null && limit.NotificationModeType.Length > 0)
+                    parameterlimit.Add("@notification_mode_type", Convert.ToChar(limit.NotificationModeType));
+                else
+                    parameterlimit.Add("@notification_mode_type", null);
                 parameterlimit.Add("@max_limit", limit.MaxLimit);
-                parameterlimit.Add("@notification_period_type", Convert.ToChar(limit.NotificationPeriodType));
+                if (limit.NotificationPeriodType != null && limit.NotificationPeriodType.Length > 0)
+                    parameterlimit.Add("@notification_period_type", Convert.ToChar(limit.NotificationPeriodType));
+                else
+                    parameterlimit.Add("@notification_period_type", null);
                 parameterlimit.Add("@period_limit", limit.PeriodLimit);
                 parameterlimit.Add("@state", 'A');
                 parameterlimit.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
@@ -274,14 +325,20 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterrecipient.Add("@notification_id", recipient.NotificationId);
                 parameterrecipient.Add("@recipient_label", recipient.RecipientLabel);
                 parameterrecipient.Add("@account_group_id", recipient.AccountGroupId);
-                parameterrecipient.Add("@notification_mode_type", Convert.ToChar(recipient.NotificationModeType));
+                if (recipient.NotificationModeType != null && recipient.NotificationModeType.Length > 0)
+                    parameterrecipient.Add("@notification_mode_type", Convert.ToChar(recipient.NotificationModeType));
+                else
+                    parameterrecipient.Add("@notification_mode_type", null);
                 parameterrecipient.Add("@phone_no", recipient.PhoneNo);
                 parameterrecipient.Add("@sms", recipient.Sms);
                 parameterrecipient.Add("@email_id", recipient.EmailId);
                 parameterrecipient.Add("@email_sub", recipient.EmailSub);
                 parameterrecipient.Add("@email_text", recipient.EmailText);
                 parameterrecipient.Add("@ws_url", recipient.WsUrl);
-                parameterrecipient.Add("@ws_type", Convert.ToChar(recipient.WsType));
+                if (recipient.WsType != null && recipient.WsType.Length > 0)
+                    parameterrecipient.Add("@ws_type", Convert.ToChar(recipient.WsType));
+                else
+                    parameterrecipient.Add("@ws_type", null);
                 parameterrecipient.Add("@ws_text", recipient.WsText);
                 parameterrecipient.Add("@ws_login", recipient.WsLogin);
                 parameterrecipient.Add("@ws_password", recipient.WsPassword);
