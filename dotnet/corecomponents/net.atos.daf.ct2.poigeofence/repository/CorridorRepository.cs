@@ -519,16 +519,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 // using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 // {
-
-
-                var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id, Convert.ToChar(existingTripCorridor.CorridorType)).Result;
-
-                if (isExist)
-                {
-                    existingTripCorridor.Id = -1;// Corridor is already exist with same name.
-                    return existingTripCorridor;
-                }
-
                 var updateIntoLandmark = @"update master.landmark set 
                                                     organization_id=@organization_id,
                                                     name=@corridorLabel, 
@@ -541,12 +531,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                                     longitude=@longitude, 
                                                     distance=@distance,
                                                     width=@width,                                                          
-                                                    modified_at=@,
-                                                    modified_by =@
+                                                    modified_at=@modified_at,
+                                                    modified_by =@modified_by
                                                     where id = @Id RETURNING id";
 
 
-               
+
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@Id", existingTripCorridor.Id);
@@ -562,10 +552,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@distance", existingTripCorridor.Distance);
                 parameter.Add("@width", existingTripCorridor.Width);
                 parameter.Add("@state", 'A');
-                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@created_by", existingTripCorridor.CreatedBy);
-                parameter.Add("@Created_At", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@Created_By", existingTripCorridor.CreatedBy);
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@modified_by", existingTripCorridor.CreatedBy);
                 parameter.Add("@state", "A");
 
 
@@ -615,7 +603,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                                                 start_position=@StartPosition,
                                                                 end_position=@EndPosition,
                                                                 distance=@Distance
-                                                                where id = @Id RETURNING id";          
+                                                                where id = @Id RETURNING id";
 
                     if (existingTrip.LandmarkId > 0 && existingTrip.Id > 0)
                     {
@@ -691,7 +679,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                                                 modified_by=@Modified_By,
                                                                 address=@Address,
                                                                 trip_id=@TripId
-                                                                where id = @Id RETURNING id";                    
+                                                                where id = @Id RETURNING id";
 
 
                     if (nodePoint.LandmarkId > 0 && nodePoint.Id > 0)

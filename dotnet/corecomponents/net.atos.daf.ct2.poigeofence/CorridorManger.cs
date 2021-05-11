@@ -129,9 +129,21 @@ namespace net.atos.daf.ct2.poigeofence
             return objCorridorLookUp;
         }
 
-        public Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        public async Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
-            throw new NotImplementedException();
+
+            var _existingTripCorridor = new ExistingTripCorridor();
+            var isExist = await _corridorRepository.CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id,
+                                                                       Convert.ToChar(existingTripCorridor.CorridorType));
+            if (isExist)
+            {
+                _existingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);               
+            }
+            else
+                _existingTripCorridor.Id = -1;
+            return _existingTripCorridor;
+
+           
         }
 
         public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor objRouteCorridor)

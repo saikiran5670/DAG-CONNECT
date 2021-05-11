@@ -421,6 +421,57 @@ namespace net.atos.daf.ct2.poigeofenceservice
             return await Task.FromResult(response);
         }
 
+
+        public override async Task<ExistingTripCorridorResponse> UpdateExistingTripCorridor(ExistingTripCorridorRequest request, ServerCallContext context)
+        {
+            var response = new ExistingTripCorridorResponse();
+            try
+            {
+                _logger.Info("Update Existing Trip Corridor .");
+                var existingTripEntity = _corridorMapper.ToExistingTripCorridorEntity(request);
+
+
+                var result = await _corridorManger.UpdateExistingTripCorridor(existingTripEntity);
+                if (result.Id == -1)
+                {
+                    response.Message = "Corridor Name is " + existingTripEntity.CorridorLabel + " already exists ";
+                    response.Code = Responsecode.Conflict;
+                    response.CorridorID = result.Id;
+
+                }
+                else if (result != null && result.Id > 0)
+                {
+                    var isTransactionDone = result.ExistingTrips.Any(x => x.Id != 0);
+                    if (isTransactionDone)
+                    {
+                        response.Message = "Update successfully";
+                        response.Code = Responsecode.Success;
+                        response.CorridorID = result.Id;
+                    }
+                    else
+                    {
+                        response.Message = "Transaction failed";
+                        response.Code = Responsecode.Failed;
+                        response.CorridorID = result.Id;
+                    }
+                }
+                else
+                {
+                    response.Message = "Update Existing Trip Corridor Fail";
+                    response.Code = Responsecode.Failed;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
+
+
+
+
         public override async Task<UpdateRouteCorridorResponse> UpdateRouteCorridor(UpdateRouteCorridorRequest objRequest, ServerCallContext context)
         {
             UpdateRouteCorridorResponse objResponse = new UpdateRouteCorridorResponse();

@@ -10,6 +10,7 @@ service CorridorService{
  rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
  rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
  rpc AddExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
+  rpc UpdateExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
  rpc UpdateRouteCorridor (UpdateRouteCorridorRequest) returns (UpdateRouteCorridorResponse);
     }
 
