@@ -98,6 +98,8 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alert.CreatedBy = request.CreatedBy;
             alert.ModifiedAt = request.ModifiedAt;
             alert.ModifiedBy = request.ModifiedBy;
+            alert.VehicleName =string.IsNullOrEmpty(request.VehicleName)?string.Empty: request.VehicleName;
+            alert.VehicleGroupName = string.IsNullOrEmpty(request.VehicleGroupName) ? string.Empty: request.VehicleGroupName;
            
             if (request.AlertUrgencyLevelRefs.Count > 0)
             {
