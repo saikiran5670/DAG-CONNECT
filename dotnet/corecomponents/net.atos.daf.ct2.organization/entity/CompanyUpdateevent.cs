@@ -1,29 +1,47 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.organization.entity
 {
-        public class Address    {
-        public string Type { get; set; } 
-        public string Street { get; set; } 
-        public string StreetNumber { get; set; } 
-        public string PostalCode { get; set; } 
-        public string City { get; set; } 
-        public string CountryCode { get; set; } 
+    public class Address
+    {
+        [StringLength(50, MinimumLength = 0)]
+        public string Type { get; set; }
+        [StringLength(50, MinimumLength = 0)]
+        public string Street { get; set; }
+        [StringLength(50, MinimumLength = 0)]
+        public string StreetNumber { get; set; }
+        [StringLength(15, MinimumLength = 0)]
+        public string PostalCode { get; set; }
+        [StringLength(50, MinimumLength = 0)]
+        public string City { get; set; }
+        [StringLength(20, MinimumLength = 0)]
+        public string CountryCode { get; set; }
     }
-     public class Company    {
-        public string type { get; set; } 
-        public string ID { get; set; } 
-        public string Name { get; set; } 
-        public Address Address { get; set; } 
-        public string ReferenceDateTime { get; set; } 
+    public class Company
+    {
+        [StringLength(50, MinimumLength = 0)]
+        public string type { get; set; }
+        [Required]
+        [StringLength(100, MinimumLength = 1)]
+        public string ID { get; set; }
+        [StringLength(100, MinimumLength = 0)]
+        public string Name { get; set; }
+        public Address Address { get; set; }
+        [Required]
+        public string ReferenceDateTime { get; set; }
     }
 
-    public class CompanyUpdatedEvent    {
-        public Company Company { get; set; } 
+    public class CompanyUpdatedEvent
+    {
+        [Required]
+        public Company Company { get; set; }
     }
 
-    public class Customer {
-        public CompanyUpdatedEvent CompanyUpdatedEvent { get; set; } 
+    public class Customer
+    {
+        [Required]
+        public CompanyUpdatedEvent CompanyUpdatedEvent { get; set; }
     }
 }
 

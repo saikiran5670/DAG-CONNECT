@@ -348,7 +348,7 @@
                     <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedGeofence.toggle(row) : null'
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedGeofence.toggle(row) : null; geofenceCheckboxClicked($event,row)'
                       [checked]='selectedGeofence.isSelected(row)' [aria-label]='checkboxLabelForGeofence(row)'>
                     </mat-checkbox>
                   </mat-cell>

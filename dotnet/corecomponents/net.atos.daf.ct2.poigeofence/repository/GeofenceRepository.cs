@@ -191,11 +191,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = string.Empty;
                 query = @"select L.id geofenceID,
                                  L.name geofenceName, L.type ,L.category_id categoryID,L.sub_category_id subcategoryId,
-                                 case when C.type='P' then C.name end category,
-                                 case when C.type='S' then C.name end subCategory                                
+                                 C.name as category,
+								 s.name as subCategory                                 
                                  from master.landmark L
-	                             left join master.category C on L.category_id=C.id
-	                             where L.state='A'";
+	                             left join master.category C on L.category_id=C.id and L.state <>'D' and C.state <>'D'
+								 left join master.category s on L.sub_category_id = s.id and L.state <>'D' and s.state <>'D'
+	                             where L.state='A' and L.type in ('C','O')";
                 var parameter = new DynamicParameters();
                 if (geofenceEntityRequest.organization_id > 0)
                 {
