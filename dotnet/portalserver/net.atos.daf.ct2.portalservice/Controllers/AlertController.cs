@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
                         {
-                            StatusCode(400, "Alert type should be same while duplicating the alert");
+                            return StatusCode(400, "Alert type should be same while duplicating the alert");
                         }
                     }
                     else if(duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
