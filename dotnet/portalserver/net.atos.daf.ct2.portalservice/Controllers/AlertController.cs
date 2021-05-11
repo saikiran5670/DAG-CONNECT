@@ -190,6 +190,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var alertRequest = new AlertRequest();
                 alertRequest = _mapper.ToAlertRequest(request);
+
+                if (request.IsDuplicate)
+                {
+                    alertservice.IdRequest idRequest = new IdRequest();
+                    idRequest.AlertId = request.Id
+                    alertservice.DuplicateAlertResponse alertResponse = await _AlertServiceClient.DuplicateAlertTypeAsync(alertRequest);
+                    if (alertResponse != null && alertResponse.Type.ToLower() != request.Type.ToLower())
+                    {
+                        StatusCode(400, "Alert type should be same while duplicating the alert");
+                    }
+                }
+
                 alertservice.AlertResponse alertResponse = await _AlertServiceClient.CreateAlertAsync(alertRequest);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
