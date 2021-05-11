@@ -75,6 +75,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isThursdaySelected: boolean= false;
   isFridaySelected: boolean= false;
   isSaturdaySelected: boolean= false;
+  labelForThreshold: string= '';
+  unitForThreshold: string= '';
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -244,7 +246,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeAlertType(event){
     this.alert_type_selected= event.value;
-    if(this.alert_category_selected === 'L'){
+    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
         this.loadMap();
         this.loadPOIData();
@@ -262,6 +264,67 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
       else if(this.alert_type_selected === 'E'){
         this.alertForm.get('alertLevel').setValue('warning');
+      }
+    }
+    else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
+            (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
+
+      switch(this.alert_category_selected+this.alert_type_selected){
+        case "LY": { //Excessive under utilization in days
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+          this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
+          break;
+        }
+        case "LH": { //Excessive under utilization in hours
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          break;
+        }
+        case "LD": { //Excessive distance done
+          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
+          this.unitForThreshold= "" //km/miles
+          break;
+        }
+        case "LU": { //Excessive Driving duration
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
+          this.unitForThreshold= ""
+          break;
+        }
+        case "LG": { //Excessive Global Mileage
+          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
+          this.unitForThreshold= "" //km/miles
+          break;
+        }
+        case "FP": { //Fuel Increase During stop
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= "%";
+          break;
+        }
+        case "FL": { //Fuel loss during stop
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= "%"
+          break;
+        }
+        case "FT": { //Fuel loss during trip
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= ""
+          break;
+        }
+        case "FI": { //Excessive Average Idling
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
+          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          break;
+        }
+        case "FA": { //Excessive Average speed
+          this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
+          this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
+          break;
+        }
+        case "FF": { //Fuel Consumed
+          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
+          this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
+          break;
+        }
       }
     }
     

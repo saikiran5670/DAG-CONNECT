@@ -187,21 +187,25 @@
             </div>
           </div>
 
-          <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'H' || alert_type_selected === 'Y'))"
+          <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'H' || alert_type_selected === 'Y' || alert_type_selected === 'D' || alert_type_selected === 'U' || alert_type_selected === 'G')) || 
+                      (alert_category_selected === 'F' && (alert_type_selected === 'P' || alert_type_selected === 'L' || alert_type_selected === 'T' || alert_type_selected === 'I' || alert_type_selected === 'A' || alert_type_selected === 'F' ))"
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-              <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+              <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>  
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-checkbox (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical</mat-checkbox>
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblPeriod || 'Period' }} <span class='mandatoryColor'>*</span></mat-label>         
+                    <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
                       <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="criticalLevelThreshold" maxlength="50">
                     </mat-form-field>
+                  </div>
+                  <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <span>{{ unitForThreshold }}</span>
                   </div>
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -209,12 +213,15 @@
                     <mat-checkbox (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning</mat-checkbox>
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblPeriod || 'Period' }} <span class='mandatoryColor'>*</span></mat-label>         
+                    <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="50"> Days
+                      <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="warningLevelThreshold" maxlength="50">
                     </mat-form-field>
+                  </div>
+                  <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <span>{{ unitForThreshold }}</span>
                   </div>
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
@@ -222,12 +229,15 @@
                     <mat-checkbox (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory</mat-checkbox>
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblPeriod || 'Period' }} <span class='mandatoryColor'>*</span></mat-label>         
+                    <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
                       <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput formControlName="advisoryLevelThreshold" maxlength="50">
                     </mat-form-field>
+                  </div>
+                  <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <span>{{ unitForThreshold }}</span>
                   </div>
                 </div>
              </div>
