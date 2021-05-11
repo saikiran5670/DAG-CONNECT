@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             return objenumtrans;
         }
        
-        public DuplicateAlertResponse ToDupliacteAlert(DuplicateAlertType request)
+        public DuplicateAlert ToDupliacteAlert(DuplicateAlertType request)
         {
             var alert = new DuplicateAlert();
             alert.Id = request.Id;

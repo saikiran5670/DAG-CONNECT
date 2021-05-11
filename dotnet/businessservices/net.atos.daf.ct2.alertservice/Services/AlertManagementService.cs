@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.ActivateAlert(request.AlertId, ((char)AlertState.Active), ((char)AlertState.Suspend));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId),
+                    Message = id > 0 ? String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 _logger.Error(null, ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId),
+                    Message = String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
                     Code = ResponseCode.Failed
                 });
             }
@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.SuspendAlert(request.AlertId, ((char)AlertState.Suspend), ((char)AlertState.Active));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId),
+                    Message = id > 0 ? String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -65,7 +65,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
+                    Code = ResponseCode.Failed
+                });
             }
         }
 
@@ -85,7 +89,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.DeleteAlert(request.AlertId, ((char)AlertState.Delete));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId),
+                    Message = id > 0 ? String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -93,7 +97,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
+                    Code = ResponseCode.Failed
+                });
             }
         }
 
@@ -238,7 +246,7 @@ namespace net.atos.daf.ct2.alertservice.Services
             var alertResponse = new DuplicateAlertResponse();
             try
             {
-                alertResponse.DuplicateAlert = _mapper.ToDupliacteAlert(await _alertManager.DuplicateAlertType(request.AlertId);
+                alertResponse.DuplicateAlert = _mapper.ToDupliacteAlert(await _alertManager.DuplicateAlertType(request.AlertId));
                 alertResponse.Code = ResponseCode.Success;
                 alertResponse.Message = String.Format(AlertConstants.DUPLICATE_ALERT_SUCCESS_MSG, request.AlertId);
             }
