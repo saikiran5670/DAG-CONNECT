@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             var etcObj = new poigeofence.entity.ExistingTripCorridor()
             {
 
-
+                Id=request.Id,
                 OrganizationId = request.OrganizationId,
                 CorridorType = request.CorridorType,// Convert.ToChar(request.CorridorType);
                 CorridorLabel = request.CorridorLabel,

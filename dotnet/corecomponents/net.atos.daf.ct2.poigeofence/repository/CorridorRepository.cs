@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								 ,latitude
 								 ,longitude
 						  FROM MASTER.CORRIDORVIASTOP WHERE
-						  landmark_id=@landmark_id";
+						  landmark_id=@landmark_id and state = 'A'";
 
                 parameter.Add("@landmark_id", Id);
                 var data = await _dataAccess.QueryAsync<ViaAddressDetail>(query, parameter);

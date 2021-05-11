@@ -83,7 +83,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         {
             var ExistingTripCorridorRequest = new ExistingTripCorridorRequest()
             {
-
+                Id = request.Id,
                 OrganizationId = request.OrganizationId != null ? request.OrganizationId.Value : 0,
                 CorridorType = request.CorridorType != null ? request.CorridorType : "E",
                 CorridorLabel = CheckNull(request.CorridorLabel),
