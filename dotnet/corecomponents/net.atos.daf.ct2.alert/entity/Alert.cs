@@ -33,6 +33,8 @@ namespace net.atos.daf.ct2.alert.entity
         public long ModifiedAt { get; set; }
 
         public int ModifiedBy { get; set; }
+        public string VehicleName { get; set; }
+        public string VehicleGroupName { get; set; }
 
         public List<Notification> Notifications { get; set; } = new List<Notification>();
 

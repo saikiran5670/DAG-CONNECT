@@ -10,9 +10,11 @@
   </div>
   <div *ngIf='!createViewEditStatus'>
       <mat-card class='mat-elevation-z'>
-        <div>
-            <app-alerts-filter  ></app-alerts-filter>
-          </div>  
+        <div *ngIf='alertCategoryList'>
+          <app-alerts-filter (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'  [alertStatusList]='alertStatusList' [vehicleGroupList]='vehicleGroupList'
+            [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
+          </app-alerts-filter>        
+        </div>  
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAlertDetails || 'All Created Alert Details' }}
@@ -44,7 +46,6 @@
                 </div>
             </div>
         </div>
-
         <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
         <div *ngIf='initData.length > 0' id="alertsData">
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
@@ -57,7 +58,7 @@
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">
-                  <img src="{{row.alertIcon}}" style='width: 22px;height: 22px;'>
+                  <i class="material-icons" [style]="{ 'color': row.alertIcon } ">warning</i>
                 </span> </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
