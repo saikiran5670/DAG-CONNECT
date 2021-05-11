@@ -416,9 +416,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     existingTrip.LandmarkId = existingTripCorridor.Id;
                     var insertIntoCorridorTrips = @"INSERT INTO master.corridortrips(
 										  landmark_id, trip_id, start_date, end_date, driver_id1, driver_id2, start_latitude, 
-										  start_longitude, end_latitude,end_longitude, start_position, end_position, distance)
+										  start_longitude, end_latitude,end_longitude, start_position, end_position, distance,state)
 										  VALUES (@LandmarkId,@TripId, @StartDate, @EndDate, @DriverId1, @DriverId2, @StartLatitude, 
-										  @StartLongitude, @EndLatitude,@EndLongitude, @StartPosition, @EndPosition, @Distance) RETURNING id";
+										  @StartLongitude, @EndLatitude,@EndLongitude, @StartPosition, @EndPosition, @Distance,'A') RETURNING id";
 
                     if (existingTrip.LandmarkId > 0)
                     {
@@ -802,7 +802,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            ,l.modified_at as ModifiedAt
 	                            ,l.modified_by as ModifiedBy
                         FROM       master.landmark l
-                        WHERE      l.type IN ('E')
+                        WHERE      l.type IN ('E') and state in ('A', 'I')
                         AND        l.organization_id = @organization_id";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
@@ -836,7 +836,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         end_position as EndPosition, 
                         distance
 	                    FROM master.corridortrips
-                        WHERE      landmark_id = @landmark_id";
+                        WHERE   state = 'A' and  landmark_id = @landmark_id";
 
                 parameter.Add("@landmark_id", corridoreid);
                 var data = _dataAccess.Query<ExistingTrip>(query, parameter);
@@ -867,7 +867,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             address,
                             trip_id as TripId
                             FROM master.nodes
-                            where trip_id = @trip_id and landmark_id=@landmark_id";
+                            where state= 'A' and trip_id = @trip_id and landmark_id=@landmark_id";
 
                 parameter.Add("@trip_id", tripid);
                 parameter.Add("@landmark_id", landmarkid);
