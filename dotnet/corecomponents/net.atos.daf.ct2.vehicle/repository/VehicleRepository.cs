@@ -1048,7 +1048,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 									on ass.account_group_id=grp.id and grp.object_type='A' 
 									inner join master.groupref vgrpref
 									on  grp.id=vgrpref.group_id
-									where vgrpref.ref_id=125) AND veh.status <>'T'
+									where vgrpref.ref_id=@accountid) AND veh.status <>'T'
 									AND veh.organization_id =@orgnizationid";
                 //Start date and end date need to be discuss in subscription
 
