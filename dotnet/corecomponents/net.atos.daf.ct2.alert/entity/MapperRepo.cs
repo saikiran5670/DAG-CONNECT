@@ -125,6 +125,8 @@ namespace net.atos.daf.ct2.alert.entity
             alert.CreatedBy = request.ale_created_by;
             alert.ModifiedAt = request.alefil_modified_at;
             alert.ModifiedBy = request.ale_modified_by;
+            alert.VehicleName = request.vehiclename;
+            alert.VehicleGroupName = request.vehiclegroupname;
             alert.AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>();
             alert.Notifications = new List<Notification>();
             alert.AlertLandmarkRefs = new List<AlertLandmarkRef>();

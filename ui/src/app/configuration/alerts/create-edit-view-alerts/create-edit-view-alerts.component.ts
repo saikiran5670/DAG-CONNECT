@@ -59,7 +59,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isDuplicateAlert: boolean= false;
   private platform: any;
   map: any;
+  geofenceData: any;
+  marker: any;
   markerArray: any = [];
+  geoMarkerArray: any = [];
   alertTypeByCategoryList: any= [];
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
@@ -75,6 +78,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isThursdaySelected: boolean= false;
   isFridaySelected: boolean= false;
   isSaturdaySelected: boolean= false;
+  labelForThreshold: string= '';
+  unitForThreshold: string= '';
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -244,7 +249,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeAlertType(event){
     this.alert_type_selected= event.value;
-    if(this.alert_category_selected === 'L'){
+    if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
         this.loadMap();
         this.loadPOIData();
@@ -262,6 +267,67 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
       else if(this.alert_type_selected === 'E'){
         this.alertForm.get('alertLevel').setValue('warning');
+      }
+    }
+    else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
+            (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
+
+      switch(this.alert_category_selected+this.alert_type_selected){
+        case "LY": { //Excessive under utilization in days
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+          this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
+          break;
+        }
+        case "LH": { //Excessive under utilization in hours
+          this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          break;
+        }
+        case "LD": { //Excessive distance done
+          this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
+          this.unitForThreshold= "" //km/miles
+          break;
+        }
+        case "LU": { //Excessive Driving duration
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
+          this.unitForThreshold= ""
+          break;
+        }
+        case "LG": { //Excessive Global Mileage
+          this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
+          this.unitForThreshold= "" //km/miles
+          break;
+        }
+        case "FP": { //Fuel Increase During stop
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= "%";
+          break;
+        }
+        case "FL": { //Fuel loss during stop
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= "%"
+          break;
+        }
+        case "FT": { //Fuel loss during trip
+          this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
+          this.unitForThreshold= ""
+          break;
+        }
+        case "FI": { //Excessive Average Idling
+          this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
+          this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          break;
+        }
+        case "FA": { //Excessive Average speed
+          this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
+          this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
+          break;
+        }
+        case "FF": { //Fuel Consumed
+          this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
+          this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
+          break;
+        }
       }
     }
     
@@ -287,9 +353,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
 }
 
 checkboxClicked(event: any, row: any) {
+  console.log(row);
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
   }else{ //-- remove existing marker
+    //It will filter out checked points only
     let arr = this.markerArray.filter(item => item.id != row.id);
     this.markerArray = arr;
   }
@@ -304,7 +372,73 @@ checkboxClicked(event: any, row: any) {
       this.map.addObject(marker);
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
     });
+    this.geoMarkerArray.forEach(element => {
+      this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(this.marker);
+      this.createResizableCircle(element.distance, element);
+
+  });
   }
+
+  geofenceCheckboxClicked(event: any, row: any) {
+    this.geofenceService.getGeofenceById(this.accountOrganizationId, row.geofenceId).subscribe((geoData: any) => {
+      this.geofenceData = geoData;
+    if(event.checked){ 
+      this.geoMarkerArray.push(geoData);
+    }else{ 
+      let arr = this.geoMarkerArray.filter(item => item.id != row.geofenceId);
+      this.geoMarkerArray = arr;
+      // this.map.removeObjects(this.map.getObjects());
+    }
+    this.addCircleOnMap(event);
+  });
+    }
+
+    addCircleOnMap(event: any){
+      if(event.checked == false){
+    this.map.removeObjects(this.map.getObjects());
+  }
+//adding circular geofence points on map
+    this.geoMarkerArray.forEach(element => {
+      this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(this.marker);
+      this.createResizableCircle(element.distance, element);
+
+  });
+  //adding poi geofence points on map
+  this.markerArray.forEach(element => {
+    let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+    this.map.addObject(marker);
+  });
+
+    }
+
+  createResizableCircle(_radius: any, rowData: any) {
+    var circle = new H.map.Circle(
+      { lat: rowData.latitude, lng: rowData.longitude },
+
+      _radius,//85000,
+      {
+        style: { fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 0 }
+      }
+    ),
+      circleOutline = new H.map.Polyline(
+        circle.getGeometry().getExterior(),
+        {
+          style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+        }
+      ),
+      circleGroup = new H.map.Group({
+        volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+        objects: [circle, circleOutline]
+      }),
+      circleTimeout;
+
+    circle.draggable = true;
+    circleOutline.draggable = true;
+    circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
+    this.map.addObject(circleGroup);
+    }
   
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +

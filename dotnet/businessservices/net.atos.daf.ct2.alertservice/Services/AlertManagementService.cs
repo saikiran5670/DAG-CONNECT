@@ -17,12 +17,12 @@ namespace net.atos.daf.ct2.alertservice.Services
     public class AlertManagementService : AlertService.AlertServiceBase
     {
         private ILog _logger;
-        private readonly IAlertManager _alertManager;       
+        private readonly IAlertManager _alertManager;
         private readonly Mapper _mapper;
         public AlertManagementService(IAlertManager alertManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _alertManager = alertManager;            
+            _alertManager = alertManager;
             _mapper = new Mapper();
         }
 
@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.ActivateAlert(request.AlertId, ((char)AlertState.Active), ((char)AlertState.Suspend));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId),
+                    Message = id > 0 ? String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -42,7 +42,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
+                    Code = ResponseCode.Failed
+                });
             }
         }
 
@@ -53,7 +57,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.SuspendAlert(request.AlertId, ((char)AlertState.Suspend), ((char)AlertState.Active));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId),                    
+                    Message = id > 0 ? String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -61,7 +65,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
+                    Code = ResponseCode.Failed
+                });
             }
         }
 
@@ -81,7 +89,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 var id = await _alertManager.DeleteAlert(request.AlertId, ((char)AlertState.Delete));
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = id > 0 ? String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId),
+                    Message = id > 0 ? String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, id) : String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG),
                     Code = id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
 
@@ -89,7 +97,11 @@ namespace net.atos.daf.ct2.alertservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                return await Task.FromResult(new AlertResponse
+                {
+                    Message = String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
+                    Code = ResponseCode.Failed
+                });
             }
         }
 
@@ -102,13 +114,13 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 IEnumerable<net.atos.daf.ct2.alert.entity.EnumTranslation> enumTranslationList = await _alertManager.GetAlertCategory();
 
-                
+
                 AlertCategoryResponse response = new AlertCategoryResponse();
                 foreach (var item in enumTranslationList)
                 {
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
-               
+
                 response.Message = "Alert Category data retrieved";
                 response.Code = ResponseCode.Success;
                 _logger.Info("Get method in alert service called.");
@@ -143,7 +155,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 if (alert.Exists)
                 {
                     response.AlertRequest.Exists = true;
-                    response.Message = "Duplicate Group";
+                    response.Message = "Duplicate alert name";
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }
@@ -178,7 +190,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 alert = await _alertManager.CreateAlert(alert);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}" ,
+                    Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}",
                     Code = alert.Id > 0 ? ResponseCode.Success : ResponseCode.Failed
                 });
             }
@@ -196,14 +208,14 @@ namespace net.atos.daf.ct2.alertservice.Services
         #endregion
 
         #region Get Alert List
-        public override async Task<AlertListResponse>  GetAlertList(AlertListRequest request,ServerCallContext context)
+        public override async Task<AlertListResponse> GetAlertList(AlertListRequest request, ServerCallContext context)
         {
             try
             {
                 //Alert objalert = new Alert();
                 //objalert.OrganizationId = request.OrganizationId;
                 //objalert.CreatedBy = request.AccountId;
-                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId,request.OrganizationId);
+                IEnumerable<Alert> alertList = await _alertManager.GetAlertList(request.AccountId, request.OrganizationId);
 
                 AlertListResponse response = new AlertListResponse();
                 foreach (var item in alertList)
@@ -225,6 +237,27 @@ namespace net.atos.daf.ct2.alertservice.Services
                     Message = "Get alert list fail : " + ex.Message
                 });
             }
+        }
+        #endregion
+
+        #region DuplicateAlertType
+        public override async Task<DuplicateAlertResponse> DuplicateAlertType(IdRequest request, ServerCallContext context)
+        {
+            var alertResponse = new DuplicateAlertResponse();
+            try
+            {
+                var duplicateAlert = await _alertManager.DuplicateAlertType(request.AlertId);
+                alertResponse.DuplicateAlert = duplicateAlert != null ? _mapper.ToDupliacteAlert(duplicateAlert) : null;
+                alertResponse.Code = duplicateAlert != null ?  ResponseCode.Success : ResponseCode.Failed;
+                alertResponse.Message = duplicateAlert != null ? String.Format(AlertConstants.DUPLICATE_ALERT_SUCCESS_MSG, request.AlertId) : String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                alertResponse.Code = ResponseCode.InternalServerError;
+                alertResponse.Message = String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, ex.Message);
+            }
+            return alertResponse;
         }
         #endregion
     }

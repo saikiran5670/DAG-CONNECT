@@ -12,6 +12,7 @@ service AlertService {
   rpc UpdateAlert (AlertRequest) returns (AlertResponse);
   rpc CreateAlert (AlertRequest) returns (AlertResponse);
   rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
+  rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
 }
 
 enum ResponseCode{
@@ -27,12 +28,21 @@ message IdRequest {
   int32 AlertId = 1;
 }
 
+message DuplicateAlertResponse{   
+    ResponseCode Code=1;
+    string message = 2;
+	DuplicateAlert DuplicateAlert=3;
+}
 message AlertResponse{   
     ResponseCode Code=1;
     string message = 2;
 	AlertRequest AlertRequest=3;
 }
-
+message AlertListResponse{   
+    ResponseCode Code=1;
+    string message = 2;
+	repeated AlertRequest AlertRequest=3;
+}
 message AlertCategoryResponse{
     ResponseCode Code=1;
     string message = 2;
@@ -40,6 +50,11 @@ message AlertCategoryResponse{
 }
 message AccountIdRequest {
   int32 AccountId = 1;
+}
+
+message AlertListRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
 }
 message EnumTranslation{
     int32 Id= 1;
@@ -49,6 +64,19 @@ message EnumTranslation{
     string Key=5; 
 }
 
+message DuplicateAlert
+{
+	int32 Id=1;
+	int32 OrganizationId=2;
+	string Name=3;
+	string Category=4;
+	string Type=5;
+	string ValidityPeriodType=6;
+	int64 ValidityStartDate=7;
+	int64 ValidityEndDate=8;
+	int32 VehicleGroupId=9;
+	string State=10;
+}
 message AlertRequest
 {
 	int32 Id=1;
@@ -65,9 +93,12 @@ message AlertRequest
 	int32 CreatedBy=12;
 	int64 ModifiedAt=13;
 	int32 ModifiedBy=14;
-	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=15;
-	repeated NotificationRequest Notifications=17;
-	repeated AlertLandmarkRefRequest AlertLandmarkRefs=18;
+	string VehicleName=15;
+	string VehicleGroupName=16;
+	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=17;
+	repeated NotificationRequest Notifications=18;
+	repeated AlertLandmarkRefRequest AlertLandmarkRefs=19;
+	bool Exists=20;
 }
 
 message AlertFilterRefRequest
@@ -184,15 +215,4 @@ message NotificationRecipientRequest
 	string State=16;
 	int64 CreatedAt=17;
 	int64 ModifiedAt=18;
-}
-
-message AlertListResponse{   
-    ResponseCode Code=1;
-    string message = 2;
-	repeated AlertRequest AlertRequest=3;
-}
-
-message AlertListRequest {
-  int32 AccountId = 1;
-  int32 OrganizationId = 2;
 }
