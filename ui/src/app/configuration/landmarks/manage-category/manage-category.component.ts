@@ -304,10 +304,10 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   nextStepforGeofence(geofenceData: any){
-    const colsList = ['geofenceName', 'categoryName', 'subCategoryName'];
+    const colsList = ['name', 'categoryName', 'subCategoryName'];
     const colsName = [this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
     const tableTitle = this.translationData.lblGeofence || 'Geofence';
-    let filterGeoData: any = geofenceData.geofenceList.filter(item => item.type == 'C' || item.type == 'O');
+    let filterGeoData: any = geofenceData.filter(item => item.type == 'C' || item.type == 'O');
     this.callToCommonTable(filterGeoData, colsList, colsName, tableTitle);
   }
 
