@@ -12,6 +12,7 @@ service AlertService {
   rpc UpdateAlert (AlertRequest) returns (AlertResponse);
   rpc CreateAlert (AlertRequest) returns (AlertResponse);
   rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
+  rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
 }
 
 enum ResponseCode{
@@ -58,6 +59,19 @@ message EnumTranslation{
     string Key=5; 
 }
 
+message DuplicateAlertResponse
+{
+	int32 Id=1;
+	int32 OrganizationId=2;
+	string Name=3;
+	string Category=4;
+	string Type=5;
+	string ValidityPeriodType=6;
+	int64 ValidityStartDate=7;
+	int64 ValidityEndDate=8;
+	int32 VehicleGroupId=9;
+	string State=10;
+}
 message AlertRequest
 {
 	int32 Id=1;

@@ -41,4 +41,27 @@ namespace net.atos.daf.ct2.alert.entity
         public List<AlertLandmarkRef> AlertLandmarkRefs { get; set; } = new List<AlertLandmarkRef>();
         public bool Exists { get; set; }
     }
-}
+
+    public class DuplicateAlertType
+    {
+        public int Id { get; set; }
+
+        public int OrganizationId { get; set; }
+
+        public string Name { get; set; }
+
+        public string Category { get; set; }
+
+        public string Type { get; set; }
+
+        public string ValidityPeriodType { get; set; }
+
+        public long ValidityStartDate { get; set; }
+
+        public long ValidityEndDate { get; set; }
+
+        public int VehicleGroupId { get; set; }
+
+        public string State { get; set; }
+    }
+    }

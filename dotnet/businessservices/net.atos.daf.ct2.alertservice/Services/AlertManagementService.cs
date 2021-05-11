@@ -227,5 +227,21 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
         }
         #endregion
+
+        #region DuplicateAlertType
+        public override async Task<DuplicateAlertResponse> DuplicateAlertType(IdRequest request, ServerCallContext context)
+        {
+            var alert = new DuplicateAlertResponse();
+            try
+            {
+                alert = _mapper.ToDupliacteAlert(await _alertManager.DuplicateAlertType(request.AlertId);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return alert;
+        }
+        #endregion
     }
 }
