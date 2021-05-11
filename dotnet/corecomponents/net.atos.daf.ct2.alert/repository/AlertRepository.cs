@@ -510,7 +510,7 @@ namespace net.atos.daf.ct2.alert.repository
                 //parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 //parameterAlert.Add("@created_by", alert.CreatedBy);
 
-                string queryAlert = @"SELECT 
+                string queryAlert = @"SELECT distinct
                     ale.id as ale_id,
                     ale.organization_id as ale_organization_id,
                     ale.name as ale_name,
@@ -608,7 +608,9 @@ namespace net.atos.daf.ct2.alert.repository
                     notava.end_time as notava_end_time,
                     notava.state as notava_state,
                     notava.created_at as notava_created_at,
-                    notava.modified_at as notava_modified_at
+                    notava.modified_at as notava_modified_at,					
+					(CASE WHEN grp.group_type='S' THEN veh.name END) as vehiclename,
+					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname
                     FROM master.alert ale
                     inner join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
@@ -624,6 +626,12 @@ namespace net.atos.daf.ct2.alert.repository
                     on noti.id= notlim.notification_id and notlim.state in ('A','I')
                     inner join master.notificationavailabilityperiod notava
                     on noti.id= notava.notification_id and notava.state in ('A','I')
+					inner join master.group grp 
+					on ale.vehicle_group_id=grp.id
+					inner join master.groupref vgrpref
+					on  grp.id=vgrpref.group_id and grp.object_type='V'	
+					inner join master.vehicle veh
+					on vgrpref.ref_id=veh.id 
                      ";
 
                 if (accountid > 0 && organizationid > 0)
