@@ -63,6 +63,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   marker: any;
   markerArray: any = [];
   geoMarkerArray: any = [];
+  polyPoints: any = [];
   alertTypeByCategoryList: any= [];
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
@@ -373,25 +374,34 @@ checkboxClicked(event: any, row: any) {
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
     });
     this.geoMarkerArray.forEach(element => {
+      if(element.type == "C"){
       this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(this.marker);
       this.createResizableCircle(element.distance, element);
+      }
+      else if(element.type == "O"){
+        this.polyPoints = [];
+        element.nodes.forEach(item => {
+        this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
+        this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+        this.polyPoints.push(0);
+        });
+        this.createResizablePolygon(this.map,this.polyPoints,this);
+      }
 
   });
   }
 
   geofenceCheckboxClicked(event: any, row: any) {
-    this.geofenceService.getGeofenceById(this.accountOrganizationId, row.geofenceId).subscribe((geoData: any) => {
-      this.geofenceData = geoData;
+
     if(event.checked){ 
-      this.geoMarkerArray.push(geoData);
+      this.geoMarkerArray.push(row);
     }else{ 
-      let arr = this.geoMarkerArray.filter(item => item.id != row.geofenceId);
+      let arr = this.geoMarkerArray.filter(item => item.id != row.id);
       this.geoMarkerArray = arr;
-      // this.map.removeObjects(this.map.getObjects());
     }
     this.addCircleOnMap(event);
-  });
+  // });
     }
 
     addCircleOnMap(event: any){
@@ -400,9 +410,22 @@ checkboxClicked(event: any, row: any) {
   }
 //adding circular geofence points on map
     this.geoMarkerArray.forEach(element => {
+      if(element.type == "C"){
       this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(this.marker);
+      
       this.createResizableCircle(element.distance, element);
+      }
+      // "PolygonGeofence"
+      else{
+        this.polyPoints = [];
+        element.nodes.forEach(item => {
+        this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
+        this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+        this.polyPoints.push(0);
+        });
+        this.createResizablePolygon(this.map,this.polyPoints,this);
+      }
 
   });
   //adding poi geofence points on map
@@ -440,6 +463,122 @@ checkboxClicked(event: any, row: any) {
     this.map.addObject(circleGroup);
     }
   
+    createResizablePolygon(map: any, points: any, thisRef: any){
+          var svgCircle = '<svg width="50" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
+          '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
+          '</svg>',
+            polygon = new H.map.Polygon(
+              new H.geo.Polygon(new H.geo.LineString(points)),
+              {
+                style: {fillColor: 'rgba(150, 100, 0, .8)', lineWidth: 0}
+              }
+            ),
+            verticeGroup = new H.map.Group({
+              visibility: false
+            }),
+            mainGroup = new H.map.Group({
+              volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+              objects: [polygon, verticeGroup]
+            }),
+            polygonTimeout;
+      
+        // ensure that the polygon can receive drag events
+        polygon.draggable = true;
+      
+        // create markers for each polygon's vertice which will be used for dragging
+        polygon.getGeometry().getExterior().eachLatLngAlt(function(lat, lng, alt, index) {
+          var vertice = new H.map.Marker(
+            {lat, lng},
+            {
+              icon: new H.map.Icon(svgCircle, {anchor: {x: 10, y: 10}})
+            }
+          );
+          vertice.draggable = true;
+          vertice.setData({'verticeIndex': index})
+          verticeGroup.addObject(vertice);
+        });
+      
+        // add group with polygon and it's vertices (markers) on the map
+        map.addObject(mainGroup);
+      
+        // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
+        mainGroup.addEventListener('pointerenter', function(evt) {
+          if (polygonTimeout) {
+            clearTimeout(polygonTimeout);
+            polygonTimeout = null;
+          }
+      
+          // show vertice markers
+          verticeGroup.setVisibility(true);
+        }, true);
+      
+        // event listener for main group to hide vertice markers if moved out with mouse (or released finger on touch devices)
+        // the vertice markers are hidden on touch devices after specific timeout
+        mainGroup.addEventListener('pointerleave', function(evt) {
+          var timeout = (evt.currentPointer.type == 'touch') ? 1000 : 0;
+      
+          // hide vertice markers
+          polygonTimeout = setTimeout(function() {
+            verticeGroup.setVisibility(false);
+          }, timeout);
+        }, true);
+      
+        if(thisRef.actionType == 'create'){ //-- only for create polygon geofence
+          // event listener for vertice markers group to change the cursor to pointer
+          verticeGroup.addEventListener('pointerenter', function(evt) {
+            document.body.style.cursor = 'pointer';
+          }, true);
+        
+          // event listener for vertice markers group to change the cursor to default
+          verticeGroup.addEventListener('pointerleave', function(evt) {
+            document.body.style.cursor = 'default';
+          }, true);
+        
+          // event listener for vertice markers group to resize the geo polygon object if dragging over markers
+          verticeGroup.addEventListener('drag', function(evt) {
+            var pointer = evt.currentPointer,
+                geoLineString = polygon.getGeometry().getExterior(),
+                geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
+           // set new position for vertice marker
+            evt.target.setGeometry(geoPoint);
+        
+            // set new position for polygon's vertice
+            geoLineString.removePoint(evt.target.getData()['verticeIndex']);
+            geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
+            polygon.setGeometry(new H.geo.Polygon(geoLineString));
+        
+            // stop propagating the drag event, so the map doesn't move
+            evt.stopPropagation();
+          }, true);
+  
+          verticeGroup.addEventListener('dragend', function (ev) {
+            var coordinate = map.screenToGeo(ev.currentPointer.viewportX,
+              ev.currentPointer.viewportY);
+              let nodeIndex = ev.target.getData()['verticeIndex'];
+            let _position = Math.abs(coordinate.lat.toFixed(4)) + "," + Math.abs(coordinate.lng.toFixed(4));
+              if(_position){
+                thisRef.hereService.getAddressFromLatLng(_position).then(result => {
+                  let locations = <Array<any>>result;
+                  let data = locations[0].Location.Address;
+                  let pos = locations[0].Location.DisplayPosition;
+                  thisRef.setAddressValues('updatePoint', data, pos, nodeIndex);
+                }, error => {
+                  // console.error(error);
+                });
+              }
+  
+          }, false);
+        }
+    }
+  
+    toBack() {
+      let emitObj = {
+        stepFlag: false,
+        msg: ""
+      }
+      this.backToPage.emit(emitObj);
+    }
+
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
     '<path d="M 19 31 C 19 32.7 16.3 34 13 34 C 9.7 34 7 32.7 7 31 C 7 29.3 9.7 ' +
@@ -505,23 +644,27 @@ checkboxClicked(event: any, row: any) {
       this.updatePOIDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
-      this.selectPOITableRows(this.selectedRowData);
+      // this.selectPOITableRows(this.selectedRowData);
     }
   }
 
-  selectPOITableRows(rowData: any){
+  selectPOITableRows(event:any,rowData: any){
     this.poiDataSource.data.forEach((row: any) => {
       let search = rowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
       if (search.length > 0) {
         this.selectedPOI.select(row);
+        this.checkboxClicked(event,row);
+
       }
     });
   }
 
 
   loadGeofenceData() {
-    this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((geofencelist: any) => {
-      this.geofenceGridData = geofencelist.geofenceList;
+    // this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((geofencelist: any) => {
+    this.geofenceService.getGeofenceDetails(this.accountOrganizationId).subscribe((geofencelist: any) => {
+      // this.geofenceGridData = geofencelist.geofenceList;
+      this.geofenceGridData = geofencelist;
      this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
       this.updateGeofenceDataSource(this.geofenceGridData);
       if(this.actionType == 'view' || this.actionType == 'edit')
@@ -543,15 +686,16 @@ checkboxClicked(event: any, row: any) {
       this.updateGeofenceDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
-      this.selectGeofenceTableRows(this.selectedRowData);
+      // this.selectGeofenceTableRows(this.selectedRowData);
     }
   }
 
-  selectGeofenceTableRows(rowData: any){
+  selectGeofenceTableRows(event: any,rowData: any){
     this.geofenceDataSource.data.forEach((row: any) => {
-      let search = rowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
       if (search.length > 0) {
         this.selectedGeofence.select(row);
+        this.geofenceCheckboxClicked(event,row);
       }
     });
   }
@@ -851,8 +995,8 @@ checkboxClicked(event: any, row: any) {
   onReset(){ //-- Reset
     this.selectedPOI.clear();
     this.selectedGeofence.clear();
-    this.selectPOITableRows(this.selectedRowData);
-    this.selectGeofenceTableRows(this.selectedRowData);
+    // this.selectPOITableRows(this.selectedRowData);
+    // this.selectGeofenceTableRows(this.selectedRowData);
     this.setDefaultValue();
   }
 
@@ -1014,8 +1158,8 @@ checkboxClicked(event: any, row: any) {
     };
     this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
       groupDetails = groupData["groups"][0];
-      this.selectPOITableRows(groupDetails);
-      this.selectGeofenceTableRows(groupDetails);
+      this.selectPOITableRows(event,groupDetails);
+      this.selectGeofenceTableRows(event,groupDetails);
     });
   }
 }
