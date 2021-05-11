@@ -128,6 +128,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
+    setTimeout(() => {
+    this.initMap();
+    }, 0);
+  }
+
+  initMap(){
     let defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(this.mapElement.nativeElement,
       defaultLayers.vector.normal.map, {
@@ -136,13 +142,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
       pixelRatio: window.devicePixelRatio || 1
     });
     window.addEventListener('resize', () => this.map.getViewPort().resize());
-
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-
-     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
   }
   
-
   checkboxClicked(event: any, row: any) {
     this.showMap = this.selectedpois.selected.length > 0 ? true : false;
     console.log(this.selectedpois.selected.length)
@@ -162,7 +165,6 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.markerArray.forEach(element => {
         let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(marker);
-        
       });
     }
     
@@ -380,6 +382,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
+    this.selectedpois.clear();
+    this.selectedgeofences.clear();
+    this.showMap = false;
+    setTimeout(() => {
+      this.initMap();
+    }, 0);
   }
 
   checkCreationForGeofence(item: any) {
@@ -395,7 +403,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
+    this.selectedpois.clear();
     this.selectedgeofences.clear();
+    this.showMap = false;
+    setTimeout(() => {
+      this.initMap();
+    }, 0);
   }
 
   onClose() {
@@ -415,11 +428,16 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, rowData.name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if (res) {
-        this.poiService.deletePoi(poiId).subscribe((data) => {
-          this.openSnackBar('Item delete', 'dismiss');
+        this.poiService.deletePoi(poiId).subscribe((data: any) => {
+          this.successMsgBlink(this.getDeletMsg(rowData.name));
           this.loadPoiData();
-        })
-        this.successMsgBlink(this.getDeletMsg(rowData.name));
+          this.loadGeofenceData();
+          this.selectedgeofences.clear();
+          this.selectedpois.clear();
+          this.markerArray = [];
+          this.showMap = false;
+          this.addMarkerOnMap();
+        });
       }
     });
   }
@@ -440,16 +458,18 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
-      this.poiService.deletePoi(poiId).subscribe((data) => {
-        this.openSnackBar('Item delete', 'dismiss');
-        this.loadPoiData();
-      })
-        this.successMsgBlink(this.getDeletMsg(name));
+      this.poiService.deletePoi(poiId).subscribe((data: any) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadPoiData();
+          this.loadGeofenceData();
+          this.selectedgeofences.clear();
+          this.selectedpois.clear();
+          this.markerArray = [];
+          this.showMap = false;
+          this.addMarkerOnMap();
+        });
       }
     });
-    this.markerArray = [];
-    this.showMap = false;
-    // console.log(this.markerArray)
   }
 
 
@@ -473,6 +493,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
           this.loadGeofenceData();
           this.loadPoiData();
           this.selectedgeofences.clear();
+          this.selectedpois.clear();
         });
       }
     });
@@ -509,6 +530,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
             this.loadGeofenceData();
             this.loadPoiData();
             this.selectedgeofences.clear();
+            this.selectedpois.clear();
           });
         }
       });
@@ -553,15 +575,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   masterToggleForPOI() {
+    this.markerArray = [];
     if(this.isAllSelectedForPOI()){
       this.selectedpois.clear();
       this.showMap = false;
-    }  else {
-      this.poidataSource.data.forEach((row) =>
-      this.selectedpois.select(row)
-      );
-      this.showMap = true ;
-    } 
+    }
+    else{
+      this.poidataSource.data.forEach((row) =>{
+        this.selectedpois.select(row);
+        this.markerArray.push(row);
+      });
+      this.showMap = true;
+    }
+    this.addMarkerOnMap();
   }
 
   isAllSelectedForPOI() {
