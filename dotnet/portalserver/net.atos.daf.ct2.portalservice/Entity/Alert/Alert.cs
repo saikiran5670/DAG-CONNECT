@@ -16,10 +16,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
                   ErrorMessage = "Alert name should be between 1 and 50 characters")]
         public string Name { get; set; }
         [AlertCategory]
+        [StringLength(1, MinimumLength = 1,
+                  ErrorMessage = "Alert Category should be 1 character")]
         public string Category { get; set; }
-
+        [StringLength(1, MinimumLength = 1,
+                  ErrorMessage = "Alert Type should be 1 character")]
         public string Type { get; set; }
-
+        [StringLength(1, MinimumLength = 1,
+                  ErrorMessage = "Alert Validity Period Type should be 1 character")]
         public string ValidityPeriodType { get; set; }
 
         public long ValidityStartDate { get; set; }
@@ -29,6 +33,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public int VehicleGroupId { get; set; }
         [State]
         public string State { get; set; }
+        [StringLength(1, MinimumLength = 1,
+                  ErrorMessage = "ApplyOn should be 1 character")]
         public string ApplyOn { get; set; }
 
         //public long CreatedAt { get; set; }
