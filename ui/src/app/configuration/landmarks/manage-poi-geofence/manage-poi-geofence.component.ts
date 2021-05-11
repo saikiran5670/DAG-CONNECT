@@ -447,6 +447,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
         this.successMsgBlink(this.getDeletMsg(name));
       }
     });
+    this.markerArray = [];
+    this.showMap = false;
+    // console.log(this.markerArray)
   }
 
 
