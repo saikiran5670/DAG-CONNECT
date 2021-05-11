@@ -522,7 +522,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@ids", tripIds);
-                var query = @"update master.corridortrips set state='D' where  id =any(@ids) and type = 'E' RETURNING id";
+                var query = @"update master.corridortrips set state='D' where  id =any(@ids)  RETURNING id";
                 int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
@@ -542,7 +542,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@ids", nodeIds);
-                var query = @"update master.nodes set state='D' where  id =any(@ids) and type = 'E' RETURNING id";
+                var query = @"update master.nodes set state='D' where  id =any(@ids)  RETURNING id";
                 int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
@@ -594,10 +594,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@longitude", existingTripCorridor.StartLongitude);
                 parameter.Add("@distance", existingTripCorridor.Distance);
                 parameter.Add("@width", existingTripCorridor.Width);
-                parameter.Add("@state", 'A');
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                parameter.Add("@modified_by", existingTripCorridor.CreatedBy);
-                parameter.Add("@state", "A");
+                parameter.Add("@modified_by", existingTripCorridor.ModifiedBy);
 
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(updateIntoLandmark, parameter);
@@ -654,8 +652,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             var nodeparameter = new DynamicParameters();
                             nodeparameter.Add("@landmark_id", landmarkId);
                             nodeparameter.Add("@trip_id", trip.trip_id);
-                            var nodequery = @"SELECT id,trip_id FROM master.nodes where state in ('A','I') and trip_id=@trip_id  and landmark_id=@landmark_id;";
-                            var noderesult = await _dataAccess.QueryAsync<(int id, string trip_id)>(nodequery, tripparameter);
+                            var nodequery = @"SELECT id,trip_id FROM master.nodes where state in ('A','I') and landmark_id=@landmark_id  and trip_id=@trip_id;";
+                            var noderesult = await _dataAccess.QueryAsync<(int id, string trip_id)>(nodequery, nodeparameter);
                             var nodeDetails = noderesult.ToList();
                             var nodeIds = nodeDetails.Select(x => x.id).ToList();
                             var deleteNodes =await DeleteNodes(nodeIds);
