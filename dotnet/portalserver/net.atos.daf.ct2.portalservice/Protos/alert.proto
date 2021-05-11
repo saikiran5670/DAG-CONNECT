@@ -28,6 +28,11 @@ message IdRequest {
   int32 AlertId = 1;
 }
 
+message DuplicateAlertResponse{   
+    ResponseCode Code=1;
+    string message = 2;
+	DuplicateAlert DuplicateAlert=3;
+}
 message AlertResponse{   
     ResponseCode Code=1;
     string message = 2;
@@ -59,7 +64,7 @@ message EnumTranslation{
     string Key=5; 
 }
 
-message DuplicateAlertResponse
+message DuplicateAlert
 {
 	int32 Id=1;
 	int32 OrganizationId=2;
