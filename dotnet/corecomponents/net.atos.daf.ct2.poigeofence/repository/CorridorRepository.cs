@@ -250,8 +250,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             parameter.Add("@ViaStopName", temp.ViaStopName);
 
                             var insertIntoCorridorViaStop = @"INSERT INTO master.corridorviastop(
-                                          landmark_id, latitude, longitude, name)
-                                            VALUES (@LandmarkId, @Latitude, @Longitude ,@ViaStopName) RETURNING id";
+                                          landmark_id, latitude, longitude, name, state)
+                                            VALUES (@LandmarkId, @Latitude, @Longitude ,@ViaStopName, @state) RETURNING id";
 
                             await _dataAccess.ExecuteScalarAsync<int>(insertIntoCorridorViaStop, parameter);
 
@@ -895,11 +895,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                                state=@State 
                                    WHERE id = @ID RETURNING id ";
 
+                    var deleteViaStop = @"UPDATE master.corridorviastop
+                                          SET  state= @State
+                                            where landmark_id= @ID";
+
                     parameter.Add("@ID", CorridorId);
                     parameter.Add("@State", "D");
 
                     var id = await _dataAccess.ExecuteScalarAsync<int>(deleteCorridor, parameter);
                     corridorID.Id = id;
+                    if (corridorID.Id > 0)
+                    {
+                        await _dataAccess.ExecuteScalarAsync<int>(deleteViaStop, parameter);
+                    }
 
                     transactionScope.Complete();
                     return corridorID;

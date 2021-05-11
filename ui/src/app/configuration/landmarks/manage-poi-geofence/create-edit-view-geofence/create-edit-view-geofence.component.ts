@@ -64,7 +64,6 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   polyPoints: any = [];
   createPolyButtonFlag: boolean = false;
   isPolyCreated: boolean = false;
-  selectedCategoryData: any = {};
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -134,24 +133,10 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         this.loadGridData(this.poiData);
         this.drawCircularGeofence();
       } else { //-- polygon geofence
-        if(this.actionType == 'view'){
-          this.getCategoryDetails();
-        }
         this.polygoanGeofence = true;
         this.setDefaultPolygonGeofenceFormValue();
         this.drawPolygon();
       }
-    }
-  }
-
-  getCategoryDetails(){
-    let catData = this.categoryList.filter(item => item.id == this.selectedElementData.categoryId);
-    let subCatData = this.subCategoryList.filter(item => item.id == this.selectedElementData.subCategoryId);
-    if(catData && catData.length > 0){
-      this.selectedCategoryData.categoryName = catData[0].name;
-    }
-    if(subCatData && subCatData.length > 0){
-      this.selectedCategoryData.subCategoryName = subCatData[0].name;
     }
   }
 
@@ -329,8 +314,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   getAllGeofenceData(){
-    this.geofenceService.getAllGeofences(this.organizationId).subscribe((geoData: any) => {
-      let geoInitData = geoData["geofenceList"];
+    this.geofenceService.getGeofenceDetails(this.organizationId).subscribe((geoListData: any) => {
+      let geoInitData = geoListData;
       geoInitData = geoInitData.filter(item => item.type == "C" || item.type == "O");
       let geofenceCreatedUpdateMsg = this.circularGeofence ? this.getCircularGeofenceCreatedUpdatedMessage() : this.getPolygonGeofenceCreatedUpdatedMessage();
       let emitObj = { stepFlag: false, tableData: geoInitData, successMsg: geofenceCreatedUpdateMsg };
