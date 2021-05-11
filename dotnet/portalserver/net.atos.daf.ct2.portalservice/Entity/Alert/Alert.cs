@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     public class Alert:AlertBase
     {
          public int Id { get; set; }
-         public int IsDuplicate { get; set; }
+         public bool IsDuplicate { get; set; }
 
         //public long CreatedAt { get; set; }
 

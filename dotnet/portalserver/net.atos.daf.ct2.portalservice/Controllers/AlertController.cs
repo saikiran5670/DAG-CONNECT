@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.IsDuplicate)
                 {
                     alertservice.IdRequest idRequest = new IdRequest();
-                    idRequest.AlertId = request.Id
+                    idRequest.AlertId = request.Id;
                     alertservice.DuplicateAlertResponse alertResponse = await _AlertServiceClient.DuplicateAlertTypeAsync(alertRequest);
                     if (alertResponse != null && alertResponse.Type.ToLower() != request.Type.ToLower())
                     {
