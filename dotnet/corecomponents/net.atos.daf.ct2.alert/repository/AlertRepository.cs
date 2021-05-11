@@ -648,7 +648,27 @@ namespace net.atos.daf.ct2.alert.repository
             }
         }
         #endregion
-        
+
+        #region Duplicate Alert Type
+        public Task<DuplicateAlertType> DuplicateAlertType(int alertId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", alertId);
+                parameter.Add("@state", ((char)AlertState.Delete));
+                string query =
+                    @"SELECT id as Id, organization_id as OrganizationId, name as Name,category as Category, type as Type, validity_period_type as ValidityPeriodType, validity_start_date as ValidityStartDate, validity_end_date as ValidityEndDate, vehicle_group_id as VehicleGroupId, state as State	FROM master.alert WHERE id=@id and state<>@state";
+
+                return  dataAccess.QueryFirstOrDefaultAsync<DuplicateAlertType>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
         #region Private method
 
         private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId,int ModifiedBy)
@@ -705,7 +725,7 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 throw ex;
             }
-        }
+        }        
 
         #endregion
     }

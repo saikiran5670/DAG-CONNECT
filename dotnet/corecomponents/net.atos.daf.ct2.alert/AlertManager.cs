@@ -63,5 +63,11 @@ namespace net.atos.daf.ct2.alert
             }
         }
         #endregion
+        #region Duplicate Alert Type
+        public Task<DuplicateAlertType> DuplicateAlertType(int alertId)
+        {
+            return alertRepository.DuplicateAlertType(alertId);
+        }
+        #endregion
     }
 }

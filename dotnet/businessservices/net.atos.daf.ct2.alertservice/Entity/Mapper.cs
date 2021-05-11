@@ -21,6 +21,21 @@ namespace net.atos.daf.ct2.alertservice.Entity
             return objenumtrans;
         }
        
+        public DuplicateAlert ToDupliacteAlert(DuplicateAlertType request)
+        {
+            var alert = new DuplicateAlert();
+            alert.Id = request.Id;
+            alert.OrganizationId = request.OrganizationId;
+            alert.Name = request.Name;
+            alert.Category = request.Category;
+            alert.Type = request.Type;
+            alert.ValidityPeriodType = request.ValidityPeriodType;
+            alert.ValidityStartDate = request.ValidityStartDate;
+            alert.ValidityEndDate = request.ValidityEndDate;
+            alert.VehicleGroupId = request.VehicleGroupId;
+            alert.State = request.State;
+            return alert;
+        }
 
         public Alert ToAlertEntity(AlertRequest request)
         {

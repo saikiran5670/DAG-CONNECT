@@ -17,6 +17,7 @@ namespace net.atos.daf.ct2.alert.repository
 
         #region Alert Category
         Task<IEnumerable<EnumTranslation>> GetAlertCategory();
+        Task<DuplicateAlertType> DuplicateAlertType(int alertId);
         #endregion
     }
 }

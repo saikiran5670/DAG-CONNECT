@@ -48,13 +48,13 @@ export class GeofenceService {
       .pipe(catchError(this.handleError));
   }
 
-  getGeofenceDetails(orgId: any, geoId: any): Observable<any[]> {
+  getGeofenceDetails(orgId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.GeofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}&Id=${geoId}`, headers)
+      .get<any[]>(`${this.GeofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 

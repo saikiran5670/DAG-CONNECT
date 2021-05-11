@@ -7,6 +7,7 @@ using net.atos.daf.ct2.data;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.alert.test
 {
@@ -35,7 +36,7 @@ namespace net.atos.daf.ct2.alert.test
         {
             //Provide the Alert Id which has suspended State in Database
             var ExcepteId = 1;
-            var Id =  _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active), ((char)AlertState.Suspend)).Result;
+            var Id = _ialertManager.ActivateAlert(ExcepteId, ((char)AlertState.Active), ((char)AlertState.Suspend)).Result;
             Assert.AreEqual(ExcepteId, Id);
         }
 
@@ -63,7 +64,7 @@ namespace net.atos.daf.ct2.alert.test
             if (_ialertManager.CheckIsNotificationExitForAlert(ExcepteId).Result)
                 Id = _ialertManager.DeleteAlert(ExcepteId, ((char)AlertState.Suspend)).Result;
             Assert.AreEqual(ExcepteId, Id);
-         }
+        }
 
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Delete Alert Falied, Provide the Alert Id which has a no active notification")]
@@ -92,14 +93,14 @@ namespace net.atos.daf.ct2.alert.test
                 OrganizationId = 10,
                 Name = "TestAlert1",
                 Category = "L",
-                Type ="N",
-                ValidityPeriodType ="A" ,
+                Type = "N",
+                ValidityPeriodType = "A",
                 ValidityStartDate = 1620272821,
                 ValidityEndDate = 1620272821,
-                VehicleGroupId =12,
-                State ="A",
+                VehicleGroupId = 12,
+                State = "A",
                 CreatedAt = 1620272821,
-                CreatedBy =10,
+                CreatedBy = 10,
                 //ModifiedAt =,
                 //ModifiedBy =,
                 AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>(),
@@ -111,30 +112,30 @@ namespace net.atos.daf.ct2.alert.test
                 //Id =,
                 //AlertId =,
                 AlertUrgencyLevelType = "C",
-                FrequencyType ="O",
-                FrequencyThreshholdValue =1,
-                ValidityType ="A",
+                FrequencyType = "O",
+                FrequencyThreshholdValue = 1,
+                ValidityType = "A",
                 State = "A",
                 CreatedAt = 1620272821,
                 CreatedBy = 10,
                 //ModifiedAt =,
                 //ModifiedBy =,
                 NotificationRecipients = new List<NotificationRecipient>(),
-                NotificationLimits =new List<NotificationLimit> (),
-                NotificationAvailabilityPeriods =new List<NotificationAvailabilityPeriod> (),
+                NotificationLimits = new List<NotificationLimit>(),
+                NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
             {
                 //Id =,
                 //NotificationId =,
-                RecipientLabel ="Test Manager",
-                AccountGroupId =12,
-                NotificationModeType ="E",
-                PhoneNo =string.Empty,
+                RecipientLabel = "Test Manager",
+                AccountGroupId = 12,
+                NotificationModeType = "E",
+                PhoneNo = string.Empty,
                 Sms = string.Empty,
-                EmailId ="testmanager@atos.net",
-                EmailSub ="Email Notification ",
-                EmailText ="Hello Text",
+                EmailId = "testmanager@atos.net",
+                EmailSub = "Email Notification ",
+                EmailText = "Hello Text",
                 WsUrl = string.Empty,
                 WsType = "X",
                 WsText = string.Empty,
@@ -148,10 +149,10 @@ namespace net.atos.daf.ct2.alert.test
             {
                 //Id =,
                 //NotificationId =,
-                NotificationModeType ="E",
-                MaxLimit =100,
-                NotificationPeriodType ="D",
-                PeriodLimit =50,
+                NotificationModeType = "E",
+                MaxLimit = 100,
+                NotificationPeriodType = "D",
+                PeriodLimit = 50,
                 State = "A",
                 CreatedAt = 1620272821,
                 //ModifiedAt =,
@@ -160,8 +161,8 @@ namespace net.atos.daf.ct2.alert.test
             {
                 //Id =,
                 //NotificationId =,
-                AvailabilityPeriodType ="A",
-                PeriodType ="D",
+                AvailabilityPeriodType = "A",
+                PeriodType = "D",
                 StartTime = 1620272821,
                 EndTime = 1620272821,
                 State = "A",
@@ -172,11 +173,11 @@ namespace net.atos.daf.ct2.alert.test
             {
                 //Id =,
                 //AlertId =,
-                UrgencyLevelType ="C",
-                ThresholdValue =2,
-                UnitType ="C",
-                DayType = new bool[7] {true, true, true, true, true, true, true},
-                PeriodType ="D",
+                UrgencyLevelType = "C",
+                ThresholdValue = 2,
+                UnitType = "C",
+                DayType = new bool[7] { true, true, true, true, true, true, true },
+                PeriodType = "D",
                 UrgencylevelStartDate = 1620272821,
                 UrgencylevelEndDate = 1620272821,
                 State = "A",
@@ -189,10 +190,10 @@ namespace net.atos.daf.ct2.alert.test
             {
                 //Id =,
                 //AlertId =,
-                LandmarkType ="P",
-                RefId =170,
-                Distance =20,
-                UnitType ="X",
+                LandmarkType = "P",
+                RefId = 170,
+                Distance = 20,
+                UnitType = "X",
                 State = "A",
                 CreatedAt = 1620272821,
                 //ModifiedAt =,
@@ -202,14 +203,14 @@ namespace net.atos.daf.ct2.alert.test
                 //Id =,
                 //AlertId =,
                 //AlertUrgencyLevelId =,
-                FilterType ="O",
-                ThresholdValue =20,
-                UnitType ="X",
-                LandmarkType ="P",
-                RefId =170,
-                PositionType ="X",
+                FilterType = "O",
+                ThresholdValue = 20,
+                UnitType = "X",
+                LandmarkType = "P",
+                RefId = 170,
+                PositionType = "X",
                 DayType = new bool[7] { true, true, true, true, true, true, true },
-                PeriodType ="D",
+                PeriodType = "D",
                 FilterStartDate = 1620272821,
                 FilterEndDate = 1620272821,
                 State = "A",
@@ -221,7 +222,7 @@ namespace net.atos.daf.ct2.alert.test
             notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
             notification.NotificationLimits.Add(notificationLimit);
             notification.NotificationRecipients.Add(notificationRecipient);
-             
+
             alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
 
             alert.AlertLandmarkRefs.Add(alertLandmarkRef);
@@ -256,7 +257,7 @@ namespace net.atos.daf.ct2.alert.test
                 Notifications = new List<Notification>(),
                 AlertLandmarkRefs = new List<AlertLandmarkRef>(),
             };
-            var result = _ialertManager.GetAlertList(alert).Result;
+            var result = _ialertManager.GetAlertList(alert.CreatedBy,alert.OrganizationId).Result;
             Assert.IsNotNull(result);
         }
 
@@ -300,8 +301,8 @@ namespace net.atos.daf.ct2.alert.test
             };
             Notification notification = new Notification
             {
-                Id =10,
-                AlertId =14,
+                Id = 10,
+                AlertId = 14,
                 AlertUrgencyLevelType = "W",
                 FrequencyType = "O",
                 FrequencyThreshholdValue = 5,
@@ -310,15 +311,15 @@ namespace net.atos.daf.ct2.alert.test
                 //CreatedAt = 1620272821,
                 //CreatedBy = 10,
                 ModifiedAt = 1620272821,
-                ModifiedBy =10,
+                ModifiedBy = 10,
                 NotificationRecipients = new List<NotificationRecipient>(),
                 NotificationLimits = new List<NotificationLimit>(),
                 NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
             {
-                Id =3,
-                NotificationId =10,
+                Id = 3,
+                NotificationId = 10,
                 RecipientLabel = "Test notification 01",
                 AccountGroupId = 12,
                 NotificationModeType = "E",
@@ -338,8 +339,8 @@ namespace net.atos.daf.ct2.alert.test
             };
             NotificationLimit notificationLimit = new NotificationLimit
             {
-                Id =6,
-                NotificationId =10,
+                Id = 6,
+                NotificationId = 10,
                 NotificationModeType = "E",
                 MaxLimit = 100,
                 NotificationPeriodType = "D",
@@ -350,8 +351,8 @@ namespace net.atos.daf.ct2.alert.test
             };
             NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod
             {
-                Id =6,
-                NotificationId =10,
+                Id = 6,
+                NotificationId = 10,
                 AvailabilityPeriodType = "A",
                 PeriodType = "D",
                 StartTime = 1620272821,
@@ -362,8 +363,8 @@ namespace net.atos.daf.ct2.alert.test
             };
             AlertUrgencyLevelRef alertUrgencyLevelRef = new AlertUrgencyLevelRef
             {
-                Id =14,
-                AlertId =14,
+                Id = 14,
+                AlertId = 14,
                 UrgencyLevelType = "C",
                 ThresholdValue = 2,
                 UnitType = "C",
@@ -379,8 +380,8 @@ namespace net.atos.daf.ct2.alert.test
             };
             AlertLandmarkRef alertLandmarkRef = new AlertLandmarkRef
             {
-                Id =13,
-                AlertId =14,
+                Id = 13,
+                AlertId = 14,
                 LandmarkType = "P",
                 RefId = 170,
                 Distance = 20,
@@ -391,8 +392,8 @@ namespace net.atos.daf.ct2.alert.test
             };
             AlertFilterRef alertFilterRef = new AlertFilterRef
             {
-                Id =10,
-                AlertId =14,
+                Id = 10,
+                AlertId = 14,
                 //AlertUrgencyLevelId =,
                 FilterType = "O",
                 ThresholdValue = 50,
@@ -421,6 +422,16 @@ namespace net.atos.daf.ct2.alert.test
             alert.Notifications.Add(notification);
             var result = _ialertManager.UpdateAlert(alert).Result;
             Assert.IsTrue(result.Id > 0);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Duplicate Alert Type")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task DuplicateAlertType()
+        {
+            var alert = await _ialertManager.DuplicateAlertType(1);
+            Assert.IsTrue(alert.Id > 0);
         }
     }
 }
