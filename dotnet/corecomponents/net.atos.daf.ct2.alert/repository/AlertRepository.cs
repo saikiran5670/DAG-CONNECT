@@ -492,23 +492,23 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Get Alert List
-        public async Task<IEnumerable<Alert>> GetAlertList(Alert alert)
+        public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
             {
                 var parameterAlert = new DynamicParameters();
-                parameterAlert.Add("@organization_id", alert.OrganizationId);
-                parameterAlert.Add("@name", alert.Name);
-                parameterAlert.Add("@category", alert.Category);
-                parameterAlert.Add("@type", Convert.ToChar(alert.Type));
-                parameterAlert.Add("@validity_period_type", Convert.ToChar(alert.ValidityPeriodType));
-                parameterAlert.Add("@validity_start_date", alert.ValidityStartDate);
-                parameterAlert.Add("@validity_end_date", alert.ValidityEndDate);
-                parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
-                parameterAlert.Add("@state", 'A');
-                parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                parameterAlert.Add("@created_by", alert.CreatedBy);
+               
+                //parameterAlert.Add("@name", alert.Name);
+                //parameterAlert.Add("@category", alert.Category);
+                //parameterAlert.Add("@type", Convert.ToChar(alert.Type));
+                //parameterAlert.Add("@validity_period_type", Convert.ToChar(alert.ValidityPeriodType));
+                //parameterAlert.Add("@validity_start_date", alert.ValidityStartDate);
+                //parameterAlert.Add("@validity_end_date", alert.ValidityEndDate);
+                //parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
+                //parameterAlert.Add("@state", 'A');
+                //parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                //parameterAlert.Add("@created_by", alert.CreatedBy);
 
                 string queryAlert = @"SELECT 
                     ale.id as ale_id,
@@ -625,7 +625,19 @@ namespace net.atos.daf.ct2.alert.repository
                     inner join master.notificationavailabilityperiod notava
                     on noti.id= notava.notification_id and notava.state in ('A','I')
                      ";
-                
+
+                if (accountid > 0 && organizationid > 0)
+                {
+                    queryAlert = queryAlert + " where ale.created_by = @created_by AND ale.organization_id = @organization_id";
+                    parameterAlert.Add("@organization_id", organizationid);
+                    parameterAlert.Add("@created_by", accountid);
+                }
+                else if (accountid == 0 && organizationid > 0)
+                {
+                    queryAlert = queryAlert + " where ale.organization_id = @organization_id";
+                    parameterAlert.Add("@organization_id", organizationid);
+                }               
+
                 IEnumerable<AlertResult> alertResult = await dataAccess.QueryAsync<AlertResult>(queryAlert, parameterAlert);
                 return repositoryMapper.GetAlertList(alertResult);
 

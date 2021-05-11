@@ -55,6 +55,8 @@ message GeofenceRequest{
     repeated NodeRequest Nodes=17;
     bool Exists=18;
     google.protobuf.StringValue Message =19;
+    google.protobuf.StringValue CategoryName =20;
+    google.protobuf.StringValue SubCategoryName =21;
 }
 message NodeRequest{
     int32 Id =1;

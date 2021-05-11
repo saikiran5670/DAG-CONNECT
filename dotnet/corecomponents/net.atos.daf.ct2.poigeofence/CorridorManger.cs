@@ -129,23 +129,42 @@ namespace net.atos.daf.ct2.poigeofence
             return objCorridorLookUp;
         }
 
-        public Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
+        public async Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
-            throw new NotImplementedException();
+
+            var _existingTripCorridor = new ExistingTripCorridor();
+            var isExist = await _corridorRepository.CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id,
+                                                                       Convert.ToChar(existingTripCorridor.CorridorType));
+            if (isExist)
+            {
+                _existingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);               
+            }
+            else
+                _existingTripCorridor.Id = -1;
+            return _existingTripCorridor;
+
+           
         }
 
         public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor objRouteCorridor)
         {
             RouteCorridor objRouteCorridorResponse = new RouteCorridor();
-            var isExist = await _corridorRepository.CheckRouteCorridorIsexist(objRouteCorridor.CorridorLabel, objRouteCorridor.OrganizationId, objRouteCorridor.Id, objRouteCorridor.CorridorType);
-            if (isExist)
+            try
             {
-                var corridorID = await _corridorRepository.UpdateRouteCorridor(objRouteCorridor);
-                if (corridorID.Id > 0)
-                    objRouteCorridorResponse.Id = corridorID.Id;
+                var isExist = await _corridorRepository.CheckRouteCorridorIsexist(objRouteCorridor.CorridorLabel, objRouteCorridor.OrganizationId, objRouteCorridor.Id, objRouteCorridor.CorridorType);
+                if (isExist)
+                {
+                    var corridorID = await _corridorRepository.UpdateRouteCorridor(objRouteCorridor);
+                    if (corridorID.Id > 0)
+                        objRouteCorridorResponse.Id = corridorID.Id;
+                }
+                else
+                    objRouteCorridorResponse.Id = -1;
             }
-            else
-                objRouteCorridorResponse.Id = -1;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
             return objRouteCorridorResponse;
         }
 

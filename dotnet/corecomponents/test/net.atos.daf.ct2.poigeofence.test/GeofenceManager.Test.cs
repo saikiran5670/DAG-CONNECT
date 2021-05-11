@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.poigeofence.test
             geofence.Latitude = 101.11;
             geofence.Longitude = 100.100;
             geofence.Distance = 0;
-            geofence.TripId = 0;
+          //  geofence.TripId = 0;
             geofence.CreatedBy = 50;
             geofence.Nodes = new List<Nodes>();
             geofence.Nodes.Add(new Nodes() { Latitude = 101.11,Longitude=100.100,SeqNo=1 });

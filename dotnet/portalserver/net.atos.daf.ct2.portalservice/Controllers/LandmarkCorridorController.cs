@@ -195,6 +195,56 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
 
+        [HttpPost]
+        [Route("updateexistingtripcorridor")]
+
+        public async Task<IActionResult> UpdateExistingTripCorridor(ExistingTripCorridor request)
+        {
+            try
+            {
+                if (request.OrganizationId == 0 && request.Id ==0)
+                {
+                    //bool hasRights = await HasAdminPrivilege();
+                    //if (!hasRights)
+                    return StatusCode(400, "Organization_Id and Id are Required .");
+                }
+                if (request.ExistingTrips.Count == 0)
+                {
+                    return StatusCode(400, "ExistingTrips required");
+                }
+                var MapRequest = _corridorMapper.MapExistingTripCorridorRequest(request);
+                var data = await _corridorServiceClient.UpdateExistingTripCorridorAsync(MapRequest);
+                if (data != null && data.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                           "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "UpdateExistingTripCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
+                                            Request);
+                    return Ok(data);
+                }
+                else if (data != null && data.Code == Responsecode.Conflict)
+                {
+                    return StatusCode(409, data.Message);
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Landmark Corridor Component",
+                                         "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "UpdateExistingTripCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          Request);
+
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
 
         [NonAction]
         public async Task<bool> HasAdminPrivilege()
@@ -272,7 +322,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
-                
+                if (request.ViaAddressDetails.Count > 5)
+                {
+                    foreach (var item in request.ViaAddressDetails)
+                    {
+                        if (item.ViaStopId ==0)
+                        {
+                            return StatusCode(400, $"Via Stop Id is not provided for {item.ViaRoutName}");
+                        }
+                    }
+                    
+                }
+
                 UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
                 objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);
                 var data = await _corridorServiceClient.UpdateRouteCorridorAsync(objUpdateRouteCorridorRequest);
