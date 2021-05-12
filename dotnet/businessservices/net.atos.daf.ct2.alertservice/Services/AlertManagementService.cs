@@ -186,6 +186,7 @@ namespace net.atos.daf.ct2.alertservice.Services
             try
             {
                 AlertResponse response = new AlertResponse();
+                response.AlertRequest = new AlertRequest();
                 Alert alert = new Alert();
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.CreateAlert(alert);
