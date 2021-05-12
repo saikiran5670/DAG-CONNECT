@@ -21,6 +21,8 @@ export class CreateEditViewPoiComponent implements OnInit {
   @Input() translationData: any;
   @Input() selectedElementData: any;
   @Input() viewFlag: boolean;
+  @Input() categoryList: any;
+  @Input() subCategoryList: any;
   @Output() backToPage = new EventEmitter<any>();
   breadcumMsg: any = '';
   @Input() actionType: any;
@@ -51,15 +53,12 @@ export class CreateEditViewPoiComponent implements OnInit {
   localStLanguage: any;
   initData: any = [];
   showLoadingIndicator: any = false;
-  categoryList: any = [];
   actualLattitude: any;
   actuallongitude: any;
-  subCategoryList: any = [];
   poiInitdata: any = [];
   userName: string = '';
   state: any;
   selectedMarker: any;
-  // UpdatedPoiFlag: any;
   searchData: any = [];
   activeSearchList: any = false;
   duplicatePOIName: any = false;
@@ -78,11 +77,9 @@ export class CreateEditViewPoiComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    //console.log("for create-edit-view-poi" + this.selectedElementData);
+  ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
-
     this.poiFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1), Validators.max(100)]],
       category: ['', [Validators.required]],
@@ -103,56 +100,6 @@ export class CreateEditViewPoiComponent implements OnInit {
     if (this.actionType == 'view' || this.actionType == 'edit') {
       this.setDefaultValue();
     }
-    this.loadInitData();
-    this.loadLandmarkCategoryData();
-
-  }
-
-  loadInitData() {
-  }
-
-  loadLandmarkCategoryData() {
-    this.showLoadingIndicator = true;
-    let objData = {
-      type: 'C',
-      Orgid: this.organizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
-      this.categoryList = parentCategoryData.categories;
-      this.getSubCategoryData();
-    }, (error) => {
-      this.categoryList = [];
-      this.getSubCategoryData();
-    });
-  }
-
-  getSubCategoryData() {
-    let objData = {
-      type: 'S',
-      Orgid: this.organizationId
-    }
-    this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((subCategoryData: any) => {
-      this.subCategoryList = subCategoryData.categories;
-      this.getCategoryDetails();
-    }, (error) => {
-      this.subCategoryList = [];
-      this.getCategoryDetails();
-    });
-  }
-
-  getCategoryDetails() {
-    this.landmarkCategoryService.getLandmarkCategoryDetails().subscribe((categoryData: any) => {
-      this.hideloader();
-      //let data = this.createImageData(categoryData.categories);
-    }, (error) => {
-      this.hideloader();
-      this.initData = [];
-    });
-  }
-
-  hideloader() {
-    // Setting display of spinner
-    this.showLoadingIndicator = false;
   }
 
   toBack() {
@@ -168,9 +115,6 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
-
-
-
     let defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
     this.map = new H.Map(this.mapElement.nativeElement,
