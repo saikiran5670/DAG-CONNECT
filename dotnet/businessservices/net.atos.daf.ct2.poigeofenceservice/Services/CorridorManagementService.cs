@@ -546,7 +546,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 objResponse.Response = new RouteCorridorAddResponse();
                 if (result.Id == -1)
                 {
-                    objResponse.Response.Message = $"Corridor Name  {obj.CorridorLabel} already exists ";
+                    objResponse.Response.Message = $"Corridor Name  {obj.CorridorLabel} does not exist to update";
                     objResponse.Response.Code = Responsecode.Conflict;
                     objResponse.Response.CorridorID = result.Id;
 

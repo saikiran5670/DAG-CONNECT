@@ -1,11 +1,18 @@
 <div>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map
+            View' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+    </mat-expansion-panel>
+  </mat-card>
     <mat-card class='mat-elevation-z' *ngIf='!createEditStatus'>
         <div class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView
-                    ||
-                    'Map View' }}</span>
-            </div>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
                 <div fxLayout="row" class='areaWidth'>
                     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
