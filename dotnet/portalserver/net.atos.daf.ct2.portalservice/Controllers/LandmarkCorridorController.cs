@@ -332,7 +332,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                            "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "UpdateRouteCorridor method in Landmark Corridor controller", data.Response.CorridorID, data.Response.CorridorID, JsonConvert.SerializeObject(request),
                                             Request);
-                    return Ok(data);
+                    return Ok(data.Response);
                 }
                 else if (data != null && data.Response.Code == Responsecode.Conflict)
                 {
