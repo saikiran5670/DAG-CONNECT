@@ -117,7 +117,7 @@
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedpois.toggle(row) : null; checkboxClicked($event, row)'
-                  [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
+                  [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -247,7 +247,7 @@
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedgeofences.toggle(row) : null; geofenceCheckboxClicked($event,row)' [checked]='selectedgeofences.isSelected(row)'
-                  [aria-label]='checkboxLabelForGeo(row)'>
+                  [aria-label]='checkboxLabelForGeo(row)'  matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
