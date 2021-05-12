@@ -84,6 +84,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @ViewChild("map")
   public mapElement: ElementRef;
   markerArray: any = [];
+  geoMarkerArray: any = [];
+  polyPoints: any = [];
+  marker: any;
   hereMap: any;
   
   constructor( 
@@ -145,6 +148,16 @@ export class ManagePoiGeofenceComponent implements OnInit {
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
   }
+
+  selectGeofenceTableRows(event: any,rowData: any){
+    this.geofencedataSource.data.forEach((row: any) => {
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
+      if (search.length > 0) {
+        this.selectedgeofences.select(row);
+        this.geofenceCheckboxClicked(event,row);
+      }
+    });
+  }
   
   checkboxClicked(event: any, row: any) {
     this.showMap = this.selectedpois.selected.length > 0 ? true : false;
@@ -160,13 +173,191 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.addMarkerOnMap(); 
     }
     
-    addMarkerOnMap(){
+  addMarkerOnMap(){
       this.map.removeObjects(this.map.getObjects());
       this.markerArray.forEach(element => {
         let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(marker);
       });
     }
+
+  geofenceCheckboxClicked(event: any, row: any) {
+      this.showMap = this.selectedgeofences.selected.length > 0 ? true : false;
+      if(event.checked){ 
+        this.geoMarkerArray.push(row);
+      }else{ 
+        let arr = this.geoMarkerArray.filter(item => item.id != row.id);
+        this.geoMarkerArray = arr;
+      }
+      this.addCircleOnMap(event);
+      // });
+ }
+
+  addCircleOnMap(event: any){
+      if(event.checked == false){
+        this.map.removeObjects(this.map.getObjects());
+      }
+      //adding circular geofence points on map
+        this.geoMarkerArray.forEach(element => {
+        if(element.type == "C"){
+        this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+        this.map.addObject(this.marker);
+        
+        this.createResizableCircle(element.distance, element);
+        }
+        // "PolygonGeofence"
+        else{
+          this.polyPoints = [];
+          element.nodes.forEach(item => {
+          this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
+          this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+          this.polyPoints.push(0);
+          });
+          this.createResizablePolygon(this.map,this.polyPoints,this);
+        }
+  
+    });
+    //adding poi geofence points on map
+    this.markerArray.forEach(element => {
+      let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(marker);
+    });
+  }
+  
+    createResizableCircle(_radius: any, rowData: any) {
+      var circle = new H.map.Circle(
+        { lat: rowData.latitude, lng: rowData.longitude },
+  
+        _radius,//85000,
+        {
+          style: { fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 0 }
+        }
+      ),
+        circleOutline = new H.map.Polyline(
+          circle.getGeometry().getExterior(),
+          {
+            style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+          }
+        ),
+        circleGroup = new H.map.Group({
+          volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+          objects: [circle, circleOutline]
+        }),
+        circleTimeout;
+  
+      circle.draggable = true;
+      circleOutline.draggable = true;
+      circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
+      this.map.addObject(circleGroup);
+      }
+    
+      createResizablePolygon(map: any, points: any, thisRef: any){
+            var svgCircle = '<svg width="50" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
+            '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
+            '</svg>',
+              polygon = new H.map.Polygon(
+                new H.geo.Polygon(new H.geo.LineString(points)),
+                {
+                  style: {fillColor: 'rgba(150, 100, 0, .8)', lineWidth: 0}
+                }
+              ),
+              verticeGroup = new H.map.Group({
+                visibility: false
+              }),
+              mainGroup = new H.map.Group({
+                volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+                objects: [polygon, verticeGroup]
+              }),
+              polygonTimeout;
+        
+          // ensure that the polygon can receive drag events
+          polygon.draggable = true;
+        
+          // create markers for each polygon's vertice which will be used for dragging
+          polygon.getGeometry().getExterior().eachLatLngAlt(function(lat, lng, alt, index) {
+            var vertice = new H.map.Marker(
+              {lat, lng},
+              {
+                icon: new H.map.Icon(svgCircle, {anchor: {x: 10, y: 10}})
+              }
+            );
+            vertice.draggable = true;
+            vertice.setData({'verticeIndex': index})
+            verticeGroup.addObject(vertice);
+          });
+        
+          // add group with polygon and it's vertices (markers) on the map
+          map.addObject(mainGroup);
+        
+          // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
+          mainGroup.addEventListener('pointerenter', function(evt) {
+            if (polygonTimeout) {
+              clearTimeout(polygonTimeout);
+              polygonTimeout = null;
+            }
+        
+            // show vertice markers
+            verticeGroup.setVisibility(true);
+          }, true);
+        
+          // event listener for main group to hide vertice markers if moved out with mouse (or released finger on touch devices)
+          // the vertice markers are hidden on touch devices after specific timeout
+          mainGroup.addEventListener('pointerleave', function(evt) {
+            var timeout = (evt.currentPointer.type == 'touch') ? 1000 : 0;
+        
+            // hide vertice markers
+            polygonTimeout = setTimeout(function() {
+              verticeGroup.setVisibility(false);
+            }, timeout);
+          }, true);
+        
+          if(thisRef.actionType == 'create'){ //-- only for create polygon geofence
+            // event listener for vertice markers group to change the cursor to pointer
+            verticeGroup.addEventListener('pointerenter', function(evt) {
+              document.body.style.cursor = 'pointer';
+            }, true);
+          
+            // event listener for vertice markers group to change the cursor to default
+            verticeGroup.addEventListener('pointerleave', function(evt) {
+              document.body.style.cursor = 'default';
+            }, true);
+          
+            // event listener for vertice markers group to resize the geo polygon object if dragging over markers
+            verticeGroup.addEventListener('drag', function(evt) {
+              var pointer = evt.currentPointer,
+                  geoLineString = polygon.getGeometry().getExterior(),
+                  geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
+             // set new position for vertice marker
+              evt.target.setGeometry(geoPoint);
+          
+              // set new position for polygon's vertice
+              geoLineString.removePoint(evt.target.getData()['verticeIndex']);
+              geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
+              polygon.setGeometry(new H.geo.Polygon(geoLineString));
+          
+              // stop propagating the drag event, so the map doesn't move
+              evt.stopPropagation();
+            }, true);
+    
+            verticeGroup.addEventListener('dragend', function (ev) {
+              var coordinate = map.screenToGeo(ev.currentPointer.viewportX,
+                ev.currentPointer.viewportY);
+                let nodeIndex = ev.target.getData()['verticeIndex'];
+              let _position = Math.abs(coordinate.lat.toFixed(4)) + "," + Math.abs(coordinate.lng.toFixed(4));
+                if(_position){
+                  thisRef.hereService.getAddressFromLatLng(_position).then(result => {
+                    let locations = <Array<any>>result;
+                    let data = locations[0].Location.Address;
+                    let pos = locations[0].Location.DisplayPosition;
+                    thisRef.setAddressValues('updatePoint', data, pos, nodeIndex);
+                  }, error => {
+                    // console.error(error);
+                  });
+                }
+    
+            }, false);
+          }
+      }
     
   updatedPOITableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
@@ -494,6 +685,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
           this.loadPoiData();
           this.selectedgeofences.clear();
           this.selectedpois.clear();
+          this.showMap = false;
+          this.geoMarkerArray = [];
         });
       }
     });
@@ -531,6 +724,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
             this.loadPoiData();
             this.selectedgeofences.clear();
             this.selectedpois.clear();
+            this.showMap = false;
+            this.geoMarkerArray = [];
           });
         }
       });
@@ -605,11 +800,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   masterToggleForGeo() {
-    this.isAllSelectedForGeo()
-      ? this.selectedgeofences.clear()
-      : this.geofencedataSource.data.forEach((row) =>
-        this.selectedgeofences.select(row)
-      );
+    this.geoMarkerArray = [];
+    if(this.isAllSelectedForGeo()){
+      this.selectedgeofences.clear();
+      this.showMap = false;
+    }
+    else{
+      this.geofencedataSource.data.forEach((row) =>{
+        this.selectedgeofences.select(row);
+        this.geoMarkerArray.push(row);
+      });
+      this.showMap = true;
+    }
+    this.addCircleOnMap(event);
   }
 
   isAllSelectedForGeo() {
