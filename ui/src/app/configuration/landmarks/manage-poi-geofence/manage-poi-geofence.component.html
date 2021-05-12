@@ -259,7 +259,7 @@
             <ng-container matColumnDef="categoryName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.categoryName != '' ? row.categoryName : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="subCategoryName">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubCategory || 'Sub-Category' }}

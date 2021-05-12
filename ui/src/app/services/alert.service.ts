@@ -39,13 +39,13 @@ export class AlertService {
     return getHeaderObj;
   }
 
-  getAlertFilterData(id): Observable<any[]> {
+  getAlertFilterData(id, orgId): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
      headers: new HttpHeaders({ headerObj }),
    };
      return this.httpClient
-       .get<any[]>(`${this.alertServiceUrl}/GetAlertCategory?accountId=${id}`,headers)
+       .get<any[]>(`${this.alertServiceUrl}/GetAlertCategory?accountId=${id}&orgnizationid=${orgId}`,headers)
        .pipe(catchError(this.handleError));
    }
    

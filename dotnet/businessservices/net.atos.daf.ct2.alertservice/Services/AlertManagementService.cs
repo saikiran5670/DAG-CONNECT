@@ -185,9 +185,18 @@ namespace net.atos.daf.ct2.alertservice.Services
         {
             try
             {
+                AlertResponse response = new AlertResponse();
                 Alert alert = new Alert();
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.CreateAlert(alert);
+                response.AlertRequest.Exists = false;
+                if (alert.Exists)
+                {
+                    response.AlertRequest.Exists = true;
+                    response.Message = "Duplicate alert name";
+                    response.Code = ResponseCode.Conflict;
+                    return response;
+                }
                 return await Task.FromResult(new AlertResponse
                 {
                     Message = alert.Id > 0 ? $"Alert is created successful for id:- {alert.Id}." : $"Alert creation is failed for {alert.Name}",

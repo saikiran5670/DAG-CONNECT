@@ -90,7 +90,7 @@ export class AlertsComponent implements OnInit {
   }
 
   loadFiltersData(){
-    this.alertService.getAlertFilterData(this.accountId).subscribe((data) => {
+    this.alertService.getAlertFilterData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
