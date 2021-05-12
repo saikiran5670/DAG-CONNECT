@@ -339,13 +339,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (accountId == 0 || orgnizationid == 0) return BadRequest("Account id or Orgnization id cannot be null.");
 
                 AlertListResponse response = await _AlertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
 
                 if (response != null)
                 {
                     response.Code = ResponseCode.Success;
-                    return Ok(response);
+                    return Ok(response.AlertRequest);
                 }
                 else
                 {
