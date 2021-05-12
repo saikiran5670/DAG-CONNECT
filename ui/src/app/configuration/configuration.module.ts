@@ -29,6 +29,8 @@ import { DeleteCategoryPopupComponent } from './landmarks/manage-category/delete
 import { CreateEditViewAlertsComponent } from './alerts/create-edit-view-alerts/create-edit-view-alerts.component';
 import { CreateEditCorridorComponent } from './landmarks/manage-corridor/create-edit-corridor/create-edit-corridor.component';
 import { AlertsFilterComponent } from './alerts/alerts-filter/alerts-filter.component';
+import { RouteCalculatingComponent } from './landmarks/manage-corridor/create-edit-corridor/route-calculating/route-calculating.component';
+import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-corridor/existing-trips/existing-trips.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { AlertsFilterComponent } from './alerts/alerts-filter/alerts-filter.comp
     CreateEditViewGroupComponent,
     CreateEditViewGeofenceComponent,
     DeleteCategoryPopupComponent,
-    CreateEditCorridorComponent
+    CreateEditCorridorComponent,
+    RouteCalculatingComponent,
+    ExistingTripsComponent
    ],
   imports: [
     CommonModule,

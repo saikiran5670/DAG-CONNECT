@@ -65,6 +65,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   createPolyButtonFlag: boolean = false;
   isPolyCreated: boolean = false;
   uiElem: any;
+  categorySelectionForPOI: any = 0;
+  subCategorySelectionForPOI: any = 0;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -429,7 +431,9 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   onCircularReset() {
     this.selectedPOI.clear();
     this.setDefaultCircularGeofenceFormValue();
-    this.selectTableRows();
+    this.categorySelectionForPOI = 0;
+    this.subCategorySelectionForPOI = 0;
+    this.loadGridData(this.poiData);
     this.drawCircularGeofence();
   }
 
@@ -445,14 +449,10 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   masterToggleForPOI() {
-    // this.isAllSelectedForPOI()
-    //   ? this.selectedPOI.clear()
-    //   : this.dataSourceForPOI.data.forEach((row) =>
-    //     this.selectedPOI.select(row)
-    //   );
     this.markerArray = [];
     if(this.isAllSelectedForPOI()){
       this.selectedPOI.clear();
+      this.markerArray = [];
     }
     else{
       this.dataSourceForPOI.data.forEach((row: any) =>{
@@ -477,12 +477,63 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         } row`;
   }
 
-  onCategoryChange(event: any) {
-
+  onCategoryChange(_event: any) {
+    this.categorySelectionForPOI = parseInt(_event.value);
+    if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
+      this.updatePOIDatasource(this.poiData); //-- load all data
+    }
+    else if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI != 0){
+      let filterData = this.poiData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
+      if(filterData){
+        this.updatePOIDatasource(filterData);
+      }
+      else{
+        this.updatePOIDatasource([]);
+      }
+    }
+    else{
+      let selectedId = this.categorySelectionForPOI;
+      let selectedSubId = this.subCategorySelectionForPOI;
+      let categoryData = this.poiData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updatePOIDatasource(categoryData);
+    }
   }
 
-  onSubCategoryChange(event: any) {
-
+  onSubCategoryChange(_event: any) {
+    this.subCategorySelectionForPOI = parseInt(_event.value);
+    if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
+      this.updatePOIDatasource(this.poiData); //-- load all data
+    }
+    else if(this.subCategorySelectionForPOI == 0 && this.categorySelectionForPOI != 0){
+      let filterData = this.poiData.filter(item => item.categoryId == this.categorySelectionForPOI);
+      if(filterData){
+        this.updatePOIDatasource(filterData);
+      }
+      else{
+        this.updatePOIDatasource([]);
+      }
+    }
+    else if(this.subCategorySelectionForPOI != 0 && this.categorySelectionForPOI == 0){
+      let filterData = this.poiData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
+      if(filterData){
+        this.updatePOIDatasource(filterData);
+      }
+      else{
+        this.updatePOIDatasource([]);
+      }
+    }
+    else{
+      let selectedId = this.categorySelectionForPOI;
+      let selectedSubId = this.subCategorySelectionForPOI;
+      let categoryData = this.poiData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updatePOIDatasource(categoryData);
+    }
   }
 
   geoSelection(type: any) {

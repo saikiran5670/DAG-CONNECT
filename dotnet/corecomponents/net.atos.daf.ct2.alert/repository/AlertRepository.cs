@@ -242,16 +242,16 @@ namespace net.atos.daf.ct2.alert.repository
                 var parameternotification = new DynamicParameters();
                 parameternotification.Add("@alert_id", notification.AlertId);
                 if (notification.AlertUrgencyLevelType != null && notification.AlertUrgencyLevelType.Length > 0)
-                    parameternotification.Add("@alert_urgency_level_type", Convert.ToChar(notification.AlertUrgencyLevelType));
+                    parameternotification.Add("@alert_urgency_level_type", Convert.ToChar(notification.AlertUrgencyLevelType.ToUpper()));
                 else
                     parameternotification.Add("@alert_urgency_level_type", null);
                 if (notification.FrequencyType != null && notification.FrequencyType.Length > 0)
-                    parameternotification.Add("@frequency_type", Convert.ToChar(notification.FrequencyType));
+                    parameternotification.Add("@frequency_type", Convert.ToChar(notification.FrequencyType.ToUpper()));
                 else
                     parameternotification.Add("@frequency_type", null);
                 parameternotification.Add("@frequency_threshhold_value", notification.FrequencyThreshholdValue);
                 if (notification.ValidityType != null && notification.ValidityType.Length > 0)
-                    parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType));
+                    parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType.ToUpper()));
                 else
                     parameternotification.Add("@validity_type", null);
                 parameternotification.Add("@state", 'A');
@@ -675,21 +675,21 @@ namespace net.atos.daf.ct2.alert.repository
 					(CASE WHEN grp.group_type='S' THEN veh.name END) as vehiclename,
 					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname
                     FROM master.alert ale
-                    inner join master.alerturgencylevelref aleurg
+                    left join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
-                    inner join master.alertfilterref alefil
+                    left join master.alertfilterref alefil
                     on aleurg.id=alefil.alert_urgency_level_id and alefil.state in ('A','I')
-                    inner join master.alertlandmarkref alelan
+                    left join master.alertlandmarkref alelan
                     on ale.id=alelan.alert_id and alelan.state in ('A','I')
-                    inner join master.notification noti
+                    left join master.notification noti
                     on ale.id=noti.alert_id and ale.state in ('A','I') and noti.state in ('A','I')
-                    inner join master.notificationrecipient notrec
+                    left join master.notificationrecipient notrec
                     on noti.id=notrec.notification_id and notrec.state in ('A','I')
-                    inner join master.notificationlimit notlim
+                    left join master.notificationlimit notlim
                     on noti.id= notlim.notification_id and notlim.state in ('A','I')
-                    inner join master.notificationavailabilityperiod notava
+                    left join master.notificationavailabilityperiod notava
                     on noti.id= notava.notification_id and notava.state in ('A','I')
-					inner join master.group grp 
+					left join master.group grp 
 					on ale.vehicle_group_id=grp.id
 					inner join master.groupref vgrpref
 					on  grp.id=vgrpref.group_id and grp.object_type='V'	
