@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         //public int Id { get; set; }
         public int OrganizationId { get; set; }
-        [IsEmpty(ErrorMessage = "Name should not be null or empty.")]
+        [Required(ErrorMessage = "Name should not be null or empty.")]
         [StringLength(50, MinimumLength = 1,ErrorMessage = "Alert name should be between 1 and 50 characters")]
         [RegularExpression(@"^[a-zA-ZÀ-ÚÄ-Ü0-9]([\w -]*[a-zA-ZÀ-ÚÄ-Ü0-9])?$", ErrorMessage = "Only alphabets,numbers,hyphens,dash,spaces,periods,international alphabets allowed in alert name.")]
         public string Name { get; set; }
