@@ -170,7 +170,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"rtcadmin@ct2.net", "123456");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	    public static void KeyHandover() throws Exception {
 	    	Log.info("Updating Customer data");
@@ -178,7 +178,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.keyhandover;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"rtcadmin@ct2.net", "123456");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}
 	    public static void Vehicle_Data() throws Exception {
 	    	Log.info("Updating Vehicle data");
@@ -186,7 +186,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"rtcadmin@ct2.net", "123456");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	    public static void Vehicle_DataWithInvalidUser() throws Exception {
 	    	Log.info("Updating vehicle data with invalid user");
@@ -194,7 +194,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"rtcadmin@ct2.net", "123451");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.patel@atos.net", "Ulka@123451");
 	    	}	
 	    public static void Subscription() throws Exception {
 	    	Log.info("Updating Subscription of package");
@@ -202,7 +202,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"rtcadmin@ct2.net", "123456");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	   // Subscription_withAuth
 	    
@@ -212,7 +212,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.Subscription_withAuth(url,module,request,"rtcadmin@ct2.net", "123456");
+	    	CommonAPI.Subscriptions_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");
 	    	}	
 	    
 	    
@@ -275,6 +275,7 @@ public class CommonAPI extends CommonFunctionLib {
 	            }
 	            httpRequest.header("Authorization", "Bearer "+ bearerToken);
 	            httpRequest.body(addData);
+	            
 	            Response response = httpRequest.request(Method.POST);
 	            statusCode = response.getStatusCode();
 	            System.out.println(statusCode);
@@ -334,10 +335,16 @@ public class CommonAPI extends CommonFunctionLib {
 	    	            DriverScript.bResult = true;
 	    	            ExcelSheet.setCellData("You are not authorized to perform this operation and status code is: 401", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
 	    	            break; 
+	    			case 404: //The request could not be completed due to a conflict with the current state of the target resource
+	    				test.log(LogStatus.PASS, "Record not found. " + statusCode);
+	    	            Log.info("Record not found. " + statusCode);	        
+	    		        DriverScript.bResult = true;
+	    				ExcelSheet.setCellData("Record not found and status code is: 404", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	    				break;
 	    			case 409: //The request could not be completed due to a conflict with the current state of the target resource
 	    				test.log(LogStatus.PASS, "The Record is already whitelisted." + statusCode);
 	    	            Log.info("The Record is already whitelisted." + statusCode);	        
-	    		        DriverScript.bResult = false;
+	    		        DriverScript.bResult = true;
 	    				ExcelSheet.setCellData("The Record is already whitelisted and status code is: 409", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
 	    				break;
 //	    			case 403: //Forbidden
@@ -366,7 +373,7 @@ public class CommonAPI extends CommonFunctionLib {
 	        }
 	    @SuppressWarnings("unchecked")
 	    //This function is only for unsubscribe method 
-		public static void Subscription_withAuth(String url, String module, String request,String UserName, String Pass) {//, String param1, String param2) {
+		public static void Subscriptions_withAuth(String url, String module, String request,String UserName, String Pass) {//, String param1, String param2) {
 	   	   	try {
 	   	   	System.out.println(url);
 	    		test.log(LogStatus.PASS, "Verifying " +request+ " of "+ module);
@@ -413,7 +420,7 @@ public class CommonAPI extends CommonFunctionLib {
 					Object obj = parser.parse(new FileReader(path+ Un_Sub_fileName));
 			        JSONObject jsonObject = (JSONObject)obj;
 			    	System.out.println(jsonObject.toString());
-			    	JSONObject updated_jsonObject =replacekeyInJSONObject(jsonObject,"orderID", p1);
+			    	JSONObject updated_jsonObject =replaceINTkeyInJSONObject(jsonObject,"orderID",Integer.parseInt(p1));
 			    	System.out.println(updated_jsonObject.toString());
 			    	JSONObject updated_jsonObject1 =replacekeyInJSONObject(updated_jsonObject,"organizationID", OrgID);
 			    	System.out.println(updated_jsonObject1.toString());
@@ -521,6 +528,22 @@ public class CommonAPI extends CommonFunctionLib {
 	                JSONObject modifiedJsonobject = (JSONObject) jsonObject.get(key);
 	                if (modifiedJsonobject != null) {
 	                    replacekeyInJSONObject(modifiedJsonobject, jsonKey, jsonValue);
+	                }
+	            }
+
+	        }
+	        return jsonObject;
+	    }
+	    private static JSONObject replaceINTkeyInJSONObject(JSONObject jsonObject, String jsonKey, Number jsonValue) {
+
+	        for (Object key : jsonObject.keySet()) {
+	            if (key.equals(jsonKey) && ((jsonObject.get(key) instanceof String)||(jsonObject.get(key) instanceof Number)||jsonObject.get(key) ==null)) {
+	                jsonObject.put(key, jsonValue);
+	                return jsonObject;
+	            } else if (jsonObject.get(key) instanceof JSONObject) {
+	                JSONObject modifiedJsonobject = (JSONObject) jsonObject.get(key);
+	                if (modifiedJsonobject != null) {
+	                	replaceINTkeyInJSONObject(modifiedJsonobject, jsonKey, jsonValue);
 	                }
 	            }
 
