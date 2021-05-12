@@ -343,7 +343,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 AlertListResponse response = await _AlertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
 
-                if (response != null)
+                if (response.AlertRequest != null && response.AlertRequest.Count>0)
                 {
                     response.Code = ResponseCode.Success;
                     return Ok(response.AlertRequest);
