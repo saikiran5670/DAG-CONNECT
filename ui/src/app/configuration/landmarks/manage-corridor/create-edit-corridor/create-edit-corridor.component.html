@@ -19,7 +19,7 @@
 
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline" class="half-width">
-                    <mat-select (selectionChange)="corridorTypeChanged($event)" formControlName="corridorType" required>
+                    <mat-select (selectionChange)="corridorTypeChanged($event)" required>
                         <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
                             {{ type.value }}
                         </mat-option>

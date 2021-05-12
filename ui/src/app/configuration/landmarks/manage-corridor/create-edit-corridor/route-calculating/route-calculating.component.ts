@@ -45,13 +45,14 @@ export class RouteCalculatingComponent implements OnInit {
 
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
-    this.corridorFormGroup =  new FormGroup({
-      label: new FormControl(),
-      startaddress:new FormControl(),
-      endaddress: new FormControl(),
-      widthInput :new FormControl(),
-      viaroute1: new FormControl(),
-      viaroute2: new FormControl()
+    this.corridorFormGroup = this.formBuilder.group({
+      corridorType:['Regular'],
+      label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+      startaddress: ['', [Validators.required]],
+      endaddress:  ['', [Validators.required]],
+      widthInput : ['', [Validators.required]],
+      viaroute1: ['', [Validators.required]],
+      viaroute2: ['', [Validators.required]],
 
   
 
