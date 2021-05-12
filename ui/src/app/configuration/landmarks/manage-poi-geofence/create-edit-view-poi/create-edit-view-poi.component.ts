@@ -79,7 +79,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("for create-edit-view-poi" + this.selectedElementData);
+    //console.log("for create-edit-view-poi" + this.selectedElementData);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
 
@@ -211,7 +211,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     if(event.target.value == "") {
       this.activeSearchList = false;
     }
-    console.log("----search value called--",event.target.value);
+    ////console.log("----search value called--",event.target.value);
     let inputData = event.target.value;
           // "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       // var a = https://places.ls.hereapi.com/places/v1/autosuggest?at=40.74917,-73.98529&q=chrysler&apiKey="BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
@@ -225,8 +225,8 @@ export class CreateEditViewPoiComponent implements OnInit {
 
   SearchListItems(item){
    
-// console.log("you clicked on:" +item.title);
-// console.log(item.position);
+// ////console.log("you clicked on:" +item.title);
+// //console.log(item.position);
 this.map.setCenter({lat:item.position[0], lng:item.position[1]});
 this.map.setZoom(14);
   }
@@ -237,25 +237,25 @@ this.map.setZoom(14);
     //  thisRef.UpdatedPoiFlag = thisRef.poiFlag;
     map.addEventListener('tap', function (evt) {
       // let selectedMakerOnClick = selectedMarker;
-      // console.log("----UpdatedPoiFlag---",thisRef.poiFlag)
-      // console.log(ui.getBubbles());
+      // //console.log("----UpdatedPoiFlag---",thisRef.poiFlag)
+      // //console.log(ui.getBubbles());
       ui.removeBubble(bubble);
       if (thisRef.poiFlag) {
         thisRef.setNewMapMarker(map, behavior, selectedMarker, here, poiFlag, data, thisRef, evt)
       } else {
-        // console.log("---this----", this)
-        // console.log("---thisRef----", thisRef)
+        // //console.log("---this----", this)
+        // //console.log("---thisRef----", thisRef)
         let getSelectedLatitude = thisRef.poiFormGroup.get("lattitude").value;
         let getSelectedLongitude = thisRef.poiFormGroup.get("longitude").value;
         let existingMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
         // this.map.addObject(this.selectedMarker);
 
         if (existingMarker) {
-          // console.log("---existingMarker----", existingMarker)
+          // //console.log("---existingMarker----", existingMarker)
           map.removeObjects(map.getObjects())
           thisRef.setNewMapMarker(map, behavior, selectedMarker, here, poiFlag, data, thisRef, evt)
         }
-        // console.log("--second click triggered in MAP")
+        // //console.log("--second click triggered in MAP")
       }
     });
   }
@@ -265,7 +265,7 @@ this.map.setZoom(14);
     let actionTypeGlobal = this.actionType;
     if (actionTypeGlobal == 'edit') {
       this.poiFlag = false;
-      // console.log("----when edit selected marker--",selectedMarker)
+      // //console.log("----when edit selected marker--",selectedMarker)
       // map.removeObject(selectedMarker);
       map.removeObjects(map.getObjects());
       //             thisRef.setNewMapMarker(map,behavior,selectedMarker, here, poiFlag, data,thisRef,evt)
@@ -277,8 +277,8 @@ this.map.setZoom(14);
     let y = Math.abs(coord.lng.toFixed(4));
     this.actualLattitude = x;
     this.actuallongitude = y;
-    console.log("latitude=" + x);
-    console.log("longi=" + y);
+    //console.log("latitude=" + x);
+    //console.log("longi=" + y);
 
     let locations = new H.map.Marker({ lat: x, lng: y }, {
       // mark the object as volatile for the smooth dragging
@@ -326,29 +326,29 @@ this.map.setZoom(14);
         evt.currentPointer.viewportY);
       let x = Math.abs(coord.lat.toFixed(4));
       let y = Math.abs(coord.lng.toFixed(4));
-      console.log(" updated - latitude=" + x);
-      console.log("updated - longi=" + y);
+      //console.log(" updated - latitude=" + x);
+      //console.log("updated - longi=" + y);
 
       let dataUpdated = thisRef.locations[0].Location.Address;
-      // console.log(this.locations[0].Location.Address);
+      // //console.log(this.locations[0].Location.Address);
       let position = thisRef.locations[0].Location.DisplayPosition;
       this.data = dataUpdated;
-      // console.log("---while dragging location and data--",dataUpdated,"---position---",position);
+      // //console.log("---while dragging location and data--",dataUpdated,"---position---",position);
 
       thisRef.setAddressValues(dataUpdated, position);
       this.actualLattitude = x;
       this.actuallongitude = y;
 
       this.position = this.actualLattitude + "," + this.actuallongitude;
-      // console.log("---updated positions with lat long----",this.position);
+      // //console.log("---updated positions with lat long----",this.position);
       if (this.position) {
 
         here.getAddressFromLatLng(this.position).then(result => {
           this.locations = <Array<any>>result;
           data = this.locations[0].Location.Address;
-          // console.log(this.locations[0].Location.Address);
+          // //console.log(this.locations[0].Location.Address);
           let pos = this.locations[0].Location.DisplayPosition;
-          // console.log(data);
+          // //console.log(data);
           this.data = data;
           thisRef.poiFlag = false;
           thisRef.setAddressValues(data, pos);
@@ -361,18 +361,18 @@ this.map.setZoom(14);
 
 
     this.position = this.actualLattitude + "," + this.actuallongitude;
-    // console.log("---initial positions with lat long----", this.position);
+    // //console.log("---initial positions with lat long----", this.position);
     if (this.position) {
-      // console.log("---thisRef--POIFLAG--", thisRef.poiFlag)
+      // //console.log("---thisRef--POIFLAG--", thisRef.poiFlag)
       this.poiFlag = false;
       thisRef.poiFlag = false;
-      // console.log("---this--POIFLAG--", this.poiFlag)
+      // //console.log("---this--POIFLAG--", this.poiFlag)
       here.getAddressFromLatLng(this.position).then(result => {
         this.locations = <Array<any>>result;
         data = this.locations[0].Location.Address;
-        // console.log(this.locations[0].Location.Address);
+        // //console.log(this.locations[0].Location.Address);
         let pos = this.locations[0].Location.DisplayPosition;
-        // console.log(data);
+        // //console.log(data);
         this.data = data;
         this.poiFlag = false;
         thisRef.setAddressValues(data, pos);
@@ -385,8 +385,8 @@ this.map.setZoom(14);
   }
 
   setAddressValues(addressVal, positions) {
-    //     console.log("this is in setAddress()");
-    console.log(addressVal);
+    //     //console.log("this is in setAddress()");
+    //console.log(addressVal);
     this.address = addressVal.Label;
     this.zip = addressVal.PostalCode;
     this.city = addressVal.City;
@@ -394,14 +394,14 @@ this.map.setZoom(14);
     this.country = addressVal.Country;
     // var nameArr = positions.split(',');
     let pos = positions;
-    // console.log(this.lattitude);
+    // //console.log(this.lattitude);
     this.poiFormGroup.get("address").setValue(this.address);
     this.poiFormGroup.get("zip").setValue(this.zip);
     this.poiFormGroup.get("city").setValue(this.city);
     this.poiFormGroup.get("country").setValue(this.country);
     this.poiFormGroup.get("lattitude").setValue(positions.Latitude);
     this.poiFormGroup.get("longitude").setValue(positions.Longitude);
-    console.log("poiformgroup=" + this.poiFormGroup);
+    //console.log("poiformgroup=" + this.poiFormGroup);
     // this.poiFormGroup.get("category").setValue(this.selectedCategoryType);
   }
 
@@ -506,7 +506,7 @@ this.map.setZoom(14);
       });
     }
     else {
-      console.log(this.selectedElementData);
+      //console.log(this.selectedElementData);
       let objData = {
         id: this.selectedElementData.id,
         icon: this.selectedElementData.icon,
