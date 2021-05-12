@@ -44,7 +44,7 @@ pool: $(PRIVATEAGENT)
 steps:
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.singlesignonservice/appsettings.Production.json'
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.ssoservice/appsettings.Production.json'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -57,11 +57,11 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/dataservices/net.atos.daf.ct2.singlesignonservice/appsettings.Production.json
+      cat dotnet/dataservices/net.atos.daf.ct2.ssoservice/appsettings.Production.json
 
 - task: replacetokens@3
   inputs:
-    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.singlesignonservice/log4net.config'
+    targetFiles: 'dotnet/dataservices/net.atos.daf.ct2.ssoservice/log4net.config'
     encoding: 'auto'
     writeBOM: true
     actionOnMissing: 'warn'
@@ -74,7 +74,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat dotnet/dataservices/net.atos.daf.ct2.singlesignonservice/log4net.config
+      cat dotnet/dataservices/net.atos.daf.ct2.ssoservice/log4net.config
 
 - task: Docker@0
   displayName: 'Build an image'
