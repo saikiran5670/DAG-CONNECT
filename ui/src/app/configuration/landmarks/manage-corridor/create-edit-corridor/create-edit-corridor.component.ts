@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/custom.validators';
+import { AlertService } from '../../../../services/alert.service'
 
 
 @Component({
@@ -12,15 +13,16 @@ export class CreateEditCorridorComponent implements OnInit {
   @Input() translationData: any;
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
+  typeForm: FormGroup;
   breadcumMsg: any = '';
   organizationId: number;
   localStLanguage: any;
   accountId: any = 0;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 1;
+  selectedCorridorTypeId : any = 'Route Calculating';
+  exclusionList : any;
 
-
-  constructor() {
+  constructor(private alertService: AlertService) {
    }
 
   ngOnInit(): void {
@@ -28,10 +30,21 @@ export class CreateEditCorridorComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
-  
+    this.loadDropdownData();
 
   }
 
+  loadDropdownData(){
+    this.alertService.getAlertFilterData(this.accountId, this.organizationId).subscribe((data) => {
+      let filterData = data["enumTranslation"];
+      filterData.forEach(element => {
+        element["value"]= this.translationData[element["key"]];
+      });
+    ///  this.corridorTypeList= filterData.filter(item => item.type == 'R');
+      console.log(this.corridorTypeList)
+      this.exclusionList= filterData.filter(item => item.type == 'E');
+    });
+  }
   
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 

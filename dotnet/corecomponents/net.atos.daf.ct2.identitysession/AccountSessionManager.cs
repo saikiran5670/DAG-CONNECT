@@ -9,11 +9,11 @@ namespace net.atos.daf.ct2.identitysession
     public class AccountSessionManager : IAccountSessionManager
     {
         IAccountSessionRepository sessionRepository;
-        public AccountSessionManager (IAccountSessionRepository _sessionRepository)
+        public AccountSessionManager(IAccountSessionRepository _sessionRepository)
         {
-            sessionRepository =_sessionRepository;
+            sessionRepository = _sessionRepository;
         }
-       public async Task<int> InsertSession(AccountSession accountSession)
+        public async Task<int> InsertSession(AccountSession accountSession)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-         public async Task<int> DeleteSession(string SessionId)
+        public async Task<int> DeleteSession(string SessionId)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-         public async Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId)
+        public async Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId)
         {
             try
             {
@@ -62,6 +62,17 @@ namespace net.atos.daf.ct2.identitysession
             try
             {
                 return await sessionRepository.DeleteSessionByAccountId(SessionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<AccountSession> GetAccountSessionById(int SessionId)
+        {
+            try
+            {
+                return await sessionRepository.GetAccountSessionById(SessionId);
             }
             catch (Exception ex)
             {

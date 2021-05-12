@@ -51,8 +51,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.modified_by as ModifiedBy
 						FROM       master.landmark l
 						LEFT JOIN master.nodes n on l.id = n.landmark_id
-						WHERE      l.type IN ('R')
-						AND        l.organization_id = @organization_id";
+						WHERE      l.organization_id = @organization_id
+						AND        l.type IN ('R')";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 var data = await _dataAccess.QueryAsync<CorridorResponse>(query, parameter);
@@ -118,9 +118,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
 						FROM       master.landmark l
 						LEFT JOIN master.nodes n on l.id = n.landmark_id
 						LEFT JOIN master.corridorproperties cp on l.id = cp.landmark_id
-						WHERE      l.type IN ('E','R')
+						WHERE      l.id = @id
 						AND        l.organization_id = @organization_id
-						AND        l.id = @id";
+						AND        l.type IN ('E','R')";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 parameter.Add("@id", objCorridorRequest.CorridorId);
@@ -278,13 +278,25 @@ namespace net.atos.daf.ct2.poigeofence.repository
             parameterduplicate.Add("@organization_id", OrganizationId);
             parameterduplicate.Add("@name", CorridorName);
             parameterduplicate.Add("@type", Type);
-            var queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = @type  and name=@name and organization_id=@organization_id;";
+            var queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = @type and name=@name and organization_id=@organization_id;";
 
             int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
             return corridorExist == 0 ? false : true;
         }
+        public async Task<bool> CheckCorridorexistByIdName(string CorridorName, int? OrganizationId, int Id, char Type)
+        {
+            var parameterduplicate = new DynamicParameters();
+            parameterduplicate.Add("@organization_id", OrganizationId);
+            parameterduplicate.Add("@name", CorridorName);
+            parameterduplicate.Add("@type", Type);
+            parameterduplicate.Add("@id", Id);
+            var queryduplicate = @"SELECT id FROM master.landmark where id=@id and organization_id=@organization_id and name=@name and type = @type and state in ('A','I');";
 
+            int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+
+            return corridorExist == 0 ? false : true;
+        }
         public async Task<IEnumerable<RouteCorridor>> GetRouteCorridor(RouteCorridorFilter routeCorridorFilter)
         {
             try

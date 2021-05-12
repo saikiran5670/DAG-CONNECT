@@ -59,4 +59,18 @@ export class AlertService {
        .pipe(catchError(this.handleError));
    }
 
+   createAlert(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.alertServiceUrl}/create`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+
 }

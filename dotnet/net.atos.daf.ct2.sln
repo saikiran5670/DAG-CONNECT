@@ -185,6 +185,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.alert", "c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "net.atos.daf.ct2.alert.test", "corecomponents\test\net.atos.daf.ct2.alert.test\net.atos.daf.ct2.alert.test.csproj", "{1184A495-2CCB-4C68-B574-AADD0B613963}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.singlesignonservice", "dataservices\net.atos.daf.ct2.ssoservice\net.atos.daf.ct2.singlesignonservice.csproj", "{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1119,6 +1121,18 @@ Global
 		{1184A495-2CCB-4C68-B574-AADD0B613963}.Release|x64.Build.0 = Release|Any CPU
 		{1184A495-2CCB-4C68-B574-AADD0B613963}.Release|x86.ActiveCfg = Release|Any CPU
 		{1184A495-2CCB-4C68-B574-AADD0B613963}.Release|x86.Build.0 = Release|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Debug|x64.Build.0 = Debug|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Debug|x86.Build.0 = Debug|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Release|x64.ActiveCfg = Release|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Release|x64.Build.0 = Release|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Release|x86.ActiveCfg = Release|Any CPU
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1206,6 +1220,7 @@ Global
 		{9DC5CA95-8330-4ADF-AC94-18043DF9EC0B} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 		{0D4E5225-EFBC-4D54-8A5D-BA9DC80F5028} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
 		{1184A495-2CCB-4C68-B574-AADD0B613963} = {A8B3E117-26FF-4FC1-A381-ED115B3104D5}
+		{EDF007B0-7546-44BC-B0C0-75B44EE1BC4D} = {C93E4ACE-B462-4601-AD70-594B9B6634BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}

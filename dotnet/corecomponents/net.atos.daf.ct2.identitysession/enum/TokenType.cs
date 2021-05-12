@@ -4,9 +4,10 @@ using System.Text;
 
 namespace net.atos.daf.ct2.identitysession.ENUM
 {
- public enum TokenType
+    public enum TokenType
     {
         Bearer = 'B',
-        Authentication = 'A'       
+        Authentication = 'A',
+        SSO = 'S'
     }
 }

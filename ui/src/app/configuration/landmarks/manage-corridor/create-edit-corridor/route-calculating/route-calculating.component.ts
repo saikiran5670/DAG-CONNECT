@@ -2,6 +2,8 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
+import { CorridorService } from '../../../../../services/corridor.service';
+
 declare var H: any;
 
 @Component({
@@ -34,8 +36,9 @@ export class RouteCalculatingComponent implements OnInit {
   viaRouteCount : boolean = false;
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
-  
-  constructor(private here: HereService,private formBuilder: FormBuilder) {
+  corridorWidth : number;
+
+  constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -57,6 +60,7 @@ export class RouteCalculatingComponent implements OnInit {
   
 
     });
+
   }
 
   public ngAfterViewInit() {
@@ -117,16 +121,117 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   explosiveChecked :boolean = false;
-  attributeCheck(_checked,type){
+  gasChecked :boolean = false;
+  flammableChecked : boolean = false;
+  combustibleChecked : boolean = false;
+  organicChecked : boolean = false;
+  poisonChecked : boolean = false;
+  radioactiveChecked : boolean = false;
+  corrosiveChecked : boolean = false;
+  poisonInhaleChecked : boolean = false;
+  waterHarmChecked : boolean = false;
+  othersChecked : boolean = false;
+
+  attributeCheck(_checked, type) {
     switch (type) {
       case 'explosive':
         this.explosiveChecked = _checked;
-        console.log(this.explosiveChecked)
         break;
-    
+      case 'gas':
+        this.gasChecked = _checked;
+        break;
+      case 'flammable':
+        this.flammableChecked = _checked;
+        break;
+      case 'combustible':
+        this.combustibleChecked = _checked;
+        break;
+      case 'organic':
+        this.organicChecked = _checked;
+        break;
+      case 'poison':
+        this.poisonChecked = _checked;
+        break;
+      case 'radioactive':
+        this.radioactiveChecked = _checked;
+        break;
+      case 'corrosive':
+        this.corrosiveChecked = _checked;
+        break;
+      case 'poisonInhale':
+        this.poisonInhaleChecked = _checked;
+        break;
+      case 'waterHarm':
+        this.waterHarmChecked = _checked;
+        break;
+      case 'others':
+        this.othersChecked = _checked;
+        break;
       default:
         break;
     }
   }
 
+  createCorridorClicked(){
+    var corridorObj = {
+      "id": 0,
+      "organizationId": this.organizationId,
+      "corridorType": 46,
+      "corridorLabel":this.corridorFormGroup.controls.label.value,
+      "startAddress": this.corridorFormGroup.controls.startaddress.value,
+      "startLatitude": 0,
+      "startLongitude": 0,
+      "endAddress": this.corridorFormGroup.controls.endaddress.value,
+      "endLatitude": 0,
+      "endLongitude": 0,
+      "width": this.corridorWidth,
+      "viaAddressDetails": [
+        {
+          "viaRoutName": "string",
+          "latitude": 0,
+          "longitude": 0
+        }
+      ],
+      "transportData": this.transportDataChecked,
+      "trafficFlow": this.trafficFlowChecked,
+      "state": "string",
+      "created_At": 0,
+      "created_By": 0,
+      "modified_At": 0,
+      "modified_By": 0,
+      "attribute": {
+        "trailer": 0,
+        "explosive": this.explosiveChecked,
+        "gas": this.gasChecked,
+        "flammable": this.flammableChecked,
+        "combustible": this.combustibleChecked,
+        "organic": this.organicChecked,
+        "poision": this.poisonChecked,
+        "radioActive": this.radioactiveChecked,
+        "corrosive": this.corrosiveChecked,
+        "poisonousInhalation": this.poisonInhaleChecked,
+        "waterHarm": this.waterHarmChecked,
+        "other": this.othersChecked
+      },
+      "exclusion": {
+        "tollRoad": "string",
+        "mortorway": "string",
+        "boatFerries": "string",
+        "railFerries": "string",
+        "tunnels": "string",
+        "dirtRoad": "string"
+      },
+      "vehicleSize": {
+        "vehicleSizeHeight": 0,
+        "vehicleSizeWidth": 0,
+        "vehicleSizeLength": 0,
+        "vehicleSizeLimitedWeight": 0,
+        "vehicleSizeWeightPerAxle": 0
+      }
+    }
+    console.log(corridorObj)
+    this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
+      console.log(responseData);
+    })
+  }
 }

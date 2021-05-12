@@ -50,6 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class ViaStopDetails
     {
+        [Required]
         [StringLength(100)]
         public string ViaRoutName { get; set; }
         public double Latitude { get; set; }
