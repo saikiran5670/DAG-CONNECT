@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public string FrequencyType { get; set; }
         public int FrequencyThreshholdValue { get; set; }
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Validity type should be 1 character")]
-        public string ValidityType { get; set; }
+        public string ValidityType { get; set; } = "A";
         //public string State { get; set; }
         //public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }

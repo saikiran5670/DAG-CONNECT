@@ -88,6 +88,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
   polyPoints: any = [];
   marker: any;
   hereMap: any;
+  categorySelectionForPOI: any = 0;
+  subCategorySelectionForPOI: any = 0;
+  categorySelectionForGeo: any = 0;
+  subCategorySelectionForGeo: any = 0;
   
   constructor( 
     private dialogService: ConfirmDialogService,
@@ -119,7 +123,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
       this.poiInitData = data;
-      // console.log("poiData=" +this.poiInitData);
+      // //console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
@@ -161,8 +165,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   
   checkboxClicked(event: any, row: any) {
     this.showMap = this.selectedpois.selected.length > 0 ? true : false;
-    console.log(this.selectedpois.selected.length)
-    console.log(row);
+    //console.log(this.selectedpois.selected.length)
+    //console.log(row);
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
     }else{ //-- remove existing marker
@@ -236,7 +240,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
         circleOutline = new H.map.Polyline(
           circle.getGeometry().getExterior(),
           {
-            style: { lineWidth: 8, strokeColor: 'rgba(255, 0, 0, 0)' }
+            style: { lineWidth: 1, strokeColor: 'rgba(45, 93, 176, 0.7)' }
           }
         ),
         circleGroup = new H.map.Group({
@@ -258,7 +262,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
               polygon = new H.map.Polygon(
                 new H.geo.Polygon(new H.geo.LineString(points)),
                 {
-                  style: {fillColor: 'rgba(150, 100, 0, .8)', lineWidth: 0}
+                  style: {fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 1}
                 }
               ),
               verticeGroup = new H.map.Group({
@@ -310,8 +314,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
               verticeGroup.setVisibility(false);
             }, timeout);
           }, true);
-        
-          if(thisRef.actionType == 'create'){ //-- only for create polygon geofence
+          
+          if(false){ //-- only for create polygon geofence
             // event listener for vertice markers group to change the cursor to pointer
             verticeGroup.addEventListener('pointerenter', function(evt) {
               document.body.style.cursor = 'pointer';
@@ -442,88 +446,123 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  onCategoryChange(_event) {
-    this.selectedCategoryId = _event.value;
-    this.updateSelectionData();
-  }
-
-  applyFilterOnCategory(_event){
-    this.selectedCategoryId = _event.value;
-    if(this.selectedCategoryId == "all"){
-      this.poidataSource.filter = '';
+  onGeofenceCategoryChange(_event: any) {
+    this.categorySelectionForGeo = parseInt(_event.value);
+    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
+      this.updatedGeofenceTableData(this.geoInitData); //-- load all data
+    }
+    else if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo != 0){
+      let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
+      if(filterData){
+        this.updatedGeofenceTableData(filterData);
+      }
+      else{
+        this.updatedGeofenceTableData([]);
+      }
     }
     else{
-    this.poidataSource.filterPredicate = function(data, filter: any): boolean {
-      return data.categoryId == filter;
-    }; this.poidataSource.filter = this.selectedCategoryId; 
+      let selectedId = this.categorySelectionForGeo;
+      let selectedSubId = this.subCategorySelectionForGeo;
+      let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
-    
+      this.updatedGeofenceTableData(categoryData);
+    }
   }
 
-  applyFilterOnSubCategory(_event){
-    this.selectedSubCategoryId = _event.value;
-    if(this.selectedSubCategoryId == "all"){
-      this.poidataSource.filter = '';
+  onGeofenceSubCategoryChange(_event: any) {
+    this.subCategorySelectionForGeo = parseInt(_event.value);
+    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
+      this.updatedGeofenceTableData(this.geoInitData); //-- load all data
+    }
+    else if(this.subCategorySelectionForGeo == 0 && this.categorySelectionForGeo != 0){
+      let filterData = this.geoInitData.filter(item => item.categoryId == this.categorySelectionForGeo);
+      if(filterData){
+        this.updatedGeofenceTableData(filterData);
+      }
+      else{
+        this.updatedGeofenceTableData([]);
+      }
+    }
+    else if(this.subCategorySelectionForGeo != 0 && this.categorySelectionForGeo == 0){
+      let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
+      if(filterData){
+        this.updatedGeofenceTableData(filterData);
+      }
+      else{
+        this.updatedGeofenceTableData([]);
+      }
     }
     else{
-    this.poidataSource.filterPredicate = function(data, filter: any): boolean {
-      return data.subCategoryId == filter;
-    }; this.poidataSource.filter = this.selectedSubCategoryId; 
+      let selectedId = this.categorySelectionForGeo;
+      let selectedSubId = this.subCategorySelectionForGeo;
+      let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
+      this.updatedGeofenceTableData(categoryData);
+    }
   }
 
-
-  onSubCategoryChange(_event) {
-    this.selectedSubCategoryId = _event.value;
-    //this.updateSelectionData();
-
+  applyFilterOnPOICategory(_event: any){
+    this.categorySelectionForPOI = parseInt(_event.value);
+    if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
+      this.updatedPOITableData(this.poiInitData); //-- load all data
+    }
+    else if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI != 0){
+      let filterData = this.poiInitData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
+      if(filterData){
+        this.updatedPOITableData(filterData);
+      }
+      else{
+        this.updatedPOITableData([]);
+      }
+    }
+    else{
+      let selectedId = this.categorySelectionForPOI;
+      let selectedSubId = this.subCategorySelectionForPOI;
+      let categoryData = this.poiInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updatedPOITableData(categoryData);
+    }
   }
 
-  updateSelectionData() {
-    let poiCategoryData = [];
-    if (this.selectedCategoryId) {
-
-      poiCategoryData = this.allCategoryPOIData.filter((e) => {
-        return (e.subCategoryId === this.selectedCategoryId);
-      });
+  applyFilterOnPOISubCategory(_event){
+    this.subCategorySelectionForPOI = parseInt(_event.value);
+    if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
+      this.updatedPOITableData(this.poiInitData); //-- load all data
     }
-    if (this.selectedSubCategoryId) {
-      poiCategoryData = this.allCategoryPOIData.filter((e) => {
-        return (e.subCategoryId === this.selectedSubCategoryId);
-      });
+    else if(this.subCategorySelectionForPOI == 0 && this.categorySelectionForPOI != 0){
+      let filterData = this.poiInitData.filter(item => item.categoryId == this.categorySelectionForPOI);
+      if(filterData){
+        this.updatedPOITableData(filterData);
+      }
+      else{
+        this.updatedPOITableData([]);
+      }
     }
-    if (this.selectedCategoryId && this.selectedSubCategoryId) {
-      poiCategoryData = this.allCategoryPOIData.filter((e) => {
-        return (e.parentCategoryId === this.selectedCategoryId && e.subCategoryId === this.selectedSubCategoryId);
-      });
+    else if(this.subCategorySelectionForPOI != 0 && this.categorySelectionForPOI == 0){
+      let filterData = this.poiInitData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
+      if(filterData){
+        this.updatedPOITableData(filterData);
+      }
+      else{
+        this.updatedPOITableData([]);
+      }
     }
-    //console.log(poiCategoryData)
+    else{
+      let selectedId = this.categorySelectionForPOI;
+      let selectedSubId = this.subCategorySelectionForPOI;
+      let categoryData = this.poiInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updatedPOITableData(categoryData);
+    }
   }
-  // mockData() {
-  //   this.data = [
-  //     {
-  //       name: "Global List",
-  //       category: "Dealers1",
-  //       subcategory: "Sub-dealer1",
-  //       address: "American city, Pratt, North"
-  //     },
-  //     {
-  //       name: "Global List",
-  //       category: "Dealers2",
-  //       subcategory: "Sub-dealer2",
-  //       address: "American city, Pratt, North"
-  //     },
-  //     {
-  //       name: "Global List",
-  //       category: "Dealers3",
-  //       subcategory: "Sub-dealer3",
-  //       address: "American city, Pratt, North"
-  //     }
-  //   ]
-  //   return this.data;
-  //   console.log(this.data);
-
-  // }
 
   createEditView() {
     this.tabVisibility.emit(false);
@@ -569,13 +608,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if (item.tableData) {
       this.poiInitData = item.tableData;
     }
-    //this.loadPoiData();
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
-    this.selectedpois.clear();
-    this.selectedgeofences.clear();
-    this.showMap = false;
+    this.resetAll();
     setTimeout(() => {
       this.initMap();
     }, 0);
@@ -594,16 +630,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
-    this.selectedpois.clear();
-    this.selectedgeofences.clear();
-    this.showMap = false;
+    this.resetAll();
     setTimeout(() => {
       this.initMap();
     }, 0);
   }
 
   onClose() {
-
+    this.titleVisible = false;
   }
 
   deletePoi(rowData: any) {
@@ -621,16 +655,25 @@ export class ManagePoiGeofenceComponent implements OnInit {
       if (res) {
         this.poiService.deletePoi(poiId).subscribe((data: any) => {
           this.successMsgBlink(this.getDeletMsg(rowData.name));
+          this.resetAll()
           this.loadPoiData();
           this.loadGeofenceData();
-          this.selectedgeofences.clear();
-          this.selectedpois.clear();
-          this.markerArray = [];
-          this.showMap = false;
-          this.addMarkerOnMap();
         });
       }
     });
+  }
+
+  resetAll(){
+    this.categorySelectionForPOI = 0;
+    this.subCategorySelectionForPOI = 0;
+    this.categorySelectionForGeo = 0;
+    this.subCategorySelectionForGeo = 0;
+    this.selectedgeofences.clear();
+    this.selectedpois.clear();
+    this.markerArray = [];
+    this.geoMarkerArray = [];
+    this.showMap = false;
+    this.addMarkerOnMap();
   }
 
   deleteMultiplePoi()
@@ -651,13 +694,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if (res) {
       this.poiService.deletePoi(poiId).subscribe((data: any) => {
           this.successMsgBlink(this.getDeletMsg(name));
+          this.resetAll();
           this.loadPoiData();
           this.loadGeofenceData();
-          this.selectedgeofences.clear();
-          this.selectedpois.clear();
-          this.markerArray = [];
-          this.showMap = false;
-          this.addMarkerOnMap();
         });
       }
     });
@@ -681,12 +720,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
         }
         this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
           this.successMsgBlink(this.getDeletMsg(rowData.name)); 
+          this.resetAll();
           this.loadGeofenceData();
           this.loadPoiData();
-          this.selectedgeofences.clear();
-          this.selectedpois.clear();
-          this.showMap = false;
-          this.geoMarkerArray = [];
         });
       }
     });
@@ -722,26 +758,23 @@ export class ManagePoiGeofenceComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(geofencesList)); 
             this.loadGeofenceData();
             this.loadPoiData();
-            this.selectedgeofences.clear();
-            this.selectedpois.clear();
-            this.showMap = false;
-            this.geoMarkerArray = [];
+            this.resetAll();
           });
         }
       });
     }
     else{
-      console.log("geofence id not found...");
+      //console.log("geofence id not found...");
     }
   }
 
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
+      //console.log('The snackbar is dismissed');
     });
     snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
+      //console.log('The snackbar action was triggered!');
     });
   }
 
