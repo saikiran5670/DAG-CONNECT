@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [StringLength(250, MinimumLength = 0,ErrorMessage = "Notification email subject should be between 1 and 250 characters")]
         public string EmailSub { get; set; }
         public string EmailText { get; set; }
-        [StringLength(250, MinimumLength = 1,ErrorMessage = "Notification web service url should be between 1 and 250 characters")]
+        [StringLength(250, MinimumLength = 0,ErrorMessage = "Notification web service url should be between 1 and 250 characters")]
         public string WsUrl { get; set; }
         [StringLength(1, MinimumLength = 0,ErrorMessage = "Notification web service type should be 1 character")]
         public string WsType { get; set; }
