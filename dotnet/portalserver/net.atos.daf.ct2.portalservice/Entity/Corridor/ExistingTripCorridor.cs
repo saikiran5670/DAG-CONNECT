@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public int Id { get; set; }
         [Required]
         public int? OrganizationId { get; set; }
-        [Required]
+        
         public string CorridorType { get; set; }
         [Required]
         public string CorridorLabel { get; set; }
@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public string Description { get; set; }
-        [Required]
+        
         public string Address { get; set; }
         public string City { get; set; }
         public string Country { get; set; }

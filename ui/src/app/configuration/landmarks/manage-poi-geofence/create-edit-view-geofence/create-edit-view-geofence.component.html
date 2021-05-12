@@ -43,7 +43,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
+                <input maxlength="100" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
                   formControlName="name" required>
               </mat-form-field>
               <mat-error *ngIf="polygonGeofenceFormGroup.get('name').hasError('required')">
@@ -196,7 +196,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
+                <input maxlength="100" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
                   formControlName="circularName">
               </mat-form-field>
               <mat-error *ngIf="circularGeofenceFormGroup.get('circularName').hasError('required')">

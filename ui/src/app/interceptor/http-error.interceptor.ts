@@ -46,8 +46,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                   'Your sessoin has been expired. kindly login again to continue.',
                 confirmText: 'Ok',
               };
-
-              this.dialogService.SessionModelOpen(options);
+              localStorage.setItem("sessionFlag", "false");
+              if(localStorage.getItem("sessionFlag") == 'false'){
+                this.dialogService.SessionModelOpen(options);
+                localStorage.setItem("sessionFlag", "true");
+              }
             }
           } else if (err instanceof ErrorEvent) {
             // client-side error
