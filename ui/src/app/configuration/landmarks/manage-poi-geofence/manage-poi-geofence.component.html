@@ -246,7 +246,7 @@
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
-                  (change)='$event ? selectedgeofences.toggle(row) : null' [checked]='selectedgeofences.isSelected(row)'
+                  (change)='$event ? selectedgeofences.toggle(row) : null; geofenceCheckboxClicked($event,row)' [checked]='selectedgeofences.isSelected(row)'
                   [aria-label]='checkboxLabelForGeo(row)'>
                 </mat-checkbox>
               </mat-cell>
