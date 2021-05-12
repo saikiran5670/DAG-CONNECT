@@ -21,5 +21,6 @@ namespace net.atos.daf.ct2.poigeofence.repository
         Task<bool> CheckRouteCorridorIsexist(string Name, int? OrganizationId, int id, char type);
 
         Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor routeCorridor);
+        Task<bool> CheckCorridorexistByIdName(string CorridorName, int? OrganizationId, int Id, char Type);
     }
 }

@@ -77,22 +77,23 @@
             <mat-label>{{ translationData.lblApplyOn || 'Apply On' }} <span class='mandatoryColor'>*</span></mat-label>
             <div class="margin-bottom-sm">
                 <mat-radio-group (change)='onApplyOnChange($event)' formControlName="applyOn">
-                    <mat-radio-button style='margin-right: 20px;' value="vehicle_group">
+                    <mat-radio-button style='margin-right: 20px;' value="G">
                         {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
                     </mat-radio-button>
-                    <mat-radio-button style='margin-right: 20px;' value="vehicle">
-                        {{ translationData.lblVehicle || 'Vehicle' }}
+                    <mat-radio-button style='margin-right: 20px;' value="S">
+                        {{ translationData.lblVehicle || 'vehicle' }}
                     </mat-radio-button>
                 </mat-radio-group>
             </div>
             <p style="color: darkgray;">Select alert to apply alert on a single vehicle or a group of vehicles.</p>
         </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblFilterVehiclesByGroup || 'Filter Vehicles By Group' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" formControlName="vehicleGroup" >
-                    <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.enum">
-                        {{vehGrp.value}}
+                <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event)" formControlName="vehicleGroup" >
+                  <mat-option value="ALL">--All--</mat-option>  
+                  <mat-option *ngFor="let vehGrp of vehicleByVehGroupList" [value]="vehGrp.vehicleGroupId">
+                        {{vehGrp.vehicleGroupName}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -100,12 +101,12 @@
               {{translationData.lblPleaseSelectVehicleGroup || 'Please select Vehicle Group' }}
             </mat-error>
         </div>
-        <div *ngIf="selectedApplyOn == 'vehicle'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf="selectedApplyOn == 'S'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                    <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.enum">
-                        {{vehicle.value}}
+                <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event)" formControlName="vehicle">
+                    <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
+                        {{vehicle.vin}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -121,10 +122,10 @@
             <mat-label>{{ translationData.lblStatusMode || 'Status Mode' }} <span class='mandatoryColor'>*</span></mat-label>
             <div>
                 <mat-radio-group formControlName="statusMode">
-                    <mat-radio-button style='margin-right: 20px;' value="active">
+                    <mat-radio-button style='margin-right: 20px;' value="A">
                         {{ translationData.lblActive || 'Active' }}
                     </mat-radio-button>
-                    <mat-radio-button style='margin-right: 20px;' value="suspended">
+                    <mat-radio-button style='margin-right: 20px;' value="S">
                         {{ translationData.lblSuspended || 'Suspended' }}
                     </mat-radio-button>
                 </mat-radio-group>
@@ -171,13 +172,13 @@
                 <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
                 <div class="margin-bottom-sm">
                     <mat-radio-group [disabled]="alert_category_selected === 'R'" formControlName="alertLevel">
-                        <mat-radio-button style='margin-right: 20px;' value="critical">
+                        <mat-radio-button style='margin-right: 20px;' value="C">
                             {{ translationData.lblCritical || 'Critical' }}
                         </mat-radio-button>
-                        <mat-radio-button style='margin-right: 20px;' value="warning">
+                        <mat-radio-button style='margin-right: 20px;' value="W">
                             {{ translationData.lblWarning || 'Warning' }}
                         </mat-radio-button>
-                        <mat-radio-button style='margin-right: 20px;' value="advisory">
+                        <mat-radio-button style='margin-right: 20px;' value="A">
                             {{ translationData.lblAdvisory || 'Advisory' }}
                         </mat-radio-button>
                     </mat-radio-group>
@@ -589,8 +590,8 @@
             (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
           <button class='no-margin' 
               [disabled]="!alertForm.valid ||
-              (alertForm.controls.alertCategory.value === 'C' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X') && (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)) ||
-              (alertForm.controls.alertCategory.value === 'C' && alertForm.controls.alertType.value === 'C' && selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
+              (alertForm.controls.alertCategory.value === 'L' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X') && (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)) ||
+              (alertForm.controls.alertCategory.value === 'L' && alertForm.controls.alertType.value === 'C' && selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>

@@ -8,12 +8,12 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountTokenManager : IAccountTokenManager
     {
-         IAccountTokenRepository tokenRepository;
-        public AccountTokenManager (IAccountTokenRepository _tokenRepository)
+        IAccountTokenRepository tokenRepository;
+        public AccountTokenManager(IAccountTokenRepository _tokenRepository)
         {
-            tokenRepository =_tokenRepository;
+            tokenRepository = _tokenRepository;
         }
-       public async Task<int> InsertToken(AccountToken accountToken)
+        public async Task<int> InsertToken(AccountToken accountToken)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-           public async Task<IEnumerable<AccountToken>> GetTokenDetails(string TokenId)
+        public async Task<IEnumerable<AccountToken>> GetTokenDetails(string TokenId)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.identitysession
                 throw ex;
             }
         }
-          public async Task<bool> ValidateToken(string TokenId)
+        public async Task<bool> ValidateToken(string TokenId)
         {
             try
             {
