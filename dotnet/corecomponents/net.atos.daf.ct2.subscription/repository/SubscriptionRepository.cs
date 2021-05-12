@@ -329,11 +329,23 @@ namespace net.atos.daf.ct2.subscription.repository
                         {
                             //Get all vehicle Ids corrosponding to VINs and match count with VINs 
                             //for checking VINs outside the provided organization
-                            var subscriptionIds = await CheckVINsExistInSubscription(objUnSubscription.VINs, objUnSubscription.OrderID, orgid);
+                            var result = await CheckVINsExistInSubscription(objUnSubscription.VINs, objUnSubscription.OrderID, orgid);
+                            var nonExistVins = result.Item1;
+                            var subscriptionIds = result.Item2;
+
+                            //VINs not found in subscription table
+                            if(nonExistVins.Count > 0)
+                                return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("VIN_NOT_FOUND", nonExistVins.ToArray()));
+
+                            //Check if order is fully unsubscribed
+                            if (result.Item3)
+                                return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("INVALID_REQUEST", objUnSubscription.OrderID));
+
+                            //Few are subscribed and few are already unsubscribed
                             if (objUnSubscription.VINs.Count != subscriptionIds.Count)
                             {
                                 var values = objUnSubscription.VINs.ToArray().Except(subscriptionIds.Keys.ToArray()).ToArray();
-                                return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("VIN_NOT_FOUND", values));
+                                return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("INVALID_REQUEST", values));
                             }
 
                             var parameter = new DynamicParameters();
@@ -511,9 +523,11 @@ namespace net.atos.daf.ct2.subscription.repository
             return vehicleIds;
         }
 
-        private async Task<Dictionary<string, int>> CheckVINsExistInSubscription(List<string> VINs, string orderId, int orgId)
+        private async Task<Tuple<List<string>, Dictionary<string, int>, bool>> CheckVINsExistInSubscription(List<string> VINs, string orderId, int orgId)
         {
             Dictionary<string, int> subscriptionIds = new Dictionary<string, int>();
+            List<string> nonExistVins = new List<string>();
+            int counter = VINs.Count;
             foreach (var item in VINs)
             {
                 var parameterToGetVehicleId = new DynamicParameters();
@@ -526,12 +540,22 @@ namespace net.atos.daf.ct2.subscription.repository
                                              AND  sub.subscription_id = @subscription_id
                                              AND  sub.organization_id = @organization_id";
                 var vinExist = await dataAccess.QueryFirstOrDefaultAsync<UnSubscribeVin>(query, parameterToGetVehicleId);
+                if (vinExist == null)
+                    nonExistVins.Add(item);
+
                 if (vinExist!= null && vinExist.id > 0 && vinExist.state.ToUpper() == "A")
                 {
                     subscriptionIds.Add(item, vinExist.id);
                 }
+
+                if (vinExist != null && vinExist.state.ToUpper() == "I")
+                    counter--;
             }
-            return subscriptionIds;
+
+            if (counter == 0)
+                return Tuple.Create(nonExistVins, subscriptionIds, true);
+
+            return Tuple.Create(nonExistVins, subscriptionIds, false);
         }
     }
 }
