@@ -1,9 +1,11 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, Output, EventEmitter,OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CorridorService } from 'src/app/services/corridor.service';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 
 declare var H: any;
 
@@ -40,7 +42,10 @@ export class ManageCorridorComponent implements OnInit {
   selectedCorridors = new SelectionModel(true, []);
 
   
-  constructor( private corridorService : CorridorService) {
+  constructor( 
+    private dialogService: ConfirmDialogService, 
+    private corridorService : CorridorService,
+    private _snackBar: MatSnackBar) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -147,23 +152,48 @@ export class ManageCorridorComponent implements OnInit {
   }
 
   deleteCorridor(rowData: any){
-    // let packageId = rowData.id;
-    // const options = {
-    //   title: this.translationData.lblDelete || "Delete",
-    //   message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
-    //   cancelText: this.translationData.lblCancel || "Cancel",
-    //   confirmText: this.translationData.lblDelete || "Delete"
-    // };
-    // this.dialogService.DeleteModelOpen(options, rowData.code);
-    // this.dialogService.confirmedDel().subscribe((res) => {
-    // if (res) {
-    //   this.packageService.deletePackage(packageId).subscribe((data) => {
-    //     this.openSnackBar('Item delete', 'dismiss');
-    //     this.loadPackageData();
-    //   })
-    //     this.successMsgBlink(this.getDeletMsg(rowData.code));
-    //   }
-    // });
+    let corridorId = rowData.id;
+    const options = {
+      title: this.translationData.lblDelete || "Delete",
+      message: this.translationData.lblAreyousureyouwanttodelete || "Are you sure you want to delete '$' ?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    this.dialogService.DeleteModelOpen(options, rowData.corridoreName);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.corridorService.deleteCorridor(corridorId).subscribe((data) => {
+        this.openSnackBar('Item delete', 'dismiss');
+        this.loadCorridorData();
+      })
+        this.successMsgBlink(this.getDeletMsg(rowData.corridoreName));
+      }
+    });
+  }
+
+  successMsgBlink(msg: any) {
+    this.titleVisible = true;
+    this.corridorCreatedMsg = msg;
+    setTimeout(() => {
+      this.titleVisible = false;
+    }, 5000);
+  }
+
+  openSnackBar(message: string, action: string) {
+    let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
+    snackBarRef.afterDismissed().subscribe(() => {
+      //console.log('The snackbar is dismissed');
+    });
+    snackBarRef.onAction().subscribe(() => {
+      //console.log('The snackbar action was triggered!');
+    });
+  }
+
+  getDeletMsg(name: any) {
+    if (this.translationData.lblCorridorwassuccessfullydeleted)
+      return this.translationData.lblCorridorwassuccessfullydeleted.replace('$', name);
+    else
+      return ("Corridor '$' was successfully deleted").replace('$', name);
   }
 
   masterToggleForCorridor() {
