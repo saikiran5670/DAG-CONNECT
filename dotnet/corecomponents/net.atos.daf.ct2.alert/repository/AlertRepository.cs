@@ -28,6 +28,12 @@ namespace net.atos.daf.ct2.alert.repository
             var transactionScope = dataAccess.connection.BeginTransaction();
             try
             {
+                alert = await Exists(alert);
+                // duplicate alert name
+                if (alert.Exists)
+                {
+                    return alert;
+                }
                 var parameterAlert = new DynamicParameters();
                 parameterAlert.Add("@organization_id", alert.OrganizationId);
                 parameterAlert.Add("@name", alert.Name);
