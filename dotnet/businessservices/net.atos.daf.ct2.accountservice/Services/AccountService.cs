@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.accountservice
 {
     public class AccountManagementService : AccountService.AccountServiceBase
     {
-       // private readonly ILogger<AccountManagementService> _logger;
+        // private readonly ILogger<AccountManagementService> _logger;
         private readonly AccountComponent.IAccountManager accountmanager;
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
@@ -35,7 +35,7 @@ namespace net.atos.daf.ct2.accountservice
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
 
         #region Constructor
-        public AccountManagementService( AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        public AccountManagementService(AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             accountmanager = _accountmanager;
@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.accountservice
                 if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
                 {
 
-                   
+
 
                     return Task.FromResult(new AccountIdentityResponse
                     {
@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 else
                 {
-                  
+
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
@@ -655,7 +655,7 @@ namespace net.atos.daf.ct2.accountservice
         public override async Task<ResetPasswordResponse> GetResetPasswordTokenStatus(GetResetPasswordTokenStatusRequest request, ServerCallContext context)
         {
             try
-            {            
+            {
                 var result = await accountmanager.GetResetPasswordTokenStatus(new Guid(request.ProcessToken));
 
                 ResetPasswordResponse response = new ResetPasswordResponse();
@@ -862,7 +862,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountBlobResponse
                 {
                     Code = Responcecode.Failed,
@@ -1294,7 +1294,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new ServiceResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1478,7 +1478,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountVehiclesResponse
                 {
                     Message = "Exception :-" + ex.Message + ex.StackTrace,
@@ -1537,7 +1537,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -2021,7 +2021,7 @@ namespace net.atos.daf.ct2.accountservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
 
                 return await Task.FromResult(new AccountRoles
                 {
@@ -2113,5 +2113,41 @@ namespace net.atos.daf.ct2.accountservice
 
         #endregion
 
+        #region Signle Sign On
+
+        public async override Task<SSOToken> GenerateSSO(TokenSSORequest request, ServerCallContext context)
+        {
+            try
+            {
+                AccountComponent.entity.TokenSSORequest ssoRequest = new AccountComponent.entity.TokenSSORequest();
+                ssoRequest.AccountID = Convert.ToInt32(request.AccountID);
+                ssoRequest.RoleID = Convert.ToInt32(request.RoleID);
+                ssoRequest.OrganizaitonID = Convert.ToInt32(request.OrganizationID);
+                ssoRequest.Email = request.Email;
+
+                SSOToken responseDetails = new SSOToken();
+                var response = await accountIdentityManager.GenerateSSOToken(ssoRequest);
+                responseDetails.Token = response.token;
+                //responseDetails.TokeType = response.tokenType;
+                //responseDetails.StatusCode = response.statusCode.ToString();
+                responseDetails.Code = Responcecode.Success;
+                responseDetails.Message = response.message;
+
+                return await Task.FromResult(responseDetails);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new SSOToken
+                {
+                    Code = Responcecode.NotFound,
+                    Message = "NOT FOUND"
+
+                });
+            }
+        }
+
+        #endregion
     }
 }

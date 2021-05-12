@@ -13,12 +13,12 @@ namespace net.atos.daf.ct2.identitysession.repository
 {
     public class AccountSessionRepository : IAccountSessionRepository
     {
-         private readonly IDataAccess dataAccess;
+        private readonly IDataAccess dataAccess;
         public AccountSessionRepository(IDataAccess _dataAccess)
         {
             dataAccess = _dataAccess;
         }
-         public async Task<int> InsertSession(AccountSession accountSession)
+        public async Task<int> InsertSession(AccountSession accountSession)
         {
             try
             {
@@ -50,18 +50,18 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
                 parameter.Add("@session_started_at", accountSession.SessionStartedAt);
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
-                parameter.Add("@account_id", accountSession.AccountId); 
+                parameter.Add("@account_id", accountSession.AccountId);
                 parameter.Add("@created_at", accountSession.CreatedAt);
                 int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
-            
+
         }
-         public async Task<int> UpdateSession(AccountSession accountSession)
+        public async Task<int> UpdateSession(AccountSession accountSession)
         {
             try
             {
@@ -82,12 +82,12 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@last_session_refresh", accountSession.LastSessionRefresh);
                 parameter.Add("@session_started_at", accountSession.SessionStartedAt);
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
-                parameter.Add("@account_id", accountSession.AccountId); 
+                parameter.Add("@account_id", accountSession.AccountId);
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                int  sessionID= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         {
             try
             {
-                long currentUTCFormate=UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                long currentUTCFormate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 var QueryStatement = @"DELETE FROM
                                         master.accountsession 
                                         where id=@id
@@ -105,10 +105,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", Guid.Parse(SessionId));
                 parameter.Add("@sessoin_expired_at", currentUTCFormate);
-                int Id= await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return Id;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -129,22 +129,22 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         from master.accountsession 
                                         where account_id=@AccountId";
                 var parameter = new DynamicParameters();
-            
+
                 parameter.Add("@AccountId", AccountId);
                 dynamic accountsessions = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 List<AccountSession> accountsessionsList = new List<AccountSession>();
                 foreach (dynamic record in accountsessions)
-                {                    
+                {
                     accountsessionsList.Add(Map(record));
                 }
                 return accountsessionsList.AsEnumerable();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
-            }          
-           
+            }
+
         }
         public async Task<int> DeleteSessionByAccountId(int AccountId)
         {
@@ -173,10 +173,43 @@ namespace net.atos.daf.ct2.identitysession.repository
             entity.LastSessionRefresh = record.last_session_refresh;
             entity.SessionStartedAt = record.session_started_at;
             entity.SessionExpiredAt = record.sessoin_expired_at;
-            entity.AccountId=record.account_id;
-            entity.CreatedAt = record.created_at;  
+            entity.AccountId = record.account_id;
+            entity.CreatedAt = record.created_at;
             return entity;
         }
-        
+        public async Task<AccountSession> GetAccountSessionById(int SessionId)
+        {
+            try
+            {
+                var QueryStatement = @"select 
+                                         id
+                                        ,session_id
+                                        ,ip_address
+                                        ,last_session_refresh
+                                        ,session_started_at
+                                        ,sessoin_expired_at
+                                        ,account_id
+                                        ,created_at
+                                        from master.accountsession 
+                                        where id=@SessionId";
+                var parameter = new DynamicParameters();
+
+                parameter.Add("@SessionId", SessionId);
+                dynamic accountsessions = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+
+                List<AccountSession> accountsessionsList = new List<AccountSession>();
+                foreach (dynamic record in accountsessions)
+                {
+                    accountsessionsList.Add(Map(record));
+                }
+                return accountsessionsList.AsEnumerable().FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
     }
 }

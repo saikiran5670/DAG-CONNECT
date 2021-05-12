@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.identitysession.repository
         Task<int> DeleteSession(string SessionId);
         Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId);
         Task<int> DeleteSessionByAccountId(int AccountId);
-
+        Task<AccountSession> GetAccountSessionById(int SessionId);
 
     }
 }
