@@ -54,14 +54,32 @@
         <div *ngIf='initData.length == 0'>No Record Found</div>
         <div *ngIf='initData.length > 0'>
             <mat-table [dataSource]="dataSource" class="table-items" matSort>
-                <ng-container matColumnDef="corridoreName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                      <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-                      <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                      <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{ row.corridoreName }}</span>
-                  </mat-cell>
-                  </ng-container>
+              <ng-container matColumnDef="All">
+                <mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox (change)='$event ? masterToggleForCorridor() : null'
+                    [checked]='selectedCorridors.hasValue() && isAllSelectedForCorridor()'
+                    [indeterminate]='selectedCorridors.hasValue() && !isAllSelectedForCorridor()'
+                    [aria-label]='checkboxLabelForCorridor()' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
+                  </mat-checkbox>
+                  <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+              <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+              <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span> -->
+                  <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+                  <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                  <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
+                  <mat-checkbox (click)='$event.stopPropagation()'
+                    (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
+                    [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
+                  </mat-checkbox>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="corridoreName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblname || 'Name' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{ row.corridoreName }}</mat-cell>
+              </ng-container>
                   <ng-container matColumnDef="startPoint">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'Start Point' }}</mat-header-cell>
                     <mat-cell *matCellDef="let row">{{ row.startPoint }}</mat-cell>
