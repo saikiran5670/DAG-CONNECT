@@ -26,11 +26,30 @@ import utiliities.Log;
 public class Role extends CommonFunctionLib  {
 	public static void viewRole() throws Exception {
 		try {
-			//String GRPTBL = getTextFromOR(""); 
+			String GRPTBL = getTextFromOR("ROLL_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
-			String CELL = "/div";
-			CommonFunctionLib.viewRecord("", COLHEAD, GRP_ROW, CELL);
+			String CELL = "/mat-cell";
+			CommonFunctionLib.viewRecord(GRPTBL, COLHEAD, GRP_ROW, CELL);
+			
+				
+			}catch (Exception e) {
+				test.log(LogStatus.FAIL, e.getMessage());
+				Log.error("Data is not present in table..." + e.getMessage());
+				String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+				test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+				ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+				DriverScript.bResult = false;				
+				}	
+	}//mat-row[@role="row"][2]/mat-cell[1]/mat-icon
+	
+	public static void VerifyGlobalRole() throws Exception {
+		try {
+			String GRPTBL = getTextFromOR("ROLL_TBL"); 
+			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
+			String GRP_ROW = getTextFromOR("GRP_ROW");
+			String CELL = "/mat-cell";
+			CommonFunctionLib.VerifyGlobalIcon(GRPTBL, COLHEAD, GRP_ROW, CELL);
 			
 				
 			}catch (Exception e) {

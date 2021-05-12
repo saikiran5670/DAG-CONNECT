@@ -1,6 +1,12 @@
 package modules;
 
 import static executionEngine.DriverScript.TestStep;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 import com.relevantcodes.extentreports.LogStatus;
 import executionEngine.DriverScript;
 import objectProperties.Constants;
@@ -103,5 +109,34 @@ public class User extends CommonFunctionLib{
 				DriverScript.bResult = false;				
 				}	
 	}
-
+	public static void verifyUserCountAG() throws Exception {
+		try {
+			int ColNo = 0; 
+			String column = "Accounts";
+			String TBL =  getTextFromOR("GRP_STEP3_TBL");
+			String COL =  getTextFromOR("GRP_COLUMNHEADER");
+			
+			List<WebElement> options = driver.findElements(By.xpath(TBL+COL));
+			Thread.sleep(3000);	
+			for (int i = 2; i <= options.size(); i++) 
+			{
+			String colnameF = driver.findElement(By.xpath(TBL+COL+"["+i+"]/div/div")).getText();
+			String colname = colnameF.trim();
+			if (colname.equals(column.trim())) 
+			{
+			System.out.println(column);
+			System.out.println(colname);
+			ColNo= i;
+			}
+			}
+			CommonFunctionLib.clickOnCount(ColNo,TBL,"/div/div");				
+			}catch (Exception e) {
+				test.log(LogStatus.FAIL, e.getMessage());
+				Log.error("Data is not present in table..." + e.getMessage());
+				String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+				test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+				ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+				DriverScript.bResult = false;				
+			}	
+		}
 }

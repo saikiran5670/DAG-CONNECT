@@ -222,7 +222,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   loadFiltersData(){
-    this.alertService.getAlertFilterData(this.accountId).subscribe((data) => {
+    this.alertService.getAlertFilterData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
@@ -652,13 +652,15 @@ checkboxClicked(event: any, row: any) {
     this.poiDataSource.data.forEach((row: any) => {
       let search = rowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
       if (search.length > 0) {
-        this.selectedPOI.select(row);
+        if(event.checked)
+          this.selectedPOI.select(row);
+        else
+          this.selectedPOI.deselect(row);  
         this.checkboxClicked(event,row);
 
       }
     });
   }
-
 
   loadGeofenceData() {
     // this.geofenceService.getAllGeofences(this.accountOrganizationId).subscribe((geofencelist: any) => {
@@ -694,7 +696,10 @@ checkboxClicked(event: any, row: any) {
     this.geofenceDataSource.data.forEach((row: any) => {
       let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
       if (search.length > 0) {
-        this.selectedGeofence.select(row);
+        if(event.checked)
+          this.selectedGeofence.select(row);
+        else
+          this.selectedGeofence.deselect(row);
         this.geofenceCheckboxClicked(event,row);
       }
     });

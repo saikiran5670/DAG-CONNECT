@@ -8,15 +8,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
     public class AlertUrgencyLevelRefBase
     {
-        [StringLength(1, MinimumLength = 0, ErrorMessage = "Urgency level type should be 1 character")]
+        [Required(ErrorMessage = "Urgency level type is required.")]
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Urgency level type should be 1 character.")]
         public string UrgencyLevelType { get; set; }
 
         public double ThresholdValue { get; set; }
-        [StringLength(1, MinimumLength = 0, ErrorMessage = "Unit type should be 1 character")]
+        [StringLength(1, MinimumLength = 0, ErrorMessage = "Unit type should be 1 character.")]
         public string UnitType { get; set; }
 
         public bool[] DayType { get; set; } = new bool[7];
-        [StringLength(1, MinimumLength = 0, ErrorMessage = "Period type should be 1 character")]
+        [StringLength(1, MinimumLength = 0, ErrorMessage = "Period type should be 1 character.")]
         public string PeriodType { get; set; }
 
         public long UrgencylevelStartDate { get; set; }

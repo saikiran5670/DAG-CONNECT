@@ -84,7 +84,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
   @ViewChild("map")
   public mapElement: ElementRef;
   markerArray: any = [];
+  geoMarkerArray: any = [];
+  polyPoints: any = [];
+  marker: any;
   hereMap: any;
+  categorySelectionForPOI: any = 0;
+  subCategorySelectionForPOI: any = 0;
+  categorySelectionForGeo: any = 0;
+  subCategorySelectionForGeo: any = 0;
   
   constructor( 
     private dialogService: ConfirmDialogService,
@@ -116,7 +123,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
       this.poiInitData = data;
-      // console.log("poiData=" +this.poiInitData);
+      // //console.log("poiData=" +this.poiInitData);
       this.hideloader();
       this.allCategoryPOIData = this.poiInitData;
       this.updatedPOITableData(this.poiInitData);
@@ -145,11 +152,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
   }
+
+  selectGeofenceTableRows(event: any,rowData: any){
+    this.geofencedataSource.data.forEach((row: any) => {
+      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
+      if (search.length > 0) {
+        this.selectedgeofences.select(row);
+        this.geofenceCheckboxClicked(event,row);
+      }
+    });
+  }
   
   checkboxClicked(event: any, row: any) {
     this.showMap = this.selectedpois.selected.length > 0 ? true : false;
-    console.log(this.selectedpois.selected.length)
-    console.log(row);
+    //console.log(this.selectedpois.selected.length)
+    //console.log(row);
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
     }else{ //-- remove existing marker
@@ -160,13 +177,191 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.addMarkerOnMap(); 
     }
     
-    addMarkerOnMap(){
+  addMarkerOnMap(){
       this.map.removeObjects(this.map.getObjects());
       this.markerArray.forEach(element => {
         let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(marker);
       });
     }
+
+  geofenceCheckboxClicked(event: any, row: any) {
+      this.showMap = this.selectedgeofences.selected.length > 0 ? true : false;
+      if(event.checked){ 
+        this.geoMarkerArray.push(row);
+      }else{ 
+        let arr = this.geoMarkerArray.filter(item => item.id != row.id);
+        this.geoMarkerArray = arr;
+      }
+      this.addCircleOnMap(event);
+      // });
+ }
+
+  addCircleOnMap(event: any){
+      if(event.checked == false){
+        this.map.removeObjects(this.map.getObjects());
+      }
+      //adding circular geofence points on map
+        this.geoMarkerArray.forEach(element => {
+        if(element.type == "C"){
+        this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+        this.map.addObject(this.marker);
+        
+        this.createResizableCircle(element.distance, element);
+        }
+        // "PolygonGeofence"
+        else{
+          this.polyPoints = [];
+          element.nodes.forEach(item => {
+          this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
+          this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+          this.polyPoints.push(0);
+          });
+          this.createResizablePolygon(this.map,this.polyPoints,this);
+        }
+  
+    });
+    //adding poi geofence points on map
+    this.markerArray.forEach(element => {
+      let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+      this.map.addObject(marker);
+    });
+  }
+  
+    createResizableCircle(_radius: any, rowData: any) {
+      var circle = new H.map.Circle(
+        { lat: rowData.latitude, lng: rowData.longitude },
+  
+        _radius,//85000,
+        {
+          style: { fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 0 }
+        }
+      ),
+        circleOutline = new H.map.Polyline(
+          circle.getGeometry().getExterior(),
+          {
+            style: { lineWidth: 1, strokeColor: 'rgba(45, 93, 176, 0.7)' }
+          }
+        ),
+        circleGroup = new H.map.Group({
+          volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+          objects: [circle, circleOutline]
+        }),
+        circleTimeout;
+  
+      circle.draggable = true;
+      circleOutline.draggable = true;
+      circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
+      this.map.addObject(circleGroup);
+      }
+    
+      createResizablePolygon(map: any, points: any, thisRef: any){
+            var svgCircle = '<svg width="50" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
+            '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
+            '</svg>',
+              polygon = new H.map.Polygon(
+                new H.geo.Polygon(new H.geo.LineString(points)),
+                {
+                  style: {fillColor: 'rgba(138, 176, 246, 0.7)', lineWidth: 1}
+                }
+              ),
+              verticeGroup = new H.map.Group({
+                visibility: false
+              }),
+              mainGroup = new H.map.Group({
+                volatility: true, // mark the group as volatile for smooth dragging of all it's objects
+                objects: [polygon, verticeGroup]
+              }),
+              polygonTimeout;
+        
+          // ensure that the polygon can receive drag events
+          polygon.draggable = true;
+        
+          // create markers for each polygon's vertice which will be used for dragging
+          polygon.getGeometry().getExterior().eachLatLngAlt(function(lat, lng, alt, index) {
+            var vertice = new H.map.Marker(
+              {lat, lng},
+              {
+                icon: new H.map.Icon(svgCircle, {anchor: {x: 10, y: 10}})
+              }
+            );
+            vertice.draggable = true;
+            vertice.setData({'verticeIndex': index})
+            verticeGroup.addObject(vertice);
+          });
+        
+          // add group with polygon and it's vertices (markers) on the map
+          map.addObject(mainGroup);
+        
+          // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
+          mainGroup.addEventListener('pointerenter', function(evt) {
+            if (polygonTimeout) {
+              clearTimeout(polygonTimeout);
+              polygonTimeout = null;
+            }
+        
+            // show vertice markers
+            verticeGroup.setVisibility(true);
+          }, true);
+        
+          // event listener for main group to hide vertice markers if moved out with mouse (or released finger on touch devices)
+          // the vertice markers are hidden on touch devices after specific timeout
+          mainGroup.addEventListener('pointerleave', function(evt) {
+            var timeout = (evt.currentPointer.type == 'touch') ? 1000 : 0;
+        
+            // hide vertice markers
+            polygonTimeout = setTimeout(function() {
+              verticeGroup.setVisibility(false);
+            }, timeout);
+          }, true);
+          
+          if(false){ //-- only for create polygon geofence
+            // event listener for vertice markers group to change the cursor to pointer
+            verticeGroup.addEventListener('pointerenter', function(evt) {
+              document.body.style.cursor = 'pointer';
+            }, true);
+          
+            // event listener for vertice markers group to change the cursor to default
+            verticeGroup.addEventListener('pointerleave', function(evt) {
+              document.body.style.cursor = 'default';
+            }, true);
+          
+            // event listener for vertice markers group to resize the geo polygon object if dragging over markers
+            verticeGroup.addEventListener('drag', function(evt) {
+              var pointer = evt.currentPointer,
+                  geoLineString = polygon.getGeometry().getExterior(),
+                  geoPoint = map.screenToGeo(pointer.viewportX, pointer.viewportY);
+             // set new position for vertice marker
+              evt.target.setGeometry(geoPoint);
+          
+              // set new position for polygon's vertice
+              geoLineString.removePoint(evt.target.getData()['verticeIndex']);
+              geoLineString.insertPoint(evt.target.getData()['verticeIndex'], geoPoint);
+              polygon.setGeometry(new H.geo.Polygon(geoLineString));
+          
+              // stop propagating the drag event, so the map doesn't move
+              evt.stopPropagation();
+            }, true);
+    
+            verticeGroup.addEventListener('dragend', function (ev) {
+              var coordinate = map.screenToGeo(ev.currentPointer.viewportX,
+                ev.currentPointer.viewportY);
+                let nodeIndex = ev.target.getData()['verticeIndex'];
+              let _position = Math.abs(coordinate.lat.toFixed(4)) + "," + Math.abs(coordinate.lng.toFixed(4));
+                if(_position){
+                  thisRef.hereService.getAddressFromLatLng(_position).then(result => {
+                    let locations = <Array<any>>result;
+                    let data = locations[0].Location.Address;
+                    let pos = locations[0].Location.DisplayPosition;
+                    thisRef.setAddressValues('updatePoint', data, pos, nodeIndex);
+                  }, error => {
+                    // console.error(error);
+                  });
+                }
+    
+            }, false);
+          }
+      }
     
   updatedPOITableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
@@ -251,88 +446,123 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
   }
 
-  onCategoryChange(_event) {
-    this.selectedCategoryId = _event.value;
-    this.updateSelectionData();
-  }
-
-  applyFilterOnCategory(_event){
-    this.selectedCategoryId = _event.value;
-    if(this.selectedCategoryId == "all"){
-      this.poidataSource.filter = '';
+  onGeofenceCategoryChange(_event: any) {
+    this.categorySelectionForGeo = parseInt(_event.value);
+    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
+      this.updatedGeofenceTableData(this.geoInitData); //-- load all data
+    }
+    else if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo != 0){
+      let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
+      if(filterData){
+        this.updatedGeofenceTableData(filterData);
+      }
+      else{
+        this.updatedGeofenceTableData([]);
+      }
     }
     else{
-    this.poidataSource.filterPredicate = function(data, filter: any): boolean {
-      return data.categoryId == filter;
-    }; this.poidataSource.filter = this.selectedCategoryId; 
+      let selectedId = this.categorySelectionForGeo;
+      let selectedSubId = this.subCategorySelectionForGeo;
+      let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
-    
+      this.updatedGeofenceTableData(categoryData);
+    }
   }
 
-  applyFilterOnSubCategory(_event){
-    this.selectedSubCategoryId = _event.value;
-    if(this.selectedSubCategoryId == "all"){
-      this.poidataSource.filter = '';
+  onGeofenceSubCategoryChange(_event: any) {
+    this.subCategorySelectionForGeo = parseInt(_event.value);
+    if(this.categorySelectionForGeo == 0 && this.subCategorySelectionForGeo == 0){
+      this.updatedGeofenceTableData(this.geoInitData); //-- load all data
+    }
+    else if(this.subCategorySelectionForGeo == 0 && this.categorySelectionForGeo != 0){
+      let filterData = this.geoInitData.filter(item => item.categoryId == this.categorySelectionForGeo);
+      if(filterData){
+        this.updatedGeofenceTableData(filterData);
+      }
+      else{
+        this.updatedGeofenceTableData([]);
+      }
+    }
+    else if(this.subCategorySelectionForGeo != 0 && this.categorySelectionForGeo == 0){
+      let filterData = this.geoInitData.filter(item => item.subCategoryId == this.subCategorySelectionForGeo);
+      if(filterData){
+        this.updatedGeofenceTableData(filterData);
+      }
+      else{
+        this.updatedGeofenceTableData([]);
+      }
     }
     else{
-    this.poidataSource.filterPredicate = function(data, filter: any): boolean {
-      return data.subCategoryId == filter;
-    }; this.poidataSource.filter = this.selectedSubCategoryId; 
+      let selectedId = this.categorySelectionForGeo;
+      let selectedSubId = this.subCategorySelectionForGeo;
+      let categoryData = this.geoInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
+      this.updatedGeofenceTableData(categoryData);
+    }
   }
 
-
-  onSubCategoryChange(_event) {
-    this.selectedSubCategoryId = _event.value;
-    //this.updateSelectionData();
-
+  applyFilterOnPOICategory(_event: any){
+    this.categorySelectionForPOI = parseInt(_event.value);
+    if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
+      this.updatedPOITableData(this.poiInitData); //-- load all data
+    }
+    else if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI != 0){
+      let filterData = this.poiInitData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
+      if(filterData){
+        this.updatedPOITableData(filterData);
+      }
+      else{
+        this.updatedPOITableData([]);
+      }
+    }
+    else{
+      let selectedId = this.categorySelectionForPOI;
+      let selectedSubId = this.subCategorySelectionForPOI;
+      let categoryData = this.poiInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updatedPOITableData(categoryData);
+    }
   }
 
-  updateSelectionData() {
-    let poiCategoryData = [];
-    if (this.selectedCategoryId) {
-
-      poiCategoryData = this.allCategoryPOIData.filter((e) => {
-        return (e.subCategoryId === this.selectedCategoryId);
-      });
+  applyFilterOnPOISubCategory(_event){
+    this.subCategorySelectionForPOI = parseInt(_event.value);
+    if(this.categorySelectionForPOI == 0 && this.subCategorySelectionForPOI == 0){
+      this.updatedPOITableData(this.poiInitData); //-- load all data
     }
-    if (this.selectedSubCategoryId) {
-      poiCategoryData = this.allCategoryPOIData.filter((e) => {
-        return (e.subCategoryId === this.selectedSubCategoryId);
-      });
+    else if(this.subCategorySelectionForPOI == 0 && this.categorySelectionForPOI != 0){
+      let filterData = this.poiInitData.filter(item => item.categoryId == this.categorySelectionForPOI);
+      if(filterData){
+        this.updatedPOITableData(filterData);
+      }
+      else{
+        this.updatedPOITableData([]);
+      }
     }
-    if (this.selectedCategoryId && this.selectedSubCategoryId) {
-      poiCategoryData = this.allCategoryPOIData.filter((e) => {
-        return (e.parentCategoryId === this.selectedCategoryId && e.subCategoryId === this.selectedSubCategoryId);
-      });
+    else if(this.subCategorySelectionForPOI != 0 && this.categorySelectionForPOI == 0){
+      let filterData = this.poiInitData.filter(item => item.subCategoryId == this.subCategorySelectionForPOI);
+      if(filterData){
+        this.updatedPOITableData(filterData);
+      }
+      else{
+        this.updatedPOITableData([]);
+      }
     }
-    //console.log(poiCategoryData)
+    else{
+      let selectedId = this.categorySelectionForPOI;
+      let selectedSubId = this.subCategorySelectionForPOI;
+      let categoryData = this.poiInitData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updatedPOITableData(categoryData);
+    }
   }
-  // mockData() {
-  //   this.data = [
-  //     {
-  //       name: "Global List",
-  //       category: "Dealers1",
-  //       subcategory: "Sub-dealer1",
-  //       address: "American city, Pratt, North"
-  //     },
-  //     {
-  //       name: "Global List",
-  //       category: "Dealers2",
-  //       subcategory: "Sub-dealer2",
-  //       address: "American city, Pratt, North"
-  //     },
-  //     {
-  //       name: "Global List",
-  //       category: "Dealers3",
-  //       subcategory: "Sub-dealer3",
-  //       address: "American city, Pratt, North"
-  //     }
-  //   ]
-  //   return this.data;
-  //   console.log(this.data);
-
-  // }
 
   createEditView() {
     this.tabVisibility.emit(false);
@@ -378,13 +608,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if (item.tableData) {
       this.poiInitData = item.tableData;
     }
-    //this.loadPoiData();
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
-    this.selectedpois.clear();
-    this.selectedgeofences.clear();
-    this.showMap = false;
+    this.resetAll();
     setTimeout(() => {
       this.initMap();
     }, 0);
@@ -403,16 +630,14 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.allCategoryPOIData = this.poiInitData;
     this.updatedPOITableData(this.poiInitData);
     this.updatedGeofenceTableData(this.geoInitData);
-    this.selectedpois.clear();
-    this.selectedgeofences.clear();
-    this.showMap = false;
+    this.resetAll();
     setTimeout(() => {
       this.initMap();
     }, 0);
   }
 
   onClose() {
-
+    this.titleVisible = false;
   }
 
   deletePoi(rowData: any) {
@@ -430,16 +655,25 @@ export class ManagePoiGeofenceComponent implements OnInit {
       if (res) {
         this.poiService.deletePoi(poiId).subscribe((data: any) => {
           this.successMsgBlink(this.getDeletMsg(rowData.name));
+          this.resetAll()
           this.loadPoiData();
           this.loadGeofenceData();
-          this.selectedgeofences.clear();
-          this.selectedpois.clear();
-          this.markerArray = [];
-          this.showMap = false;
-          this.addMarkerOnMap();
         });
       }
     });
+  }
+
+  resetAll(){
+    this.categorySelectionForPOI = 0;
+    this.subCategorySelectionForPOI = 0;
+    this.categorySelectionForGeo = 0;
+    this.subCategorySelectionForGeo = 0;
+    this.selectedgeofences.clear();
+    this.selectedpois.clear();
+    this.markerArray = [];
+    this.geoMarkerArray = [];
+    this.showMap = false;
+    this.addMarkerOnMap();
   }
 
   deleteMultiplePoi()
@@ -460,13 +694,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
     if (res) {
       this.poiService.deletePoi(poiId).subscribe((data: any) => {
           this.successMsgBlink(this.getDeletMsg(name));
+          this.resetAll();
           this.loadPoiData();
           this.loadGeofenceData();
-          this.selectedgeofences.clear();
-          this.selectedpois.clear();
-          this.markerArray = [];
-          this.showMap = false;
-          this.addMarkerOnMap();
         });
       }
     });
@@ -490,10 +720,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
         }
         this.geofenceService.deleteGeofence(delObjData).subscribe((delData: any) => {
           this.successMsgBlink(this.getDeletMsg(rowData.name)); 
+          this.resetAll();
           this.loadGeofenceData();
           this.loadPoiData();
-          this.selectedgeofences.clear();
-          this.selectedpois.clear();
         });
       }
     });
@@ -529,24 +758,23 @@ export class ManagePoiGeofenceComponent implements OnInit {
             this.successMsgBlink(this.getDeletMsg(geofencesList)); 
             this.loadGeofenceData();
             this.loadPoiData();
-            this.selectedgeofences.clear();
-            this.selectedpois.clear();
+            this.resetAll();
           });
         }
       });
     }
     else{
-      console.log("geofence id not found...");
+      //console.log("geofence id not found...");
     }
   }
 
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
-      console.log('The snackbar is dismissed');
+      //console.log('The snackbar is dismissed');
     });
     snackBarRef.onAction().subscribe(() => {
-      console.log('The snackbar action was triggered!');
+      //console.log('The snackbar action was triggered!');
     });
   }
 
@@ -605,11 +833,19 @@ export class ManagePoiGeofenceComponent implements OnInit {
   }
 
   masterToggleForGeo() {
-    this.isAllSelectedForGeo()
-      ? this.selectedgeofences.clear()
-      : this.geofencedataSource.data.forEach((row) =>
-        this.selectedgeofences.select(row)
-      );
+    this.geoMarkerArray = [];
+    if(this.isAllSelectedForGeo()){
+      this.selectedgeofences.clear();
+      this.showMap = false;
+    }
+    else{
+      this.geofencedataSource.data.forEach((row) =>{
+        this.selectedgeofences.select(row);
+        this.geoMarkerArray.push(row);
+      });
+      this.showMap = true;
+    }
+    this.addCircleOnMap(event);
   }
 
   isAllSelectedForGeo() {

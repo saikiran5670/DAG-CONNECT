@@ -43,7 +43,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
+                <input maxlength="100" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
                   formControlName="name" required>
               </mat-form-field>
               <mat-error *ngIf="polygonGeofenceFormGroup.get('name').hasError('required')">
@@ -196,7 +196,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
+                <input maxlength="100" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
                   formControlName="circularName">
               </mat-form-field>
               <mat-error *ngIf="circularGeofenceFormGroup.get('circularName').hasError('required')">
@@ -299,21 +299,21 @@
       </div>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
-          <mat-select (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-          <mat-option value="0">--All--</mat-option>
-          <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
-              {{ rer.name }}
-          </mat-option>
+          <mat-select [(ngModel)]="categorySelectionForPOI" [disabled]='poiData.length == 0' (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+            <mat-option value="0">--All--</mat-option>
+            <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+                {{ rer.name }}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
-          <mat-select (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+          <mat-select [(ngModel)]="subCategorySelectionForPOI" [disabled]='poiData.length == 0' (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
             <mat-option value="0">--All--</mat-option>
             <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
               {{ rer.name }}
-          </mat-option>
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>

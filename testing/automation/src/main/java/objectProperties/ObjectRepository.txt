@@ -160,6 +160,15 @@ USER_EDIT_CONFIRM = XPATH~//button/span[text()='Confirm']
 USER_GRP_TABLE = XPATH~//*[@id="cdk-step-content-1-2"]//mat-table[@role="grid"]
 USER_BREADCRUMB = XPATH~//app-edit-view-user/div[@fxlayout="row"]/div/span
 ACCOUNT_INFO_TYPE = XPATH~//mat-select[@formcontrolname="userType"]
+ACCOUNT_FILTER_BTN = XPATH~//mat-expansion-panel-header[@role="button"]/span[2]
+ACCOUNT_FILTER_NAME = XPATH~//input[@placeholder="Search Name"]
+ACCOUNT_FILTER_GROUP = XPATH~//mat-label[text()=' Group ']/following-sibling::mat-form-field//mat-select[@role="combobox"]/div/div[2]
+ACCOUNT_FILTER_ROLE = XPATH~//mat-label[text()=' Role ']/following-sibling::mat-form-field//mat-select[@role="combobox"]/div/div[2]
+FILTER_BTN = XPATH~//button/span[text()=' Filter ']
+FILTER_RESET_BTN = XPATH~//button/span[text()=' Reset ']
+GRP_SEARCH = XPATH~//*[@id="cdk-step-content-0-2"]//input[@data-placeholder="Search"]
+ROLE_SEARCH = XPATH~//*[@id="cdk-step-content-1-1"]//input[@data-placeholder="Search"]
+USER_CANCEL = XPATH~//*[@id="cdk-step-content-2-0"]//button/span[text()='Cancel']
 
 /*****Role ****************************************************************************************************
 
@@ -168,15 +177,16 @@ ROLE_DETAIL_LB = XPATH~//*[text()='All Account Role Details']
 ROLE_ACCESS = XPATH~//*[text()='Access ']//input[@role="switch"]
 ROLE_ACCESS_TOGGLE = XPATH~//*[text()='Access ']//mat-slide-toggle
 ROLE_NAME_LB = XPATH~//*[text()='Account Role Name']/following-sibling::mat-label
-ROLE_DESC_LB = XPATH~//*[text()='Account Role Description']/following-sibling::mat-label
+ROLE_DESC_LB = XPATH~//*[text()='Account Role Description (Optional)']/following-sibling::mat-label
 COPY = XPATH~]/button[2]/span[1]/mat-icon
 ROLE_EDIT = XPATH~]/button[3]/span[1]/mat-icon
-ROLE_DELETE = XPATH~]/button[4]/span[1]/mat-icon
+ROLE_DELETE = XPATH~]/button[3]/span[1]/mat-icon
 ROLENAME = XPATH~//input[@formcontrolname="userRoleName"]
 NEW_ROLE = XPATH~//span[text()=' New Account Role ']
 ROLEDESC = XPATH~//input[@formcontrolname="userRoleDescription"]
 ROLETYPEDD = XPATH~//*[@formcontrolname="roleType"]
 ROLETYPE = XPATH~//span[text()='Regular']
+ROLL_TBL = XPATH~//*[@id="accountRoleData"]
 
 /*****Vehicle Management***************************************************************************************
 

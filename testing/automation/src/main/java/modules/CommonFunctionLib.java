@@ -564,7 +564,7 @@ public static void isObjectEnabled() throws Exception
 	  {
 		  object = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
 		  String sFlag = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);		  
-		  WebDriverWait wait = new WebDriverWait(CommonFunctionLib.driver, 30);
+		//  WebDriverWait wait = new WebDriverWait(CommonFunctionLib.driver, 30);
 		  WebElement obj =  driver.findElement(getLocator(object));
 		 if  (obj.isEnabled() && sFlag.equalsIgnoreCase("Yes") || obj.isDisplayed() && sFlag.equalsIgnoreCase("Yes"))			  
 			  {
@@ -1535,7 +1535,7 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	for (int j = 1; j <= options1.size(); j++) 
 	{
 	//String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
-	String rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]")).getText();
+	String rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/span[3]")).getText();
 	String[] str;
 	if(column.equals("Vehicle Group")||column.equals("Vehicle")) {
 		 str = rowvalueF.split("\\r?\\n");
@@ -1576,6 +1576,100 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	return false;
 	}
 	}
+//********************* Verify Gobal Icon ****************************************************************
+public static boolean VerifyGlobalIcon(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL) throws Exception {
+	Thread.sleep(3000);
+	try 
+	{
+	Actions actions = new Actions(driver);
+	actions.sendKeys(Keys.PAGE_UP).perform();
+	String column = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+	String value = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+	//String Yes_No = ExcelSheet.getCellData(TestStep, Constants.Col_Parm2, Constants.Sheet_TestSteps);
+	List<WebElement> options = driver.findElements(getLocator("GRP_COLUMNHEADER"));
+	boolean temp = false;	
+	Thread.sleep(3000);	
+	for (int i = 1; i <= options.size(); i++) 
+	{
+	String PartialcolnameF =  getTextFromOR("PART_COL_F_N_FIRST");
+	String PartialcolnameS =  getTextFromOR("PART_COL_F_N_SEC");
+	String colnameF = driver.findElement(By.xpath(PartialcolnameF + i + PartialcolnameS)).getText();
+	String colname = colnameF.trim();
+	if (colname.equals(column.trim())) 
+	{
+	System.out.println(column);
+	System.out.println(colname);	  		  
+	String Page = driver.findElement(getLocator("PAGINATION")).getText();
+	String TotalRecord =Page.split(" ")[1];
+	String Rowcount =driver.findElement(getLocator("GRP_ROW_COUNT_VAL")).getText();
+	int Page_No =1; //Integer.parseInt(TotalRecord);
+	int remainder = 0;
+	if(Integer.parseInt(TotalRecord) > Integer.parseInt(Rowcount))
+	{
+		Page_No= Integer.parseInt(TotalRecord)/Integer.parseInt(Rowcount);
+		remainder = Integer.parseInt(TotalRecord)%Integer.parseInt(Rowcount);
+		if(remainder>0) {
+			Page_No=Page_No+1;
+		}
+	}else if(Integer.parseInt(TotalRecord)< Integer.parseInt(Rowcount)) {
+		Page_No =1;
+	}
+	Thread.sleep(3000);
+	for (int k = 1; k <= Page_No; k++) 
+	{
+	waitForLoadingImage();
+	if (driver.findElement(By.xpath(GRPTBL)).isDisplayed());
+	{
+	System.out.println(" Next Page button is working");
+	Thread.sleep(3000);
+	List<WebElement> options1 = driver.findElements(By.xpath(GRP_ROW));
+	Thread.sleep(3000);
+	for (int j = 1; j <= options1.size(); j++) 
+	{
+	//String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
+	String rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/span[3]")).getText();
+	String[] str;
+	if(column.equals("Vehicle Group")||column.equals("Vehicle")) {
+		 str = rowvalueF.split("\\r?\\n");
+		 rowvalueF = str[0];
+	}
+	String rowvalue = rowvalueF.trim();
+	if (rowvalue.equals(value.trim())) 
+	{
+	System.out.println(value);
+	System.out.println(rowvalue);
+	System.out.println("Value found in expected column");
+	test.log(LogStatus.PASS,  "Value found in expected column");
+	Log.info("Value found in expected column");	
+	if(driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/mat-icon[text()=' public ']")).isDisplayed())
+	{
+	System.out.println("Global Icon present for this record.");
+	test.log(LogStatus.PASS,  "Global Icon present for this record.");
+	Log.info("Global Icon present for this record.");
+	temp = true;
+	return temp;
+	}
+	}
+	}
+	}
+	driver.findElement(getLocator("NEXT_PAGINATION")).click();
+	}
+	return temp;
+	}
+	}
+	return false;
+	}catch (Exception e){
+	test.log(LogStatus.FAIL, e.getMessage());
+	Log.error("Data is not present in table..." + e.getMessage());
+	String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+	test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+	ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	DriverScript.bResult = false;
+	return false;
+	}
+	}
+
+
 //*********************Edit Record From TBL***************************************************************
 public static boolean editRecordFrmTbl() throws Exception {
 Thread.sleep(3000);
@@ -1692,7 +1786,7 @@ return false;
 }
 }
 //*********************Click on count present in row of TBL***************************************************************
-public static boolean clickOnCount(int colOfCount) throws Exception {
+public static boolean clickOnCount(int colOfCount, String TBL, String Cell) throws Exception {
 Thread.sleep(3000);
 try 
 {
@@ -1700,23 +1794,26 @@ Actions actions = new Actions(driver);
 actions.sendKeys(Keys.PAGE_UP).perform();
 String column = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
 String value = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
-List<WebElement> options = driver.findElements(getLocator("GRP_COLUMNHEADER"));
+String Col = getTextFromOR("GRP_COLUMNHEADER");
+List<WebElement> options = driver.findElements(By.xpath(TBL+Col));
 boolean temp = false;
 Thread.sleep(3000);	
-for (int i = 1; i <= options.size(); i++) 
-{
+for (int i = 2; i <= options.size(); i++) 
+{	
 String PartialcolnameF =  getTextFromOR("PART_COL_F_N_FIRST");
 String PartialcolnameS =  getTextFromOR("PART_COL_F_N_SEC");
-String colnameF = driver.findElement(By.xpath(PartialcolnameF + i + PartialcolnameS)).getText();
+String colnameF = driver.findElement(By.xpath(TBL+ PartialcolnameF + i + PartialcolnameS +Cell)).getText();
 String colname = colnameF.trim();
 if (colname.equals(column.trim())) 
 {
 System.out.println(column);
-System.out.println(colname);	  		  
-String Page = driver.findElement(getLocator("PAGINATION")).getText();
+System.out.println(colname);	  
+String PAGINATION =  getTextFromOR("PAGINATION");
+String Page = driver.findElement(By.xpath(TBL+ PAGINATION)).getText();
 String TotalRecord =Page.split(" ")[1];
-String Rowcount =driver.findElement(getLocator("GRP_ROW_COUNT_VAL")).getText();
-int Page_No =Integer.parseInt(TotalRecord);
+String ROW =  getTextFromOR("GRP_ROW_COUNT_VAL");
+String Rowcount =driver.findElement(By.xpath(TBL+ROW)).getText();
+int Page_No =1; //Integer.parseInt(TotalRecord);
 int remainder = 0;
 if(Integer.parseInt(TotalRecord) > Integer.parseInt(Rowcount))
 {
@@ -1725,6 +1822,8 @@ if(Integer.parseInt(TotalRecord) > Integer.parseInt(Rowcount))
 	if(remainder>0) {
 		Page_No=Page_No+1;
 	}
+}else if(Integer.parseInt(TotalRecord)< Integer.parseInt(Rowcount)) {
+	Page_No =1;
 }
 Thread.sleep(3000);
 for (int k = 1; k <= Page_No; k++) 
@@ -1733,13 +1832,14 @@ waitForLoadingImage();
 if (driver.findElement(getLocator("TABLE")).isDisplayed());
 {
 System.out.println(" Next Page button is working");
-Thread.sleep(3000);
-List<WebElement> options1 = driver.findElements(getLocator("GRP_ROW"));
+Thread.sleep(3001);
+String GRow = getTextFromOR("GRP_ROW");
+List<WebElement> options1 = driver.findElements(By.xpath(TBL+ GRow));
 Thread.sleep(3000);
 for (int j = 1; j <= options1.size(); j++) 
 {
 String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
-String rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getText();
+String rowvalueF = driver.findElement(By.xpath(TBL+ RowPart + j + "]/mat-cell["+i+"]")).getText();
 String rowvalue = rowvalueF.trim();
 if (rowvalue.equals(value.trim())) 
 {
@@ -1748,7 +1848,7 @@ System.out.println(rowvalue);
 System.out.println("Value found in expected column");
 test.log(LogStatus.PASS,  "Value found in expected column");
 Log.info("Value found in expected column");	
-driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+colOfCount+"]/span")).click();
+driver.findElement(By.xpath(TBL+RowPart + j + "]/mat-cell["+colOfCount+"]/span")).click();
 waitForElementClick("GRP_USER_COUNT");
 if(driver.findElement(getLocator("GRP_USER_COUNT")).isDisplayed()) {
 	test.log(LogStatus.PASS,  "Count hyperlink is working and dailog box is displayed");

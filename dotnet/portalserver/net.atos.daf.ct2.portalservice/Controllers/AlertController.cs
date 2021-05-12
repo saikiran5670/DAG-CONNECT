@@ -189,6 +189,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var alertRequest = new AlertRequest();
+                if (request.ApplyOn.ToLower() == "s")
+                {
+                    var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                    VehicleGroupRequest.Name = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
+                    VehicleGroupRequest.GroupType = "S";
+                    VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
+                    VehicleGroupRequest.FunctionEnum = "N";
+                    VehicleGroupRequest.OrganizationId = alertRequest.OrganizationId;
+                    VehicleGroupRequest.Description = "Single vehicle group for alert:-  " + alertRequest.Name + "  org:- " + alertRequest.OrganizationId;
+                    vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                    alertRequest.VehicleGroupId = response.VehicleGroup.Id;
+                }
+
                 alertRequest = _mapper.ToAlertRequest(request);
 
                 if (request.IsDuplicate)
@@ -325,13 +339,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if ( orgnizationid == 0) return BadRequest("Orgnization id cannot be null.");
 
                 AlertListResponse response = await _AlertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
 
                 if (response != null)
                 {
                     response.Code = ResponseCode.Success;
-                    return Ok(response);
+                    return Ok(response.AlertRequest);
                 }
                 else
                 {

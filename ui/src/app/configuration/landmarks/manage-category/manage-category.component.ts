@@ -221,6 +221,8 @@ export class ManageCategoryComponent implements OnInit {
           }
           this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
             this.successMsgBlink(this.getDeletMsg(name, delType));
+            this.categorySelection = 0;
+            this.subCategorySelection = 0;
             this.loadLandmarkCategoryData();
             this.selectedCategory = new SelectionModel(true, []);
           });
@@ -589,6 +591,8 @@ export class ManageCategoryComponent implements OnInit {
       if(res){ //--delete
         this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
           this.successMsgBlink(this.getDeletMsg());
+          this.categorySelection = 0;
+          this.subCategorySelection = 0;
           this.loadLandmarkCategoryData();
           this.selectedCategory = new SelectionModel(true, []);
         });
