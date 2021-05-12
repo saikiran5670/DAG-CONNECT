@@ -104,7 +104,7 @@
                 <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
                   [checked]='selectedpois.hasValue() && isAllSelectedForPOI()'
                   [indeterminate]='selectedpois.hasValue() && !isAllSelectedForPOI()'
-                  [aria-label]='checkboxLabelForPOI()'>
+                  [aria-label]='checkboxLabelForPOI()' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">All</span>
               </mat-header-cell>
@@ -237,7 +237,7 @@
                 <mat-checkbox (change)='$event ? masterToggleForGeo() : null'
                   [checked]='selectedgeofences.hasValue() && isAllSelectedForGeo()'
                   [indeterminate]='selectedgeofences.hasValue() && !isAllSelectedForGeo()'
-                  [aria-label]='checkboxLabelForGeo()'>
+                  [aria-label]='checkboxLabelForGeo()' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
