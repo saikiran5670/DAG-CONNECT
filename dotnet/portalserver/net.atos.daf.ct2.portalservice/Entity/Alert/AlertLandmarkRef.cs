@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         //public int Id { get; set; }
         //public int AlertId { get; set; }
-        [StringLength(1, MinimumLength = 0, ErrorMessage = "Landmark type should be 1 character")]
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Landmark type should be 1 character")]
         public string LandmarkType { get; set; }
         public int RefId { get; set; }
         public double Distance { get; set; }

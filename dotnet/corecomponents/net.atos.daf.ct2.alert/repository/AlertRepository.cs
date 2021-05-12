@@ -242,16 +242,16 @@ namespace net.atos.daf.ct2.alert.repository
                 var parameternotification = new DynamicParameters();
                 parameternotification.Add("@alert_id", notification.AlertId);
                 if (notification.AlertUrgencyLevelType != null && notification.AlertUrgencyLevelType.Length > 0)
-                    parameternotification.Add("@alert_urgency_level_type", Convert.ToChar(notification.AlertUrgencyLevelType));
+                    parameternotification.Add("@alert_urgency_level_type", Convert.ToChar(notification.AlertUrgencyLevelType.ToUpper()));
                 else
                     parameternotification.Add("@alert_urgency_level_type", null);
                 if (notification.FrequencyType != null && notification.FrequencyType.Length > 0)
-                    parameternotification.Add("@frequency_type", Convert.ToChar(notification.FrequencyType));
+                    parameternotification.Add("@frequency_type", Convert.ToChar(notification.FrequencyType.ToUpper()));
                 else
                     parameternotification.Add("@frequency_type", null);
                 parameternotification.Add("@frequency_threshhold_value", notification.FrequencyThreshholdValue);
                 if (notification.ValidityType != null && notification.ValidityType.Length > 0)
-                    parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType));
+                    parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType.ToUpper()));
                 else
                     parameternotification.Add("@validity_type", null);
                 parameternotification.Add("@state", 'A');

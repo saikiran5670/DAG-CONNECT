@@ -232,7 +232,8 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     response.Code = Responcecode.Conflict;
                     return response;
                 }
-                else
+
+                if (group.Exists && group.GroupType == Group.GroupType.Single)
                 {
                     response.VehicleGroup.Exists = true;
                     response.Message = "Duplicate Group";
