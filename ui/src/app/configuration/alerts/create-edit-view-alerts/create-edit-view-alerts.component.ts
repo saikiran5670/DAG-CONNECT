@@ -68,6 +68,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
   alert_type_selected: string= '';
+  vehicle_group_selected: number= 26;
   alertTypeName: string= '';
   isCriticalLevelSelected: boolean= false;
   isWarningLevelSelected: boolean= false;
@@ -81,6 +82,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isSaturdaySelected: boolean= false;
   labelForThreshold: string= '';
   unitForThreshold: string= '';
+  notifications: any= [];
+  alertFilterRefs: any= [];
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -121,11 +124,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
       alertName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       alertCategory: ['', [Validators.required]],
       alertType: ['', [Validators.required]],
-      applyOn: ['vehicle_group', [Validators.required]],
+      applyOn: ['G', [Validators.required]],
       vehicleGroup: ['', [Validators.required]],
       vehicle: [''],
-      statusMode: ['active', [Validators.required]],
-      alertLevel: ['critical', [Validators.required]],
+      statusMode: ['A', [Validators.required]],
+      alertLevel: ['C', [Validators.required]],
       criticalLevel: [''],
       criticalLevelThreshold: [''],
       warningLevel: [''],
@@ -147,71 +150,72 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.breadcumMsg = this.getBreadcum();
     }
 
-    this.vehicleGroupList= [
-      {
-        id: 1,
-        value: 'Vehicle Group 001'
-      },
-      {
-        id: 2,
-        value: 'Vehicle Group 002'
-      },
-      {
-        id: 3,
-        value: 'Vehicle Group 003'
-      }
-    ];
+    // this.vehicleGroupList= [
+    //   {
+    //     id: 1,
+    //     value: 'Vehicle Group 001'
+    //   },
+    //   {
+    //     id: 2,
+    //     value: 'Vehicle Group 002'
+    //   },
+    //   {
+    //     id: 3,
+    //     value: 'Vehicle Group 003'
+    //   }
+    // ];
 
-    this.vehicleList= [
-      {
-        id: 1,
-        value: 'Vehicle 1',
-        vehicleGroupId: 1
-      },
-      {
-        id: 2,
-        value: 'Vehicle 2',
-        vehicleGroupId: 1
-      },
-      {
-        id: 3,
-        value: 'Vehicle 3',
-        vehicleGroupId: 1
-      },
-      {
-        id: 4,
-        value: 'Vehicle 4',
-        vehicleGroupId: 2
-      },
-      {
-        id: 5,
-        value: 'Vehicle 5',
-        vehicleGroupId: 2
-      },
-      {
-        id: 6,
-        value: 'Vehicle 6',
-        vehicleGroupId: 2
-      },
-      {
-        id: 7,
-        value: 'Vehicle 7',
-        vehicleGroupId: 3
-      },
-      {
-        id: 8,
-        value: 'Vehicle 8',
-        vehicleGroupId: 3
-      },
-      {
-        id: 9,
-        value: 'Vehicle 9',
-        vehicleGroupId: 3
-      }
-    ]
+    // this.vehicleList= [
+    //   {
+    //     id: 1,
+    //     value: 'Vehicle 1',
+    //     vehicleGroupId: 1
+    //   },
+    //   {
+    //     id: 2,
+    //     value: 'Vehicle 2',
+    //     vehicleGroupId: 1
+    //   },
+    //   {
+    //     id: 3,
+    //     value: 'Vehicle 3',
+    //     vehicleGroupId: 1
+    //   },
+    //   {
+    //     id: 4,
+    //     value: 'Vehicle 4',
+    //     vehicleGroupId: 2
+    //   },
+    //   {
+    //     id: 5,
+    //     value: 'Vehicle 5',
+    //     vehicleGroupId: 2
+    //   },
+    //   {
+    //     id: 6,
+    //     value: 'Vehicle 6',
+    //     vehicleGroupId: 2
+    //   },
+    //   {
+    //     id: 7,
+    //     value: 'Vehicle 7',
+    //     vehicleGroupId: 3
+    //   },
+    //   {
+    //     id: 8,
+    //     value: 'Vehicle 8',
+    //     vehicleGroupId: 3
+    //   },
+    //   {
+    //     id: 9,
+    //     value: 'Vehicle 9',
+    //     vehicleGroupId: 3
+    //   }
+    // ]
 
     // this.alertTypeByCategoryList= this.alertTypeList;
-    // this.vehicleByVehGroupList= this.vehicleList;
+    this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
+    this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
 
     
 
@@ -219,6 +223,20 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.loadFiltersData();
     if(this.vehicleGroupList.length == 0)
       this.loadVehicleGroupData(); 
+  }
+
+  getUnique(arr, comp) {
+
+    // store the comparison  values in array
+    const unique =  arr.map(e => e[comp])
+
+      // store the indexes of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+
+      // eliminate the false indexes & return unique objects
+    .filter((e) => arr[e]).map(e => arr[e]);
+
+    return unique;
   }
 
   loadFiltersData(){
@@ -230,9 +248,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.vehicleList= data["vehicleGroup"];
-      // this.alertTypeByCategoryList= this.alertTypeList;
-      // this.vehicleByVehGroupList= this.vehicleList;
-
+      this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
+      this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
     }, (error) => {
 
     })
@@ -330,8 +347,21 @@ export class CreateEditViewAlertsComponent implements OnInit {
           break;
         }
       }
+    } 
+  }
+
+  onChangeVehicleGroup(event){
+    this.vehicle_group_selected= event.value;
+    if(event.value == 'ALL'){
+      this.vehicleByVehGroupList = this.getUnique(this.vehicleList, "vehicleId");
     }
-    
+    else{
+      this.vehicleByVehGroupList= this.vehicleList.filter(item => item.vehicleGroupId == event.value)
+    }
+  }
+
+  onChangeVehicle(event){
+    this.vehicle_group_selected= event.value;
   }
 
   loadMap() {
@@ -1022,10 +1052,75 @@ checkboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){
+    let alertLandmarkRefs= [];
+    // Payload for Entering Zone, Exiting Zone, Exiting Corridor
+    if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X' || this.alert_type_selected === 'C')){
+      
+      if(this.selectedPOI.selected.length > 0){
+        this.selectedPOI.selected.forEach(element => {
+          let tempObj= {
+            "landmarkType": "P",
+            "refId": element.id,
+            "distance": 100,
+            "unitType": ""
+          }
+          alertLandmarkRefs.push(tempObj);
+        });
+      }
+      if(this.selectedGeofence.selected.length > 0){
+        this.selectedGeofence.selected.forEach(element => {
+          let tempObj= {
+            "landmarkType": element.type,
+            "refId": element.id,
+            "distance": element.distance,
+            "unitType": ""
+          }
+          alertLandmarkRefs.push(tempObj);
+        });
+      }
+    }
 
+      let alertObjData= {
+        "organizationId": this.accountOrganizationId,
+        "name": this.alertForm.get('alertName').value,
+        "category": this.alert_category_selected,
+        "type": this.alert_type_selected,
+        "validityPeriodType": "A",
+        "validityStartDate": 0,
+        "validityEndDate": 0,
+        "vehicleGroupId": this.vehicle_group_selected,
+        "state": "A",
+        "applyOn": this.alertForm.get('applyOn').value,
+        "createdBy": this.accountId,
+        "notifications": this.notifications,
+        "alertUrgencyLevelRefs": [{
+          "urgencyLevelType": this.alertForm.get('alertLevel').value,
+          "thresholdValue": 0,
+          "unitType": "N",
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "urgencylevelStartDate": 0,
+          "urgencylevelEndDate": 0,
+          "alertFilterRefs": this.alertFilterRefs
+        }],
+        "alertLandmarkRefs": alertLandmarkRefs
+      }
+
+      this.alertService.createAlert(alertObjData).subscribe((data) => {
+        if(data){
+          this.alertCreatedMsg = this.getAlertCreatedMessage();
+          let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
+           this.backToPage.emit(emitObj);
+        }  
+      }, (error) => {
+  
+      })
+      
   }
 
-  getGroupCreatedMessage() {
+  getAlertCreatedMessage() {
     let alertName = `${this.alertForm.controls.alertName.value}`;
     if(this.actionType == 'create') {
       if(this.translationData.lblAlertCreatedSuccessfully)
