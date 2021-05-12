@@ -54,6 +54,27 @@ export class CorridorService {
       .pipe(catchError(this.handleError));
   }
 
+  createRouteCorridor(routeCorridorObj : any) : Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.corridorServiceUrl}/addroutecorridor`, routeCorridorObj, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  
+  createExistingCorridor(routeCorridorObj : any) : Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.corridorServiceUrl}/addexistingtripcorridor`, routeCorridorObj, headers)
+      .pipe(catchError(this.handleError));
+  }
+  
   private handleError(errResponse: HttpErrorResponse) {
     if (errResponse.error instanceof ErrorEvent) {
       console.error('Client side error', errResponse.error.message);

@@ -2,6 +2,8 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
+import { CorridorService } from '../../../../../services/corridor.service';
+
 declare var H: any;
 
 @Component({
@@ -36,7 +38,7 @@ export class RouteCalculatingComponent implements OnInit {
   trafficFlowChecked : boolean = false;
   corridorWidth : number;
 
-  constructor(private here: HereService,private formBuilder: FormBuilder) {
+  constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -228,5 +230,8 @@ export class RouteCalculatingComponent implements OnInit {
       }
     }
     console.log(corridorObj)
+    this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
+      console.log(responseData);
+    })
   }
 }
