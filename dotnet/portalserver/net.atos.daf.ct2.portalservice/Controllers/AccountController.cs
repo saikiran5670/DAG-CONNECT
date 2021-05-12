@@ -1912,7 +1912,50 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
         }
         #endregion
-   
+
+        #region Signle Sign On
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("sso")]
+        public async Task<IActionResult> GenerateSSOToken([FromBody] TokenSSORequest request)
+        {
+            try
+            {
+                AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
+                ssoRequest.Email = request.Email;
+                ssoRequest.AccountID = _userDetails.accountId.ToString();
+                ssoRequest.RoleID = _userDetails.roleId.ToString();
+                ssoRequest.OrganizationID = _userDetails.orgId.ToString();
+
+
+
+                var response = await _accountClient.GenerateSSOAsync(ssoRequest);
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "GenerateSSOToken method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                           JsonConvert.SerializeObject(request), Request);
+                    return Ok(response.Message);
+                }
+                else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                    return NotFound(response.Message);
+                else
+                    return StatusCode(500, "SSO generation process failed !");
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                          "GenerateSSOToken method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          JsonConvert.SerializeObject(request), Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, "Error while generating SSO token.");
+            }
+        }
+        #endregion
+
     }
 
 }

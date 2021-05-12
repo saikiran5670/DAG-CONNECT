@@ -16,5 +16,7 @@ namespace net.atos.daf.ct2.account
         Task<bool> LogoutByJwtToken(string token);
         Task<bool> LogoutByAccountId(int accountId);
         Task<bool> LogoutByTokenId(string tokenid);
+        Task<SSOToken> GenerateSSOToken(TokenSSORequest email);
+        Task<SSOTokenResponse> ValidateSSOToken(string tokenGuid);
     }
 }

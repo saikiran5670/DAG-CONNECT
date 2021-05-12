@@ -61,9 +61,10 @@ service AccountService
   
  
   // Add Role
-   rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
+  rpc AddRoles (AccountRoleRequest) returns (AccountRoleResponse);
   rpc RemoveRoles (AccountRoleDeleteRequest) returns (AccountRoleResponse);
   rpc GetRoles (AccountRoleDeleteRequest) returns (AccountRoles);
+  rpc GenerateSSO (TokenSSORequest) returns (SSOToken);
 }
 enum AccountType
     {
@@ -503,5 +504,19 @@ message DeleteAccessRelationRequest
     int32 Id=1;    
     bool IsGroup=2;    
     int32 OrganizationId=3;    
+}
+
+message TokenSSORequest {
+    string Email=1;
+    string AccountID=2;
+    string RoleID=3;
+    string OrganizationID=4;
+}
+
+message SSOToken{
+string token = 1;
+//string tokeType = 2;
+Responcecode Code=2;
+string Message = 3; 
 }
 // end - vehicle-account access relatioship
