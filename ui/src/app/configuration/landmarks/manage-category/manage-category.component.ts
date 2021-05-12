@@ -8,6 +8,7 @@ import { LandmarkCategoryService } from '../../../services/landmarkCategory.serv
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonTableComponent } from '../../../shared/common-table/common-table.component'; 
 import { SelectionModel } from '@angular/cdk/collections';
+import { DeleteCategoryPopupComponent } from './delete-category-popup/delete-category-popup.component';
 
 @Component({
   selector: 'app-manage-category',
@@ -34,6 +35,7 @@ export class ManageCategoryComponent implements OnInit {
   selectedRowData: any = [];
   @Output() tabVisibility: EventEmitter<boolean> = new EventEmitter();
   dialogRef: MatDialogRef<CommonTableComponent>;
+  dialogRefForDelete: MatDialogRef<DeleteCategoryPopupComponent>;
   selectedCategory = new SelectionModel(true, []);
   allCategoryData : any =[];
   userType: any= "";
@@ -172,39 +174,76 @@ export class ManageCategoryComponent implements OnInit {
   deleteCategory(rowData: any){
     let deleteText: any;
     let deleteMsg: any;
-    let search = this.initData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
-    if(search.length > 1) { //-- having sub category
-      deleteText = 'hide-btn'; 
-      deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "The '$' contains a sub-category. You can not delete this category if it has a sub-category. To remove this category, first remove connected sub-category.";
-    }else{
-      deleteText = this.translationData.lblDelete || 'Delete';
-      deleteMsg = this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?";
+    let delType: any = '';
+    let name = '';
+    if(rowData.subCategoryId > 0){
+      if(rowData.noOfPOI > 0 || rowData.noOfGeofence > 0){ //- sub-cat can not delete having POI/Geofence
+        name = rowData.subCategoryName;
+        delType = '';
+        deleteText = 'hide-btn'; 
+        deleteMsg = this.translationData.lblSubcategoryDeleteMsg || "'$' sub-category can not be deleted as they have child relationship exist(POI/Geofence). To remove this category, first remove connected POI/Geofence.";
+      }else{ //-- delete sub-cat
+        name = rowData.subCategoryName;
+        delType = 'subcategory';
+        deleteText = this.translationData.lblDelete || 'Delete';
+        deleteMsg = this.translationData.lblAreyousureyouwanttodeletesubcategory || "Are you sure you want to delete subcategory '$'?";
+      }
+    }else{ //-- delete cat
+      let search = this.allCategoryData.filter((item: any) => item.parentCategoryId == rowData.parentCategoryId);
+      if(search.length > 1 || rowData.noOfPOI > 0 || rowData.noOfGeofence > 0) { //-- having sub-cat/POI/geofence
+        name = rowData.parentCategoryName;
+        delType = '';
+        deleteText = 'hide-btn'; 
+        deleteMsg = this.translationData.lblCategoryDeleteMsg || "'$' category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+      }else{ //-- No sub-cat/POI/Geofence
+        name = rowData.parentCategoryName;
+        delType = 'category';
+        deleteText = this.translationData.lblDelete || 'Delete';
+        deleteMsg = this.translationData.lblAreyousureyouwanttodeleteCategorylist || "Are you sure you want to delete Category list '$'?";
+      }
     }
-
+    
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: deleteMsg,
       cancelText: this.translationData.lblCancel || 'Cancel',
       confirmText: deleteText 
     };
-    let name = rowData.parentCategoryName;
     this.dialogService.DeleteModelOpen(options, name);
     this.dialogService.confirmedDel().subscribe((res) => {
       if(res){
-        this.landmarkCategoryService.deleteLandmarkCategory(rowData.parentCategoryId).subscribe((deletedData: any) => {
-          this.successMsgBlink(this.getDeletMsg(name));
-          this.loadLandmarkCategoryData();
-        });
+        if(delType == 'category' || delType == 'subcategory'){
+          let bulkDeleteObj: any = {
+            category_SubCategory_s: [{
+              categoryId : rowData.parentCategoryId, 
+              subCategoryId : rowData.subCategoryId
+            }]
+          }
+          this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
+            this.successMsgBlink(this.getDeletMsg(name, delType));
+            this.categorySelection = 0;
+            this.subCategorySelection = 0;
+            this.loadLandmarkCategoryData();
+            this.selectedCategory = new SelectionModel(true, []);
+          });
+        }
       }
-     });
+    });
   }
 
-  getDeletMsg(categoryName?: any){
+  getDeletMsg(categoryName?: any, delType?: any){
     if(categoryName){
-      if(this.translationData.lblLandmarkCategoryDelete)
-        return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
-      else
-        return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+      if(delType == 'category'){
+        if(this.translationData.lblLandmarkCategoryDelete)
+          return this.translationData.lblLandmarkCategoryDelete.replace('$', categoryName);
+        else
+          return ("Landmark category '$' was successfully deleted").replace('$', categoryName);
+      }else if(delType == 'subcategory'){
+        if(this.translationData.lblLandmarkSubCategoryDelete)
+          return this.translationData.lblLandmarkSubCategoryDelete.replace('$', categoryName);
+        else
+          return ("Landmark sub-category '$' was successfully deleted").replace('$', categoryName);
+      }
     }
     else{
       return this.translationData.lblBulkLandmarkCategoryDelete ? this.translationData.lblBulkLandmarkCategoryDelete : "Landmark category was successfully deleted";
@@ -220,22 +259,58 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onPOIClick(rowData: any){
+    let id: any; 
+    if(rowData.subCategoryId == 0){ // parent-cat
+      id = rowData.parentCategoryId;
+      this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+        this.nextStepforPOI(poiData);
+      });
+    }else{ // sub-cat
+      id = rowData.subCategoryId;
+      this.landmarkCategoryService.getSubCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+        this.nextStepforPOI(poiData);
+      });
+    }
+  }
+
+  onGeofenceClick(rowData: any){
+    let id: any; 
+    if(rowData.subCategoryId == 0){ // parent-cat
+      id = rowData.parentCategoryId;
+      this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+        this.nextStepforGeofence(geofenceData);
+      });
+    }else{ // sub-cat
+      id = rowData.subCategoryId; 
+      this.landmarkCategoryService.getSubCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+        this.nextStepforGeofence(geofenceData);
+      });
+    }
+  }
+
+  nextStepforPOI(poiData: any){
     const colsList = ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
     const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
     const tableTitle = this.translationData.lblPOI || 'POI';
-    this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, rowData.parentCategoryId).subscribe((poiData: any) => {
-      poiData.forEach(element => {
-        if(element.icon && element.icon != ''){
-          // let TYPED_ARRAY = new Uint8Array(element.icon);
-          // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
-          // let base64String = btoa(STRING_CHAR);
-          element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
-        }else{
-          element.icon = '';
-        }
-      });
-      this.callToCommonTable(poiData, colsList, colsName, tableTitle);
+    poiData.forEach(element => {
+      if(element.icon && element.icon != ''){
+        // let TYPED_ARRAY = new Uint8Array(element.icon);
+        // let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+        // let base64String = btoa(STRING_CHAR);
+        element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + element.icon);
+      }else{
+        element.icon = '';
+      }
     });
+    this.callToCommonTable(poiData, colsList, colsName, tableTitle);
+  }
+
+  nextStepforGeofence(geofenceData: any){
+    const colsList = ['name', 'categoryName', 'subCategoryName'];
+    const colsName = [this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
+    const tableTitle = this.translationData.lblGeofence || 'Geofence';
+    let filterGeoData: any = geofenceData.filter(item => item.type == 'C' || item.type == 'O');
+    this.callToCommonTable(filterGeoData, colsList, colsName, tableTitle);
   }
 
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
@@ -249,15 +324,6 @@ export class ManageCategoryComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
-  }
-
-  onGeofenceClick(rowData: any){
-    const colsList = ['geofenceName', 'categoryName', 'subCategoryName'];
-    const colsName = [this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
-    const tableTitle = this.translationData.lblGeofence || 'Geofence';
-    this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, rowData.parentCategoryId).subscribe((geofenceData: any) => {
-      this.callToCommonTable(geofenceData.geofenceList, colsList, colsName, tableTitle);
-    });
   }
 
   onCategoryChange(_event: any){
@@ -375,33 +441,162 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onBulkDeleteCategory(){
-    let bulkCategories= [];
-    const options = {
-      title: this.translationData.lblDeleteGroup || 'Bulk Delete Category',
-      message: this.translationData.lblBulkDeleteMessage || "Deleting Parent category will delete all of its sub-categories also. Are you sure you want to delete?",
-      cancelText: this.translationData.lblCancel || 'Cancel',
-      confirmText: this.translationData.lblDelete || 'Delete'
-    };
-    this.dialogService.DeleteModelOpen(options);
-    this.dialogService.confirmedDel().subscribe((res) => {
-    if (res) {
-      // let filterIds: any = this.selectedCategory.selected.map(item => item.parentCategoryId)
-      // .filter((value, index, self) => self.indexOf(value) === index)
+    let filterCat: any = [];
+    let deleteCatMsg: any = '';
+    let noDeleteCatMsg: any = '';
+    let bulkDeleteObj: any; 
+    let bulkCategories: any = [];
+    let delCatList: any = '';
+    let noDelCatList: any = '';
+    let deleteText: any;
+    let delCatCount: any = 0;
+    let noDelCatCount: any = 0;
 
-      
-      this.selectedCategory.selected.forEach(item => {
-        bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+    filterCat = this.selectedCategory.selected.filter(item => item.subCategoryId == 0);
+    
+    if(filterCat.length == this.selectedCategory.selected.length){ //- delete cat
+      filterCat.forEach(item => {
+        let filterId = this.allCategoryData.filter(i => i.parentCategoryId == item.parentCategoryId);
+        if(filterId.length > 1 || filterId[0].noOfPOI > 0 || filterId[0].noOfGeofence > 0){ //-- cat having sub-cat/POI/Geofence
+          noDelCatCount++;
+          noDelCatList += item.parentCategoryName + ", ";
+        }else{
+          delCatCount++;
+          delCatList += item.parentCategoryName + ", ";
+          bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+        }
       });
-
-      let bulkDeleteObj: any = {
-        category_SubCategory_s: bulkCategories
+      if(delCatCount == this.selectedCategory.selected.length){ //-- all are cat, having no sub-cat/POI/Geofence
+        deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+        noDeleteCatMsg = '';
+        deleteText = this.translationData.lblDelete || 'Delete';
+      }else if(noDelCatCount == this.selectedCategory.selected.length){
+        deleteCatMsg = '';
+        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+        deleteText = 'hide-btn'; 
+      }else{
+        deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+        noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+        deleteText = this.translationData.lblDelete || 'Delete';
       }
-      this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
-        this.successMsgBlink(this.getDeletMsg());
-        this.loadLandmarkCategoryData();
-        this.selectedCategory = new SelectionModel(true, []);
-      });
     }
-   });    
+    else{ //-- delete sub-cat
+      let filterSubCat: any;
+      filterSubCat = this.selectedCategory.selected.filter(item => item.subCategoryId > 0);
+      if(filterSubCat.length == this.selectedCategory.selected.length){ //-- only sub-cat
+        let _filter: any = filterSubCat.filter(i => i.noOfGeofence == 0 && i.noOfPOI == 0);
+        if(_filter.length == filterSubCat.length){ //-- delete sub-cat
+          _filter.forEach(item => {
+            delCatCount++;
+            delCatList += item.subCategoryName + ", ";
+            bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+          });
+          deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+          noDeleteCatMsg = '';
+          deleteText = this.translationData.lblDelete || 'Delete';
+        }else{
+          let _filterCat: any = filterSubCat.filter(i => i.noOfGeofence > 0 || i.noOfPOI > 0);
+          _filterCat.forEach(element => {
+            noDelCatCount++;
+            noDelCatList += element.subCategoryName + ", ";
+          });
+
+          _filter.forEach(item => {
+            delCatCount++;
+            delCatList += item.subCategoryName + ", ";
+            bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+          });
+
+          if(delCatCount > 0 && noDelCatCount == 0){ //-- cat & sub-cat
+            deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+            noDeleteCatMsg = '';
+            deleteText = this.translationData.lblDelete || 'Delete';
+          }else if(delCatCount == 0 && noDelCatCount > 0){
+            deleteCatMsg = '';
+            noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+            deleteText = 'hide-btn';
+          }
+          else{ //-- sub-cat & cat having sub-cat
+            deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+            noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+            deleteText = this.translationData.lblDelete || 'Delete';
+          }
+        }
+      }else if(filterSubCat.length > 0 && filterCat.length > 0){ //- cat & sub-cat
+        filterCat.forEach(item => {
+          let filterId = this.allCategoryData.filter(i => i.parentCategoryId == item.parentCategoryId);
+          if(filterId.length > 1 || filterId[0].noOfPOI > 0 || filterId[0].noOfGeofence > 0){ //-- cat having sub-cat/poi/geofence
+            noDelCatCount++;
+            noDelCatList += item.parentCategoryName + ", ";
+          }else{
+            delCatCount++;
+            delCatList += item.parentCategoryName + ", ";
+            bulkCategories.push({"categoryId" : item.parentCategoryId, "subCategoryId" : item.subCategoryId});
+          }
+        });
+
+        filterSubCat.forEach(_item => {
+          if(_item.noOfPOI > 0 || _item.noOfGeofence > 0){ //-- sub-cat have poi/geofence
+            noDelCatCount++;
+            noDelCatList += _item.subCategoryName + ", ";
+          }else{ //-- No poi/geofence for sub-cat
+            delCatCount++;
+            delCatList += _item.subCategoryName + ", ";
+            bulkCategories.push({"categoryId" : _item.parentCategoryId, "subCategoryId" : _item.subCategoryId});
+          }
+        });
+
+        if(delCatCount > 0 && noDelCatCount == 0){ //-- cat & sub-cat
+          deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+          noDeleteCatMsg = '';
+          deleteText = this.translationData.lblDelete || 'Delete';
+        }else if(delCatCount == 0 && noDelCatCount > 0){ //- no delete 
+          deleteCatMsg = '';
+          noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+          deleteText = 'hide-btn';
+        }
+        else{ //-- sub-cat & cat having sub-cat
+          deleteCatMsg = this.translationData.lblDeleteCategoryMessage || "Are you sure you want to delete '$'?";
+          noDeleteCatMsg = this.translationData.lblNoDeleteCategoryMessage || "Below category can not be deleted as they have child relationship exist(sub-category/POI/Geofence). To remove this category, first remove connected sub-category/POI/Geofence.";
+          deleteText = this.translationData.lblDelete || 'Delete';
+        }
+      }
+    }
+
+    if(delCatList != ''){
+      delCatList = delCatList.slice(0, -2);
+    }
+    if(noDelCatList != ''){
+      noDelCatList = noDelCatList.slice(0, -2);
+    }
+
+    bulkDeleteObj = {
+      category_SubCategory_s: bulkCategories
+    }
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      title: this.translationData.lblDelete || 'Delete',
+      delMessage: deleteCatMsg,
+      noDelMessage: noDeleteCatMsg,
+      deleteCatList: delCatList,
+      noDeleteCatList: noDelCatList,
+      cancelText: this.translationData.lblCancel || 'Cancel',
+      confirmText: deleteText
+    }
+    this.dialogRefForDelete = this.dialog.open(DeleteCategoryPopupComponent, dialogConfig);
+    this.dialogRefForDelete.afterClosed().subscribe(res => {
+      if(res){ //--delete
+        this.landmarkCategoryService.deleteBulkLandmarkCategory(bulkDeleteObj).subscribe((deletedData: any) => {
+          this.successMsgBlink(this.getDeletMsg());
+          this.categorySelection = 0;
+          this.subCategorySelection = 0;
+          this.loadLandmarkCategoryData();
+          this.selectedCategory = new SelectionModel(true, []);
+        });
+      }
+    });    
   }
 }

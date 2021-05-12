@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -34,7 +34,7 @@ export class ManageGroupComponent implements OnInit {
   rowsData: any;
   createStatus: boolean;
   titleText: string;
-  translationData: any;
+  @Input() translationData: any;
   grpTitleVisible : boolean = false;
   displayMessage: any;
   organizationId: number;
@@ -96,8 +96,15 @@ export class ManageGroupComponent implements OnInit {
     if(data && data.length > 0){
       this.initData = this.getNewTagData(data); 
     } 
+    this.dataSource = new MatTableDataSource(this.initData);
+    this.dataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.name.toString().toLowerCase().includes(filter) ||
+        data.poiCount.toString().toLowerCase().includes(filter) ||
+        data.geofenceCount.toString().toLowerCase().includes(filter)
+      );
+    };
     setTimeout(()=>{
-      this.dataSource = new MatTableDataSource(this.initData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
@@ -285,5 +292,6 @@ exportAsPdf() {
       PDF.output('dataurlnewwindow');
   });     
 }
+
 
 }

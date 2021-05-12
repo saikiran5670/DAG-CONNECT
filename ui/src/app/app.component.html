@@ -30,8 +30,15 @@
                                 &nbsp;{{ lang.name }}
                             </mat-option>
                         </mat-select>
+                        <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
+                            <div class="logoutButton" fxLayout="column">
+                                <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center padding-item">
+                                    <mat-icon matTooltip="Logout" class='logoutIcon'>exit_to_app</mat-icon>
+                                </button>
+                            </div>
+                        </div>                        
                     </div>
-                </form>
+                </form>                
             </div>
         </mat-toolbar-row>
     </mat-toolbar>
@@ -65,14 +72,7 @@
                 <div *ngIf="menuCollapsed" class='text-truncate' style='font-size: 11px;'>
                     <span matTooltip='{{ userFullName }}'>{{ userFullName }}</span>
                 </div>
-            </div>
-            <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
-                <div class="logoutButton" fxLayout="column">
-                    <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center">
-                        <mat-icon matTooltip="Logout" class='logoutIcon'>exit_to_app</mat-icon>
-                    </button>
-                </div>
-            </div>
+            </div>        
             <div *ngIf="openUserRoleDialog" class="userRoleDialogContainer">
                 <form [formGroup]="landingPageForm">
                     <mat-card class='mat-elevation-z margin-bottom-xlg no-padding'>
@@ -167,7 +167,7 @@
                 'keyboard_arrow_leftperson_search' : 'person_searchkeyboard_arrow_right'}}</mat-icon>
         </div>
         <app-preferences *ngIf="isLogedIn && userPreferencesFlag" [userPreferencesFlag]="userPreferencesFlag"></app-preferences>
-    </div>
+    </div>   
     <div id="sideMenuCollapseBtnContainer" class='sideMenuCollapseBtnContainer'
         [ngClass]="menuCollapsed ? 'withCollapse' : 'withoutCollapse'" *ngIf="isLogedIn">
         <button mat-icon-button (click)="sidenavToggle()" class="collapseBtn">

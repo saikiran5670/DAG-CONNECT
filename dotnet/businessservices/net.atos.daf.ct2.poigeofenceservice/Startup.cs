@@ -36,10 +36,15 @@ namespace net.atos.daf.ct2.poigeofenceservice
             }));
 
 
-            string connectionString = Configuration.GetConnectionString("ConnectionString");        
+            string connectionString = Configuration.GetConnectionString("ConnectionString");
+            string DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
+            });
+            services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+            {
+                return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
             services.AddTransient<IPoiManager, PoiManager>();
             services.AddTransient<IPoiRepository, PoiRepository>();
@@ -49,7 +54,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
             services.AddTransient<IGeofenceRepository, GeofenceRepository>();
             services.AddTransient<ILandmarkGroupManager, LandmarkGroupManager>();
             services.AddTransient<ILandmarkgroupRepository, LandmarkgroupRepository>();
-
+            services.AddTransient<ICorridorManger, CorridorManger>();
+            services.AddTransient<ICorridorRepository, CorridorRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,7 +82,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                                                   .RequireCors("AllowAll");
                 endpoints.MapGrpcService<GroupManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
-
+                endpoints.MapGrpcService<CorridorManagementService>().EnableGrpcWeb()
+                                                  .RequireCors("AllowAll");
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

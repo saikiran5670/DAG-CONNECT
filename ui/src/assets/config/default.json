@@ -15,6 +15,9 @@
       "landmarkGroupRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/landmarkgroup",
       "poiRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poi",
       "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence",
-      "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence"
+      "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence",
+      "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
+      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor"
+
     }
 }

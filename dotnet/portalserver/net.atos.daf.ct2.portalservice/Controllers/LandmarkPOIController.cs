@@ -437,6 +437,34 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             return Result;
         }
+
+        [HttpGet]
+        [Route("getalltripdetails")]
+        public async Task<IActionResult> GetAllTripDetails([FromQuery] net.atos.daf.ct2.portalservice.Entity.POI.TripEntityRequest request)
+        {
+            try
+            {
+                _logger.Info("GetAllTripDetails method in POI API called.");
+                TripRequest objTripRequest = new TripRequest();
+                objTripRequest.VIN = request.VIN;
+                objTripRequest.StartDateTime = request.StartDateTime;
+                objTripRequest.EndDateTime = request.EndDateTime;                
+                var data = await _poiServiceClient.GetAllTripDetailsAsync(objTripRequest);
+                if (data != null )
+                {
+                  return Ok(data);                   
+                }
+                else
+                {
+                    return StatusCode(404, "Trip details are not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
     }
 }
 

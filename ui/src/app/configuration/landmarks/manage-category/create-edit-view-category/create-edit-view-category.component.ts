@@ -115,7 +115,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.file = event.target.files[0];     
     if(this.file){
       console.log("Icon size:: ", this.file.size)
-      if(this.file.size > 1024){ //-- 32*32 px
+      if(this.file.size > 1024 * 3){ //-- 32*32 px
         this.imageMaxMsg = true;
       }
       else{

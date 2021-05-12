@@ -13,9 +13,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
     public class PoiRepository : IPoiRepository
     {
         private readonly IDataAccess dataAccess;
-        public PoiRepository(IDataAccess _dataAccess)
+        private readonly IDataMartDataAccess dataMartdataAccess;
+        public PoiRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
         {
             dataAccess = _dataAccess;
+            dataMartdataAccess = _DataMartdataAccess;
         }
         public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
@@ -37,8 +39,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             l.type as type,
                             l.latitude as latitude,
                             l.longitude as longitude,
-                            l.distance as distance,
-                            l.trip_id as tripid,
+                            l.distance as distance,                           
                             l.state as state,
                             l.created_at as createdat,
                             l.created_by as createdby,
@@ -91,8 +92,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             l.type as type,
                             l.latitude as latitude,
                             l.longitude as longitude,
-                            l.distance as distance,
-                            l.trip_id as tripid,
+                            l.distance as distance,                            
                             l.state as state,
                             l.created_at as createdat,
                             l.created_by as createdby,
@@ -181,11 +181,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@longitude", poiFilter.Longitude);
                     query = query + " and l.longitude= @longitude ";
                 }
-                if (poiFilter.TripId > 0)
-                {
-                    parameter.Add("@trip_id", poiFilter.TripId);
-                    query = query + " and l.trip_id= @trip_id ";
-                }
+                //if (poiFilter.TripId > 0)
+                //{
+                //    parameter.Add("@trip_id", poiFilter.TripId);
+                //    query = query + " and l.trip_id= @trip_id ";
+                //}
                 if (poiFilter.CreatedAt > 0)
                 {
                     parameter.Add("@created_at", poiFilter.CreatedAt);
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", poi.OrganizationId != 0 ? poi.OrganizationId : null);
                 parameter.Add("@category_id", poi.CategoryId);
-                parameter.Add("@sub_category_id", poi.SubCategoryId);
+                parameter.Add("@sub_category_id", poi.SubCategoryId != 0 ? poi.SubCategoryId : null);
                 parameter.Add("@name", poi.Name);
                 parameter.Add("@address", poi.Address);
                 parameter.Add("@city", poi.City);
@@ -242,13 +242,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@latitude", poi.Latitude);
                 parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
-                parameter.Add("@trip_id", poi.TripId);
+              //  parameter.Add("@trip_id", poi.TripId);
                 parameter.Add("@state", 'A');
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", poi.CreatedBy);
 
-                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance,  state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance,  @state, @created_at, @created_by) RETURNING id";
 
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 poi.Id = id;
@@ -461,13 +461,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@latitude", poi.Latitude);
                         parameter.Add("@longitude", poi.Longitude);
                         parameter.Add("@distance", poi.Distance);
-                        parameter.Add("@trip_id", poi.TripId);
+                      //  parameter.Add("@trip_id", poi.TripId);
                         parameter.Add("@state", 'A');
                         parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                         parameter.Add("@created_by", poi.CreatedBy);
 
-                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, trip_id, state, created_at, created_by)
-	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @trip_id, @state, @created_at, @created_by) RETURNING id";
+                        string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, state, created_at, created_by)
+	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @state, @created_at, @created_by) RETURNING id";
 
                         var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         poi.Id = id;
@@ -502,7 +502,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Latitude = Convert.ToDouble(record.latitude);
             poi.Longitude = Convert.ToDouble(record.longitude);
             poi.Distance = Convert.ToDouble(record.distance);
-            poi.TripId = record.tripid != null ? record.tripid : 0;
+          //  poi.TripId = record.tripid != null ? record.tripid : 0;
             poi.CreatedAt = record.createdat != null ? record.createdat : 0;
             poi.State = MapCharToLandmarkState(record.state);
             poi.CreatedBy = record.createdby != null ? record.createdby : 0;
@@ -595,6 +595,81 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     break;
             }
             return ptype;
+        }
+
+        public async Task<List<TripEntityResponce>> GetAllTripDetails(TripEntityRequest tripEntityRequest)
+        {
+            try
+            {
+                List<TripEntityResponce> lstTripEntityResponce = new List<TripEntityResponce>();
+                string query = string.Empty;
+                query = @"Select
+                TS.Id Id,
+                TS.trip_id TripId,
+                TS.VIN VIN,
+                D.first_name DriverFirstName,
+                D.last_name DriverLastName,
+                TS.driver2_id DriverId2,
+                TS.driver1_id DriverId1,
+                TS.last_odometer - TS.start_odometer Distance,
+                TS.start_position StartAddress,
+                TS.end_position EndAddress,
+                TS.start_position_lattitude StartPositionlattitude,
+                TS.start_position_longitude StartPositionLongitude,
+                TS.end_position_lattitude EndPositionLattitude,
+                TS.end_position_longitude EndPositionLongitude,
+                TS.start_time_stamp StartTimeStamp,
+                TS.end_time_stamp EndTimeStamp
+               
+                from tripdetail.trip_statistics TS
+                left join master.driver D on TS.driver1_id=D.driver_id
+                left join master.vehicle V on TS.vin=V.vin
+                where TS.vin=@vin and (TS.start_time_stamp>=@StartDateTime and TS.end_time_stamp<=@EndDateTime)";
+                 
+                var parameter = new DynamicParameters();               
+                parameter.Add("@StartDateTime", tripEntityRequest.StartDateTime);
+                parameter.Add("@EndDateTime", tripEntityRequest.EndDateTime);
+                parameter.Add("@vin", tripEntityRequest.VIN);
+                
+                var data = await dataMartdataAccess.QueryAsync<TripEntityResponce>(query, parameter);
+                foreach (var item in data)
+                {                    
+                    var parameterPosition = new DynamicParameters();
+                    parameterPosition.Add("@vin", item.VIN);
+                    parameterPosition.Add("@trip_id", item.TripId);
+                    string queryPosition= @"select id, 
+                              vin,
+                              gps_altitude, 
+                              gps_heading,
+                              gps_latitude,
+                              gps_longitude
+                              from livefleet.livefleet_position_statistics
+                              where vin=@vin and trip_id = @trip_id order by id desc";
+                    var PositionData = await dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
+                    List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
+                   
+                    if (PositionData.Count()>0)
+                    {
+                        foreach (var positionData in PositionData)
+                        {
+                            LiveFleetPosition objLiveFleetPosition = new LiveFleetPosition();
+                            objLiveFleetPosition.GpsAltitude = positionData.GpsAltitude;
+                            objLiveFleetPosition.GpsHeading = positionData.GpsHeading;
+                            objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
+                            objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
+                            objLiveFleetPosition.Id = positionData.Id;
+                            lstLiveFleetPosition.Add(objLiveFleetPosition);                            
+                        }
+                        item.LiveFleetPosition = lstLiveFleetPosition;
+                    }
+                }
+                lstTripEntityResponce = data.ToList();                
+                return lstTripEntityResponce;
+            }
+            catch (System.Exception ex)
+            {               
+                throw ex;
+            }
         }
     }
 }

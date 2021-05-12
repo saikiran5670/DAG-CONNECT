@@ -40,6 +40,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 }
                 GeofenceDeleteEntity objGeofenceDeleteEntity = new GeofenceDeleteEntity();
                 objGeofenceDeleteEntity.GeofenceId = lstGeofenceId;
+                objGeofenceDeleteEntity.ModifiedBy = request.ModifiedBy;
                 bool result = await _geofenceManager.DeleteGeofence(objGeofenceDeleteEntity);
                 if (result)
                 {
@@ -187,19 +188,12 @@ namespace net.atos.daf.ct2.geofenceservice
                 {
                     geofence.Add(_mapper.ToGeofenceEntity(item));
                 }
-                geofence = await _geofenceManager.CreateCircularGeofence(geofence);
-                if (geofence[0].Exists)
-                {
-                    response.Message = "Duplicate Geofence Name";
-                    response.Code = Responsecode.Conflict;
-                    return response;
-                }
+                geofence = await _geofenceManager.CreateCircularGeofence(geofence);                
 
                 foreach (var item in geofence)
                 {
                     response.GeofenceRequest.Add(_mapper.ToGeofenceRequest(item));
-                }
-                response.Message = "Circular Geofence created with selected POI";
+                }                
                 response.Code = Responsecode.Success;
                 return await Task.FromResult(response);
             }
@@ -259,6 +253,7 @@ namespace net.atos.daf.ct2.geofenceservice
 
         public override async Task<BulkGeofenceResponse> BulkImportGeofence(BulkGeofenceRequest requests, ServerCallContext context)
         {
+            var response = new BulkGeofenceResponse();
             try
             {
                 var geofence = new List<Geofence>();
@@ -271,7 +266,7 @@ namespace net.atos.daf.ct2.geofenceservice
                 var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false && w.Nodes.Where(w => w.IsFailed).Count() == 0).Count();
                 var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false && w.Nodes.Where(w => w.IsFailed).Count() == 0).Count();
 
-                var response = new BulkGeofenceResponse();
+                
                 response.Code = Responsecode.Success;
                 response.FailureCount = failCount;
                 response.AddedCount = addedCount;
@@ -282,9 +277,16 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);
-                throw ex;
+                _logger.Error(null, ex);                
+                response.Code = Responsecode.Failed;
+                response.FailureCount = 0;
+                response.AddedCount = 0;
+                response.UpdatedCount = 0;
+                foreach (var item in requests.GeofenceRequest)
+                    item.Message = ex.Message;
+                response.FailureResult.AddRange(requests.GeofenceRequest);                
             }
+            return response;
         }
 
         public override async Task<GeofenceCircularUpdateResponce> UpdateCircularGeofence(GeofenceCircularUpdateRequest request, ServerCallContext context)

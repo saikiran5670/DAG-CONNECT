@@ -10,8 +10,8 @@ namespace net.atos.daf.ct2.poigeofence
         POI = 'P',
         CircularGeofence = 'C',
         PolygonGeofence = 'O',
-        Corridor = 'R',
-        Route = 'U'
+        ExistingTripCorridor = 'E',
+        RouteCorridor = 'R'
 
     }
 }

@@ -1,42 +1,76 @@
-import { Injectable } from "@angular/core";
-import { Router, NavigationStart } from "@angular/router";
-import { Observable, Subject } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { of } from 'rxjs';
+import { delay, catchError } from 'rxjs/internal/operators';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
+import { ConfigService } from '@ngx-config/core';
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class AlertService {
-  private subject = new Subject<any>();
-  private keepAfterRouteChange = false;
+    alertServiceUrl: string = '';
 
-  constructor(private router: Router) {
-    // clear alert messages on route change unless 'keepAfterRouteChange' flag is true
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        if (this.keepAfterRouteChange) {
-          // only keep for a single route change
-          this.keepAfterRouteChange = false;
-        } else {
-          // clear alert message
-          this.clear();
-        }
-      }
-    });
+  constructor(private httpClient: HttpClient, private config: ConfigService) {
+    this.alertServiceUrl = config.getSettings("foundationServices").alertRESTServiceURL;
   }
 
-  getAlert(): Observable<any> {
-    return this.subject.asObservable();
-  }
-  success(message: string, keepAfterRouteChange = false) {
-    this.keepAfterRouteChange = keepAfterRouteChange;
-    this.subject.next({ type: "success", text: message });
-  }
-
-  error(message: string, keepAfterRouteChange = false) {
-    this.keepAfterRouteChange = keepAfterRouteChange;
-    this.subject.next({ type: "error", text: message });
+  private handleError(errResponse: HttpErrorResponse) {
+    if (errResponse.error instanceof ErrorEvent) {
+      console.error('Client side error', errResponse.error.message);
+    } else {
+      console.error('Server side error', errResponse);
+    }
+    return throwError(
+      errResponse
+    );
   }
 
-  clear() {
-    // clear by calling subject.next() without parameters
-    this.subject.next();
+  generateHeader(){
+    let genericHeader : object = {
+      'Content-Type' : 'application/json',
+      'accountId' : localStorage.getItem('accountId'),
+      'orgId' : localStorage.getItem('accountOrganizationId'),
+      'roleId' : localStorage.getItem('accountRoleId')
+    }
+    let getHeaderObj = JSON.stringify(genericHeader)
+    return getHeaderObj;
   }
+
+  getAlertFilterData(id, orgId): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     return this.httpClient
+       .get<any[]>(`${this.alertServiceUrl}/GetAlertCategory?accountId=${id}&orgnizationid=${orgId}`,headers)
+       .pipe(catchError(this.handleError));
+   }
+   
+  getAlertData(id, orgId): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     return this.httpClient
+       .get<any[]>(`${this.alertServiceUrl}/GetAlerts?accountId=${id}&orgnizationid=${orgId}`,headers)
+       .pipe(catchError(this.handleError));
+   }
+
+   createAlert(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.alertServiceUrl}/create`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+
 }

@@ -12,6 +12,7 @@ import { ConfigService } from '@ngx-config/core';
 @Injectable()
 export class POIService {
     PoiServiceUrl: string = '';
+    hereMapApiUrl: string = 'https://places.ls.hereapi.com';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.PoiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
@@ -35,6 +36,16 @@ export class POIService {
     };
     return this.httpClient
       .get<any[]>(`${this.PoiServiceUrl}/get?OrganizationId=${id}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getAutoSuggestMap(inputKey : any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.hereMapApiUrl}/places/v1/autosuggest?at=40.74917,-73.98529&q=${inputKey}&apiKey=${'BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw'}`,headers)
       .pipe(catchError(this.handleError));
   }
 

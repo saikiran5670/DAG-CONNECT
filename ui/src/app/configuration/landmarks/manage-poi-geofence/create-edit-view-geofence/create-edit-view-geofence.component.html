@@ -1,187 +1,369 @@
+<div *ngIf="actionType == 'create' || actionType == 'edit' || actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+    <span>{{ breadcumMsg }}</span>
+  </div>
+  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+    <span class='custom-font' (click)="toBack()">
+      <span><&nbsp;</span>
+          <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+      </span>
+  </div>
+</div>
 
 <mat-card class='mat-elevation-z'>
-    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Map View</span>
+  <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'create') ? (translationData.lblAddNewGeofence || 'Add New Geofence') : (actionType == 'edit') ? (translationData.lblEditGeofenceDetails || 'Edit Geofence Details') : (translationData.lblViewGeofenceDetails || 'View Geofence Details') }}</span>
+    </div>
+  </div>
+  <div *ngIf='geoSelectionFlag' class="selectGeoContainer">
+    <div class='custom-font'>{{ translationData.lblClicktoAddNewDetails || 'Click to Add New Details'}}</div>
+    <div class="selectGeoBox">
+      <div (click)="geoSelection('polygon')" class='cursor-pointer hoverClass'>
+        <div class='padding-10'>{{ translationData.lblCreatePolygonGeofence || 'Create Polygon Geofence' }}</div>
+      </div>
+      <div (click)="geoSelection('circular')" class='cursor-pointer hoverClass'>
+        <div class='padding-10'>{{ translationData.lblCreateCircularGeofence || 'Create Circular Geofence' }}</div>
       </div>
     </div>
-  
-    <div #map style="width: 900px; height: 450px"> 
+  </div>
+  <div *ngIf='createPolyButtonFlag' class='createPolyBtn'>
+    <button class='no-margin' mat-raised-button color="primary" (click)='drawPolygon()'>{{ translationData.lblCreatePolygon || 'Create Polygon' }}</button>
+  </div>
+  <div #map style="width: 100%; height: 450px; margin-bottom: 25px" [ngClass]="{'opacity-0-5': geoSelectionFlag}"></div>
 
-     </div>
-  
-  </mat-card>
+  <div *ngIf="polygoanGeofence || circularGeofence">
+    <div *ngIf="polygoanGeofence">
+      <form [formGroup]="polygonGeofenceFormGroup">
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblName || 'Name' }}</span>
+              <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="100" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
+                  formControlName="name" required>
+              </mat-form-field>
+              <mat-error *ngIf="polygonGeofenceFormGroup.get('name').hasError('required')">
+                {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
+              </mat-error>
+              <mat-error *ngIf="!polygonGeofenceFormGroup.get('name').hasError('required')  && polygonGeofenceFormGroup.get('name').hasError('whitespace')">
+                {{ translationData.lblNamecannotcontainonlywhitespace || 'Name cannot contain only whitespace' }}
+               </mat-error>
+              <mat-error *ngIf="polygonGeofenceFormGroup.get('name').hasError('specialCharsNotAllowed')">
+                  {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+              </mat-error>
+              <mat-error *ngIf="duplicatePolygonGeofence">
+                {{ translationData.lblDuplicatePolygonGeofenceName || 'Duplicate Polygon Geofence Name' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+            </mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="type">
+                      <mat-option *ngFor="let type of types" [value]="type">
+                          {{ type }}
+                      </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div *ngIf="actionType == 'view'">
+                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+              </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblCategory || 'Category' }}</span><span *ngIf="actionType != 'view'"
+                class='mandatoryColor'>*</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class='full-width'>
+                <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}" formControlName="category">
+                  <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+                    {{ rer.name }}
+                </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-error *ngIf="polygonGeofenceFormGroup.get('category').hasError('required')">
+                {{translationData.lblPleaseSelectCategory || 'Please Select Category' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--'  }}</span>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblSubCategory || 'Sub-Category' }}</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class='full-width'>
+                <mat-select placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}" formControlName="subCategory">
+                  <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                    {{ rer.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblAddress || 'Address' }}</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class='full-width'>
+                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Enter Address' }}"
+                  matInput formControlName="address">
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.address ? selectedElementData.address : '--' }}</span>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
+            <mat-label><span>{{ translationData.lblZipCode || 'Zip-Code' }}</span></mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="50" placeholder="{{ translationData.lblEnterZipCode|| 'Enter Zip-Code' }}" matInput
+                  formControlName="zip">
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.zipcode ? selectedElementData.zipcode : '--' }}</span>
+            </div>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
+          <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblCity || 'City' }}</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="50" placeholder="{{ translationData.lblEnterCity|| 'Enter City' }}" matInput
+                  formControlName="city">
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.city ? selectedElementData.city : '--'  }}</span>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per orgGrayDefault" fxLayout="column" fxLayoutAlign="left">
+            <mat-label><span>{{ translationData.lblCountry || 'Country' }}</span></mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="50" placeholder="{{ translationData.lblEnterCountry|| 'Enter Country' }}" matInput
+                  formControlName="country">
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.country ? selectedElementData.country : '--' }}</span>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        </div>
+        <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end" class='areaWidth'>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+              (click)='onPolygonReset()'>{{translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin' [disabled]="!polygonGeofenceFormGroup.valid || !isPolyCreated" mat-raised-button color="primary"
+              (click)='onCreateUpdatePolygonGeofence()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+              (translationData.lblConfirm || 'Confirm') }}</button>
+        </div>
+      </form>
+    </div>
+    
+    <div *ngIf="circularGeofence">
+      <form [formGroup]="circularGeofenceFormGroup">
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblName || 'Name' }}</span>
+              <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input maxlength="100" placeholder="{{ translationData.lblEnterName|| 'Enter Name' }}" matInput
+                  formControlName="circularName">
+              </mat-form-field>
+              <mat-error *ngIf="circularGeofenceFormGroup.get('circularName').hasError('required')">
+                {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
+              </mat-error>
+              <mat-error *ngIf="!circularGeofenceFormGroup.get('circularName').hasError('required')  && circularGeofenceFormGroup.get('circularName').hasError('whitespace')">
+                {{ translationData.lblNamecannotcontainonlywhitespace || 'Name cannot contain only whitespace' }}
+               </mat-error>
+              <mat-error *ngIf="circularGeofenceFormGroup.get('circularName').hasError('specialCharsNotAllowed')">
+                  {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+              </mat-error>
+              <mat-error *ngIf="duplicateCircularGeofence">
+                {{ translationData.lblDuplicateCircularGeofenceName || 'Duplicate Circular Geofence Name' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblType || 'Type' }} <span class='mandatoryColor'>*</span>
+            </mat-label>
+              <div *ngIf="actionType != 'view'">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select formControlName="type">
+                      <mat-option *ngFor="let type of types" [value]="type">
+                          {{ type }}
+                      </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div *ngIf="actionType == 'view'">
+                <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+              </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblRadius || 'Radius' }}</span>
+              <span *ngIf="actionType != 'view'"
+                class='mandatoryColor'>*</span>&nbsp;<span>({{ translationData.lblMeter || 'Meter' }})</span>
+            </mat-label>
+            <!-- <div *ngIf="actionType != 'view'" [ngClass]="{'pointer-events-none orgGrayDefault': actionType == 'edit'}"> -->
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <input (change)="onChangeRadius($event)" type='number' placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
+                  formControlName="radius">
+              </mat-form-field>
+              <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('required')">
+                {{translationData.lblPleaseEnterRadius || 'Please Enter Radius' }}
+              </mat-error>
+              <mat-error *ngIf="!circularGeofenceFormGroup.get('radius').hasError('required')  && circularGeofenceFormGroup.get('radius').hasError('whitespace')">
+                {{ translationData.lblRadiuscannotcontainonlywhitespace || 'Radius cannot contain only whitespace' }}
+               </mat-error>
+              <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('specialCharsNotAllowed')">
+                  {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ selectedElementData.distance ? selectedElementData.distance : '--' }}</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between">
+          <div fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign='center center'>
+              <mat-icon class='margin-right-10'>info</mat-icon>
+              <span>{{ translationData.lblCircularGeofenceInfo || 'You can select POI from below list to map with this Geofence' }}</span>
+            </div>
+          </div>
+          <div fxLayout="column" fxLayoutAlign="end">
+            <div fxLayout="row" class='areaWidth'>
+              <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+              <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+                (click)='onCircularReset()'>{{translationData.lblReset || 'Reset' }}</button>
+              <button class='no-margin' [disabled]="(!circularGeofenceFormGroup.valid) || (selectedPOI.selected.length == 0)" mat-raised-button color="primary"
+                (click)='onCreateUpdateCircularGeofence()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+                (translationData.lblConfirm || 'Confirm') }}</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div> 
+    
+  </div>
+</mat-card>
 
-  
-<form [formGroup]="geofenceFormGroup">
-  <mat-card *ngIf="polygoanGeofence || circularGeofence" class="card">
-    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Add New Geofence</span>
+<mat-card *ngIf='circularGeofence' class='mat-elevation-z margin-top-20'>
+  <mat-card-content>
+    <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+          <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ (actionType == 'view') ? (translationData.lblSelectedPOI || 'Selected POI') : (translationData.lblSelectPOI || 'Select POI') }}</span><span class='mandatoryColor'>*</span></span>
       </div>
     </div>
-    <mat-card-content>
-      <div *ngIf="polygoanGeofence" >
-      <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" >
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiName || 'Name' }}</span><span *ngIf="actionType != 'view'"
-              class='mandatoryColor'>*</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" >
-              <input maxlength="20" placeholder="{{ translationData.lblEnterPoiName|| 'Enter Poi Name' }}" matInput
-                formControlName="name">
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label>
-            <span>{{ translationData.lblType || 'Category' }}</span><span *ngIf="actionType != 'view'"
-              class='mandatoryColor'>*</span>
-          </mat-label>
-          <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <mat-form-field appearance="outline" >
-              <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
-                <mat-option>
-                  Category1
-                </mat-option>
-                <mat-option>
-                  Category2
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label>
-            <span>{{ translationData.lblType || 'Sub-Category' }}</span><span *ngIf="actionType != 'view'"
-              class='mandatoryColor'>*</span>
-          </mat-label>
-          <div class="areaWidth" fxLayout="column" >
-            <mat-form-field appearance="outline" >
-              <mat-select placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                <mat-option>
-                  Category1
-                </mat-option>
-                <mat-option>
-                  Category2
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
-
+    <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm' fxLayoutGap="10px">
+      <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+            <input matInput (keyup)="applyPOIFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+            <span matPrefix><mat-icon>search</mat-icon></span>
+        </mat-form-field>
       </div>
-
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-
-        <div class="areaWidth" fxLayout="column"  > 
-          <mat-label><span>{{ translationData.lblPoiAddress || 'Address' }}</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" >
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiAddress|| 'Enter Address' }}" matInput
-                formControlName="address"  >
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="areaWidth" fxLayout="column">
-          <mat-label><span>{{ translationData.lblPoiZip || 'Zip-Code' }}</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" >
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiZip|| 'Select one' }}" matInput
-                formControlName="zip">
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiCity || 'City' }}</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" >
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiCity|| 'Select one' }}" matInput
-                formControlName="city">
-            </mat-form-field>
-          </div>
-        </div>
-
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+          <mat-select [(ngModel)]="categorySelectionForPOI" [disabled]='poiData.length == 0' (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+            <mat-option value="0">--All--</mat-option>
+            <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
+                {{ rer.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
-
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiCountry || 'Country' }}</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiCountry|| 'Select One' }}" matInput
-                formControlName="country">
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiLattitude || 'Lattitude' }}</span>
-            <span *ngIf="actionType != 'view'"
-            class='mandatoryColor'>*</span>
-          </mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiLattitude|| 'Select One' }}" matInput
-                formControlName="lattitude">
-            </mat-form-field>
-          </div>
-        </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiLongitude || 'Longitude' }}</span>
-            <span *ngIf="actionType != 'view'"
-            class='mandatoryColor'>*</span>
-          </mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiLongitude|| 'Select One' }}" matInput
-                formControlName="longitude">
-            </mat-form-field>
-          </div>
-        </div>
+      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-form-field appearance="outline">
+          <mat-select [(ngModel)]="subCategorySelectionForPOI" [disabled]='poiData.length == 0' (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+            <mat-option value="0">--All--</mat-option>
+            <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+              {{ rer.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
     </div>
-
-
-      <div *ngIf="circularGeofence" fxLayout="row" fxLayoutAlign="space-around" class="full-width margin-bottom-sm" >
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiName || 'Name' }}</span><span *ngIf="actionType != 'view'"
-              class='mandatoryColor'>*</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" >
-              <input maxlength="20" placeholder="{{ translationData.lblEnterPoiName|| 'Enter Poi Name' }}" matInput
-                formControlName="name">
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiName || 'Radius' }}</span><span *ngIf="actionType != 'view'"
-              class='mandatoryColor'>* (Meters)</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" >
-              <input maxlength="20" placeholder="{{ translationData.lblEnterPoiName|| 'Enter Radius' }}" matInput
-                formControlName="radius">
-            </mat-form-field>
-          </div>
-        </div>
-      </div>
-
-
-      <div fxLayout="row" fxLayoutAlign="end" class='margin-bottom-sm'>
-        <div fxLayout="row" class='areaWidth'>
-          <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
-            translationData.lblCancel || 'Cancel' }}</button>
-            <button class='no-margin' [disabled]="!geofenceFormGroup.valid" mat-raised-button
-            color="primary" >{{ createStatus ? (translationData.lblCreate ||
-            'Create') :
-            (translationData.lblConfirm || 'Confirm') }}</button>
-        </div>
-      </div>
-
-    </mat-card-content>
-
-  </mat-card>
-</form>
-  
+    <div>
+      <mat-table [dataSource]="dataSourceForPOI" class="table-items" matSort>
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
+              [checked]='selectedPOI.hasValue() && isAllSelectedForPOI()'
+              [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
+              [aria-label]='checkboxLabelForPOI()' 
+              [disabled]="actionType != 'create'">
+            </mat-checkbox>
+            <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)='$event.stopPropagation()' (change)='onChangeCheckbox($event, row)'
+              [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' [disabled]="actionType != 'create'">
+            </mat-checkbox>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="icon">
+          <mat-header-cell *matHeaderCellDef>{{ translationData.lblName || 'Icon' }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <mat-icon>place</mat-icon>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="categoryName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.categoryName }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="subCategoryName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblSubCategory || 'Sub-Category' }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.subCategoryName }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="address">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAddress || 'Address' }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{ row.address }}, {{ row.city }}, {{ row.country }}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;">
+        </mat-row>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>

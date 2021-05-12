@@ -1,0 +1,34 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <button mat-flat-button (click)="backToCorridorList()" style="background: transparent;">
+            <mat-icon>arrow_back_ios</mat-icon><span>Back</span>
+        </button>
+    </div>
+</div>
+
+    <mat-card class='mat-elevation-z'>
+        <mat-card-content>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <span>{{ translationData.lblAddNewCorridor || 'Add New Corridor' }}</span>
+            </div>
+            <mat-label *ngIf="actionType != 'view'">{{ translationData.lblCorridorType || 'Corridor Type' }} <span
+                    class='mandatoryColor'>*</span></mat-label>
+
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-select (selectionChange)="corridorTypeChanged($event)" required>
+                        <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
+                            {{ type.value }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </mat-card-content>
+    </mat-card>
+    <!-- Map Div-->
+    <div class='fixDiv'></div>
+    <app-route-calculating  *ngIf='selectedCorridorTypeId ==1' [translationData]="translationData"></app-route-calculating>
+    <app-existing-trips *ngIf='selectedCorridorTypeId ==2' [translationData]="translationData"></app-existing-trips>

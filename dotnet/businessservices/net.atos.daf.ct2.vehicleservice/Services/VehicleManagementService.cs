@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                _logger.Error(null, ex);
                 return await Task.FromResult(new VehicleResponce
                 {
-                    Message = "Vehicle Updation Faile due to - " + ex.Message,
+                    Message = "Vehicle Updation Failed due to - " + ex.Message,
                     Code = Responcecode.Failed,
                     Vehicle = null
                 });
@@ -224,12 +224,23 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 group = await _groupManager.Create(group);
                 // check for exists
                 response.VehicleGroup.Exists = false;
-                if (group.Exists)
+                request.Id = group.Id;
+                if (group.Exists && group.GroupType == Group.GroupType.Group)
                 {
                     response.VehicleGroup.Exists = true;
                     response.Message = "Duplicate Group";
                     response.Code = Responcecode.Conflict;
                     return response;
+                }
+
+                if (group.Exists && group.GroupType == Group.GroupType.Single)
+                {
+                    response.VehicleGroup.Exists = true;
+                    response.Message = "Duplicate Group";
+                    response.Code = Responcecode.Conflict;
+                    response.VehicleGroup = request;
+                    return response;
+
                 }
                 // Add group reference.                               
                 if (group.Id > 0 && request.GroupRef != null && group.GroupType == Group.GroupType.Group)
@@ -242,7 +253,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     }
                     bool vehicleRef = await _groupManager.AddRefToGroups(group.GroupRef);
                 }
-                request.Id = group.Id;
+                
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Vehicle Group ", 1, 2, Convert.ToString(group.Id)).Result;
                 _logger.Info("Group Created:" + Convert.ToString(group.Name));
                 return await Task.FromResult(new VehicleGroupResponce
@@ -977,8 +988,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-
-
         public override async Task<VehicleListResponce> GetRelationshipVehicles(OrgvehicleIdRequest request, ServerCallContext context)
         {
             try
@@ -1009,7 +1018,32 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 });
             }
 
+        }
 
+        public override async Task<VehicleGroupResponse> GetVehicleGroupbyAccountId(VehicleGroupListRequest request, ServerCallContext context)
+        {
+            try
+            {
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupList> VehicleGroupList = await _vehicelManager.GetVehicleGroupbyAccountId(request.AccountId, request.OrganizationId);
+                VehicleGroupResponse response = new VehicleGroupResponse();
+                foreach (var item in VehicleGroupList)
+                {
+                    response.VehicleGroupList.Add(_mapper.MapVehicleGroup(item));
+                }
+                response.Message = "Vehicle Group data retrieved";
+                response.Code = Responcecode.Success;
+                _logger.Info("Get method in vehicle service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleGroupResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "GetVehicleGroupbyAccountId fail due to with reason : " + ex.Message
+                });
+            }
         }
 
     }

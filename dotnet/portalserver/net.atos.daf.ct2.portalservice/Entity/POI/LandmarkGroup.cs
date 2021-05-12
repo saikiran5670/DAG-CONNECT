@@ -39,8 +39,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         POI = 'P',
         CircularGeofence = 'C',
         PolygonGeofence = 'O',
-        Corridor = 'R',
-        Route = 'U'
+        ExistingTripCorridor = 'E',
+        RouteCorridor = 'R'
+       
 
     }
 }

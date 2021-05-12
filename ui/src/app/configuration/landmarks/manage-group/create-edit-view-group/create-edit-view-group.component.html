@@ -24,7 +24,7 @@
               <div *ngIf="actionType != 'view'">
                 <mat-form-field appearance="outline" class="full-width">
                   <input placeholder="{{ translationData.lblEnterNewGroupName || 'Enter New Group Name' }}" matInput
-                    formControlName="landmarkGroupName" required maxlength="50">
+                    formControlName="landmarkGroupName" required maxlength="100">
                 </mat-form-field>
                 <mat-error *ngIf="landmarkGroupForm.get('landmarkGroupName').hasError('required')">
                   {{translationData.lblPleaseEnterNewGroupName || 'Please enter new Group name' }}
@@ -115,9 +115,10 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onSubCategoryChange('POI', $event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
-                    {{ rer.name }}
-                </mat-option>
+                  <mat-option value="0">--All--</mat-option>  
+                  <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                      {{ rer.name }}
+                  </mat-option>
                 </mat-select>
             </mat-form-field>
           </div>
@@ -199,9 +200,10 @@
           <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-form-field appearance="outline">
                 <mat-select (selectionChange)="onSubCategoryChange('Geofence', $event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                  <mat-option value="0">--All--</mat-option>
                   <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
                     {{ rer.name }}
-                </mat-option>
+                  </mat-option>
                 </mat-select>
             </mat-form-field>
           </div>

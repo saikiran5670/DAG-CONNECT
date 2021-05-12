@@ -1,0 +1,32 @@
+<form [formGroup]="existingTripForm">
+    <div fxLayout="row" fxLayoutAlign="space-around" class='margin-bottom-sm'>
+<div fxLayout="column"  class="full-width" fxLayoutGap="10px">
+    <mat-label>{{ translationData.lblTimeRanges || 'Time Ranges' }} <span class='mandatoryColor'>*</span></mat-label>
+    <div class="areaWidth min-width-50-per" >
+          <!-- <mat-form-field  class="full-width"> -->
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary">{{ translationData.lblToday || 'Today' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary">{{ translationData.lblYesterday || 'Yesterday' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary">{{ translationData.lblLastWeek || 'Last Week' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary">{{ translationData.lblLastMonth || 'Last Month' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary">{{ translationData.lblLast3Months || 'Last 3 Months' }}</button>
+          <!-- </mat-form-field> -->
+
+        </div> 
+
+      </div>
+
+    <div class="areaWidth min-width-30-per"  >
+        <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+        <!-- <mat-form-field class="full-width"> -->
+            <mat-select  placeholder="{{ translationData.lblGroupType || 'Vehicle Group' }}" formControlName="vehicleGroup" required>
+            <mat-option>
+              Hello Options
+            </mat-option>
+          </mat-select>
+          <!-- </mat-form-field> -->
+          <mat-error *ngIf="existingTripForm.get('vehicleGroup').hasError('required')">
+            {{ translationData.lblPleasechoosevehicleGroup || 'Please choose vehicle group' }}
+          </mat-error>
+    </div>
+  </div>
+</form>

@@ -3,12 +3,12 @@ using System;
 using net.atos.daf.ct2.subscription.repository;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net;
 
 namespace net.atos.daf.ct2.subscription
 {
     public class SubscriptionManager : ISubscriptionManager
     {
-
         ISubscriptionRepository subscriptionRepository;
 
         public SubscriptionManager(ISubscriptionRepository _subscriptionRepository)
@@ -16,12 +16,12 @@ namespace net.atos.daf.ct2.subscription
             subscriptionRepository = _subscriptionRepository;
         }
 
-        public async Task<SubscriptionResponse> Subscribe(SubscriptionActivation objSubscription)
+        public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Subscribe(SubscriptionActivation objSubscription)
         {
             return await subscriptionRepository.Subscribe(objSubscription);
         }
 
-        public async Task<SubscriptionResponse> Unsubscribe(UnSubscription objUnSubscription)
+        public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Unsubscribe(UnSubscription objUnSubscription)
         {
             return await subscriptionRepository.Unsubscribe(objUnSubscription);
         }

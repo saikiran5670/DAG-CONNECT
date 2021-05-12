@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poi.Id = poiResponseData.Id;
             poi.OrganizationId = poiResponseData.OrganizationId != null ? poiResponseData.OrganizationId.Value : 0;
             poi.CategoryId = poiResponseData.CategoryId;
-            poi.SubCategoryId = poiResponseData.SubCategoryId;
+            poi.SubCategoryId = poiResponseData.SubCategoryId != null ? poiResponseData.SubCategoryId.Value : 0; 
             poi.Name = poiResponseData.Name;
             poi.SubCategoryName = poiResponseData.SubCategoryName;
             poi.CategoryName = poiResponseData.CategoryName;
@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
                     landmarktype = LandmarkType.CircularGeofence;
                     break;
                 case "R":
-                    landmarktype = LandmarkType.Corridor;
+                    landmarktype = LandmarkType.RouteCorridor;
                     break;
                 case "N":
                     landmarktype = LandmarkType.None;
@@ -101,8 +101,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
                 case "O":
                     landmarktype = LandmarkType.PolygonGeofence;
                     break;
-                case "U":
-                    landmarktype = LandmarkType.Route;
+                case "E":
+                    landmarktype = LandmarkType.ExistingTripCorridor;
                     break;
                
 
