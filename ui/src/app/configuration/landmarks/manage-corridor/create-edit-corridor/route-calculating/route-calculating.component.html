@@ -142,9 +142,9 @@
                         <span class="col-sm">
                             <mat-label><span>{{ translationData.lblTrailer|| 'Trailer' }}</span></mat-label>
                             <mat-form-field appearance="outline" class="full-width">
-                                <mat-select formControlName="trailer" required>
-                                    <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
-                                        {{ type.value }}
+                                <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" required>
+                                    <mat-option *ngFor="let type of trailerList" [value]="type">
+                                        {{type}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -181,8 +181,8 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblTollRoad|| 'Toll Road' }}</span></mat-label>
                                 <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="tollRoad" required>
-                                        <mat-option *ngFor="let type of exclusionList" [value]="type.id">
+                                    <mat-select formControlName="tollRoad" [(value)]="tollRoadId" (selectionChange)="exclusionSelected($event,'tollRoad')" required>
+                                        <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
@@ -193,8 +193,8 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblMotorWay|| 'Motor Way' }}</span></mat-label>
                                 <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="motorWay" required>
-                                        <mat-option *ngFor="let type of exclusionList" [value]="type.id">
+                                    <mat-select formControlName="motorWay" [(value)]="motorWayId" (selectionChange)="exclusionSelected($event,'motorWay')" required>
+                                        <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
@@ -205,8 +205,8 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblBoatFerries || 'Boat Ferries' }}</span></mat-label>
                                 <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="boatFerries" required>
-                                        <mat-option *ngFor="let type of exclusionList" [value]="type.id">
+                                    <mat-select formControlName="boatFerries" [(value)]="boatFerriesId" (selectionChange)="exclusionSelected($event,'boatFerries')" required>
+                                        <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
@@ -219,8 +219,8 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblRailFerries || 'Rail Ferries' }}</span></mat-label>
                                 <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="railFerries" required>
-                                        <mat-option *ngFor="let type of exclusionList" [value]="type.id">
+                                    <mat-select formControlName="railFerries" [(value)]="railFerriesId" (selectionChange)="exclusionSelected($event,'railFerries')" required>
+                                        <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
@@ -231,8 +231,8 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblTunnels|| 'Tunnels' }}</span></mat-label>
                                 <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="tunnels" required>
-                                        <mat-option *ngFor="let type of exclusionList" [value]="type.id">
+                                    <mat-select formControlName="tunnels" [(value)]="tunnelId" (selectionChange)="exclusionSelected($event,'tunnel')" required>
+                                        <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
@@ -243,8 +243,8 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblDirtRoad || 'Dirt Road' }}</span></mat-label>
                                 <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="dirtRoad" required>
-                                        <mat-option *ngFor="let type of exclusionList" [value]="type.id">
+                                    <mat-select formControlName="dirtRoad"  [(value)]="dirtRoadId" (selectionChange)="exclusionSelected($event,'dirtRoad')" required>
+                                        <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
@@ -268,13 +268,9 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblHeight|| 'Height' }}:</span></mat-label>
                                 <mat-form-field appearance="outline" class='full-width'>
-                                    <input maxlength="50" 
+                                    <input type="number" maxlength="50" 
                                         matInput formControlName="vehicleHeight" required>
                                 </mat-form-field>
-                                <mat-error
-                                    *ngIf="corridorFormGroup.get('vehicleHeight').hasError('required') && corridorFormGroup.get('vehicleHeight').touched">
-                                    {{translationData.lblPleaseEnterHeight|| 'Please Enter height' }}
-                                </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleHeight').hasError('specialCharsNotAllowed')">
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
@@ -284,13 +280,9 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblWidth|| 'Width' }}:</span></mat-label>
                                 <mat-form-field appearance="outline" class='full-width'>
-                                    <input maxlength="50" 
+                                    <input type="number" maxlength="50" 
                                         matInput formControlName="vehicleWidth" required>
                                 </mat-form-field>
-                                <mat-error
-                                    *ngIf="corridorFormGroup.get('vehicleWidth').hasError('required') && corridorFormGroup.get('vehicleWidth').touched">
-                                    {{translationData.lblPleaseEnterWidth|| 'Please Enter width' }}
-                                </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleWidth').hasError('specialCharsNotAllowed')">
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
@@ -300,13 +292,9 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblLength|| 'Length' }}:</span></mat-label>
                                 <mat-form-field appearance="outline" class='full-width'>
-                                    <input maxlength="50" 
+                                    <input type="number" maxlength="50" 
                                         matInput formControlName="vehicleLength" required>
                                 </mat-form-field>
-                                <mat-error
-                                    *ngIf="corridorFormGroup.get('vehicleLength').hasError('required') && corridorFormGroup.get('vehicleLength').touched">
-                                    {{translationData.lblPleaseEnterLength|| 'Please Enter length' }}
-                                </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleLength').hasError('specialCharsNotAllowed')">
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
@@ -318,13 +306,9 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}:</span></mat-label>
                                 <mat-form-field appearance="outline" class='full-width'>
-                                    <input maxlength="50" 
+                                    <input type="number" maxlength="50" 
                                         matInput formControlName="limitedWeight" required>
                                 </mat-form-field>
-                                <mat-error
-                                    *ngIf="corridorFormGroup.get('limitedWeight').hasError('required') && corridorFormGroup.get('limitedWeight').touched">
-                                    {{translationData.lblPleaseEnterLimitedWeight|| 'Please Enter limited weight' }}
-                                </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('limitedWeight').hasError('specialCharsNotAllowed')">
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
@@ -334,13 +318,9 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}:</span></mat-label>
                                 <mat-form-field appearance="outline" class='full-width'>
-                                    <input maxlength="50" 
+                                    <input type="number" maxlength="50" 
                                         matInput formControlName="weightPerAxle" required>
                                 </mat-form-field>
-                                <mat-error
-                                    *ngIf="corridorFormGroup.get('weightPerAxle').hasError('required') && corridorFormGroup.get('weightPerAxle').touched">
-                                    {{translationData.lblPleaseEnterWeightPerAxle|| 'Please enter weight per axle' }}
-                                </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('specialCharsNotAllowed')">
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
@@ -351,7 +331,7 @@
                 </mat-accordion>
        
                 <div class="example-button-row pt-2" fxLayoutAlign="right">
-                    <button mat-flat-button color="primary">
+                    <button mat-flat-button color="primary" (click)="resetValues()">
                         <span>Reset</span>
                     </button>
                 </div>
