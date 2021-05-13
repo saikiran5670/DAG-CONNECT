@@ -41,6 +41,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
       authentication:['', [Validators.required]],
       loginId: ['', [Validators.required]],
       password: ['', [Validators.required]],
+      webURL:['', [Validators.required]],
     });
   }
 
