@@ -25,6 +25,7 @@ export class ManageCorridorComponent implements OnInit {
   corridorCreatedMsg: any = '';
   actionType : string;
   titleVisible : boolean = false;
+  titleFailVisible: boolean = false;
   showMap: boolean = false;
   map: any;
   initData: any = [];
@@ -179,6 +180,13 @@ export class ManageCorridorComponent implements OnInit {
     }, 5000);
   }
 
+  failureMsgBlink(msg: any) {
+    this.titleFailVisible = true;
+    this.corridorCreatedMsg = msg;
+    setTimeout(() => {
+      this.titleFailVisible = false;
+    }, 5000);
+  }
   openSnackBar(message: string, action: string) {
     let snackBarRef = this._snackBar.open(message, action, { duration: 2000 });
     snackBarRef.afterDismissed().subscribe(() => {
@@ -287,10 +295,14 @@ export class ManageCorridorComponent implements OnInit {
     this.createEditStatus = false;
 
     this.tabVisibility.emit(true);
-    if(_eventObj.msg=="create"){
+    if(_eventObj.successMsg=="create"){
       var _msg = "Corridor created successfully!"
       this.successMsgBlink(_msg);
       this.loadCorridorData();
+    }
+    else if(_eventObj.successMsg=="reject"){
+        var _msg = "Corridor label exists!"
+        this.failureMsgBlink(_msg);
     }
   }
 

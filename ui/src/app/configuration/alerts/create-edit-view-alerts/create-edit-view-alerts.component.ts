@@ -129,7 +129,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       alertCategory: ['', [Validators.required]],
       alertType: ['', [Validators.required]],
       applyOn: ['G', [Validators.required]],
-      vehicleGroup: ['', [Validators.required]],
+      vehicleGroup: [''],
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
@@ -147,6 +147,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       ]
     });
 
+    this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
@@ -308,12 +309,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeVehicleGroup(event){
-    this.vehicle_group_selected= event.value;
+    
     if(event.value == 'ALL'){
       this.vehicleByVehGroupList = this.getUnique(this.vehicleList, "vehicleId");
     }
     else{
       this.vehicleByVehGroupList= this.vehicleList.filter(item => item.vehicleGroupId == event.value)
+      this.vehicle_group_selected= event.value;
     }
     this.updateVehiclesDataSource(this.vehicleByVehGroupList);
   }
