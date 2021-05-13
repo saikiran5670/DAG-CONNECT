@@ -30,5 +30,5 @@
     </mat-card>
     <!-- Map Div-->
     <div class='fixDiv'></div>
-    <app-route-calculating  *ngIf='selectedCorridorTypeId ==46' [translationData]="translationData" [exclusionList]="exclusionList"></app-route-calculating>
+    <app-route-calculating  *ngIf='selectedCorridorTypeId ==46' [translationData]="translationData" (backToPage) = "backToCorridorList()"[exclusionList]="exclusionList"></app-route-calculating>
     <app-existing-trips *ngIf='selectedCorridorTypeId ==45' [translationData]="translationData"></app-existing-trips>
