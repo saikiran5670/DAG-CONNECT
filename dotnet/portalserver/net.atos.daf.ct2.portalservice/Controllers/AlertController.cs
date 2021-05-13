@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Alert;
 using net.atos.daf.ct2.vehicleservice;
 using Newtonsoft.Json;
 using System;
@@ -22,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class AlertController : ControllerBase
     {
         private ILog _logger;
-        private readonly AlertService.AlertServiceClient _AlertServiceClient;
+        private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
@@ -31,13 +32,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Entity.Alert.Mapper _mapper;
         private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
-        public AlertController(AlertService.AlertServiceClient AlertServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, VehicleService.VehicleServiceClient vehicleClient, IHttpContextAccessor _httpContextAccessor)
+        public AlertController(AlertService.AlertServiceClient alertServiceClient, 
+                               AuditHelper auditHelper, 
+                               Common.AccountPrivilegeChecker privilegeChecker, 
+                               VehicleService.VehicleServiceClient vehicleClient, 
+                               IHttpContextAccessor httpContextAccessor)
         {
-            _AlertServiceClient = AlertServiceClient;
+            _alertServiceClient = alertServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
             _vehicleClient = vehicleClient;
             _mapper = new Entity.Alert.Mapper();
         }
@@ -51,7 +56,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (alertId == 0) return BadRequest("Alert id cannot be zero.");
-                var response = await _AlertServiceClient.ActivateAlertAsync(new IdRequest { AlertId = alertId });
+                var response = await _alertServiceClient.ActivateAlertAsync(new IdRequest { AlertId = alertId });
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == ResponseCode.Success)
+                    return Ok(String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, alertId));
+                if (response.Code == ResponseCode.Failed)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, alertId, AlertConstants.ALERT_FAILURE_MSG));
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, alertId, response.Message));
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
@@ -60,18 +73,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"ActivateAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
                   Request);
-                //_logger.Error(null, ex);
-                // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
-                {
-                    return StatusCode(500, "Internal Server Error.(01)");
-                }
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Activate Alert Failed for Id:- {alertId}.");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 
@@ -82,7 +89,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (alertId == 0) return BadRequest("Alert id cannot be zero.");
-                var response = await _AlertServiceClient.SuspendAlertAsync(new IdRequest { AlertId = alertId });
+                var response = await _alertServiceClient.SuspendAlertAsync(new IdRequest { AlertId = alertId });
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == ResponseCode.Success)
+                    return Ok(String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, alertId));
+                if (response.Code == ResponseCode.Failed)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, alertId, AlertConstants.ALERT_FAILURE_MSG));
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, alertId, response.Message));
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
@@ -113,7 +128,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (alertId == 0) return BadRequest("Alert id cannot be zero.");
-                var response = await _AlertServiceClient.DeleteAlertAsync(new IdRequest { AlertId = alertId });
+                var response = await _alertServiceClient.DeleteAlertAsync(new IdRequest { AlertId = alertId });
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == ResponseCode.Success)
+                    return Ok(String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, alertId));
+                if (response.Code == ResponseCode.Conflict)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.DELETE_ALERT_NO_NOTIFICATION_MSG, alertId));
+                if (response.Code == ResponseCode.Failed)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, alertId, AlertConstants.ALERT_FAILURE_MSG));
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.DELETE_ALERT_FAILURE_MSG, alertId, response.Message));
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
@@ -148,7 +173,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (accountId == 0 || orgnizationid==0) return BadRequest("Account id or Orgnization id cannot be null.");
                 net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
-                AlertCategoryResponse alertcategory = await _AlertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
+                var alertcategory = await _alertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
                 VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = orgnizationid });
                 if (alertcategory.EnumTranslation != null)
                 {
@@ -209,7 +234,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     alertservice.IdRequest idRequest = new IdRequest();
                     idRequest.AlertId = request.Id;
-                    alertservice.DuplicateAlertResponse duplicateAlertResponse = await _AlertServiceClient.DuplicateAlertTypeAsync(idRequest);
+                    alertservice.DuplicateAlertResponse duplicateAlertResponse = await _alertServiceClient.DuplicateAlertTypeAsync(idRequest);
                     if (duplicateAlertResponse != null && duplicateAlertResponse.Code == ResponseCode.Success)
                     {
                         if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
@@ -227,7 +252,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                 }
 
-                alertservice.AlertResponse alertResponse = await _AlertServiceClient.CreateAlertAsync(alertRequest);
+                alertservice.AlertResponse alertResponse = await _alertServiceClient.CreateAlertAsync(alertRequest);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
                 {
@@ -291,7 +316,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
-                alertservice.AlertResponse alertResponse = await _AlertServiceClient.UpdateAlertAsync(alertRequest);
+                alertservice.AlertResponse alertResponse = await _alertServiceClient.UpdateAlertAsync(alertRequest);
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
                 {
@@ -341,7 +366,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if ( orgnizationid == 0) return BadRequest("Orgnization id cannot be null.");
 
-                AlertListResponse response = await _AlertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
 
                 if (response.AlertRequest != null && response.AlertRequest.Count>0)
                 {

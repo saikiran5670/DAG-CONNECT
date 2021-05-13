@@ -44,8 +44,8 @@ namespace net.atos.daf.ct2.alertservice.Services
                 _logger.Error(null, ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = String.Format(AlertConstants.ACTIVATED_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
-                    Code = ResponseCode.Failed
+                    Message = ex.Message,
+                    Code = ResponseCode.InternalServerError
                 });
             }
         }
@@ -67,8 +67,8 @@ namespace net.atos.daf.ct2.alertservice.Services
                 _logger.Error(null, ex);
                 return await Task.FromResult(new AlertResponse
                 {
-                    Message = String.Format(AlertConstants.SUSPEND_ALERT_FAILURE_MSG, request.AlertId, ex.Message),
-                    Code = ResponseCode.Failed
+                    Message = ex.Message,
+                    Code = ResponseCode.InternalServerError
                 });
             }
         }
@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 var duplicateAlert = await _alertManager.DuplicateAlertType(request.AlertId);
                 alertResponse.DuplicateAlert = duplicateAlert != null ? _mapper.ToDupliacteAlert(duplicateAlert) : null;
-                alertResponse.Code = duplicateAlert != null ?  ResponseCode.Success : ResponseCode.Failed;
+                alertResponse.Code = duplicateAlert != null ? ResponseCode.Success : ResponseCode.Failed;
                 alertResponse.Message = duplicateAlert != null ? String.Format(AlertConstants.DUPLICATE_ALERT_SUCCESS_MSG, request.AlertId) : String.Format(AlertConstants.DUPLICATE_ALERT_FAILURE_MSG, request.AlertId, AlertConstants.ALERT_FAILURE_MSG);
             }
             catch (Exception ex)
