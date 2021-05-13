@@ -18,7 +18,7 @@ import { AlertService } from 'src/app/services/alert.service';
 })
 
 export class AlertsComponent implements OnInit {
-  displayedColumns: string[] = ['alertIcon','name','category','alertType','threshold','vehicleGroup','status','action'];
+  displayedColumns: string[] = ['validityPeriodType','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
   displayMessage: any;
   createViewEditStatus: boolean = false;
@@ -48,7 +48,7 @@ export class AlertsComponent implements OnInit {
 
   stringifiedData: any;  
   parsedJson: any;  
-
+  filterValues = {};  
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<UserDetailTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -62,27 +62,29 @@ export class AlertsComponent implements OnInit {
     private dialog: MatDialog,
     private vehicleService: VehicleService,
     private alertService: AlertService ) { }
- 
-  ngOnInit() {
-    this.localStLanguage = JSON.parse(localStorage.getItem("language"));
-    this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
-    let translationObj = {
-      id: 0,
-      code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
-      type: "Menu",
-      name: "",
-      value: "",
-      filter: "",
-      menuId: 17 //-- for alerts
-    }
-    this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.loadFiltersData();
-      this.loadAlertsData();
-    });  
   
-  }
+    ngOnInit() {
+      this.localStLanguage = JSON.parse(localStorage.getItem("language"));
+      this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+      this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+      let translationObj = {
+        id: 0,
+        code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+        type: "Menu",
+        name: "",
+        value: "",
+        filter: "",
+        menuId: 17 //-- for alerts
+      }
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        this.processTranslation(data);
+        this.loadFiltersData();     
+      //  this.loadAlertsData();
+      });  
+      this.loadAlertsData();
+      this.updateDatasource(this.filterValues);     
+    }
+    
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -101,14 +103,15 @@ export class AlertsComponent implements OnInit {
       this.vehicleList= data["vehicleGroup"];
       this.alertStatusList=[{
        id: 1,
-       status:"Active",
+       status:"A",
        value:'Active'
       },{
         id: 2,
-        status:"Suspended",
+        status:"S",
         value:'Suspended'
        }
     ]
+   this.loadAlertsData();
     }, (error) => {
 
     })
@@ -175,14 +178,7 @@ export class AlertsComponent implements OnInit {
   }
 
   loadAlertsData(){
-    this.showLoadingIndicator = true;
-    // this.alertService.getAlertData(this.accountId, this.accountOrganizationId).subscribe((data) => {
-    //   data.forEach(element => {
-    //     let filterData = data;       
-    //   });      
-    // }, (error) => {
-    // })
-    
+    this.showLoadingIndicator = true;   
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -190,14 +186,26 @@ export class AlertsComponent implements OnInit {
       vehicleGroupGroupId: 0,
       roleId: 0,
       name: ""
-    }
-     this.stringifiedData = JSON.stringify(this.myData);  
-     this.parsedJson = JSON.parse(this.stringifiedData); 
-    
-   this.hideloader();
-   this.initData = this.parsedJson;  
-   this.updateDatasource(this.initData);
+    }    
+    this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
+      //this.initData = data["alertRequest"];       
+      data.forEach(item => {         
+      let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
+      catVal.forEach(obj => { 
+        item["category"]=obj.value;
+      });     
+      let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
+      typeVal.forEach(obj => { 
+        item["type"]=obj.value;
+      });   
+    }); 
+      this.initData =data;
+      this.updateDatasource(this.initData);   
+    }, (error) => {
+    })   
+   this.hideloader();     
  }
+
  getFilteredValues(dataSource){
   this.dataSource = dataSource;
   this.dataSource.paginator = this.paginator;
@@ -282,13 +290,13 @@ export class AlertsComponent implements OnInit {
     }, 5000);
   }
 
-   changePackageStatus(rowData: any){
+  changePackageStatus(rowData: any){
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.status == 'Active') ? this.translationData.lblDeactivate || " Suspended" : this.translationData.lblActivate || " Activate",
-      status: rowData.status == 'Active' ? 'Inactive' : 'Active' ,
+      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate || " Suspended" : this.translationData.lblActivate || " Activate",
+      status: rowData.state == 'Active' ? 'Inactive' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -301,7 +309,7 @@ export class AlertsComponent implements OnInit {
         // TODO: change status with latest grid data
         let updatePackageParams = {
           "packageId": rowData.id,
-          "status":rowData.status === "Active" ? "I" : "A"
+          "status":rowData.state === "Active" ? "S" : "A"
         }
         this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
           this.loadAlertsData();
@@ -316,22 +324,21 @@ export class AlertsComponent implements OnInit {
 
   onVehicleGroupClick(data: any) {   
     const colsList = ['name','vin','licensePlateNumber'];
-    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'Group Name', this.translationData.lblRegistrationNumber || 'Status'];
-    const tableTitle =`${data.vehicleGroup} - ${this.translationData.lblVehicles || 'Vehicles'}`;
+    const colsName =[this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const tableTitle =`${data.vehicleGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
     let objData = {
-      // groupId: data.groupId,
-      // groupType: data.groupType,
-      // functionEnum: data.functionEnum,
-      // organizationId: data.organizationId
-      groupId: 97,
+      groupId: data.vehicleGroupId,
       groupType: 'G',
       functionEnum: 'A',
-      organizationId: 36
+      organizationId: data.organizationId    
+      // groupType: data.groupType,
+      // functionEnum: data.functionEnum
     }
     this.vehicleService.getVehiclesDetails(objData).subscribe((vehList: any) => {
       this.callToCommonTable(vehList, colsList, colsName, tableTitle);
     });
   }
+
   callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any){
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
@@ -343,107 +350,5 @@ export class AlertsComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogVeh = this.dialog.open(UserDetailTableComponent, dialogConfig);
-  }
-  myData =[ 
-    {
-      id: 1,
-      name:"Test Alert 01",
-      category:"Fuel and Driver Performance",
-      alertType:"Exiting Zone",
-      threshold:"-",
-      vehicleGroup:"Test Group 1",
-      status:"Active",
-      alertIcon:"#DC143C",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 2,
-      name:"Test Alert 02",
-      category:"Logistics Alerts",
-      alertType:"Fuel Loss During Trip",
-      threshold:"25%",
-      vehicleGroup:"Test Group 2",
-      status:"Suspended",
-      alertIcon:"#FFD700",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 3,
-      name:"Test Alert 03",
-      category:"Repair and Maintenance",
-      alertType:"Excessive Average Speed",
-      threshold:"63.1347mph",
-      vehicleGroup:"Test Group 3",
-      status:"Active",
-      alertIcon:"#FF8C00",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 4,
-      name:"Test Alert 04",
-      category:"Fuel and Driver Performance",
-      alertType:"Exiting Zone",
-      threshold:"-",
-      vehicleGroup:"Test Group 4",
-      status:"Active",
-      alertIcon:"#DC143C",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 5,
-      name:"Test Alert 05",
-      category:"Logistics Alerts",
-      alertType:"Fuel Loss During Trip",
-      threshold:"25%",
-      vehicleGroup:"Test Group 5",
-      status:"Suspended",
-      alertIcon:"#FFD700",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 6,
-      name:"Test Alert 06",
-      category:"Repair and Maintenance",
-      alertType:"Excessive Average Speed",
-      threshold:"63.1347mph",
-      vehicleGroup:"Test Group 6",
-      status:"Active",
-      alertIcon:"#FF8C00",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 7,
-      name:"Test Alert 07",
-      category:"Fuel and Driver Performance",
-      alertType:"Exiting Zone",
-      threshold:"-",
-      vehicleGroup:"Test Group 7",
-      status:"Active",
-      alertIcon:"#DC143C",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 8,
-      name:"Test Alert 08",
-      category:"Logistics Alerts",
-      alertType:"Fuel Loss During Trip",
-      threshold:"25%",
-      vehicleGroup:"Test Group 8",
-      status:"Suspended",
-      alertIcon:"#FFD700",
-      createdAt: new Date().getTime()
-    },
-    {
-      id: 9,
-      name:"Test Alert 09",
-      category:"Repair and Maintenance",
-      alertType:"Excessive Average Speed",
-      threshold:"63.1347mph",
-      vehicleGroup:"veh002 grp",
-      status:"Active",
-      alertIcon:"#FF8C00",
-      createdAt: new Date().getTime()
-    }
-];  
-
+  }   
 }
