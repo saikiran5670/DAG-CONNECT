@@ -35,7 +35,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
     this.notificationForm = this._formBuilder.group({
       recipientLabel: ['', [ Validators.required ]],
       contactMode: ['', [Validators.required]],
-      emailAddress: ['', [Validators.required]],
+      emailAddress: ['', [Validators.required, Validators.email]],
       mailSubject: ['', [Validators.required]],
       mailDescription: ['', [Validators.required]],
       authentication:['', [Validators.required]],

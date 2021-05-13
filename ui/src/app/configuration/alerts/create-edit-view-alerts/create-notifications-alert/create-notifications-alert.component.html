@@ -67,11 +67,17 @@
                         </mat-label>
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblEmailAddress || 'Enter Email Address' }}" matInput
-                                formControlName="emailAddress" maxlength="50">
+                                formControlName="emailAddress" >
                         </mat-form-field>
                         <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
                             with comma (;)
                             separated' }}</mat-hint>
+                            <mat-error *ngIf="notificationForm.get('emailAddress').hasError('required')">
+                                {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
+                                  </mat-error>
+                            <mat-error *ngIf="notificationForm.get('emailAddress').hasError('email')">
+                                {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email address' }}
+                            </mat-error>
                     </div>
                     <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblMailSubject || 'Mail Subject' }} <span
@@ -81,7 +87,7 @@
                         <mat-form-field appearance="outline" class="full-width">
                             <input
                                 placeholder="{{ translationData.lblMailSubjectAlertType || 'Mail Subject - Alert Type' }}"
-                                matInput formControlName="mailSubject" maxlength="50">
+                                matInput formControlName="mailSubject" maxlength="120">
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailSubjectDescription || 'Mail Subject Description'}}</mat-hint>
                     </div>
@@ -95,7 +101,7 @@
                             </mat-label>
                                 
                         <mat-form-field appearance="outline">
-                            <textarea matInput
+                            <textarea matInput maxlength="250"
                                 placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
                                 formControlName="mailDescription"></textarea>
                         </mat-form-field>
