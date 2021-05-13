@@ -817,7 +817,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             geofence.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
             geofence.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             geofence.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
-            geofence.City = !string.IsNullOrEmpty(record.city) ? record.City : string.Empty;
+            geofence.City = !string.IsNullOrEmpty(record.city) ? record.city : string.Empty;
             geofence.Country = !string.IsNullOrEmpty(record.country) ? record.country : string.Empty;
             geofence.Zipcode = !string.IsNullOrEmpty(record.zipcode) ? record.zipcode : string.Empty;
             geofence.Type = record.type;
