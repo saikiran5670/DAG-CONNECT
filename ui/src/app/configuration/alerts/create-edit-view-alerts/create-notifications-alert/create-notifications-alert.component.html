@@ -105,11 +105,11 @@
             </div>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: grey" class="areaWidth">
                 <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
-                <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold'>{{
+                <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
                     translationData.lblSetLimitations || 'Set Limitations' }}</span>
-                <span style="padding-bottom: 15px;">{{translationData.lblMaxAlertNotificationsPerVehicle || 'Max 10
+                <span style="padding-bottom: 15px;padding-left: 8px;">{{translationData.lblMaxAlertNotificationsPerVehicle || 'Max 10
                     alert notifications per vehicle' }}</span>
-                <span class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
+                <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
                         class='mandatoryColor'>*</span></span>
                 <mat-radio-button [checked]="true" style='margin-right: 20px;' value="Always">{{
                     translationData.lblAlways || 'Always' }}
@@ -128,22 +128,22 @@
             <mat-icon style="color: red;">deleteicon</mat-icon>
         </mat-panel-title>
         <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"  style="padding-right: 15px;">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
                     fxLayoutGap="10px">
-                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                    <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="right">
                         <mat-label>{{ translationData.lblWebServiceURL || 'Web Service URL' }} <span
                                 class='mandatoryColor'>*</span>
                         </mat-label>
                         <mat-form-field appearance="outline" class="full-width">
-                            <input placeholder="{{ translationData.lblEmailAddress || 'Enter Email Address' }}" matInput
-                                formControlName="emailAddress" maxlength="50">
+                            <input placeholder="{{ translationData.lblhttpsTestCom || 'https://Test.com' }}" matInput
+                                formControlName="webURL" maxlength="50">
                         </mat-form-field>
                         <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
                             with comma (;)
                             separated' }}</mat-hint>
                     </div>
-                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                    <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="right">
                         <div class="margin-bottom-sm">
                         <mat-radio-group (change)="onRadioButtonChange($event)" formControlName="authentication">
                         <mat-radio-button style='margin-right: 20px;' [checked]="true"  value="0">{{
@@ -199,11 +199,11 @@
 
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: grey" class="areaWidth">
                 <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
-                <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold'>{{
+                <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
                     translationData.lblSetLimitations || 'Set Limitations' }}</span>
-                <span style="padding-bottom: 15px;">{{translationData.lblMaxAlertNotificationsPerVehicle || 'Max 10
+                <span style="padding-bottom: 15px;padding-left:10px;">{{translationData.lblMaxAlertNotificationsPerVehicle || 'Max 10
                     alert notifications per vehicle' }}</span>
-                <span class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
+                <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
                         class='mandatoryColor'>*</span></span>
                 <mat-radio-button [checked]="true" style='margin-right: 20px;' value="Always">{{
                     translationData.lblAlways || 'Always' }}

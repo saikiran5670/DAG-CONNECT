@@ -19,7 +19,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 })
 
 export class AlertsComponent implements OnInit {
-  displayedColumns: string[] = ['validityPeriodType','name','category','type','thresholdValue','vehicleGroupName','state','action'];
+  displayedColumns: string[] = ['urgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
   displayMessage: any;
   createViewEditStatus: boolean = false;
@@ -82,8 +82,7 @@ export class AlertsComponent implements OnInit {
         this.processTranslation(data);
         this.loadFiltersData();     
       //  this.loadAlertsData();
-      });  
-      this.loadAlertsData();
+      });       
       this.updateDatasource(this.filterValues);     
     }
     
@@ -305,13 +304,13 @@ export class AlertsComponent implements OnInit {
     }, 5000);
   }
 
-  changePackageStatus(rowData: any){
+  onChangeAlertStatus(rowData: any){
     const options = {
       title: this.translationData.lblAlert || "Alert",
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
       cancelText: this.translationData.lblCancel || "Cancel",
-      confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate || " Suspended" : this.translationData.lblActivate || " Activate",
-      status: rowData.state == 'Active' ? 'Inactive' : 'Active' ,
+      confirmText: (rowData.state == 'A') ? this.translationData.lblDeactivate || " Suspend" : this.translationData.lblActivate || " Activate",
+      status: rowData.state == 'A' ? 'Suspend' : 'Activate' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
@@ -321,16 +320,26 @@ export class AlertsComponent implements OnInit {
     this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
     this.dialogRef.afterClosed().subscribe((res: any) => {
       if(res == true){ 
-        // TODO: change status with latest grid data
-        let updatePackageParams = {
-          "packageId": rowData.id,
-          "status":rowData.state === "Active" ? "S" : "A"
-        }
-        this.packageService.updateChangedStatus(updatePackageParams).subscribe((data) => {
+       if(rowData.state == 'A'){
+          this.alertService.suspendAlert(rowData.id).subscribe((data) => {
+            this.loadAlertsData();
+            // let successMsg = "Updated Successfully!";
+            // this.successMsgBlink(successMsg);
+          }, error => {
+            this.loadAlertsData();
+          });
+       }
+       else{
+        this.alertService.activateAlert(rowData.id).subscribe((data) => {
           this.loadAlertsData();
-          let successMsg = "Updated Successfully!";
-          this.successMsgBlink(successMsg);
-        })
+          // let successMsg = "Updated Successfully!";
+          // this.successMsgBlink(successMsg);
+        }, error => {
+          this.loadAlertsData();
+        });
+
+       }
+        
       }else {
         this.loadAlertsData();
       }

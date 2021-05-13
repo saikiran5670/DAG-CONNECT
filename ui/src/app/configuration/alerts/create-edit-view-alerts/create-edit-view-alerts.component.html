@@ -321,7 +321,7 @@
                     <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; checkboxClicked($event,row)'
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; PoiCheckboxClicked($event,row)'
                       [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
                     </mat-checkbox>
                   </mat-cell>
@@ -578,51 +578,20 @@
 </mat-card>
 </form>
   <!-- Notification details -->
-<mat-card class='mat-elevation-z'>
-  <mat-expansion-panel class="full-width" fxLayoutGap="10px">
-    <mat-expansion-panel-header class="full-width">
-      <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNotificationDetails || 'Notification details' }}</span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
-        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblName || 'Name' }}</mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <input placeholder="{{ translationData.lblSearchName || 'Search Name' }}"  matInput>
-            </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblGroup || 'Group' }}
-            </mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserGroup || 'Select User Group' }}" >
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
-                        {{usrGrp}}
-                    </mat-option> -->
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblRole || 'Role' }}
-            </mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select User Role' }}">
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
-                    <!-- <mat-option *ngFor="let role of roles" [value]="role">
-                        {{role}}
-                    </mat-option> -->
-                </mat-select>
-            </mat-form-field>
-        </div>
-    </div>
-  </mat-expansion-panel>
-</mat-card>
+  <mat-card class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" (opened)="panelOpenState = true" (closed)="panelOpenState = false" hideToggle="true">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
+              <button style="margin-left: 50%;" mat-raised-button color="primary">{{ !panelOpenState ? translationData.lblAddNotification || 'Add
+                Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-create-notifications-alert [translationData]='translationData'></app-create-notifications-alert>
+      
+    </mat-expansion-panel>
+  </mat-card>
 
 <mat-card-actions style="padding: 10px;" fxLayoutAlign="end" *ngIf="actionType != 'view'">
     <div fxLayout="row" fxLayoutAlign="space-between center">

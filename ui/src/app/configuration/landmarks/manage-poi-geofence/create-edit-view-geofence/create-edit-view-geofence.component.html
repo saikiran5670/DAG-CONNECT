@@ -241,7 +241,7 @@
             <!-- <div *ngIf="actionType != 'view'" [ngClass]="{'pointer-events-none orgGrayDefault': actionType == 'edit'}"> -->
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input (change)="onChangeRadius($event)" type='number' placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
+                <input maxlength="6" (change)="onChangeRadius($event)" type="text" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
                   formControlName="radius">
               </mat-form-field>
               <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('required')">

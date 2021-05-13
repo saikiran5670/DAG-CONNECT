@@ -21,11 +21,9 @@ export class AlertsFilterComponent implements OnInit {
   @Input() alertStatusList: any= [];
   @Input() initData : any;
 
-  isDisabledAlerts = true;
-  selectedCategory: any;
-  selectedType:any;
+  isDisabledAlerts = true; 
   localData : any; 
-
+  dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -63,21 +61,12 @@ export class AlertsFilterComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    console.log("process translationData:: ", this.translationData)
   }
 
-  public dataResultTypes: Array<{ productName: string, productId: number, categoryId: number }>;
-
-  //public dataResultOrders: Array<{ orderName: string, orderId: number, productId: number, }>;
-  
-  //public selectedOrder: { orderName: string, orderId: number };
 
   handleCategoryChange(value) {
-    this.selectedCategory = value;   
-    this.selectedType = undefined;
-    //this.selectedOrder = undefined;
-
-    if(value == "All"){
+       if(value == "All"){
           this.isDisabledAlerts = false;
           this.dataResultTypes = this.alertTypeList;
     }
@@ -103,25 +92,7 @@ export class AlertsFilterComponent implements OnInit {
       this.dataSource.sort = this.sort;
     });
   }
-
-  // handleProductChange(value) {
-  //     this.selectedProduct = value;
-  //     this.selectedOrder = undefined;
-
-  //     if (value.productId === this.defaultItemProducts.productId) {
-  //         this.isDisabledOrders = true;
-  //         this.dataResultOrders = [];
-  //     } else {
-  //         this.isDisabledOrders = false;
-  //         this.dataResultOrders = this.dataOrders.filter((s) => s.productId === value.productId);
-  //     }
-  // }
-
-  // handleOrderChange(value) {
-  //     this.selectedOrder = value;
-  // }
   
-
   // Called on Filter change
   filterChange(filter, event) {    
   this.filterListValues[filter] = event.value.trim()   
