@@ -241,7 +241,7 @@
             <!-- <div *ngIf="actionType != 'view'" [ngClass]="{'pointer-events-none orgGrayDefault': actionType == 'edit'}"> -->
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input (change)="onChangeRadius($event)" type='number' placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
+                <input maxlength="6" (change)="onChangeRadius($event)" type="text" (keypress)="keyPressNumbers($event)" placeholder="{{ translationData.lblEnterRadius|| 'Enter Radius' }}" matInput
                   formControlName="radius">
               </mat-form-field>
               <mat-error *ngIf="circularGeofenceFormGroup.get('radius').hasError('required')">
@@ -299,7 +299,7 @@
       </div>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
-          <mat-select [(ngModel)]="categorySelectionForPOI" [disabled]='poiData.length == 0' (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+          <mat-select [(ngModel)]="categorySelectionForPOI" [disabled]="poiData.length == 0 || actionType == 'view'" (selectionChange)="onCategoryChange($event)" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
             <mat-option value="0">--All--</mat-option>
             <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                 {{ rer.name }}
@@ -309,7 +309,7 @@
       </div>
       <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-form-field appearance="outline">
-          <mat-select [(ngModel)]="subCategorySelectionForPOI" [disabled]='poiData.length == 0' (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+          <mat-select [(ngModel)]="subCategorySelectionForPOI" [disabled]="poiData.length == 0  || actionType == 'view'" (selectionChange)="onSubCategoryChange($event)" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
             <mat-option value="0">--All--</mat-option>
             <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
               {{ rer.name }}
@@ -321,7 +321,7 @@
     <div>
       <mat-table [dataSource]="dataSourceForPOI" class="table-items" matSort>
         <ng-container matColumnDef="select">
-          <mat-header-cell *matHeaderCellDef>
+          <mat-header-cell *matHeaderCellDef class="max-width-10-per">
             <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
               [checked]='selectedPOI.hasValue() && isAllSelectedForPOI()'
               [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
@@ -330,15 +330,15 @@
             </mat-checkbox>
             <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
           </mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let row" class="max-width-10-per">
             <mat-checkbox (click)='$event.stopPropagation()' (change)='onChangeCheckbox($event, row)'
               [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' [disabled]="actionType != 'create'">
             </mat-checkbox>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="icon">
-          <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-header-cell *matHeaderCellDef class="max-width-8-per">{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
+          <mat-cell *matCellDef="let row" class="max-width-8-per">
             <mat-icon>place</mat-icon>
           </mat-cell>
         </ng-container>

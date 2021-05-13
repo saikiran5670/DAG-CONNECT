@@ -1,8 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../shared/custom.validators';
-import { AlertService } from '../../../../services/alert.service'
-
+import { AlertService } from '../../../../services/alert.service';
 
 @Component({
   selector: 'app-create-edit-corridor',
@@ -19,8 +18,9 @@ export class CreateEditCorridorComponent implements OnInit {
   localStLanguage: any;
   accountId: any = 0;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 'Route Calculating';
+  selectedCorridorTypeId : any = 46;
   exclusionList : any;
+
 
   constructor(private alertService: AlertService) {
    }
@@ -31,7 +31,7 @@ export class CreateEditCorridorComponent implements OnInit {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.loadDropdownData();
-
+    //console.log(this.selectedCorridorTypeId)
   }
 
   loadDropdownData(){
@@ -40,8 +40,7 @@ export class CreateEditCorridorComponent implements OnInit {
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
       });
-    ///  this.corridorTypeList= filterData.filter(item => item.type == 'R');
-      console.log(this.corridorTypeList)
+      this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
     });
   }
@@ -57,12 +56,19 @@ export class CreateEditCorridorComponent implements OnInit {
     this.selectedCorridorTypeId = _event.value;
   }
 
-  backToCorridorList(){
+  backToCorridorList(_eventObj){
+    if(_eventObj){
+      
+    this.backToPage.emit(_eventObj);
+    }else{
+      
     let emitObj = {
       booleanFlag: false,
       successMsg: ""
-    }  
+    } 
     this.backToPage.emit(emitObj);
+
+    } 
   }
 
 }

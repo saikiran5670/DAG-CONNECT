@@ -135,6 +135,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
+     <!-- Advance filter -->
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
@@ -155,6 +156,45 @@
             </mat-card>
         </div>
     </div>
+
+    <!-- Vehicles table -->
+    
+      <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span><span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewVehiclesConcerned || 'View Vehicles Concerned ' }}</span> </span>
+          </mat-panel-title>
+          </mat-expansion-panel-header>
+      <div fxLayout="row" fxLayoutAlign="left" class='margin-bottom-sm'>
+        <div style='margin-right: 50px;' class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+          <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilterForVehicles($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+              <span matPrefix><mat-icon>search</mat-icon></span>
+          </mat-form-field>
+        </div>
+      </div>
+      <div>
+        <mat-table matTableExporter [dataSource]="vehiclesDataSource" matSort>
+          <ng-container matColumnDef="vehicleName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.vehicleName }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="vehicleGroupName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroupName || 'Vehicle Group Name' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.vehicleGroupName }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="subcriptionStatus">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.subcriptionStatus ? 'Subscribed' : 'Non-Subscribed' }}</mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumnsVehicles"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumnsVehicles;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+    </mat-expansion-panel>
+
   </mat-expansion-panel>
 </mat-card>
 
@@ -281,7 +321,7 @@
                     <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; checkboxClicked($event,row)'
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; PoiCheckboxClicked($event,row)'
                       [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
                     </mat-checkbox>
                   </mat-cell>
@@ -429,8 +469,8 @@
                     <mat-cell *matCellDef="let row" matTooltip={{row.geofenceCount}}><span [ngClass]="row.geofenceCount !=0 ? 'row-hover' : '' "
                     (click)="row.geofenceCount !=0 ? onGeofenceClick(row) : ''">{{row.geofenceCount}}</span></mat-cell>
                 </ng-container>
-                <mat-header-row *matHeaderRowDef="groupDisplayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: groupDisplayedColumns;">
+                <mat-header-row *matHeaderRowDef="displayedColumnsGroup"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumnsGroup;">
                 </mat-row>
               </mat-table>
               <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
@@ -469,7 +509,7 @@
                     <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedCorridor.toggle(row) : null;'
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedCorridor.toggle(row) : null; corridorCheckboxClicked($event, row)'
                       [checked]='selectedCorridor.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)'>
                     </mat-checkbox>
                   </mat-cell>
@@ -494,8 +534,8 @@
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth || 'Width(mtr)' }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.width }}</mat-cell>
                 </ng-container>
-                <mat-header-row *matHeaderRowDef="corridorDisplayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: corridorDisplayedColumns;">
+                <mat-header-row *matHeaderRowDef="displayedColumnsCorridor"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumnsCorridor;">
                 </mat-row>
               </mat-table>
               <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
@@ -538,51 +578,20 @@
 </mat-card>
 </form>
   <!-- Notification details -->
-<mat-card class='mat-elevation-z'>
-  <mat-expansion-panel class="full-width" fxLayoutGap="10px">
-    <mat-expansion-panel-header class="full-width">
-      <mat-panel-title>
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblNotificationDetails || 'Notification details' }}</span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction" fxLayoutGap="10px">
-        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblName || 'Name' }}</mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <input placeholder="{{ translationData.lblSearchName || 'Search Name' }}"  matInput>
-            </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblGroup || 'Group' }}
-            </mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserGroup || 'Select User Group' }}" >
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups | removeDuplicates" [value]="usrGrp"> -->
-                    <!-- <mat-option *ngFor="let usrGrp of userGroups" [value]="usrGrp">
-                        {{usrGrp}}
-                    </mat-option> -->
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label style='display: flex; place-content: space-between;'>
-                {{ translationData.lblRole || 'Role' }}
-            </mat-label>
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select User Role' }}">
-                    <!-- <mat-option value='All'>{{ translationData.lblAll || 'All' }}</mat-option> -->
-                    <!-- <mat-option *ngFor="let role of roles | removeDuplicates" [value]="role"> -->
-                    <!-- <mat-option *ngFor="let role of roles" [value]="role">
-                        {{role}}
-                    </mat-option> -->
-                </mat-select>
-            </mat-form-field>
-        </div>
-    </div>
-  </mat-expansion-panel>
-</mat-card>
+  <mat-card class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" (opened)="panelOpenState = true" (closed)="panelOpenState = false" hideToggle="true">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
+              <button style="margin-left: 50%;" mat-raised-button color="primary">{{ !panelOpenState ? translationData.lblAddNotification || 'Add
+                Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-create-notifications-alert [translationData]='translationData'></app-create-notifications-alert>
+      
+    </mat-expansion-panel>
+  </mat-card>
 
 <mat-card-actions style="padding: 10px;" fxLayoutAlign="end" *ngIf="actionType != 'view'">
     <div fxLayout="row" fxLayoutAlign="space-between center">

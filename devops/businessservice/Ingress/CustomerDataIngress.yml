@@ -109,6 +109,10 @@ spec:
           servicePort: 80
         path: /subscription
       - backend:
+          serviceName: singlesignonservice
+          servicePort: 80
+        path: /sso
+      - backend:
           serviceName: applicationservice
           servicePort: 80
         path: /  

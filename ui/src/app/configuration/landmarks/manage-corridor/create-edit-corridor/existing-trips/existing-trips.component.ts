@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,6 +13,12 @@ import { CustomValidators } from '../../../../../shared/custom.validators';
   styleUrls: ['./existing-trips.component.less']
 })
 export class ExistingTripsComponent implements OnInit {
+  startDate = new FormControl();
+  endDate = new FormControl();
+  // range = new FormGroup({
+  //   start: new FormControl(),
+  //   end: new FormControl()
+  // });
   translationData: any;
   OrgId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
@@ -50,6 +56,7 @@ export class ExistingTripsComponent implements OnInit {
     this.existingTripForm = this._formBuilder.group({
       // userGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       vehicleGroup: ['', [Validators.required]],
+      vehicle: ['', [Validators.required]],
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     },
     {

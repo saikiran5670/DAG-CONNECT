@@ -12,13 +12,15 @@ declare var H: any;
 })
 export class RouteCalculatingComponent implements OnInit {
   @Input() translationData: any;
-
+  @Input() exclusionList :  any;
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
   breadcumMsg: any = '';
   corridorFormGroup: FormGroup;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 1;
+  trailerList = [0,1,2,3,4];
+  selectedCorridorTypeId : any = 46;
+  selectedTrailerId = 0;
   private platform: any;
   map: any;
   private ui: any;
@@ -36,6 +38,9 @@ export class RouteCalculatingComponent implements OnInit {
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
   corridorWidth : number;
+  sliderValue : number = 0;
+  min : number = 0;
+  max : number = 10000;
 
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService) {
     this.platform = new H.service.Platform({
@@ -44,7 +49,6 @@ export class RouteCalculatingComponent implements OnInit {
    }
 
   ngOnInit(): void {
-
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.corridorFormGroup = this.formBuilder.group({
@@ -60,7 +64,13 @@ export class RouteCalculatingComponent implements OnInit {
       motorWay:['Regular'],
       boatFerries:['Regular'],
       railFerries:['Regular'],
-      tunnels:['Regular']
+      tunnels:['Regular'],
+      dirtRoad:['Regular'],
+      vehicleHeight:['', [Validators.required]],
+      vehicleWidth: ['', [Validators.required]],
+      vehicleLength : ['', [Validators.required]],
+      limitedWeight: ['', [Validators.required]],
+      weightPerAxle: ['', [Validators.required]]
 
     });
 
@@ -94,9 +104,27 @@ export class RouteCalculatingComponent implements OnInit {
     var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
   }
 
+  addPolylineToMap(){
+    var lineString = new H.geo.LineString();
+    // lineString.pushPoint({lat : this.startAddressPosition.lat, lng: this.startAddressPosition.long});
+    // lineString.pushPoint({lat : this.endAddressPosition.lat, lng: this.endAddressPosition.long});
+    lineString.pushPoint({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
+    lineString.pushPoint({lat:this.endAddressPositionLat , lng:this.endAddressPositionLong});
+   // console.log(this.startAddressPosition,this.endAddressPosition)
+    this.hereMap.addObject(new H.map.Polyline(
+      lineString, { style: { lineWidth: 4 }}
+    ));
+  }
   sliderChanged(_event){
       let distanceinMtr = _event.value;
+      this.corridorWidth = _event.value;
       this.distanceinKM = distanceinMtr/1000;
+      this.corridorFormGroup.controls.widthInput.setValue(this.distanceinKM);
+  }
+
+  changeSliderInput(){
+    this.distanceinKM = this.corridorFormGroup.controls.widthInput.value;
+    this.sliderValue = this.distanceinKM * 1000;
   }
   
   formatLabel(value:number){
@@ -175,60 +203,107 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
-  startAddressPosition = {lat : 18.50424,long : 73.85286};
+  trailerSelected(_event){
+    this.selectedTrailerId = _event.value;
+  }
+
+  tollRoadId = 'D';
+  motorWayId ='D';
+  railFerriesId = 'D';
+  tunnelId ='D';
+  dirtRoadId = 'D';
+  boatFerriesId = 'D';
+  exclusionSelected(_event,type){
+    console.log(this.exclusionList);
+    console.log(_event)
+    switch (type) {
+      case 'tollRoad':
+          this.tollRoadId = _event.value;
+        break;
+        case 'motorWay':
+          this.motorWayId = _event.value;
+        break;
+        
+        case 'boatFerries':
+          this.boatFerriesId = _event.value;
+        break;
+        case 'railFerries':
+          this.railFerriesId = _event.value;
+        break;
+        case 'tunnel':
+          this.tunnelId = _event.value;
+        break;
+        case 'dirtRoad':
+          this.dirtRoadId = _event.value;
+        break;
+      default:
+        break;
+    }
+  }
+
+  startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
+  startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
+  startMarker : any;
+  endMarker :any;
   startAddressFocusOut(){
     if (this.corridorFormGroup.controls.startaddress.value != '') {
       this.here.getAddress(this.corridorFormGroup.controls.startaddress.value).then((result) => {
         console.log(result)
-        this.startAddressPosition.lat = result[0]["Location"]["DisplayPosition"]["Latitude"];
-        this.startAddressPosition.long = result[0]["Location"]["DisplayPosition"]["Longitude"];
+        this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
+        this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+        this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
+        this.hereMap.addObject(this.startMarker);
+        this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+        this.hereMap.setZoom(2);
       });
-      console.log(this.startAddressPosition);
     }
   }
 
-  endAddressPosition = {lat : 18.50424,long : 73.85286};
+  endAddressPositionLat : number = 0;
+  endAddressPositionLong : number = 0;
+
   endAddressFocusOut(){
     if (this.corridorFormGroup.controls.endaddress.value != '') {
       this.here.getAddress(this.corridorFormGroup.controls.endaddress.value).then((result) => {
         console.log(result)
-        this.endAddressPosition.lat = result[0]["Location"]["DisplayPosition"]["Latitude"];
-        this.endAddressPosition.long = result[0]["Location"]["DisplayPosition"]["Longitude"];
+        this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
+        this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+        this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong});
+        this.hereMap.addObject(this.endMarker);
+
       });
-      console.log(this.endAddressPosition);
+   // this.addPolylineToMap();
 
     }
+  }
+
+  drawStartMarker(){
+    
   }
   createCorridorClicked(){
    
     var corridorObj = {
       "id": 0,
       "organizationId": this.organizationId,
-      "corridorType": 46,
+      "corridorType": "R",
       "corridorLabel":this.corridorFormGroup.controls.label.value,
       "startAddress": this.corridorFormGroup.controls.startaddress.value,
-      "startLatitude": this.startAddressPosition.lat,
-      "startLongitude": this.startAddressPosition.long,
+      "startLatitude": this.startAddressPositionLat,
+      "startLongitude": this.startAddressPositionLong,
       "endAddress": this.corridorFormGroup.controls.endaddress.value,
-      "endLatitude": this.endAddressPosition.lat,
-      "endLongitude": this.endAddressPosition.long,
+      "endLatitude": this.endAddressPositionLat,
+      "endLongitude": this.endAddressPositionLong,
       "width": this.corridorWidth,
-      "viaAddressDetails": [
-        {
-          "viaRoutName": "string",
-          "latitude": 0,
-          "longitude": 0
-        }
-      ],
+      "viaAddressDetails": [],
       "transportData": this.transportDataChecked,
       "trafficFlow": this.trafficFlowChecked,
-      "state": "string",
+      "state": "A",
       "created_At": 0,
       "created_By": 0,
       "modified_At": 0,
       "modified_By": 0,
       "attribute": {
-        "trailer": 0,
+        "trailer": this.selectedTrailerId,
         "explosive": this.explosiveChecked,
         "gas": this.gasChecked,
         "flammable": this.flammableChecked,
@@ -242,32 +317,76 @@ export class RouteCalculatingComponent implements OnInit {
         "other": this.othersChecked
       },
       "exclusion": {
-        "tollRoad": this.corridorFormGroup.controls.tollRoad.value,
-        "mortorway": this.corridorFormGroup.controls.motorWay.value,
-        "boatFerries":this.corridorFormGroup.controls.boatFerries.value,
-        "railFerries": this.corridorFormGroup.controls.railFerries.value,
-        "tunnels": this.corridorFormGroup.controls.tunnels.value,
-        "dirtRoad":this.corridorFormGroup.controls.dirtRoad.value,
+        "tollRoad": this.tollRoadId,
+        "mortorway": this.motorWayId,
+        "boatFerries":this.boatFerriesId,
+        "railFerries": this.railFerriesId,
+        "tunnels": this.tunnelId,
+        "dirtRoad":this.dirtRoadId,
       },
       "vehicleSize": {
-        "vehicleSizeHeight": 0,
-        "vehicleSizeWidth": 0,
-        "vehicleSizeLength": 0,
-        "vehicleSizeLimitedWeight": 0,
-        "vehicleSizeWeightPerAxle": 0
+        "vehicleSizeHeight":this.corridorFormGroup.controls.vehicleHeight.value ? this.corridorFormGroup.controls.vehicleHeight.value : 0,
+        "vehicleSizeWidth": this.corridorFormGroup.controls.vehicleWidth.value ? this.corridorFormGroup.controls.vehicleWidth.value : 0,
+        "vehicleSizeLength": this.corridorFormGroup.controls.vehicleLength.value ? this.corridorFormGroup.controls.vehicleLength.value : 0,
+        "vehicleSizeLimitedWeight": this.corridorFormGroup.controls.limitedWeight.value ? this.corridorFormGroup.controls.limitedWeight.value : 0,
+        "vehicleSizeWeightPerAxle": this.corridorFormGroup.controls.weightPerAxle.value ? this.corridorFormGroup.controls.weightPerAxle.value : 0,
       }
     }
     console.log(corridorObj)
     this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
-      console.log(responseData);
+      if(responseData.code === 200){
+        this.backToCorridorListFromCreate();
+      }
     })
   }
 
+  backToCorridorListFromCreate(){
+    let emitObj = {
+      booleanFlag: false,
+      successMsg: "create",
+      fromCreate:true,
+    }  
+    this.backToPage.emit(emitObj);
+  }
   backToCorridorList(){
     let emitObj = {
       booleanFlag: false,
-      successMsg: ""
+      successMsg: "",
     }  
     this.backToPage.emit(emitObj);
+  }
+
+  resetValues(){
+    this.tollRoadId = 'D';
+    this.motorWayId ='D';
+    this.railFerriesId = 'D';
+    this.tunnelId ='D';
+    this.dirtRoadId = 'D';
+    this.boatFerriesId = 'D';
+    this.explosiveChecked = false;
+    this.gasChecked = false;
+    this.flammableChecked  = false;
+    this.combustibleChecked  = false;
+    this.organicChecked  = false;
+    this.poisonChecked  = false;
+    this.radioactiveChecked  = false;
+    this.corrosiveChecked  = false;
+    this.poisonInhaleChecked  = false;
+    this.waterHarmChecked  = false;
+    this.othersChecked  = false;
+    this.corridorFormGroup.controls.vehicleHeight.setValue("");
+    this.corridorFormGroup.controls.vehicleLength.setValue("");
+    this.corridorFormGroup.controls.vehicleWidth.setValue("");
+    this.corridorFormGroup.controls.limitedWeight.setValue("");
+    this.corridorFormGroup.controls.weightPerAxle.setValue("");
+    this.corridorFormGroup.controls.startaddress.setValue("");
+    this.corridorFormGroup.controls.endaddress.setValue("");
+    this.clearMap();
+  }
+
+  clearMap(){
+    this.hereMap.removeObject(this.startMarker);
+    this.hereMap.removeObject(this.endMarker);
+
   }
 }

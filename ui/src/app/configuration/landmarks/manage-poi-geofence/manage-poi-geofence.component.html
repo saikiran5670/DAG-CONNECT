@@ -98,7 +98,7 @@
         <div *ngIf='poiInitData.length > 0'>
           <mat-table [dataSource]="poidataSource" class="table-items" matSort>
             <ng-container matColumnDef="All">
-              <mat-header-cell *matHeaderCellDef>
+              <mat-header-cell *matHeaderCellDef class="max-width-10-per">
                 <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
                   [checked]='selectedpois.hasValue() && isAllSelectedForPOI()'
                   [indeterminate]='selectedpois.hasValue() && !isAllSelectedForPOI()'
@@ -106,7 +106,7 @@
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row" class="max-width-10-per">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
@@ -117,8 +117,8 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="Icon">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-header-cell *matHeaderCellDef class="max-width-8-per">{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" class="max-width-8-per">
                 <mat-icon>place</mat-icon>
               </mat-cell>
             </ng-container>
@@ -227,7 +227,7 @@
           <mat-table matTableExporter [dataSource]="geofencedataSource" [hiddenColumns]=[0,4] class="table-items"
             matSort>
             <ng-container matColumnDef="All">
-              <mat-header-cell *matHeaderCellDef>
+              <mat-header-cell *matHeaderCellDef class="max-width-10-per">
                 <mat-checkbox (change)='$event ? masterToggleForGeo() : null'
                   [checked]='selectedgeofences.hasValue() && isAllSelectedForGeo()'
                   [indeterminate]='selectedgeofences.hasValue() && !isAllSelectedForGeo()'
@@ -235,7 +235,7 @@
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row" class="max-width-10-per">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
