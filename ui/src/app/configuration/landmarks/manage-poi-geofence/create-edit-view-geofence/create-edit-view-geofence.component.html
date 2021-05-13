@@ -125,7 +125,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class='full-width'>
-                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Enter Address' }}"
+                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress || 'Enter Address' }}"
                   matInput formControlName="address">
               </mat-form-field>
             </div>
@@ -137,7 +137,7 @@
             <mat-label><span>{{ translationData.lblZipCode || 'Zip-Code' }}</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterZipCode|| 'Enter Zip-Code' }}" matInput
+                <input maxlength="50" placeholder="{{ translationData.lblEnterZipCode || 'Enter Zip-Code' }}" matInput
                   formControlName="zip">
               </mat-form-field>
             </div>
@@ -153,7 +153,7 @@
             </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterCity|| 'Enter City' }}" matInput
+                <input maxlength="50" placeholder="{{ translationData.lblEnterCity || 'Enter City' }}" matInput
                   formControlName="city">
               </mat-form-field>
             </div>
@@ -337,7 +337,7 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="icon">
-          <mat-header-cell *matHeaderCellDef>{{ translationData.lblName || 'Icon' }}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <mat-icon>place</mat-icon>
           </mat-cell>
