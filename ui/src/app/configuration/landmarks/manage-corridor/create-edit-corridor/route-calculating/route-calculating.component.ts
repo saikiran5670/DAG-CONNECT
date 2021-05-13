@@ -254,7 +254,7 @@ export class RouteCalculatingComponent implements OnInit {
         this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
         this.hereMap.addObject(this.startMarker);
         this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
-        this.hereMap.setZoom(5);
+        this.hereMap.setZoom(2);
       });
     }
   }
@@ -334,14 +334,24 @@ export class RouteCalculatingComponent implements OnInit {
     }
     console.log(corridorObj)
     this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
-      console.log(responseData);
+      if(responseData.code === 200){
+        this.backToCorridorListFromCreate();
+      }
     })
   }
 
+  backToCorridorListFromCreate(){
+    let emitObj = {
+      booleanFlag: false,
+      successMsg: "create",
+      fromCreate:true,
+    }  
+    this.backToPage.emit(emitObj);
+  }
   backToCorridorList(){
     let emitObj = {
       booleanFlag: false,
-      successMsg: ""
+      successMsg: "",
     }  
     this.backToPage.emit(emitObj);
   }

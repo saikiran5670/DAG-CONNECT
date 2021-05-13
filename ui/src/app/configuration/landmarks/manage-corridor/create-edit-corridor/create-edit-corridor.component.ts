@@ -56,12 +56,19 @@ export class CreateEditCorridorComponent implements OnInit {
     this.selectedCorridorTypeId = _event.value;
   }
 
-  backToCorridorList(){
+  backToCorridorList(_eventObj){
+    if(_eventObj){
+      
+    this.backToPage.emit(_eventObj);
+    }else{
+      
     let emitObj = {
       booleanFlag: false,
       successMsg: ""
-    }  
+    } 
     this.backToPage.emit(emitObj);
+
+    } 
   }
 
 }

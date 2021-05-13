@@ -287,5 +287,11 @@ export class ManageCorridorComponent implements OnInit {
     this.createEditStatus = false;
 
     this.tabVisibility.emit(true);
+    if(_eventObj.msg=="create"){
+      var _msg = "Corridor created successfully!"
+      this.successMsgBlink(_msg);
+      this.loadCorridorData();
+    }
   }
+
 }
