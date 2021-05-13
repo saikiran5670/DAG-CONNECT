@@ -336,8 +336,8 @@
             </mat-checkbox>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="icon" class="max-width-8-per">
-          <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
+        <ng-container matColumnDef="icon">
+          <mat-header-cell *matHeaderCellDef class="max-width-8-per">{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
           <mat-cell *matCellDef="let row" class="max-width-8-per">
             <mat-icon>place</mat-icon>
           </mat-cell>
