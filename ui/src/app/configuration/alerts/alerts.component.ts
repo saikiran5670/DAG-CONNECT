@@ -19,7 +19,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 })
 
 export class AlertsComponent implements OnInit {
-  displayedColumns: string[] = ['validityPeriodType','name','category','type','thresholdValue','vehicleGroupName','state','action'];
+  displayedColumns: string[] = ['urgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
   displayMessage: any;
   createViewEditStatus: boolean = false;
@@ -82,8 +82,7 @@ export class AlertsComponent implements OnInit {
         this.processTranslation(data);
         this.loadFiltersData();     
       //  this.loadAlertsData();
-      });  
-      this.loadAlertsData();
+      });       
       this.updateDatasource(this.filterValues);     
     }
     
@@ -311,7 +310,7 @@ export class AlertsComponent implements OnInit {
       message: this.translationData.lblYouwanttoDetails || "You want to # '$' Details?",   
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: (rowData.state == 'Active') ? this.translationData.lblDeactivate || " Suspended" : this.translationData.lblActivate || " Activate",
-      status: rowData.state == 'Active' ? 'Inactive' : 'Active' ,
+      status: rowData.state == 'Active' ? 'Suspended' : 'Active' ,
       name: rowData.name
     };
     const dialogConfig = new MatDialogConfig();
