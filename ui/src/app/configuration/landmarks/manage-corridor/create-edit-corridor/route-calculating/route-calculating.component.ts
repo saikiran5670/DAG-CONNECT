@@ -3,7 +3,6 @@ import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/f
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
 import { CorridorService } from '../../../../../services/corridor.service';
-
 declare var H: any;
 
 @Component({
@@ -56,8 +55,12 @@ export class RouteCalculatingComponent implements OnInit {
       widthInput : ['', [Validators.required]],
       viaroute1: ['', [Validators.required]],
       viaroute2: ['', [Validators.required]],
-
-  
+      trailer:["Regular"],
+      tollRoad:['Regular'],
+      motorWay:['Regular'],
+      boatFerries:['Regular'],
+      railFerries:['Regular'],
+      tunnels:['Regular']
 
     });
 
@@ -172,18 +175,43 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
+  startAddressPosition = {lat : 18.50424,long : 73.85286};
+  startAddressFocusOut(){
+    if (this.corridorFormGroup.controls.startaddress.value != '') {
+      this.here.getAddress(this.corridorFormGroup.controls.startaddress.value).then((result) => {
+        console.log(result)
+        this.startAddressPosition.lat = result[0]["Location"]["DisplayPosition"]["Latitude"];
+        this.startAddressPosition.long = result[0]["Location"]["DisplayPosition"]["Longitude"];
+      });
+      console.log(this.startAddressPosition);
+    }
+  }
+
+  endAddressPosition = {lat : 18.50424,long : 73.85286};
+  endAddressFocusOut(){
+    if (this.corridorFormGroup.controls.endaddress.value != '') {
+      this.here.getAddress(this.corridorFormGroup.controls.endaddress.value).then((result) => {
+        console.log(result)
+        this.endAddressPosition.lat = result[0]["Location"]["DisplayPosition"]["Latitude"];
+        this.endAddressPosition.long = result[0]["Location"]["DisplayPosition"]["Longitude"];
+      });
+      console.log(this.endAddressPosition);
+
+    }
+  }
   createCorridorClicked(){
+   
     var corridorObj = {
       "id": 0,
       "organizationId": this.organizationId,
       "corridorType": 46,
       "corridorLabel":this.corridorFormGroup.controls.label.value,
       "startAddress": this.corridorFormGroup.controls.startaddress.value,
-      "startLatitude": 0,
-      "startLongitude": 0,
+      "startLatitude": this.startAddressPosition.lat,
+      "startLongitude": this.startAddressPosition.long,
       "endAddress": this.corridorFormGroup.controls.endaddress.value,
-      "endLatitude": 0,
-      "endLongitude": 0,
+      "endLatitude": this.endAddressPosition.lat,
+      "endLongitude": this.endAddressPosition.long,
       "width": this.corridorWidth,
       "viaAddressDetails": [
         {
@@ -214,12 +242,12 @@ export class RouteCalculatingComponent implements OnInit {
         "other": this.othersChecked
       },
       "exclusion": {
-        "tollRoad": "string",
-        "mortorway": "string",
-        "boatFerries": "string",
-        "railFerries": "string",
-        "tunnels": "string",
-        "dirtRoad": "string"
+        "tollRoad": this.corridorFormGroup.controls.tollRoad.value,
+        "mortorway": this.corridorFormGroup.controls.motorWay.value,
+        "boatFerries":this.corridorFormGroup.controls.boatFerries.value,
+        "railFerries": this.corridorFormGroup.controls.railFerries.value,
+        "tunnels": this.corridorFormGroup.controls.tunnels.value,
+        "dirtRoad":this.corridorFormGroup.controls.dirtRoad.value,
       },
       "vehicleSize": {
         "vehicleSizeHeight": 0,
@@ -233,5 +261,13 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
       console.log(responseData);
     })
+  }
+
+  backToCorridorList(){
+    let emitObj = {
+      booleanFlag: false,
+      successMsg: ""
+    }  
+    this.backToPage.emit(emitObj);
   }
 }
