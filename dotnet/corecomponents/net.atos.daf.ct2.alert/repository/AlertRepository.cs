@@ -672,7 +672,7 @@ namespace net.atos.daf.ct2.alert.repository
                     notava.state as notava_state,
                     notava.created_at as notava_created_at,
                     notava.modified_at as notava_modified_at,					
-					(CASE WHEN grp.group_type='S' THEN veh.name END) as vehiclename,
+					(CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
 					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname
                     FROM master.alert ale
                     left join master.alerturgencylevelref aleurg
@@ -691,10 +691,12 @@ namespace net.atos.daf.ct2.alert.repository
                     on noti.id= notava.notification_id and notava.state in ('A','I')
 					left join master.group grp 
 					on ale.vehicle_group_id=grp.id
-					inner join master.groupref vgrpref
+					left join master.groupref vgrpref
 					on  grp.id=vgrpref.group_id and grp.object_type='V'	
-					inner join master.vehicle veh
+					left join master.vehicle veh
 					on vgrpref.ref_id=veh.id 
+                    left join master.vehicle vehs
+					on grp.ref_id=vehs.id and grp.grouptype='S'
                      ";
 
                 if (accountid > 0 && organizationid > 0)
