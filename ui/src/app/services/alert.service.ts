@@ -72,5 +72,18 @@ export class AlertService {
       .pipe(catchError(this.handleError));
   }
 
+  deleteAlert(id: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .delete<void>(`${this.alertServiceUrl}/DeleteAlert?alertId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+
+
 
 }

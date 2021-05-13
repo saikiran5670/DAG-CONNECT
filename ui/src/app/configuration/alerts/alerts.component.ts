@@ -10,6 +10,7 @@ import { MatSort } from '@angular/material/sort';
 import { VehicleService } from '../../services/vehicle.service';
 import { PackageService } from 'src/app/services/package.service';
 import { AlertService } from 'src/app/services/alert.service';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-alerts',
@@ -61,7 +62,8 @@ export class AlertsComponent implements OnInit {
     private packageService: PackageService, 
     private dialog: MatDialog,
     private vehicleService: VehicleService,
-    private alertService: AlertService ) { }
+    private alertService: AlertService,
+    private dialogService: ConfirmDialogService ) { }
   
     ngOnInit() {
       this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -255,17 +257,30 @@ export class AlertsComponent implements OnInit {
 
   deleteAlertData(item: any) {
     const options = {
-      title: this.translationData.lblDeleteAccount || "Delete Account",
-      message: this.translationData.lblAreyousureyouwanttodeleteuseraccount || "Are you sure you want to delete '$' account?",
+      title: this.translationData.lblDeleteAlert || "Delete Alert",
+      message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    this.OpenDialog(options, 'delete', item);
+    let name = item.name;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.alertService.deleteAlert(item.id).subscribe((res) => {
+          this.successMsgBlink(this.getDeletMsg(name));
+          this.loadAlertsData();
+        });
+    }
+   });
   }
     
-  OpenDialog(options: any, flag: any, item: any) {
-   
+  getDeletMsg(alertName: any){
+    if(this.translationData.lblAlertDelete)
+      return this.translationData.lblAlertDelete.replace('$', alertName);
+    else
+      return ("Alert '$' was successfully deleted").replace('$', alertName);
   }
+
   editViewAlertData(element: any, type: any) {
    
   }

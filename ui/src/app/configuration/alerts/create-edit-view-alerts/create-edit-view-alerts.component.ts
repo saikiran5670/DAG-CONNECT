@@ -30,14 +30,16 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() alertTypeList: any;
   @Input() vehicleGroupList: any;
   @Input() vehicleList: any;
+  displayedColumnsVehicles: string[] = ['vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName'];
-  groupDisplayedColumns: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
-  corridorDisplayedColumns: string[] = ['select', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
+  displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
+  displayedColumnsCorridor: string[] = ['select', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
   selectedPOI = new SelectionModel(true, []);
   selectedGeofence = new SelectionModel(true, []);
   selectedGroup = new SelectionModel(true, []);
   selectedCorridor = new SelectionModel(true, []);
+  vehiclesDataSource: any = new MatTableDataSource([]);
   poiDataSource: any = new MatTableDataSource([]);
   geofenceDataSource: any = new MatTableDataSource([]);
   groupDataSource: any = new MatTableDataSource([]);
@@ -83,6 +85,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isSaturdaySelected: boolean= false;
   labelForThreshold: string= '';
   unitForThreshold: string= '';
+  panelOpenState: boolean = false;
   notifications: any= [];
   typesOfLevel: any= [
                       {
@@ -156,6 +159,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.vehicleGroupList= this.vehicleGroupList.filter(item=> item.vehicleGroupId != 0);
     this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
 
+    if(this.vehicleList.length > 0){
+      this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
+    }
     
 
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
@@ -185,6 +191,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.vehicleList= data["vehicleGroup"];
+      if(this.vehicleList.length > 0){
+        this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
+      }
       this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
       this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
     }, (error) => {
@@ -192,8 +201,19 @@ export class CreateEditViewAlertsComponent implements OnInit {
     })
   }
 
-  loadVehicleGroupData(){
-
+  updateVehiclesDataSource(tableData: any){
+    this.vehiclesDataSource= new MatTableDataSource(tableData);
+    this.vehiclesDataSource.filterPredicate = function(data: any, filter: string): boolean {
+      return (
+        data.vehicleName.toString().toLowerCase().includes(filter) ||
+        data.vehicleGroupName.toString().toLowerCase().includes(filter) ||
+        data.subcriptionStatus.toString().toLowerCase().includes(filter)
+      );
+    };
+    setTimeout(()=>{
+      this.vehiclesDataSource.paginator = this.paginator.toArray()[0];
+      this.vehiclesDataSource.sort = this.sort.toArray()[0];
+    });
   }
 
   onChangeAlertCategory(event){
@@ -295,6 +315,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else{
       this.vehicleByVehGroupList= this.vehicleList.filter(item => item.vehicleGroupId == event.value)
     }
+    this.updateVehiclesDataSource(this.vehicleByVehGroupList);
   }
 
   onChangeVehicle(event){
@@ -537,14 +558,41 @@ checkboxClicked(event: any, row: any) {
           }, false);
         }
     }
-  
-    toBack() {
-      let emitObj = {
-        stepFlag: false,
-        msg: ""
-      }
-      this.backToPage.emit(emitObj);
+
+    corridorCheckboxClicked(event, row){
+      if(event.checked){ //-- add new marker
+        this.markerArray.push(row);
+      }else{ //-- remove existing marker
+        //It will filter out checked points only
+        let arr = this.markerArray.filter(item => item.id != row.id);
+        this.markerArray = arr;
+        }
+        this.addPolylineToMap();
     }
+  
+    addPolylineToMap(){
+      console.log(this.markerArray)
+      var lineString = new H.geo.LineString();
+      this.markerArray.forEach(element => {
+        console.log(element.startLat)
+      lineString.pushPoint({lat : element.startLat, lng: element.startLong});
+      lineString.pushPoint({lat : element.endLat, lng: element.endLong});
+      // lineString.pushPoint({lat:48.8567, lng:2.3508});
+      // lineString.pushPoint({lat:52.5166, lng:13.3833});
+      });
+  
+      this.map.addObject(new H.map.Polyline(
+        lineString, { style: { lineWidth: 4 }}
+      ));
+    }
+  
+    // toBack() {
+    //   let emitObj = {
+    //     stepFlag: false,
+    //     msg: ""
+    //   }
+    //   this.backToPage.emit(emitObj);
+    // }
 
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
@@ -733,7 +781,7 @@ checkboxClicked(event: any, row: any) {
         }
       });
       tableData = selectedGroupList;
-      this.corridorDisplayedColumns= ['name', 'poiCount', 'geofenceCount'];
+      this.displayedColumnsCorridor= ['name', 'poiCount', 'geofenceCount'];
       this.updateCorridorDatasource(tableData);
     }
     else if(this.actionType == 'edit'){
@@ -761,8 +809,8 @@ checkboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.poiDataSource.paginator = this.paginator.toArray()[0];
-      this.poiDataSource.sort = this.sort.toArray()[0];
+      this.poiDataSource.paginator = this.paginator.toArray()[1];
+      this.poiDataSource.sort = this.sort.toArray()[1];
     });
   }
 
@@ -776,8 +824,8 @@ checkboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.geofenceDataSource.paginator = this.paginator.toArray()[1];
-      this.geofenceDataSource.sort = this.sort.toArray()[1];
+      this.geofenceDataSource.paginator = this.paginator.toArray()[2];
+      this.geofenceDataSource.sort = this.sort.toArray()[2];
     });
   }
 
@@ -791,8 +839,8 @@ checkboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.groupDataSource.paginator = this.paginator.toArray()[2];
-      this.groupDataSource.sort = this.sort.toArray()[2];
+      this.groupDataSource.paginator = this.paginator.toArray()[3];
+      this.groupDataSource.sort = this.sort.toArray()[3];
     });
   }
 
@@ -808,8 +856,8 @@ checkboxClicked(event: any, row: any) {
       );
     };
     setTimeout(()=>{
-      this.corridorDataSource.paginator = this.paginator.toArray()[0];
-      this.corridorDataSource.sort = this.sort.toArray()[0];
+      this.corridorDataSource.paginator = this.paginator.toArray()[1];
+      this.corridorDataSource.sort = this.sort.toArray()[1];
     });
   }
 
@@ -1083,6 +1131,12 @@ checkboxClicked(event: any, row: any) {
     else{
       return '';
     }
+  }
+
+  applyFilterForVehicles(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
+    this.vehiclesDataSource.filter = filterValue;
   }
 
   applyFilterForPOI(filterValue: string) {
