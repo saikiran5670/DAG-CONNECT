@@ -111,7 +111,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   getBreadcum(type: any) {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewPOI ? this.translationData.lblViewPOI : 'View POI Details') : (type == 'edit') ? (this.translationData.lblEditPOI ? this.translationData.lblEditPOI : 'Edit POI Details') : (this.translationData.lblPOIDetails ? this.translationData.lblPOIDetails : 'Add New POI')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / ${(type == 'view') ? (this.translationData.lblViewPOI ? this.translationData.lblViewPOI : 'View POI Details') : (type == 'edit') ? (this.translationData.lblEditPOI ? this.translationData.lblEditPOI : 'Edit POI Details') : (this.translationData.lblAddNewPOI ? this.translationData.lblAddNewPOI : 'Add New POI')}`;
   }
 
   public ngAfterViewInit() {
@@ -135,19 +135,32 @@ export class CreateEditViewPoiComponent implements OnInit {
    
     var searchbox = ui.getControl("searchbox");
     if (this.actionType == 'edit' || this.actionType == 'view') {
-      let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
-      let getSelectedLongitude = this.poiFormGroup.get("longitude").value;
-      this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
-      this.map.addObject(this.selectedMarker);
+      this.removeMapObjects();
+      this.drawMarkerOnMap();
+      // let getSelectedLatitude = this.poiFormGroup.get("lattitude").value;
+      // let getSelectedLongitude = this.poiFormGroup.get("longitude").value;
+      // this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
+      // this.map.addObject(this.selectedMarker);
     }
     if(this.actionType != 'view'){
       var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-        content: '<b>Click on map to create POI position</b>'
-    });
-    // Add info bubble to the UI:
-    ui.addBubble(bubble);
-    this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
+          content: '<b>Click on map to create POI position</b>'
+      });
+      // Add info bubble to the UI:
+      ui.addBubble(bubble);
+      this.setUpClickListener(this.map, behavior, this.selectedMarker, this.here, this.poiFlag, this.data, this, bubble, ui);
     }
+  }
+
+  drawMarkerOnMap(){
+    let getSelectedLatitude = this.selectedElementData.latitude;//this.poiFormGroup.get("lattitude").value;
+    let getSelectedLongitude = this.selectedElementData.longitude;//this.poiFormGroup.get("longitude").value;
+    this.selectedMarker = new H.map.Marker({ lat: getSelectedLatitude, lng: getSelectedLongitude });
+    this.map.addObject(this.selectedMarker);
+  }
+
+  removeMapObjects(){
+    this.map.removeObjects(this.map.getObjects());
   }
 
   searchValue(event: any) {
@@ -368,15 +381,15 @@ this.map.setZoom(14);
   getUserCreatedMessage() {
     this.userName = `${this.poiFormGroup.controls.name.value}`;
     if (this.actionType == 'create') {
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+      if (this.translationData.lblNewPOICreatedSuccessfully)
+        return this.translationData.lblNewPOICreatedSuccessfully.replace('$', this.userName);
       else
         return ("New POI '$' Created Successfully").replace('$', this.userName);
     } else {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+      if (this.translationData.lblPOIDetailsUpdatedSuccessfully)
+        return this.translationData.lblPOIDetailsUpdatedSuccessfully.replace('$', this.userName);
       else
-        return ("New POI Details '$' Updated Successfully").replace('$', this.userName);
+        return ("'$' POI Details Updated Successfully").replace('$', this.userName);
     }
   }
 
@@ -396,7 +409,7 @@ this.map.setZoom(14);
     if(this.translationData.lblDuplicatePOINameMsg)
       this.duplicatePOINameMsg = this.translationData.lblDuplicatePOINameMsg.replace('$', poiName);
     else
-      this.duplicatePOINameMsg = ("Category Name '$' already exists.").replace('$', poiName);
+      this.duplicatePOINameMsg = ("POI name '$' already exists.").replace('$', poiName);
   }
 
   onCreatePoi() {
@@ -449,8 +462,7 @@ this.map.setZoom(14);
         }
       });
     }
-    else {
-      //console.log(this.selectedElementData);
+    else { //-- update
       let objData = {
         id: this.selectedElementData.id,
         icon: this.selectedElementData.icon,
@@ -484,6 +496,13 @@ this.map.setZoom(14);
 
     }
 
+  }
+
+  onReset(){
+    //-- reset POI here
+    this.setDefaultValue();
+    this.removeMapObjects();
+    this.drawMarkerOnMap();
   }
 
 }

@@ -88,7 +88,7 @@
                       <mat-label>{{ translationData.lblSelectAndUploadIcon || 'Select And Upload Icon' }}</mat-label>
                       <mat-form-field appearance="outline">
                           <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadFile" placeholder="Upload Icon" ></ngx-mat-file-input>
-                          <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                          <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
                       </mat-form-field>
                       <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting icon format - .jpg, .png, .gif and size- 32x32px' }}</span>
                       <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
@@ -144,7 +144,7 @@
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="100"
-                placeholder="{{translationData.lblEnterDescription || 'Description' }}" matInput
+                placeholder="{{translationData.lblEnterDescription || 'Enter Description' }}" matInput
                 formControlName="categoryDescription">
             </mat-form-field>
             <mat-error *ngIf="categoryForm.get('categoryDescription').hasError('whitespace')">

@@ -895,7 +895,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';
       this.importTranslationData.importedFileDetails = this.translationData.lblImportedFileDetails || 'Imported file details';
-      this.importTranslationData.new = this.translationData.lblNew || 'new';
+      this.importTranslationData.new = this.translationData.lblNew || 'New';
       this.importTranslationData.fileType = this.translationData.lblPOI || 'POI';
       this.importTranslationData.fileTypeMultiple = this.translationData.lblPOI || 'POI';
       this.importTranslationData.imported = this.translationData.lblimport || 'Imported';
@@ -927,7 +927,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.totalSizeMustNotExceed = this.translationData.lblTotalSizeMustNotExceed || 'The total size must not exceed';
       this.importTranslationData.emptyFile = this.translationData.lblEmptyFile || 'Empty File';
       this.importTranslationData.importedFileDetails = this.translationData.lblImportedFileDetails || 'Imported file details';
-      this.importTranslationData.new = this.translationData.lblNew || 'new';
+      this.importTranslationData.new = this.translationData.lblNew || 'New';
       this.importTranslationData.fileType = this.translationData.lblGeofence || 'Geofence';
       this.importTranslationData.fileTypeMultiple = this.translationData.lblGeofence || 'Geofences';
       this.importTranslationData.imported = this.translationData.lblimport || 'Imported';
