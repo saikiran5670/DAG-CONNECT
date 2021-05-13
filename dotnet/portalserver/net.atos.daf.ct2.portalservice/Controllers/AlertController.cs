@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region ActivateAlert,SuspendAlert and  DeleteAlert
 
         [HttpPut]
-        [Route("ActivateAlert")]
+        [Route("activatealert")]
         public async Task<IActionResult> ActivateAlert(int alertId)
         {
             try
@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPut]
-        [Route("SuspendAlert")]
+        [Route("suspendalert")]
         public async Task<IActionResult> SuspendAlert(int alertId)
         {
             try
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpDelete]
-        [Route("DeleteAlert")]
+        [Route("deletealert")]
         public async Task<IActionResult> DeleteAlert(int alertId)
         {
             try
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Alert Category
         [HttpGet]
-        [Route("GetAlertCategory")]
+        [Route("getalertcategory")]
         public async Task<IActionResult> GetAlertCategory(int accountId, int orgnizationid)
         {
             try
@@ -334,7 +334,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Get Alert List
         [HttpGet]
-        [Route("GetAlerts")]
+        [Route("getalerts")]
         public async Task<IActionResult> GetAlerts(int accountId, int orgnizationid)
         {
             try

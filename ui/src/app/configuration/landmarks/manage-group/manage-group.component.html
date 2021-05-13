@@ -70,7 +70,7 @@
                             (click)="row.geofenceCount !=0 ? onGeofenceClick(row) : ''">{{row.geofenceCount}}</span></mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="action">
-                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef>{{ translationData.lblActions || 'Actions' }}</mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <button class='actionBtn' mat-flat-button matTooltip="View" (click)="editViewlandmarkGroup(row, 'view')">
                                     <mat-icon>visibility</mat-icon>
