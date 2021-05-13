@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AlertService } from 'src/app/services/alert.service';
+import { CorridorService } from 'src/app/services/corridor.service';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { POIService } from 'src/app/services/poi.service';
@@ -32,7 +33,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName'];
   groupDisplayedColumns: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
-  corridorDisplayedColumns: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
+  corridorDisplayedColumns: string[] = ['select', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
   selectedPOI = new SelectionModel(true, []);
   selectedGeofence = new SelectionModel(true, []);
   selectedGroup = new SelectionModel(true, []);
@@ -109,7 +110,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private landmarkGroupService: LandmarkGroupService, 
               private domSanitizer: DomSanitizer, 
               private dialog: MatDialog,
-              private alertService: AlertService) 
+              private alertService: AlertService,
+              private corridorService: CorridorService) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -150,79 +152,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.breadcumMsg = this.getBreadcum();
     }
 
-    // this.vehicleGroupList= [
-    //   {
-    //     id: 1,
-    //     value: 'Vehicle Group 001'
-    //   },
-    //   {
-    //     id: 2,
-    //     value: 'Vehicle Group 002'
-    //   },
-    //   {
-    //     id: 3,
-    //     value: 'Vehicle Group 003'
-    //   }
-    // ];
-
-    // this.vehicleList= [
-    //   {
-    //     id: 1,
-    //     value: 'Vehicle 1',
-    //     vehicleGroupId: 1
-    //   },
-    //   {
-    //     id: 2,
-    //     value: 'Vehicle 2',
-    //     vehicleGroupId: 1
-    //   },
-    //   {
-    //     id: 3,
-    //     value: 'Vehicle 3',
-    //     vehicleGroupId: 1
-    //   },
-    //   {
-    //     id: 4,
-    //     value: 'Vehicle 4',
-    //     vehicleGroupId: 2
-    //   },
-    //   {
-    //     id: 5,
-    //     value: 'Vehicle 5',
-    //     vehicleGroupId: 2
-    //   },
-    //   {
-    //     id: 6,
-    //     value: 'Vehicle 6',
-    //     vehicleGroupId: 2
-    //   },
-    //   {
-    //     id: 7,
-    //     value: 'Vehicle 7',
-    //     vehicleGroupId: 3
-    //   },
-    //   {
-    //     id: 8,
-    //     value: 'Vehicle 8',
-    //     vehicleGroupId: 3
-    //   },
-    //   {
-    //     id: 9,
-    //     value: 'Vehicle 9',
-    //     vehicleGroupId: 3
-    //   }
-    // ]
-
     // this.alertTypeByCategoryList= this.alertTypeList;
     this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
+    this.vehicleGroupList= this.vehicleGroupList.filter(item=> item.vehicleGroupId != 0);
     this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
 
     
 
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
       this.loadFiltersData();
-    if(this.vehicleGroupList.length == 0)
-      this.loadVehicleGroupData(); 
   }
 
   getUnique(arr, comp) {
@@ -268,8 +206,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   onChangeAlertType(event){
     this.alert_type_selected= event.value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
+      this.loadMap();
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
-        this.loadMap();
         this.loadPOIData();
         this.loadGeofenceData();
         this.loadGroupData();
@@ -778,17 +716,11 @@ checkboxClicked(event: any, row: any) {
   }
 
   loadCorridorData(){
-    let objData = { 
-      organizationid : this.accountOrganizationId,
-   };
-
-    this.landmarkGroupService.getLandmarkGroups(objData).subscribe((data: any) => {
-      if(data){
-        this.groupGridData = data["groups"];
-        this.updateGroupDatasource(this.groupGridData);
-      }
+    this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
+      this.corridorGridData = data;
+      this.updateCorridorDatasource(this.corridorGridData);
     }, (error) => {
-      //console.log(error)
+      
     });
   }
 
@@ -869,14 +801,16 @@ checkboxClicked(event: any, row: any) {
     this.corridorDataSource = new MatTableDataSource(tableData);
     this.corridorDataSource.filterPredicate = function(data: any, filter: string): boolean {
       return (
-        data.name.toString().toLowerCase().includes(filter) ||
-        data.poiCount.toString().toLowerCase().includes(filter) ||
-        data.geofenceCount.toString().toLowerCase().includes(filter)
+        data.corridoreName.toString().toLowerCase().includes(filter) ||
+        data.startPoint.toString().toLowerCase().includes(filter) ||
+        data.endPoint.toString().toLowerCase().includes(filter) ||
+        data.distance.toString().toLowerCase().includes(filter) ||
+        data.width.toString().toLowerCase().includes(filter)
       );
     };
     setTimeout(()=>{
-      this.corridorDataSource.paginator = this.paginator.toArray()[3];
-      this.corridorDataSource.sort = this.sort.toArray()[3];
+      this.corridorDataSource.paginator = this.paginator.toArray()[0];
+      this.corridorDataSource.sort = this.sort.toArray()[0];
     });
   }
 
@@ -1053,8 +987,8 @@ checkboxClicked(event: any, row: any) {
 
   onCreateUpdate(){
     let alertLandmarkRefs= [];
-    // Payload for Entering Zone, Exiting Zone, Exiting Corridor
-    if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X' || this.alert_type_selected === 'C')){
+    // Entering Zone, Exiting Zone
+    if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
       
       if(this.selectedPOI.selected.length > 0){
         this.selectedPOI.selected.forEach(element => {
@@ -1073,6 +1007,19 @@ checkboxClicked(event: any, row: any) {
             "landmarkType": element.type,
             "refId": element.id,
             "distance": element.distance,
+            "unitType": ""
+          }
+          alertLandmarkRefs.push(tempObj);
+        });
+      }
+    }
+    else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'C'){ // Exiting Corridor
+      if(this.selectedCorridor.selected.length > 0){
+        this.selectedCorridor.selected.forEach(element => {
+          let tempObj= {
+            "landmarkType": "P",
+            "refId": element.id,
+            "distance": 100,
             "unitType": ""
           }
           alertLandmarkRefs.push(tempObj);

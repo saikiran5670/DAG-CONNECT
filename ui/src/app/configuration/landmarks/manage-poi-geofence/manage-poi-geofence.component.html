@@ -40,7 +40,7 @@
               </button>
               <mat-menu #belowMenu="matMenu" yPosition="below">
                 <button mat-menu-item (click)="createEditView()">{{ translationData.lblNewPOI || 'New POI' }}</button>
-                <button mat-menu-item (click)="onGeofenceSelection()">{{ translationData.lblNeGeofence || 'New Geofence' }}</button>
+                <button mat-menu-item (click)="onGeofenceSelection()">{{ translationData.lblNewGeofence || 'New Geofence' }}</button>
               </mat-menu>
             </div>
           </div>
@@ -102,20 +102,17 @@
                 <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
                   [checked]='selectedpois.hasValue() && isAllSelectedForPOI()'
                   [indeterminate]='selectedpois.hasValue() && !isAllSelectedForPOI()'
-                  [aria-label]='checkboxLabelForPOI()' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
+                  [aria-label]='checkboxLabelForPOI()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
-                <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-            <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-            <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span> -->
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedpois.toggle(row) : null; checkboxClicked($event, row)'
-                  [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
+                  [checked]='selectedpois.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -234,7 +231,7 @@
                 <mat-checkbox (change)='$event ? masterToggleForGeo() : null'
                   [checked]='selectedgeofences.hasValue() && isAllSelectedForGeo()'
                   [indeterminate]='selectedgeofences.hasValue() && !isAllSelectedForGeo()'
-                  [aria-label]='checkboxLabelForGeo()' matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
+                  [aria-label]='checkboxLabelForGeo()' matTooltip="{{ translationData.lblAllCheckboxViewTooltipMsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
@@ -244,7 +241,7 @@
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedgeofences.toggle(row) : null; geofenceCheckboxClicked($event,row)' [checked]='selectedgeofences.isSelected(row)'
-                  [aria-label]='checkboxLabelForGeo(row)'  matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
+                  [aria-label]='checkboxLabelForGeo(row)'  matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
@@ -264,7 +261,7 @@
               <mat-cell *matCellDef="let row">{{ row.subCategoryName != '' ? row.subCategoryName : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="Actions">
-              <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action' }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef>{{ translationData.lblActions || 'Actions' }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <button class='actionBtn' mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}"
                   (click)="editViewGeofence(row, 'view')">
