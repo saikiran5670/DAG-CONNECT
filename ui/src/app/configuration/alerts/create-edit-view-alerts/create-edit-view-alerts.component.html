@@ -92,7 +92,7 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event)" formControlName="vehicleGroup" >
                   <mat-option value="ALL">--All--</mat-option>  
-                  <mat-option *ngFor="let vehGrp of vehicleByVehGroupList" [value]="vehGrp.vehicleGroupId">
+                  <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.vehicleGroupId">
                         {{vehGrp.vehicleGroupName}}
                     </mat-option>
                 </mat-select>
@@ -474,22 +474,25 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name'}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <span>{{row.name}}</span> </mat-cell>
+                <ng-container matColumnDef="corridoreName">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblname || 'Name' }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.corridoreName }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="poiCount">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblPOI || 'POI'}}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row" matTooltip={{row.poiCount}}><span [ngClass]="row.poiCount !=0 ? 'row-hover' : '' "
-                        (click)="row.poiCount !=0 ? onPOIClick(row) : ''">{{row.poiCount}}</span></mat-cell>
+                <ng-container matColumnDef="startPoint">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'Start Point' }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.startPoint }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="geofenceCount">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblGeofence || 'Geofence'}}
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row" matTooltip={{row.geofenceCount}}><span [ngClass]="row.geofenceCount !=0 ? 'row-hover' : '' "
-                    (click)="row.geofenceCount !=0 ? onGeofenceClick(row) : ''">{{row.geofenceCount}}</span></mat-cell>
+                <ng-container matColumnDef="endPoint">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'End Point' }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.endPoint }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="distance">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance(km)' }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.distance }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="width">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth || 'Width(mtr)' }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.width }}</mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="corridorDisplayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: corridorDisplayedColumns;">
@@ -500,7 +503,7 @@
           </mat-expansion-panel>
           </div>
 
-          <!-- Calender selction -->
+          <!-- Calender selection -->
 
           <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'S'"
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -590,8 +593,8 @@
             (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
           <button class='no-margin' 
               [disabled]="!alertForm.valid ||
-              (alertForm.controls.alertCategory.value === 'L' && (alertForm.controls.alertType.value === 'N' || alertForm.controls.alertType.value === 'X') && (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)) ||
-              (alertForm.controls.alertCategory.value === 'L' && alertForm.controls.alertType.value === 'C' && selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
+              (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)) ||
+              (alert_category_selected === 'L' && alert_type_selected === 'C' && selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
