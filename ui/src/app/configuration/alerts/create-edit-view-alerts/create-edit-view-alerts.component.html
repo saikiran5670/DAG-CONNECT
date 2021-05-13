@@ -114,7 +114,7 @@
               {{translationData.lblPleaseSelectVehicle || 'Please select Vehicle' }}
             </mat-error>
         </div>
-        <div *ngIf="selectedApplyOn != 'vehicle'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div *ngIf="selectedApplyOn != 'S'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -601,9 +601,16 @@
           <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
             (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
           <button class='no-margin' 
-              [disabled]="!alertForm.valid ||
-              (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X') && (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0)) ||
-              (alert_category_selected === 'L' && alert_type_selected === 'C' && selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
+              [disabled]="!alertForm.valid || (selectedApplyOn == 'G' ? 
+              ((alertForm.controls.vehicleGroup.value == '' || 
+                alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
+                (alertForm.controls.vehicle.value == '' ? true : false)) ||
+              (alert_category_selected === 'L' && (alert_type_selected === 'N' || 
+              alert_type_selected === 'X') && 
+              (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && 
+              selectedGroup.selected.length == 0)) ||
+              (alert_category_selected === 'L' && alert_type_selected === 'C' && 
+              selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
