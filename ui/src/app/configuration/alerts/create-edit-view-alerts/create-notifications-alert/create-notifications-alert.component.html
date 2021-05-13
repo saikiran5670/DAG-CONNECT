@@ -1,0 +1,235 @@
+<form [formGroup]="notificationForm">
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+        fxLayoutGap="10px">
+        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }} <span
+                    class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <input placeholder="{{ translationData.lblEnterRecipientLabel || 'Enter Recipient Label' }}" matInput
+                    formControlName="recipientLabel" maxlength="50">
+            </mat-form-field>
+            <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization || 'Enter max 10 recipient label for
+                categorization' }}</mat-hint>
+            <!-- <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('required') && notificationForm.get('recipientLabel').touched">
+          {{translationData.lblPleaseEnterNewAlertName || 'Please enter new Alert name' }}
+        </mat-error>
+        <mat-error *ngIf="!notificationForm.get('recipientLabel').hasError('required')  && notificationForm.get('recipientLabel').hasError('whitespace')">
+          {{ translationData.lblAlertNamecannotcontainonlywhitespace || 'Alert Name cannot contain only whitespace' }}
+         </mat-error>
+        <mat-error *ngIf="isDuplicaterecipient">{{translationData.lblDuplicaterecipient || 'Duplicate recipient Name' }}</mat-error>
+        <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
+            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+        </mat-error> -->
+        </div>
+        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblContactMode || 'Contact Mode' }} <span class='mandatoryColor'>*</span>
+            </mat-label>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-select (selectionChange)="onChangeContactMode($event)" placeholder="{{ translationData.lblSelectContactMode || 'Select Contact Mode' }}"
+                    formControlName="contactMode">
+                    <mat-option *ngFor="let item of contactModes" [value]="item.id">
+                       {{item.value}}
+                    </mat-option>
+                    <!-- <mat-option>
+                        Ws
+                    </mat-option> -->
+                </mat-select>
+            </mat-form-field>
+            <mat-hint>{{translationData.lblSelectContactModeAndAddWithList || 'Select contact mode and add with list'}}
+            </mat-hint>
+            <mat-error
+                *ngIf="notificationForm.get('contactMode').hasError('required') && notificationForm.get('contactMode').touched">
+                {{translationData.lblPleaseSelectContactMode || 'Please select Contact Mode' }}
+            </mat-error>
+        </div>
+        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <button class='no-margin' mat-raised-button color="primary" (click)='onNotificationAdd()'>{{ actionType ==
+                'create'
+                ? (translationData.lblAdd || 'Add') :
+                (translationData.lblAdd || 'Add') }}</button>
+        </div>
+    </div>
+
+    <!-- For email -->
+    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 " style="border: 1px solid #000">
+        <mat-panel-title>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
+                translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
+            <mat-icon style="color: red;">deleteicon</mat-icon>
+        </mat-panel-title>
+        <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                    fxLayoutGap="10px">
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailAddress || 'Email Address' }} <span
+                                class='mandatoryColor'>*</span>
+                        </mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input placeholder="{{ translationData.lblEmailAddress || 'Enter Email Address' }}" matInput
+                                formControlName="emailAddress" maxlength="50">
+                        </mat-form-field>
+                        <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
+                            with comma (;)
+                            separated' }}</mat-hint>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblMailSubject || 'Mail Subject' }} <span
+                                class='mandatoryColor'>*</span>
+                                <span>{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                        </mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input
+                                placeholder="{{ translationData.lblMailSubjectAlertType || 'Mail Subject - Alert Type' }}"
+                                matInput formControlName="mailSubject" maxlength="50">
+                        </mat-form-field>
+                        <mat-hint>{{translationData.lblMailSubjectDescription || 'Mail Subject Description'}}</mat-hint>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                    fxLayoutGap="10px">
+                    <div class="full-width  " fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblMailDescription || 'Mail Description' }} <span
+                                class='mandatoryColor'>*</span>
+                                <span>{{ translationData.lbl250CharMax || '250 characters max' }}</span>
+                            </mat-label>
+                                
+                        <mat-form-field appearance="outline">
+                            <textarea matInput
+                                placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
+                                formControlName="mailDescription"></textarea>
+                        </mat-form-field>
+                        <mat-hint>{{translationData.lblMailTextDescription || 'Mail Text Description' }}</mat-hint>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: grey" class="areaWidth">
+                <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
+                <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold'>{{
+                    translationData.lblSetLimitations || 'Set Limitations' }}</span>
+                <span style="padding-bottom: 15px;">{{translationData.lblMaxAlertNotificationsPerVehicle || 'Max 10
+                    alert notifications per vehicle' }}</span>
+                <span class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
+                        class='mandatoryColor'>*</span></span>
+                <mat-radio-button [checked]="true" style='margin-right: 20px;' value="Always">{{
+                    translationData.lblAlways || 'Always' }}
+                </mat-radio-button>
+                <!-- </div> -->
+            </div>
+        </div>
+    </mat-card>
+
+
+    <!-- For webservice -->
+    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 0" style="border: 1px solid #000;">
+        <mat-panel-title>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
+                translationData.lblRecipientLabel02 || 'Recipient Label 01' }}</span>
+            <mat-icon style="color: red;">deleteicon</mat-icon>
+        </mat-panel-title>
+        <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                    fxLayoutGap="10px">
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebServiceURL || 'Web Service URL' }} <span
+                                class='mandatoryColor'>*</span>
+                        </mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input placeholder="{{ translationData.lblEmailAddress || 'Enter Email Address' }}" matInput
+                                formControlName="emailAddress" maxlength="50">
+                        </mat-form-field>
+                        <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
+                            with comma (;)
+                            separated' }}</mat-hint>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <div class="margin-bottom-sm">
+                        <mat-radio-group (change)="onRadioButtonChange($event)" formControlName="authentication">
+                        <mat-radio-button style='margin-right: 20px;' [checked]="true"  value="0">{{
+                            translationData.lblNoAuthentication || 'No Authentication' }}
+                        </mat-radio-button>
+                        <mat-radio-button  style='margin-right: 20px;' value="1">{{
+                            translationData.lblLoginPasswordAuthentication || 'Login/Password Authentication' }}
+                        </mat-radio-button>     
+                    </mat-radio-group>          </div>    
+                    </div>
+                </div>
+                <div fxLayout="row" *ngIf="radioButtonVal != '1'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                    fxLayoutGap="10px">
+                    <div class="full-width  " fxLayout="column" fxLayoutAlign="left">
+                        <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblWSDescription || 'WS Description' }} <span
+                                class='mandatoryColor'>*</span>
+                                <span>{{ translationData.lbl250CharMax || '250 characters max' }}</span>
+                            </mat-label>
+                        <mat-form-field appearance="outline">
+                            <textarea matInput
+                                placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
+                                formControlName="mailDescription"></textarea>
+                        </mat-form-field>
+                        <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
+                    </div>
+                </div>
+                    <div fxLayout="row" *ngIf="radioButtonVal == '1'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                        fxLayoutGap="10px">
+                        <div class="full-width" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblWSDescription || 'WS Description' }}
+                                <span>{{ translationData.lbl250CharMax || '250 characters max' }}</span>
+                            </mat-label>
+                            <mat-form-field appearance="outline">
+                                <textarea matInput placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
+                                    formControlName="mailDescription"></textarea>
+                            </mat-form-field>
+                            <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
+                        </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblLogin || 'Login' }} <span class='mandatoryColor'>*</span>
+                        </mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input placeholder="{{ translationData.lblloginId || 'Login ID' }}" matInput formControlName="loginId">
+                        </mat-form-field>
+                        <mat-label>{{ translationData.lblPassword || 'Password' }} <span class='mandatoryColor'>*</span>
+                        </mat-label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input placeholder="{{ translationData.lblPassword || 'Password' }}" matInput formControlName="password">
+                        </mat-form-field>
+                    </div>
+                    </div>
+            </div>
+
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: grey" class="areaWidth">
+                <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
+                <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold'>{{
+                    translationData.lblSetLimitations || 'Set Limitations' }}</span>
+                <span style="padding-bottom: 15px;">{{translationData.lblMaxAlertNotificationsPerVehicle || 'Max 10
+                    alert notifications per vehicle' }}</span>
+                <span class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
+                        class='mandatoryColor'>*</span></span>
+                <mat-radio-button [checked]="true" style='margin-right: 20px;' value="Always">{{
+                    translationData.lblAlways || 'Always' }}
+                </mat-radio-button>
+                <!-- </div> -->
+            </div>
+        </div>
+    </mat-card>
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+
+    <div *ngIf="openAdvancedFilter" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
+                <mat-panel-title>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
+                </mat-panel-title>
+                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
+                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint4</p>
+                </div>   
+            </mat-card>
+        </div>
+    </div>
+</form>
