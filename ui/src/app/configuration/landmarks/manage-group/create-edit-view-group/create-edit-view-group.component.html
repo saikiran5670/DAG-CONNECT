@@ -126,7 +126,7 @@
         <div>
           <mat-table [dataSource]="poiDataSource" class="table-items" matSort>
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef>
+              <mat-header-cell *matHeaderCellDef class='max-width-10-per'>
                 <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
                   [checked]='selectedPOI.hasValue() && isAllSelectedForPOI()'
                   [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
@@ -134,15 +134,15 @@
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row" class='max-width-10-per'>
                 <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null'
                   [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="icon">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>Icon</mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-header-cell *matHeaderCellDef class='max-width-8-per'>Icon</mat-header-cell>
+                <mat-cell *matCellDef="let row" class='max-width-8-per'>
                   <mat-icon *ngIf="row.icon && row.icon == ''">place</mat-icon>
                   <img *ngIf="row.icon && row.icon != ''" [src]='row.icon' alt='' width='20px' height='20px'>
                 </mat-cell>
@@ -211,7 +211,7 @@
         <div>
           <mat-table [dataSource]="geofenceDataSource" class="table-items" matSort>
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef>
+              <mat-header-cell *matHeaderCellDef class='max-width-10-per'>
                 <mat-checkbox (change)='$event ? masterToggleForGeofence() : null'
                   [checked]='selectedGeofence.hasValue() && isAllSelectedForGeofence()'
                   [indeterminate]='selectedGeofence.hasValue() && !isAllSelectedForGeofence()'
@@ -219,7 +219,7 @@
                 </mat-checkbox>
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">
+              <mat-cell *matCellDef="let row" class='max-width-10-per'>
                 <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedGeofence.toggle(row) : null'
                   [checked]='selectedGeofence.isSelected(row)' [aria-label]='checkboxLabelForGeofence(row)'>
                 </mat-checkbox>
