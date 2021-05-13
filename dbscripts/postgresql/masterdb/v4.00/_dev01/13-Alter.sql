@@ -11,7 +11,7 @@ CREATE TABLE if not exists translation.enumtranslation
 TABLESPACE pg_default;
 
 ALTER TABLE  translation.enumtranslation 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -51,7 +51,7 @@ CREATE TABLE if not exists master.alert
 TABLESPACE pg_default;
 
 ALTER TABLE  master.alert 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -101,7 +101,7 @@ CREATE TABLE if not exists master.alertlandmarkref
 TABLESPACE pg_default;
 
 ALTER TABLE  master.alertlandmarkref 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -154,7 +154,7 @@ CREATE TABLE if not exists master.alerturgencylevelref
 TABLESPACE pg_default;
 
 ALTER TABLE  master.alerturgencylevelref 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -212,7 +212,7 @@ CREATE TABLE if not exists master.alertfilterref
 TABLESPACE pg_default;
 
 ALTER TABLE  master.alertfilterref 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -264,7 +264,7 @@ CREATE TABLE if not exists master.notification
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notification 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -315,7 +315,7 @@ CREATE TABLE if not exists master.notificationavailabilityperiod
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notificationavailabilityperiod 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -375,7 +375,7 @@ CREATE TABLE if not exists master.notificationrecipient
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notificationrecipient 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -426,7 +426,7 @@ CREATE TABLE if not exists master.notificationlimit
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notificationlimit 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -474,7 +474,7 @@ CREATE TABLE if not exists master.notificationtemplate
 TABLESPACE pg_default;
 
 ALTER TABLE  master.notificationtemplate 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 
 Do $$
@@ -529,7 +529,7 @@ CREATE TABLE if not exists master.corridorproperties
 TABLESPACE pg_default;
 
 ALTER TABLE  master.corridorproperties 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -574,7 +574,7 @@ CREATE TABLE if not exists master.corridorviastop
 TABLESPACE pg_default;
 
 ALTER TABLE  master.corridorviastop 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
@@ -631,7 +631,7 @@ CREATE TABLE if not exists master.corridortrips
 TABLESPACE pg_default;
 
 ALTER TABLE  master.corridortrips 
-    OWNER to pgadmin;
+    OWNER to pgdbadmin;
 
 Do $$
 begin
