@@ -111,7 +111,7 @@ export class CreateEditViewPoiComponent implements OnInit {
   }
 
   getBreadcum(type: any) {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewPOI ? this.translationData.lblViewPOI : 'View POI Details') : (type == 'edit') ? (this.translationData.lblEditPOI ? this.translationData.lblEditPOI : 'Edit POI Details') : (this.translationData.lblPOIDetails ? this.translationData.lblPOIDetails : 'Add New POI')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / ${(type == 'view') ? (this.translationData.lblViewPOI ? this.translationData.lblViewPOI : 'View POI Details') : (type == 'edit') ? (this.translationData.lblEditPOI ? this.translationData.lblEditPOI : 'Edit POI Details') : (this.translationData.lblAddNewPOI ? this.translationData.lblAddNewPOI : 'Add New POI')}`;
   }
 
   public ngAfterViewInit() {
@@ -368,15 +368,15 @@ this.map.setZoom(14);
   getUserCreatedMessage() {
     this.userName = `${this.poiFormGroup.controls.name.value}`;
     if (this.actionType == 'create') {
-      if (this.translationData.lblUserAccountCreatedSuccessfully)
-        return this.translationData.lblUserAccountCreatedSuccessfully.replace('$', this.userName);
+      if (this.translationData.lblNewPOICreatedSuccessfully)
+        return this.translationData.lblNewPOICreatedSuccessfully.replace('$', this.userName);
       else
         return ("New POI '$' Created Successfully").replace('$', this.userName);
     } else {
-      if (this.translationData.lblUserAccountUpdatedSuccessfully)
-        return this.translationData.lblUserAccountUpdatedSuccessfully.replace('$', this.userName);
+      if (this.translationData.lblPOIDetailsUpdatedSuccessfully)
+        return this.translationData.lblPOIDetailsUpdatedSuccessfully.replace('$', this.userName);
       else
-        return ("New POI Details '$' Updated Successfully").replace('$', this.userName);
+        return ("'$' POI Details Updated Successfully").replace('$', this.userName);
     }
   }
 
@@ -396,7 +396,7 @@ this.map.setZoom(14);
     if(this.translationData.lblDuplicatePOINameMsg)
       this.duplicatePOINameMsg = this.translationData.lblDuplicatePOINameMsg.replace('$', poiName);
     else
-      this.duplicatePOINameMsg = ("Category Name '$' already exists.").replace('$', poiName);
+      this.duplicatePOINameMsg = ("POI name '$' already exists.").replace('$', poiName);
   }
 
   onCreatePoi() {

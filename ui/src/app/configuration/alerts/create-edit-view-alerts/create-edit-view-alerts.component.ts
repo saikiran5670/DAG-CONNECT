@@ -84,7 +84,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
   labelForThreshold: string= '';
   unitForThreshold: string= '';
   notifications: any= [];
-  alertFilterRefs: any= [];
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -207,22 +206,22 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.alert_type_selected= event.value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       this.loadMap();
-      if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){
+      if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){ //Entering zone & Exiting Zone
         this.loadPOIData();
         this.loadGeofenceData();
         this.loadGroupData();
       }
-      else if(this.alert_type_selected === 'C'){
+      else if(this.alert_type_selected === 'C'){ // Exiting Corridor
         this.loadCorridorData();
       }
     }
-    else if(this.alert_category_selected == 'R'){
+    else if(this.alert_category_selected == 'R'){ // Repair and maintenance
       this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
-      if(this.alert_type_selected === 'O'){
-        this.alertForm.get('alertLevel').setValue('critical');
+      if(this.alert_type_selected === 'O'){ // Status Change to Stop Now
+        this.alertForm.get('alertLevel').setValue('C');
       }
-      else if(this.alert_type_selected === 'E'){
-        this.alertForm.get('alertLevel').setValue('warning');
+      else if(this.alert_type_selected === 'E'){ // Status Change to Service Now
+        this.alertForm.get('alertLevel').setValue('W');
       }
     }
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
@@ -987,6 +986,8 @@ checkboxClicked(event: any, row: any) {
 
   onCreateUpdate(){
     let alertLandmarkRefs= [];
+    let alertFilterRefs: any= [];
+
     // Entering Zone, Exiting Zone
     if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
       
@@ -1050,7 +1051,7 @@ checkboxClicked(event: any, row: any) {
           "periodType": "A",
           "urgencylevelStartDate": 0,
           "urgencylevelEndDate": 0,
-          "alertFilterRefs": this.alertFilterRefs
+          "alertFilterRefs": alertFilterRefs
         }],
         "alertLandmarkRefs": alertLandmarkRefs
       }
@@ -1064,7 +1065,6 @@ checkboxClicked(event: any, row: any) {
       }, (error) => {
   
       })
-      
   }
 
   getAlertCreatedMessage() {

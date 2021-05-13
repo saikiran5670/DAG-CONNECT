@@ -212,7 +212,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   }
 
   getBreadcum(type: any) {
-    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / ${(type == 'view') ? (this.translationData.lblViewGeofenceDetails ? this.translationData.lblViewGeofenceDetails : 'View Geofence Details') : (type == 'edit') ? (this.translationData.lblEditGeofenceDetails ? this.translationData.lblEditGeofenceDetails : 'Edit Geofence Details') : (this.translationData.lblAddNewGeofence ? this.translationData.lblAddNewGeofence : 'Add New Geofence')}`;
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / ${(type == 'view') ? (this.translationData.lblViewGeofenceDetails ? this.translationData.lblViewGeofenceDetails : 'View Geofence Details') : (type == 'edit') ? (this.translationData.lblEditGeofenceDetails ? this.translationData.lblEditGeofenceDetails : 'Edit Geofence Details') : (this.translationData.lblAddNewGeofence ? this.translationData.lblAddNewGeofence : 'Add New Geofence')}`;
   }
 
   setAddressValues(type: any, addressVal: any, positions: any, nodeNo: any) {
@@ -553,7 +553,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   indicateBubble(){
     //if(this.actionType == 'create'){
       var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-        content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>select POI from below list to map with this Geofence</b>')
+        content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
       });
       this.uiElem.addBubble(bubble);
       if(this.polygoanGeofence){
