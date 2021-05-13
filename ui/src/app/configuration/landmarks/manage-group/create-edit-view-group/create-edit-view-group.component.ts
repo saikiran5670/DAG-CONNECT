@@ -44,8 +44,10 @@ export class CreateEditViewGroupComponent implements OnInit {
   selectedSubCategoryId = null;
   poiGridData = [];
   geofenceGridData = [];
-  categorySelection: any = 0;
-  subCategorySelection: any = 0;
+  categoryPOISelection: any = 0;
+  subCategoryPOISelection: any = 0;
+  categoryGeoSelection: any = 0;
+  subCategoryGeoSelection: any = 0;
 
   constructor(private _formBuilder: FormBuilder, private poiService: POIService, private geofenceService: GeofenceService, private landmarkGroupService: LandmarkGroupService,  private domSanitizer: DomSanitizer, private landmarkCategoryService: LandmarkCategoryService) { }
 
@@ -127,8 +129,9 @@ export class CreateEditViewGroupComponent implements OnInit {
         });
         this.poiGridData = poilist;
         this.updatePOIDataSource(this.poiGridData);
-        if(this.actionType == 'view' || this.actionType == 'edit')
-        this.loadPOISelectedData(this.poiGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit'){
+          this.loadPOISelectedData(this.poiGridData);
+        }
       }
       
     });
@@ -200,7 +203,7 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   updatePOIDataSource(tableData: any){
-    this.poiDataSource= new MatTableDataSource(tableData);
+    this.poiDataSource = new MatTableDataSource(tableData);
     this.poiDataSource.filterPredicate = function(data: any, filter: string): boolean {
       return (
         data.name.toString().toLowerCase().includes(filter) ||
@@ -231,6 +234,10 @@ export class CreateEditViewGroupComponent implements OnInit {
   }
 
   onReset(){ //-- Reset
+    this.categoryPOISelection = 0;
+    this.subCategoryPOISelection = 0;
+    this.categoryGeoSelection = 0;
+    this.subCategoryGeoSelection = 0;
     this.selectedPOI.clear();
     this.selectedGeofence.clear();
     this.selectPOITableRows();
@@ -401,123 +408,121 @@ export class CreateEditViewGroupComponent implements OnInit {
         } row`;
   }
 
-  onCategoryChange(landmarkName, _event: any){
-    this.categorySelection = parseInt(_event.value);
-    if(this.categorySelection == 0 && this.subCategorySelection == 0){
-      if(landmarkName == 'POI'){
-        this.updatePOIDataSource(this.poiGridData); //-- load all data
-      }
-      else{ //landmarkName= "Geofence"
-        this.updateGeofenceDataSource(this.geofenceGridData);
-      }
+  onPOICategoryChange(_event: any){
+    this.categoryPOISelection = parseInt(_event.value);
+    if(this.categoryPOISelection == 0 && this.subCategoryPOISelection == 0){
+      this.updatePOIDataSource(this.poiGridData); //-- load all data
     }
-    else if(this.categorySelection == 0 && this.subCategorySelection != 0){
-      if(landmarkName == 'POI'){
-        let filterPOIData = this.poiGridData.filter(item => item.subCategoryId == this.subCategorySelection);
-        if(filterPOIData){
-          this.updatePOIDataSource(filterPOIData);
-        }
-        else{
-          this.updatePOIDataSource([]);
-        }
+    else if(this.categoryPOISelection == 0 && this.subCategoryPOISelection != 0){
+      let filterData = this.poiGridData.filter(item => item.subCategoryId == this.subCategoryPOISelection);
+      if(filterData){
+        this.updatePOIDataSource(filterData);
       }
-      else{ //landmarkName= "Geofence"
-        let filterGeofenceData = this.geofenceGridData.filter(item => item.subCategoryId == this.subCategorySelection);
-        if(filterGeofenceData){
-          this.updateGeofenceDataSource(filterGeofenceData);
-        }
-        else{
-          this.updateGeofenceDataSource([]);
-        }
+      else{
+        this.updatePOIDataSource([]);
       }
     }
     else{
-      let selectedId = this.categorySelection;
-      let selectedSubId = this.subCategorySelection;
-      if(landmarkName == 'POI'){
-        let poiCategoryData = this.poiGridData.filter(item => item.categoryId === selectedId);
-        if(selectedSubId != 0){
-          poiCategoryData = poiCategoryData.filter(item => item.subCategoryId === selectedSubId);
-        }
-        this.updatePOIDataSource(poiCategoryData);
+      let selectedId = this.categoryPOISelection;
+      let selectedSubId = this.subCategoryPOISelection;
+      let categoryData = this.poiGridData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
-      else{ //landmarkName= "Geofence"
-        let geofenceCategoryData = this.geofenceGridData.filter(item => item.categoryId === selectedId);
-        if(selectedSubId != 0){
-          geofenceCategoryData = geofenceCategoryData.filter(item => item.subCategoryId === selectedSubId);
-        }
-        this.updateGeofenceDataSource(geofenceCategoryData);
-      }
+      this.updatePOIDataSource(categoryData);
     }
   }
 
-  onSubCategoryChange(landmarkName, _event: any){
-    this.subCategorySelection = parseInt(_event.value);
-    if(this.categorySelection == 0 && this.subCategorySelection == 0){
-      if(landmarkName == 'POI'){
-        this.updatePOIDataSource(this.poiGridData); //-- load all data
+  onPOISubCategoryChange(_event: any){
+    this.subCategoryPOISelection = parseInt(_event.value);
+    if(this.categoryPOISelection == 0 && this.subCategoryPOISelection == 0){
+      this.updatePOIDataSource(this.poiGridData); //-- load all data
+    }
+    else if(this.subCategoryPOISelection == 0 && this.categoryPOISelection != 0){
+      let filterData = this.poiGridData.filter(item => item.categoryId == this.categoryPOISelection);
+      if(filterData){
+        this.updatePOIDataSource(filterData);
       }
-      else{ //landmarkName= "Geofence"
-        this.updateGeofenceDataSource(this.geofenceGridData);
+      else{
+        this.updatePOIDataSource([]);
       }
     }
-    else if(this.subCategorySelection == 0 && this.categorySelection != 0){
-      if(landmarkName == 'POI'){
-        let filterPOIData = this.poiGridData.filter(item => item.categoryId == this.categorySelection);
-        if(filterPOIData){
-          this.updatePOIDataSource(filterPOIData);
-        }
-        else{
-          this.updatePOIDataSource([]);
-        }
+    else if(this.subCategoryPOISelection != 0 && this.categoryPOISelection == 0){
+      let filterData = this.poiGridData.filter(item => item.subCategoryId == this.subCategoryPOISelection);
+      if(filterData){
+        this.updatePOIDataSource(filterData);
       }
-      else{ //landmarkName= "Geofence"
-        let filterGeofenceData = this.geofenceGridData.filter(item => item.categoryId == this.categorySelection);
-        if(filterGeofenceData){
-          this.updateGeofenceDataSource(filterGeofenceData);
-        }
-        else{
-          this.updateGeofenceDataSource([]);
-        }
-      }
-    }
-    else if(this.subCategorySelection != 0 && this.categorySelection == 0){
-      if(landmarkName == 'POI'){
-        let filterPOIData = this.poiGridData.filter(item => item.subCategoryId == this.subCategorySelection);
-        if(filterPOIData){
-          this.updatePOIDataSource(filterPOIData);
-        }
-        else{
-          this.updatePOIDataSource([]);
-        }
-      }
-      else{ //landmarkName= "Geofence"
-        let filterGeofenceData = this.geofenceGridData.filter(item => item.subCategoryId == this.subCategorySelection);
-        if(filterGeofenceData){
-          this.updateGeofenceDataSource(filterGeofenceData);
-        }
-        else{
-          this.updateGeofenceDataSource([]);
-        }
+      else{
+        this.updatePOIDataSource([]);
       }
     }
     else{
-      let selectedId = this.categorySelection;
-      let selectedSubId = this.subCategorySelection;
-      if(landmarkName == 'POI'){
-        let poiCategoryData = this.poiGridData.filter(item => item.categoryId === selectedId);
-        if(selectedSubId != 0){
-          poiCategoryData = poiCategoryData.filter(item => item.subCategoryId === selectedSubId);
-        }
-        this.updatePOIDataSource(poiCategoryData);
+      let selectedId = this.categoryPOISelection;
+      let selectedSubId = this.subCategoryPOISelection;
+      let categoryData = this.poiGridData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
       }
-      else{ //landmarkName= "Geofence"
-        let geofenceCategoryData = this.geofenceGridData.filter(item => item.categoryId === selectedId);
-        if(selectedSubId != 0){
-          geofenceCategoryData = geofenceCategoryData.filter(item => item.subCategoryId === selectedSubId);
-        }
-        this.updateGeofenceDataSource(geofenceCategoryData);
+      this.updatePOIDataSource(categoryData);
+    }
+  }
+
+  onGeoCategoryChange(_event: any){
+    this.categoryGeoSelection = parseInt(_event.value);
+    if(this.categoryGeoSelection == 0 && this.subCategoryGeoSelection == 0){
+      this.updateGeofenceDataSource(this.geofenceGridData); //-- load all data
+    }
+    else if(this.categoryGeoSelection == 0 && this.subCategoryGeoSelection != 0){
+      let filterData = this.geofenceGridData.filter(item => item.subCategoryId == this.subCategoryGeoSelection);
+      if(filterData){
+        this.updateGeofenceDataSource(filterData);
       }
+      else{
+        this.updateGeofenceDataSource([]);
+      }
+    }
+    else{
+      let selectedId = this.categoryGeoSelection;
+      let selectedSubId = this.subCategoryGeoSelection;
+      let categoryData = this.geofenceGridData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updateGeofenceDataSource(categoryData);
+    }
+  }
+
+  onGeoSubCategoryChange(_event: any){
+    this.subCategoryGeoSelection = parseInt(_event.value);
+    if(this.categoryGeoSelection == 0 && this.subCategoryGeoSelection == 0){
+      this.updateGeofenceDataSource(this.geofenceGridData); //-- load all data
+    }
+    else if(this.subCategoryGeoSelection == 0 && this.categoryGeoSelection != 0){
+      let filterData = this.geofenceGridData.filter(item => item.categoryId == this.categoryGeoSelection);
+      if(filterData){
+        this.updateGeofenceDataSource(filterData);
+      }
+      else{
+        this.updateGeofenceDataSource([]);
+      }
+    }
+    else if(this.subCategoryGeoSelection != 0 && this.categoryGeoSelection == 0){
+      let filterData = this.geofenceGridData.filter(item => item.subCategoryId == this.subCategoryGeoSelection);
+      if(filterData){
+        this.updateGeofenceDataSource(filterData);
+      }
+      else{
+        this.updateGeofenceDataSource([]);
+      }
+    }
+    else{
+      let selectedId = this.categoryGeoSelection;
+      let selectedSubId = this.subCategoryGeoSelection;
+      let categoryData = this.geofenceGridData.filter(item => item.categoryId === selectedId);
+      if(selectedSubId != 0){
+        categoryData = categoryData.filter(item => item.subCategoryId === selectedSubId);
+      }
+      this.updateGeofenceDataSource(categoryData);
     }
   }
 
