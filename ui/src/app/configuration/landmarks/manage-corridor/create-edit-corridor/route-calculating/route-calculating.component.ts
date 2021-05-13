@@ -119,6 +119,65 @@ export class RouteCalculatingComponent implements OnInit {
       lineString, { style: { lineWidth: 4 }}
     ));
   }
+
+  private createOuterMainIcon(markerSvg){
+    return `<svg width="80" height="80" viewbox="0,0,80,80" xmlns="http://www.w3.org/2000/svg">
+	${markerSvg}
+		</svg>`
+  }
+  private createDrivingMarkerSVG(embeddedVehicleIcon: string): string {
+		return `<g id="svg_15">
+			<g id="svg_1">
+				<path stroke="#db4f60" fill="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="m6.04673,9.43231c-5.18654,5.35713 -5.04859,13.90421 0.30854,19.09075c5.35713,5.18655 13.90495,5.04785 19.09149,-0.30927l9.39111,-9.70039l-9.70039,-9.39037c-5.35638,-5.18654 -13.90421,-5.04785 -19.09075,0.30928l0,0z" id="path1978"/>
+			</g>
+		
+			${embeddedVehicleIcon}
+		
+			<g id="svg_8" class="hidden">
+				<g id="svg_11" stroke="null">
+					<circle id="svg_12" r="6.236538" cy="8.9" cx="26.9" class="st0" stroke="null"/>
+					<path id="svg_13" d="m26.9,15.8c-3.78173,0 -6.9,-3.11827 -6.9,-6.9s3.11827,-6.9 6.9,-6.9s6.9,3.11827 6.9,6.9s-3.11827,6.9 -6.9,6.9zm0,-12.47308c-3.05192,0 -5.57308,2.52116 -5.57308,5.57308c0,3.05192 2.52116,5.57308 5.57308,5.57308s5.57308,-2.52116 5.57308,-5.57308c0,-3.05192 -2.52116,-5.57308 -5.57308,-5.57308z" class="st4" stroke="null"/>
+				</g>
+				<path id="svg_14" d="m29.95192,10.49231l-0.59711,-0.66346c-0.39808,-0.46443 -0.66346,-0.9952 -0.66346,-1.79135l0,-0.8625c0,-0.66346 -0.46443,-1.19423 -1.06154,-1.39327c0,0 0,0 0,-0.06635c0,-0.39807 -0.33173,-0.7298 -0.72981,-0.7298c-0.39808,0 -0.72981,0.33173 -0.72981,0.7298c0,0 0,0 0,0.06635c-0.59711,0.13269 -1.06154,0.72981 -1.06154,1.39327l0,0.8625c0,0.79615 -0.26538,1.32692 -0.66346,1.79135l-0.59711,0.66346c-0.26539,0.46442 0.13269,1.06154 0.66346,1.06154l1.725,0c0,0.39807 0.33173,0.7298 0.72981,0.7298c0.39807,0 0.72981,-0.33173 0.72981,-0.7298l1.5923,0c0.53077,-0.06635 0.8625,-0.59712 0.66347,-1.06154l-0.00001,0z" class="st5" stroke="null"/>
+			</g>
+		</g>`;
+	}
+
+  createHomeMarker(){
+    const homeMarker = `<svg width="80" height="80" viewbox="0,0,80,80" xmlns="http://www.w3.org/2000/svg">
+	
+    <g id="svg_15">
+        <g id="svg_1" transform="rotate(90 20 20)">
+          <path stroke="#417ee7" fill="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="m6.04673,9.43231c-5.18654,5.35713 -5.04859,13.90421 0.30854,19.09075c5.35713,5.18655 13.90495,5.04785 19.09149,-0.30927l9.39111,-9.70039l-9.70039,-9.39037c-5.35638,-5.18654 -13.90421,-5.04785 -19.09075,0.30928l0,0z" id="path1978"/>
+        </g>
+      <svg fill="#417ee7"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 80 80" width="80px" height="80px">
+      <g id="house" transform="translate(13,8)">
+      <path d="M 8 1.320313 L 0.660156 8.132813 L 1.339844 8.867188 L 2 8.253906 L 2 14 L 7 14 L 7 9 L 9 9 L 9 14 L 14 14 L 14 8.253906 L 14.660156 8.867188 L 15.339844 8.132813 Z M 8 2.679688 L 13 7.328125 L 13 13 L 10 13 L 10 8 L 6 8 L 6 13 L 3 13 L 3 7.328125 Z"/>
+      
+      </g>
+      </svg>
+      </g>
+      </svg>`
+return homeMarker;
+  }
+
+  createEndMarker(){
+    const homeMarker = `<svg width="80" height="80" viewbox="0,0,80,80" xmlns="http://www.w3.org/2000/svg">
+	
+    <g id="svg_15">
+        <g id="svg_1" transform="rotate(90 20 20)">
+          <path stroke="#e62e2d" fill="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="m6.04673,9.43231c-5.18654,5.35713 -5.04859,13.90421 0.30854,19.09075c5.35713,5.18655 13.90495,5.04785 19.09149,-0.30927l9.39111,-9.70039l-9.70039,-9.39037c-5.35638,-5.18654 -13.90421,-5.04785 -19.09075,0.30928l0,0z" id="path1978"/>
+        </g>
+      <svg fill="#e62e2d"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 80 80" width="80px" height="80px">
+      <g id="house" transform="translate(13,8)">
+      <path d="M 8 1.320313 L 0.660156 8.132813 L 1.339844 8.867188 L 2 8.253906 L 2 14 L 7 14 L 7 9 L 9 9 L 9 14 L 14 14 L 14 8.253906 L 14.660156 8.867188 L 15.339844 8.132813 Z M 8 2.679688 L 13 7.328125 L 13 13 L 10 13 L 10 8 L 6 8 L 6 13 L 3 13 L 3 7.328125 Z"/>
+      
+      </g>
+      </svg>
+      </g>
+      </svg>`
+return homeMarker;
+  }
   sliderChanged(_event){
       let distanceinMtr = _event.value;
       this.corridorWidth = _event.value;
@@ -255,10 +314,15 @@ export class RouteCalculatingComponent implements OnInit {
         console.log(result)
         this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
         this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-        this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
+        let houseMarker = this.createHomeMarker();
+        let markerSize = { w: 80, h: 80 };
+        const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+    
+        this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
         this.hereMap.addObject(this.startMarker);
+        this.hereMap.setZoom(8);
+
         this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
-        this.hereMap.setZoom(2);
       });
     }
   }
@@ -272,8 +336,15 @@ export class RouteCalculatingComponent implements OnInit {
         console.log(result)
         this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
         this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-        this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong});
+        let houseMarker = this.createEndMarker();
+        let markerSize = { w: 80, h: 80 };
+        const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+    
+        this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
         this.hereMap.addObject(this.endMarker);
+        this.hereMap.setZoom(8);
+
+        this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
 
       });
    // this.addPolylineToMap();
