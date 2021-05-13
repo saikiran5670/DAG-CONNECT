@@ -190,7 +190,7 @@ export class ManageGroupComponent implements OnInit {
   deleteLandmarkGroup(row){
     const options = {
       title: this.translationData.lblDeleteGroup || 'Delete Group',
-      message: this.translationData.lblAreyousureyouwanttodeletecategory || "Are you sure you want to delete '$' category?",
+      message: this.translationData.lblAreyousureyouwanttodeletegroup || "Are you sure you want to delete '$' group?",
       cancelText: this.translationData.lblCancel || 'Cancel',
       confirmText: this.translationData.lblDelete || 'Delete'
     };
@@ -230,7 +230,7 @@ export class ManageGroupComponent implements OnInit {
   }
 
   getDeletMsg(groupName: any){
-    if(this.translationData.lblUserRoleDelete)
+    if(this.translationData.lblLandmarkGroupDelete)
       return this.translationData.lblLandmarkGroupDelete.replace('$', groupName);
     else
       return ("Landmark group '$' was successfully deleted").replace('$', groupName);

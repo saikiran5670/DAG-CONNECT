@@ -95,7 +95,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
+    ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / 
     ${(this.actionType == 'edit') ? (this.translationData.lblEditCategoryDetails ? this.translationData.lblEditCategoryDetails : 'Edit Category Details') : (this.actionType == 'view') ? (this.translationData.lblViewCategoryDetails ? this.translationData.lblViewCategoryDetails : 'View Category Details') : (this.translationData.lblCreateNewCategory ? this.translationData.lblCreateNewCategory : 'Create New Category')}`;
   }
 
