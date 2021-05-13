@@ -696,7 +696,7 @@ namespace net.atos.daf.ct2.alert.repository
 					left join master.vehicle veh
 					on vgrpref.ref_id=veh.id 
                     left join master.vehicle vehs
-					on grp.ref_id=vehs.id and grp.grouptype='S'
+					on grp.ref_id=vehs.id and grp.group_type='S'
                      ";
 
                 //if (accountid > 0 && organizationid > 0)
