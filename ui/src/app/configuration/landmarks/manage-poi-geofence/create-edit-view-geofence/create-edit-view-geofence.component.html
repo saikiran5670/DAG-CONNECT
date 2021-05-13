@@ -321,7 +321,7 @@
     <div>
       <mat-table [dataSource]="dataSourceForPOI" class="table-items" matSort>
         <ng-container matColumnDef="select">
-          <mat-header-cell *matHeaderCellDef>
+          <mat-header-cell *matHeaderCellDef class="max-width-10-per">
             <mat-checkbox (change)='$event ? masterToggleForPOI() : null'
               [checked]='selectedPOI.hasValue() && isAllSelectedForPOI()'
               [indeterminate]='selectedPOI.hasValue() && !isAllSelectedForPOI()'
@@ -330,15 +330,15 @@
             </mat-checkbox>
             <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
           </mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let row" class="max-width-10-per">
             <mat-checkbox (click)='$event.stopPropagation()' (change)='onChangeCheckbox($event, row)'
               [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)' [disabled]="actionType != 'create'">
             </mat-checkbox>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="icon">
+        <ng-container matColumnDef="icon" class="max-width-8-per">
           <mat-header-cell *matHeaderCellDef>{{ translationData.lblIcon || 'Icon' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">
+          <mat-cell *matCellDef="let row" class="max-width-8-per">
             <mat-icon>place</mat-icon>
           </mat-cell>
         </ng-container>
