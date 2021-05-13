@@ -66,9 +66,7 @@ export class CreateEditViewGroupComponent implements OnInit {
     if(this.actionType == 'edit' ){
       this.setDefaultValue();
     }
-    if(this.actionType == 'view' || this.actionType == 'edit'){
-      this.breadcumMsg = this.getBreadcum();
-    }
+    this.breadcumMsg = this.getBreadcum();
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadLandmarkCategoryData();
