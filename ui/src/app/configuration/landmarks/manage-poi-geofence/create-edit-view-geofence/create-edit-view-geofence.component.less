@@ -40,9 +40,39 @@
     pointer-events: none;
 }
 
-.createPolyBtn{
-    position: absolute;
+.createPolyBtnContainer{
+    position: relative;
     z-index: 1;
+    //height: 450px;
+    width: 100%;
+    .createBtn{
+        top: 10px;
+        position: absolute;
+        left: 45%;
+    }
+}
+
+.infoIcon{
+    cursor: pointer; 
+    display: inline-block; 
+    position: absolute; 
+    top: 20px; 
+    left: 10px;
+}
+
+.infoText{
+    width: 40%; 
+    border: 1px solid; 
+    padding: 5px; 
+    background: #fffdfd; 
+    border-radius: 5px; 
+    display: inline-block; 
+    position: absolute; 
+    left: 40px; 
+    top: 10px;
+    &:hover{
+        width: 40%; 
+    }
 }
 
 .max-width-10-per{

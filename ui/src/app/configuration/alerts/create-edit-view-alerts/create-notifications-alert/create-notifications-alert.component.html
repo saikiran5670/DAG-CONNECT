@@ -10,16 +10,12 @@
             </mat-form-field>
             <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization || 'Enter max 10 recipient label for
                 categorization' }}</mat-hint>
-            <!-- <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('required') && notificationForm.get('recipientLabel').touched">
-          {{translationData.lblPleaseEnterNewAlertName || 'Please enter new Alert name' }}
-        </mat-error>
-        <mat-error *ngIf="!notificationForm.get('recipientLabel').hasError('required')  && notificationForm.get('recipientLabel').hasError('whitespace')">
-          {{ translationData.lblAlertNamecannotcontainonlywhitespace || 'Alert Name cannot contain only whitespace' }}
-         </mat-error>
-        <mat-error *ngIf="isDuplicaterecipient">{{translationData.lblDuplicaterecipient || 'Duplicate recipient Name' }}</mat-error>
-        <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
-            {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
-        </mat-error> -->
+            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('required')">
+                {{translationData.lblPleaseEnterRecipientLabel|| 'Please enter recipient label' }}
+            </mat-error>
+            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
+                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+            </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblContactMode || 'Contact Mode' }} <span class='mandatoryColor'>*</span>
@@ -37,9 +33,8 @@
             </mat-form-field>
             <mat-hint>{{translationData.lblSelectContactModeAndAddWithList || 'Select contact mode and add with list'}}
             </mat-hint>
-            <mat-error
-                *ngIf="notificationForm.get('contactMode').hasError('required') && notificationForm.get('contactMode').touched">
-                {{translationData.lblPleaseSelectContactMode || 'Please select Contact Mode' }}
+            <mat-error *ngIf="notificationForm.get('contactMode').hasError('required')">
+                {{translationData.lblPleaseSelectContactMode|| 'Please select contact Mode' }}
             </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
@@ -90,6 +85,9 @@
                                 matInput formControlName="mailSubject" maxlength="120">
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailSubjectDescription || 'Mail Subject Description'}}</mat-hint>
+                        <mat-error *ngIf="notificationForm.get('mailSubject').hasError('required')">
+                            {{ translationData.lblPleaseenterMailSubject || 'Please enter Mail Subject' }}
+                              </mat-error>
                     </div>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
@@ -106,6 +104,9 @@
                                 formControlName="mailDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailTextDescription || 'Mail Text Description' }}</mat-hint>
+                        <mat-error *ngIf="notificationForm.get('mailDescription').hasError('required')">
+                            {{ translationData.lblPleaseentermailDescription || 'Please enter mail Description' }}
+                              </mat-error>
                     </div>
                 </div>
             </div>
@@ -143,11 +144,14 @@
                         </mat-label>
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblhttpsTestCom || 'https://Test.com' }}" matInput
-                                formControlName="webURL" maxlength="50">
+                                formControlName="webURL" >
                         </mat-form-field>
                         <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
                             with comma (;)
                             separated' }}</mat-hint>
+                            <mat-error *ngIf="notificationForm.get('webURL').hasError('required')">
+                                {{ translationData.lblPleaseenterWebServiceURL || 'Please enter Web Service URL' }}
+                                  </mat-error>
                     </div>
                     <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="right">
                         <div class="margin-bottom-sm">
@@ -169,11 +173,14 @@
                                 <span>{{ translationData.lbl250CharMax || '250 characters max' }}</span>
                             </mat-label>
                         <mat-form-field appearance="outline">
-                            <textarea matInput
+                            <textarea matInput maxlength="120"
                                 placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
-                                formControlName="mailDescription"></textarea>
+                                formControlName="wsDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
+                        <mat-error *ngIf="notificationForm.get('wsDescription').hasError('required')">
+                            {{ translationData.lblPleaseenterwsDescription || 'Please enter ws Description' }}
+                              </mat-error>
                     </div>
                 </div>
                     <div fxLayout="row" *ngIf="radioButtonVal == '1'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
@@ -183,8 +190,8 @@
                                 <span>{{ translationData.lbl250CharMax || '250 characters max' }}</span>
                             </mat-label>
                             <mat-form-field appearance="outline">
-                                <textarea matInput placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
-                                    formControlName="mailDescription"></textarea>
+                                <textarea matInput maxlength="120" placeholder="{{ translationData.lblVehicleIsInKnownZone || 'Vehicle is in known zone' }}"
+                                    formControlName="wsTextDescription"></textarea>
                             </mat-form-field>
                             <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
                         </div>
@@ -194,11 +201,20 @@
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblloginId || 'Login ID' }}" matInput formControlName="loginId">
                         </mat-form-field>
+                        <mat-error *ngIf="notificationForm.get('loginId').hasError('required')">
+                            {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
+                              </mat-error>
+                        <mat-error *ngIf="notificationForm.get('loginId').hasError('email')">
+                            {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email address' }}
+                        </mat-error>
                         <mat-label>{{ translationData.lblPassword || 'Password' }} <span class='mandatoryColor'>*</span>
                         </mat-label>
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblPassword || 'Password' }}" matInput formControlName="password">
                         </mat-form-field>
+                        <mat-error *ngIf="notificationForm.get('password').hasError('required')">
+                            {{ translationData.lblPleaseEnterPassword || 'Please enter password' }}
+                              </mat-error>
                     </div>
                     </div>
             </div>
