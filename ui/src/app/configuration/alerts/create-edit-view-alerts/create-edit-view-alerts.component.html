@@ -321,7 +321,7 @@
                     <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All'}}</span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; checkboxClicked($event,row)'
+                    <mat-checkbox (click)='$event.stopPropagation()' (change)='$event ? selectedPOI.toggle(row) : null; PoiCheckboxClicked($event,row)'
                       [checked]='selectedPOI.isSelected(row)' [aria-label]='checkboxLabelForPOI(row)'>
                     </mat-checkbox>
                   </mat-cell>

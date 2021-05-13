@@ -341,7 +341,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     
 }
 
-checkboxClicked(event: any, row: any) {
+PoiCheckboxClicked(event: any, row: any) {
   console.log(row);
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
@@ -671,7 +671,7 @@ checkboxClicked(event: any, row: any) {
           this.selectedPOI.select(row);
         else
           this.selectedPOI.deselect(row);  
-        this.checkboxClicked(event,row);
+        this.PoiCheckboxClicked(event,row);
 
       }
     });
