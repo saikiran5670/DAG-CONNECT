@@ -294,4 +294,9 @@ export class ManageCorridorComponent implements OnInit {
     }
   }
 
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
+  }
 }

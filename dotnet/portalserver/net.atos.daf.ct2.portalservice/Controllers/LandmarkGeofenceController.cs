@@ -396,7 +396,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("BulkImportGeofence")]
+        [Route("bulkimportgeofence")]
         public async Task<IActionResult> BulkImportGeofence(List<Geofence> requests)
         {
             try
