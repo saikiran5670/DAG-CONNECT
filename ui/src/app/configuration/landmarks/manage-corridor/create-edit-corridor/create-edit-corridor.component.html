@@ -2,10 +2,12 @@
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <span>{{ breadcumMsg }}</span>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <button mat-flat-button (click)="backToCorridorList()" style="background: transparent;">
-            <mat-icon>arrow_back_ios</mat-icon><span>Back</span>
-        </button>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <span class='custom-font' (click)="backToCorridorList()">
+            <span>
+                <&nbsp;</span>
+                    <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span>
+        </span>
     </div>
 </div>
 
@@ -30,5 +32,5 @@
     </mat-card>
     <!-- Map Div-->
     <div class='fixDiv'></div>
-    <app-route-calculating  *ngIf='selectedCorridorTypeId ==1' [translationData]="translationData"></app-route-calculating>
-    <app-existing-trips *ngIf='selectedCorridorTypeId ==2' [translationData]="translationData"></app-existing-trips>
+    <app-route-calculating  *ngIf='selectedCorridorTypeId ==46' [translationData]="translationData" (backToPage) = "backToCorridorList()"[exclusionList]="exclusionList"></app-route-calculating>
+    <app-existing-trips *ngIf='selectedCorridorTypeId ==45' [translationData]="translationData"></app-existing-trips>

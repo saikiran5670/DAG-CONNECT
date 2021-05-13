@@ -72,5 +72,38 @@ export class AlertService {
       .pipe(catchError(this.handleError));
   }
 
+  deleteAlert(id: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .delete<void>(`${this.alertServiceUrl}/DeleteAlert?alertId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  activateAlert(id): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .put<any>(`${this.alertServiceUrl}/ActivateAlert?alertId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  suspendAlert(id): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    return this.httpClient
+      .put<any>(`${this.alertServiceUrl}/SuspendAlert?alertId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
 
 }

@@ -209,7 +209,7 @@ export class ManageCorridorComponent implements OnInit {
       });
       this.showMap = true;
     }
-    this.addMarkerOnMap();
+    this.addPolylineToMap();
   }
 
   isAllSelectedForCorridor() {
@@ -237,17 +237,32 @@ export class ManageCorridorComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       }
-      this.addMarkerOnMap(); 
+      this.addPolylineToMap();
   }
 
-
-  addMarkerOnMap(){
-    this.map.removeObjects(this.map.getObjects());
+  addPolylineToMap(){
+    console.log(this.markerArray)
+    var lineString = new H.geo.LineString();
     this.markerArray.forEach(element => {
-      let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
-      this.map.addObject(marker);
+      console.log(element.startLat)
+    lineString.pushPoint({lat : element.startLat, lng: element.startLong});
+    lineString.pushPoint({lat : element.endLat, lng: element.endLong});
+    // lineString.pushPoint({lat:48.8567, lng:2.3508});
+    // lineString.pushPoint({lat:52.5166, lng:13.3833});
     });
+
+  this.map.addObject(new H.map.Polyline(
+    lineString, { style: { lineWidth: 4 }}
+  ));
   }
+
+  // addMarkerOnMap(){
+  //   this.map.removeObjects(this.map.getObjects());
+  //   this.markerArray.forEach(element => {
+  //     let marker = new H.map.Marker({ lat: 48.8567, lng: 2.3508 }, { icon: this.getSVGIcon() });
+  //     this.map.addObject(marker);
+  //   });
+  // }
 
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
@@ -272,5 +287,16 @@ export class ManageCorridorComponent implements OnInit {
     this.createEditStatus = false;
 
     this.tabVisibility.emit(true);
+    if(_eventObj.msg=="create"){
+      var _msg = "Corridor created successfully!"
+      this.successMsgBlink(_msg);
+      this.loadCorridorData();
+    }
+  }
+
+  pageSizeUpdated(_event){
+    setTimeout(() => {
+      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    }, 100);
   }
 }
