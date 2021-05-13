@@ -360,12 +360,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
+            _dataAccess.connection.Open();
+            var transactionScope = _dataAccess.connection.BeginTransaction();
+
             try
             {
-                // using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                // {
-
-
+              
                 var isExist = CheckRouteCorridorIsexist(existingTripCorridor.CorridorLabel, existingTripCorridor.OrganizationId, existingTripCorridor.Id, Convert.ToChar(existingTripCorridor.CorridorType)).Result;
 
                 if (isExist)
@@ -405,17 +405,21 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     existingTripCorridor.Id = id;
                     var tripDetails = await AddTripsCorridor(existingTripCorridor);
                 }
-
-                //  transactionScope.Complete();
-
-                // }
+                transactionScope.Commit();
+               
             }
             catch (Exception ex)
             {
+                transactionScope.Rollback();
                 log.Info("AddExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
                 log.Error(ex.ToString());
-                // throw ex;
+                
             }
+            finally
+            {
+                _dataAccess.connection.Close();
+            }
+            
             return existingTripCorridor;
         }
         private async Task<List<ExistingTrip>> AddTripsCorridor(ExistingTripCorridor existingTripCorridor)
@@ -570,6 +574,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
+            _dataAccess.connection.Open();
+            var transactionScope = _dataAccess.connection.BeginTransaction();
+
             try
             {
                 // using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -621,16 +628,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                 }
 
-                //  transactionScope.Complete();
+              
+                transactionScope.Commit();
 
-                // }
             }
             catch (Exception ex)
             {
-                log.Info("AddExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
+                transactionScope.Rollback();
+                log.Info("UpdateExistingTripCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(existingTripCorridor.Id));
                 log.Error(ex.ToString());
-                // throw ex;
+
             }
+            finally
+            {
+                _dataAccess.connection.Close();
+            }
+
             return existingTripCorridor;
         }
 
