@@ -108,19 +108,19 @@
                 <mat-cell *matCellDef="let row"><span matTooltip="{{ row.subCategoryName }}">{{ row.subCategoryName ? row.subCategoryName : '-' }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="noOfPOI">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofPOI || 'Number of POI'}}
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNumberofPOI || 'Number of POI'}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row"><span matTooltip="{{ row.noOfPOI }}" [ngClass]="row.noOfPOI != 0 ? 'row-hover' : '' "
                     (click)="row.noOfPOI != 0 ? onPOIClick(row) : ''">{{ (row.noOfPOI < 10) ? '0' : '' }}{{ row.noOfPOI }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="noOfGeofence">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNunberofGeofence || 'Number of Geofence'}}
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNumberofGeofence || 'Number of Geofence'}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row"><span matTooltip="{{ row.noOfGeofence }}" [ngClass]="row.noOfGeofence != 0 ? 'row-hover' : '' "
                     (click)="row.noOfGeofence != 0 ? onGeofenceClick(row) : ''">{{ (row.noOfGeofence < 10) ? '0' : '' }}{{ row.noOfGeofence }}</span></mat-cell>
               </ng-container>
               <ng-container matColumnDef="action">
-                <mat-header-cell *matHeaderCellDef>{{ translationData.lblAction || 'Action'}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>{{ translationData.lblActions || 'Actions'}}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <button class='actionBtn' (click)="editViewCategory(row, 'view')" mat-flat-button matTooltip="{{ translationData.lblView || 'View' }}">
                     <mat-icon>visibility</mat-icon>
