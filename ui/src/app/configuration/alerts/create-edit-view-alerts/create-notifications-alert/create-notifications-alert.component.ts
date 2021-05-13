@@ -38,10 +38,17 @@ export class CreateNotificationsAlertComponent implements OnInit {
       emailAddress: ['', [Validators.required, Validators.email]],
       mailSubject: ['', [Validators.required]],
       mailDescription: ['', [Validators.required]],
+      wsDescription: ['', [Validators.required]],
       authentication:['', [Validators.required]],
-      loginId: ['', [Validators.required]],
+      loginId: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
       webURL:['', [Validators.required]],
+      wsTextDescription:['']
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForName('recipientLabel'),
+      ]
     });
   }
 
