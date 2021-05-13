@@ -579,16 +579,13 @@
 </form>
   <!-- Notification details -->
   <mat-card class='mat-elevation-z'>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
-      <mat-expansion-panel-header class="full-width" #panelH (click)="panelH._toggle()">
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" (opened)="panelOpenState = true" (closed)="panelOpenState = false" hideToggle="true">
+      <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 50%;'>{{
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                 translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
-              <button   (click)="panelH._toggle()" mat-raised-button color="primary">{{ translationData.lblAddNotification || 'Add
-                Notification' }}</button>
-                <!-- <button  (click)="panelH._toggle()" mat-raised-button color="primary">{{ translationData.lblSkipNotification || 'Skip
-                  Notification' }}</button> -->
-   
+              <button style="margin-left: 50%;" mat-raised-button color="primary">{{ !panelOpenState ? translationData.lblAddNotification || 'Add
+                Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
         </mat-panel-title>
       </mat-expansion-panel-header>
       <app-create-notifications-alert [translationData]='translationData'></app-create-notifications-alert>
