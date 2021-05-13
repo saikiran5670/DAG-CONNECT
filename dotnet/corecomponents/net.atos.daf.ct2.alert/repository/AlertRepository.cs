@@ -699,17 +699,17 @@ namespace net.atos.daf.ct2.alert.repository
 					on grp.ref_id=vehs.id and grp.grouptype='S'
                      ";
 
-                if (accountid > 0 && organizationid > 0)
-                {
-                    queryAlert = queryAlert + " where ale.created_by = @created_by AND ale.organization_id = @organization_id";
-                    parameterAlert.Add("@organization_id", organizationid);
-                    parameterAlert.Add("@created_by", accountid);
-                }
-                else if (accountid == 0 && organizationid > 0)
-                {
+                //if (accountid > 0 && organizationid > 0)
+                //{
+                //    queryAlert = queryAlert + " where ale.created_by = @created_by AND ale.organization_id = @organization_id";
+                //    parameterAlert.Add("@organization_id", organizationid);
+                //    parameterAlert.Add("@created_by", accountid);
+                //}
+                //else if (accountid == 0 && organizationid > 0)
+                //{
                     queryAlert = queryAlert + " where ale.organization_id = @organization_id";
                     parameterAlert.Add("@organization_id", organizationid);
-                }               
+                //}               
 
                 IEnumerable<AlertResult> alertResult = await dataAccess.QueryAsync<AlertResult>(queryAlert, parameterAlert);
                 return repositoryMapper.GetAlertList(alertResult);
