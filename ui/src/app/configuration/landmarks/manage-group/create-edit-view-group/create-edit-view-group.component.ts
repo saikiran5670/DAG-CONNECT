@@ -111,7 +111,7 @@ export class CreateEditViewGroupComponent implements OnInit {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
     ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditGroupDetails ? this.translationData.lblEditGroupDetails : 'Edit Group Details') : (this.translationData.lblViewGroupDetails ? this.translationData.lblViewGroupDetails : 'View Group Details')}`;
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditGroupDetails ? this.translationData.lblEditGroupDetails : 'Edit Group Details') : (this.actionType == 'view') ? (this.translationData.lblViewGroupDetails ? this.translationData.lblViewGroupDetails : 'View Group Details') : (this.translationData.lblAddNewGroup ? this.translationData.lblAddNewGroup : 'Add New Group')}`;
   }
 
   loadPOIData() {
