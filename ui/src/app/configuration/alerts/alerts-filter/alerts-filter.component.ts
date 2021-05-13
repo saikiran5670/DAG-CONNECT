@@ -24,13 +24,8 @@ export class AlertsFilterComponent implements OnInit {
   isDisabledAlerts = true;
   selectedCategory: any;
   selectedType:any;
-  localData : any;
-  dataSource = new MatTableDataSource();
+  localData : any; 
 
-  filterAlertType: any;
-
-
-  filterData: any;
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -42,8 +37,10 @@ export class AlertsFilterComponent implements OnInit {
     IsGlobal: this.isGlobal
  };
 
+ filterListValues = {};
+ dataSource = new MatTableDataSource();
  constructor(private translationService: TranslationService) { }
-
+   
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -57,83 +54,11 @@ export class AlertsFilterComponent implements OnInit {
       menuId: 18 //-- for landmark
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-    });
-    this.localData = this.initData ;
-    this.dataSource = new MatTableDataSource(this.initData);    
+    this.processTranslation(data);
+    });       
+    this.updatedTableData(this.initData );   
+    this.dataSource.filterPredicate = this.createFilter();    
   } 
- 
-  applyFilterOnAlertType(filterValue){   
-   this.localData = this.initData; 
-   if(filterValue=="All"){
-    this.filterData = this.localData;
-   } 
-   else{   
-   this.filterData = this.localData.filter(item => item.alertType == filterValue.value);
-   }
-   this.dataSource = new MatTableDataSource(this.filterData);
-   this.filterValues.emit(this.dataSource);
- }
-
-
- applyFilterOnAlertCategory(filterValue){   
-  this.localData = this.initData; 
-  //this.filterAlertType=
-  // this.localData.forEach(item => {
-  //  // this.filterAlertType= item.category;
- 
-  //   if(item.category == filterValue.value){
-  //     this.filterData.push(item);
-  //   }
-  //   else if(item.category == filterValue.value && item.alertType == filterValue.value){
-
-  //   }
-  // });
-
-  if(filterValue=="All"){
-   this.filterData = this.localData;
-  } 
-  else{
-  this.filterData = this.localData.filter(item => item.category == filterValue.value);
-  }
-  this.dataSource = new MatTableDataSource(this.filterData);
-  this.filterValues.emit(this.dataSource);
-}
-
-
-applyFilterOnAlertVehGroup(filterValue){   
-  this.localData = this.initData; 
-  if(filterValue=="All"){
-   this.filterData = this.localData;
-  } 
-  else{
-  this.filterData = this.localData.filter(item => item.vehicleGroup == filterValue.value);
-  }
-  this.dataSource = new MatTableDataSource(this.filterData);
-  this.filterValues.emit(this.dataSource);
-}
-
-
-applyFilterOnAlertStatus(filterValue){   
-  this.localData = this.initData; 
-  if(filterValue=="All"){
-   this.filterData = this.localData;
-  } 
-  else{
-  this.filterData = this.localData.filter(item => item.status == filterValue);
-  }
-  this.dataSource = new MatTableDataSource(this.filterData);
-  this.filterValues.emit(this.dataSource);
-}
-
-
-applyFilterOnAlertCriticality(filterValue){   
-  
-}
-
-applyFilterOnAlertVehicle(filterValue){  
-}
-
 
 
   processTranslation(transData: any) {
@@ -195,7 +120,47 @@ applyFilterOnAlertVehicle(filterValue){
   // handleOrderChange(value) {
   //     this.selectedOrder = value;
   // }
+  
 
+  // Called on Filter change
+  filterChange(filter, event) {    
+  this.filterListValues[filter] = event.value.trim()   
+   this.dataSource.filter = JSON.stringify(this.filterListValues)
+   this.filterValues.emit(this.dataSource);    
+  }
+  
+  createFilter() {
+    let filterFunction = function (data: any, filter: string): boolean {
+      let searchTerms = JSON.parse(filter);
+      let isFilterSet = false;
+      for (const col in searchTerms) {
+        if (searchTerms[col].toString() !== '') {
+          isFilterSet = true;
+        } else {
+          delete searchTerms[col];
+        }
+      }
 
+      console.log(searchTerms);
+
+      let nameSearch = () => {
+        let found = false;
+        if (isFilterSet) {
+          for (const col in searchTerms) {
+            searchTerms[col].trim().toLowerCase().split(' ').forEach(word => {
+              if (data[col].toString().toLowerCase().indexOf(word) != -1 && isFilterSet) {
+                found = true
+              }
+            });
+          }
+          return found
+        } else {
+          return true;
+        }
+      }
+      return nameSearch()
+    }
+    return filterFunction
+  }
 
 }
