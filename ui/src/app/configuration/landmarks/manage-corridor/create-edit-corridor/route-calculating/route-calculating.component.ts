@@ -15,6 +15,10 @@ export class RouteCalculatingComponent implements OnInit {
   @Input() exclusionList :  any;
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
+  @Output() backToCreate = new EventEmitter<any>();
+  @Output() backToReject = new EventEmitter<any>();
+
+
   breadcumMsg: any = '';
   corridorFormGroup: FormGroup;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
@@ -335,19 +339,25 @@ export class RouteCalculatingComponent implements OnInit {
     console.log(corridorObj)
     this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
       if(responseData.code === 200){
-        this.backToCorridorListFromCreate();
+          let emitObj = {
+            booleanFlag: false,
+            successMsg: "create",
+            fromCreate:true,
+          }  
+          this.backToCreate.emit(emitObj);
       }
+    },(error)=>{
+        if(error.status === 409){
+          let emitObj = {
+            booleanFlag: false,
+            successMsg: "duplicate",
+            fromCreate:true,
+          }  
+          this.backToReject.emit(emitObj);
+        }
     })
   }
 
-  backToCorridorListFromCreate(){
-    let emitObj = {
-      booleanFlag: false,
-      successMsg: "create",
-      fromCreate:true,
-    }  
-    this.backToPage.emit(emitObj);
-  }
   backToCorridorList(){
     let emitObj = {
       booleanFlag: false,

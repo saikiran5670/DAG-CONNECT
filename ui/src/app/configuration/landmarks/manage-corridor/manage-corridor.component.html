@@ -9,6 +9,15 @@
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
           </div>
         </div>
+        <div *ngIf='titleFailVisible' fxLayout="row" fxLayoutAlign="center center"
+          style='padding:10px; color:#fff; background: #f74f4f;' class='margin-bottom-sm'>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+            {{ corridorCreatedMsg }}
+          </div>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+            <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+          </div>
+        </div>
       </div>
     <mat-card *ngIf='!createEditStatus' class='mat-elevation-z no-padding margin-bottom-xlg'>
     <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
