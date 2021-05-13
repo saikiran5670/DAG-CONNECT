@@ -85,7 +85,7 @@
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
         <mat-label>{{min}}</mat-label>
             <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
-                thumbLabel [displayWith]="formatLabel" [(ngModel)]="sliderValue"></mat-slider>
+                thumbLabel [displayWith]="formatLabel"></mat-slider>
         <mat-label>{{max}}</mat-label>
 
         </div>
@@ -149,21 +149,21 @@
                                 </mat-select>
                             </mat-form-field>
                         </span>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'explosive')">Explosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'gas')">Gas</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'lammable')">Flammable</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')">Explosive</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')">Gas</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')">Flammable</mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class=" container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'combustible')">Combustible</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'organic')">Organic</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'poison')">Poison</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'radioactive')">Radio Active</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')">Combustible</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')">Organic</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')">Poison</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')">Radio Active</mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'corrosive')">Corrosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'poisonInhale')">Poisonous Inhalation</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'waterHarm')">Water Harm</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" (change)="attributeCheck($event.checked,'others')">Others</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')">Corrosive</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonInhale')">Poisonous Inhalation</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'waterHarm')">Water Harm</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'others')">Others</mat-checkbox>
                      </div>
                 </mat-expansion-panel>
                 </mat-accordion>

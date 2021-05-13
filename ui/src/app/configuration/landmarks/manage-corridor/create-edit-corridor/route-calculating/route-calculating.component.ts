@@ -243,13 +243,18 @@ export class RouteCalculatingComponent implements OnInit {
 
   startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
-
+  startMarker : any;
+  endMarker :any;
   startAddressFocusOut(){
     if (this.corridorFormGroup.controls.startaddress.value != '') {
       this.here.getAddress(this.corridorFormGroup.controls.startaddress.value).then((result) => {
         console.log(result)
-        this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"],
-        this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"]
+        this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
+        this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+        this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
+        this.hereMap.addObject(this.startMarker);
+        this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+        this.hereMap.setZoom(5);
       });
     }
   }
@@ -261,12 +266,19 @@ export class RouteCalculatingComponent implements OnInit {
     if (this.corridorFormGroup.controls.endaddress.value != '') {
       this.here.getAddress(this.corridorFormGroup.controls.endaddress.value).then((result) => {
         console.log(result)
-        this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"],
-        this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"]
+        this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
+        this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+        this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong});
+        this.hereMap.addObject(this.endMarker);
+
       });
-    this.addPolylineToMap();
+   // this.addPolylineToMap();
 
     }
+  }
+
+  drawStartMarker(){
+    
   }
   createCorridorClicked(){
    
@@ -352,6 +364,19 @@ export class RouteCalculatingComponent implements OnInit {
     this.poisonInhaleChecked  = false;
     this.waterHarmChecked  = false;
     this.othersChecked  = false;
-    this.corridorFormGroup.controls.vehicleHeight.setValue("")
+    this.corridorFormGroup.controls.vehicleHeight.setValue("");
+    this.corridorFormGroup.controls.vehicleLength.setValue("");
+    this.corridorFormGroup.controls.vehicleWidth.setValue("");
+    this.corridorFormGroup.controls.limitedWeight.setValue("");
+    this.corridorFormGroup.controls.weightPerAxle.setValue("");
+    this.corridorFormGroup.controls.startaddress.setValue("");
+    this.corridorFormGroup.controls.endaddress.setValue("");
+    this.clearMap();
+  }
+
+  clearMap(){
+    this.hereMap.removeObject(this.startMarker);
+    this.hereMap.removeObject(this.endMarker);
+
   }
 }
