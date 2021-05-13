@@ -12,13 +12,13 @@ declare var H: any;
 })
 export class RouteCalculatingComponent implements OnInit {
   @Input() translationData: any;
-
+  @Input() exclusionList :  any;
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
   breadcumMsg: any = '';
   corridorFormGroup: FormGroup;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 1;
+  selectedCorridorTypeId : any = 46;
   private platform: any;
   map: any;
   private ui: any;
@@ -36,6 +36,9 @@ export class RouteCalculatingComponent implements OnInit {
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
   corridorWidth : number;
+  sliderValue : number = 0;
+  min : number = 0;
+  max : number = 10000;
 
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService) {
     this.platform = new H.service.Platform({
@@ -44,7 +47,7 @@ export class RouteCalculatingComponent implements OnInit {
    }
 
   ngOnInit(): void {
-
+console.log(this.exclusionList)
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.corridorFormGroup = this.formBuilder.group({
@@ -60,7 +63,13 @@ export class RouteCalculatingComponent implements OnInit {
       motorWay:['Regular'],
       boatFerries:['Regular'],
       railFerries:['Regular'],
-      tunnels:['Regular']
+      tunnels:['Regular'],
+      dirtRoad:['Regular'],
+      vehicleHeight:['', [Validators.required]],
+      vehicleWidth: ['', [Validators.required]],
+      vehicleLength : ['', [Validators.required]],
+      limitedWeight: ['', [Validators.required]],
+      weightPerAxle: ['', [Validators.required]]
 
     });
 
@@ -96,7 +105,14 @@ export class RouteCalculatingComponent implements OnInit {
 
   sliderChanged(_event){
       let distanceinMtr = _event.value;
+      this.corridorWidth = _event.value;
       this.distanceinKM = distanceinMtr/1000;
+      this.corridorFormGroup.controls.widthInput.setValue(this.distanceinKM);
+  }
+
+  changeSliderInput(){
+    this.distanceinKM = this.corridorFormGroup.controls.widthInput.value;
+    this.sliderValue = this.distanceinKM * 1000;
   }
   
   formatLabel(value:number){
@@ -250,11 +266,11 @@ export class RouteCalculatingComponent implements OnInit {
         "dirtRoad":this.corridorFormGroup.controls.dirtRoad.value,
       },
       "vehicleSize": {
-        "vehicleSizeHeight": 0,
-        "vehicleSizeWidth": 0,
-        "vehicleSizeLength": 0,
-        "vehicleSizeLimitedWeight": 0,
-        "vehicleSizeWeightPerAxle": 0
+        "vehicleSizeHeight":this.corridorFormGroup.controls.vehicleHeight.value,
+        "vehicleSizeWidth": this.corridorFormGroup.controls.vehicleWidth.value,
+        "vehicleSizeLength": this.corridorFormGroup.controls.vehicleLength.value,
+        "vehicleSizeLimitedWeight": this.corridorFormGroup.controls.limitedWeight.value,
+        "vehicleSizeWeightPerAxle": this.corridorFormGroup.controls.weightPerAxle.value,
       }
     }
     console.log(corridorObj)
