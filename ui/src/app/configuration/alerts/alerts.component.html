@@ -57,8 +57,8 @@
               <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                <span class="text-truncate" *ngFor="let val of row.alertUrgencyLevelRefs; let i  | removeDuplicates">
-                  <span *ngIf="val." ></span>
+                <span class="text-truncate" *ngFor="let val of row.alertUrgencyLevelRefs  | removeDuplicates">
+                  
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'C'">
                   <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
                 </span> 
