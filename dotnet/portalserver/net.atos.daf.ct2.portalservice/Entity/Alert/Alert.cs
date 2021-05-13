@@ -15,9 +15,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [StringLength(50, MinimumLength = 1,ErrorMessage = "Alert name should be between 1 and 50 characters")]
         [RegularExpression(@"^[a-zA-ZÀ-ÚÄ-Ü0-9]([\w -]*[a-zA-ZÀ-ÚÄ-Ü0-9])?$", ErrorMessage = "Only alphabets,numbers,hyphens,dash,spaces,periods,international alphabets allowed in alert name.")]
         public string Name { get; set; }
-        [AlertCategory]
+        [AlertCategoryCheck(ErrorMessage = "Alert Category is invalid")]
         [StringLength(1, MinimumLength = 1,ErrorMessage = "Alert Category should be 1 character")]
         public string Category { get; set; }
+        [AlertTypeCheck("Category",ErrorMessage = "Alert Type is invalid")]
+
         [StringLength(1, MinimumLength = 1,ErrorMessage = "Alert Type should be 1 character")]
         public string Type { get; set; }
         [StringLength(1, MinimumLength = 1,ErrorMessage = "Alert Validity Period Type should be 1 character")]
