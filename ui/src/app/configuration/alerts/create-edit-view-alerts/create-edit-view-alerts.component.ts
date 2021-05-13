@@ -1035,6 +1035,7 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){
+    this.isDuplicateAlert= false;
     let alertLandmarkRefs= [];
     let alertFilterRefs: any= [];
 
@@ -1113,7 +1114,8 @@ PoiCheckboxClicked(event: any, row: any) {
            this.backToPage.emit(emitObj);
         }  
       }, (error) => {
-  
+        if(error.status == 409)
+          this.isDuplicateAlert= true;
       })
   }
 
