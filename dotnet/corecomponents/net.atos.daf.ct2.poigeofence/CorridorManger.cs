@@ -151,7 +151,7 @@ namespace net.atos.daf.ct2.poigeofence
             RouteCorridor objRouteCorridorResponse = new RouteCorridor();
             try
             {
-                var isExist = await _corridorRepository.CheckRouteCorridorIsexist(objRouteCorridor.CorridorLabel, objRouteCorridor.OrganizationId, objRouteCorridor.Id, objRouteCorridor.CorridorType);
+                var isExist = await _corridorRepository.CheckCorridorexistByIdName(objRouteCorridor.CorridorLabel, objRouteCorridor.OrganizationId, objRouteCorridor.Id, objRouteCorridor.CorridorType);
                 if (isExist)
                 {
                     var corridorID = await _corridorRepository.UpdateRouteCorridor(objRouteCorridor);

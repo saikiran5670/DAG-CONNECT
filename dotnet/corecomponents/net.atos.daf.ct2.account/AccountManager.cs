@@ -660,5 +660,16 @@ namespace net.atos.daf.ct2.account
             return await repository.GetLanguageCodePreference(emailId.ToLower(), orgId);
         }
         #endregion
+
+        #region Account SSO Details
+
+        public async Task<SSOTokenResponse> GetAccountSSODetails(int accountId)
+        {
+            List<SSOTokenResponse> _responses = new List<SSOTokenResponse>();
+            _responses = await repository.GetAccountSSODetails(accountId);
+            return _responses.FirstOrDefault();
+        }
+
+        #endregion
     }
 }

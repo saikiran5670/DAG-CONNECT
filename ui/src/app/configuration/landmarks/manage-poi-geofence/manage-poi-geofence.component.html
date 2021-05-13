@@ -290,7 +290,7 @@
       </mat-card>
     </div>
     <app-create-edit-view-poi *ngIf="createEditViewPoiFlag" [translationData]='translationData'
-      [actionType]='actionType' [selectedElementData]='selectedElementData' (backToPage)='checkCreationForPoi($event)'>
+      [actionType]='actionType' [selectedElementData]='selectedElementData' [categoryList]='categoryList' [subCategoryList]='subCategoryList' (backToPage)='checkCreationForPoi($event)'>
     </app-create-edit-view-poi>
     <app-create-edit-view-geofence *ngIf="createEditViewGeofenceFlag" [translationData]='translationData'
       [poiData]='poiInitData' [actionType]='actionType' [selectedElementData]='selectedElementData'

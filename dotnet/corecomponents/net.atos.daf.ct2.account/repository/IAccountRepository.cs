@@ -19,8 +19,8 @@ namespace net.atos.daf.ct2.account
         Task<Account> AddAccountToOrg(Account account);
         Task<int> UpsertPasswordModifiedDate(int accountId, long modifiedAt);
         Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyForBlockAccount);
-        Task<long?> GetPasswordModifiedDate(int accountId);        
-        Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int accountId);        
+        Task<long?> GetPasswordModifiedDate(int accountId);
+        Task<PasswordPolicyAccount> GetPasswordPolicyAccount(int accountId);
         Task<AccountBlob> CreateBlob(AccountBlob accountBlob);
         Task<AccountBlob> GetBlob(int blobId);
         Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter);
@@ -47,5 +47,6 @@ namespace net.atos.daf.ct2.account
         Task<string> GetLanguageCodePreference(string emailId, int? orgId);
         Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays);
         Task<int> UpdateIsReminderSent(int accountId, bool isReminderSend = true);
+        Task<List<SSOTokenResponse>> GetAccountSSODetails(int AccountID);
     }
 }

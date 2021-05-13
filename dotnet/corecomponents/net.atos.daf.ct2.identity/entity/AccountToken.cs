@@ -11,6 +11,8 @@ namespace net.atos.daf.ct2.identity.entity
         public string Scope { get; set; }
         public HttpStatusCode statusCode { get; set; }
         public string message { get; set; }
+        public int RoleID { get; set; }
+        public int OrganizationID { get; set; }
         // public string Error { get; set; }
     }
 }

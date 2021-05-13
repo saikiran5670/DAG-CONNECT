@@ -128,10 +128,7 @@ export class AlertsComponent implements OnInit {
     if(objData.successMsg && objData.successMsg != ''){
       this.successMsgBlink(objData.successMsg);
     }
-    if(objData.gridData){
-      this.initData = objData.gridData;
-    }
-    this.updateDatasource(this.initData);
+    this.loadAlertsData();
   }
   
   pageSizeUpdated(_event){
@@ -278,10 +275,10 @@ export class AlertsComponent implements OnInit {
   }
 
    successMsgBlink(msg: any){
-    this.titleVisible = true;
-    this.packageCreatedMsg = msg;
+    this.grpTitleVisible = true;
+    this.displayMessage = msg;
     setTimeout(() => {  
-      this.titleVisible = false;
+      this.grpTitleVisible = false;
     }, 5000);
   }
 

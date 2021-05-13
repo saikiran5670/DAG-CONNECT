@@ -1497,6 +1497,74 @@ namespace net.atos.daf.ct2.account
             return objToken;
         }
         #endregion
+
+        #region AccountSSO
+        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(int AccountID)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                List<SSOTokenResponse> response = new List<SSOTokenResponse>();
+                if (AccountID > 0)
+                {
+                    query = @"WITH cte_account
+                                AS (
+	                                SELECT act.preference_id AS preferenceid
+		                                ,act.id AS accountid
+		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
+		                                ,actrole.role_id AS roleid
+		                                ,org.org_id AS organizationid
+		                                ,org.name AS organizationname
+	                                FROM master.account act
+	                                INNER JOIN master.accountrole actrole ON act.id = actrole.account_id
+	                                LEFT JOIN master.organization org ON actrole.organization_id = org.id
+	                                WHERE act.STATE = 'A'
+	                                )
+	                                ,cte_actpreference
+                                AS (
+	                                SELECT _timezone.name AS timezonename
+		                                ,_dateformat.name AS dateformat
+		                                ,_unit.name AS UnitDisplay
+		                                ,actp.id AS accountpreferenceid
+		                                ,actp.vehicle_display_id AS VehicleDisplay
+		                                ,actp.timezone_id AS TimeZone
+		                                ,actp.date_format_id
+		                                ,actp.unit_id
+	                                FROM master.accountpreference actp
+	                                INNER JOIN master.timezone _timezone ON _timezone.id = actp.timezone_id
+	                                INNER JOIN master.unit _unit ON _unit.id = actp.unit_id
+	                                INNER JOIN master.DATEFORMAT _dateformat ON _dateformat.id = actp.date_format_id
+	                                INNER JOIN master.vehicledisplay _vehicledisplay ON _vehicledisplay.id = actp.vehicle_display_id
+	                                )
+                                SELECT cte_act.accountid
+	                                ,cte_act.accountname
+	                                ,cte_act.roleid
+	                                ,cte_act.organizationid
+	                                ,cte_act.organizationname
+	                                ,cte_actp.timezonename
+	                                ,cte_actp.DATEFORMAT
+	                                ,cte_actp.unitdisplay
+	                                ,cte_actp.vehicledisplay
+                                FROM cte_actpreference cte_actp
+                                RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid
+                                WHERE cte_act.accountID = @accountID
+                                ";
+                    //}
+                    parameter.Add("@accountID", AccountID);
+                    IEnumerable<SSOTokenResponse> accountDetails = await dataAccess.QueryAsync<SSOTokenResponse>(query, parameter);
+                    response = accountDetails.ToList();
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+
     }
 
 }

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
 {
-    public class AlertCategoryAttribute: ValidationAttribute
+    public class AlertCategoryCheckAttribute: ValidationAttribute
     {
-        public AlertCategoryAttribute()
+
+        public AlertCategoryCheckAttribute()
             : base("Invalid alert {0}")
         {
 
@@ -16,7 +17,9 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             string val = (string)value;
+            
             bool valid = false;
+            
             switch (val)
             {
                 case "L":
