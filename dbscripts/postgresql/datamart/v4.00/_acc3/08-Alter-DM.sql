@@ -45,7 +45,7 @@ CREATE TABLE if not exists tripdetail.tripalerts
 TABLESPACE pg_default;
 
 ALTER TABLE  tripdetail.tripalerts 
-    OWNER to pgadmin;
+    OWNER to pgdbdmadmin;
 
 
 Do $$
