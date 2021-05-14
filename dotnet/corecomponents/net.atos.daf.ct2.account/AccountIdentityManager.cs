@@ -456,7 +456,7 @@ namespace net.atos.daf.ct2.account
                         accTokenEntity = new IdentitySessionComponent.entity.AccountToken();
                         /* Assigning NULL as access token from db is not require after GUID implementation
                          * accTokenEntity.AccessToken = accToken.AccessToken;*/
-                        accTokenEntity.AccessToken = null;
+                        accTokenEntity.AccessToken = string.Empty;
 
                         accTokenEntity.AccountId = account.Id;
                         accTokenEntity.CreatedAt = unixTimeSecondsIssueAt;

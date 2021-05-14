@@ -108,16 +108,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
-                {
-                    return StatusCode(500, "Internal Server Error.(01)");
-                }
-                // check for fk violation
                 if (ex.Message.Contains(SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Suspend Alert Failed for Id:- {alertId}.");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 
@@ -144,21 +139,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
-                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"ActivateAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"DeleteAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
                   Request);
                 //_logger.Error(null, ex);
-                // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
-                {
-                    return StatusCode(500, "Internal Server Error.(01)");
-                }
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, $"Exception Occurred, Delete Alert Failed for Id:- {alertId}.");
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 
