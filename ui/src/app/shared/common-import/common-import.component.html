@@ -1,17 +1,16 @@
-<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span>{{ breadcumMsg }}</span>
-    </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
-        <span class='custom-font' (click)="closeImport()">
-            <span>
-                &nbsp;</span>
-                    <span class='backBtnCss'>{{ this.importTranslationData.lblBack || 'Back' }}</span>
-        </span>
-    </div>
-</div>
-
 <div class='bgtrans'>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span>{{ breadcumMsg }}</span>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="closeImport()">
+                <span>
+                    <&nbsp;</span>
+                        <span class='backBtnCss'>{{ this.importTranslationData.lblBack || 'Back' }}</span>
+            </span>
+        </div>
+    </div>
 <mat-card class='mat-elevation-z margin-bottom-xlg'>
     <form [formGroup]="importPackageFormGroup">
         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
