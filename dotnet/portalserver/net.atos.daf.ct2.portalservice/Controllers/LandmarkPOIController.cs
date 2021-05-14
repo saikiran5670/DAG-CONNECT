@@ -24,7 +24,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
-        private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly HeaderObj _userDetails;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";

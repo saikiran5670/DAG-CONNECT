@@ -34,13 +34,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly AuditHelper _auditHelper;
         private readonly FeatureSetMapper _featureSetMapper;
-        private readonly FeatureService.FeatureServiceClient _featureclient;
         private readonly RelationshipMapper _relationshipMapper;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly OrganizationBusinessService.OrganizationService.OrganizationServiceClient organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public IConfiguration Configuration { get; }
         public OrganizationController(
                                       OrganizationService.OrganizationServiceClient _organizationClient,
@@ -979,7 +977,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     level = -1;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 level = -1;
             }

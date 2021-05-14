@@ -26,7 +26,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
         private readonly Entity.Alert.Mapper _mapper;
