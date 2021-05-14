@@ -4,3 +4,9 @@
 .margin-top-adjust{
     margin-top: 25px;
 }
+
+.backBtnCss{
+    text-decoration: underline;
+    color: #29539c;
+    cursor: pointer;
+  }

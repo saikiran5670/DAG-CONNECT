@@ -80,7 +80,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   selectedSubCategoryId = null;
   allCategoryPOIData : any;
   defaultGpx : any;
-
+  breadcumMsg : any = "";
+  breadcumMsgG : any = "";
   @ViewChild("map")
   public mapElement: ElementRef;
   markerArray: any = [];
@@ -107,6 +108,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
+    this.breadcumMsg = this.getBreadcumPOI();
+    this.breadcumMsgG = this.getBreadcumGeofence();
+
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -115,6 +119,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.loadPoiData();
     this.loadGeofenceData();
     this.loadLandmarkCategoryData();
+  }
+
+  getBreadcumPOI() {
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
+    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
+    ${this.translationData.lblImportPOI ? this.translationData.lblImportPOI : "Import POI"}`;
+  }
+
+  
+  getBreadcumGeofence() {
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
+    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
+    ${this.translationData.lblImportGeofence ? this.translationData.lblImportGeofence : "Import Geofence"}`;
   }
 
   loadPoiData() {
@@ -857,21 +876,57 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.defaultGpx = `<?xml version="1.0" encoding="UTF-8"?>
     <gpx version="1.1">
       <metadata>
-        <id>156</id>
-        <organizationId>6</organizationId>,
-        <categoryId>0</categoryId>,
-        <subCategoryId>0</subCategoryId>,
-        <geofencename>Test Geofence1</geofencename>,
-        <type>O</type>,
-        <address>Pune</address>,
-        <city>Pune</city>,
-        <country>India</country>,
-        <zipcode>400501</zipcode>,
-        <latitude>18.52050580488341</latitude>,
-        <longitude>73.86056772285173</longitude>,
-        <distance>0</distance>,
-        <tripId>0</tripId>,
-        <createdBy>0</createdBy>,
+        <id>157</id>
+        <categoryId>0</categoryId>
+        <subCategoryId>0</subCategoryId>
+        <geofencename>Test Geofence2</geofencename>
+        <type>C</type>
+        <address>Pune</address>
+        <city>Pune</city>
+        <country>India</country>
+        <zipcode>400501</zipcode>
+        <latitude>18.52050580488341</latitude>
+        <longitude>73.86056772285173</longitude>
+        <distance>10</distance>
+		<width>0</width>
+        <createdBy>0</createdBy>
+      </metadata>
+	  <metadata>
+        <id>158</id>
+        <categoryId>0</categoryId>
+        <subCategoryId>0</subCategoryId>
+        <geofencename>Test Geofence3</geofencename>
+        <type>O</type>
+        <address>Pune</address>
+        <city>Pune</city>
+        <country>India</country>
+        <zipcode>400501</zipcode>
+        <latitude>18.52050580488341</latitude>
+        <longitude>73.86056772285173</longitude>
+        <distance>0</distance>
+        <tripId>0</tripId>
+		<width>0</width>
+        <createdBy>0</createdBy>
+		<nodes>
+			<id>0</id>
+			<landmarkId>0</landmarkId>
+			<seqNo>1</seqNo>
+			<latitude>18.52050580488341</latitude>
+			<longitude>73.86056772285173</longitude>
+			<createdBy>0</createdBy>
+			<address>Pune</address>
+			<tripId>Trip1</tripId>
+		</nodes>
+		<nodes>
+			<id>0</id>
+			<landmarkId>0</landmarkId>
+			<seqNo>2</seqNo>
+			<latitude>18.52050580488341</latitude>
+			<longitude>73.86056772285173</longitude>
+			<createdBy>0</createdBy>
+			<address>Mumbai</address>
+			<tripId>Trip2</tripId>
+		</nodes>
       </metadata>
       <trk>
         <name>RUN</name>
@@ -902,6 +957,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.rejected = this.translationData.lblrejected || 'Rejected';
       this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
+      this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryId || 'CategoryId',
@@ -939,7 +995,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.nodesAreRequired = this.translationData.lblnodesAreRequired || 'Nodes are required';
       this.importTranslationData.typeCanEitherBeCorO = this.translationData.lbltypeCanEitherBeCorO || 'Geofence type can either be C or O';
       this.importTranslationData.organizationIdCannotbeZero = this.translationData.lblorganizationIdCannotbeZero || 'Organization Id cannot be zero';
-      this.tableTitle = this.translationData.lblGeofenceTableTitle || 'Rejected Geofence Details';
+      this.importTranslationData.invalidFileType = this.translationData.lblInvalidFileType || 'Invalid file type';
+      this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
+       this.tableTitle = this.translationData.lblGeofenceTableTitle || 'Rejected Geofence Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'Organization Id',
                               this.translationData.lblGeofenceName|| 'Geofence Name',
                               this.translationData.lblGeofenceType|| 'Type',

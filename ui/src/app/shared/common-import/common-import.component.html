@@ -1,3 +1,15 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span>{{ breadcumMsg }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+        <span class='custom-font' (click)="closeImport()">
+            <span>
+                &nbsp;</span>
+                    <span class='backBtnCss'>{{ this.importTranslationData.lblBack || 'Back' }}</span>
+        </span>
+    </div>
+</div>
 
 <div class='bgtrans'>
 <mat-card class='mat-elevation-z margin-bottom-xlg'>
@@ -6,11 +18,7 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importTitle || 'Import New Package'}}</span>
             </div>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                <button mat-flat-button (click)="closeImport()">
-                    <mat-icon>arrow_back_ios</mat-icon>
-                 </button>
-            </div>
+           
       
         </div>
         <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
@@ -42,9 +50,12 @@
                                <mat-error *ngIf="excelEmptyMsg">
                                     {{ this.importTranslationData.emptyFile || 'Empty File' }}
                                 </mat-error> 
+                                <mat-error *ngIf="filetypeError">
+                                    {{ this.importTranslationData.invalidFileType}}
+                                </mat-error> 
                             </div>
                             <div fxLayout="column" class='margin-top-adjust'>
-                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
+                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg || filetypeError" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
                                     (click)="importNewFile(removableInput)">
                                     <mat-icon>arrow_circle_up</mat-icon> {{ this.importTranslationData.uploadButtonText}}
                                 </button>
