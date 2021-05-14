@@ -297,18 +297,15 @@
 </div>
 
 <div class='bgtrans' *ngIf="importPOIClicked">
-  <div>Home / Configuration / Landmark / Import POI</div>
-
   <app-common-import [importFileComponent]="'poi'" (showImportCSV)="updateImportView($event)"
     [importTranslationData]="importTranslationData" [templateTitle]="templateTitle" [templateValue]="templateValue"
-    [tableColumnList]="tableColumnList" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle'>
+    [tableColumnList]="tableColumnList" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle' [breadcumMsg]="breadcumMsg">
   </app-common-import>
 </div>
-<div class='bgtrans' *ngIf="importGeofenceClicked">
-  <div>Home / Configuration / Landmark / Import Geofence</div>
 
+<div class='bgtrans' *ngIf="importGeofenceClicked">
   <app-common-import [importFileComponent]="'geofence'" (showImportCSV)="updateImportView($event)"
     [importTranslationData]="importTranslationData" [templateTitle]="templateTitle" [templateValue]="templateValue"
     [tableColumnList]="tableColumnList" [tableColumnName]="tableColumnName" [tableTitle]='tableTitle'
-    [defaultGpx]="defaultGpx"></app-common-import>
+    [defaultGpx]="defaultGpx" [breadcumMsg]="breadcumMsgG"></app-common-import>
 </div>

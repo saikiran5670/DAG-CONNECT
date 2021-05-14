@@ -45,6 +45,7 @@ export class CommonImportComponent implements OnInit {
   @Input() tableColumnName : any;
   @Input() tableTitle : string;
   @Input() defaultGpx:any;
+  @Input() breadcumMsg : any;
   fileExtension = '.csv';
   parsedGPXData : any;
   accountOrganizationId: any = 0;

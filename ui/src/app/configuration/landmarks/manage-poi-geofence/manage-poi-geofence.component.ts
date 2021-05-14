@@ -80,7 +80,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
   selectedSubCategoryId = null;
   allCategoryPOIData : any;
   defaultGpx : any;
-
+  breadcumMsg : any = "";
+  breadcumMsgG : any = "";
   @ViewChild("map")
   public mapElement: ElementRef;
   markerArray: any = [];
@@ -107,6 +108,9 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   ngOnInit(): void {
     this.showLoadingIndicator = true;
+    this.breadcumMsg = this.getBreadcumPOI();
+    this.breadcumMsgG = this.getBreadcumGeofence();
+
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -115,6 +119,21 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.loadPoiData();
     this.loadGeofenceData();
     this.loadLandmarkCategoryData();
+  }
+
+  getBreadcumPOI() {
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
+    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
+    ${this.translationData.lblImportPOI ? this.translationData.lblImportPOI : "Import POI"}`;
+  }
+
+  
+  getBreadcumGeofence() {
+    return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
+    ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
+    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
+    ${this.translationData.lblImportGeofence ? this.translationData.lblImportGeofence : "Import Geofence"}`;
   }
 
   loadPoiData() {
@@ -938,6 +957,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.rejected = this.translationData.lblrejected || 'Rejected';
       this.importTranslationData.existError = this.translationData.lblNamealreadyexists || 'POI name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || '$ is mandatory input';
+      this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
       this.tableTitle = this.translationData.lblTableTitle || 'Rejected POI Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'OrganizationId',
                               this.translationData.lblCategoryId || 'CategoryId',
@@ -976,7 +996,8 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.typeCanEitherBeCorO = this.translationData.lbltypeCanEitherBeCorO || 'Geofence type can either be C or O';
       this.importTranslationData.organizationIdCannotbeZero = this.translationData.lblorganizationIdCannotbeZero || 'Organization Id cannot be zero';
       this.importTranslationData.invalidFileType = this.translationData.lblInvalidFileType || 'Invalid file type';
-      this.tableTitle = this.translationData.lblGeofenceTableTitle || 'Rejected Geofence Details';
+      this.importTranslationData.lblBack = this.translationData.lblBack || 'Back';
+       this.tableTitle = this.translationData.lblGeofenceTableTitle || 'Rejected Geofence Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'Organization Id',
                               this.translationData.lblGeofenceName|| 'Geofence Name',
                               this.translationData.lblGeofenceType|| 'Type',
