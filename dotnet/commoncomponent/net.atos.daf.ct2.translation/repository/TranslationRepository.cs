@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.translation.repository
 {
     public class TranslationRepository : ITranslationRepository
     {
-        private readonly IConfiguration _config;
+        //private readonly IConfiguration _config;
         private readonly TranslationCoreMapper _translationCoreMapper;
 
         //     private readonly IDataAccess dataAccess;
@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.translation.repository
 
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Enumerable.Empty<Translations>();
             }
@@ -410,7 +410,6 @@ namespace net.atos.daf.ct2.translation.repository
         {
             try
             {
-                int IsUpdated = 0;
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
@@ -592,7 +591,7 @@ namespace net.atos.daf.ct2.translation.repository
             {
                 Entity.updated_count = Convert.ToInt32(record.updated_count);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 Entity.updated_count = 0; ;

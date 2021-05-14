@@ -431,7 +431,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else
                     Result = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Result = false;
             }
