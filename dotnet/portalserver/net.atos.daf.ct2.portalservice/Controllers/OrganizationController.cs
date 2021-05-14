@@ -249,7 +249,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _logger.Info("Relationship get level and code function called ");
 
-                return Ok(levelCode);
+                return Ok(await Task.FromResult(levelCode));
             }
             catch (Exception ex)
             {

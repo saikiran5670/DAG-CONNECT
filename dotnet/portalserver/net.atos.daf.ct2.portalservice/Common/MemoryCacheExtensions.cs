@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     SlidingExpiration = TimeSpan.FromSeconds(30)
                 };
 
-                _cache.SetAsync(key, mStream.ToArray());
+               await _cache.SetAsync(key, mStream.ToArray());
 
                 mStream.Close();
             }
