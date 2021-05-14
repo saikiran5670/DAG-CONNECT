@@ -35,8 +35,6 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ,token_id
                                         ,session_id
-                                        ,role_id
-                                        ,session_id
                                         ) 
                                     VALUES(
                                         @user_name
@@ -48,9 +46,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,@idp_type
                                         ,@created_at
                                         ,@token_id
-                                        ,@session_id
-                                        ,@role_id
-                                        ,@session_id
+                                        ,@session_id                                        
                                         )RETURNING id";
 
                 var parameter = new DynamicParameters();
@@ -65,8 +61,6 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@created_at", accountToken.CreatedAt);
                 parameter.Add("@token_id", Guid.Parse(accountToken.TokenId));
                 parameter.Add("@session_id", accountToken.Session_Id);
-                parameter.Add("@session_id", accountToken.RoleId);
-                parameter.Add("@session_id", accountToken.OrganizationId);
 
                 int tokenId =await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return tokenId;
@@ -159,8 +153,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ,token_id
                                         ,session_id
-                                        ,role_id as RoleId
-                                        ,organization_id as OrganizationId
+                                        ,0 as RoleId
+                                        ,0 as OrganizationId
                                         from master.accounttoken 
                                         where account_id=@AccountID";
                 var parameter = new DynamicParameters();
@@ -198,8 +192,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ,token_id
                                         ,session_id
-                                        ,role_id as RoleId
-                                        ,organization_id as OrganizationId
+                                        ,0 as RoleId
+                                        ,0 as OrganizationId
                                         from master.accounttoken 
                                         where token_id=@token_id";
                 var parameter = new DynamicParameters();
