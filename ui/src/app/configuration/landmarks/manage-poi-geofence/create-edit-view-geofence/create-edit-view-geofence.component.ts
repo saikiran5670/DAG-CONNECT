@@ -67,6 +67,8 @@ export class CreateEditViewGeofenceComponent implements OnInit {
   uiElem: any;
   categorySelectionForPOI: any = 0;
   subCategorySelectionForPOI: any = 0;
+  infoBubble: boolean = false;
+  infoBubbleText: boolean = false;
 
   @ViewChild("map")
   public mapElement: ElementRef;
@@ -137,6 +139,7 @@ export class CreateEditViewGeofenceComponent implements OnInit {
         this.drawCircularGeofence();
       } else { //-- polygon geofence
         this.polygoanGeofence = true;
+        this.setInfoBubble(this.polygoanGeofence);
         this.setDefaultPolygonGeofenceFormValue();
         this.drawPolygon();
       }
@@ -545,28 +548,42 @@ export class CreateEditViewGeofenceComponent implements OnInit {
       this.indicateBubble();
     } else { //-- polygon
       this.polygoanGeofence = true;
+      this.setInfoBubble(this.polygoanGeofence);
       this.setPolygonType();
-      this.indicateBubble();
+      //this.indicateBubble();
+      if(this.polygoanGeofence){
+        this.getPolyPoint(this.hereMap, this);
+      }
     }
+  }
+
+  setInfoBubble(_flag: boolean){
+    this.infoBubble = _flag;
+    this.infoBubbleText = _flag;
+  }
+
+  clickInfoBubbled(event: any){
+    this.infoBubbleText = !this.infoBubbleText;
   }
 
   indicateBubble(){
     //if(this.actionType == 'create'){
       var bubble = new H.ui.InfoBubble({ lng: 13.4050, lat: 52.5200 }, {
-        content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
+        //content: this.polygoanGeofence ? (this.translationData.lblPolygonInfoText || '<b>Click on map to create polygon points</b>') : (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
+        content: (this.translationData.lblCircularInfoText || '<b>Select POI from below list to map with this Geofence</b>')
       });
       this.uiElem.addBubble(bubble);
-      if(this.polygoanGeofence){
-        this.getPolyPoint(this.hereMap, this, bubble);
-      }
+      // if(this.polygoanGeofence){
+      //   this.getPolyPoint(this.hereMap, this, bubble);
+      // }
     //}
   }
 
-  getPolyPoint(map: any, thisRef: any, bubble: any){
+  getPolyPoint(map: any, thisRef: any, bubble?: any){
     let pointsArray = [];
     let nodeNo: any = 0;
       map.addEventListener('tap', function (evt) {
-        thisRef.uiElem.removeBubble(bubble); //- remove bubble
+        //thisRef.uiElem.removeBubble(bubble); //- remove bubble
         var coord = map.screenToGeo(evt.currentPointer.viewportX,
                 evt.currentPointer.viewportY);
         if(!thisRef.isPolyCreated && pointsArray.length <= 12){ //-- Min-3 & Max-5

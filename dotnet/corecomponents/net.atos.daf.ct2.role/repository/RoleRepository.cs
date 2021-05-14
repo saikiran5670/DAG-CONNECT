@@ -193,13 +193,15 @@ namespace net.atos.daf.ct2.role.repository
             parameter.Add("@updatedby", roleMaster.Updatedby);
             parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));            
             parameter.Add("@description", roleMaster.Description);
+            parameter.Add("@level", roleMaster.Level);
 
             var RoleQueryStatement = @" UPDATE master.role
                                             SET name=@name,
                                             description= @Description,
                                              feature_set_id = @feature_set_id,
                                             modified_by=@updatedby,
-                                           modified_at=@updateddate  
+                                           modified_at=@updateddate,
+                                           level=@level
                                         WHERE id = @id
                                         RETURNING id;";
             int resultUpdatedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);

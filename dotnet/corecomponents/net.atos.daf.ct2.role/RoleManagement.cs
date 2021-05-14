@@ -99,7 +99,10 @@ namespace net.atos.daf.ct2.role
                    roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
                    int RoleId = 0;
                    int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
-                   if(featuresetid > 0 )
+                //to get minimum features level
+                int minlevel = await FeatureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
+                roleMaster.Level = minlevel;
+                if (featuresetid > 0 )
                    {
                        roleMaster.Feature_set_id = featuresetid;
                         RoleId= await roleRepository.UpdateRole(roleMaster);
