@@ -42,9 +42,12 @@
                                <mat-error *ngIf="excelEmptyMsg">
                                     {{ this.importTranslationData.emptyFile || 'Empty File' }}
                                 </mat-error> 
+                                <mat-error *ngIf="filetypeError">
+                                    {{ this.importTranslationData.invalidFileType}}
+                                </mat-error> 
                             </div>
                             <div fxLayout="column" class='margin-top-adjust'>
-                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
+                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg || filetypeError" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
                                     (click)="importNewFile(removableInput)">
                                     <mat-icon>arrow_circle_up</mat-icon> {{ this.importTranslationData.uploadButtonText}}
                                 </button>

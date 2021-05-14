@@ -975,6 +975,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.nodesAreRequired = this.translationData.lblnodesAreRequired || 'Nodes are required';
       this.importTranslationData.typeCanEitherBeCorO = this.translationData.lbltypeCanEitherBeCorO || 'Geofence type can either be C or O';
       this.importTranslationData.organizationIdCannotbeZero = this.translationData.lblorganizationIdCannotbeZero || 'Organization Id cannot be zero';
+      this.importTranslationData.invalidFileType = this.translationData.lblInvalidFileType || 'Invalid file type';
       this.tableTitle = this.translationData.lblGeofenceTableTitle || 'Rejected Geofence Details';
       this.tableColumnName = [this.translationData.lblOrganizationId || 'Organization Id',
                               this.translationData.lblGeofenceName|| 'Geofence Name',

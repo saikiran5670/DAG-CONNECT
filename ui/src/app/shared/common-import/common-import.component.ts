@@ -48,6 +48,7 @@ export class CommonImportComponent implements OnInit {
   fileExtension = '.csv';
   parsedGPXData : any;
   accountOrganizationId: any = 0;
+  filetypeError : boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
     private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
@@ -137,43 +138,62 @@ export class CommonImportComponent implements OnInit {
   }
 
 
+  checkFileType(_fileName){
+    let getfileExtension = "." + _fileName.split(".")[1];
+    if(getfileExtension !== this.fileExtension){
+      return true;
+    }
+
+    return false;
+  }
+
   addfile(event: any){ 
+    this.filetypeError = false;
     if (this.fileExtension === '.csv' || this.fileExtension === '.xlsx') {
       this.excelEmptyMsg = false;
       this.file = event.target.files[0];
-      let fileReader = new FileReader();
-      fileReader.readAsArrayBuffer(this.file);
-      fileReader.onload = (e) => {
-        this.arrayBuffer = fileReader.result;
-        var data = new Uint8Array(this.arrayBuffer);
-        var arr = new Array();
-        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        var bstr = arr.join("");
-        var workbook = XLSX.read(bstr, { type: "binary" });
-        var first_sheet_name = workbook.SheetNames[0];
-        var worksheet = workbook.Sheets[first_sheet_name];
-        var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-        this.filelist = [];
-        this.filelist = arraylist;
+      let fileName = this.file.name;
+      this.filetypeError = this.checkFileType(fileName);
+      if (!this.filetypeError) {
+
+        let fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(this.file);
+        fileReader.onload = (e) => {
+          this.arrayBuffer = fileReader.result;
+          var data = new Uint8Array(this.arrayBuffer);
+          var arr = new Array();
+          for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+          var bstr = arr.join("");
+          var workbook = XLSX.read(bstr, { type: "binary" });
+          var first_sheet_name = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[first_sheet_name];
+          var arraylist = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+          this.filelist = [];
+          this.filelist = arraylist;
+        }
       }
     }
     else{
       this.file = event.target.files[0];
+      let fileName = this.file.name;
+      this.filetypeError = this.checkFileType(fileName);
+      if (!this.filetypeError) {
 
-      let fileReader = new FileReader();
-      fileReader.readAsText(this.file);
-      let text : any;
-      fileReader.onload = (e) => {
-        text = fileReader.result;
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(text, 'text/xml');
-        this.parsedGPXData = this.ngxXml2jsonService.xmlToJson(xml);
-        //this.formatGPXData();
-        this.formatNewData();
+        let fileReader = new FileReader();
+        fileReader.readAsText(this.file);
+        let text: any;
+        fileReader.onload = (e) => {
+          text = fileReader.result;
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(text, 'text/xml');
+          this.parsedGPXData = this.ngxXml2jsonService.xmlToJson(xml);
+          //this.formatGPXData();
+          this.formatNewData();
+        }
       }
     }
   }
-  
+
   importNewFile(removableInput){
     if(this.filelist.length > 0){
       this.excelEmptyMsg = false;
@@ -774,9 +794,6 @@ export class CommonImportComponent implements OnInit {
          // console.log(resultData)
           this.showImportStatus = true;
           removableInput.clear();
-          // if(resultData["poiUploadedList"].length >0){
-          //   this.importedCount = resultData["poiUploadedList"].length;
-          // }
           this.importedCount = resultData.addedCount;
           if(resultData["failureResult"].length >0){
             this.updateDuplicateErrorMsg(resultData["failureResult"]);
