@@ -857,21 +857,57 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.defaultGpx = `<?xml version="1.0" encoding="UTF-8"?>
     <gpx version="1.1">
       <metadata>
-        <id>156</id>
-        <organizationId>6</organizationId>,
-        <categoryId>0</categoryId>,
-        <subCategoryId>0</subCategoryId>,
-        <geofencename>Test Geofence1</geofencename>,
-        <type>O</type>,
-        <address>Pune</address>,
-        <city>Pune</city>,
-        <country>India</country>,
-        <zipcode>400501</zipcode>,
-        <latitude>18.52050580488341</latitude>,
-        <longitude>73.86056772285173</longitude>,
-        <distance>0</distance>,
-        <tripId>0</tripId>,
-        <createdBy>0</createdBy>,
+        <id>157</id>
+        <categoryId>0</categoryId>
+        <subCategoryId>0</subCategoryId>
+        <geofencename>Test Geofence2</geofencename>
+        <type>C</type>
+        <address>Pune</address>
+        <city>Pune</city>
+        <country>India</country>
+        <zipcode>400501</zipcode>
+        <latitude>18.52050580488341</latitude>
+        <longitude>73.86056772285173</longitude>
+        <distance>10</distance>
+		<width>0</width>
+        <createdBy>0</createdBy>
+      </metadata>
+	  <metadata>
+        <id>158</id>
+        <categoryId>0</categoryId>
+        <subCategoryId>0</subCategoryId>
+        <geofencename>Test Geofence3</geofencename>
+        <type>O</type>
+        <address>Pune</address>
+        <city>Pune</city>
+        <country>India</country>
+        <zipcode>400501</zipcode>
+        <latitude>18.52050580488341</latitude>
+        <longitude>73.86056772285173</longitude>
+        <distance>0</distance>
+        <tripId>0</tripId>
+		<width>0</width>
+        <createdBy>0</createdBy>
+		<nodes>
+			<id>0</id>
+			<landmarkId>0</landmarkId>
+			<seqNo>1</seqNo>
+			<latitude>18.52050580488341</latitude>
+			<longitude>73.86056772285173</longitude>
+			<createdBy>0</createdBy>
+			<address>Pune</address>
+			<tripId>Trip1</tripId>
+		</nodes>
+		<nodes>
+			<id>0</id>
+			<landmarkId>0</landmarkId>
+			<seqNo>2</seqNo>
+			<latitude>18.52050580488341</latitude>
+			<longitude>73.86056772285173</longitude>
+			<createdBy>0</createdBy>
+			<address>Mumbai</address>
+			<tripId>Trip2</tripId>
+		</nodes>
       </metadata>
       <trk>
         <name>RUN</name>

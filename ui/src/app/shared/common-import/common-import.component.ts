@@ -168,8 +168,8 @@ export class CommonImportComponent implements OnInit {
         const parser = new DOMParser();
         const xml = parser.parseFromString(text, 'text/xml');
         this.parsedGPXData = this.ngxXml2jsonService.xmlToJson(xml);
-        this.formatGPXData();
-
+        //this.formatGPXData();
+        this.formatNewData();
       }
     }
   }
@@ -503,7 +503,101 @@ export class CommonImportComponent implements OnInit {
   }
 
   //import Geofence function
+  formatNewData(){
+    //console.log( this.parsedGPXData);
+    let gpxData = this.parsedGPXData;
+    let gpxInfo = gpxData["gpx"]["metadata"];
+    let organizedGPXData = [];
+    
+    let nodesArray = [];
+    if(gpxInfo.length){
+      for(let i = 0; i < gpxInfo.length ; i++){
+        if(gpxInfo[i]['nodes']){
+          let internalNode = gpxInfo[i]['nodes'];
+          for(let j=0 ; j<internalNode.length;j++){
+            nodesArray=[];
+              nodesArray.push({
+                "id": Number(internalNode[j]["id"]),
+                "landmarkId":Number(internalNode[j]["landmarkId"]),
+                "seqNo": j+1,
+                "latitude": Number(internalNode[j]["latitude"]),
+                "longitude": Number(internalNode[j]["longitude"]),
+                "createdBy": Number(internalNode[j]["createdBy"]),
+                "address": internalNode[j]["address"],
+                "tripId": internalNode[j]["tripId"]
+              })
 
+          }
+        }
+        else{
+          nodesArray = [];
+        }
+        organizedGPXData.push(
+          {
+            "id": Number(gpxInfo[i].id),
+            "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
+            "categoryId": Number(gpxInfo[i].categoryId),
+            "subCategoryId": Number(gpxInfo[i].subCategoryId),
+            "name": gpxInfo[i].geofencename,
+            "type": gpxInfo[i].type,
+            "address": gpxInfo[i].address,
+            "city": gpxInfo[i].city,
+            "country": gpxInfo[i].country,
+            "zipcode": gpxInfo[i].zipcode,
+            "latitude": Number(gpxInfo[i].latitude),
+            "longitude":Number( gpxInfo[i].longitude),
+            "distance": Number(gpxInfo[i].distance),
+            "width": Number(gpxInfo[i].width),
+            "createdBy":Number(gpxInfo[i].createdBy),
+            "nodes": nodesArray
+          })
+        }
+    }
+    else{
+      if(gpxInfo['nodes']){
+        let internalNode = gpxInfo['nodes'];
+        nodesArray=[];
+        for(let j=0 ; j<internalNode.length;j++){
+            nodesArray.push({
+              "id": Number(internalNode[j]["id"]),
+              "landmarkId":Number(internalNode[j]["landmarkId"]),
+              "seqNo": j+1,
+              "latitude": Number(internalNode[j]["latitude"]),
+              "longitude": Number(internalNode[j]["longitude"]),
+              "createdBy": Number(internalNode[j]["createdBy"]),
+              "address": internalNode[j]["address"],
+              "tripId": internalNode[j]["tripId"]
+            })
+
+        }
+      }
+      else{
+        nodesArray = [];
+      }
+      organizedGPXData.push(
+        {
+          "id": Number(gpxInfo.id),
+          "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
+          "categoryId": Number(gpxInfo.categoryId),
+          "subCategoryId": Number(gpxInfo.subCategoryId),
+          "name": gpxInfo.geofencename,
+          "type": gpxInfo.type,
+          "address": gpxInfo.address,
+          "city": gpxInfo.city,
+          "country": gpxInfo.country,
+          "zipcode": gpxInfo.zipcode,
+          "latitude": Number(gpxInfo.latitude),
+          "longitude":Number( gpxInfo.longitude),
+          "distance": Number(gpxInfo.distance),
+          "width": Number(gpxInfo.width),
+          "createdBy":Number(gpxInfo.createdBy),
+          "nodes": nodesArray
+        })
+    }
+   
+      this.filelist = organizedGPXData;
+      
+  }
   formatGPXData(){
     let gpxData = this.parsedGPXData;
     let gpxInfo = gpxData["gpx"]["metadata"];
@@ -512,12 +606,16 @@ export class CommonImportComponent implements OnInit {
     //console.log(nodeInfo)
     let organizedGPXData = [];
     let nodeArray = [],nodeObj ={};
-    
-    for(var i in nodeInfo){
-      nodeArray.push(nodeInfo[i]["trkseg"]["trkpt"]);
-    }
     let nodeArraySet = [];
 
+    if (nodeInfo.length) {
+       for (var i in nodeInfo) {
+        nodeArray.push(nodeInfo[i]["trkseg"]["trkpt"]);
+      }
+    }
+    else {
+      nodeArray.push(nodeInfo["trkseg"]["trkpt"]);
+    }
     for(let i = 0; i < nodeArray.length ; i++){
       let nodeArrayForEach = [];
       for(let j = 0; j < nodeArray[i].length ; j++){
@@ -536,31 +634,56 @@ export class CommonImportComponent implements OnInit {
 
    // console.log("nodeArraySet");
     //console.log(nodeArraySet)
-    for(let i = 0; i < gpxInfo.length ; i++){
+    if(gpxInfo.length){
+      for(let i = 0; i < gpxInfo.length ; i++){
       
+        organizedGPXData.push(
+          {
+            "id": Number(gpxInfo[i].id),
+            "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
+            "categoryId": Number(gpxInfo[i].categoryId),
+            "subCategoryId": Number(gpxInfo[i].subCategoryId),
+            "name": gpxInfo[i].geofencename,
+            "type": gpxInfo[i].type,
+            "address": gpxInfo[i].address,
+            "city": gpxInfo[i].city,
+            "country": gpxInfo[i].country,
+            "zipcode": gpxInfo[i].zipcode,
+            "latitude": Number(gpxInfo[i].latitude),
+            "longitude":Number( gpxInfo[i].longitude),
+            "distance": Number(gpxInfo[i].distance),
+            "tripId":Number(gpxInfo[i].tripId),
+            "createdBy":Number(gpxInfo[i].createdBy),
+            "nodes": nodeArraySet[i]
+          })
+        }
+    }
+    else{
       organizedGPXData.push(
         {
-          "id": Number(gpxInfo[i].id),
+          "id": Number(gpxInfo.id),
           "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
-          "categoryId": Number(gpxInfo[i].categoryId),
-          "subCategoryId": Number(gpxInfo[i].subCategoryId),
-          "name": gpxInfo[i].geofencename,
-          "type": gpxInfo[i].type,
-          "address": gpxInfo[i].address,
-          "city": gpxInfo[i].city,
-          "country": gpxInfo[i].country,
-          "zipcode": gpxInfo[i].zipcode,
-          "latitude": Number(gpxInfo[i].latitude),
-          "longitude":Number( gpxInfo[i].longitude),
-          "distance": Number(gpxInfo[i].distance),
-          "tripId":Number(gpxInfo[i].tripId),
-          "createdBy":Number(gpxInfo[i].createdBy),
-          "nodes": nodeArraySet[i]
+          "categoryId": Number(gpxInfo.categoryId),
+          "subCategoryId": Number(gpxInfo.subCategoryId),
+          "name": gpxInfo.geofencename,
+          "type": gpxInfo.type,
+          "address": gpxInfo.address,
+          "city": gpxInfo.city,
+          "country": gpxInfo.country,
+          "zipcode": gpxInfo.zipcode,
+          "latitude": Number(gpxInfo.latitude),
+          "longitude":Number( gpxInfo.longitude),
+          "distance": Number(gpxInfo.distance),
+          "tripId":Number(gpxInfo.tripId),
+          "createdBy":Number(gpxInfo.createdBy),
+          "nodes": nodeArraySet
         })
-      }
+    }
+   
       this.filelist = organizedGPXData;
       
-      //console.log(organizedGPXData)
+      //console.log(organizedGPXData);
+      //console.log(this.filelist)
       //console.log(nodeArray)
   }
 
@@ -614,7 +737,7 @@ export class CommonImportComponent implements OnInit {
             break;
           }
           case 'nodes':{
-            let objData: any = this.distanceValidation(value,_geofenceType,'nodes'); 
+            let objData: any = this.nodeValidation(value,_geofenceType,'nodes'); 
             nodeFlag = objData.status;
             if(!nodeFlag){
               item.message = objData.reason;
@@ -854,7 +977,7 @@ export class CommonImportComponent implements OnInit {
     let obj: any = { status: true, reason: 'correct data'};
     let SpecialCharRegex = /[^!@#\$%&*]+$/;
     
-      if(_geofenceType === 'C'){
+      if(_geofenceType === 'C' && type === 'distance'){
         
         if(value == ''){
           obj.status = false;
@@ -867,13 +990,6 @@ export class CommonImportComponent implements OnInit {
           return obj;
         }
       }
-      else if(_geofenceType === 'O'){
-        if((!value || value == '') && value.length < 1){
-          obj.status = false;
-          obj.reason = this.importTranslationData.nodesAreRequired;
-          return obj;
-        }
-      }
       
       if(!SpecialCharRegex.test(value)){
         obj.status = false;
@@ -881,6 +997,21 @@ export class CommonImportComponent implements OnInit {
         return obj;
       }
       return obj;
+
+  }
+
+  nodeValidation(value,_geofenceType,type){
+    let obj: any = { status: true, reason: 'correct data'};
+    let SpecialCharRegex = /[^!@#\$%&*]+$/;
+    
+    if(_geofenceType === 'O' && type === 'nodes'){
+      if((!value || value == '') && value.length < 1){
+        obj.status = false;
+        obj.reason = this.importTranslationData.nodesAreRequired;
+        return obj;
+      }
+    }
+    return obj;
 
   }
 
