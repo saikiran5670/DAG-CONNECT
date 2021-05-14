@@ -32,10 +32,11 @@ import { CreateEditViewAlertsComponent } from './configuration/alerts/create-edi
 import { AlertsFilterComponent } from './configuration/alerts/alerts-filter/alerts-filter.component';
 import { AlertService } from './services/alert.service';
 import { CreateNotificationsAlertComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/create-notifications-alert.component';
+import { Ng2CompleterModule } from "ng2-completer";
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
@@ -50,6 +51,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     ChartsModule,
     FormsModule,
     ReactiveFormsModule,
+    Ng2CompleterModule,
     ConfigModule.forRoot({
       provide: ConfigLoader,
       useFactory: configFactory,
