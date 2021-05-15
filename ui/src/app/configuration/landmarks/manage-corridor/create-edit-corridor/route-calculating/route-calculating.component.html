@@ -38,7 +38,7 @@
         <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class='full-width'>
                 <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
-                    matInput formControlName="startaddress" (focusout)="startAddressFocusOut()" required>
+                    matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required>
             </mat-form-field>
             <mat-error
                 *ngIf="corridorFormGroup.get('startaddress').hasError('required') && corridorFormGroup.get('startaddress').touched">

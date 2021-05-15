@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
          <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -10,9 +10,6 @@
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <Reference Include="net.atos.daf.ct2.data">
       <HintPath>..\..\dlls\net.atos.daf.ct2.data.dll</HintPath>
-    </Reference>
-     <Reference Include="net.atos.daf.ct2.audit">
-      <HintPath>..\..\dlls\net.atos.daf.ct2.audit.dll</HintPath>
     </Reference>
   </ItemGroup>
 

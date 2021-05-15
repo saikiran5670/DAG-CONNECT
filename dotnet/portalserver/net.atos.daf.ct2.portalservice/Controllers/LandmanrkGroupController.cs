@@ -21,7 +21,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

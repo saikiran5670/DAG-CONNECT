@@ -3,6 +3,10 @@ import { Form, FormBuilder,FormControl, FormGroup, Validators } from '@angular/f
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { HereService } from 'src/app/services/here.service';
 import { CorridorService } from '../../../../../services/corridor.service';
+import {
+  CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData
+} from 'ng2-completer';
+
 declare var H: any;
 
 @Component({
@@ -45,8 +49,9 @@ export class RouteCalculatingComponent implements OnInit {
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
-
-  constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService) {
+  mapapikey = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
+    private completerService: CompleterService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -429,6 +434,13 @@ return homeMarker;
     })
   }
 
+  getSuggestion(_event){
+    let startValue = _event.target.value;
+    
+    this.configureAutoCompleteForLocationSearch(startValue);
+    console.log(_event)
+  }
+
   backToCorridorList(){
     let emitObj = {
       booleanFlag: false,
@@ -469,5 +481,26 @@ return homeMarker;
     this.hereMap.removeObject(this.startMarker);
     this.hereMap.removeObject(this.endMarker);
 
+  }
+
+  suggestionData :  any;
+  dataService : any;
+  private configureAutoCompleteForLocationSearch(findValue) {
+    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
+      // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
+      // The search text which is the basis of the query
+      '&beginHighlight=' + encodeURIComponent('<mark>') + //  Mark the beginning of the match in a token.
+      '&endHighlight=' + encodeURIComponent('</mark>') + //  Mark the end of the match in a token.
+      '&maxresults=5' +
+      'apiKey=' + this.mapapikey
+    '&query=' + encodeURIComponent(findValue);   // The search text which is the basis of the query
+    this.suggestionData = this.completerService.remote(
+      AUTOCOMPLETION_URL,
+      "label",
+      "label");
+    this.suggestionData.dataField("suggestions");
+    this.dataService = this.suggestionData;
+    console.log(this.dataService)
+    // this.dataService = this.completerService.local(this.searchData, 'color', 'color');
   }
 }
