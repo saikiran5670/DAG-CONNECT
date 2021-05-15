@@ -1542,7 +1542,7 @@ namespace net.atos.daf.ct2.account
 	                                ,cte_act.roleid
 	                                ,cte_act.organizationid
 	                                ,cte_act.organizationname
-	                                ,cte_actp.timezonename
+	                                ,cte_actp.timezonename as timezone
 	                                ,cte_actp.DATEFORMAT
 	                                ,cte_actp.unitdisplay
 	                                ,cte_actp.vehicledisplay
