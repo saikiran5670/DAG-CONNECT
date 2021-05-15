@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     level = -1;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                     level = -1;
             }

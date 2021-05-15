@@ -25,7 +25,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly CategoryMapper _categoryMapper;
         private ILog _logger;
-        private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private readonly HeaderObj _userDetails;
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
@@ -349,7 +348,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else
                     Result = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Result = false;
             }

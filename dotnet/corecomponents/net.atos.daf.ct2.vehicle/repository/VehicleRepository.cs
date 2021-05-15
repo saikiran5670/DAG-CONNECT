@@ -1480,7 +1480,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 calVehicleStatus = (char)VehicleCalculatedStatus.Terminate;
             }
-            return calVehicleStatus;
+            return await Task.FromResult(calVehicleStatus);
         }
 
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)

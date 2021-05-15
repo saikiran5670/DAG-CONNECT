@@ -1851,7 +1851,6 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 Group.GroupFilter groupFilter = new Group.GroupFilter();
-                int accountCount = 0;
                 AccountGroupDetailsDataList response = new AccountGroupDetailsDataList();
                 AccountGroupDetail accountDetail = null;
 
@@ -2141,9 +2140,8 @@ namespace net.atos.daf.ct2.accountservice
                 _logger.Error(null, ex);
                 return await Task.FromResult(new SSOToken
                 {
-                    Code = Responcecode.NotFound,
-                    Message = "NOT FOUND"
-
+                    Code = Responcecode.Failed,
+                    Message = ex.StackTrace
                 });
             }
         }

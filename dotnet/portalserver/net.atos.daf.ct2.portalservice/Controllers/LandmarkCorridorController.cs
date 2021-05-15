@@ -24,10 +24,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly CorridorService.CorridorServiceClient _corridorServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly CorridorMapper _corridorMapper;
         private readonly HeaderObj _userDetails;
-        private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -258,7 +256,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else
                     Result = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Result = false;
             }
