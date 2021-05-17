@@ -423,8 +423,8 @@ namespace net.atos.daf.ct2.features.repository
                 {
                 
                 var FeatureSetQueryStatement = @"INSERT INTO master.dataattributeset(
-                                                             name, description, is_exlusive, created_at, created_by, modified_at, modified_by)
-                                                            VALUES (@name, @description, @is_exlusive,@created_at,@created_by,@modified_at,@modified_by) RETURNING id";
+                                                             name, description, is_exlusive, created_at, created_by, modified_at, modified_by,state)
+                                                            VALUES (@name, @description, @is_exlusive,@created_at,@created_by,@modified_at,@modified_by,'A') RETURNING id";
 
                             var parameter = new DynamicParameters();
                            // parameter.Add("@dataattributesetID", DataAttributeSetID);

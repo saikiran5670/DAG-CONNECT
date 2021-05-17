@@ -68,17 +68,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class Exclusion
     {
-        [StringLength(1)]
+        [StringLength(1,MinimumLength =1)]
         public string TollRoad { get; set; }
-        [StringLength(1)]
+        [StringLength(1, MinimumLength = 1)]
         public string Mortorway { get; set; }
-        [StringLength(1)]
+        [StringLength(1, MinimumLength = 1)]
         public string BoatFerries { get; set; }
-        [StringLength(1)]
+        [StringLength(1, MinimumLength = 1)]
         public string RailFerries { get; set; }
-        [StringLength(1)]
+        [StringLength(1, MinimumLength = 1)]
         public string Tunnels { get; set; }
-        [StringLength(1)]
+        [StringLength(1, MinimumLength = 1)]
         public string DirtRoad { get; set; }
     }
 
