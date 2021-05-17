@@ -40,6 +40,9 @@ export class EditUserRoleDetailsComponent implements OnInit {
   selectedChildrens : any = [];
   organizationId: number;
   preSelectedValues: any = []
+  textLengthCounter: any;
+  // remainingChar: any;
+  showCount: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -280,12 +283,22 @@ export class EditUserRoleDetailsComponent implements OnInit {
         this.preSelectedValues.push(feature.id);
       }
     })
-    console.log("---preSelectedValues onInit()--",this.preSelectedValues);
+    // console.log("---preSelectedValues onInit()--",this.preSelectedValues);
   // }
   }
 
   //From Shubham's code
-
+  textCounter (event,maxLength) {
+    this.showCount = true;
+    this.textLengthCounter = event.target.value.length;
+    if(this.textLengthCounter == 0){
+      this.showCount = false;
+    }
+    // if(this.textLengthCounter < maxLength) {
+    //   this.remainingChar = maxLength - this.textLengthCounter;
+    //   console.log("--remainingChar--",this.remainingChar)
+    // }
+  }
   onCheckboxChange(event: any, row: any) {
     // this.selectionForFeatures.selected.forEach(feature => {
     //   this.preSelectedValues.push(feature.id);
