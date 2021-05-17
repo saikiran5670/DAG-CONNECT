@@ -933,11 +933,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor routeCorridor)
         {
+            _dataAccess.connection.Open();
+            var transactionScope = _dataAccess.connection.BeginTransaction();
             try
             {
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    //RouteCorridor obj = new RouteCorridor();
                     var UpdateCorridorparameter = new DynamicParameters();
 
                     StringBuilder queryForUpdateCorridor = new StringBuilder();
@@ -1084,38 +1083,26 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                     UpdateCorridorPropertiesparameter.Add("@is_other", routeCorridor.Other);
                     queryToUpdateCorridorProperties.Append(", is_other=@is_other");
-
-
-                    if (routeCorridor.TollRoad != null)
-                    {
-                        UpdateCorridorPropertiesparameter.Add("@toll_road_type", routeCorridor.TollRoad);
-                        queryToUpdateCorridorProperties.Append(", toll_road_type=@toll_road_type");
-                    }
-                    if (routeCorridor.Mortorway != null)
-                    {
-                        UpdateCorridorPropertiesparameter.Add("@motorway_type", routeCorridor.Mortorway);
-                        queryToUpdateCorridorProperties.Append(", motorway_type=@motorway_type");
-                    }
-                    if (routeCorridor.BoatFerries != null)
-                    {
-                        UpdateCorridorPropertiesparameter.Add("@boat_ferries_type", routeCorridor.BoatFerries);
-                        queryToUpdateCorridorProperties.Append(", boat_ferries_type=@boat_ferries_type");
-                    }
-                    if (routeCorridor.RailFerries != null)
-                    {
-                        UpdateCorridorPropertiesparameter.Add("@rail_ferries_type", routeCorridor.RailFerries);
-                        queryToUpdateCorridorProperties.Append(", rail_ferries_type=@rail_ferries_type");
-                    }
-                    if (routeCorridor.Tunnels != null)
-                    {
-                        UpdateCorridorPropertiesparameter.Add("@tunnels_type", routeCorridor.Tunnels);
-                        queryToUpdateCorridorProperties.Append(", tunnels_type=@tunnels_type");
-                    }
-                    if (routeCorridor.DirtRoad != null)
-                    {
-                        UpdateCorridorPropertiesparameter.Add("@dirt_road_type", routeCorridor.DirtRoad);
-                        queryToUpdateCorridorProperties.Append(", dirt_road_type=@dirt_road_type");
-                    }
+                
+                    //Char type added validation at model level so if is not needed here
+                    UpdateCorridorPropertiesparameter.Add("@toll_road_type", routeCorridor.TollRoad);
+                    queryToUpdateCorridorProperties.Append(", toll_road_type=@toll_road_type");
+                   
+                    UpdateCorridorPropertiesparameter.Add("@motorway_type", routeCorridor.Mortorway);
+                    queryToUpdateCorridorProperties.Append(", motorway_type=@motorway_type");
+                  
+                    UpdateCorridorPropertiesparameter.Add("@boat_ferries_type", routeCorridor.BoatFerries);
+                    queryToUpdateCorridorProperties.Append(", boat_ferries_type=@boat_ferries_type");
+                   
+                    UpdateCorridorPropertiesparameter.Add("@rail_ferries_type", routeCorridor.RailFerries);
+                    queryToUpdateCorridorProperties.Append(", rail_ferries_type=@rail_ferries_type");
+                   
+                    UpdateCorridorPropertiesparameter.Add("@tunnels_type", routeCorridor.Tunnels);
+                    queryToUpdateCorridorProperties.Append(", tunnels_type=@tunnels_type");
+                   
+                    UpdateCorridorPropertiesparameter.Add("@dirt_road_type", routeCorridor.DirtRoad);
+                    queryToUpdateCorridorProperties.Append(", dirt_road_type=@dirt_road_type");
+                    
 
                     if (routeCorridor.VehicleSizeHeight > 0)
                     {
@@ -1186,14 +1173,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             await _dataAccess.ExecuteAsync(QueryInsertViaStop, UpdateViaRoutparameter);
                         }
                     }
-                    transactionScope.Complete();
-                }
+                    transactionScope.Commit();
             }
             catch (Exception ex)
             {
                 log.Info($"UpdateRouteCorridor method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(routeCorridor.Id)}");
                 log.Error(ex.ToString());
+                transactionScope.Rollback();
                 throw ex;
+            }
+            finally
+            {
+                _dataAccess.connection.Close();
             }
             return routeCorridor;
         }
