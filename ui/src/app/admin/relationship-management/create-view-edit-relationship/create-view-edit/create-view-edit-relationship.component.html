@@ -64,7 +64,7 @@
                     <mat-form-field appearance="outline" class="full-width">
                         <input placeholder="{{ translationData.lblEnterRelationshipName || 'Enter Relationship Name' }}"
                             (keyup)="isRelationshipExist=false; doneFlag=false" matInput
-                            formControlName="relationshipName" required maxlength="60">
+                            formControlName="relationshipName" required maxlength="50">
                         <mat-icon style='color:green;' matSuffix *ngIf="doneFlag">done</mat-icon>
                     </mat-form-field>
                     <mat-error *ngIf="relationshipFormGroup.get('relationshipName').hasError('required')">
@@ -86,10 +86,10 @@
                 <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
                         <span>{{ translationData.lblRelationshipDescription || 'Relationship Description'}}</span>
-                        <span>{{ translationData.lbl120CharMax || '120 characters max'}}</span>
+                        <span>{{ translationData.lbl100CharMax || '100 characters max'}}</span>
                     </mat-label>
                     <mat-form-field appearance="outline" class="full-width">
-                        <input maxlength="120"
+                        <input maxlength="100"
                             placeholder="{{ translationData.lblEnterAboutRelationship || 'Enter About Relationship' }}"
                             matInput formControlName="relationshipDescription">
                     </mat-form-field>
