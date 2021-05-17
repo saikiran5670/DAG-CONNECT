@@ -12,7 +12,9 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-select (selectionChange)="handleCategoryChange('category',$event)" placeholder="{{translationData.lblSelectUserGroup || 'Select Category'}}">
                     <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
-                    <mat-option *ngFor="let catList of alertCategoryList | removeDuplicates" [value]="catList">{{catList.value}}</mat-option>
+                      <mat-option *ngFor="let catList of alertCategoryList | removeDuplicates" [value]="catList">
+                      {{ catList.value }}                                           
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
         </div>
@@ -21,8 +23,9 @@
                 {{ translationData.lblGroup || 'Type' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select  [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterAlertTypeChange('type',$event)">
-                  <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option>
+                <mat-select  [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterChange('type',$event)">
+                    <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
+                    <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option>
                 </mat-select>
             </mat-form-field> 
         </div>

@@ -87,7 +87,7 @@ export class AlertsComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    console.log("process translationData:: ", this.translationData)
   }
 
   loadFiltersData(){    
@@ -101,6 +101,7 @@ export class AlertsComponent implements OnInit {
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"].filter(item=>item.vehicleName!='');
+     
       this.alertStatusList=[{
        id: 1,
        value:"A",
@@ -226,7 +227,13 @@ export class AlertsComponent implements OnInit {
       writable : true,enumerable : true, configurable : true});  
       });   
       }   
-
+      if(item.vehicleGroupName!=''){
+      this.vehicleGroupList=[{      
+        value:item.vehicleGroupName,
+        key:item.vehicleGroupName
+       }
+      ]  
+      }   
      });     
       this.initData =data; 
       this.updateDatasource(this.initData);  
