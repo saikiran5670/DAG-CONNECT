@@ -707,7 +707,7 @@ namespace net.atos.daf.ct2.alert.repository
                 //}
                 //else if (accountid == 0 && organizationid > 0)
                 //{
-                    queryAlert = queryAlert + " where ale.organization_id = @organization_id";
+                    queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D'";
                     parameterAlert.Add("@organization_id", organizationid);
                 //}               
 
