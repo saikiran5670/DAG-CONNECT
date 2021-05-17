@@ -23,6 +23,8 @@ export class AlertsFilterComponent implements OnInit {
 
   isDisabledAlerts = true; 
   localData : any; 
+  tempData: any;
+  urgencyLevel = false; 
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -52,55 +54,71 @@ export class AlertsFilterComponent implements OnInit {
       menuId: 18 //-- for landmark
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    this.processTranslation(data);
-    });       
-    this.updatedTableData(this.initData );   
-    this.dataSource.filterPredicate = this.createFilter();    
+     this.processTranslation(data);  
+     this.updatedTableData(this.initData);     
+     this.dataSource.filterPredicate = this.createFilter();    
+    });   
   } 
-
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    console.log("process translationData:: ", this.translationData)
-  }
+    console.log("process translationData:: ", this.translationData)  
+   }
 
-
-  handleCategoryChange(value) {
-       if(value == "All"){
-          this.isDisabledAlerts = false;
-          this.dataResultTypes = this.alertTypeList;
+  handleCategoryChange(filter, event) {         
+    if(event.value == ''){
+          this.isDisabledAlerts = true;
+         // this.dataResultTypes = this.alertTypeList;  
     }
     else{
         this.isDisabledAlerts = false;
-        this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === value.enum);
+        this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
+    }  
+     this.filterChange(filter, event);
+    }
+
+    filterAlertTypeChange(filter, event) {
+      this.updatedTableData(this.initData); 
+      let event_val = event.value.value.trim().toLowerCase();
+      this.dataSource.filter = event_val; 
+      this.filterValues.emit(this.dataSource);   
+      this.updatedTableData(this.initData);     
      }
-     this.applyFilter(value)
-    // this.isDisabledOrders = true;
-    // this.dataResultOrders = [];
-    }
 
-    applyFilter(filterValue) {
-      filterValue.value = filterValue.value.trim(); // Remove whitespace    
-      this.dataSource.filter= filterValue.value;
-    }
-
-   updatedTableData(tableData : any) {
-    this.localData = tableData;
-    this.dataSource = new MatTableDataSource(this.localData);
+   updatedTableData(tableData : any) {   
+    this.dataSource = new MatTableDataSource(tableData);
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
   }
-  
+   
   // Called on Filter change
   filterChange(filter, event) {    
-  this.filterListValues[filter] = event.value.trim()   
-   this.dataSource.filter = JSON.stringify(this.filterListValues)
-   this.filterValues.emit(this.dataSource);    
+    let event_val;      
+      if(filter == "highUrgencyLevel"){  
+          if(event.value == ''){
+            event_val = event.value.trim();  
+          }
+          else{
+            event_val = event.value.enum.trim() ;
+          }
+      }
+      else{
+      if(event.value == ''){
+      event_val = event.value.trim();  
+      }
+      else{
+        event_val = event.value.value.trim() ;
+      }
+    }
+   this.filterListValues[filter] =event_val;
+   this.dataSource.filter = JSON.stringify(this.filterListValues);  
+   this.filterValues.emit(this.dataSource); 
   }
-  
+
   createFilter() {
+    this.ngOnInit(); 
     let filterFunction = function (data: any, filter: string): boolean {
       let searchTerms = JSON.parse(filter);
       let isFilterSet = false;
@@ -118,12 +136,12 @@ export class AlertsFilterComponent implements OnInit {
         let found = false;
         if (isFilterSet) {
           for (const col in searchTerms) {
-            searchTerms[col].trim().toLowerCase().split(' ').forEach(word => {
+            searchTerms[col].trim().toLowerCase().split(' ').forEach(word => {              
               if (data[col].toString().toLowerCase().indexOf(word) != -1 && isFilterSet) {
                 found = true
               }
-            });
-          }
+            });         
+           }
           return found
         } else {
           return true;

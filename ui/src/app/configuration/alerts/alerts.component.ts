@@ -19,7 +19,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 })
 
 export class AlertsComponent implements OnInit {
-  displayedColumns: string[] = ['urgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
+  displayedColumns: string[] = ['highUrgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
   displayMessage: any;
   createViewEditStatus: boolean = false;
@@ -79,11 +79,9 @@ export class AlertsComponent implements OnInit {
         menuId: 17 //-- for alerts
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);
-        this.loadFiltersData();     
-      //  this.loadAlertsData();
-      });       
-      this.updateDatasource(this.filterValues);     
+        this.processTranslation(data);      
+        this.loadFiltersData();  
+      });  
     }
     
   
@@ -92,7 +90,8 @@ export class AlertsComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadFiltersData(){
+  loadFiltersData(){    
+    this.showLoadingIndicator = true;   
     this.alertService.getAlertFilterData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
       filterData.forEach(element => {
@@ -101,18 +100,18 @@ export class AlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
-      this.vehicleList= data["vehicleGroup"];
+      this.vehicleList= data["vehicleGroup"].filter(item=>item.vehicleName!='');
       this.alertStatusList=[{
        id: 1,
-       status:"A",
-       value:'Active'
+       value:"A",
+       key:'Active'
       },{
         id: 2,
-        status:"S",
-        value:'Suspended'
+        value:"I",
+        key:'Suspended'
        }
-    ]
-   this.loadAlertsData();
+    ]    
+    this.loadAlertsData();        
     }, (error) => {
 
     })
@@ -178,8 +177,7 @@ export class AlertsComponent implements OnInit {
     return initdata;
   }
 
-  loadAlertsData(){
-    this.showLoadingIndicator = true;   
+  loadAlertsData(){    
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -189,8 +187,8 @@ export class AlertsComponent implements OnInit {
       name: ""
     }    
     this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
-      //this.initData = data["alertRequest"];       
-      data.forEach(item => {         
+     //this.initData = data["alertRequest"]; 
+      data.forEach(item => {           
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => { 
         item["category"]=obj.value;
@@ -198,15 +196,45 @@ export class AlertsComponent implements OnInit {
       let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
       typeVal.forEach(obj => { 
         item["type"]=obj.value;
+      });  
+     
+      let critical  = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
+      let warning   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
+      let advisory   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
+     
+      if(critical.length > 0){
+      critical.forEach(obj => { 
+      item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
+      writable : true,enumerable : true, configurable : true});
+      item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
+      writable : true,enumerable : true, configurable : true});         
+      }); 
+      }
+      else if(warning.length > 0){
+      warning.forEach(obj => { 
+      item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
+      writable : true,enumerable : true, configurable : true});
+      item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
+      writable : true,enumerable : true, configurable : true});
+      });     
+      }       
+      else {
+      advisory.forEach(obj => { 
+      item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
+      writable : true,enumerable : true, configurable : true});
+      item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
+      writable : true,enumerable : true, configurable : true});  
       });   
-    }); 
-      this.initData =data;
-      this.updateDatasource(this.initData);   
+      }   
+
+     });     
+      this.initData =data; 
+      this.updateDatasource(this.initData);  
     }, (error) => {
     })   
    this.hideloader();     
  }
-
+ 
  getFilteredValues(dataSource){
   this.dataSource = dataSource;
   this.dataSource.paginator = this.paginator;
