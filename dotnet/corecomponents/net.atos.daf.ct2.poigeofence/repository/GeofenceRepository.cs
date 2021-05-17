@@ -479,7 +479,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 List<Geofence> groupList = new List<Geofence>();
-                var query = @"select id from master.landmark where type in ('C','O') and 1=1";
+                var query = @"select id from master.landmark where type in ('C','O')";
                 if (geofenceRequest != null)
                 {
 
