@@ -118,7 +118,7 @@ export class AlertsFilterComponent implements OnInit {
   }
 
   createFilter() {
-    this.ngOnInit(); 
+   // this.ngOnInit(); 
     let filterFunction = function (data: any, filter: string): boolean {
       let searchTerms = JSON.parse(filter);
       let isFilterSet = false;
