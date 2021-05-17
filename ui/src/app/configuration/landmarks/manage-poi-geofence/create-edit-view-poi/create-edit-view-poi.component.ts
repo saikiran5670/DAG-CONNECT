@@ -378,6 +378,10 @@ this.map.setZoom(14);
 
   }
 
+  inputPoiName(){
+    this.duplicatePOIName = false;
+  }
+
   getUserCreatedMessage() {
     this.userName = `${this.poiFormGroup.controls.name.value}`;
     if (this.actionType == 'create') {
