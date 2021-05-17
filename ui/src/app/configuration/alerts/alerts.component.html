@@ -91,10 +91,18 @@
                 </mat-cell>  
               </ng-container>
               <ng-container matColumnDef="vehicleGroupName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
                   (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
                   {{ row.vehicleGroupName }}</span>
+                </span> -->
+                  <span *ngIf="row.vehicleGroupName!=''">
+                  <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
+                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                  {{ row.vehicleGroupName }}</span>
+                  </span>              
+                  <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span>
                 </mat-cell>
              </ng-container> 
             <ng-container matColumnDef="state">

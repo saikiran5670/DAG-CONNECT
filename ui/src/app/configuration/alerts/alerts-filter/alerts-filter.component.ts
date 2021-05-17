@@ -12,7 +12,7 @@ export class AlertsFilterComponent implements OnInit {
   OrgId = parseInt(localStorage.getItem("accountOrganizationId"));
   isGlobal: boolean = true;   
 
-  @Input() translationData: any = []; 
+  @Input() translationData: any; 
   @Input() alertCategoryList: any;
   @Input() alertTypeList: any; 
   @Input() vehicleList: any;
@@ -62,15 +62,16 @@ export class AlertsFilterComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    console.log("process translationData:: ", this.translationData)  
+    //console.log("process translationData:: ", this.translationData)  
    }
 
-  handleCategoryChange(filter, event) {         
-    if(event.value == ''){
-          this.isDisabledAlerts = true;
+  handleCategoryChange(filter, event) {   
+    this.dataResultTypes=[];      
+    if(event.value == ''){  
+         this.isDisabledAlerts = true;
          // this.dataResultTypes = this.alertTypeList;  
     }
-    else{
+    else{     
         this.isDisabledAlerts = false;
         this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
     }  
@@ -97,11 +98,27 @@ export class AlertsFilterComponent implements OnInit {
   filterChange(filter, event) {    
     let event_val;      
       if(filter == "highUrgencyLevel"){  
-          if(event.value == ''){
+          if(event.value == ''){          
             event_val = event.value.trim();  
           }
           else{
-            event_val = event.value.enum.trim() ;
+            event_val = event.value.enum.trim().toLowerCase(); 
+          }
+      }else if(filter == "vehicleName"){
+        if(event.value == ''){
+          event_val = event.value.trim();  
+        }
+        else{
+          event_val = event.value.vehicleName.trim().toLowerCase();
+        }
+      }     
+      else if(filter == "category"){      
+        if(event.value == ''){
+          this.dataResultTypes = [];
+          event_val = event.value.trim();          
+          }
+          else{
+            event_val = event.value.value.trim().toLowerCase();
           }
       }
       else{
@@ -109,7 +126,7 @@ export class AlertsFilterComponent implements OnInit {
       event_val = event.value.trim();  
       }
       else{
-        event_val = event.value.value.trim() ;
+        event_val = event.value.value.trim().toLowerCase();
       }
     }
    this.filterListValues[filter] =event_val;
