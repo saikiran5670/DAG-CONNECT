@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.account
         IdentitySessionComponent.IAccountTokenManager accountTokenManager;
         private readonly IConfiguration configuration;
         private readonly IAuditTraillib auditlog;
+        private readonly SSOConfiguration _ssoConfiguration;
 
         public AccountIdentityManager(IdentityComponent.ITokenManager _tokenManager, IdentityComponent.IAccountAuthenticator _autheticator,
                                     IAccountManager _accountManager, IAuditTraillib _auditlog,
@@ -42,10 +43,14 @@ namespace net.atos.daf.ct2.account
             identityAccountManager = _identityAccountManager;
             configuration = _configuration;
             auditlog = _auditlog;
+            _ssoConfiguration = new SSOConfiguration();
+            configuration.GetSection("SSOConfiguration").Bind(_ssoConfiguration); 
+            
         }
 
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
         {
+            int roleId = 0;
             AccountIdentity accIdentity = new AccountIdentity();
             accIdentity.tokenIdentifier = string.Empty;
             accIdentity.ErrorMessage = "Account is not configured.";
@@ -54,6 +59,13 @@ namespace net.atos.daf.ct2.account
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
+                List<AccountOrgRole> accountOrgRoleList = new List<AccountOrgRole>();
+                accountOrgRoleList = await accountManager.GetAccountRole(account.Id);
+                foreach (AccountOrgRole aor in accountOrgRoleList)
+                {
+                    roleId = aor.Id;
+                    break; //get only first role 
+                }
                 //Check if the user id blocked
                 //1. Get Password Policy by Account Id
                 var passwordPolicyAccount = await accountManager.GetPasswordPolicyAccount(account.Id);
@@ -73,7 +85,7 @@ namespace net.atos.daf.ct2.account
                     return await Task.FromResult(accIdentity);
                 }
 
-                accToken = await PrepareSaveToken(user, account);
+                accToken = await PrepareSaveToken(user, account,roleId);
                 if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
                 {
                     passwordPolicyAccount = await CaptureUserLastLogin(account);
@@ -83,7 +95,7 @@ namespace net.atos.daf.ct2.account
                     accIdentity.tokenIdentifier = accIDPclaims.Id;
                     accIdentity.accountInfo = account;
                     accIdentity.AccountOrganization = accountManager.GetAccountOrg(account.Id).Result;
-                    accIdentity.AccountRole = accountManager.GetAccountRole(account.Id).Result;
+                    accIdentity.AccountRole = accountOrgRoleList;
                     #region commneted code
                     //accIdentity.AccountToken=accToken;
                     // int accountId= GetAccountByEmail(user.UserName);
@@ -200,7 +212,15 @@ namespace net.atos.daf.ct2.account
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
-                accToken = await PrepareSaveToken(user, account);
+                int roleId = 0;
+                List <AccountOrgRole> accountOrgRoleList = new List<AccountOrgRole>();
+                accountOrgRoleList = await accountManager.GetAccountRole(account.Id);
+                foreach (AccountOrgRole aor in accountOrgRoleList)
+                {
+                    roleId = aor.Id;
+                    break; //get only first role 
+                }
+                accToken = await PrepareSaveToken(user, account,roleId);
             }
             else
             {
@@ -216,7 +236,15 @@ namespace net.atos.daf.ct2.account
             Account account = GetAccountByEmail(user.UserName);
             if (account != null && account.Id > 0)
             {
-                accToken = await PrepareSaveToken(user, account);
+                int roleId = 0;
+                List<AccountOrgRole> accountOrgRoleList = new List<AccountOrgRole>();
+                accountOrgRoleList = await accountManager.GetAccountRole(account.Id);
+                foreach (AccountOrgRole aor in accountOrgRoleList)
+                {
+                    roleId = aor.Id;
+                    break; //get only first role 
+                }
+                accToken = await PrepareSaveToken(user, account, roleId);
                 if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
                 {
                     IdentityEntity.AccountIDPClaim accIDPclaims = tokenManager.DecodeToken(accToken.AccessToken);
@@ -384,7 +412,7 @@ namespace net.atos.daf.ct2.account
                 IdentityEntity.Response response = await identityAccountManager.LogOut(identity);
             }
         }
-        private async Task<IdentityEntity.AccountToken> PrepareSaveToken(IdentityEntity.Identity user, Account account)
+        private async Task<IdentityEntity.AccountToken> PrepareSaveToken(IdentityEntity.Identity user, Account account, int roleId)
         {
             IdentityEntity.AccountToken accToken = new IdentityEntity.AccountToken();
             //generate idp token 
@@ -456,7 +484,7 @@ namespace net.atos.daf.ct2.account
                         accTokenEntity = new IdentitySessionComponent.entity.AccountToken();
                         /* Assigning NULL as access token from db is not require after GUID implementation
                          * accTokenEntity.AccessToken = accToken.AccessToken;*/
-                        accTokenEntity.AccessToken = null;
+                        accTokenEntity.AccessToken = string.Empty;
 
                         accTokenEntity.AccountId = account.Id;
                         accTokenEntity.CreatedAt = unixTimeSecondsIssueAt;
@@ -469,6 +497,7 @@ namespace net.atos.daf.ct2.account
                         accTokenEntity.TokenId = tokenidentifier.ToString();
                         accTokenEntity.UserId = account.Id;
                         accTokenEntity.UserName = account.EmailId;
+                        accTokenEntity.RoleId = roleId;
                         accTokenEntity.OrganizationId = account.Organization_Id.Value;
                         int tokenkey = await accountTokenManager.InsertToken(accTokenEntity);
                         //token generated successfully hence adding token info & updating session info
@@ -524,7 +553,7 @@ namespace net.atos.daf.ct2.account
                 result.StatusCode = result.StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.NotFound;
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new Response { StatusCode = HttpStatusCode.NotFound };
             }
@@ -587,12 +616,14 @@ namespace net.atos.daf.ct2.account
 
                     // Preparing SSO Token with new TokenId (GUID) and Token Type as 'S'
                     IdentitySessionComponent.entity.AccountToken _newSSOToken = _latestToken;
+                    _newSSOToken.AccessToken = string.Empty;
                     _newSSOToken.CreatedAt = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds();
                     _newSSOToken.TokenType = IdentitySessionComponent.ENUM.TokenType.SSO;
                     _newSSOToken.TokenId = Convert.ToString(_ssoGuid);
                     _newSSOToken.ExpireIn = _recentTokenExpirIn;
                     _newSSOToken.AccountId = request.AccountID;
                     _newSSOToken.OrganizationId = request.OrganizaitonID;
+                    _newSSOToken.RoleId = request.RoleID;
 
                     // Sotring toen details for future validation
                     int tokenkey = await accountTokenManager.InsertToken(_newSSOToken);
@@ -607,7 +638,7 @@ namespace net.atos.daf.ct2.account
                     }
 
                     // To Return valid SSO details 
-                    ssoToken.token = Convert.ToString(_ssoGuid);
+                    ssoToken.token = _ssoConfiguration.ZuoraBaseUrl +"="+Convert.ToString(_ssoGuid);
                     ssoToken.tokenType = IdentitySessionComponent.ENUM.TokenType.SSO.ToString();
                     ssoToken.statusCode = HttpStatusCode.Redirect;
                     ssoToken.message = "Request to redirected";

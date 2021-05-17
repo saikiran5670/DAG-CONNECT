@@ -11,6 +11,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-slider/ngx-slider": "^2.0.3",
     "@angular/animations": "^9.1.12",
     "@angular/cdk": "^10.2.4",
     "@angular/common": "~9.1.12",
@@ -27,6 +28,7 @@
     "@ngx-config/http-loader": "^9.0.0",
     "bootstrap": "^4.5.2",
     "chart.js": "^2.9.3",
+    "detect-passive-events": "^2.0.3",
     "exceljs": "^4.2.1",
     "file-saver": "^2.0.5",
     "gps-to-gpx": "^1.5.1",
@@ -37,6 +39,7 @@
     "mat-table-exporter": "^9.1.2",
     "moment": "^2.29.1",
     "ng2-charts": "^2.3.2",
+    "ng2-completer": "^9.0.1",
     "ngx-cookie-service": "^11.0.2",
     "ngx-device-detector": "^2.0.4",
     "ngx-dropzone": "^2.3.0",

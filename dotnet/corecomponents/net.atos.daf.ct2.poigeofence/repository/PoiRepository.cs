@@ -100,10 +100,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             l.modified_by as modifiedby,
                             icon.icon
                             FROM master.landmark l
-                            LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id
-                            LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id
-                            LEFT JOIN MASTER.icon icon on  c.icon_id=icon.id 
-                            WHERE 1=1 and l.state in ('A','I') ";
+                            LEFT JOIN MASTER.CATEGORY c on l.category_id = c.id  and l.state in ('A','I') and c.state in ('A','I') 
+                            LEFT JOIN MASTER.CATEGORY s on l.sub_category_id = s.id and l.state in ('A','I') and s.state in ('A','I') 
+                            LEFT JOIN MASTER.icon icon on  c.icon_id=icon.id  and icon.state in ('A','I') and c.state in ('A','I') 
+                            WHERE 1=1 ";
 
                 if (poiFilter.Id > 0)
                 {

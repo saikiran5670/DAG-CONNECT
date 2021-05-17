@@ -227,7 +227,7 @@ namespace net.atos.daf.ct2.features.repository
                 dataatribute.DataAttributes.AddRange(DataAttributeS);
                 return dataatribute;
             }
-            catch (Exception ex )
+            catch (Exception)
             {
 
                 throw;
@@ -347,7 +347,6 @@ namespace net.atos.daf.ct2.features.repository
         {
             try
             {
-                int result = 0;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var test = string.Empty;
@@ -710,7 +709,6 @@ namespace net.atos.daf.ct2.features.repository
         {
             try
             {
-                int result = 0;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var test = string.Empty;
@@ -927,7 +925,7 @@ namespace net.atos.daf.ct2.features.repository
                 var parameterfeature = CreateFeatureSetMapping(UpdateFeatureSetID, ID);
             }
            
-            return UpdateFeatureSetID;
+            return await Task.FromResult(UpdateFeatureSetID);
         }
 
         public int CheckFeatureSetMappingExist(int UpdateFeatureSetID, int ID)
