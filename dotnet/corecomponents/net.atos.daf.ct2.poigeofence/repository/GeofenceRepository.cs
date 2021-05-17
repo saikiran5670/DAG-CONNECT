@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             int categoryId = 0;
             try
             {
-                geofence = await Exists(geofence, ((char)LandmarkType.PolygonGeofence).ToString());
+                geofence = await Exists(geofence);
 
                 // duplicate Geofence
                 if (geofence.Exists)
@@ -287,7 +287,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 Geofence geofence1 = new Geofence();
-                geofence1 = await Exists(geofences.FirstOrDefault(), ((char)LandmarkType.CircularGeofence).ToString());
+                geofence1 = await Exists(geofences.FirstOrDefault());
                 // duplicate Geofence
                 if (geofence1.Exists)
                 {
@@ -408,7 +408,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                geofence = await Exists(geofence, ((char)LandmarkType.PolygonGeofence).ToString());
+                geofence = await Exists(geofence);
 
                 // duplicate Geofence
                 if (geofence.Exists)
@@ -473,14 +473,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return categoryId;
         }
 
-        private async Task<Geofence> Exists(Geofence geofenceRequest, string type)
+        private async Task<Geofence> Exists(Geofence geofenceRequest)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 List<Geofence> groupList = new List<Geofence>();
-                var query = @"select id from master.landmark where type=@type and 1=1";
-                parameter.Add("@type", type);
+                var query = @"select id from master.landmark where type in ('C','O')";
                 if (geofenceRequest != null)
                 {
 
@@ -524,7 +523,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string dbCirGeofenceName = await dataAccess.QuerySingleAsync<string>("SELECT name FROM master.landmark where id=@id", new { id = geofence.Id });
                 if (!String.Equals(dbCirGeofenceName, geofence.Name))
                 {
-                    geofence = await Exists(geofence, ((char)LandmarkType.CircularGeofence).ToString());
+                    geofence = await Exists(geofence);
                     // duplicate Geofence
                     if (geofence.Exists)
                     {

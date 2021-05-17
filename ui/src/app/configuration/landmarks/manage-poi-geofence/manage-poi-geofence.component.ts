@@ -161,7 +161,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     let defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(this.mapElement.nativeElement,
       defaultLayers.vector.normal.map, {
-      center: { lat: 50, lng: 5 },
+      center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
@@ -630,6 +630,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
   deleteMultiplePoi()
   {
+    let poiList: any = '';
     let poiId = 
     { 
       id: this.selectedpois.selected.map(item=>item.id)
@@ -640,18 +641,32 @@ export class ManagePoiGeofenceComponent implements OnInit {
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };
-    let name = this.selectedpois.selected[0].name;
-    this.dialogService.DeleteModelOpen(options, name);
+    // let name = this.selectedpois.selected[0].name;
+    let name = this.selectedpois.selected.forEach(item => {
+      poiList += item.name + ', ';
+    });
+    if(poiList != ''){
+      poiList = poiList.slice(0, -2);
+    }
+    console.log(poiList);
+    this.dialogService.DeleteModelOpen(options, poiList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.poiService.deletePoi(poiId).subscribe((data: any) => {
-          this.successMsgBlink(this.getDeletMsg(name));
+          this.successMsgBlink(this.getDeletPoiMsg(poiList));
           this.resetAll();
           this.loadPoiData();
           this.loadGeofenceData();
         });
       }
     });
+  }
+
+  getDeletPoiMsg(name: any) {
+    if (this.translationData.lblPoiwassuccessfullydeleted)
+      return this.translationData.lblPoiwassuccessfullydeleted.replace('$', name);
+    else
+      return ("Poi '$' was successfully deleted").replace('$', name);
   }
 
   deleteGeofence(rowData: any){
