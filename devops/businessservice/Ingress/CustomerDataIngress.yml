@@ -43,7 +43,15 @@ spec:
       - backend:
           serviceName: portalservice
           servicePort: 80
+        path: /alert
+      - backend:
+          serviceName: portalservice
+          servicePort: 80
         path: /organization
+      - backend:
+          serviceName: portalservice
+          servicePort: 80
+        path: /corridor
       - backend:
           serviceName: portalservice
           servicePort: 80
@@ -93,9 +101,17 @@ spec:
           servicePort: 80
         path: /vehicle/mileage
       - backend:
+          serviceName: vehicledataservice
+          servicePort: 80
+        path: /vehicle/namelist
+      - backend:
           serviceName: featureactivationservice
           servicePort: 80
         path: /subscription
+      - backend:
+          serviceName: singlesignonservice
+          servicePort: 80
+        path: /sso
       - backend:
           serviceName: applicationservice
           servicePort: 80

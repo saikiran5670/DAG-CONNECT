@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 else if (result != null && result.Id == -2)
                 {
                     response.Message = "Category Name already exist with the same Name ";
-                    response.Code = Responsecode.Failed;
+                    response.Code = Responsecode.Conflict;
                 }
 
             }

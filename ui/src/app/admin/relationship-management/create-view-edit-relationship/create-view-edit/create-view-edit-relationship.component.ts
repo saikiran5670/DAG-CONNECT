@@ -57,7 +57,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.userType = localStorage.getItem("userType");
     this.relationshipFormGroup = this._formBuilder.group({
-      relationshipName: ['', [Validators.required, Validators.maxLength(60),CustomValidators.noWhitespaceValidator]],
+      relationshipName: ['', [Validators.required, Validators.maxLength(50),CustomValidators.noWhitespaceValidator]],
       relationshipDescription: ['',[CustomValidators.noWhitespaceValidatorforDesc]],
       level: [],
       code: []

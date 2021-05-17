@@ -38,56 +38,101 @@ export class GeofenceService {
       .pipe(catchError(this.handleError));
   }
 
-//   createGeofence(data): Observable<any> {
-//     let headerObj = this.generateHeader();
-//     const headers = {
-//       headers: new HttpHeaders({ headerObj }),
-//     };
-//     return this.httpClient
-//       .post<any>(`${this.GeofenceServiceUrl}/create`, data, headers)
-//       .pipe(catchError(this.handleError));
-//   }
-
-//   updateGeofence(data): Observable<any> {
-//     let headerObj = this.generateHeader();
-//     const headers = {
-//       headers: new HttpHeaders({ headerObj }),
-//     };
-//     return this.httpClient
-//       .put<any>(`${this.GeofenceServiceUrl}/update`, data, headers)
-//       .pipe(catchError(this.handleError));
-//   }
-
-  deleteGeofence(GeofenceId: number): Observable<void> {
+  getGeofenceById(orgId: any, geoId: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
-    let data = { GeofenceId: GeofenceId };
-   return this.httpClient
-      .delete<any>(`${this.GeofenceServiceUrl}/deletegeofence?GeofenceId=${GeofenceId}`, headers)
+    return this.httpClient
+      .get<any[]>(`${this.GeofenceServiceUrl}/getgeofencebygeofenceid?OrganizationId=${orgId}&GeofenceId=${geoId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-//   importGeofence(data): Observable<any> {
-//     let headerObj = this.generateHeader();
-//     const headers = {
-//       headers: new HttpHeaders({ headerObj }),
-//     };
-//     const importData = {packagesToImport:data}
-//     return this.httpClient
-//       .post<any>(`${this.GeofenceServiceUrl}/Import`, importData, headers)
-//       .pipe(catchError(this.handleError));
-//   }
+  getGeofenceDetails(orgId: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.GeofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}`, headers)
+      .pipe(catchError(this.handleError));
+  }
 
+  createPolygonGeofence(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.GeofenceServiceUrl}/createpolygongeofence`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  createCircularGeofence(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.GeofenceServiceUrl}/createcirculargeofence`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  updatePolygonGeofence(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.GeofenceServiceUrl}/updatepolygongeofence`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  updateCircularGeofence(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.GeofenceServiceUrl}/updatecirculargeofence`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  // deleteGeofence(geoId: number): Observable<void> {
+  //   let headerObj = this.generateHeader();
+  //   const headers = {
+  //     headers: new HttpHeaders({ headerObj }),
+  //   };
+  //  return this.httpClient
+  //     .delete<any>(`${this.GeofenceServiceUrl}/deletegeofence?GeofenceId=${geoId}`, headers)
+  //     .pipe(catchError(this.handleError));
+  // }
+
+  deleteGeofence(geoIds: any): Observable<void> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.GeofenceServiceUrl}/deletegeofence`, geoIds, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  importGeofenceGpx(data): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any>(`${this.GeofenceServiceUrl}/BulkImportGeofence`,data,headers)
+      .pipe(catchError(this.handleError));
+  }
+  
   private handleError(errResponse: HttpErrorResponse) {
-    if (errResponse.error instanceof ErrorEvent) {
-      console.error('Client side error', errResponse.error.message);
-    } else {
-      console.error('Server side error', errResponse);
-    }
+    console.error('Error : ', errResponse.error);
     return throwError(
-      errResponse
+        errResponse
     );
-  };
+  }
+
 }

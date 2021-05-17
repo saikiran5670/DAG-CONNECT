@@ -175,7 +175,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                     FROM master.landmarkgroup lg                   
                                     LEFT JOIN MASTER.landmarkgroupref lgr on lgr.landmark_group_id = lg.id 
                                     LEFT JOIN MASTER.landmark lm on lm.id = lgr.ref_id
-                                    WHERE 1=1 and lg.state in ('A','I')    ";    
+                                    WHERE 1=1 and lg.state in ('A','I') and lm.state in ('A','I') ";    
                                     
 
                 if (organizationid > 0)

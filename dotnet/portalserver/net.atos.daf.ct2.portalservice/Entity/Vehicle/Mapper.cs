@@ -12,8 +12,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
         {
             var vehicle = new VehicleBusinessService.VehicleRequest();
             vehicle.Id = request.ID;
-            vehicle.Name = request.Name;
-            vehicle.LicensePlateNumber = request.License_Plate_Number;
+            vehicle.Name = request.Name ?? string.Empty;
+            vehicle.LicensePlateNumber = request.License_Plate_Number ?? string.Empty;
             vehicle.OrganizationId = request.Organization_Id;
             return vehicle;
 

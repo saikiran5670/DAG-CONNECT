@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("createcircularofence")]
+        [Route("createcirculargeofence")]
         public async Task<IActionResult> CreateCircularGeofence(List<CircularGeofence> request)
         {
             _logger.Info("CreateCircularGeofence method in Geofence API called.");
@@ -184,27 +184,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPut]
         [Route("deletegeofence")]
-        public async Task<IActionResult> DeleteGeofence([FromQuery] net.atos.daf.ct2.portalservice.Entity.Geofence.GeofenceDeleteEntity request)
+        public async Task<IActionResult> DeleteGeofence(DeleteGeofences request)
         {
             GeofenceDeleteResponse objGeofenceDeleteResponse = new GeofenceDeleteResponse();
             DeleteRequest objDeleteRequest = new DeleteRequest();
             try
             {
-                List<int> lstGeofenceId = new List<int>();
-                foreach (var item in request.GeofenceId)
+
+                foreach (var item in request.GeofenceIds)
                 {
-                    lstGeofenceId.Add(item);
+                    objDeleteRequest.GeofenceId.Add(item);
                 }
-                if (lstGeofenceId.Count > 0)
+                objDeleteRequest.ModifiedBy = request.ModifiedBy;
+                objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
+
+                if (objGeofenceDeleteResponse.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                     "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                      "DeleteGeofence  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
-                      Request);                    
-                    objDeleteRequest.GeofenceId.Add(lstGeofenceId);
-                    objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
+                      Request);
                     return Ok(objGeofenceDeleteResponse);
                 }
                 else
@@ -215,10 +216,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Delete  method in Geofence controller",Convert.ToInt32(request.GeofenceId),0, JsonConvert.SerializeObject(request),
+                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 "Delete  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
-               
+
                 //// check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -395,7 +396,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("BulkImportGeofence")]
+        [Route("bulkimportgeofence")]
         public async Task<IActionResult> BulkImportGeofence(List<Geofence> requests)
         {
             try
@@ -500,7 +501,49 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        [HttpGet]
+        [Route("getallgeofences")]
+        public async Task<IActionResult> GetAllGeofences([FromQuery] GeofenceFilter request)
+        {
+            GeofenceListResponse response = new GeofenceListResponse();
+            try
+            {
+                GeofenceRequest geofenceRequest = new GeofenceRequest();
+                geofenceRequest.Id = request.Id;
+                geofenceRequest.OrganizationId = request.OrganizationId;
+                geofenceRequest.CategoryId = request.CategoryId;
+                geofenceRequest.SubCategoryId = request.SubCategoryId;
+                
+                var result = await _GeofenceServiceClient.GetAllGeofencesAsync(geofenceRequest);
+                
+                if (result != null && result.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
+                 Request);
 
+                    return Ok(result.Geofences);
+                }
+                else
+                {
+                    return StatusCode(500, "Internal Server Error.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
+                 Request);
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+
+        }
         #endregion
         [NonAction]
         public async Task<bool> HasAdminPrivilege()
@@ -514,7 +557,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else
                     Result = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Result = false;
             }

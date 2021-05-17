@@ -747,10 +747,11 @@ private setPageTitle() {
 
   reloadCurrentComponent() {
     // save current route 
-    const currentRoute = this.router.url;
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate([currentRoute]); // navigate to same route
-    }); 
+    // const currentRoute = this.router.url;
+    // this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+    //     this.router.navigate([currentRoute]); // navigate to same route
+    // }); 
+    window.location.reload();
   }
 
   userPreferencesSetting(event){

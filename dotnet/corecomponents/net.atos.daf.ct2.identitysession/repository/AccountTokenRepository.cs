@@ -35,6 +35,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ,token_id
                                         ,session_id
+                                        ,role_id
+                                        ,organization_id
                                         ) 
                                     VALUES(
                                         @user_name
@@ -46,7 +48,9 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,@idp_type
                                         ,@created_at
                                         ,@token_id
-                                        ,@session_id
+                                        ,@session_id    
+                                        ,@role_id
+                                        ,@organization_id
                                         )RETURNING id";
 
                 var parameter = new DynamicParameters();
@@ -61,6 +65,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@created_at", accountToken.CreatedAt);
                 parameter.Add("@token_id", Guid.Parse(accountToken.TokenId));
                 parameter.Add("@session_id", accountToken.Session_Id);
+                parameter.Add("@role_id", accountToken.RoleId);
+                parameter.Add("@organization_id", accountToken.OrganizationId);
 
                 int tokenId =await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return tokenId;
@@ -142,6 +148,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             try
             {
                 var QueryStatement = @"select 
+                                        id
                                         ,user_name
                                         ,access_token
                                         ,expire_in
@@ -153,6 +160,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ,token_id
                                         ,session_id
+                                        ,case when role_id is null  then 0 else role_id end as RoleId
+                                        ,case when organization_id is null then 0 else organization_id end as OrganizationId
                                         from master.accounttoken 
                                         where account_id=@AccountID";
                 var parameter = new DynamicParameters();
@@ -179,7 +188,8 @@ namespace net.atos.daf.ct2.identitysession.repository
             try 
             {
                 var QueryStatement = @"select 
-                                         user_name
+                                        id
+                                        ,user_name
                                         ,access_token
                                         ,expire_in
                                         ,account_id
@@ -190,6 +200,8 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         ,created_at
                                         ,token_id
                                         ,session_id
+                                        ,case when role_id is null  then 0 else role_id end as RoleId
+                                        ,case when organization_id is null then 0 else organization_id end as OrganizationId
                                         from master.accounttoken 
                                         where token_id=@token_id";
                 var parameter = new DynamicParameters();
@@ -254,7 +266,8 @@ namespace net.atos.daf.ct2.identitysession.repository
         private AccountToken Map(dynamic record)
         {
             AccountToken entity = new AccountToken();
-            entity.UserName=record.user_name;
+            entity.Id=record.id;
+            entity.UserName= record.user_name;
             entity.AccessToken=record.access_token;
             entity.ExpireIn=record.expire_in;
             entity.AccountId=record.account_id;
@@ -264,6 +277,8 @@ namespace net.atos.daf.ct2.identitysession.repository
             entity.CreatedAt=record.created_at;
             entity.TokenId = Convert.ToString(record.token_id);
             entity.Session_Id = record.session_id;
+            entity.RoleId= record.roleid;
+            entity.OrganizationId= record.organizationid;
             return entity;
         }
 

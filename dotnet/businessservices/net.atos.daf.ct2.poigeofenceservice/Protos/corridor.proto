@@ -1,0 +1,274 @@
+
+
+syntax = "proto3";
+option csharp_namespace = "net.atos.daf.ct2.corridorservice";
+
+package corridorservice;
+
+service CorridorService{
+ rpc GetCorridorList (CorridorRequest) returns (CorridorResponseList);
+ rpc AddRouteCorridor (RouteCorridorAddRequest) returns (RouteCorridorAddResponse);
+ rpc DeleteCorridor (DeleteCorridorRequest) returns (DeleteCorridorResponse);
+ rpc AddExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
+  rpc UpdateExistingTripCorridor (ExistingTripCorridorRequest) returns (ExistingTripCorridorResponse);
+ rpc UpdateRouteCorridor (UpdateRouteCorridorRequest) returns (UpdateRouteCorridorResponse);
+    }
+
+message CorridorRequest{
+    int32 OrganizationId = 1;
+    int32 CorridorId = 2;
+}
+
+message ViaAddressDetail{
+    int32 CorridorViaStopId = 1;
+    int32 Latitude = 2;
+    int32 Longitude = 3;
+    string CorridorViaStopName = 4;
+}
+
+message CorridorGridViewResponse{
+    int32 Id =1;
+    int32 OrganizationId =2;
+    string CorridoreName =3;
+    string StartPoint=4;
+    double StartLat=5;
+    double StartLong=6;
+    string EndPoint=7;
+     double EndLat=8;
+    double EndLong=9;
+    double Distance=10;
+    double Width=11;
+     int32 CreatedBy = 12;
+    int64 CreatedAt = 13;
+     int32 ModifiedBy = 14;
+    int64 ModifiedAt = 15;
+    repeated ViaAddressDetail viaAddressDetail = 16;
+    repeated ExistingTrip Trips=17;
+    string CorridorType =18;
+}
+
+message CorridorEditViewResponse{
+    int32 Id =1;
+    int32 OrganizationId =2;
+    string CorridoreName =3;
+    string StartPoint=4;
+    double StartLat=5;
+    double StartLong=6;
+    string EndPoint=7;
+     double EndLat=8;
+    double EndLong=9;
+    double Distance=10;
+    double Width=11;
+     int32 CreatedBy = 12;
+    int64 CreatedAt = 13;
+     int32 ModifiedBy = 14;
+    int64 ModifiedAt = 15;
+    repeated ViaAddressDetail viaAddressDetail = 16;
+    CorridorProperties corridorProperties =17;
+    repeated ExistingTrip Trips=18;
+    string CorridorType =19;
+}
+
+message CorridorProperties{
+    int32 CorridorPropertiesId =1;
+    bool IsTransportData = 2;
+    bool IsTrafficFlow = 3;
+    int64 CreatedAtForCP = 4;
+    int64 ModifiedAtForCP = 5;
+    Attribute attribute = 6;
+    Exclusion exclusion = 7;
+    VehicleSize vehicleSize = 8;
+}
+
+message  Attribute{
+        int32 NoOfTrailers = 1;
+        bool IsExplosive = 2;
+        bool IsGas = 3;
+        bool IsFlammable = 4;
+        bool IsCombustible = 5;
+        bool IsOrganic = 6;
+        bool IsPoision = 7;
+        bool IsRadioActive = 8;
+        bool IsCorrosive = 9;
+        bool IsPoisonousInhalation = 10;
+        bool IsWaterHarm = 11;
+        bool IsOther = 12;
+}
+message Exclusion{
+        string TollRoadType = 1;
+        string Mortorway = 2;
+        string BoatFerriesType = 3;
+        string RailFerriesType = 4;
+        string TunnelsType = 5;
+        string DirtRoadType = 6;
+}
+
+message VehicleSize{
+        int32 VehicleHeight = 1;
+        int32 vehicleWidth = 2;
+        int32 vehicleLength = 3;
+        int32 vehicleLimitedWeight = 4;
+        int32 vehicleWeightPerAxle = 5;
+}
+
+message CorridorResponseList  {
+  repeated CorridorGridViewResponse CorridorGridViewList = 1;
+  repeated CorridorEditViewResponse CorridorEditViewList =2;
+  Responsecode code = 3;
+  string message = 4;
+}
+
+message UpdateRouteCorridorRequest{
+ RouteCorridorAddRequest Request = 1;
+}
+message UpdateRouteCorridorResponse{
+ RouteCorridorAddResponse Response = 1;
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+ message RouteCorridorAddRequest {
+         int32 Id =1;
+         int32  OrganizationId =2;
+         string CorridorType =3;
+         string CorridorLabel =4;
+         string StartAddress =5;
+         double StartLatitude=6;
+         double StartLongitude=7;
+         string EndAddress =8;
+         double EndLatitude=9;
+         double EndLongitude=10;
+         int32 Width =11;
+         int32 Distance =12;
+         repeated ViaDetails ViaAddressDetails = 13;
+         int32 Trailer =14;
+         bool IsTransportData =15;
+         bool IsTrafficFlow =16;
+         bool IsExplosive =17;
+         bool IsGas =18;
+         bool IsFlammable =19;
+         bool IsCombustible =20;
+         bool Isorganic =21;
+         bool Ispoision =22;
+         bool IsRadioActive =23;
+         bool IsCorrosive =24;
+         bool IsPoisonousInhalation =25;
+         bool IsWaterHarm =26;
+         bool IsOther =27;
+         string TollRoad =28;
+         string Mortorway =29;
+         string BoatFerries =30;
+         string RailFerries =31;
+         string Tunnels =32;
+         string DirtRoad =33;
+         int32 VehicleSizeHeight =34;
+         int32 VehicleSizeWidth =35;
+         int32 VehicleSizeLength =36;
+         int32 VehicleSizeLimitedWeight =37;
+         int32 VehicleSizeWeightPerAxle =38;
+         string State =39;
+         int64 Created_At =40;
+         int32 Created_By =41;
+         int64 Modified_At =42;
+         int32 Modified_By =43;
+ }
+
+
+ message ViaDetails
+{
+double Latitude=1;
+double Longitude=2;
+string ViaName =3;
+}
+
+    
+message RouteCorridorAddResponse
+{
+  Responsecode Code=1;
+  string Message = 2;  
+  int32 CorridorID =3;
+}
+
+
+message DeleteCorridorRequest
+{
+    int32 CorridorID=1;
+}
+message DeleteCorridorResponse
+{
+    Responsecode Code=1;
+  string Message = 2;  
+  int32 CorridorID =3;
+}
+message ExistingTripCorridorRequest{
+   
+    int32 OrganizationId=1;
+    string CorridorType=2;
+    string CorridorLabel=3;
+    int32 Width=4;
+    int64 CreatedAt=5;
+    int32 CreatedBy=6;
+    int64 ModifiedAt=7;
+    int32 ModifiedBy=8;
+    string Description=9;
+    string Address=10;
+    string City=11;
+    string Country=12;
+    string Zipcode=13;
+    double StartLatitude=14;
+    double StartLongitude=15;
+    double Distance=16;
+    string State =17;
+    repeated ExistingTrip ExistingTrips=18;
+     int32 Id=19;
+}
+message ExistingTripCorridorResponse{
+    Responsecode Code=1;
+    string Message = 2;  
+    int32 CorridorID =3;
+    ExistingTripCorridorRequest ExistingTripCorridor=4;
+
+}
+
+message ExistingTrip
+{
+ int32 Id = 1;
+int32 LandmarkId =  2;      
+string TripId =   3;     
+double StartDate =    4;   
+double EndDate =   5;    
+string DriverId1 =6;       
+string DriverId2 =7;
+double StartLatitude =8;
+double StartLongitude =9;
+string StartPosition =10;
+double EndLatitude =11;
+double EndLongitude =12;
+string EndPosition =13;
+int32 Distance =15;
+repeated TripNodes NodePoints=16;
+}
+
+
+message TripNodes
+{
+        int32 Id =1;       
+        int32 LandmarkId =2;        
+        string TripId =3;        
+        int32 SequenceNumber =4;        
+        double Latitude =5;        
+        double Longitude =6;
+        string State =7;        
+        string Address =8;
+        int64 CreatedAt =9;
+        int32 CreatedBy =10;
+        int64 ModifiedAt =11;
+        int32 ModifiedBy =12;
+}

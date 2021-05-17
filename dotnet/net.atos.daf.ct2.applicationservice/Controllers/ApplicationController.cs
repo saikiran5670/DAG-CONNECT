@@ -15,8 +15,7 @@ namespace net.atos.daf.ct2.applicationservice.Controllers
         [Route("~/")]
         public IActionResult Index()
         {
-            string result = "Sucess Response";
-            return Ok(result);
+            return StatusCode(200, "Sucess");
         }
     }
 }

@@ -1882,37 +1882,47 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-
-        #region TestMethods 
+        #region Signle Sign On
         [HttpPost]
-        [Route("authmethodpost")]
-        public async Task<OkObjectResult> AuthMethodPost()
+        [Route("sso")]
+        public async Task<IActionResult> GenerateSSOToken([FromBody] TokenSSORequest request)
         {
-            return await Task.FromResult(Ok(new { Message = "You are authenticated user " + Dns.GetHostName() }));
-        }
+            try
+            {
+                AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
+                ssoRequest.Email = request.Email;
+                ssoRequest.AccountID = request.AccountID.ToString();
+                ssoRequest.RoleID = request.RoleID.ToString();
+                ssoRequest.OrganizationID = request.OrganizaitonID.ToString();
+                //ssoRequest.AccountID = _userDetails.accountId.ToString();
+                //ssoRequest.RoleID = _userDetails.roleId.ToString();
+                //ssoRequest.OrganizationID = _userDetails.orgId.ToString();
 
-        [HttpPost]
-        [Route("withoutauthmethodpost")]
-        public async Task<OkObjectResult> WithoutAuthMethod()
-        {
-            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
-        }
 
-        [HttpGet]
-        [Route("authmethodget")]
-        public async Task<OkObjectResult> AuthMethodGet()
-        {
-            return await Task.FromResult(Ok(new { Message = "You will need authentication " + Dns.GetHostName() }));
-        }
-
-        [HttpGet]
-        [Route("withoutauthmethodget")]
-        public async Task<OkObjectResult> WithoutAuthMethodGet()
-        {
-            return await Task.FromResult(Ok(new { Message = "This method does not need any authentication " + Dns.GetHostName() }));
+                var response = await _accountClient.GenerateSSOAsync(ssoRequest);
+                if (response.Code == AccountBusinessService.Responcecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                           "GenerateSSOToken method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                           JsonConvert.SerializeObject(request), Request);
+                    return Ok(response.Token);
+                }
+                else 
+                    return StatusCode(500, "SSO generation process failed !");
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                          "GenerateSSOToken method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          JsonConvert.SerializeObject(request), Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, "Error while generating SSO token.");
+            }
         }
         #endregion
-   
+
     }
 
 }

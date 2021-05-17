@@ -11,6 +11,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string subCategory { get; set; }
         public int geofenceID { get; set; }
         public string type { get; set; }
+        public int categoryID { get; set; }
+        public int subcategoryId { get; set; }
 
     }
     public class GeofenceEntityRequest

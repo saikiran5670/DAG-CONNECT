@@ -184,6 +184,17 @@ namespace net.atos.daf.ct2.vehicle.test
             Assert.IsTrue(results != null);
         }
 
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get VehicleGroup By accountId ")]
+        [TestMethod]
+        public async Task UnT_vehicle_VehicleManager_GetVehicleGroupbyAccountIdTest()
+        {
+            int accountId = 125;
+            var results = await _vehiclemanager.GetVehicleGroupbyAccountId(accountId);
+            Assert.IsNotNull(results);
+            Assert.IsTrue(results != null);
+        }
+
         #region Vehicle Mileage
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Get Vehicle Mileage Data ")]

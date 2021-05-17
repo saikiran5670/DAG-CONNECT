@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.driverservice
                 var result = await driverManager.GetDriver(request.OrgID,request.DriverID);
                 if (result.Count() > 0)
                 {
-                    foreach (net.atos.daf.ct2.driver.entity.Driver entity in result)
+                    foreach (net.atos.daf.ct2.driver.entity.DriverResponse entity in result)
                     {
                         response.Driver.Add(_mapper.ToDriverResponse(entity));
                     }

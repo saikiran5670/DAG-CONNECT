@@ -1,11 +1,14 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using  net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle.response;
+using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -14,10 +17,10 @@ namespace net.atos.daf.ct2.vehicle
         IVehicleRepository vehicleRepository;
         IAuditTraillib auditlog;
 
-        public VehicleManager(IVehicleRepository _vehicleRepository,IAuditTraillib _auditlog)
+        public VehicleManager(IVehicleRepository _vehicleRepository, IAuditTraillib _auditlog)
         {
             vehicleRepository = _vehicleRepository;
-             auditlog = _auditlog;
+            auditlog = _auditlog;
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId)
@@ -41,7 +44,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                 //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
+                //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await vehicleRepository.Update(vehicle);
             }
             catch (Exception ex)
@@ -98,11 +101,11 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
-        public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId,int vehicleId)
+        public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)
         {
             try
             {
-                return await vehicleRepository.GetVehicleGroup(organizationId,vehicleId);
+                return await vehicleRepository.GetVehicleGroup(organizationId, vehicleId);
             }
             catch (Exception ex)
             {
@@ -187,7 +190,7 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                return await vehicleRepository.GetDynamicVisibleVehicle(OrganizationId,VehicleGroupId, RelationShipId);
+                return await vehicleRepository.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
             }
             catch (Exception ex)
             {
@@ -230,68 +233,80 @@ namespace net.atos.daf.ct2.vehicle
                 throw ex;
             }
         }
+        public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
+        {
+            try
+            {
+                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid,orgnizationid);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
         #region Vehicle Mileage Data
-        public async Task<VehicleMileage> GetVehicleMileage(string since,bool isnumeric,string contenttype)
-        {            
+        public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contentType, int accountId, int orgid)
+        {
             try
             {
                 long startDate = 0;
                 long endDate = 0;
 
-                if (string.IsNullOrEmpty(since) || since == "yesterday")
-                {
+                if (since == "yesterday")
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
-                    endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-
-                }
                 else if (since == "today")
-                {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
-                    endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                }
                 else if (isnumeric)
-                {
                     startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
-                    endDate = UTCHandling.GetUTCFromDateTime(GetEndOfDay(Convert.ToDateTime(since)));
-                }
-                IEnumerable<dtoVehicleMileage> vehiclemileageList= await vehicleRepository.GetVehicleMileage(startDate, endDate);
-                
+
+                endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+
+                IEnumerable<dtoVehicleMileage> vehicleMileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since));
+
+                if(vehicleMileageList.Count() > 0)
+                {
+                    //Fetch visibility vehicles for the account
+                    var vehicles = await GetVisibilityVehicles(accountId, orgid);
+
+                    vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(veh => veh.VIN == mil.vin)).AsEnumerable();
+                }                
+
                 VehicleMileage vehicleMileage = new VehicleMileage();
-                vehicleMileage.Vehicles = new List<Vehicles>();
+                vehicleMileage.Vehicles = new List<entity.Vehicles>();
                 vehicleMileage.VehiclesCSV = new List<VehiclesCSV>();
                 string sTimezone = "UTC";
                 string targetdateformat = "yyyy-MM-ddTHH:mm:ss.fffz";
 
-                if (vehiclemileageList!=null)
+                if (vehicleMileageList != null)
                 {
-                    foreach (var item in vehiclemileageList)
+                    foreach (var item in vehicleMileageList)
                     {
-                        if (contenttype == "text/csv")
+                        if (contentType == "text/csv")
                         {
                             VehiclesCSV vehiclesCSV = new VehiclesCSV();
-                            vehiclesCSV.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat); 
+                            vehiclesCSV.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty;
                             vehiclesCSV.VIN = item.vin;
-                            vehiclesCSV.TachoMileage = item.odo_distance;
-                            vehiclesCSV.RealMileage = item.real_distance;
+                            vehiclesCSV.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0;
+                            vehiclesCSV.RealMileage = item.real_distance > 0 ? item.real_distance : 0;
                             vehiclesCSV.RealMileageAlgorithmVersion = "1.2";
-                            vehicleMileage.VehiclesCSV.Add(vehiclesCSV); 
+                            vehicleMileage.VehiclesCSV.Add(vehiclesCSV);
                         }
                         else
                         {
-                            Vehicles vehiclesobj = new Vehicles();
-                            vehiclesobj.EvtDateTime = UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat); ;
+                            entity.Vehicles vehiclesobj = new entity.Vehicles();
+                            vehiclesobj.EvtDateTime = item.evt_timestamp > 0 ? UTCHandling.GetConvertedDateTimeFromUTC(item.evt_timestamp, sTimezone, targetdateformat) : string.Empty;
                             vehiclesobj.VIN = item.vin;
-                            vehiclesobj.TachoMileage = item.odo_distance;
-                            vehiclesobj.GPSMileage = item.real_distance;
-                            vehiclesobj.RealMileageAlgorithmVersion = "1.2";
+                            vehiclesobj.TachoMileage = item.odo_distance > 0 ? item.odo_distance : 0;
+                            vehiclesobj.GPSMileage = item.real_distance > 0 ? item.real_distance : 0;
                             vehicleMileage.Vehicles.Add(vehiclesobj);
                         }
                     }
                 }
                 return vehicleMileage;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -307,27 +322,147 @@ namespace net.atos.daf.ct2.vehicle
         }
 
         #endregion
-        //   public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
-        // {
-        //     try
-        //     {
-        //         return await vehicleRepository.Update(vin,tcuId,tcuactivation,referenceDateTime);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw ex;
-        //     }
-        // }     
-        //  public async Task<int> Create(int orgId, string vin,string tcuId,string tcuactivation,string referenceDateTime)
-        // {
-        //     try
-        //     {
-        //         return await vehicleRepository.Create(orgId,vin,tcuId,tcuactivation,referenceDateTime);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw ex;
-        //     }
-        // }       
+
+        #region Vehicle Namelist Data
+        public async Task<VehicleNamelistResponse> GetVehicleNamelist(string since, bool isnumeric, int accountId, int orgId)
+        {
+            try
+            {
+                long startDate = 0;
+                long endDate = 0;
+
+                if (since == "yesterday")
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Today.AddDays(-1)));
+                else if (since == "today")
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(DateTime.Now));
+                else if (isnumeric)
+                    startDate = UTCHandling.GetUTCFromDateTime(GetStartOfDay(Convert.ToDateTime(since)));
+
+                endDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+
+                IEnumerable<dtoVehicleNamelist> vehicleNameList = await vehicleRepository.GetVehicleNamelist(startDate, endDate, string.IsNullOrEmpty(since));
+
+                if(vehicleNameList.Count() > 0)
+                {
+                    //Fetch visibility vehicles for the account
+                    var vehicles = await GetVisibilityVehicles(accountId, orgId);
+
+                    vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.vin)).AsEnumerable();
+                }                
+
+                VehicleNamelistResponse vehicleNamelistResponse = new VehicleNamelistResponse();
+                vehicleNamelistResponse.Vehicles = new List<response.Vehicles>();
+
+                if (vehicleNameList != null)
+                {
+                    foreach (var item in vehicleNameList)
+                    {
+                        response.Vehicles vehiclesObj = new response.Vehicles();
+
+                        vehiclesObj.VIN = item.vin;
+                        vehiclesObj.Name = item.name;
+                        vehiclesObj.RegNo = item.regno;
+
+                        vehicleNamelistResponse.Vehicles.Add(vehiclesObj);
+                    }
+                }
+
+                return vehicleNamelistResponse;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+        #region Vehicle Visibility
+
+        public async Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId)
+        {
+            try
+            {
+                List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
+                var vehicleGroupIds = await vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId);
+
+                foreach (var vehicleGroupId in vehicleGroupIds)
+                {
+                    var vehicleGroup = await vehicleRepository.GetVehicleGroupDetails(vehicleGroupId);
+
+                    switch (vehicleGroup.GroupType)
+                    {
+                        case "S":
+                            //Single
+                            vehicles.Add(await vehicleRepository.GetVehicleForVisibility(vehicleGroup.RefId));
+                            break;
+                        case "G":
+                            //Group
+                            vehicles.AddRange(await vehicleRepository.GetGroupTypeVehicles(vehicleGroupId));
+                            break;
+                        case "D":
+                            //Dynamic
+                            switch (vehicleGroup.GroupMethod)
+                            {
+                                case "A":
+                                    //All
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicAllVehicleForVisibility(orgId));
+                                    break;
+                                case "O":
+                                    //Owner
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicOwnedVehicleForVisibility(orgId));
+                                    break;
+                                case "V":
+                                    //Visible
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicVisibleVehicleForVisibility(orgId));
+                                    break;
+                                case "M":
+                                    //OEM
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroupId));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return vehicles.Distinct(new ObjectComparer()).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+    }
+
+    internal class ObjectComparer : IEqualityComparer<VisibilityVehicle>
+    {
+        public bool Equals(VisibilityVehicle x, VisibilityVehicle y)
+        {
+            if (object.ReferenceEquals(x, y))
+            {
+                return true;
+            }
+            if (object.ReferenceEquals(x, null) || object.ReferenceEquals(y, null))
+            {
+                return false;
+            }
+            return x.Id == y.Id && x.VIN == y.VIN;
+        }
+
+        public int GetHashCode([DisallowNull] VisibilityVehicle obj)
+        {
+            if (obj == null)
+            {
+                return 0;
+            }
+            int idHashCode = obj.Id.GetHashCode();
+            int vinHashCode = obj.VIN == null ? 0 : obj.VIN.GetHashCode();
+            return idHashCode ^ vinHashCode;
+        }
     }
 }

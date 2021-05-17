@@ -346,7 +346,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                 //{
                                 objTermsAndConditionResponse.id = descriptionExists.id;
                                 objTermsAndConditionResponse.fileName = item.fileName;
-                                objTermsAndConditionResponse.action = $"No action, greater Version already exists for {descriptionExists.code}";
+                                objTermsAndConditionResponse.action = $"No action, greater Version already exists for : {descriptionExists.version_no}_{descriptionExists.code}";
                                 objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
 
                                 //}

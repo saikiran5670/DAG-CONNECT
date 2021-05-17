@@ -1,22 +1,29 @@
-
 <div class='bgtrans'>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span>{{ breadcumMsg }}</span>
+        </div>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+            <span class='custom-font' (click)="closeImport()">
+                <span>
+                    <&nbsp;</span>
+                        <span class='backBtnCss'>{{ this.importTranslationData.lblBack || 'Back' }}</span>
+            </span>
+        </div>
+    </div>
 <mat-card class='mat-elevation-z margin-bottom-xlg'>
     <form [formGroup]="importPackageFormGroup">
         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ this.importTranslationData.importTitle || 'Import New Package'}}</span>
             </div>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                <button mat-flat-button (click)="closeImport()">
-                    <mat-icon>arrow_back_ios</mat-icon>
-                 </button>
-            </div>
+           
       
         </div>
         <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
             <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='display: flex; align-items: center;'>
-                    <img matTooltip='Download CSV' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
+                    <img matTooltip='Download' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
                     <a  (click)='downloadTemplate()' class='cursor-pointer'
                         style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ this.importTranslationData.downloadTemplate || 'Download a Template'}}</a>
                 </span>
@@ -29,7 +36,7 @@
                             <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                 <mat-label>{{this.importTranslationData.selectUpdatedFile || 'Select Updated File'}} <span class='mandatoryColor'>*</span></mat-label>
                                 <mat-form-field appearance="outline">
-                                    <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.csv'" formControlName="uploadFile" placeholder="Upload CSV File" ></ngx-mat-file-input>
+                                    <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="fileExtension" formControlName="uploadFile" placeholder="Upload File" ></ngx-mat-file-input>
                                     <button mat-flat-button color="primary" matSuffix>{{ this.importTranslationData.browse || 'Browse' }}</button>
                                 </mat-form-field>
                                 <mat-error *ngIf="importPackageFormGroup.get('uploadFile').hasError('required')">
@@ -42,9 +49,12 @@
                                <mat-error *ngIf="excelEmptyMsg">
                                     {{ this.importTranslationData.emptyFile || 'Empty File' }}
                                 </mat-error> 
+                                <mat-error *ngIf="filetypeError">
+                                    {{ this.importTranslationData.invalidFileType}}
+                                </mat-error> 
                             </div>
                             <div fxLayout="column" class='margin-top-adjust'>
-                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
+                                <button style='color: #fff;' [disabled]="!importPackageFormGroup.valid || excelEmptyMsg || filetypeError" [ngStyle]="{'margin-top': importPackageFormGroup.get('uploadFile').hasError('required') ? '0px' : '3px'}" mat-flat-button color="primary"
                                     (click)="importNewFile(removableInput)">
                                     <mat-icon>arrow_circle_up</mat-icon> {{ this.importTranslationData.uploadButtonText}}
                                 </button>
@@ -71,12 +81,12 @@
     <div *ngIf="!packageCodeErrorMsg">
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.imported || 'Imported' }} <span style='color: green'>{{importedPackagesCount}} {{this.importTranslationData.new}} {{importedPackagesCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
+            <span>{{ this.importTranslationData.imported || 'Imported' }} <span style='color: green'>{{importedCount}} {{this.importTranslationData.new}} {{importedCount>1 ? this.importTranslationData.fileTypeMultiple :this.importTranslationData.fileType}}</span></span>
         </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="start space-between">
         <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-            <span>{{ this.importTranslationData.rejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedPackagesCount > 0}" (click)="(rejectedPackagesCount > 0) ? showRejectedPopup(rejectedPackageList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedPackagesCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
+            <span>{{ this.importTranslationData.rejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedCount > 0}" (click)="(rejectedCount > 0) ? showRejectedPopup(rejectedList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedCount }} {{ this.importTranslationData.fileTypeMultiple}}</span></span>
 
         </div>
     </div>

@@ -254,7 +254,7 @@ namespace net.atos.daf.ct2.organization.repository
                               a.id preferenceId,
                               o.id ,
                               o.org_id ,
-                              coalesce(o.name, '(' || o.org_id || ')') as name,                             
+                              coalesce(o.name, '') as name,                             
                               o.city ,                             
                               o.street ,
                               o.street_number ,
@@ -649,14 +649,7 @@ namespace net.atos.daf.ct2.organization.repository
                 objvehicle.VIN = keyHandOver.VIN;
                 objvehicle.Tcu_Id = keyHandOver.TCUID;
                 objvehicle.Is_Tcu_Register = istcuactive;
-                if (!string.IsNullOrEmpty(keyHandOver.ReferenceDateTime))
-                {
-                    objvehicle.Reference_Date = Convert.ToDateTime(keyHandOver.ReferenceDateTime);
-                }
-                else
-                {
-                    objvehicle.Reference_Date = null;
-                }
+                objvehicle.Reference_Date = keyHandOver.ReferenceDateTime;
 
                 objvehicle.Oem_id = Convert.ToInt32(keyHandOver.OEMRelationship);
                 objvehicle.Oem_Organisation_id = OrganizationId;
@@ -703,14 +696,7 @@ namespace net.atos.daf.ct2.organization.repository
                     istcuactive = false;
                 }
 
-                if (!string.IsNullOrEmpty(keyHandOver.ReferenceDateTime))
-                {
-                    objvehicle.Reference_Date = Convert.ToDateTime(keyHandOver.ReferenceDateTime);
-                }
-                else
-                {
-                    objvehicle.Reference_Date = null;
-                }
+                objvehicle.Reference_Date = keyHandOver.ReferenceDateTime;
 
                 objvehicle.Is_Tcu_Register = istcuactive;
                 objvehicle.VIN = keyHandOver.VIN;

@@ -1,4 +1,5 @@
-<div *ngIf="actionType == 'create' || actionType == 'edit'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="actionType == 'create' || actionType == 'edit' || actionType == 'view'" fxLayout="row"
+  fxLayoutAlign="space-between" class='margin-bottom-sm'>
   <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
     <span>{{ breadcumMsg }}</span>
   </div>
@@ -10,160 +11,217 @@
       </span>
   </div>
 </div>
-
 <mat-card class='mat-elevation-z'>
   <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Map View</span>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMapView || 'Map
+        View' }}</span>
     </div>
   </div>
-
-  <div #map id="map" style="width: 900px; height: 450px">
-    <div #searchbox style="padding: 10px 0">  
-          <input type="text" placeholder="Search your location..." style="width: 30%;" />  
-          <!-- <button><mat-icon (click)="places(query)">search</mat-icon></button> -->
-          <!-- <button><mat-icon>search</mat-icon></button> -->
-        </div>  
-   
+  <div class="searchBoxContainer">
+    <div id="searchbox" style="padding: 10px 0 0">
+      <input type="text" (keyup)="searchValue($event)" placeholder="Search your location..." />
+    </div>
+    <mat-list [ngClass]="[ activeSearchList ? 'showSearchList' : 'noSearch']">
+      <mat-list-item *ngFor="let item of searchData" (click)="SearchListItems(item)">{{item.title}}</mat-list-item>
+    </mat-list>
   </div>
-
+  <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"> </div>
 </mat-card>
-
 <form [formGroup]="poiFormGroup">
   <mat-card class="card">
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-
-        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Add New POI</span>
-        </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="actionType == 'create'">
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAddNewPOI || 'Add
+          New POI' }}</span>
       </div>
-      <mat-card-content>
-
-        <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" >
-          <div class="areaWidth" fxLayout="column" >
-            <mat-label><span>{{ translationData.lblPoiName || 'Name' }}</span><span *ngIf="actionType != 'view'"
-                class='mandatoryColor'>*</span></mat-label>
-            <div *ngIf="actionType != 'view'">
-              <mat-form-field appearance="outline" >
-                <input maxlength="20" placeholder="{{ translationData.lblEnterPoiName|| 'Enter Poi Name' }}" matInput
-                  formControlName="name">
-              </mat-form-field>
-            </div>
-            <!-- <div *ngIf="actionType == 'edit'">
-              <span style='font-weight: 500!important;'>{{ selectedElementData.name }}</span>
-          </div> -->
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="actionType == 'edit'">
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblEditPOI || 'Edit
+          POI Details' }}</span>
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' *ngIf="actionType == 'view'">
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblViewPOI || 'View
+          POI Details' }}</span>
+      </div>
+    </div>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label><span>{{ translationData.lblName || 'Name' }}</span><span *ngIf="actionType != 'view'"
+              class='mandatoryColor'>*</span></mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input maxlength="20" placeholder="{{ translationData.lblEnterPOIName || 'Enter POI Name' }}" matInput
+                formControlName="name" (keyup)="inputPoiName()">
+            </mat-form-field>
+            <mat-error *ngIf="duplicatePOIName">
+              {{ duplicatePOINameMsg }}
+            </mat-error>
+            <mat-error *ngIf="poiFormGroup.get('name').hasError('required')">
+              {{ translationData.lblPleasenterPoiName || 'Please enter Poi Name'}}
+            </mat-error>
+            <mat-error *ngIf="poiFormGroup.get('name').hasError('max')">
+              {{ translationData.lblDataAttributeSetmaxlength || 'Max length should be 100' }}
+            </mat-error>
+            <mat-error *ngIf="poiFormGroup.get('name').hasError('min')">
+              {{ translationData.lblDataAttributeSetminlength || 'Min length should be 1' }}
+            </mat-error>
+            <mat-error *ngIf="poiFormGroup.get('name').hasError('specialCharsNotAllowed')">
+              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+            </mat-error>
           </div>
-          <div class="areaWidth" fxLayout="column" >
-            <mat-label>
-              <span>{{ translationData.lblType || 'Select Category' }}</span><span *ngIf="actionType != 'view'"
-                class='mandatoryColor'>*</span>
-            </mat-label>
-            <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-              <mat-form-field appearance="outline" >
-                <mat-select  formControlName="category" (selectionChange)="onCategoryChange()" placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblCategory || 'Category' }}</span><span
+              class='mandatoryColor'>*</span>
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select formControlName="category" (selectionChange)="onCategoryChange()"
+                placeholder="{{ translationData.lblSelectCategory || 'Select Category' }}">
                 <mat-option *ngFor="let rer of categoryList" [value]="rer.id">
                   {{ rer.name }}
                 </mat-option>
               </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="areaWidth" fxLayout="column" >
-            <mat-label>
-              <span>{{ translationData.lblType || 'Select Sub-Category' }}</span><span *ngIf="actionType != 'view'"
-                class='mandatoryColor'>*</span>
-            </mat-label>
-            <div class="areaWidth" fxLayout="column" >
-              <mat-form-field appearance="outline" >
-                <mat-select formControlName="subcategory" (selectionChange)="onSubCategoryChange()" placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
-                  <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
-                      {{ rer.name }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-  </div>
-
-
-
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiAddress || 'Address' }}</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiAddress|| 'Enter Address' }}" matInput
-                formControlName="address"  >
             </mat-form-field>
+            <mat-error *ngIf="poiFormGroup.get('category').hasError('required')">
+              {{ translationData.lblPleaseSelectCategory || 'Please Select Category'}}
+            </mat-error>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--' }}</span>
           </div>
         </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiZip || 'Zip-code' }}</span></mat-label>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblSubCategory || 'Sub-Category' }}</span>
+            <!-- <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span> -->
+          </mat-label>
           <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiZip|| 'Select one' }}" matInput
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-select formControlName="subcategory" (selectionChange)="onSubCategoryChange()"
+                placeholder="{{ translationData.lblSelectSubCategory || 'Select Sub-Category' }}">
+                <mat-option *ngFor="let rer of subCategoryList" [value]="rer.id">
+                  {{ rer.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblAddress || 'Address' }}</span>
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input [readonly]="true" maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Enter Address' }}" matInput
+                formControlName="address">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.address ? selectedElementData.address : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblZipCode || 'Zip-Code' }}</span>
+          </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input [readonly]="true" maxlength="50" placeholder="{{ translationData.lblSelectOne|| 'Select One' }}" matInput
                 formControlName="zip">
             </mat-form-field>
           </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.zipcode ? selectedElementData.zipcode : '--' }}</span>
+          </div>
         </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiCity || 'City' }}</span></mat-label>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblCity || 'City' }}</span>
+          </mat-label>
           <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiCity|| 'Select one' }}" matInput
+            <mat-form-field appearance="outline" class="full-width">
+              <input [readonly]="true" maxlength="50" placeholder="{{ translationData.lblSelectOne || 'Select One' }}" matInput
                 formControlName="city">
             </mat-form-field>
           </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.city ? selectedElementData.city : '--' }}</span>
+          </div>
         </div>
-
       </div>
-
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiCountry || 'Country' }}</span></mat-label>
+      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblCountry || 'Country' }}</span>
+          </mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiCountry|| 'Select One' }}" matInput
+              <input [readonly]="true" maxlength="50" placeholder="{{ translationData.lblSelectOne|| 'Select One' }}" matInput
                 formControlName="country">
             </mat-form-field>
           </div>
-        </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiLattitude || 'Lattitude' }}</span></mat-label>
-          <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiLattitude|| 'Select One' }}" matInput
-                formControlName="lattitude">
-            </mat-form-field>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.country ? selectedElementData.country : '--' }}</span>
           </div>
         </div>
-        <div class="areaWidth" fxLayout="column" >
-          <mat-label><span>{{ translationData.lblPoiLongitude || 'Longitude' }}</span></mat-label>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblLatitude || 'Latitude' }}</span>
+            <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+          </mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
-              <input maxlength="50" placeholder="{{ translationData.lblEnterPoiLongitude|| 'Select One' }}" matInput
-                formControlName="longitude">
+              <input [readonly]="true" maxlength="50" placeholder="{{ translationData.lblSelectOne || 'Select One' }}"
+                matInput formControlName="lattitude">
             </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.latitude ? selectedElementData.latitude : '--' }}</span>
+          </div>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>
+            <span>{{ translationData.lblLongitude || 'Longitude' }}</span><span *ngIf="actionType != 'view'"
+              class='mandatoryColor'>*</span>
+            </mat-label>
+          <div *ngIf="actionType != 'view'">
+            <mat-form-field appearance="outline" class="full-width">
+              <input [readonly]="true" maxlength="50" placeholder="{{ translationData.lblSelectOne|| 'Select One' }}"
+                matInput formControlName="longitude">
+            </mat-form-field>
+          </div>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{ selectedElementData.longitude ? selectedElementData.longitude : '--' }}</span>
           </div>
         </div>
       </div>
-
-      <div fxLayout="row" fxLayoutAlign="end" class='margin-bottom-sm'>
+      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end">
         <div fxLayout="row" class='areaWidth'>
           <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
             translationData.lblCancel || 'Cancel' }}</button>
-            <button class='no-margin' [disabled]="!poiFormGroup.valid" mat-raised-button (click)='onCreatePoi()'
-            color="primary" *ngIf="actionType == 'create'">{{ createStatus ? (translationData.lblCreate ||
+          <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onReset()'>{{
+              translationData.lblReset || 'Reset' }}</button>
+          <button class='no-margin' [disabled]="!poiFormGroup.valid" mat-raised-button (click)='onCreatePoi()'
+            color="primary">{{ actionType == 'create' ? (translationData.lblCreate ||
             'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
-            <button class='no-margin' mat-raised-button color="primary" *ngIf="actionType == 'edit'"
-            (click)='onCreatePoi()'>{{ translationData.lblConfirm || 'Confirm' }}</button>
         </div>
       </div>
-
     </mat-card-content>
-
   </mat-card>
 </form>

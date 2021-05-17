@@ -118,4 +118,18 @@ namespace net.atos.daf.ct2.portalservice.Account
         [StringLength(8, MinimumLength = 2, ErrorMessage = "Minimum length of {0} field is {2} and maximum length is {1} characters.")]
         public string LanguageCode { get; set; }
     }
+
+    public class TokenSSORequest
+    {
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public int AccountID { get; set; }
+        [Required]
+        public int RoleID { get; set; }
+        [Required]
+        public int OrganizaitonID { get; set; }
+    }
+
+
 }

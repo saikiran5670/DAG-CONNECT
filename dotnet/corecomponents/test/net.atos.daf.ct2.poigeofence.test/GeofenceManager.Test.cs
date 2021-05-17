@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.poigeofence.test
             geofence.Latitude = 101.11;
             geofence.Longitude = 100.100;
             geofence.Distance = 0;
-            geofence.TripId = 0;
+          //  geofence.TripId = 0;
             geofence.CreatedBy = 50;
             geofence.Nodes = new List<Nodes>();
             geofence.Nodes.Add(new Nodes() { Latitude = 101.11,Longitude=100.100,SeqNo=1 });
@@ -139,6 +139,34 @@ namespace net.atos.daf.ct2.poigeofence.test
             Assert.IsNotNull(resultUpdateGeofence);
             Assert.IsTrue(resultUpdateGeofence.Count > 0);
 
+        }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for get all geofence")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void GetAllGeofence()
+        {
+            Geofence geofence = new Geofence();
+            geofence.OrganizationId = 171;
+            //geofence.CategoryId = 10;
+            //geofence.SubCategoryId = 8;
+            //geofence.Name = "Geofence Unit Test";
+            //geofence.Type = "P";
+            //geofence.Address = "Geofence Add Test";
+            //geofence.City = "Pune";
+            //geofence.Country = "In";
+            //geofence.Zipcode = "411018";
+            //geofence.Latitude = 101.11;
+            //geofence.Longitude = 100.100;
+            //geofence.Distance = 0;
+            //geofence.TripId = 0;
+            //geofence.CreatedBy = 50;
+            //geofence.Nodes = new List<Nodes>();
+            //geofence.Nodes.Add(new Nodes() { Latitude = 101.11, Longitude = 100.100, SeqNo = 1 });
+            //geofence.Nodes.Add(new Nodes() { Latitude = 102.11, Longitude = 101.101, SeqNo = 2 });
+            var resultGeofence = _iGeofenceManager.GetAllGeofence(geofence).Result;
+            Assert.IsNotNull(resultGeofence);
+            //Assert.IsTrue(resultGeofence);
         }
     }
 }

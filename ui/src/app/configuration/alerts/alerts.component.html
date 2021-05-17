@@ -1,3 +1,148 @@
-<div class="bgtrans">
-  <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
+<div class='bgtrans'>
+  <div *ngIf='grpTitleVisible' fxLayout="row" fxLayoutAlign="center center"
+      style='padding:10px; color:#fff; background: #5dc24e;'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ displayMessage }}
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+      </div>
+  </div>
+  <div *ngIf='!createViewEditStatus'>
+      <mat-card class='mat-elevation-z'>
+        <div *ngIf='alertCategoryList'>
+          <app-alerts-filter (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'  [alertStatusList]='alertStatusList' [vehicleGroupList]='vehicleGroupList'
+            [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
+          </app-alerts-filter>        
+        </div>  
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllAlertDetails || 'All Created Alert Details' }}
+                  <!-- ({{ dataSource.filteredData.length }}) -->
+              </span>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <div fxLayout="row" class='areaWidth'>
+                    <!-- <div class='areaWidth' fxLayout="column" fxLayoutGap="1px" fxLayoutAlign="end">
+                    <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
+                        <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
+                    </mat-menu>
+                    </div> -->
+                    <div *ngIf="!adminAccessType.adminReadOnlyAccess" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                        <button mat-flat-button color="primary" (click)="onClickNewAlert()">
+                        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewAlert || 'New Alert'}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
+        <div *ngIf='initData.length > 0' id="alertsData">
+          <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
+            <ng-container matColumnDef="urgencyLevel">      
+              <mat-header-cell *matHeaderCellDef style="max-width: 7%;"></mat-header-cell>     
+             <!-- !-- <mat-cell *matCellDef="let row" style="max-width: 7%;">
+                <img src="{{row.alertIcon}}" style='width: 22px;height: 22px;'>
+              </mat-cell>  -- -->
+              <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
+                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
+                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+                <span class="text-truncate" *ngFor="let val of row.alertUrgencyLevelRefs  | removeDuplicates">
+                  
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'C'">
+                  <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
+                </span> 
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'W'">
+                  <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
+                </span>
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'A'">
+                  <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
+                </span>            
+            </span>        
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.name }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="category">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row">         
+                {{ row.category }}            
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="type">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertType || 'Alert Type' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.type }}  </span></mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="thresholdValue">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold || 'Threshold' }}</mat-header-cell>
+             <mat-cell *matCellDef="let row">
+              <span class="text-truncate" *ngFor="let threVal of row.alertUrgencyLevelRefs | removeDuplicates">
+                <span>{{threVal.thresholdValue}}</span>
+                <!-- {{ element.alertUrgencyLevelRefs.length > 0 ? element.alertUrgencyLevelRefs : '&nbsp; &nbsp; -' }} -->
+               </span>   
+              </mat-cell>  
+            </ng-container>
+
+              <ng-container matColumnDef="vehicleGroupName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
+                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                  {{ row.vehicleGroupName }}</span>
+                </mat-cell>
+             </ng-container> 
+            <ng-container matColumnDef="state">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+              <button class='actionBtn' mat-flat-button (click)="onChangeAlertStatus(row)" matTooltip="{{ row.state == 'A' ? (translationData.lblClicktodeactivate || 'Click to Suspended') : translationData.lblClicktoactivate || 'Click to Activate' }}">
+                <mat-slide-toggle color="primary" [checked]='row.state == "A" ? true : false' >
+              </mat-slide-toggle>&nbsp;
+              <span>{{ row.state == "A" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Suspended' }}</span>
+              </button>
+            </mat-cell>            
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="action">
+                <button class='actionBtn' mat-flat-button (click)="editViewAlertData(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAlertData(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                  <mat-icon>create</mat-icon>
+                </button>
+                <button class='actionBtn'  mat-flat-button (click)="editAlertData(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate || 'Duplicate' }}">
+                  <mat-icon>content_copy</mat-icon>
+              </button>
+                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAlertData(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                  <mat-icon class="deleteIcon">delete_outline</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;">
+            </mat-row>
+          </mat-table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+        </div> 
+        <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
+      </mat-card>
+  </div>
+  <div *ngIf='createViewEditStatus'>
+      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData"
+       [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [vehicleGroupList]='vehicleGroupList' [vehicleList]='vehicleList' (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
+  </div>
 </div>

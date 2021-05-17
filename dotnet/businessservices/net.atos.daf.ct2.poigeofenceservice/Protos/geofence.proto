@@ -14,6 +14,7 @@ rpc GetGeofenceByGeofenceID (IdRequest) returns (GetGeofenceResponse);
 rpc UpdatePolygonGeofence (GeofencePolygonUpdateRequest) returns (GeofencePolygonUpdateResponce);
 rpc BulkImportGeofence (BulkGeofenceRequest) returns (BulkGeofenceResponse);
 rpc UpdateCircularGeofence (GeofenceCircularUpdateRequest) returns (GeofenceCircularUpdateResponce);
+rpc GetAllGeofences (GeofenceRequest) returns (GeofenceListResponse);
 }
 
 enum Responsecode{
@@ -26,7 +27,8 @@ enum Responsecode{
 }
 
 message DeleteRequest{
-   repeated int32 GeofenceId=1;  
+   repeated int32 GeofenceId=1;
+   int32 ModifiedBy = 2;
 }
 message GeofenceDeleteResponse {
   Responsecode Code=1;
@@ -48,11 +50,13 @@ message GeofenceRequest{
     double Longitude=12;
     double Distance=13;
     string State=14;
-    int32 TripId = 15;
+    int32 Width = 15;
     int32 CreatedBy = 16;
-    repeated NodeRequest NodeRequest=17;
+    repeated NodeRequest Nodes=17;
     bool Exists=18;
     google.protobuf.StringValue Message =19;
+    google.protobuf.StringValue CategoryName =20;
+    google.protobuf.StringValue SubCategoryName =21;
 }
 message NodeRequest{
     int32 Id =1;
@@ -63,6 +67,8 @@ message NodeRequest{
     string State=6;
     int32 CreatedBy = 7;
     google.protobuf.StringValue Message =8;
+    string Address=9;
+    string TripId=10;
 }
 
 message GeofenceResponse{
@@ -96,6 +102,9 @@ message GeofenceEntityResponce{
     string subCategoryName=3;
     int32 geofenceId=4;
     string type=5;
+    int32 categoryId=6;
+    int32 SubCategoryId=7;
+
 }
 
 message CircularGeofenceRequest{
@@ -163,10 +172,17 @@ message GeofenceCircularUpdateRequest{
  string Name =5;
  bool Exists=6;
  int32 ModifiedBy = 7;
+ double Distance = 8;
 }
 
 message GeofenceCircularUpdateResponce{
     GeofenceCircularUpdateRequest GeofenceCircularUpdateRequest=1;
+    Responsecode Code=2;
+    string message = 3;
+}
+message GeofenceListResponse
+{
+    repeated GeofenceRequest geofences=1;
     Responsecode Code=2;
     string message = 3;
 }

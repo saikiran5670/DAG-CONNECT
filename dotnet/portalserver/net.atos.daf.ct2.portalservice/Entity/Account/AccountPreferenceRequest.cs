@@ -13,8 +13,9 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int VehicleDisplayId { get; set; }
         public int DateFormatTypeId { get; set; }
         public int TimeFormatId { get; set; }
-        public int LandingPageDisplayId { get; set; }        
-        
+        public int LandingPageDisplayId { get; set; }
+        public string PreferenceType { get; set; }
+
     }
     public class AccountPreferenceResponse
     {

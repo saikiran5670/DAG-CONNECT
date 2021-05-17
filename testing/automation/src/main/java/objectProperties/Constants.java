@@ -49,6 +49,7 @@ public class Constants {
 	
 	public static final String Sheet_TestCases = "Test Cases";	
 	public static final int Col_TestCaseID = 0;
+	public static final int Col_TestCaseDesc = 1;
 	public static final int Col_RunMode = 2;
 	public static final int Col_Result = 3;
 	

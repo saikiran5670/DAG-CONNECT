@@ -33,6 +33,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
   clearInput: any;
   userType: any= "";
   types = ['Global', 'Regular'];
+  duplicateCategory: boolean = false;
+  duplicateCatMsg: any = '';
 
   constructor(private _formBuilder: FormBuilder, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer) { }
 
@@ -60,10 +62,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.setDefaultIcon();
     this.selectedCategoryType = 'category';
     this.breadcumMsg = this.getBreadcum();
-    if(this.actionType == 'edit'){
-      this.setDefaultValues();
-    }
     if(this.actionType == 'edit' || this.actionType == 'view'){
+      this.setDefaultValues();
       this.makeIcon(this.selectedRowData.icon);
     }
   }
@@ -82,13 +82,12 @@ export class CreateEditViewCategoryComponent implements OnInit {
   }
 
   setDefaultValues(){
-    this.selectedCategoryType = 'category';
     this.imageMaxMsg = false;
     this.imageEmptyMsg = false;
-    this.categoryForm.get('categoryName').setValue(this.selectedRowData.parentCategoryName);
+    this.categoryForm.get('categoryName').setValue(this.selectedRowData.subCategoryId == 0 ? this.selectedRowData.parentCategoryName : this.selectedRowData.subCategoryName);
     this.categoryForm.get('type').setValue(this.selectedRowData.organizationId ? (this.selectedRowData.organizationId  > 0 ? 'Regular': 'Global' ) : 'Global');
     this.categoryForm.get('categoryDescription').setValue(this.selectedRowData.description);
-    this.categoryForm.get('categoryType').setValue(this.selectedCategoryType);
+    this.selectedCategoryType = this.selectedRowData.subCategoryId == 0 ? 'category' : 'subcategory';
     this.categoryForm.get('parentCategory').setValue(this.selectedRowData.parentCategoryId);
     //this.categoryForm.get('uploadFile').setValue(this.selectedRowData.icon);
   }
@@ -96,8 +95,8 @@ export class CreateEditViewCategoryComponent implements OnInit {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmark ? this.translationData.lblLandmark : "Landmark"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditCategoryDetails ? this.translationData.lblEditCategoryDetails : 'Edit Category Details') : (this.actionType == 'view') ? (this.translationData.lblViewCategoryDetails ? this.translationData.lblViewCategoryDetails : 'View Category Details') : (this.translationData.lblCreateNewCategory ? this.translationData.lblCreateNewCategory : 'Create New Category')}`;
+    ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / 
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditCategoryDetails ? this.translationData.lblEditCategoryDetails : 'Edit Category Details') : (this.actionType == 'view') ? (this.translationData.lblViewCategoryDetails ? this.translationData.lblViewCategoryDetails : 'View Category Details') : (this.translationData.lblAddNewCategory ? this.translationData.lblAddNewCategory : 'Add New Category')}`;
   }
 
   onCancel(){
@@ -116,7 +115,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.file = event.target.files[0];     
     if(this.file){
       console.log("Icon size:: ", this.file.size)
-      if(this.file.size > 1024){ //-- 32*32 px
+      if(this.file.size > 1024 * 3){ //-- 32*32 px
         this.imageMaxMsg = true;
       }
       else{
@@ -151,16 +150,17 @@ export class CreateEditViewCategoryComponent implements OnInit {
   }
 
   onCreateUpdate(){
+    this.duplicateCategory = false;
     if(this.actionType == 'create'){ //-- create category
       let createdObj: any = {
         id: 0,
         organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0,
-        name: this.categoryForm.controls.categoryName.value,
+        name: this.categoryForm.controls.categoryName.value.trim(),
         iconName: this.uploadIconName, //-- icon name
         type: (this.selectedCategoryType == 'category') ? 'C' : 'S',
         parent_Id: (this.selectedCategoryType == 'category') ? 0 : this.categoryForm.controls.parentCategory.value,
         state: "A", //-- Active
-        description: this.categoryForm.controls.categoryDescription.value,
+        description: this.categoryForm.controls.categoryDescription.value.trim(),
         created_At: 0,
         created_By: this.accountId, //-- login account id
         modified_At: 0,
@@ -169,21 +169,38 @@ export class CreateEditViewCategoryComponent implements OnInit {
       }
       this.landmarkCategoryService.addLandmarkCategory(createdObj).subscribe((createdData: any) => {
         this.loadLandmarkCategoryData();
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicateCategory = true;
+          this.getDuplicateCategoryMsg(this.categoryForm.controls.categoryName.value.trim());
+        }
       });
     }else{ //-- update category
       let updatedObj: any = {
-        id: this.selectedRowData.parentCategoryId,
-        name: this.categoryForm.controls.categoryName.value,
+        id: (this.selectedRowData.subCategoryId == 0) ? this.selectedRowData.parentCategoryId : this.selectedRowData.subCategoryId,
+        name: this.categoryForm.controls.categoryName.value.trim(),
         iconName: this.uploadIconName,
         modified_By: this.accountId,
         icon: this.uploadIcon,
-        description: this.categoryForm.controls.categoryDescription.value,
-        organization_Id: this.categoryForm.controls.type.value=="Regular" ? this.accountOrganizationId : 0
+        description: this.categoryForm.controls.categoryDescription.value.trim(),
+        organization_Id: (this.categoryForm.controls.type.value == "Regular") ? this.accountOrganizationId : 0
       }
       this.landmarkCategoryService.updateLandmarkCategory(updatedObj).subscribe((updatedData: any) => {
         this.loadLandmarkCategoryData();
+      }, (error) => {
+        if(error.status == 409){
+          this.duplicateCategory = true;
+          this.getDuplicateCategoryMsg(this.categoryForm.controls.categoryName.value.trim());
+        }
       });
     }
+  }
+
+  getDuplicateCategoryMsg(catName: any){
+    if(this.translationData.lblDuplicateCategoryMsg)
+      this.duplicateCatMsg = this.translationData.lblDuplicateCategoryMsg.replace('$', catName);
+    else
+      this.duplicateCatMsg = ("Category Name '$' already exists.").replace('$', catName);
   }
 
   loadLandmarkCategoryData(){

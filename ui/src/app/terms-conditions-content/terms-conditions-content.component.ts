@@ -14,6 +14,7 @@ export class TermsConditionsContentComponent implements OnInit {
   versions: any= [];
   fileURL: any;
   termsConditionsHistoryFormGroup: FormGroup;
+  userType: any;
 
   constructor(private _formBuilder: FormBuilder, private translationService: TranslationService,  private domSanitizer: DomSanitizer) { }
 
@@ -21,9 +22,29 @@ export class TermsConditionsContentComponent implements OnInit {
     this.termsConditionsHistoryFormGroup = this._formBuilder.group({
       tcVersions: ['']
     });
+    let levelCode: number= 10;
+    this.userType= localStorage.getItem("userType");
+    switch(this.userType){
+      case "Admin#Platform" :{
+        levelCode = 10; 
+        break;
+      }
+      case "Admin#Global" : {
+        levelCode = 20; 
+        break;
+      }
+      case "Admin#Organisation" : {
+        levelCode = 30; 
+        break;
+      }
+      case "Admin#Account" : {
+        levelCode = 40; 
+        break;
+      }
+    }
     let objData= {
       orgId :  localStorage.getItem('accountOrganizationId'),
-      levelCode : 10,
+      levelCode : levelCode,
       accountId : localStorage.getItem('accountId'),
     }
     this.translationService.getAllTCVersions(objData).subscribe(data => {

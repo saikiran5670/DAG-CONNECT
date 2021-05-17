@@ -7,7 +7,5 @@ namespace net.atos.daf.ct2.authenticationservicerest.Entity
         public string access_token { get; set; }
         public int expires_in { get; set; }
         public string token_type { get; set; }
-        public string session_state { get; set; }
-        public string scope { get; set; }
     }
 }

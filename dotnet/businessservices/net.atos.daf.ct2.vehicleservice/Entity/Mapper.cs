@@ -164,10 +164,10 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
                 {
                     entity.GroupType = Group.GroupType.Dynamic;
                 }
-                //else if (type == 's' || type == 'S')
-                //{
-                //    entity.GroupType = Group.GroupType.Single;
-                //}
+                else if (type == 's' || type == 'S')
+                {
+                    entity.GroupType = Group.GroupType.Single;
+                }
                 else if (type == 'g' || type == 'G')
                 {
                     entity.GroupType = Group.GroupType.Group;
@@ -277,6 +277,18 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             //        GroupFilter.GroupIds.Add(item);
             //}
             return GroupFilter;
+        }
+
+        public VehicleGroupList MapVehicleGroup(net.atos.daf.ct2.vehicle.entity.VehicleGroupList vehiclegroup)
+        {
+            VehicleGroupList objvehiclegroup = new VehicleGroupList();
+            objvehiclegroup.VehicleGroupId = vehiclegroup.VehicleGroupId;
+            objvehiclegroup.VehicleGroupName = string.IsNullOrEmpty(vehiclegroup.VehicleGroupName) ? string.Empty : vehiclegroup.VehicleGroupName;
+            objvehiclegroup.VehicleId = vehiclegroup.VehicleId;
+            objvehiclegroup.VehicleName = string.IsNullOrEmpty(vehiclegroup.VehicleName) ? string.Empty : vehiclegroup.VehicleName;
+            objvehiclegroup.Vin = string.IsNullOrEmpty(vehiclegroup.Vin) ? string.Empty : vehiclegroup.Vin;
+            objvehiclegroup.SubcriptionStatus = vehiclegroup.SubcriptionStatus;
+            return objvehiclegroup;
         }
 
     }

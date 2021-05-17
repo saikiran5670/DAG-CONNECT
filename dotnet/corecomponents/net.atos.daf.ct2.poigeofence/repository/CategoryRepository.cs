@@ -431,28 +431,42 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 getQuery = @"with result As
                             (
-                            select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
+                            select pcat.id as Parent_id, pcat.name as Pcategory, COALESCE(scat.id,0) as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
 							pcat.description,pcat.created_at,i.name As Icon_Name, COALESCE(pcat.organization_id,0) as organization_id
                             from master.category pcat
-                            left join master.category scat on pcat.id = scat.parent_id
-								join master.icon i on i.id = pcat.icon_id
+                            left join master.category scat on pcat.id = scat.parent_id and scat.state='A'
+							left join master.icon i on i.id = pcat.icon_id
                             where pcat.type ='C' and pcat.state ='A'
 								union
-								select pcat.id as Parent_id, pcat.name as Pcategory,scat.id as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
+								select pcat.id as Parent_id, pcat.name as Pcategory, COALESCE(scat.id,0) as Subcategory_id, scat.name as Scategory, pcat.icon_id as Parent_category_Icon,
 							pcat.description,pcat.created_at,i.name As Icon_Name, COALESCE(pcat.organization_id,0) as organization_id
                             from master.category pcat
-                            left join master.category scat on pcat.id = 0
-								join master.icon i on i.id = pcat.icon_id
+                            left join master.category scat on pcat.id = 0 --and scat.state='A'
+							left join master.icon i on i.id = pcat.icon_id
                             where pcat.type ='C' and pcat.state ='A'
-								
                             ) 
                             select r.Parent_id ,r.Pcategory As ParentCategory,r.Subcategory_id,r.Scategory As SubCategory ,
-                            (select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') ) as No_of_Geofence,
-                            (select Count(id) from master.landmark where sub_category_id in (r.subcategory_id) and type in ('P')) as No_of_POI,
+                            
+							(select (case r.Subcategory_id when 0
+									then  
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') and state ='A') 
+									else 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('C','O') and state ='A') 
+									end) ) as No_of_Geofence,
+							
+							
+							(select (case r.Subcategory_id when 0
+									then  
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('P') and state ='A') 
+									else 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('P') and state ='A') 
+									end) )  as No_of_POI,
+									
                             r.Parent_category_Icon As IconId,
                             (select icon from master.icon where id in (r.Parent_category_Icon)) as Icon,
 							r.description,r.created_at,r.Icon_Name,r.organization_id
                             from result r 
+							
 							 ";
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 

@@ -22,7 +22,7 @@ public class ExcelSheet
 //*******************************************************************************	
  public static void setExccelFile (String Path) 
  {
-	System.out.println(Path);
+	//System.out.println(Path);
 	FileInputStream ExcelFile;
 	
 	try 

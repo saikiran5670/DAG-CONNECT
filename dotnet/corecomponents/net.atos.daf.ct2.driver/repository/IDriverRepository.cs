@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.driver
       // //  Task<string> ShowConsentForm(string languageCode,int OrganizationId);
       //   Task<List<string>> InertUpdateDriverDetails(List<DriverMaster> driverdetails);
         Task<List<DriverImportResponse>> ImportDrivers(List <Driver> driver,int orgid);
-        Task<IEnumerable<Driver>> GetDriver(int OrganizationId,int DriverID);
+        Task<IEnumerable<DriverResponse>> GetDriver(int OrganizationId,int DriverID);
         Task<Driver> UpdateDriver(Driver driver);
         Task<bool> DeleteDriver(int OrganizationId, int DriverId);
         Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus);

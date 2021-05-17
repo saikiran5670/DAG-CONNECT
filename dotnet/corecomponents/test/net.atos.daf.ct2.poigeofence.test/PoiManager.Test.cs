@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _poiRepository = new PoiRepository(_dataAccess);
+           // _poiRepository = new PoiRepository(_dataAccess);
             _iPoiManager = new PoiManager(_poiRepository);
         }
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                 //  ModifiedBy =,
                 OrganizationId = 100,
                 SubCategoryId = 8,
-                TripId = 10,
+                //TripId = 10,
                 Type = "V",
                 Zipcode = "411057",
                 CreatedBy = 1
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                 ModifiedBy = 1,
                 OrganizationId = 100,
                 SubCategoryId = 8,
-                TripId = 10,
+                //TripId = 10,
                 Type = "POI",
                 Zipcode = "411057",
                   

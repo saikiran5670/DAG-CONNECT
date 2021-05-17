@@ -1,0 +1,84 @@
+.row-hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.backBtnCss{
+    text-decoration: underline;
+    color: #29539c;
+    cursor: pointer;
+}
+
+.selectGeoContainer{
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    text-align: center;
+    padding-top: 50px;
+    //font-weight: bold;
+    padding: 50px 430px;
+}
+
+.selectGeoBox{
+    margin-top: 10px;
+    border: 1px solid #2e71af;
+    //padding: 10px;
+    //border-radius: 5px;
+    background: #FFF;
+    .hoverClass{
+        &:hover{
+            background-color: #cbe6ff;
+        }
+    }
+}
+
+.opacity-0-5{
+    opacity: 0.5;
+}
+
+.pointer-events-none{
+    pointer-events: none;
+}
+
+.createPolyBtnContainer{
+    position: relative;
+    z-index: 1;
+    //height: 450px;
+    width: 100%;
+    .createBtn{
+        top: 10px;
+        position: absolute;
+        left: 45%;
+    }
+}
+
+.infoIcon{
+    cursor: pointer; 
+    display: inline-block; 
+    position: absolute; 
+    top: 20px; 
+    left: 10px;
+}
+
+.infoText{
+    width: 40%; 
+    border: 1px solid; 
+    padding: 5px; 
+    background: #fffdfd; 
+    border-radius: 5px; 
+    display: inline-block; 
+    position: absolute; 
+    left: 40px; 
+    top: 10px;
+    &:hover{
+        width: 40%; 
+    }
+}
+
+.max-width-10-per{
+    max-width: 10% !important;
+}
+
+.max-width-8-per{
+max-width: 8% !important;
+}

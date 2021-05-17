@@ -23,6 +23,7 @@ namespace net.atos.daf.ct2.vehicledataservice
                              webBuilder.ConfigureKestrel(serverOptions =>
                              {
                                  serverOptions.AddServerHeader = false;
+                                 serverOptions.AllowSynchronousIO = true;
                              })
                              .UseStartup<Startup>();
                          }).ConfigureLogging(builder =>

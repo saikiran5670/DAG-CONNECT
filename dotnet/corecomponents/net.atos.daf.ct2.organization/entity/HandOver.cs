@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.organization.entity
         public string VIN { get; set; } 
         public string TCUID { get; set; } 
         public string TCUActivation { get; set; } 
-        public string ReferenceDateTime { get; set; } 
+        public DateTime ReferenceDateTime { get; set; } 
         public string CustomerID { get; set; } 
         public string CustomerName { get; set; } 
         public string Type { get; set; } 

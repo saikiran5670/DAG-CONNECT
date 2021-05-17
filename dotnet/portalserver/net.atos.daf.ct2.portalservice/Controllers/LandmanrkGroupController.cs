@@ -21,7 +21,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -69,7 +68,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (result != null && result.Code == Responcecodes.Conflict)
                 {
-                    return StatusCode(400, result.Message);
+                    return StatusCode(409, result.Message);
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
@@ -143,13 +142,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var result = await _groupServiceclient.UpdateAsync(objgroup);
                 if (result != null && result.Code == Responcecodes.Conflict)
                 {
-                    return StatusCode(400, result.Message);
-                }
-                if (result != null && result.Code == Responcecodes.Failed)
-                {
                     return StatusCode(409, result.Message);
                 }
-                else if (result != null && result.Code == Responcecodes.Success)
+                
+                if (result != null && result.Code == Responcecodes.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,

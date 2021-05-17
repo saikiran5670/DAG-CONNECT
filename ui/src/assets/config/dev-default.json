@@ -15,6 +15,9 @@
     "landmarkGroupRESTServiceURL": "https://api.dev1.ct2.atos.net/landmarkgroup",
     "poiRESTServiceURL": "https://api.dev1.ct2.atos.net/poi",
     "landmarkCategoryRESTServiceURL": "https://api.dev1.ct2.atos.net/poigeofence",
-    "geofenceRESTServiceURL": "https://api.dev1.ct2.atos.net/geofence"
+    "geofenceRESTServiceURL": "https://api.dev1.ct2.atos.net/geofence",
+    "alertRESTServiceURL": "https://api.dev1.ct2.atos.net/alert",
+    "corridorRESTServiceURL": "https://api.dev1.ct2.atos.net/corridor"
+
   }
 }

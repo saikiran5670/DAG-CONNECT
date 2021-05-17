@@ -30,8 +30,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
          private ILog _logger;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
         private readonly Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         //Constructor
         public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper)

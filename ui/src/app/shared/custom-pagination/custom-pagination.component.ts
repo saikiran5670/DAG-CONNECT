@@ -10,17 +10,17 @@ import {MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator
 })
 export class CustomPaginationComponent extends MatPaginatorIntl {
   @Input()
-  showFirstLastButtons: boolean
+  showFirstLastButtons: boolean;
   constructor() { 
     super()
   // this.nextPageLabel = ' My new label for next page';
   // this.previousPageLabel = ' My new label for previous page';
   this.itemsPerPageLabel = 'View';
-  this.getRangeLabel = (page: number, pageSize: number, length: number) => `of ${length.toString()} lists`;
+  this.getRangeLabel = (page: number, pageSize: number, length: number) => `Page ${(page + 1).toString()} of ${length.toString()} lists`;
   }
   
 
   ngOnInit(): void {
   }
-
+ 
 }

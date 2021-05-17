@@ -25,7 +25,7 @@
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
                     <input placeholder="{{ translationData.lblEnterName || 'Enter Name' }}" matInput
-                      formControlName="categoryName" required maxlength="50">
+                      formControlName="categoryName" required maxlength="100">
                   </mat-form-field>
                   <mat-error *ngIf="categoryForm.get('categoryName').hasError('required')">
                     {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
@@ -36,9 +36,12 @@
                   <mat-error *ngIf="categoryForm.get('categoryName').hasError('specialCharsNotAllowed')">
                       {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                   </mat-error>
+                  <mat-error *ngIf="duplicateCategory">
+                    {{ duplicateCatMsg }}
+                  </mat-error>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ (selectedRowData.subCategoryId == 0) ? selectedRowData.parentCategoryName : selectedRowData.subCategoryName }}</span>
                 </div>
             </div>
             <div *ngIf="(userType == 'Admin#Platform' || userType == 'Admin#Global')" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
@@ -54,7 +57,7 @@
                 </mat-form-field>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedRowData.parentCategoryName ? selectedRowData.parentCategoryName : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ selectedRowData.organizationId ? (selectedRowData.organizationId > 0 ? (translationData.lblRegular || 'Regular') : (translationData.lblGlobal || 'Global')) : (translationData.lblGlobal || 'Global') }}</span>
                 </div>
             </div>
           </div>
@@ -64,7 +67,7 @@
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-radio-group (change)='onCategoryChange($event)' formControlName="categoryType">
-                    <mat-radio-button [disableRipple]="actionType == 'edit'" style='margin-right: 20px;' value="category"
+                    <mat-radio-button [disabled]="actionType == 'edit'" [disableRipple]="actionType == 'edit'" style='margin-right: 20px;' value="category"
                       [checked]="selectedCategoryType ===  'category' ? true : false">{{ translationData.lblCategory || 'Category' }}
                     </mat-radio-button>
                     <mat-radio-button [disabled]="actionType == 'edit'" [disableRipple]="actionType == 'edit'" style='margin-right: 20px;' value="subcategory"
@@ -73,7 +76,7 @@
                   </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <span style='font-weight: 500!important;'>{{ selectedCategoryType ? selectedCategoryType : '--' }}</span>
+                  <span style='font-weight: 500!important;'>{{ (selectedCategoryType ===  'category') ? (translationData.lblCategory || 'Category') : (translationData.lblSubCategory || 'Sub-Category') }}</span>
                 </div>
             </div>
           </div>
@@ -85,7 +88,7 @@
                       <mat-label>{{ translationData.lblSelectAndUploadIcon || 'Select And Upload Icon' }}</mat-label>
                       <mat-form-field appearance="outline">
                           <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadFile" placeholder="Upload Icon" ></ngx-mat-file-input>
-                          <button mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                          <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
                       </mat-form-field>
                       <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting icon format - .jpg, .png, .gif and size- 32x32px' }}</span>
                       <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
@@ -115,11 +118,11 @@
       </div>
       <div *ngIf="selectedCategoryType == 'subcategory'" fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span>
-          </mat-label>
+          <mat-label *ngIf="actionType != 'view'">{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
+          <mat-label *ngIf="actionType == 'view'">{{ translationData.lblSelectedParentCategory || 'Selected Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class='full-width'>
-              <mat-select formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
+              <mat-select [disabled]="actionType == 'edit'" formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
               <mat-option *ngFor="let rer of parentCategoryList" [value]="rer.id">
                 {{ rer.name }}
               </mat-option>
@@ -141,7 +144,7 @@
           <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width">
               <input maxlength="100"
-                placeholder="{{translationData.lblEnterDescription || 'Description' }}" matInput
+                placeholder="{{translationData.lblEnterDescription || 'Enter Description' }}" matInput
                 formControlName="categoryDescription">
             </mat-form-field>
             <mat-error *ngIf="categoryForm.get('categoryDescription').hasError('whitespace')">
@@ -152,7 +155,7 @@
           </mat-error>
           </div>
           <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{ selectedRowData.categoryDescription ? selectedRowData.categoryDescription : '--' }}</span>
+            <span style='font-weight: 500!important;'>{{ selectedRowData.description ? selectedRowData.description : '--' }}</span>
           </div>
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left"></div>

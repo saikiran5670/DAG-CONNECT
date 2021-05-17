@@ -17,3 +17,44 @@
   .buttons{
     padding-left: 75%;
   }
+
+::ng-deep.H_ib_body {
+  width: 260px;
+  height: 30px;
+  // position: fixed;
+
+  .H_ib_close {
+    display: none;
+  }
+
+  .H_ib_content {
+    margin: 5px;
+  }
+
+}
+::ng-deep.H_ib_tail {
+  display: none;
+}
+.searchBoxContainer {
+  position: absolute;
+  z-index: 1;
+  margin: 10px 20px;
+  // width: 300px;
+
+  
+  .showSearchList {
+    display: visible;
+    height: 120px;
+    width: 300px;
+    overflow: auto;
+    cursor: pointer;
+    background-color: white;
+  }
+
+  input {
+    padding: 5px;
+    width: 300px;
+    letter-spacing: 2px;
+    border-radius: 5px;
+  }
+}
