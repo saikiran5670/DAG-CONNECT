@@ -119,7 +119,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     //Step 2: initialize a map - this map is centered over Europe
     this.map = new H.Map(this.mapElement.nativeElement,
       defaultLayers.vector.normal.map, {
-      center: { lat: 50, lng: 5 },
+      center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       // center: {lat:37.37634, lng:-122.03405},
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
