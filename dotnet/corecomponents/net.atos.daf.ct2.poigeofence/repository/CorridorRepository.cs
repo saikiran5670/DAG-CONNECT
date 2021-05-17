@@ -51,9 +51,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.modified_by as ModifiedBy
 						FROM       master.landmark l
 						LEFT JOIN master.nodes n on l.id = n.landmark_id
-						WHERE      l.organization_id = 100
+						WHERE      l.organization_id = @organization_id
 						AND        l.type = 'R'
-                        AND        l.state IN ('A','I')";
+                        AND        l.state <> 'D'";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 var data = await _dataAccess.QueryAsync<CorridorResponse>(query, parameter);
@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 						WHERE      l.id = @id
 						AND        l.organization_id = @organization_id
 						AND        l.type IN ('E','R')
-                        AND        l.state IN ('A','I')";
+                        AND        l.state <> 'D'";
 
                 parameter.Add("@organization_id", objCorridorRequest.OrganizationId);
                 parameter.Add("@id", objCorridorRequest.CorridorId);
