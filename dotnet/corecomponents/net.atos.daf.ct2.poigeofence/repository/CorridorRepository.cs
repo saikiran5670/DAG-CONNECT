@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								,l.distance as Width
 								,l.state as State
 								,l.type as CorridorType
-								,l.created_at as Created_At
+								,l.created_at as CreatedAt
 								,l.created_by as CreatedBy
 								,l.modified_at as ModifiedAt
 								,l.modified_by as ModifiedBy
@@ -788,7 +788,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            ,l.distance as Width
                                 ,l.state as State
                                 ,l.type as CorridorType
-	                            ,l.created_at as Created_At
+	                            ,l.created_at as CreatedAt
 	                            ,l.created_by as CreatedBy
 	                            ,l.modified_at as ModifiedAt
 	                            ,l.modified_by as ModifiedBy
