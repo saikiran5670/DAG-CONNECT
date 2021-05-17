@@ -35,11 +35,15 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
-        <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class='full-width'>
-                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
-                    matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required>
-            </mat-form-field>
+        <div>
+            <ng2-completer input-class="form-control form-control-small" [(ngModel)]="searchStr" 
+            [datasource]="dataService" [minSearchLength]="0" (keyup)="onLocationKeyPress($event)" 
+            [minSearchLength]="0" (selected)="onSelected($event)" [selectOnClick]="true" [ngModelOptions]="{standalone: true}"></ng2-completer>
+            <!-- <mat-form-field appearance="outline" class='full-width'>
+               <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                    matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required> 
+                </mat-form-field>  -->
+
             <mat-error
                 *ngIf="corridorFormGroup.get('startaddress').hasError('required') && corridorFormGroup.get('startaddress').touched">
                 {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
@@ -58,11 +62,15 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
-        <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class='full-width'>
+        <div>
+            <ng2-completer input-class="form-control form-control-small" [(ngModel)]="searchEndStr" 
+            [datasource]="dataService" [minSearchLength]="0"
+            [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true" [ngModelOptions]="{standalone: true}"></ng2-completer>
+           
+            <!-- <mat-form-field appearance="outline" class='full-width'>
                 <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
                     matInput formControlName="endaddress" (focusout)="endAddressFocusOut()" required>
-            </mat-form-field>
+            </mat-form-field> -->
             <mat-error
                 *ngIf="corridorFormGroup.get('endaddress').hasError('required') && corridorFormGroup.get('endaddress').touched">
                 {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
