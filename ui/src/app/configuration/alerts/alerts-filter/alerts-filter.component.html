@@ -47,7 +47,7 @@
                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblName || 'Vehicle' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{translationData.lblSelectUserGroup || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleName',$event)">
+                <mat-select placeholder="{{translationData.lblSelectUserGroup || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleGroupName',$event)">
                 <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
                 <mat-option *ngFor="let vehList of vehicleList | removeDuplicates"  [value]="vehList">
                     {{vehList.vehicleName}}
