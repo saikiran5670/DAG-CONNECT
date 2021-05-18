@@ -9,6 +9,7 @@
     <None Remove="Protos\geofence.proto" />
     <None Remove="Protos\group.proto" />
     <None Remove="Protos\package.proto" />
+    <None Remove="Protos\report.proto" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
@@ -27,6 +28,7 @@
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.utilities\net.atos.daf.ct2.utilities.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Protobuf Include="Protos\report.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\account.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\geofence.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\group.proto" GrpcServices="Server" />

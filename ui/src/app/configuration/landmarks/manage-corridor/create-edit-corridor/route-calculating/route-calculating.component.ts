@@ -50,6 +50,7 @@ export class RouteCalculatingComponent implements OnInit {
   min : number = 0;
   max : number = 10000;
   mapapikey = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  mapGroup ;
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService) {
     this.platform = new H.service.Platform({
@@ -82,7 +83,7 @@ export class RouteCalculatingComponent implements OnInit {
       weightPerAxle: ['', [Validators.required]]
 
     });
-
+    //this.configureAutoCompleteForLocationSearch();
   }
 
   public ngAfterViewInit() {
@@ -111,6 +112,8 @@ export class RouteCalculatingComponent implements OnInit {
 
     // Create the default UI components
     var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    var group = new H.map.Group();
+    this.mapGroup = group;
   }
 
   addPolylineToMap(){
@@ -149,39 +152,37 @@ export class RouteCalculatingComponent implements OnInit {
 	}
 
   createHomeMarker(){
-    const homeMarker = `<svg width="80" height="80" viewbox="0,0,80,80" xmlns="http://www.w3.org/2000/svg">
+    // const homeMarker = `<svg width="80" height="80" viewbox="0,0,80,80" xmlns="http://www.w3.org/2000/svg">
 	
-    <g id="svg_15">
-        <g id="svg_1" transform="rotate(90 20 20)">
-          <path stroke="#417ee7" fill="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="m6.04673,9.43231c-5.18654,5.35713 -5.04859,13.90421 0.30854,19.09075c5.35713,5.18655 13.90495,5.04785 19.09149,-0.30927l9.39111,-9.70039l-9.70039,-9.39037c-5.35638,-5.18654 -13.90421,-5.04785 -19.09075,0.30928l0,0z" id="path1978"/>
-        </g>
-      <svg fill="#417ee7"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 80 80" width="80px" height="80px">
-      <g id="house" transform="translate(13,8)">
-      <path d="M 8 1.320313 L 0.660156 8.132813 L 1.339844 8.867188 L 2 8.253906 L 2 14 L 7 14 L 7 9 L 9 9 L 9 14 L 14 14 L 14 8.253906 L 14.660156 8.867188 L 15.339844 8.132813 Z M 8 2.679688 L 13 7.328125 L 13 13 L 10 13 L 10 8 L 6 8 L 6 13 L 3 13 L 3 7.328125 Z"/>
+    // <g id="svg_15">
+    //     <g id="svg_1" transform="rotate(90 20 20)">
+    //       <path stroke="#417ee7" fill="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="m6.04673,9.43231c-5.18654,5.35713 -5.04859,13.90421 0.30854,19.09075c5.35713,5.18655 13.90495,5.04785 19.09149,-0.30927l9.39111,-9.70039l-9.70039,-9.39037c-5.35638,-5.18654 -13.90421,-5.04785 -19.09075,0.30928l0,0z" id="path1978"/>
+    //     </g>
+    //   <svg fill="#417ee7"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 80 80" width="80px" height="80px">
+    //   <g id="house" transform="translate(13,8)">
+    //   <path d="M 8 1.320313 L 0.660156 8.132813 L 1.339844 8.867188 L 2 8.253906 L 2 14 L 7 14 L 7 9 L 9 9 L 9 14 L 14 14 L 14 8.253906 L 14.660156 8.867188 L 15.339844 8.132813 Z M 8 2.679688 L 13 7.328125 L 13 13 L 10 13 L 10 8 L 6 8 L 6 13 L 3 13 L 3 7.328125 Z"/>
       
-      </g>
-      </svg>
-      </g>
-      </svg>`
+    //   </g>
+    //   </svg>
+    //   </g>
+    //   </svg>`
+    const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#0D7EE7"/>
+    <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.75 13.3394H5.5L13 6.58936L20.5 13.3394H18.25V19.3394H13.75V14.8394H12.25V19.3394H7.75V13.3394ZM16.75 11.9819L13 8.60687L9.25 11.9819V17.8394H10.75V13.3394H15.25V17.8394H16.75V11.9819Z" fill="#436DDC"/>
+    </svg>`
 return homeMarker;
   }
 
   createEndMarker(){
-    const homeMarker = `<svg width="80" height="80" viewbox="0,0,80,80" xmlns="http://www.w3.org/2000/svg">
-	
-    <g id="svg_15">
-        <g id="svg_1" transform="rotate(90 20 20)">
-          <path stroke="#e62e2d" fill="#FFFFFF" stroke-width="3" stroke-miterlimit="10" d="m6.04673,9.43231c-5.18654,5.35713 -5.04859,13.90421 0.30854,19.09075c5.35713,5.18655 13.90495,5.04785 19.09149,-0.30927l9.39111,-9.70039l-9.70039,-9.39037c-5.35638,-5.18654 -13.90421,-5.04785 -19.09075,0.30928l0,0z" id="path1978"/>
-        </g>
-      <svg fill="#e62e2d"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 80 80" width="80px" height="80px">
-      <g id="house" transform="translate(13,8)">
-      <path d="M 8 1.320313 L 0.660156 8.132813 L 1.339844 8.867188 L 2 8.253906 L 2 14 L 7 14 L 7 9 L 9 9 L 9 14 L 14 14 L 14 8.253906 L 14.660156 8.867188 L 15.339844 8.132813 Z M 8 2.679688 L 13 7.328125 L 13 13 L 10 13 L 10 8 L 6 8 L 6 13 L 3 13 L 3 7.328125 Z"/>
-      
-      </g>
-      </svg>
-      </g>
-      </svg>`
-return homeMarker;
+    const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#D50017"/>
+    <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
+    <path d="M13 18.9644C16.3137 18.9644 19 16.5019 19 13.4644C19 10.4268 16.3137 7.96436 13 7.96436C9.68629 7.96436 7 10.4268 7 13.4644C7 16.5019 9.68629 18.9644 13 18.9644Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`
+    return homeMarker;
   }
   sliderChanged(_event){
       let distanceinMtr = _event.value;
@@ -309,6 +310,8 @@ return homeMarker;
     }
   }
 
+  searchStr : any;
+
   startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
@@ -320,12 +323,12 @@ return homeMarker;
         this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
         this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
         let houseMarker = this.createHomeMarker();
-        let markerSize = { w: 80, h: 80 };
+        let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
     
         this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
         this.hereMap.addObject(this.startMarker);
-        this.hereMap.setZoom(8);
+        this.hereMap.setZoom(2);
 
         this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
       });
@@ -342,12 +345,13 @@ return homeMarker;
         this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
         this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
         let houseMarker = this.createEndMarker();
-        let markerSize = { w: 80, h: 80 };
+        let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
     
         this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
         this.hereMap.addObject(this.endMarker);
-        this.hereMap.setZoom(8);
+        //this.mapGroup.addObject(this.endMarker);
+        this.hereMap.setZoom(2);
 
         this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
 
@@ -379,9 +383,9 @@ return homeMarker;
       "trafficFlow": this.trafficFlowChecked,
       "state": "A",
       "created_At": 0,
-      "created_By": 0,
+      "created_By": this.organizationId,
       "modified_At": 0,
-      "modified_By": 0,
+      "modified_By": this.organizationId,
       "attribute": {
         "trailer": this.selectedTrailerId,
         "explosive": this.explosiveChecked,
@@ -437,7 +441,7 @@ return homeMarker;
   getSuggestion(_event){
     let startValue = _event.target.value;
     
-    this.configureAutoCompleteForLocationSearch(startValue);
+   
     console.log(_event)
   }
 
@@ -483,17 +487,72 @@ return homeMarker;
 
   }
 
+  public onLocationKeyPress(a) {
+    this.searchStr= a.key;
+    this.dataService = ["Mumbai","Pune","Nasik","Delhi","Gujarat"];
+    //this.configureAutoCompleteForLocationSearch();
+
+  }
+  onSelected(item: CompleterItem){
+    console.log(item.title)
+    this.plotStartPoint(item.title)
+
+  }
+
+  onEndSelected(item: CompleterItem){
+    console.log(item.title)
+    this.plotEndPoint(item.title)
+
+  }
+  plotStartPoint(_pointAddress){
+    this.here.getAddress(_pointAddress).then((result) => {
+      console.log(result)
+      this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
+      this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+      let houseMarker = this.createHomeMarker();
+      let markerSize = { w: 26, h: 32 };
+      const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+  
+      this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
+      this.hereMap.addObject(this.startMarker);
+      //this.mapGroup.addObject(this.startMarker);
+      this.hereMap.setZoom(2);
+      // this.hereMap.getViewModel().setLookAtData({
+      //     bounds: this.mapGroup.getBoundingBox()
+      // });
+      this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+    });
+  }
+
+  plotEndPoint(_pointAddress){
+    this.here.getAddress(_pointAddress).then((result) => {
+      console.log(result)
+      this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
+      this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+      let houseMarker = this.createEndMarker();
+      let markerSize = { w: 26, h: 32 };
+      const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+  
+      this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
+      this.hereMap.addObject(this.endMarker);
+      this.hereMap.setZoom(2);
+
+      this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
+
+    });
+  }
+
   suggestionData :  any;
   dataService : any;
-  private configureAutoCompleteForLocationSearch(findValue) {
-    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
-      // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
-      // The search text which is the basis of the query
-      '&beginHighlight=' + encodeURIComponent('<mark>') + //  Mark the beginning of the match in a token.
-      '&endHighlight=' + encodeURIComponent('</mark>') + //  Mark the end of the match in a token.
-      '&maxresults=5' +
-      'apiKey=' + this.mapapikey
-    '&query=' + encodeURIComponent(findValue);   // The search text which is the basis of the query
+  private configureAutoCompleteForLocationSearch() {
+    let params = '?' +
+    'query=' +  encodeURIComponent(this.searchStr) +   // The search text which is the basis of the query
+    '&beginHighlight=' + encodeURIComponent('<mark>') + //  Mark the beginning of the match in a token.
+    '&endHighlight=' + encodeURIComponent('</mark>') + //  Mark the end of the match in a token.
+    '&maxresults=5' +  // The upper limit the for number of suggestions to be included
+    // in the response.  Default is set to 5.
+    '&apikey=' + this.mapapikey;
+    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + params
     this.suggestionData = this.completerService.remote(
       AUTOCOMPLETION_URL,
       "label",

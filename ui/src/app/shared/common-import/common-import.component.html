@@ -23,7 +23,7 @@
         <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
             <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span style='display: flex; align-items: center;'>
-                    <img matTooltip='Download' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
+                    <img matTooltip='Download' [src]='fileIcon' style="width: 30px; height: 30px;" />&nbsp;
                     <a  (click)='downloadTemplate()' class='cursor-pointer'
                         style='font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>{{ this.importTranslationData.downloadTemplate || 'Download a Template'}}</a>
                 </span>

@@ -88,6 +88,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   geoMarkerArray: any = [];
   marker: any;
   hereMap: any;
+  ui: any;
   categorySelectionForPOI: any = 0;
   subCategorySelectionForPOI: any = 0;
   categorySelectionForGeo: any = 0;
@@ -167,9 +168,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
     window.addEventListener('resize', () => this.map.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
   }
   
+
   checkboxClicked(event: any, row: any) {
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
@@ -179,7 +181,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
     this.showMap = (this.selectedpois.selected.length > 0 || this.selectedgeofences.selected.length > 0) ? true : false;
     this.removeMapObjects();
-    this.addMarkerOnMap(); 
+    this.addMarkerOnMap(this.ui); 
     if(this.selectedgeofences.selected.length > 0){ //-- geofences selected
       this.addCirclePolygonOnMap();
     }
@@ -189,10 +191,29 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.map.removeObjects(this.map.getObjects());
   }
     
-  addMarkerOnMap(){
+  addMarkerOnMap(ui){
     this.markerArray.forEach(element => {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
+      var bubble;
+      marker.addEventListener('pointerenter', function (evt) {
+        // event target is the marker itself, group is a parent event target
+        // for all objects that it contains
+        bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+          // read custom data
+          content:`<div>
+          <b>POI Name: ${element.name}</b><br>
+          <b>Category: ${element.categoryName}</b><br>
+          <b>Sub-Category: ${element.subCategoryName}</b><br>
+          <b>Address: ${element.address}</b>
+          </div>`
+        });
+        // show info bubble
+        ui.addBubble(bubble);
+      }, false);
+      marker.addEventListener('pointerleave', function(evt) {
+        bubble.close();
+      }, false);
     });
   }
 
@@ -207,7 +228,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.removeMapObjects();
     this.addCirclePolygonOnMap();
     if(this.selectedpois.selected.length > 0){ //-- poi selected
-      this.addMarkerOnMap();
+      this.addMarkerOnMap(this.ui);
     }
   }
 
@@ -773,7 +794,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
     this.removeMapObjects(); //-- remove all object first
     if(this.selectedpois.selected.length > 0){ //-/ add poi
-      this.addMarkerOnMap();
+      this.addMarkerOnMap(this.ui);
     }
     if(this.selectedgeofences.selected.length > 0){ //-- add geofences
       this.addCirclePolygonOnMap();
@@ -812,7 +833,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.addCirclePolygonOnMap();
     }
     if(this.selectedpois.selected.length > 0){ //-/ add poi
-      this.addMarkerOnMap();
+      this.addMarkerOnMap(this.ui);
     }
   }
 
