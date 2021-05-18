@@ -35,6 +35,7 @@ using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.reportservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -64,6 +65,7 @@ namespace net.atos.daf.ct2.portalservice
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
             var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
+            var reportservice = Configuration["ServiceConfiguration:reportservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -202,7 +204,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(landmarkservice);
             });
-
+            services.AddGrpcClient<ReportService.ReportServiceClient>(o =>
+            {
+                o.Address = new Uri(reportservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
