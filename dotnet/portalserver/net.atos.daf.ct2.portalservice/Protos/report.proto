@@ -1,0 +1,20 @@
+
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+option csharp_namespace = "net.atos.daf.ct2.reportservice";
+
+package report;
+
+service ReportService{
+
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
