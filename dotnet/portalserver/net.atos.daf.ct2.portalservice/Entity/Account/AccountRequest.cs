@@ -123,12 +123,6 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         [Required]
         public string Email { get; set; }
-        [Required]
-        public int AccountID { get; set; }
-        [Required]
-        public int RoleID { get; set; }
-        [Required]
-        public int OrganizaitonID { get; set; }
     }
 
 

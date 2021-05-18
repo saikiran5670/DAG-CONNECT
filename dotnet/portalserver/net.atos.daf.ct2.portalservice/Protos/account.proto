@@ -506,9 +506,9 @@ message DeleteAccessRelationRequest
 }
 message TokenSSORequest {
     string Email=1;
-    string AccountID=2;
-    string RoleID=3;
-    string OrganizationID=4;
+    int32 AccountID=2;
+    int32 RoleID=3;
+    int32 OrganizationID=4;
 }
 
 message SSOToken{
