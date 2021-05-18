@@ -13,6 +13,11 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 export class CreateNotificationsAlertComponent implements OnInit {
   @Input() translationData: any = [];
   notificationForm: FormGroup;
+  @Input() alert_category_selected: any;
+  @Input() alertTypeName: string;
+  @Input() isCriticalLevelSelected :any;
+  @Input() labelForThreshold :any;
+  @Input() alert_type_selected: string;
   @Input() actionType: any;
   addFlag: boolean = false;
   contactModeType: any;
@@ -67,6 +72,10 @@ export class CreateNotificationsAlertComponent implements OnInit {
 
   onClickAdvancedFilter(){
     this.openAdvancedFilter = !this.openAdvancedFilter;
+  }
+
+  onChangeCriticalLevel(event: any){
+
   }
 
 }

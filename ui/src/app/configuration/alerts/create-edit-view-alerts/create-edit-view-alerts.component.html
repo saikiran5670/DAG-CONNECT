@@ -588,7 +588,12 @@
                 Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <app-create-notifications-alert [translationData]='translationData'></app-create-notifications-alert>
+      <app-create-notifications-alert [translationData]='translationData'
+      [alert_category_selected] ='alert_category_selected'
+      [alertTypeName] = 'alertTypeName'
+      [labelForThreshold] = 'labelForThreshold'
+      [isCriticalLevelSelected] = 'isCriticalLevelSelected'>
+    </app-create-notifications-alert>
       
     </mat-expansion-panel>
   </mat-card>
