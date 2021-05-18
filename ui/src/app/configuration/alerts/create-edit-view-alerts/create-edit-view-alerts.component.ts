@@ -32,7 +32,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() vehicleList: any;
   displayedColumnsVehicles: string[] = ['vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
-  displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName'];
+  displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
   displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
   displayedColumnsCorridor: string[] = ['select', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
   selectedPOI = new SelectionModel(true, []);
@@ -701,7 +701,7 @@ PoiCheckboxClicked(event: any, row: any) {
         }
       });
       tableData = selectedGeofenceList;
-      this.displayedColumnsGeofence= ['geofenceName', 'categoryName', 'subCategoryName'];
+      this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName'];
       this.updateGeofenceDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
