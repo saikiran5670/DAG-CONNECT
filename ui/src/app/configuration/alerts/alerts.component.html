@@ -10,7 +10,7 @@
   </div>
   <div *ngIf='!createViewEditStatus'>
       <mat-card class='mat-elevation-z'>
-        <div *ngIf='alertCategoryList'>
+        <div *ngIf='alertCategoryList.length > 0 && initData.length > 0'>
           <app-alerts-filter (filterValues)="getFilteredValues($event)" [initData]='initData' [translationData]='translationData'  [alertStatusList]='alertStatusList' [vehicleGroupList]='vehicleGroupList'
             [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [alertCriticalityList]='alertCriticalityList' [vehicleList]='vehicleList'>
           </app-alerts-filter>        
@@ -49,26 +49,23 @@
        <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
         <div *ngIf='initData.length > 0' id="alertsData">
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
-            <ng-container matColumnDef="urgencyLevel">      
+             <ng-container matColumnDef="highUrgencyLevel">      
               <mat-header-cell *matHeaderCellDef style="max-width: 7%;"></mat-header-cell>     
-             <!-- !-- <mat-cell *matCellDef="let row" style="max-width: 7%;">
-                <img src="{{row.alertIcon}}" style='width: 22px;height: 22px;'>
-              </mat-cell>  -- -->
+            
               <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                <span class="text-truncate" *ngFor="let val of row.alertUrgencyLevelRefs  | removeDuplicates">
-                  
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'C'">
+               
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.highUrgencyLevel == 'C'">
                   <i class="material-icons" [style]="{ 'color':'#FF0000' } ">warning</i> 
                 </span> 
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'W'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.highUrgencyLevel == 'W'">
                   <i class="material-icons" [style]="{ 'color':'#FFBF00' } ">warning</i> 
                 </span>
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="val.urgencyLevelType == 'A'">
+                <span [ngClass]="{ 'marginLeft-14': row.newTag }" *ngIf="row.highUrgencyLevel == 'A'">
                   <i class="material-icons" [style]="{ 'color':'#FFFF00' } ">warning</i> 
-                </span>            
-            </span>        
+                </span>  
+                
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="name">
@@ -87,22 +84,25 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlertType || 'Alert Type' }}</mat-header-cell>
               <mat-cell *matCellDef="let row" matTooltip="{{ row.roleList }}"><span class="text-truncate">{{ row.type }}  </span></mat-cell>
             </ng-container>
-
             <ng-container matColumnDef="thresholdValue">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold || 'Threshold' }}</mat-header-cell>
-             <mat-cell *matCellDef="let row">
-              <span class="text-truncate" *ngFor="let threVal of row.alertUrgencyLevelRefs | removeDuplicates">
-                <span>{{threVal.thresholdValue}}</span>
-                <!-- {{ element.alertUrgencyLevelRefs.length > 0 ? element.alertUrgencyLevelRefs : '&nbsp; &nbsp; -' }} -->
-               </span>   
-              </mat-cell>  
-            </ng-container>
-
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblThreshold || 'Threshold' }}</mat-header-cell>
+               <mat-cell *matCellDef="let row">
+                  <span>{{row.highThresholdValue}}</span>               
+                </mat-cell>  
+              </ng-container>
               <ng-container matColumnDef="vehicleGroupName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}</mat-header-cell>
-                <mat-cell *matCellDef="let row"><span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group/Vehicle' }}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
                   (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
                   {{ row.vehicleGroupName }}</span>
+                </span> -->
+                  <span *ngIf="row.vehicleGroupName!=''">
+                  <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
+                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                  {{ row.vehicleGroupName }}</span>
+                  </span>              
+                  <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span>
                 </mat-cell>
              </ng-container> 
             <ng-container matColumnDef="state">

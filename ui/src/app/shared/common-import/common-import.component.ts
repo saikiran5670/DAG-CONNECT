@@ -50,6 +50,7 @@ export class CommonImportComponent implements OnInit {
   parsedGPXData : any;
   accountOrganizationId: any = 0;
   filetypeError : boolean = false;
+  fileIcon = 'assets/images/icons/microsoftExcel/excel_icon.svg';
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
     private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
@@ -62,6 +63,7 @@ export class CommonImportComponent implements OnInit {
     }
     else if(this.importFileComponent === 'geofence'){
       this.fileExtension = '.gpx';
+      this.fileIcon = 'assets/images/icons/microsoftExcel/gpx_icon_30.png';
     }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
