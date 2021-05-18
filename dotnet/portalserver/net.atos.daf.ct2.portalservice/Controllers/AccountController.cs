@@ -1891,14 +1891,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
                 ssoRequest.Email = request.Email;
-                ssoRequest.AccountID = request.AccountID.ToString();
-                ssoRequest.RoleID = request.RoleID.ToString();
-                ssoRequest.OrganizationID = request.OrganizaitonID.ToString();
-                //ssoRequest.AccountID = _userDetails.accountId.ToString();
-                //ssoRequest.RoleID = _userDetails.roleId.ToString();
-                //ssoRequest.OrganizationID = _userDetails.orgId.ToString();
-
-
+                ssoRequest.AccountID = _userDetails.accountId;
+                ssoRequest.RoleID = _userDetails.roleId;
+                ssoRequest.OrganizationID = _userDetails.orgId;
+                if (_userDetails.accountId <= 0 || _userDetails.roleId <= 0 || _userDetails.orgId <= 0)
+                {
+                    return StatusCode(400, "Please provide account id");
+                }
                 var response = await _accountClient.GenerateSSOAsync(ssoRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {
