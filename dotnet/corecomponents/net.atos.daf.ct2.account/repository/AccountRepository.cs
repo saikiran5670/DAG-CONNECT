@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -1186,7 +1187,8 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+                return false;
             }
         }
         // End Add Account to Role
