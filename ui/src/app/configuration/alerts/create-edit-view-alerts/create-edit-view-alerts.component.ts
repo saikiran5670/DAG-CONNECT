@@ -820,7 +820,7 @@ PoiCheckboxClicked(event: any, row: any) {
     this.geofenceDataSource = new MatTableDataSource(tableData);
     this.geofenceDataSource.filterPredicate = function(data: any, filter: string): boolean {
       return (
-        data.geofenceName.toString().toLowerCase().includes(filter) ||
+        data.name.toString().toLowerCase().includes(filter) ||
         data.categoryName.toString().toLowerCase().includes(filter) ||
         data.subCategoryName.toString().toLowerCase().includes(filter)
       );
