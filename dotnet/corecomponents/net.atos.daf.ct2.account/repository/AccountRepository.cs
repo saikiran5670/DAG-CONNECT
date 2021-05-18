@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -1186,7 +1187,8 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+                return false;
             }
         }
         // End Add Account to Role
@@ -1526,8 +1528,9 @@ namespace net.atos.daf.ct2.account
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
 		                                ,_unit.name AS UnitDisplay
+                                        ,_vehicledisplay.name as VehicleDisplay
 		                                ,actp.id AS accountpreferenceid
-		                                ,actp.vehicle_display_id AS VehicleDisplay
+		                                ,actp.vehicle_display_id AS VehicleDisplayId
 		                                ,actp.timezone_id AS TimeZone
 		                                ,actp.date_format_id
 		                                ,actp.unit_id

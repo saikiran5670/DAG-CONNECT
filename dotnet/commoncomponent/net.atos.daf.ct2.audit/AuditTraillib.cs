@@ -19,9 +19,7 @@ namespace net.atos.daf.ct2.audit
         public async Task<int> AddLogs(AuditTrail auditTrail)
         {
             try
-            {
-                log.Info("Audit log add method called");
-                             
+            {              
                 return await repository.AddLogs(auditTrail);
             }
             catch(Exception ex)

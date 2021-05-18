@@ -161,13 +161,21 @@ export class ManageCorridorComponent implements OnInit {
       confirmText: this.translationData.lblDelete || "Delete"
     };
     this.dialogService.DeleteModelOpen(options, rowData.corridoreName);
+    let deleteMsg :string = "";
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
       this.corridorService.deleteCorridor(corridorId).subscribe((data) => {
         this.openSnackBar('Item delete', 'dismiss');
         this.loadCorridorData();
+        if(data.code === 200){
+          this.successMsgBlink(this.getDeletMsg(rowData.corridoreName));
+        }
+        else{
+          this.failureMsgBlink(this.getNoDeletMsg(rowData.corridoreName));
+
+        }
       })
-        this.successMsgBlink(this.getDeletMsg(rowData.corridoreName));
+       
       }
     });
   }
@@ -204,6 +212,12 @@ export class ManageCorridorComponent implements OnInit {
       return ("Corridor '$' was successfully deleted").replace('$', name);
   }
 
+  getNoDeletMsg(name: any) {
+    if (this.translationData.lblCorridorwassuccessfullydeleted)
+      return this.translationData.lblCorridorwassuccessfullydeleted.replace('$', name);
+    else
+      return ("Corridor '$' cannot be deleted, it is associated with alert").replace('$', name);
+  }
   masterToggleForCorridor() {
     this.markerArray = [];
     if(this.isAllSelectedForCorridor()){

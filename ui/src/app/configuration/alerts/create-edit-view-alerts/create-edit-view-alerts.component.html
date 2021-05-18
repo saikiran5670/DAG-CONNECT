@@ -394,7 +394,7 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="geofenceName">
+                <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
                     <!-- <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell> -->
                     <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
@@ -588,7 +588,14 @@
                 Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <app-create-notifications-alert [translationData]='translationData'></app-create-notifications-alert>
+      <app-create-notifications-alert *ngIf= "(alert_category_selected !== '') && (alert_type_selected !== '')"
+      [translationData]='translationData'
+      [alert_category_selected] ='alert_category_selected'
+      [alertTypeName] = 'alertTypeName'
+      [alert_type_selected] = 'alert_type_selected'
+      [labelForThreshold] = 'labelForThreshold'
+      [isCriticalLevelSelected] = 'isCriticalLevelSelected'>
+    </app-create-notifications-alert>
       
     </mat-expansion-panel>
   </mat-card>

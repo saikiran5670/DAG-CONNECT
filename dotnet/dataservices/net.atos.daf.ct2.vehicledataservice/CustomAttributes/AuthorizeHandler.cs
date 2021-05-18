@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using log4net;
+using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.account;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,8 +13,11 @@ namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
           AuthorizationHandler<AuthorizeRequirement>
     {
         private readonly IAccountManager accountManager;
+        private readonly ILog _logger;
+
         public AuthorizeHandler(IAccountManager _accountManager)
         {
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             accountManager = _accountManager;
         }
 
@@ -25,6 +30,7 @@ namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
             if (emailClaim !=null && !string.IsNullOrEmpty(emailClaim.Value))
             {
                 emailAddress = emailClaim.Value;
+                _logger.Info($"[VehicleDataService] Email claim received: {emailAddress}");
             }
             else
             {
@@ -35,14 +41,16 @@ namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
             try
             {
                 var isExists = await accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
+                _logger.Info($"[VehicleDataService] Is user authorized: {isExists}");
                 if (isExists)
                     context.Succeed(requirement);
                 else
                     context.Fail();
                 return;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error("[VehicleDataService] Error occurred while authorizing the request", ex);
                 context.Fail();
                 return;
             }
