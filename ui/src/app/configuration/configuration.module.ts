@@ -31,7 +31,7 @@ import { CreateEditCorridorComponent } from './landmarks/manage-corridor/create-
 import { AlertsFilterComponent } from './alerts/alerts-filter/alerts-filter.component';
 import { RouteCalculatingComponent } from './landmarks/manage-corridor/create-edit-corridor/route-calculating/route-calculating.component';
 import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-corridor/existing-trips/existing-trips.component';
-
+import { Ng2CompleterModule } from 'ng2-completer';
 @NgModule({
   declarations: [
     ConfigurationComponent,
@@ -64,7 +64,8 @@ import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-
     ReactiveFormsModule,
     SharedModule,
     ChartsModule,
-    MatTableExporterModule
+    MatTableExporterModule,
+    Ng2CompleterModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [
