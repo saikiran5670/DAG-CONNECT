@@ -17,10 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\corecomponents\net.atos.daf.ct2.reports\net.atos.daf.ct2.reports.csproj" />
+    <Folder Include="enum\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="enum\" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.reports\net.atos.daf.ct2.reports.csproj" />
   </ItemGroup>
 </Project>
