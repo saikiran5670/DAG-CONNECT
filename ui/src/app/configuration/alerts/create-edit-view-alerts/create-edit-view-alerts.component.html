@@ -125,7 +125,7 @@
                     <mat-radio-button style='margin-right: 20px;' value="A">
                         {{ translationData.lblActive || 'Active' }}
                     </mat-radio-button>
-                    <mat-radio-button style='margin-right: 20px;' value="S">
+                    <mat-radio-button style='margin-right: 20px;' value="I">
                         {{ translationData.lblSuspended || 'Suspended' }}
                     </mat-radio-button>
                 </mat-radio-group>
@@ -394,7 +394,7 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="geofenceName">
+                <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
                     <!-- <mat-cell *matCellDef="let row">{{ row.geofenceName }}</mat-cell> -->
                     <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
@@ -594,7 +594,9 @@
       [alertTypeName] = 'alertTypeName'
       [alert_type_selected] = 'alert_type_selected'
       [labelForThreshold] = 'labelForThreshold'
-      [isCriticalLevelSelected] = 'isCriticalLevelSelected'>
+      [isCriticalLevelSelected] = 'isCriticalLevelSelected'
+      [isWarningLevelSelected] = 'isWarningLevelSelected'
+      [isAdvisoryLevelSelected] = 'isAdvisoryLevelSelected'>
     </app-create-notifications-alert>
       
     </mat-expansion-panel>
@@ -608,16 +610,15 @@
           <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
             (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
           <button class='no-margin' 
-              [disabled]="!alertForm.valid || (selectedApplyOn == 'G' ? 
-              ((alertForm.controls.vehicleGroup.value == '' || 
-                alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
-                (alertForm.controls.vehicle.value == '' ? true : false)) ||
-              (alert_category_selected === 'L' && (alert_type_selected === 'N' || 
-              alert_type_selected === 'X') && 
-              (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && 
-              selectedGroup.selected.length == 0)) ||
-              (alert_category_selected === 'L' && alert_type_selected === 'C' && 
-              selectedCorridor.selected.length == 0)" mat-raised-button color="primary"
+          [disabled]="!alertForm.valid || (selectedApplyOn == 'G' ? 
+          ((alertForm.controls.vehicleGroup.value == '' || 
+            alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
+            (alertForm.controls.vehicle.value == '' ? true : false)) ||
+            (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
+            (selectedCorridor.selected.length == 0) && 
+            ((!isCriticalLevelSelected || this.alertForm.get('criticalLevelThreshold').value == '') && 
+             (!isWarningLevelSelected || this.alertForm.get('warningLevelThreshold').value == '') &&
+             (!isAdvisoryLevelSelected || this.alertForm.get('advisoryLevelThreshold').value == ''))" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
