@@ -32,7 +32,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() vehicleList: any;
   displayedColumnsVehicles: string[] = ['vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
-  displayedColumnsGeofence: string[] = ['select', 'geofenceName', 'categoryName', 'subCategoryName'];
+  displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
   displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
   displayedColumnsCorridor: string[] = ['select', 'corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
   selectedPOI = new SelectionModel(true, []);
@@ -85,6 +85,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isSaturdaySelected: boolean= false;
   labelForThreshold: string= '';
   unitForThreshold: string= '';
+  unitTypeEnum: string= '';
   panelOpenState: boolean = false;
   notifications: any= [];
   typesOfLevel: any= [
@@ -252,56 +253,67 @@ export class CreateEditViewAlertsComponent implements OnInit {
         case "LY": { //Excessive under utilization in days
           this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
           this.unitForThreshold= this.translationData.lblDays ? this.translationData.lblDays : "Days";
+          this.unitTypeEnum= "D";
           break;
         }
         case "LH": { //Excessive under utilization in hours
           this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.unitTypeEnum= "H";
           break;
         }
         case "LD": { //Excessive distance done
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
-          this.unitForThreshold= "" //km/miles
+          this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
+          this.unitTypeEnum= "K";
           break;
         }
         case "LU": { //Excessive Driving duration
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
-          this.unitForThreshold= ""
+          this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
+          this.unitTypeEnum= "H";
           break;
         }
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
-          this.unitForThreshold= "" //km/miles
+          this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles //km/miles
+          this.unitTypeEnum= "K";
           break;
         }
         case "FP": { //Fuel Increase During stop
           this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
           this.unitForThreshold= "%";
+          this.unitTypeEnum= "P";
           break;
         }
         case "FL": { //Fuel loss during stop
           this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
           this.unitForThreshold= "%"
+          this.unitTypeEnum= "P";
           break;
         }
         case "FT": { //Fuel loss during trip
           this.labelForThreshold= this.translationData.lblPercentage ? this.translationData.lblPercentage : "Percentage";
-          this.unitForThreshold= ""
+          this.unitForThreshold= "%"
+          this.unitTypeEnum= "P";
           break;
         }
         case "FI": { //Excessive Average Idling
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
+          this.unitTypeEnum= "S";
           break;
         }
         case "FA": { //Excessive Average speed
           this.labelForThreshold= this.translationData.lblDSpeed ? this.translationData.lblSpeed : "Speed";
           this.unitForThreshold= this.translationData.lblkilometerperhour ? this.translationData.lblkilometerperhour : "km/h";
+          this.unitTypeEnum= "E";
           break;
         }
         case "FF": { //Fuel Consumed
           this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
           this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
+          this.unitTypeEnum= "L";
           break;
         }
       }
@@ -701,7 +713,7 @@ PoiCheckboxClicked(event: any, row: any) {
         }
       });
       tableData = selectedGeofenceList;
-      this.displayedColumnsGeofence= ['geofenceName', 'categoryName', 'subCategoryName'];
+      this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName'];
       this.updateGeofenceDataSource(tableData);
     }
     else if(this.actionType == 'edit' ){
@@ -820,7 +832,7 @@ PoiCheckboxClicked(event: any, row: any) {
     this.geofenceDataSource = new MatTableDataSource(tableData);
     this.geofenceDataSource.filterPredicate = function(data: any, filter: string): boolean {
       return (
-        data.geofenceName.toString().toLowerCase().includes(filter) ||
+        data.name.toString().toLowerCase().includes(filter) ||
         data.categoryName.toString().toLowerCase().includes(filter) ||
         data.subCategoryName.toString().toLowerCase().includes(filter)
       );
@@ -1036,46 +1048,114 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onCreateUpdate(){
     this.isDuplicateAlert= false;
+    let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
     let alertFilterRefs: any= [];
+    let urgenyLevelObj= {};
 
-    // Entering Zone, Exiting Zone
-    if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
-      
-      if(this.selectedPOI.selected.length > 0){
-        this.selectedPOI.selected.forEach(element => {
-          let tempObj= {
-            "landmarkType": "P",
-            "refId": element.id,
-            "distance": 100,
-            "unitType": ""
-          }
-          alertLandmarkRefs.push(tempObj);
-        });
+    if((this.alert_category_selected == 'L' && 
+        (this.alert_type_selected == 'N' || this.alert_type_selected == 'X' || this.alert_type_selected == 'C' || this.alert_type_selected == 'S')) || 
+      this.alert_category_selected == 'R'){
+
+      urgenyLevelObj = {
+        "urgencyLevelType": this.alertForm.get('alertLevel').value,
+        "thresholdValue": 0,
+        "unitType": "N",
+        "dayType": [
+          false, false, false, false, false, false, false
+        ],
+        "periodType": "A",
+        "urgencylevelStartDate": 0,
+        "urgencylevelEndDate": 0,
+        "alertFilterRefs": alertFilterRefs
       }
-      if(this.selectedGeofence.selected.length > 0){
-        this.selectedGeofence.selected.forEach(element => {
-          let tempObj= {
-            "landmarkType": element.type,
-            "refId": element.id,
-            "distance": element.distance,
-            "unitType": ""
-          }
-          alertLandmarkRefs.push(tempObj);
-        });
+      alertUrgencyLevelRefs.push(urgenyLevelObj);
+
+      // Entering Zone, Exiting Zone
+      if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
+        
+        if(this.selectedPOI.selected.length > 0){
+          this.selectedPOI.selected.forEach(element => {
+            let tempObj= {
+              "landmarkType": "P",
+              "refId": element.id,
+              "distance": 100,
+              "unitType": ""
+            }
+            alertLandmarkRefs.push(tempObj);
+          });
+        }
+        if(this.selectedGeofence.selected.length > 0){
+          this.selectedGeofence.selected.forEach(element => {
+            let tempObj= {
+              "landmarkType": element.type,
+              "refId": element.id,
+              "distance": element.distance,
+              "unitType": ""
+            }
+            alertLandmarkRefs.push(tempObj);
+          });
+        }
+      }
+      else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'C'){ // Exiting Corridor
+        if(this.selectedCorridor.selected.length > 0){
+          this.selectedCorridor.selected.forEach(element => {
+            let tempObj= {
+              "landmarkType": "P",
+              "refId": element.id,
+              "distance": 100,
+              "unitType": ""
+            }
+            alertLandmarkRefs.push(tempObj);
+          });
+        }
       }
     }
-    else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'C'){ // Exiting Corridor
-      if(this.selectedCorridor.selected.length > 0){
-        this.selectedCorridor.selected.forEach(element => {
-          let tempObj= {
-            "landmarkType": "P",
-            "refId": element.id,
-            "distance": 100,
-            "unitType": ""
-          }
-          alertLandmarkRefs.push(tempObj);
-        });
+    else{
+      if(this.isCriticalLevelSelected){
+        let criticalUrgenyLevelObj = {
+          "urgencyLevelType": "C",
+          "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
+          "unitType": this.unitTypeEnum,
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "urgencylevelStartDate": 0,
+          "urgencylevelEndDate": 0,
+          "alertFilterRefs": alertFilterRefs
+        }
+        alertUrgencyLevelRefs.push(criticalUrgenyLevelObj);
+      }
+      if(this.isWarningLevelSelected){
+        let warningUrgenyLevelObj = {
+          "urgencyLevelType": "W",
+          "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
+          "unitType": this.unitTypeEnum,
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "urgencylevelStartDate": 0,
+          "urgencylevelEndDate": 0,
+          "alertFilterRefs": alertFilterRefs
+        }
+        alertUrgencyLevelRefs.push(warningUrgenyLevelObj);
+      }
+      if(this.isAdvisoryLevelSelected){
+        let advisoryUrgenyLevelObj = {
+          "urgencyLevelType": "A",
+          "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
+          "unitType": this.unitTypeEnum,
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "urgencylevelStartDate": 0,
+          "urgencylevelEndDate": 0,
+          "alertFilterRefs": alertFilterRefs
+        }
+        alertUrgencyLevelRefs.push(advisoryUrgenyLevelObj);
       }
     }
 
@@ -1088,22 +1168,11 @@ PoiCheckboxClicked(event: any, row: any) {
         "validityStartDate": 0,
         "validityEndDate": 0,
         "vehicleGroupId": this.vehicle_group_selected,
-        "state": "A",
+        "state": this.alertForm.get('statusMode').value,
         "applyOn": this.alertForm.get('applyOn').value,
         "createdBy": this.accountId,
         "notifications": this.notifications,
-        "alertUrgencyLevelRefs": [{
-          "urgencyLevelType": this.alertForm.get('alertLevel').value,
-          "thresholdValue": 0,
-          "unitType": "N",
-          "dayType": [
-            false, false, false, false, false, false, false
-          ],
-          "periodType": "A",
-          "urgencylevelStartDate": 0,
-          "urgencylevelEndDate": 0,
-          "alertFilterRefs": alertFilterRefs
-        }],
+        "alertUrgencyLevelRefs": alertUrgencyLevelRefs,
         "alertLandmarkRefs": alertLandmarkRefs
       }
 

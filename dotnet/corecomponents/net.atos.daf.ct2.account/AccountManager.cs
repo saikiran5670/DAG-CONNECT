@@ -17,6 +17,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -663,10 +664,10 @@ namespace net.atos.daf.ct2.account
 
         #region Account SSO Details
 
-        public async Task<SSOTokenResponse> GetAccountSSODetails(int accountId)
+        public async Task<SSOTokenResponse> GetAccountSSODetails(IdentitySessionEntity.AccountToken account)
         {
             List<SSOTokenResponse> _responses = new List<SSOTokenResponse>();
-            _responses = await repository.GetAccountSSODetails(accountId);
+            _responses = await repository.GetAccountSSODetails(account);
             return _responses.FirstOrDefault();
         }
 

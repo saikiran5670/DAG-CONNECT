@@ -2,11 +2,13 @@ using Dapper;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -1186,7 +1188,8 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+                return false;
             }
         }
         // End Add Account to Role
@@ -1499,14 +1502,14 @@ namespace net.atos.daf.ct2.account
         #endregion
 
         #region AccountSSO
-        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(int AccountID)
+        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(AccountToken account)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 List<SSOTokenResponse> response = new List<SSOTokenResponse>();
-                if (AccountID > 0)
+                if (account.AccountId > 0)
                 {
                     query = @"WITH cte_account
                                 AS (
@@ -1526,8 +1529,9 @@ namespace net.atos.daf.ct2.account
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
 		                                ,_unit.name AS UnitDisplay
+                                        ,_vehicledisplay.name as VehicleDisplay
 		                                ,actp.id AS accountpreferenceid
-		                                ,actp.vehicle_display_id AS VehicleDisplay
+		                                ,actp.vehicle_display_id AS VehicleDisplayId
 		                                ,actp.timezone_id AS TimeZone
 		                                ,actp.date_format_id
 		                                ,actp.unit_id
@@ -1548,10 +1552,12 @@ namespace net.atos.daf.ct2.account
 	                                ,cte_actp.vehicledisplay
                                 FROM cte_actpreference cte_actp
                                 RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid
-                                WHERE cte_act.accountID = @accountID
+                                WHERE cte_act.accountID = @accountID AND cte_act.roleid = @roleID AND cte_act.organizationid = @organizationID
                                 ";
                     //}
-                    parameter.Add("@accountID", AccountID);
+                    parameter.Add("@accountID", account.AccountId);
+                    parameter.Add("@roleID", account.RoleId);
+                    parameter.Add("@organizationID", account.OrganizationId);
                     IEnumerable<SSOTokenResponse> accountDetails = await dataAccess.QueryAsync<SSOTokenResponse>(query, parameter);
                     response = accountDetails.ToList();
                 }

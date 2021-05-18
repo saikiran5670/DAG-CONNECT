@@ -43,7 +43,7 @@ export class CorridorService {
       .pipe(catchError(this.handleError));
   }
 
-  deleteCorridor(corridorId: number): Observable<void> {
+  deleteCorridor(corridorId: number): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),

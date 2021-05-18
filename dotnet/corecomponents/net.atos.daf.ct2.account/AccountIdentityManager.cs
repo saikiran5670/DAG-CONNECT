@@ -688,7 +688,7 @@ namespace net.atos.daf.ct2.account
                     if (_latestSession?.Id > 0)
                     {
                         // Get users SSO Details and return it back
-                        _ssoTokenResponse = await accountManager.GetAccountSSODetails(_savedToeken.AccountId);
+                        _ssoTokenResponse = await accountManager.GetAccountSSODetails(_savedToeken);
                     }
                 }
             }
