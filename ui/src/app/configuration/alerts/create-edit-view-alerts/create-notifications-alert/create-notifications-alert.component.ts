@@ -26,7 +26,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
  contactModes : any = [
   {
     id : 0,
-    value: 'Ws'
+    value: 'Web Service'
   },
   {
     id : 1,
@@ -48,7 +48,10 @@ export class CreateNotificationsAlertComponent implements OnInit {
       loginId: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
       webURL:['', [Validators.required]],
-      wsTextDescription:['']
+      wsTextDescription:[''],
+      criticalLevel: [''],
+      warningLevel: [''],
+      advisoryLevel: ['']
     },
     {
       validator: [
@@ -75,6 +78,14 @@ export class CreateNotificationsAlertComponent implements OnInit {
   }
 
   onChangeCriticalLevel(event: any){
+
+  }
+
+  onChangeWarningLevel(event: any){
+
+  }
+
+  onChangeAdvisoryLevel(event: any){
 
   }
 

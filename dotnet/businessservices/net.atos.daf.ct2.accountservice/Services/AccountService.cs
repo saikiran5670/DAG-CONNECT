@@ -2119,9 +2119,9 @@ namespace net.atos.daf.ct2.accountservice
             try
             {
                 AccountComponent.entity.TokenSSORequest ssoRequest = new AccountComponent.entity.TokenSSORequest();
-                ssoRequest.AccountID = Convert.ToInt32(request.AccountID);
-                ssoRequest.RoleID = Convert.ToInt32(request.RoleID);
-                ssoRequest.OrganizaitonID = Convert.ToInt32(request.OrganizationID);
+                ssoRequest.AccountID = request.AccountID;
+                ssoRequest.RoleID = request.RoleID;
+                ssoRequest.OrganizaitonID = request.OrganizationID;
                 ssoRequest.Email = request.Email;
 
                 SSOToken responseDetails = new SSOToken();
