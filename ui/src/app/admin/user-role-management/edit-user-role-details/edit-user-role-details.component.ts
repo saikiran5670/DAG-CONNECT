@@ -43,6 +43,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   textLengthCounter: any;
   // remainingChar: any;
   showCount: boolean = false;
+  createButtonFlag: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService) { }
 
@@ -117,6 +118,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
   }
 
   onCreate() {
+    this.createButtonFlag = true;
     const UserRoleInputvalues = this.userRoleFormGroup.controls.userRoleName.value;
     if (this.createStatus || this.duplicateFlag) {
       this.createUserRole(UserRoleInputvalues);
