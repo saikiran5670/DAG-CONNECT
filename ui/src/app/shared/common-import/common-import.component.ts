@@ -23,6 +23,8 @@ export class CommonImportComponent implements OnInit {
   importPackageFormGroup : FormGroup;
   translationData = [];
   @Output() showImportCSV : EventEmitter<any> = new EventEmitter();
+  @Output() backToPage = new EventEmitter<any>();
+  poiInitdata : any;
   readonly maxSize = 104857600;
   templateFileUrl: string = 'assets/docs/packageTemplate.csv';
   templateFileName: string = 'packageFile.csv';
@@ -78,7 +80,19 @@ export class CommonImportComponent implements OnInit {
     this.showImportCSV.emit(true);
   }
   closeImport(){
+    this.poiService.getPois(this.accountOrganizationId).subscribe((data: any) => {
+      this.poiInitdata = data;
+      // this.userCreatedMsg = this.getUserCreatedMessage();
+      let emitObj = {
+        stepFlag: false,
+        successMsg: '',
+        tableData: this.poiInitdata,
+      }
+      this.backToPage.emit(emitObj);
+    // this.backToPage.emit(emitObj);
     this.showImportCSV.emit(false);
+
+    });
   }
 
   downloadTemplate(){
@@ -523,6 +537,17 @@ export class CommonImportComponent implements OnInit {
       removableInput.clear();
       this.showImportStatus = true;
     }
+    // this.poiService.getPois(this.accountOrganizationId).subscribe((poilist: any) => { 
+    //   this.poiInitdata = data;
+    //   // this.userCreatedMsg = this.getUserCreatedMessage();
+    //   // let emitObj = {
+    //   //   stepFlag: false,
+    //   //   successMsg: this.userCreatedMsg,
+    //   //   tableData: this.poiInitdata,
+    //   // }
+    //   this.backToPage.emit(emitObj);
+    // });
+
   }
 
   //import Geofence function
