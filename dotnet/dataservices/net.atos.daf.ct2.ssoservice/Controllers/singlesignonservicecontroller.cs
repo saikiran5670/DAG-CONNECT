@@ -17,24 +17,17 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
     {
         private readonly ILogger<singlesignonservicecontroller> logger;
         AccountComponent.IAccountIdentityManager accountIdentityManager;
-        // private readonly IVehicleManager vehicleManager;
-        //private readonly IOrganizationManager organizationManager;
         public IConfiguration Configuration { get; }
         public singlesignonservicecontroller(
             AccountComponent.IAccountIdentityManager _accountIdentityManager,
             ILogger<singlesignonservicecontroller> _logger,
             IConfiguration configuration
-            //IOrganizationManager _organizationManager,
-            //IVehicleManager _vehicleManager,
             )
         {
 
             accountIdentityManager = _accountIdentityManager;
             Configuration = configuration;
             logger = _logger;
-
-            //organizationManager = _organizationManager;
-            //vehicleManager = _vehicleManager;
         }
 
         [HttpGet]

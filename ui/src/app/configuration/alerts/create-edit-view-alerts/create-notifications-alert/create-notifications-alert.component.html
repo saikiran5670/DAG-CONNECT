@@ -6,36 +6,18 @@
             <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>
         </div>
         <div class="areaWidth" fxLayout="row" fxLayoutAlign="left">
-            <div fxLayout="row" class="areaWidth min-width-10-per" fxLayoutGap="5px">
-                <div class="areaWidth " fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical
+                <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-checkbox [checked] ="isCriticalLevelSelected" (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical
                     </mat-checkbox>
                 </div>
-                <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column"
-                    fxLayoutAlign="left">
-                    <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>
-                </div>
-            </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth min-width-10-per" fxLayoutGap="5px">
-                <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning
+                <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-checkbox [checked] = "isWarningLevelSelected" (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning
                     </mat-checkbox>
                 </div>
-                <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column"
-                    fxLayoutAlign="left">
-                    <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>
-                </div>
-            </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class="areaWidth min-width-10-per" fxLayoutGap="10px">
-                <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory
+                <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-checkbox [checked] = "isAdvisoryLevelSelected" (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory
                     </mat-checkbox>
                 </div>
-                <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column"
-                    fxLayoutAlign="left">
-                    <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -86,7 +68,7 @@
     </div>
 
     <!-- For email -->
-    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 " style="border: 1px solid #000">
+    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 && addFlag" style="border: 1px solid #000">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
@@ -168,7 +150,7 @@
 
 
     <!-- For webservice -->
-    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 0" style="border: 1px solid #000;">
+    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 0 && addFlag" style="border: 1px solid #000;">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 01' }}</span>
