@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
+    <ProjectReference Include="..\..\commonservices\net.atos.daf.ct2.report\net.atos.daf.ct2.report.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="entity\" />
+    <Folder Include="enum\" />
+    <Folder Include="repository\" />
+  </ItemGroup>
+</Project>
