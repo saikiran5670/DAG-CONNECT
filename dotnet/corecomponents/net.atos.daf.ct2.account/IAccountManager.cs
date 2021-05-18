@@ -6,6 +6,7 @@ using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.email.Enum;
+using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -44,6 +45,6 @@ namespace net.atos.daf.ct2.account
         Task<int> UpsertPasswordPolicyAccount(PasswordPolicyAccount passwordPolicyBlockAccount);
         Task<Response> GetResetPasswordTokenStatus(Guid processToken);
         Task<IEnumerable<EmailList>> SendEmailForPasswordExpiry(int noOfDays);
-        Task<SSOTokenResponse> GetAccountSSODetails(int accountId);
+        Task<SSOTokenResponse> GetAccountSSODetails(IdentitySessionEntity.AccountToken account);
     }
 }
