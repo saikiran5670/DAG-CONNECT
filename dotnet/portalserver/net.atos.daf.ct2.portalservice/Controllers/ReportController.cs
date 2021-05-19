@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly ReportServiceClient _reportServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        //private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
         private readonly Report.Mapper _mapper;
 
@@ -41,7 +41,39 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #region Select User Preferences
-        
+        [HttpGet]
+        [Route("getuserpreferencereportdatacolumn")]
+        public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        {
+            try
+            {
+                if (!(reportId > 0)) return BadRequest("Report id cannot be zero.");
+                if (!(accountId > 0)) return BadRequest("Account id cannot be zero.");
+                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId });
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.Failed)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2));
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
+                  Request);
+                // check for fk violation
+                if (ex.Message.Contains(SocketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

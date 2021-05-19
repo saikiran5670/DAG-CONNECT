@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.Collections;
+using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.reports.entity;
 using System;
 using System.Collections.Generic;
@@ -9,19 +10,19 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
-        internal RepeatedField<UserPreferenceDataColumn> GetUserPrefences(IEnumerable<UserPrefernceReportDataColumn> userPrefernces)
+        internal IEnumerable<UserPreferenceDataColumn> MapUserPrefences(IEnumerable<UserPrefernceReportDataColumn> userPrefernces)
         {
-            var userPreferenceResult = new RepeatedField<UserPreferenceDataColumn>();
+            var userPreferenceResult = new List<UserPreferenceDataColumn>();
             foreach (var userpreference in userPrefernces)
             {
                 userPreferenceResult.Add(new UserPreferenceDataColumn
                 {
                     DataAtrributeId = userpreference.DataAtrributeId,
                     Name = userpreference.Name,
-                    Description = userpreference.Description,
+                    Description = userpreference.Description ?? string.Empty,
                     Type = userpreference.Type,
                     Key = userpreference.Key,
-                    IsExclusive = userpreference.IsExclusive,
+                    IsExclusive = userpreference.IsExclusive ?? ((char)IsExclusive.Yes).ToString(),
                 });
             }
             return userPreferenceResult;

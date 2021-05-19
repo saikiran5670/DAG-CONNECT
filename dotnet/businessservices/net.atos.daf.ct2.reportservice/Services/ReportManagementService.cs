@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     return  await Task.FromResult(new UserPreferenceDataColumnResponse
                     {
-                        Message = String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, request.ReportId, request.AccountId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2),
+                        Message = String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, request.AccountId, request.ReportId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2),
                         Code = Responsecode.Failed
                     }); 
                 }
@@ -44,10 +44,10 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var response = new UserPreferenceDataColumnResponse
                 {                    
-                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.ReportId, request.AccountId),
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG,request.AccountId, request.ReportId),
                     Code = Responsecode.Success
                 };
-                response.UserPreferences.AddRange(_mapper.GetUserPrefences(userPrefernces));
+                response.UserPreferences.AddRange(_mapper.MapUserPrefences(userPrefernces));
                 return await Task.FromResult(response); ;
 
             }
