@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                if (await roleRepository.IsRoleAssigned(roleid) > 0)
+                if (await roleRepository.IsRoleAssigned(roleid))
                 {
                     return -1;
                 }

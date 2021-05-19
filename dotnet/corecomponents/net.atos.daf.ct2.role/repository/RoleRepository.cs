@@ -119,7 +119,7 @@ namespace net.atos.daf.ct2.role.repository
 
         }
 
-        public async Task<int> IsRoleAssigned(int roleid)
+        public async Task<bool> IsRoleAssigned(int roleid)
         {
             try
             {
@@ -127,8 +127,10 @@ namespace net.atos.daf.ct2.role.repository
                 parameter.Add("@roleid", roleid);
 
                 string RoleQueryStatement = @"Select account_id from master.accountrole where role_id= @roleid";
-                int roleexists = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
-                return roleexists;
+                int accountid = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
+                
+                return accountid > 0;
+                
             }
             catch (Exception ex)
             {
