@@ -16,20 +16,20 @@ using System.Reflection;
 
 namespace net.atos.daf.ct2.roleservice
 {
-    
+
     public class RoleManagementService : RoleService.RoleServiceBase
     {
 
-       // private readonly ILogger<RoleManagementService> _logger;
+        // private readonly ILogger<RoleManagementService> _logger;
 
         private ILog _logger;
         private readonly IRoleManagement _RoleManagement;
         private readonly IFeatureManager _FeaturesManager;
-        public RoleManagementService( IRoleManagement RoleManagement,IFeatureManager FeatureManager)
+        public RoleManagementService(IRoleManagement RoleManagement, IFeatureManager FeatureManager)
         {
-            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _RoleManagement = RoleManagement;
-            _FeaturesManager=FeatureManager;
+            _FeaturesManager = FeatureManager;
 
         }
 
@@ -37,20 +37,20 @@ namespace net.atos.daf.ct2.roleservice
         {
             try
             {
-               
+
                 RoleMaster ObjRole = new RoleMaster();
-                ObjRole.Organization_Id =request.OrganizationId;
+                ObjRole.Organization_Id = request.OrganizationId;
                 ObjRole.Name = request.RoleName;
                 ObjRole.Created_by = request.CreatedBy;
                 ObjRole.Description = request.Description;
-                ObjRole.Feature_set_id=0;
+                ObjRole.Feature_set_id = 0;
                 ObjRole.Level = request.Level;
                 ObjRole.Code = request.Code;
                 ObjRole.FeatureSet = new FeatureSet();
                 ObjRole.FeatureSet.Features = new List<Feature>();
-                foreach(var item in request.FeatureIds)
+                foreach (var item in request.FeatureIds)
                 {
-                     ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
+                    ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
                 }
                 int Rid = _RoleManagement.CheckRoleNameExist(request.RoleName.Trim(), request.OrganizationId, 0);
                 if (Rid > 0)
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.roleservice
                     });
                 }
                 var role = await _RoleManagement.CreateRole(ObjRole);
-                
+
                 return await Task.FromResult(new RoleResponce
                 {
                     Message = "Role created with id:- " + role,
@@ -71,14 +71,14 @@ namespace net.atos.daf.ct2.roleservice
 
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return await Task.FromResult(new RoleResponce
-                                {
-                                    Message = "Exception :-" + ex.Message,
-                                    Code = Responcecode.Failed
-                                });
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
             }
 
         }
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.roleservice
         {
             try
             {
-               
+
                 RoleMaster roleMaster = new RoleMaster();
                 roleMaster.Name = request.RoleName;
                 roleMaster.Id = request.RoleID;
@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.roleservice
                     roleMaster.FeatureSet.Features.Add(new Feature() { Id = item });
                 }
                 var role = await _RoleManagement.UpdateRole(roleMaster);
-          
+
                 return await Task.FromResult(new RoleResponce
                 {
                     Message = "Role Updated id:- " + role,
@@ -109,14 +109,14 @@ namespace net.atos.daf.ct2.roleservice
 
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return await Task.FromResult(new RoleResponce
-                                {
-                                    Message = "Exception :-" + ex.Message,
-                                    Code = Responcecode.Failed
-                                });
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
             }
 
         }
@@ -125,65 +125,78 @@ namespace net.atos.daf.ct2.roleservice
         {
             try
             {
-               
-                var role = _RoleManagement.DeleteRole(request.RoleID,request.OrganizationId).Result;                          
-                
-                return Task.FromResult(new RoleResponce
-                {
-                    Message = "Role Updated id:- " + role,
-                    Code = Responcecode.Success
 
-                });
+                var role = _RoleManagement.DeleteRole(request.RoleID, request.OrganizationId).Result;
+
+                if (role < 0)
+                {
+                    return Task.FromResult(new RoleResponce
+                    {
+                        Message = "ROLE_IN_USE",
+                        Code = Responcecode.Assigned
+
+                    });
+                }
+                else
+                {
+                    return Task.FromResult(new RoleResponce
+                    {
+                        Message = "Role Updated id:- " + role,
+                        Code = Responcecode.Success
+
+                    });
+                }
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return Task.FromResult(new RoleResponce
-                                {
-                                    Message = "Exception :-" + ex.Message,
-                                    Code = Responcecode.Failed
-                                });
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
             }
 
         }
 
-         public async override Task<RoleListResponce> Get(RoleFilterRequest request, ServerCallContext context)
+        public async override Task<RoleListResponce> Get(RoleFilterRequest request, ServerCallContext context)
         {
             try
             {
                 RoleFilter ObjroleFilter = new RoleFilter();
                 RoleListResponce ObjroleList = new RoleListResponce();
 
-                ObjroleFilter.AccountId=request.AccountId;
-                ObjroleFilter.RoleId= request.RoleId;
+                ObjroleFilter.AccountId = request.AccountId;
+                ObjroleFilter.RoleId = request.RoleId;
                 ObjroleFilter.Organization_Id = request.OrganizationId;
-                ObjroleFilter.State= request.Active? "A" : "I";
+                ObjroleFilter.State = request.Active ? "A" : "I";
                 ObjroleFilter.IsGlobal = request.IsGlobal;
                 ObjroleFilter.LangaugeCode = request.LangaugeCode;
 
                 var role = _RoleManagement.GetRoles(ObjroleFilter).Result;
-                 foreach (var item in role)
+                foreach (var item in role)
                 {
                     RoleRequest ObjResponce = new RoleRequest();
-                    ObjResponce.RoleID=item.Id;
-                    ObjResponce.OrganizationId =item.Organization_Id == null ? 0 : item.Organization_Id.Value;
+                    ObjResponce.RoleID = item.Id;
+                    ObjResponce.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id.Value;
                     ObjResponce.RoleName = item.Name;
                     ObjResponce.CreatedBy = item.Created_by;
                     ObjResponce.CreatedAt = item.Created_at;
                     //ObjResponce.= item.Is_Active;
                     ObjResponce.Description = item.Description == null ? "" : item.Description;
                     //ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
-                    ObjResponce.FeatureIds.Add(item.FeatureSet.Features.Select(I=> I.Id).ToArray());
+                    ObjResponce.FeatureIds.Add(item.FeatureSet.Features.Select(I => I.Id).ToArray());
                     ObjResponce.Level = item.Level;
                     ObjResponce.Code = item.Code;
                     ObjroleList.Roles.Add(ObjResponce);
                 }
 
-                 ObjroleList.Message = "Roles data retrieved";
+                ObjroleList.Message = "Roles data retrieved";
                 ObjroleList.Code = Responcecode.Success;
                 return await Task.FromResult(ObjroleList);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return await Task.FromResult(new RoleListResponce
