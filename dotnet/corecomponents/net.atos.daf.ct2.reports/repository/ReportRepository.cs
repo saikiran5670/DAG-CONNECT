@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }

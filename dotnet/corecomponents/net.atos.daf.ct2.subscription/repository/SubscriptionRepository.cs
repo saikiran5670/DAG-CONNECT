@@ -270,7 +270,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
                 log.Info("Subscribe Subscription method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(objSubscription));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -370,7 +370,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
                 log.Info("Subscribe Subscription method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(objUnSubscription));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -441,7 +441,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
                 log.Info("Create Subscription by OrganizationId method in repository failed with OrganizationId" + orgId);
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -498,7 +498,7 @@ namespace net.atos.daf.ct2.subscription.repository
             {
                 log.Info("Subscribe Get method in repository failed ");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 

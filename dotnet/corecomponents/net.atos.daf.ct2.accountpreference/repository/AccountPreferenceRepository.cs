@@ -99,7 +99,7 @@ namespace net.atos.daf.ct2.accountpreference
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return preference;
         }
@@ -127,7 +127,7 @@ namespace net.atos.daf.ct2.accountpreference
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return preference;
 
@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.accountpreference
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<AccountPreference>> Get(AccountPreferenceFilter filter)
@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.accountpreference
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private AccountPreference Map(dynamic record)

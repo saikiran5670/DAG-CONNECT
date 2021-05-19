@@ -317,7 +317,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 
@@ -343,7 +343,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -401,7 +401,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -473,7 +473,7 @@ namespace net.atos.daf.ct2.translation.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -523,7 +523,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -572,7 +572,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }            
         }
 
@@ -704,7 +704,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -723,7 +723,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 
@@ -760,7 +760,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -847,7 +847,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -882,7 +882,7 @@ namespace net.atos.daf.ct2.translation.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

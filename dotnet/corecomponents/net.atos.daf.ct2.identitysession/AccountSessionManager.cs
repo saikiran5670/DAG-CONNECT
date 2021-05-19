@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> UpdateSession(AccountSession accountSession)
@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> DeleteSession(string SessionId)
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId)
@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> DeleteSessionByAccountId(int SessionId)
@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<AccountSession> GetAccountSessionById(int SessionId)
@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Add Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(category.Id));
                 log.Error(ex.ToString());
-               // throw ex;
+               // throw;
             }
             return category;
         }
@@ -125,7 +125,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<int>> GetPOICategory (int categoryId)
@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 
@@ -188,7 +188,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 
@@ -234,7 +234,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return category;
         }
@@ -343,7 +343,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -418,7 +418,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<CategoryList>> GetCategoryDetails()
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 
@@ -513,7 +513,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(deleteCategoryclass));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         
@@ -565,7 +565,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryobj.CategoryId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -598,7 +598,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(subcategoryId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 

@@ -27,7 +27,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 //         public async Task<int> UpdateFeatureType(FeatureType featureType)
@@ -40,7 +40,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 //         public async Task<int> DeleteFeatureType(int FeatureTypeId, int Userid)
@@ -53,7 +53,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 //         // public async Task<IEnumerable<FeatureType>> GetFeatureType(int FeatureTypeId)
@@ -64,7 +64,7 @@
 //         //     }
 //         //     catch (Exception ex)
 //         //     {
-//         //         throw ex;
+//         //         throw;
 //         //     }
 //         // }
 //         public async Task<int> CheckFeatureTypeExist(string FeatureType)
@@ -75,7 +75,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -91,7 +91,7 @@
 //         //     }
 //         //     catch (Exception ex)
 //         //     {
-//         //         throw ex;
+//         //         throw;
 //         //     }
 //         // }
 
@@ -105,7 +105,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -119,7 +119,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -133,7 +133,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -145,7 +145,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -163,7 +163,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -177,7 +177,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -192,7 +192,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -204,7 +204,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -216,7 +216,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
@@ -228,7 +228,7 @@
 //             }
 //             catch (Exception ex)
 //             {
-//                 throw ex;
+//                 throw;
 //             }
 //         }
 
