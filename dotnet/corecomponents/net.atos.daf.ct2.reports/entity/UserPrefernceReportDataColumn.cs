@@ -11,6 +11,6 @@ namespace net.atos.daf.ct2.reports.entity
         public string Description { get; set; }
         public string Type { get; set; }
         public string Key { get; set; }
-        public bool IsExclusive { get; set; }
+        public string IsExclusive { get; set; }
     }
 }
