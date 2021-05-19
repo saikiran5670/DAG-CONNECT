@@ -37,5 +37,45 @@ namespace net.atos.daf.ct2.reports.repository
 
         }
         #endregion
+
+        #region Create Preference
+        public async Task<int> CreateUserPreference(UserPreferenceRequest objUserPreferenceRequest)
+        {
+            _dataAccess.connection.Open();
+            string query = @"INSERT INTO master.reportpreference
+                                    (account_id, report_id, data_attribute_id, is_exlusive)
+                             VALUES (@account_id,@report_id,@data_attribute_id,@is_exlusive)";
+            int rowsEffected = 0;
+            using (var transactionScope = _dataAccess.connection.BeginTransaction())
+            {
+                try
+                {
+                    for (int i = 0; i < objUserPreferenceRequest.AtributesShowNoShow.Count; i++)
+                    {
+                        var insertUserPreference = new DynamicParameters();
+                        insertUserPreference.Add("account_id", objUserPreferenceRequest.AtributesShowNoShow[i].AccountId);
+                        insertUserPreference.Add("report_id", objUserPreferenceRequest.AtributesShowNoShow[i].ReportId);
+                        insertUserPreference.Add("data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
+                        insertUserPreference.Add("is_exlusive", objUserPreferenceRequest.AtributesShowNoShow[i].IsExclusive);
+                        rowsEffected += await _dataAccess.ExecuteAsync(query, insertUserPreference);
+                    }
+                    transactionScope.Commit();
+                }
+                catch (Exception ex)
+                {
+                    log.Info($"CreateUserPreference method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(objUserPreferenceRequest)}");
+                    log.Error(ex.ToString());
+                    transactionScope.Rollback();
+                    rowsEffected = 0;
+                    throw ex;
+                }
+                finally
+                {
+                    _dataAccess.connection.Close();
+                }
+            }
+            return rowsEffected;
+        }
+        #endregion
     }
 }
