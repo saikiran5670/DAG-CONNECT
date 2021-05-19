@@ -20,23 +20,23 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #region Select User Preferences
-        //public async Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId)
-        //{
-        //    try
-        //    {
-        //        var parameter = new DynamicParameters();
-        //        parameter.Add("@report_id", reportId);
-        //        parameter.Add("@account_id", accountId);
-        //        var query = $"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,d.key as Key,rp.is_exlusive as IsExclusive FROM master.reportdef rd     INNER JOIN master.dataattribute d  ON rd.report_id = @report_id and rd.data_attribute_id = d.id LEFT JOIN master.reportpreference rp ON rp.report_id = @report_id and rp.account_id = @account_id and rp.report_id = rd.report_id and rp.data_attribute_id = rd.data_attribute_id WHERE rd.report_id = @report_id";
-        //        IEnumerable<UserPrefernceReportDataColumn> userPrefernces = await _dataAccess.QueryAsync<UserPrefernceReportDataColumn>(query, parameter);
-        //        return userPrefernces;
-        //    }
-        //    catch (Exception ex)
-        //    {                
-        //        throw ex;
-        //    }
+        public async Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+                parameter.Add("@account_id", accountId);
+                var query = $"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,d.key as Key,rp.is_exlusive as IsExclusive FROM master.reportdef rd     INNER JOIN master.dataattribute d  ON rd.report_id = @report_id and rd.data_attribute_id = d.id LEFT JOIN master.reportpreference rp ON rp.report_id = @report_id and rp.account_id = @account_id and rp.report_id = rd.report_id and rp.data_attribute_id = rd.data_attribute_id WHERE rd.report_id = @report_id";
+                IEnumerable<UserPrefernceReportDataColumn> userPrefernces = await _dataAccess.QueryAsync<UserPrefernceReportDataColumn>(query, parameter);
+                return userPrefernces;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
-        //}
+        }
         #endregion
     }
 }
