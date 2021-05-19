@@ -17,8 +17,8 @@
       "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence",
       "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence",
       "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
-      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor"
-
+      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor",
+      "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso"
     },
     "hereMap":{
       "app_id":"LRJH9LmTMNbwteXRz03L",

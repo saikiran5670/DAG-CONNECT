@@ -392,7 +392,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate" + ex.Message, 1, 2, emailId);
-                throw ex;
+                throw;
             }
         }
 
@@ -420,7 +420,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Get Reset Password Token Status" + ex.Message, 1, 2, processToken.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -468,7 +468,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password: " + ex.Message, 1, 2, accountInfo.ProcessToken.Value.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<Response> ResetPasswordInvalidate(Guid ResetToken)
@@ -491,7 +491,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password Invalidate: " + ex.Message, 1, 2, ResetToken.ToString());
-                throw ex;
+                throw;
             }
 
             return response;

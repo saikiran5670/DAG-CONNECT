@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.audit.repository
            }
            catch(Exception ex)
            {
-               throw ex;
+               throw;
                
            }
                   

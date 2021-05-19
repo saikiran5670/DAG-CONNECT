@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 // log.Info("Create Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organization));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return organization;
         }
@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Delete Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Update Organization method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return organization;
         }
@@ -241,7 +241,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId)
@@ -307,7 +307,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -350,7 +350,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -504,7 +504,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Update Customer method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return customer;
         }
@@ -586,7 +586,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("UpdateCompany method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -625,7 +625,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("InsertCompany method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -677,7 +677,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("InsertVehicle method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<int> UpdatetVehicle(HandOver keyHandOver, int OrganizationId)
@@ -712,7 +712,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return 1;
         }
@@ -738,7 +738,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("UpdatetVehicle method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return 1;
         }
@@ -822,7 +822,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("KeyHandOverEvent method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return keyHandOver;
         }
@@ -928,7 +928,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("CreateOwnerRelationship method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return 0;
         }
@@ -962,7 +962,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -1039,7 +1039,7 @@ namespace net.atos.daf.ct2.organization.repository
         //     {
         //         log.Info("CraeteOrganizationRelationship method called in repository failed :");
         //         log.Error(ex.ToString());
-        //         throw ex;
+        //         throw;
         //     }
         //     return organizationRelationshipID;           
         // }
@@ -1083,7 +1083,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -1112,7 +1112,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("IsOwnerRelationshipExist method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -1135,7 +1135,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
     }

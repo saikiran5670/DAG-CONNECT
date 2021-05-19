@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
            
         }
@@ -339,7 +339,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex ;
+                throw ;
             }
         }
        // public async Task<bool> RemoveFeatureSetMapping(int FeatureSetId , List<int> IDs)
@@ -385,7 +385,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> CheckDataAttributeSetExist(int ID)
@@ -405,7 +405,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet)
@@ -466,7 +466,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
            
         }
@@ -575,7 +575,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -639,7 +639,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -700,7 +700,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -745,7 +745,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public int RemoveDataAttributeSetMappingWithFeature(int dataAttributeSetID)
@@ -804,7 +804,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -842,7 +842,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -911,7 +911,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -945,7 +945,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             
         }
@@ -967,7 +967,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -999,7 +999,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

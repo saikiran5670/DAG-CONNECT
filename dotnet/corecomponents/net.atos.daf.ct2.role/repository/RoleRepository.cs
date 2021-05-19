@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.role.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
 
         }
@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.role.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
             
         }

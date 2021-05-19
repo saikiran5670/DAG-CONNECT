@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> DeleteAssertionbySessionId(int sessionId)
@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<AccountAssertion>> GetAssertion(int accountId)
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.identitysession
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

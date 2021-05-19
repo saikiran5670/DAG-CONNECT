@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.reportservice;
 using net.atos.daf.ct2.portalservice.Common;
 using System.Reflection;
+using System.Threading.Tasks;
 using static net.atos.daf.ct2.reportservice.ReportService;
 using Report = net.atos.daf.ct2.portalservice.Entity.Report;
+using net.atos.daf.ct2.portalservice.Entity.Report;
+using System;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -19,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly ReportServiceClient _reportServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        //private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
         private readonly Report.Mapper _mapper;
 
@@ -36,6 +40,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _mapper = new Report.Mapper();
         }
 
+        #region Select User Preferences
         
+        #endregion
     }
 }

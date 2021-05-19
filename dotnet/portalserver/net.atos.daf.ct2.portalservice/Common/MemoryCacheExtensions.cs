@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
     }
