@@ -276,7 +276,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         }
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
-          this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles //km/miles
+          this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
           this.unitTypeEnum= "K";
           break;
         }
@@ -334,6 +334,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeVehicle(event){
     this.vehicle_group_selected= event.value;
+    this.updateVehiclesDataSource(this.vehicleList.filter(item => item.vehicleId == event.value));
   }
 
   loadMap() {

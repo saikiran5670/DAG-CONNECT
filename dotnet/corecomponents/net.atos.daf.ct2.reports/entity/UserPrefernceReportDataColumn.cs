@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.reports.entity
 {
-    class UserPrefernceReportDataColumn
+    public class UserPrefernceReportDataColumn
     {
         public int DataAtrributeId { get; set; }
         public string Name { get; set; }

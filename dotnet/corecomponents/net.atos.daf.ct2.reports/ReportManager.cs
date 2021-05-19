@@ -1,7 +1,9 @@
-﻿using net.atos.daf.ct2.reports.repository;
+﻿using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.repository;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -15,7 +17,10 @@ namespace net.atos.daf.ct2.reports
         }
 
         #region Select User Preferences
-
+        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        {
+            return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId);
+        }
         #endregion
     }
 }
