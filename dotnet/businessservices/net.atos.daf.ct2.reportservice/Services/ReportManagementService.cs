@@ -64,5 +64,40 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
         #endregion
+
+        #region Create User Preference
+        public override async Task<UserPreferenceCreateResponse> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceCreateRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("CreateUserPreference method in ReportManagement service called.");
+
+                int insertedUserPreferenceCount = await _reportManager.CreateUserPreference(await _mapper.MapCreateUserPrefences(objUserPreferenceCreateRequest));
+                if (insertedUserPreferenceCount == 0)
+                {
+                    return await Task.FromResult(new UserPreferenceCreateResponse
+                    {
+                        Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
+                        Code = Responsecode.Failed
+                    });
+                }
+
+                return await Task.FromResult(new UserPreferenceCreateResponse
+                {
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
+                    Code = Responsecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new UserPreferenceCreateResponse
+                {
+                    Message = ex.Message,
+                    Code = Responsecode.InternalServerError
+                });
+            }
+        }
+        #endregion
     }
 }

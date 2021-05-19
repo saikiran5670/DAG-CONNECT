@@ -22,5 +22,12 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId);
         }
         #endregion
+
+        #region Create User Preferences
+        public async Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest)
+        {
+            return await _reportRepository.CreateUserPreference(objUserPreferenceRequest);
+        }
+        #endregion
     }
 }

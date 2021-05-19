@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.reports.repository
     public interface IReportRepository
     {
         Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId);
-        Task<int> CreateUserPreference(UserPreferenceRequest objUserPreferenceRequest);
+        Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
     }
 }

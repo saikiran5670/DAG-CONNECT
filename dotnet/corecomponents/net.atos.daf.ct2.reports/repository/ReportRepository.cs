@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Create Preference
-        public async Task<int> CreateUserPreference(UserPreferenceRequest objUserPreferenceRequest)
+        public async Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest)
         {
             _dataAccess.connection.Open();
             string query = @"INSERT INTO master.reportpreference
