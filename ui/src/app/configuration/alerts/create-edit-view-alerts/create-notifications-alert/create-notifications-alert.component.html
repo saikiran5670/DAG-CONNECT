@@ -168,9 +168,7 @@
                             <input placeholder="{{ translationData.lblhttpsTestCom || 'https://Test.com' }}" matInput
                                 formControlName="webURL" >
                         </mat-form-field>
-                        <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
-                            with comma (;)
-                            separated' }}</mat-hint>
+                        <mat-hint>{{translationData.lblEnterWebServiceURL || 'Enter web service URL'}}</mat-hint>
                             <mat-error *ngIf="notificationForm.get('webURL').hasError('required')">
                                 {{ translationData.lblPleaseenterWebServiceURL || 'Please enter Web Service URL' }}
                                   </mat-error>

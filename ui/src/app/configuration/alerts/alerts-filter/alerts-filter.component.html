@@ -23,7 +23,7 @@
                 {{ translationData.lblGroup || 'Type' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select  [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterChange('type',$event)">
+                <mat-select [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterChange('type',$event)" [(ngModel)]="alertType">
                     <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
                     <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option>
                 </mat-select>
