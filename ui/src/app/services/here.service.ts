@@ -36,6 +36,20 @@ export class HereService {
     });
 }
 
+public getLocationDetails(geocodingParameters:any) {
+    return new Promise((resolve, reject) => {
+        this.geocoder.geocode(geocodingParameters,
+			(result) => {
+                if(result.Response.View[0].Result.length > 0) {
+                    resolve(result.Response.View[0].Result);
+                } else {
+                    reject({ message: "no results found" });
+                }
+            }, (error) => {
+            reject(error);
+        });
+    });
+}
 public getAddressFromLatLng(query: string) {
   return new Promise((resolve, reject) => {
       this.geocoder.reverseGeocode({ prox: query, mode: "retrieveAddress" }, result => {

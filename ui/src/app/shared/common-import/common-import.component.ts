@@ -408,7 +408,7 @@ export class CommonImportComponent implements OnInit {
             "address": this.filelist[i]["Address"],
             "city": this.filelist[i]["City"],
             "country": this.filelist[i]["Country"],
-            "zipcode": this.filelist[i]["Zipcode"],
+            "zipcode":String(this.filelist[i]["Zipcode"]),
             "latitude": this.filelist[i]["Latitude"],
             "longitude": this.filelist[i]["Longitude"],
             "distance": this.filelist[i]["Distance"],
@@ -1106,7 +1106,7 @@ export class CommonImportComponent implements OnInit {
             "poiName" :this.rejectedList[i]["name"],
             "latitude" :this.rejectedList[i]["latitude"] ? this.rejectedList[i]["latitude"].toFixed(2) :this.rejectedList[i]["latitude"] ,
             "longitude" :this.rejectedList[i]["longitude"] ? this.rejectedList[i]["longitude"].toFixed(2) :this.rejectedList[i]["longitude"] ,
-            "returnMessage" :this.rejectedList[i]["returnMessage"]
+            "returnMessage" :this.rejectedList[i]["returnMessage"] ? this.rejectedList[i]["returnMessage"] : "Duplicate POI"
           }
         )
       }
