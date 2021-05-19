@@ -2126,12 +2126,23 @@ namespace net.atos.daf.ct2.accountservice
 
                 SSOToken responseDetails = new SSOToken();
                 var response = await accountIdentityManager.GenerateSSOToken(ssoRequest);
-                responseDetails.Token = response.token;
-                //responseDetails.TokeType = response.tokenType;
-                //responseDetails.StatusCode = response.statusCode.ToString();
-                responseDetails.Code = Responcecode.Success;
-                responseDetails.Message = response.message;
+                if (response?.statusCode == System.Net.HttpStatusCode.OK)
+                {
+                    responseDetails.Token = response.token;
+                    responseDetails.Code = Responcecode.Success;
+                    responseDetails.Message = response.message;
 
+                }
+                else if (response?.statusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    responseDetails.Code = Responcecode.NotFound;
+                    responseDetails.Message = response.message;
+                }
+                else
+                {
+                    responseDetails.Code = Responcecode.NotFound;
+                    responseDetails.Message = response.message;
+                }
                 return await Task.FromResult(responseDetails);
 
             }
