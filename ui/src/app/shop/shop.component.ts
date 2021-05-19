@@ -49,23 +49,24 @@ export class ShopComponent implements OnInit {
         window.open(data.body, '_blank');
       }
       else if(data.status === 401){
+        console.log("Error: Unauthorized");
      }
      else if(data.status == 302){
+      console.log("Error: Unauthorized");
      }
     },
     (error)=> {
-       console.log("Error: " + error);
        if(error.status == 404  || error.status == 403){
-
+        console.log("Error: not found");
        }
        else if(error.status === 401){
-
+        console.log("Error: Unauthorized");
        }
        else if(error.status == 302){
-         
+        console.log("Error: Unauthorized");
        }
        else if(error.status == 500){
-
+        console.log("Error: Internal server error");
        }
      })
     }
