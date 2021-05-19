@@ -1026,7 +1026,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.rejected = this.translationData.lblrejected || 'Rejected';
       this.importTranslationData.existError = this.translationData.lblGeofenceNamealreadyexists || 'Geofence name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || "$ is mandatory input";
-      this.importTranslationData.valueCannotExceed = this.translationData.lblValueCannotExceed || 'Geofence name can be upto 50 characters';
+      this.importTranslationData.valueCannotExceed = this.translationData.lblValueCannotExceed100 || 'Geofence name can be upto 100 characters';
       this.importTranslationData.distanceGreaterThanZero = this.translationData.lbldistanceGreaterThanZero || 'Distance should be greater than zero';
       this.importTranslationData.nodesAreRequired = this.translationData.lblnodesAreRequired || 'Nodes are required';
       this.importTranslationData.typeCanEitherBeCorO = this.translationData.lbltypeCanEitherBeCorO || 'Geofence type can either be C or O';
