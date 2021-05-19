@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -133,7 +133,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -169,7 +169,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -181,7 +181,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -206,7 +206,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -230,7 +230,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
@@ -242,7 +242,7 @@ namespace net.atos.daf.ct2.vehicle
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -308,7 +308,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -371,7 +371,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -432,7 +432,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

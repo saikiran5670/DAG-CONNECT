@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -137,7 +137,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                 throw ex;   
+                 throw;   
             }
         }
 
@@ -159,7 +159,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                 throw ex;   
+                 throw;   
             }
         }
 
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }                  
         }       
 

@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.termsandconditions
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 

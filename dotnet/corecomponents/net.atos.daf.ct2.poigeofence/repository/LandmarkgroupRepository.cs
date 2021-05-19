@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 
@@ -198,7 +198,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception Ex)
             {
 
-                throw Ex;
+                throw;
             }
         }
 
@@ -237,7 +237,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception Ex)
             {
 
-                throw Ex;
+                throw;
             }
         }
 
@@ -288,7 +288,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
