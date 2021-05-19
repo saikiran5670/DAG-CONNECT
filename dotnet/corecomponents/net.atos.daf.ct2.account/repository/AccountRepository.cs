@@ -96,6 +96,7 @@ namespace net.atos.daf.ct2.account
         }
         public async Task<bool> Delete(int accountid, int organization_id)
         {
+            TransactionScope transactionScope = null;
             try
             {
                 var parameter = new DynamicParameters();
@@ -104,7 +105,7 @@ namespace net.atos.daf.ct2.account
                 string query = string.Empty;
                 int result = 0;
 
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                using (transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     // check in user need to delete 
                     // Delete Account Group Reference
@@ -142,6 +143,11 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 throw;
+            }
+            finally
+            {
+                if (transactionScope != null)
+                    transactionScope.Dispose();
             }
         }
 
