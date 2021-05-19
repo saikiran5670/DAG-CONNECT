@@ -614,8 +614,8 @@ export class NewUserStepComponent implements OnInit {
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       tableData: tableData,
-      colsList: ['firstName','emailId','roles'],
-      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role'],
+      colsList: ['firstName','emailId','roles', 'accountGroupList'],
+      colsName: [this.translationData.lblUserName || 'Account Name', this.translationData.lblEmailID || 'Email ID', this.translationData.lblUserRole || 'Account Role',  this.translationData.lblUserGroup || 'Account Group'],
       tableTitle: `${rowData.accountGroupName} - ${this.translationData.lblUsers || 'Accounts'}`
     }
     this.dialogRef = this.dialog.open(UserDetailTableComponent, dialogConfig);

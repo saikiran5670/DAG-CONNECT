@@ -1,10 +1,21 @@
-﻿using System;
+﻿using net.atos.daf.ct2.reports.repository;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace net.atos.daf.ct2.reports
 {
-    class ReportManager
+    public class ReportManager : IReportManager
     {
+        private readonly IReportRepository _reportRepository;
+
+        public ReportManager(IReportRepository reportRepository)
+        {
+            _reportRepository = reportRepository;
+        }
+
+        #region Select User Preferences
+
+        #endregion
     }
 }

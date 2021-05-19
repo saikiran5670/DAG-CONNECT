@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 // import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../../../shared/custom.validators';
+import {NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 
 @Component({
   selector: 'app-existing-trips',
@@ -15,6 +16,11 @@ import { CustomValidators } from '../../../../../shared/custom.validators';
 export class ExistingTripsComponent implements OnInit {
   startDate = new FormControl();
   endDate = new FormControl();
+  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  @Input() disabled: boolean;
+  @Input()	value: string = '11:00 PM';
+  @Input()	format: number = 12;
+
   // range = new FormGroup({
   //   start: new FormControl(),
   //   end: new FormControl()

@@ -6,6 +6,7 @@ import { CorridorService } from '../../../../../services/corridor.service';
 import {
   CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData
 } from 'ng2-completer';
+import { ConfigService } from '@ngx-config/core';
 
 declare var H: any;
 
@@ -49,13 +50,21 @@ export class RouteCalculatingComponent implements OnInit {
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
-  mapapikey = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  map_key : string = "";
+  map_id: string = "";
+  map_code : string="";
   mapGroup ;
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
-    private completerService: CompleterService) {
+    private completerService: CompleterService, private config: ConfigService) {
+     this.map_key =  config.getSettings("hereMap").api_key;
+     this.map_id =  config.getSettings("hereMap").app_id;
+     this.map_code =  config.getSettings("hereMap").app_code;
+
+
     this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+      "apikey": this.map_key
     });
+    this.configureAutoCompleteForLocationSearch();
    }
 
   ngOnInit(): void {
@@ -310,7 +319,7 @@ return homeMarker;
     }
   }
 
-  searchStr : any;
+  searchStr : string = "";
 
   startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
@@ -488,24 +497,32 @@ return homeMarker;
   }
 
   public onLocationKeyPress(a) {
-    this.searchStr= a.key;
-    this.dataService = ["Mumbai","Pune","Nasik","Delhi","Gujarat"];
+   // this.searchStr= a.key;
+    //this.dataService = ["Mumbai","Pune","Nasik","Delhi","Gujarat"];
     //this.configureAutoCompleteForLocationSearch();
 
   }
-  onSelected(item: CompleterItem){
-    console.log(item.title)
-    this.plotStartPoint(item.title)
+  onSelected(selectedAddress: CompleterItem){
+    //console.log(item.title)
+    if(selectedAddress){
+      let postalCode = selectedAddress["originalObject"]["label"]
+      this.plotStartPoint(postalCode)
+    }
 
   }
 
-  onEndSelected(item: CompleterItem){
-    console.log(item.title)
-    this.plotEndPoint(item.title)
+  onEndSelected(selectedAddress: CompleterItem){
+    if(selectedAddress){
+      let locationId = selectedAddress["originalObject"]["label"]
+      this.plotEndPoint(locationId)
+    }
 
   }
-  plotStartPoint(_pointAddress){
-    this.here.getAddress(_pointAddress).then((result) => {
+  plotStartPoint(_locationId){
+    let geocodingParameters = {
+		  searchText: _locationId ,
+		};
+    this.here.getLocationDetails(geocodingParameters).then((result) => {
       console.log(result)
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
@@ -545,14 +562,22 @@ return homeMarker;
   suggestionData :  any;
   dataService : any;
   private configureAutoCompleteForLocationSearch() {
-    let params = '?' +
-    'query=' +  encodeURIComponent(this.searchStr) +   // The search text which is the basis of the query
-    '&beginHighlight=' + encodeURIComponent('<mark>') + //  Mark the beginning of the match in a token.
-    '&endHighlight=' + encodeURIComponent('</mark>') + //  Mark the end of the match in a token.
-    '&maxresults=5' +  // The upper limit the for number of suggestions to be included
-    // in the response.  Default is set to 5.
-    '&apikey=' + this.mapapikey;
-    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + params
+
+    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
+    '&maxresults=5' +  // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
+    '&app_id=' + this.map_id + // TODO: Store this configuration in Config File.
+    '&app_code=' + this.map_code +  // TODO: Store this configuration in Config File.
+    '&query='+this.searchStr; 
+
+    // let params = '?' +
+    // 'query=' +  encodeURIComponent(this.searchStr) +   // The search text which is the basis of the query
+    // '&beginHighlight=' + encodeURIComponent('<mark>') + //  Mark the beginning of the match in a token.
+    // '&endHighlight=' + encodeURIComponent('</mark>') + //  Mark the end of the match in a token.
+    // '&maxresults=5' +  // The upper limit the for number of suggestions to be included
+    // // in the response.  Default is set to 5.
+    // '&apikey=' + this.map_key;
+    
+    // let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json' + params
     this.suggestionData = this.completerService.remote(
       AUTOCOMPLETION_URL,
       "label",
