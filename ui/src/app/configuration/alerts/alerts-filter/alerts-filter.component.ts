@@ -66,28 +66,18 @@ export class AlertsFilterComponent implements OnInit {
    }
 
   handleCategoryChange(filter, event) {
-    // this.alertType='';
+    //  this.alertType='';
     if(event.value == ''){  
         this.dataResultTypes =this.alertTypeList;
         this.isDisabledAlerts = true;
+        this.filterListValues['type'] = '';
     }
     else{     
         this.isDisabledAlerts = false;  
         this.dataResultTypes =[];
-       this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
+        this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
      }  
-    //   let event_val;
-    //  if(event.value == ''){
-    //   event_val = event.value.trim();  
-    //   }
-    //   else{
-    //     event_val = event.value.value.trim();
-    //   }
-    //  //  this.filterListValues['type'] = '';
-    // //  this.filterChange(filter, event);
-    // this.filterListValues[filter] =event_val;
-    // this.dataSource.filter = JSON.stringify(this.filterListValues);
-    // this.filterValues.emit(this.dataSource); 
+     this.filterChange(filter, event);
     }
 
     filterAlertTypeChange(filter, event) {
@@ -181,17 +171,12 @@ export class AlertsFilterComponent implements OnInit {
               if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
                   found = true;      
               }     
-             }              
-            }
-            else if(col == "category"){              
-                if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
-                    found = true;      
-                }     
-             }  
+             }       
+            }          
            else{                                
             if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
             found = true
-            }         
+             }                     
             }
            }
          
