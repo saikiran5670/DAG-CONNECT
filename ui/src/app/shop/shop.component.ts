@@ -44,7 +44,6 @@ export class ShopComponent implements OnInit {
 
     ngAfterContentInit(){
     this.getSsoToken().subscribe((data:any) => {
-        console.log("data :: "+data)
       if(data.status === 200){
         window.open(data.body, '_blank');
       }
