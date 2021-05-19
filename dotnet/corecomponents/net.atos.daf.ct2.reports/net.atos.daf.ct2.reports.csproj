@@ -9,7 +9,6 @@
     <ProjectReference Include="..\..\commonservices\net.atos.daf.ct2.report\net.atos.daf.ct2.report.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="entity\" />
     <Folder Include="enum\" />
     <Folder Include="repository\" />
   </ItemGroup>
