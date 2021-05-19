@@ -1,12 +1,12 @@
 
 syntax = "proto3";
-import "google/protobuf/wrappers.proto";
+//import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.reportservice";
 
 package report;
 
 service ReportService{
-
+rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 }
 
 enum Responsecode{
@@ -16,5 +16,24 @@ enum Responsecode{
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;
+}
+
+message IdRequest {
+  int32 ReportId = 1;
+  int32 AccountId=2;
+}
+message UserPreferenceDataColumn{
+    int32 DataAtrributeId =1;
+    string Name=2;
+    string Description = 3;
+    string Type = 4;
+    string Key =5;
+    string IsExclusive=6;
+}
+
+message UserPreferenceDataColumnResponse{
+    repeated UserPreferenceDataColumn UserPreferences = 1;
+    Responsecode Code = 2;
+    string Message = 3;
 }
 

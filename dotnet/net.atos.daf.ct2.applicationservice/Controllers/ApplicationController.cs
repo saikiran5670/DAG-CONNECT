@@ -17,5 +17,12 @@ namespace net.atos.daf.ct2.applicationservice.Controllers
         {
             return StatusCode(200, "Sucess");
         }
+
+        [HttpGet]
+        [Route("~/health-check")]
+        public IActionResult CheckHealth()
+        {
+            return StatusCode(200, "Sucess");
+        }
     }
 }
