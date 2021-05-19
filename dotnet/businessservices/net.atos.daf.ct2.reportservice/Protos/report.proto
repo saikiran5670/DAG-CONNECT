@@ -18,3 +18,12 @@ enum Responsecode{
   InternalServerError = 500;
 }
 
+message UserPreferenceDataColumn{
+    int32 DataAtrributeId =1;
+    string Name=2;
+    string Description = 3;
+    string Type = 4;
+    string Key =5;
+    bool IsExclusive=6;
+}
+

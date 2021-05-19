@@ -10,6 +10,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="enum\" />
-    <Folder Include="repository\" />
   </ItemGroup>
 </Project>
