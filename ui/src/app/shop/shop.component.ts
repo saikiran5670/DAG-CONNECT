@@ -32,7 +32,10 @@ export class ShopComponent implements OnInit {
     let headerObj = this.generateHeader();
       const httpOptions = {
           headers: new HttpHeaders({
-              headerObj
+              headerObj,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'responseType': 'application/json'
           }),
           observe: "response" as 'body',
       };
