@@ -1,6 +1,6 @@
 
 syntax = "proto3";
-import "google/protobuf/wrappers.proto";
+//import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.reportservice";
 
 package report;
