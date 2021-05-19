@@ -42,22 +42,31 @@ namespace net.atos.daf.ct2.reports.repository
         public async Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest)
         {
             _dataAccess.connection.Open();
-            string query = @"INSERT INTO master.reportpreference
+            string queryInsert = @"INSERT INTO master.reportpreference
                                     (account_id, report_id, data_attribute_id, is_exlusive)
                              VALUES (@account_id,@report_id,@data_attribute_id,@is_exlusive)";
+
+            string queryDelete = @"DELETE FROM master.reportpreference WHERE account_id=account_id AND report_id=@report_id";
             int rowsEffected = 0;
             using (var transactionScope = _dataAccess.connection.BeginTransaction())
             {
                 try
                 {
+                    
                     for (int i = 0; i < objUserPreferenceRequest.AtributesShowNoShow.Count; i++)
                     {
-                        var insertUserPreference = new DynamicParameters();
-                        insertUserPreference.Add("account_id", objUserPreferenceRequest.AtributesShowNoShow[i].AccountId);
-                        insertUserPreference.Add("report_id", objUserPreferenceRequest.AtributesShowNoShow[i].ReportId);
-                        insertUserPreference.Add("data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
-                        insertUserPreference.Add("is_exlusive", objUserPreferenceRequest.AtributesShowNoShow[i].IsExclusive);
-                        rowsEffected += await _dataAccess.ExecuteAsync(query, insertUserPreference);
+                        var userPreference = new DynamicParameters();
+                        userPreference.Add("account_id", objUserPreferenceRequest.AtributesShowNoShow[i].AccountId);
+                        userPreference.Add("report_id", objUserPreferenceRequest.AtributesShowNoShow[i].ReportId);
+                        userPreference.Add("data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
+                        userPreference.Add("is_exlusive", objUserPreferenceRequest.AtributesShowNoShow[i].IsExclusive);
+                      
+                        if (rowsEffected == 0)
+                        {
+                            await _dataAccess.ExecuteAsync(queryDelete, userPreference);
+                        }
+                        
+                        rowsEffected += await _dataAccess.ExecuteAsync(queryInsert, userPreference);
                     }
                     transactionScope.Commit();
                 }

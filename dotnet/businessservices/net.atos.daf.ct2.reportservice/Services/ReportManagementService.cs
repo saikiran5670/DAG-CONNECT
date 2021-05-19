@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("CreateUserPreference method in ReportManagement service called.");
 
-                int insertedUserPreferenceCount = await _reportManager.CreateUserPreference(await _mapper.MapCreateUserPrefences(objUserPreferenceCreateRequest));
+                int insertedUserPreferenceCount = await _reportManager.CreateUserPreference(_mapper.MapCreateUserPrefences(objUserPreferenceCreateRequest));
                 if (insertedUserPreferenceCount == 0)
                 {
                     return await Task.FromResult(new UserPreferenceCreateResponse
@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 return await Task.FromResult(new UserPreferenceCreateResponse
                 {
-                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
                     Code = Responsecode.Success
                 });
             }
