@@ -28,20 +28,28 @@ namespace net.atos.daf.ct2.portalservice.Common
         public HeaderObj GetHeaderData(HttpRequest request)
         {
             var headerObj = new HeaderObj();
-            if (request != null)
+            try
             {
-                var Headers = request.Headers;
+                if (request != null)
+                {
+                    var Headers = request.Headers;
 
-                if (Headers.Any(item => item.Key == "headerObj"))
-                {
-                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
+                    if (Headers.Any(item => item.Key == "headerObj"))
+                    {
+                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
+                    }
+                    else if (Headers.Any(item => item.Key == "Headerobj"))
+                    {
+                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
+                    }
                 }
-                else if (Headers.Any(item => item.Key == "Headerobj"))
-                {
-                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
-                }
+                return headerObj;
             }
-            return headerObj;
+            catch (Exception ex)
+            {
+                _logger.LogError("Audit_Error", ex);
+                return new HeaderObj();
+            }
         }
         public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
         {
@@ -52,7 +60,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                 int roleid = headerData.roleId;
                 int organizationid = headerData.orgId;
                 int Accountid = headerData.accountId;
-                
+
                 logs.PerformedAt = Timestamp.FromDateTime(Performed_at.ToUniversalTime());
                 logs.PerformedBy = Accountid;
                 logs.ComponentName = Component_name;
@@ -68,15 +76,15 @@ namespace net.atos.daf.ct2.portalservice.Common
                 logs.RoleID = roleid;
                 logs.OrganizationId = organizationid;
                 AuditResponce auditresponse = await _auditService.AddlogsAsync(logs);
-                
+
                 return 0;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit_Error",logs,ex);
+                _logger.LogError("Audit_Error", logs, ex);
                 return 1;
             }
-            
+
         }
 
 
