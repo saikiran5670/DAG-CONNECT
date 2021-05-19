@@ -24,6 +24,7 @@ export class AlertsFilterComponent implements OnInit {
   isDisabledAlerts = true; 
   localData : any; 
   tempData: any;
+  alertType:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -65,14 +66,17 @@ export class AlertsFilterComponent implements OnInit {
    }
 
   handleCategoryChange(filter, event) {
-        if(event.value == ''){  
+    //  this.alertType='';
+    if(event.value == ''){  
+        this.dataResultTypes =this.alertTypeList;
         this.isDisabledAlerts = true;
-         // this.dataResultTypes = this.alertTypeList;  
+        this.filterListValues['type'] = '';
     }
     else{     
-        this.isDisabledAlerts = false;
+        this.isDisabledAlerts = false;  
+        this.dataResultTypes =[];
         this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
-    }  
+     }  
      this.filterChange(filter, event);
     }
 
@@ -87,10 +91,6 @@ export class AlertsFilterComponent implements OnInit {
       this.filterListValues[filter] =event_val;
       this.dataSource.filter = JSON.stringify(this.filterListValues);
       this.filterValues.emit(this.dataSource); 
-     
-      // this.dataSource.filter = event_val; 
-      // this.filterValues.emit(this.dataSource);   
-      // this.updatedTableData(this.initData);     
      }
 
    updatedTableData(tableData : any) {   
@@ -112,18 +112,18 @@ export class AlertsFilterComponent implements OnInit {
             event_val = event.value.enum; 
           }
           }else if(filter == "vehicleGroupName"){
-        if(event.value == ''){
-          event_val = event.value.trim();  
-        }
-        else{
-          if(event.value.vehicleName != undefined){
-            event_val = event.value.vehicleName.trim();
-          }
-          else{
-            event_val = event.value.value.trim();  
-          }
-        }
-      }   
+            if(event.value == ''){
+              event_val = event.value.trim();  
+            }
+            else{
+              if(event.value.vehicleName != undefined){
+                event_val = event.value.vehicleName.trim();
+              }
+              else{
+                event_val = event.value.value.trim();  
+              }
+            }
+       } 
       else{   
       if(event.value == ''){
       event_val = event.value.trim();  
@@ -154,7 +154,7 @@ export class AlertsFilterComponent implements OnInit {
 
       let nameSearch = () => {
         let found = false;
-        if (isFilterSet) {
+        if (isFilterSet) {  
           for (const col in searchTerms) {         
            if( col == "highUrgencyLevel"){
             data.alertUrgencyLevelRefs.forEach(obj => { 
@@ -163,14 +163,23 @@ export class AlertsFilterComponent implements OnInit {
                 data["highUrgencyLevel"]=obj.urgencyLevelType;
                 data["highThresholdValue"]=obj.thresholdValue;
               }             
-            });
-           }
-           else{                            
+            });          
+           }  
+           else if(col == "type"){  
+            if (data['category'].toString().indexOf(searchTerms['category']) != -1 && isFilterSet) {
+              found = false; 
+              if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
+                  found = true;      
+              }     
+             }       
+            }          
+           else{                                
             if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
             found = true
-            }         
+             }                     
             }
            }
+         
           return found
         } else {
           return true;

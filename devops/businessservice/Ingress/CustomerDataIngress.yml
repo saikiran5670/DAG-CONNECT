@@ -115,6 +115,10 @@ spec:
       - backend:
           serviceName: applicationservice
           servicePort: 80
+        path: /health-check
+      - backend:
+          serviceName: applicationservice
+          servicePort: 80
         path: /  
   tls:
   - hosts:

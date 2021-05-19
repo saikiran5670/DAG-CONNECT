@@ -401,19 +401,19 @@ export class CommonImportComponent implements OnInit {
           
             "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
             "categoryId": this.filelist[i]["CategoryId"],
-            "categoryName":this.filelist[i]["CategoryName"],
+            "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
             "subCategoryId":this.filelist[i]["SubCategoryId"],
-            "subCategoryName": this.filelist[i]["SubCategoryName"],
+            "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
             "name": this.filelist[i]["POIName"],
-            "address": this.filelist[i]["Address"],
-            "city": this.filelist[i]["City"],
-            "country": this.filelist[i]["Country"],
-            "zipcode":String(this.filelist[i]["Zipcode"]),
+            "address": this.filelist[i]["Address"] == undefined ? '' : this.filelist[i]["Address"],
+            "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
+            "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
+            "zipcode":String(this.filelist[i]["Zipcode"] == undefined ? '' : this.filelist[i]["Zipcode"]),
             "latitude": this.filelist[i]["Latitude"],
             "longitude": this.filelist[i]["Longitude"],
-            "distance": this.filelist[i]["Distance"],
-            "state": this.filelist[i]["State"],
-            "type": this.filelist[i]["Type"]
+            "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
+            "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
+            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
         
         }
       )
