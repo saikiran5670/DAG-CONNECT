@@ -101,7 +101,7 @@ export class AlertsComponent implements OnInit {
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"].filter(item=>item.vehicleName!='');
-     
+    
       this.alertStatusList=[{
        id: 1,
        value:"A",
@@ -226,15 +226,16 @@ export class AlertsComponent implements OnInit {
       item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
       writable : true,enumerable : true, configurable : true});  
       });   
-      }   
-      if(item.vehicleGroupName!=''){
-      this.vehicleGroupList=[{      
-        value:item.vehicleGroupName,
-        key:item.vehicleGroupName
-       }
-      ]  
-      }   
-     });     
+      }  
+      if(item.vehicleGroupName!=''){     
+        this.vehicleGroupList.push({value:item.vehicleGroupName, key:item.vehicleGroupName});
+        this.vehicleGroupList = this.vehicleGroupList.filter((test, index, array) =>
+          index === array.findIndex((findTest) =>
+          findTest.value === test.value
+          )   
+       ); 
+      }        
+     }); 
       this.initData =data; 
       this.updateDatasource(this.initData);  
     }, (error) => {

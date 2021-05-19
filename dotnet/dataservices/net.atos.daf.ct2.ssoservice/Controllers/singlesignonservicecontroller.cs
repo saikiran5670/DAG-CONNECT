@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
                     }
                     else
                     {
-                        return StatusCode(400, string.Empty);
+                        return StatusCode(404, string.Empty);
                     }
                 }
                 else
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return StatusCode(500, string.Empty);
+                return StatusCode(404, string.Empty);
             }
         }
     }

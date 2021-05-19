@@ -67,6 +67,20 @@
       </mat-form-field>
       <div>{{startDate.value}}</div>
     </div>
+    <div fxLayout="row"  fxLayoutAlign="space-between center" class="timepicker">
+      <input [ngxTimepicker]="toggleTimepicker" [disableClick]="true" readonly>
+      <ngx-material-timepicker-toggle [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
+      <ngx-material-timepicker #toggleTimepicker></ngx-material-timepicker>
+  </div>
+      <!-- -----<input [ngxTimepicker]="time">
+      <ngx-material-timepicker #time></ngx-material-timepicker> -->
+      
+      <!-- ------<mat-form-field appearance="outline">
+        <mat-label>{{ 'TEndTime' | translate }}</mat-label>
+        <input matInput [ngxTimepicker]="endTime" [format]="24"  formControlName="endTime" required />
+      </mat-form-field>
+      <ngx-material-timepicker #endTime></ngx-material-timepicker> -->
+      <!-- ------<button mat-stroked-button [ngxTimepicker]="endTime" [value]="time">ttttttt<mat-icon>access_time</mat-icon></button> -->
     <div>
       <div>
         <mat-label>To<span class='mandatoryColor'>*</span></mat-label>
@@ -79,6 +93,11 @@
       
       <div>{{endDate.value}}</div>
     </div>
+    <div fxLayout="row"  fxLayoutAlign="space-between center" class="timepicker">
+      <input [ngxTimepicker]="endtoggleTimepicker" [disableClick]="true" readonly>
+      <ngx-material-timepicker-toggle [for]="endtoggleTimepicker"></ngx-material-timepicker-toggle>
+      <ngx-material-timepicker #endtoggleTimepicker></ngx-material-timepicker>
+  </div>
     <!-- </div> -->
     <div>
       <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span>

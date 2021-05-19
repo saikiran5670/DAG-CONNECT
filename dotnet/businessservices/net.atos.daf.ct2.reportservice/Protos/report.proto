@@ -1,6 +1,6 @@
 
 syntax = "proto3";
-import "google/protobuf/wrappers.proto";
+//import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.reportservice";
 
 package report;
@@ -16,5 +16,14 @@ enum Responsecode{
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;
+}
+
+message UserPreferenceDataColumn{
+    int32 DataAtrributeId =1;
+    string Name=2;
+    string Description = 3;
+    string Type = 4;
+    string Key =5;
+    bool IsExclusive=6;
 }
 

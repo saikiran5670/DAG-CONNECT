@@ -8,6 +8,7 @@ package role;
 enum Responcecode{
   Success = 0;
   Failed = 1;
+  Assigned =2;
 }
 
 

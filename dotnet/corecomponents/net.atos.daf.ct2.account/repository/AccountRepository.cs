@@ -1517,6 +1517,7 @@ namespace net.atos.daf.ct2.account
 		                                ,act.id AS accountid
 		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
 		                                ,actrole.role_id AS roleid
+										,org.id AS orgdefault_id
 		                                ,org.org_id AS organizationid
 		                                ,org.name AS organizationname
 	                                FROM master.account act
@@ -1552,7 +1553,7 @@ namespace net.atos.daf.ct2.account
 	                                ,cte_actp.vehicledisplay
                                 FROM cte_actpreference cte_actp
                                 RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid
-                                WHERE cte_act.accountID = @accountID AND cte_act.roleid = @roleID AND cte_act.organizationid = @organizationID
+                                WHERE cte_act.accountID = @accountID AND cte_act.roleid = @roleID AND cte_act.orgdefault_id = @OrganizationID
                                 ";
                     //}
                     parameter.Add("@accountID", account.AccountId);
