@@ -606,7 +606,7 @@ namespace net.atos.daf.ct2.account
         {
             SSOToken ssoToken = new SSOToken();
             // Account account = GetAccountByEmail(request.Email);
-            if (request.AccountID > 0)
+            if (request?.AccountID > 0)
             {
                 IdentitySessionComponent.entity.AccountToken _latestToken = await GetAccountTokenDetails(request.AccountID);
                 if (_latestToken?.Id > 0)
@@ -640,20 +640,20 @@ namespace net.atos.daf.ct2.account
                     // To Return valid SSO details 
                     ssoToken.token = _ssoConfiguration.ZuoraBaseUrl +"="+Convert.ToString(_ssoGuid);
                     ssoToken.tokenType = IdentitySessionComponent.ENUM.TokenType.SSO.ToString();
-                    ssoToken.statusCode = HttpStatusCode.Redirect;
-                    ssoToken.message = "Request to redirected";
+                    ssoToken.statusCode = HttpStatusCode.OK;
+                    ssoToken.message = "Request to redirect";
                     return ssoToken;
                 }
                 else
                 {
                     ssoToken.statusCode = System.Net.HttpStatusCode.NotFound;
-                    ssoToken.message = "Token is not found";
+                    ssoToken.message = "User or User Token not found";
                 }
             }
             else
             {
                 ssoToken.statusCode = System.Net.HttpStatusCode.NotFound;
-                ssoToken.message = "Account is not present";
+                ssoToken.message = "Invalid Account";
             }
             return ssoToken;
         }
