@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.reports
     {
         private readonly IReportRepository _reportRepository;
 
-        public GeofenceManager(IReportRepository reportRepository)
+        public ReportManager(IReportRepository reportRepository)
         {
             _reportRepository = reportRepository;
         }
