@@ -13,6 +13,7 @@ import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { POIService } from 'src/app/services/poi.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 
 declare var H: any;
 
@@ -88,6 +89,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   unitTypeEnum: string= '';
   panelOpenState: boolean = false;
   notifications: any= [];
+  @ViewChild(CreateNotificationsAlertComponent)
+  notificationComponent: CreateNotificationsAlertComponent;
+
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -1048,6 +1052,10 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){
+    if(this.panelOpenState){
+      let tempObj= this.notificationComponent.getNotificationDetails();
+      console.log(tempObj);
+    }
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
@@ -1336,5 +1344,9 @@ PoiCheckboxClicked(event: any, row: any) {
       this.selectPOITableRows(event,groupDetails);
       this.selectGeofenceTableRows(event,groupDetails);
     });
+  }
+
+  onAddNotification(){
+    this.panelOpenState = !this.panelOpenState;    
   }
 }

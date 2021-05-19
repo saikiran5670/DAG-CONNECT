@@ -8,7 +8,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 @Component({
   selector: 'app-create-notifications-alert',
   templateUrl: './create-notifications-alert.component.html',
-  styleUrls: ['./create-notifications-alert.component.css']
+  styleUrls: ['./create-notifications-alert.component.less']
 })
 export class CreateNotificationsAlertComponent implements OnInit {
   @Input() translationData: any = [];
@@ -156,6 +156,13 @@ mailDescription: any;
 
   onChangeAdvisoryLevel(event: any){
 
+  }
+
+  getNotificationDetails() : any{
+    let tempObj= {
+      name: "ABCD"
+    }
+    return tempObj;
   }
 
 }
