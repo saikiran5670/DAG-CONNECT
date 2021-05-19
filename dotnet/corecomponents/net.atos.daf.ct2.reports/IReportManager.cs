@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.reports
 {
     public interface IReportManager
     {
-        //Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId);
+        Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId);
     }
 }

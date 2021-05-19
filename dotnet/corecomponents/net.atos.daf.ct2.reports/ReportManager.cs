@@ -17,10 +17,10 @@ namespace net.atos.daf.ct2.reports
         }
 
         #region Select User Preferences
-        //public async  Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId)
-        //{
-        //   return await _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId);
-        //}
+        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        {
+            return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId);
+        }
         #endregion
     }
 }
