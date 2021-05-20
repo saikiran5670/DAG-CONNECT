@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     return  await Task.FromResult(new UserPreferenceDataColumnResponse
                     {
-                        Message = String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, request.ReportId, request.AccountId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2),
+                        Message = String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, request.AccountId, request.ReportId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2),
                         Code = Responsecode.Failed
                     }); 
                 }
@@ -44,10 +44,10 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var response = new UserPreferenceDataColumnResponse
                 {                    
-                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.ReportId, request.AccountId),
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG,request.AccountId, request.ReportId),
                     Code = Responsecode.Success
                 };
-                response.UserPreferences.AddRange(_mapper.GetUserPrefences(userPrefernces));
+                response.UserPreferences.AddRange(_mapper.MapUserPrefences(userPrefernces));
                 return await Task.FromResult(response); ;
 
             }
@@ -61,6 +61,41 @@ namespace net.atos.daf.ct2.reportservice.Services
                 };
                 errorResponse.UserPreferences.Add(new UserPreferenceDataColumn());
                 return await Task.FromResult(errorResponse);
+            }
+        }
+        #endregion
+
+        #region Create User Preference
+        public override async Task<UserPreferenceCreateResponse> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceCreateRequest, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("CreateUserPreference method in ReportManagement service called.");
+
+                int insertedUserPreferenceCount = await _reportManager.CreateUserPreference(_mapper.MapCreateUserPrefences(objUserPreferenceCreateRequest));
+                if (insertedUserPreferenceCount == 0)
+                {
+                    return await Task.FromResult(new UserPreferenceCreateResponse
+                    {
+                        Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
+                        Code = Responsecode.Failed
+                    });
+                }
+
+                return await Task.FromResult(new UserPreferenceCreateResponse
+                {
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_SUCCESS_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
+                    Code = Responsecode.Success
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new UserPreferenceCreateResponse
+                {
+                    Message = ex.Message,
+                    Code = Responsecode.InternalServerError
+                });
             }
         }
         #endregion

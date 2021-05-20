@@ -13,6 +13,7 @@ import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { POIService } from 'src/app/services/poi.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 
 declare var H: any;
 
@@ -88,6 +89,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   unitTypeEnum: string= '';
   panelOpenState: boolean = false;
   notifications: any= [];
+  distanceUnits: any= [];
+  @ViewChild(CreateNotificationsAlertComponent)
+  notificationComponent: CreateNotificationsAlertComponent;
+
   typesOfLevel: any= [
                       {
                         levelType : 'C',
@@ -140,7 +145,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       warningLevelThreshold: [''],
       advisoryLevel: [''],
       advisoryLevelThreshold: [''],
-      mondayPeriod: ['']
+      mondayPeriod: [''],
+      distanceUnit: ['K']
     },
     {
       validator: [
@@ -165,9 +171,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
     }
     
-
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
       this.loadFiltersData();
+  
   }
 
   getUnique(arr, comp) {
@@ -225,6 +231,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeAlertType(event){
+    this.distanceUnits= [];
     this.alert_type_selected= event.value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       this.loadMap();
@@ -249,6 +256,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
             (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
 
+      if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG')        
+        this.distanceUnits= [{enum : 'K', value : 'Kilometer'},{enum : 'M', value : 'Miles'}];
+
       switch(this.alert_category_selected+this.alert_type_selected){
         case "LY": { //Excessive under utilization in days
           this.labelForThreshold= this.translationData.lblPeriod ? this.translationData.lblPeriod : "Period";
@@ -265,7 +275,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         case "LD": { //Excessive distance done
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
-          this.unitTypeEnum= "K";
+          this.unitTypeEnum= this.alertForm.controls.distanceUnit.value;
           break;
         }
         case "LU": { //Excessive Driving duration
@@ -277,7 +287,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitTypeEnum= "K";
+          this.unitTypeEnum= this.alertForm.controls.distanceUnit.value;
           break;
         }
         case "FP": { //Fuel Increase During stop
@@ -335,6 +345,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
   onChangeVehicle(event){
     this.vehicle_group_selected= event.value;
     this.updateVehiclesDataSource(this.vehicleList.filter(item => item.vehicleId == event.value));
+  }
+
+  onChangeDistanceUnit(value){
+    this.unitForThreshold= this.distanceUnits.filter(item => item.enum == value)[0].value;
+    this.unitTypeEnum= value;
+    console.log("unitForThreshold = "+this.unitForThreshold, "unitTypeEnum = "+this.unitTypeEnum);
   }
 
   loadMap() {
@@ -1048,6 +1064,10 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){
+    if(this.panelOpenState){
+      let tempObj= this.notificationComponent.getNotificationDetails();
+      console.log(tempObj);
+    }
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
@@ -1336,5 +1356,9 @@ PoiCheckboxClicked(event: any, row: any) {
       this.selectPOITableRows(event,groupDetails);
       this.selectGeofenceTableRows(event,groupDetails);
     });
+  }
+
+  onAddNotification(){
+    this.panelOpenState = !this.panelOpenState;    
   }
 }

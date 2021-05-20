@@ -232,7 +232,22 @@
                       (alert_category_selected === 'F' && (alert_type_selected === 'P' || alert_type_selected === 'L' || alert_type_selected === 'T' || alert_type_selected === 'I' || alert_type_selected === 'A' || alert_type_selected === 'F' ))"
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>  
+                <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>  
+                  </div> 
+                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left"></div>
+                  <div *ngIf="distanceUnits.length != 0" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-select formControlName="distanceUnit" class="matSelect"
+                          (selectionChange)="onChangeDistanceUnit($event.value)">
+                          <mat-option *ngFor="let unit of distanceUnits" [value]="unit.enum">
+                              &nbsp;{{ unit.value }}
+                          </mat-option>
+                      </mat-select>         
+                    </mat-form-field> 
+                  </div> 
+                </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-checkbox (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical</mat-checkbox>
@@ -579,12 +594,12 @@
 </form>
   <!-- Notification details -->
   <mat-card class='mat-elevation-z'>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px" (opened)="panelOpenState = true" (closed)="panelOpenState = false" hideToggle="true">
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" (opened)="panelOpenState == true" (closed)="panelOpenState == false" hideToggle="true">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                 translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
-              <button style="margin-left: 50%;" mat-raised-button color="primary">{{ !panelOpenState ? translationData.lblAddNotification || 'Add
+              <button style="margin-left: 50%;" mat-raised-button color="primary" (click)="onAddNotification()">{{ !panelOpenState ? translationData.lblAddNotification || 'Add
                 Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -614,11 +629,13 @@
           ((alertForm.controls.vehicleGroup.value == '' || 
             alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
             (alertForm.controls.vehicle.value == '' ? true : false)) ||
+            (alert_category_selected != 'R' &&
             (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
             (selectedCorridor.selected.length == 0) && 
             ((!isCriticalLevelSelected || this.alertForm.get('criticalLevelThreshold').value == '') && 
              (!isWarningLevelSelected || this.alertForm.get('warningLevelThreshold').value == '') &&
-             (!isAdvisoryLevelSelected || this.alertForm.get('advisoryLevelThreshold').value == ''))" mat-raised-button color="primary"
+             (!isAdvisoryLevelSelected || this.alertForm.get('advisoryLevelThreshold').value == '')))
+             " mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
