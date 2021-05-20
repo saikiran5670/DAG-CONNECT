@@ -8,7 +8,7 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         </mat-label>
         <div *ngIf="actionType != 'view'">
-            <mat-form-field class="form-control form-control-small" appearance="outline" class="full-width">
+            <mat-form-field appearance="outline" class="full-width corridorLineHt">
                 <input maxlength="50" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
                     formControlName="label" required>
             </mat-form-field>
@@ -37,7 +37,7 @@
         </mat-label>
         <div>
             <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
-            [datasource]="dataService" [minSearchLength]="0" (keyup)="onLocationKeyPress($event)" [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
             [minSearchLength]="0" (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
             <!-- <mat-form-field appearance="outline" class='full-width'>
                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
@@ -64,7 +64,7 @@
         </mat-label>
         <div>
             <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
-            [datasource]="dataService" [minSearchLength]="0" (keyup)="onLocationKeyPress($event)" 
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
             [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer>
            
             <!-- <mat-form-field appearance="outline" class='full-width'>
@@ -339,7 +339,7 @@
                 </mat-accordion>
        
                 <div class="example-button-row pt-2" fxLayoutAlign="right">
-                    <button mat-flat-button color="primary" (click)="resetValues()">
+                    <button mat-flat-button color="primary" (click)="resetValues()"  [disabled]="corridorFormGroup.pristine">
                         <span>Reset</span>
                     </button>
                 </div>
@@ -347,10 +347,15 @@
 </mat-accordion>
 <div class='fixDiv'></div>
 
-<div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;">
+<div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
     <button mat-flat-button color="primary" (click)="backToCorridorList()">
         <span>Cancel</span>
     </button>
+    <span *ngIf="actionType === 'edit'">
+    <button mat-flat-button color="primary" (click)="resetToEditData()" [disabled]="corridorFormGroup.pristine">
+        <span>Reset</span>
+    </button>
+</span>
     <button mat-flat-button  color="primary" (click)="createCorridorClicked()" ><!-- [disabled]="!corridorFormGroup.valid"-->
         <span>Create</span>
     </button>
