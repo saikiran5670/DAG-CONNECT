@@ -44,8 +44,8 @@ namespace net.atos.daf.ct2.account
             configuration = _configuration;
             auditlog = _auditlog;
             _ssoConfiguration = new SSOConfiguration();
-            configuration.GetSection("SSOConfiguration").Bind(_ssoConfiguration); 
-            
+            configuration.GetSection("SSOConfiguration").Bind(_ssoConfiguration);
+
         }
 
         public async Task<AccountIdentity> Login(IdentityEntity.Identity user)
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.account
                     return await Task.FromResult(accIdentity);
                 }
 
-                accToken = await PrepareSaveToken(user, account,roleId);
+                accToken = await PrepareSaveToken(user, account, roleId);
                 if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
                 {
                     passwordPolicyAccount = await CaptureUserLastLogin(account);
@@ -213,14 +213,14 @@ namespace net.atos.daf.ct2.account
             if (account != null && account.Id > 0)
             {
                 int roleId = 0;
-                List <AccountOrgRole> accountOrgRoleList = new List<AccountOrgRole>();
+                List<AccountOrgRole> accountOrgRoleList = new List<AccountOrgRole>();
                 accountOrgRoleList = await accountManager.GetAccountRole(account.Id);
                 foreach (AccountOrgRole aor in accountOrgRoleList)
                 {
                     roleId = aor.Id;
                     break; //get only first role 
                 }
-                accToken = await PrepareSaveToken(user, account,roleId);
+                accToken = await PrepareSaveToken(user, account, roleId);
             }
             else
             {
@@ -638,7 +638,7 @@ namespace net.atos.daf.ct2.account
                     }
 
                     // To Return valid SSO details 
-                    ssoToken.token = _ssoConfiguration.ZuoraBaseUrl +"="+Convert.ToString(_ssoGuid);
+                    ssoToken.token = _ssoConfiguration.ZuoraBaseUrl + "=" + Convert.ToString(_ssoGuid);
                     ssoToken.tokenType = IdentitySessionComponent.ENUM.TokenType.SSO.ToString();
                     ssoToken.statusCode = HttpStatusCode.OK;
                     ssoToken.message = "Request to redirect";
@@ -673,9 +673,9 @@ namespace net.atos.daf.ct2.account
         ///     "UnitDisplay": "metric",
         ///     "VehicleDisplay": "vin"
         ///  </returns>
-        public async Task<SSOTokenResponse> ValidateSSOToken(string tokenGuid)
+        public async Task<SSOResponse> ValidateSSOToken(string tokenGuid)
         {
-            SSOTokenResponse _ssoTokenResponse = null;
+            SSOResponse _ssoResponse = new SSOResponse();
             IEnumerable<IdentitySessionComponent.entity.AccountToken> _tokenlist = await accountTokenManager.GetTokenDetails(tokenGuid);
             // TODO: delete after testing
             //IdentitySessionComponent.entity.AccountToken _savedToeken = _tokenlist.FirstOrDefault();
@@ -688,11 +688,23 @@ namespace net.atos.daf.ct2.account
                     if (_latestSession?.Id > 0)
                     {
                         // Get users SSO Details and return it back
-                        _ssoTokenResponse = await accountManager.GetAccountSSODetails(_savedToeken);
+                        _ssoResponse.Details = await accountManager.GetAccountSSODetails(_savedToeken);
                     }
                 }
+                else
+                {
+                    _ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                    _ssoResponse.Message = "TOKEN_EXPIRED";
+                    _ssoResponse.Value = tokenGuid;
+                }
             }
-            return _ssoTokenResponse;
+            else
+            {
+                _ssoResponse.StatusCode = HttpStatusCode.NotFound;
+                _ssoResponse.Message = "INVALID_TOKEN";
+                _ssoResponse.Value = tokenGuid;
+            }
+            return _ssoResponse;
         }
         private async Task<identitysession.entity.AccountToken> GetAccountTokenDetails(int _accountID)
         {
