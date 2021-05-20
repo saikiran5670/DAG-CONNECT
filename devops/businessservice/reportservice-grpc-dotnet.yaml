@@ -27,7 +27,8 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        projectPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice'
+        appsettingsPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
+        log4netConfigPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
     condition: eq(variables['Build.SourceBranchName'], 'sprint4')
 
   - stage: stage2
@@ -40,7 +41,8 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        projectPath: 'dotnet/businessservices/net.atos.daf.ct2.alertservice'
+        appsettingsPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
+        log4netConfigPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
     condition: eq(variables['Build.SourceBranchName'], 'sprint4')
        
   - stage: stage3
@@ -53,6 +55,7 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        projectPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice'
+        appsettingsPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
+        log4netConfigPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
     condition: eq(variables['Build.SourceBranchName'], 'sprint4')     
 
