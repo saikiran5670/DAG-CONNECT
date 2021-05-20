@@ -1,6 +1,7 @@
-<form [formGroup]="notificationForm" formArrayName="FormArrayItems" *ngFor="let item of ArrayList; let i = index" [formGroupName]="i">
+<form [formGroup]="notificationForm">
     <!-- for level selection -->
-    <!-- <div > -->
+<div  formArrayName="FormArrayItems" *ngFor="let item of notificationForm.controls['FormArrayItems']['controls']; let i = index" >
+    <div  [formGroupName]="i">
    
     <div *ngIf="(alert_category_selected === 'L') && (alert_type_selected === 'Y')" class="areaWidth min-width-30-per"
         fxLayout="column" fxLayoutAlign="left">
@@ -34,10 +35,10 @@
             </mat-form-field>
             <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization || 'Enter max 10 recipient label for
                 categorization' }}</mat-hint>
-            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('required')">
+            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('recipientLabel').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('recipientLabel').touched">
                 {{translationData.lblPleaseEnterRecipientLabel|| 'Please enter recipient label' }}
             </mat-error>
-            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
+            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('recipientLabel').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
@@ -57,7 +58,7 @@
             </mat-form-field>
             <mat-hint>{{translationData.lblSelectContactModeAndAddWithList || 'Select contact mode and add with list'}}
             </mat-hint>
-            <mat-error *ngIf="notificationForm.get('contactMode').hasError('required')">
+            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('contactMode').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('contactMode').touched">
                 {{translationData.lblPleaseSelectContactMode|| 'Please select contact Mode' }}
             </mat-error>
         </div>
@@ -91,10 +92,10 @@
                         <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
                             with comma (;)
                             separated' }}</mat-hint>
-                            <mat-error *ngIf="notificationForm.get('emailAddress').hasError('required')">
+                            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('emailAddress').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('emailAddress').touched">
                                 {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                                   </mat-error>
-                            <mat-error *ngIf="notificationForm.get('emailAddress').hasError('email')">
+                            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('emailAddress').hasError('email')">
                                 {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email address' }}
                             </mat-error>
                     </div>
@@ -109,7 +110,7 @@
                                 matInput formControlName="mailSubject" maxlength="120">
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailSubjectDescription || 'Mail Subject Description'}}</mat-hint>
-                        <mat-error *ngIf="notificationForm.get('mailSubject').hasError('required')">
+                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('mailSubject').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('mailSubject').touched">
                             {{ translationData.lblPleaseenterMailSubject || 'Please enter Mail Subject' }}
                               </mat-error>
                     </div>
@@ -128,7 +129,7 @@
                                 formControlName="mailDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailTextDescription || 'Mail Text Description' }}</mat-hint>
-                        <mat-error *ngIf="notificationForm.get('mailDescription').hasError('required')">
+                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('mailDescription').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('mailDescription').touched">
                             {{ translationData.lblPleaseentermailDescription || 'Please enter mail Description' }}
                               </mat-error>
                     </div>
@@ -171,7 +172,7 @@
                                 formControlName="webURL" >
                         </mat-form-field>
                         <mat-hint>{{translationData.lblEnterWebServiceURL || 'Enter web service URL'}}</mat-hint>
-                            <mat-error *ngIf="notificationForm.get('webURL').hasError('required')">
+                            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('webURL').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('webURL').touched">
                                 {{ translationData.lblPleaseenterWebServiceURL || 'Please enter Web Service URL' }}
                                   </mat-error>
                     </div>
@@ -200,7 +201,7 @@
                                 formControlName="wsDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
-                        <mat-error *ngIf="notificationForm.get('wsDescription').hasError('required')">
+                        <mat-error *ngIf="notificationForm.get('wsDescription').hasError('required') && notificationForm.get('wsDescription').touched">
                             {{ translationData.lblPleaseenterwsDescription || 'Please enter ws Description' }}
                               </mat-error>
                     </div>
@@ -223,7 +224,7 @@
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblloginId || 'Login ID' }}" matInput formControlName="loginId">
                         </mat-form-field>
-                        <mat-error *ngIf="notificationForm.get('loginId').hasError('required')">
+                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('loginId').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('loginId').touched">
                             {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                               </mat-error>
                         <mat-error *ngIf="notificationForm.get('loginId').hasError('email')">
@@ -234,7 +235,7 @@
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblPassword || 'Password' }}" matInput formControlName="password">
                         </mat-form-field>
-                        <mat-error *ngIf="notificationForm.get('password').hasError('required')">
+                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('password').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('password').touched">
                             {{ translationData.lblPleaseEnterPassword || 'Please enter password' }}
                               </mat-error>
                     </div>
@@ -276,6 +277,6 @@
             </mat-card>
         </div>
     </div>
-
-<!-- </div> -->
+</div>
+</div>
 </form>
