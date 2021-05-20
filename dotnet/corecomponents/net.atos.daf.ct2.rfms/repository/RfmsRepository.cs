@@ -11,25 +11,22 @@ namespace net.atos.daf.ct2.rfms.repository
 {
     public class RfmsRepository : IRfmsRepository
     {
-        private readonly IDataAccess  _dataAccess;
+        private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartDataAccess;
-         private static readonly log4net.ILog _log =
-        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog _log =
+       log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public RfmsRepository(IDataAccess dataAccess,IDataMartDataAccess dataMartAccess )
+        public RfmsRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartAccess)
         {
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
         }
-
-        
         public async Task<RfmsVehicles> Get(RfmsVehicleRequest rfmsVehicleRequest)
         {
-         try
-            {   
-
-             var queryStatement = @"vin
+            try
+            {
+                var queryStatement = @"select vin
                                    ,customer_vehicle_name
                                    ,brand 
                                    ,type 
@@ -41,29 +38,32 @@ namespace net.atos.daf.ct2.rfms.repository
                                    ,authorized_paths
                                    from master.vehicle 
                                    where 1=1";
-             var parameter = new DynamicParameters();
+                var parameter = new DynamicParameters();
 
-             //ID filter
 
-             if (rfmsVehicleRequest.Id != null)
-                 {
-                   parameter.Add("@id", "%" + rfmsVehicleRequest.Id + "%");
-                   queryStatement = queryStatement + " and id LIKE @id";
+                if (rfmsVehicleRequest.Id != null)
+                {
+                    parameter.Add("@id", "%" + rfmsVehicleRequest.Id + "%");
+                    queryStatement = queryStatement + " and id LIKE @id";
 
-                 }
-            
-                var rfmsVehicles = new RfmsVehicles();               
+                }
+                if (rfmsVehicleRequest.MoreDataAvailable && rfmsVehicleRequest.LastVin != null) // LastVin is mendatory when rfmsVehicleRequest is true and it is required for pagination
+                { 
+                    parameter.Add("@vin", "%" + rfmsVehicleRequest.LastVin + "%");
+                    queryStatement = queryStatement + " and vin LIKE @id";
+
+                }
+                var rfmsVehicles = new RfmsVehicles();
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
-            
-            return rfmsVehicles;
-            
-            }    
+                return rfmsVehicles;
+
+            }
 
             catch (Exception ex)
             {
                 throw ex;
             }
-            
+
 
         }
 
