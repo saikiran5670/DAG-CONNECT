@@ -852,6 +852,23 @@ namespace net.atos.daf.ct2.data
             connection.Dispose();
         }
 
+        // START : Moq test changes
+        //public Task<T> ExecuteScalarAsync<T>(string sql, object param = null)
+        //{
+        //    return connection.ExecuteScalarAsync<T>(sql, param);
+        //}
+
+        //public int Execute(string sql, object param = null)
+        //{
+        //    return connection.Execute(sql, param);
+        //}
+
+        //public Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null)
+        //{
+        //    return connection.QueryAsync<T>(sql, param);
+        //}
+        // END : Moq test changes
+
         #endregion Implementation of IDisposable
 
     }
