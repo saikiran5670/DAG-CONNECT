@@ -135,8 +135,8 @@
         </mat-expansion-panel-header>
 
         <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-sm">
-            <mat-checkbox class="example-margin" (change)="transportDataCheckedFn($event.checked)">Transaport Data</mat-checkbox>
-            <mat-checkbox class="example-margin" (change)="trafficFlowCheckedFn($event.checked)">Traffic Flow</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="transportDataChecked" (change)="transportDataCheckedFn($event.checked)" [disabled]="actionType==='view'">Transaport Data</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="trafficFlowChecked" (change)="trafficFlowCheckedFn($event.checked)"  [disabled]="actionType==='view'">Traffic Flow</mat-checkbox>
         </div>
         <div class='fixDiv'></div>
             <mat-accordion class="example-headers-align pt-2" style="background-color:#7e7878;">
@@ -150,28 +150,28 @@
                         <span class="col-sm">
                             <mat-label><span>{{ translationData.lblTrailer|| 'Trailer' }}</span></mat-label>
                             <mat-form-field appearance="outline" class="full-width">
-                                <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" required>
+                                <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" required [disabled]="actionType==='view'">
                                     <mat-option *ngFor="let type of trailerList" [value]="type">
                                         {{type}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </span>
-                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')">Explosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')">Gas</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')">Flammable</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')" [disabled]="actionType==='view'">Explosive</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')" [disabled]="actionType==='view'">Gas</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')" [disabled]="actionType==='view'">Flammable</mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class=" container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')">Combustible</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')">Organic</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')">Poison</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')">Radio Active</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')" [disabled]="actionType==='view'">Combustible</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')" [disabled]="actionType==='view'">Organic</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')" [disabled]="actionType==='view'">Poison</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')" [disabled]="actionType==='view'">Radio Active</mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')">Corrosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonInhale')">Poisonous Inhalation</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'waterHarm')">Water Harm</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'others')">Others</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')" [disabled]="actionType==='view'">Corrosive</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonInhale')" [disabled]="actionType==='view'">Poisonous Inhalation</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'waterHarm')" [disabled]="actionType==='view'">Water Harm</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'others')" [disabled]="actionType==='view'">Others</mat-checkbox>
                      </div>
                 </mat-expansion-panel>
                 </mat-accordion>
@@ -275,7 +275,7 @@
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblHeight|| 'Height' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
                                         matInput formControlName="vehicleHeight" required>
                                 </mat-form-field>
@@ -283,11 +283,14 @@
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
                             </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{corridorName}}</span>
+                            </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblWidth|| 'Width' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
                                         matInput formControlName="vehicleWidth" required>
                                 </mat-form-field>
@@ -295,11 +298,14 @@
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
                             </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{corridorName}}</span>
+                            </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblLength|| 'Length' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
                                         matInput formControlName="vehicleLength" required>
                                 </mat-form-field>
@@ -307,13 +313,16 @@
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
                             </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{corridorName}}</span>
+                            </div>
                         </div>
                     </div>
                     <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-xlg">
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
                                         matInput formControlName="limitedWeight" required>
                                 </mat-form-field>
@@ -321,17 +330,23 @@
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
                             </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{corridorName}}</span>
+                            </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
                                         matInput formControlName="weightPerAxle" required>
                                 </mat-form-field>
                                 <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('specialCharsNotAllowed')">
                                     {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
                                 </mat-error>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{corridorName}}</span>
                             </div>
                         </div>
                     </div>

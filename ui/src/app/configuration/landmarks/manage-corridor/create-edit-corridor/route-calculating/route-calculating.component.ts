@@ -129,13 +129,19 @@ export class RouteCalculatingComponent implements OnInit {
     //this.configureAutoCompleteForLocationSearch();
   }
 
+  getAttributeData : any;
+  getExclusionList : any;
   setCorridorData(){
     let _selectedElementData = this.selectedElementData;
     if(_selectedElementData){
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              console.log(data);
+              console.log(data)
+              if(data[0]["corridorProperties"]){
+                  this.setAdditionalData(data[0]["corridorProperties"]);
+              
+              }
           })
       }
       this.corridorName = _selectedElementData.corridoreName;
@@ -145,6 +151,26 @@ export class RouteCalculatingComponent implements OnInit {
       this.searchEndStr = _selectedElementData.endPoint;
       this.corridorWidth = _selectedElementData.width;
     }
+  }
+
+  setAdditionalData(_data){
+    this.getAttributeData = _data["attribute"];
+    this.getExclusionList = _data["exclusion"];
+    this.combustibleChecked = this.getAttributeData["isCombustible"];
+    this.corrosiveChecked = this.getAttributeData["isCorrosive"];
+    this.explosiveChecked = this.getAttributeData["isExplosive"];
+    this.flammableChecked = this.getAttributeData["isFlammable"];
+    this.gasChecked = this.getAttributeData["isGas"];
+    this.organicChecked = this.getAttributeData["isOrganic"];
+    this.othersChecked = this.getAttributeData["isOther"];
+    this.poisonChecked = this.getAttributeData["isPoision"];
+    this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
+    this.radioactiveChecked = this.getAttributeData["isRadioActive"];
+    this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
+    this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
+    this.trafficFlowChecked = _data["isTrafficFlow"];
+    this.transportDataChecked = _data["isTransportData"];
+
   }
 
 
