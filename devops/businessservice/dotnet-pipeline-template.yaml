@@ -20,9 +20,9 @@ parameters:
 - name: appsettingsPath
   type: string
   default: 'appsettingsPath'
-- name: log4NetConfigPath
+- name: log4netConfigPath
   type: string
-  default: 'log4NetConfigPath'
+  default: 'log4netConfigPath'
 
 
 
@@ -51,7 +51,7 @@ jobs:
 
   - task: replacetokens@3
     inputs:
-      targetFiles: ${{ parameters.log4NetConfigPath }}
+      targetFiles: ${{ parameters.log4netConfigPath }}
       encoding: 'auto'
       writeBOM: true
       actionOnMissing: 'warn'
