@@ -3,6 +3,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports.entity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,12 +12,15 @@ namespace net.atos.daf.ct2.reports.repository
     public class ReportRepository : IReportRepository
     {
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         private static readonly log4net.ILog log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ReportRepository(IDataAccess dataAccess)
+        public ReportRepository(IDataAccess dataAccess
+                                , IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
         }
 
         #region Select User Preferences
@@ -34,11 +38,9 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 throw;
             }
-
         }
         #endregion
-
-        #region Create Preference
+        
         #region Create Preference
         public async Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest)
         {
@@ -82,6 +84,26 @@ namespace net.atos.daf.ct2.reports.repository
             return rowsEffected;
         }
         #endregion
+
+        #region Get Vins from data mart trip_statistics
+        //This code is not in use, may require in future use.
+        public Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate, 
+                                                                   IEnumerable<string> vinList)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@fromdate", fromDate);
+                parameter.Add("@todate", toDate);
+                parameter.Add("@vins", vinList.ToArray());
+                var query = $"SELECT DISTINCT vin FROM tripdetail.trip_statistics WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND vin = Any(@vins)";
+                return _dataMartdataAccess.QueryAsync<string>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         #endregion
     }
 }

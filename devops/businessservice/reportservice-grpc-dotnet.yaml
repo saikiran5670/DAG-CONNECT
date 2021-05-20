@@ -15,16 +15,12 @@ variables:
    value: 'dotnet/ReportService_Dockerfile'
  - name: manifestFile
    value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+ - name: manifestFileDev0
+   value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
  - name: log4netConfigFile
    value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
- - name: developmentBranch
-   value: 'development'
- - name: testingBranch
-   value: 'testing'
- - name: releaseBranch
-   value: 'release'
 
 stages:
   - stage: stage1
@@ -36,10 +32,10 @@ stages:
         variableGroup: 'DEV0-Build-Variables'
         imageName: $(imageName)
         dockerFile: $(dockerFile)
-        manifestFile: $(manifestFile)
+        manifestFile: $(manifestFileDev0)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+    condition: eq(variables['Build.SourceBranchName'], 'development')
 
   - stage: stage2
     jobs:
@@ -53,7 +49,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+    condition: eq(variables['Build.SourceBranchName'], 'development')
        
   - stage: stage3
     jobs:
@@ -67,5 +63,5 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')     
+    condition: eq(variables['Build.SourceBranchName'],  'development')     
 

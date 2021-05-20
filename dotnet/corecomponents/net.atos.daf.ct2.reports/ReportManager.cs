@@ -29,5 +29,14 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.CreateUserPreference(objUserPreferenceRequest);
         }
         #endregion
+
+        #region Get Vins from data mart trip_statistics
+        //This code is not in use, may require in future use.
+        public Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate,
+                                                                   IEnumerable<string> vinList)
+        {
+            return _reportRepository.GetVinsFromTripStatistics(fromDate, toDate, vinList);
+        }
+        #endregion
     }
 }

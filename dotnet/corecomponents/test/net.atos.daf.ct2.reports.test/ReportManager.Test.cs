@@ -15,6 +15,7 @@ namespace net.atos.daf.ct2.reports.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         private readonly ReportRepository _reportRepository;
         private readonly IReportManager _reportManager;
         public ReportManagerTest()
@@ -22,8 +23,10 @@ namespace net.atos.daf.ct2.reports.test
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json")
                                                       .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
+
+            _dataMartdataAccess = new PgSQLDataMartDataAccess(_config.GetConnectionString("DataMartConnectionString"));
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _reportRepository = new ReportRepository(_dataAccess);
+            _reportRepository = new ReportRepository(_dataAccess, _dataMartdataAccess);
             _reportManager = new ReportManager(_reportRepository);
         }
 
@@ -46,6 +49,24 @@ namespace net.atos.daf.ct2.reports.test
         {
             var result = await _reportManager.GetUserPreferenceReportDataColumn(100000, 144);
             Assert.IsTrue(result.Count() == 0);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get GetVinsFromTripStatistics Sucess case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVinsFromTripStatistics_Success()
+        {
+            
+            var result = await _reportManager
+                                    .GetVinsFromTripStatistics(1604327461000, 1604336647000,
+                                                               new List<string> {
+                                                               "5A25561",
+                                                               "ATOSGJ6237G001973",
+                                                               "xxxxxxxx",
+                                                               "ATOSGJ6237G784859"
+                                                               });
+            Assert.IsTrue(result.Count() == 2);
         }
         #endregion
     }

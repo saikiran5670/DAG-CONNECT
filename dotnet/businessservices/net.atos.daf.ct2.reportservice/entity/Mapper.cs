@@ -47,5 +47,15 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return obj;
         }
+
+        internal IEnumerable<string> MapVinList(IEnumerable<string> vinList)
+        {
+            var vinListResult = new List<string>();
+            foreach (var vin in vinList)
+            {
+                vinListResult.Add(vin);
+            }
+            return vinListResult;
+        }
     }
 }
