@@ -31,7 +31,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() alertTypeList: any;
   @Input() vehicleGroupList: any;
   @Input() vehicleList: any;
-  displayedColumnsVehicles: string[] = ['vehicleName', 'vehicleGroupName', 'subcriptionStatus']
+  displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
   displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
@@ -89,7 +89,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   unitTypeEnum: string= '';
   panelOpenState: boolean = false;
   notifications: any= [];
-  distanceUnits: any= [];
+  unitTypes: any= [];
+  isUnsubscribedVehicle: boolean= false;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -146,7 +147,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       advisoryLevel: [''],
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
-      distanceUnit: ['K']
+      unitType: ['']
     },
     {
       validator: [
@@ -231,7 +232,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeAlertType(event){
-    this.distanceUnits= [];
+    this.unitTypes= [];
     this.alert_type_selected= event.value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       this.loadMap();
@@ -256,8 +257,35 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
             (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
 
-      if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG')        
-        this.distanceUnits= [{enum : 'K', value : 'Kilometer'},{enum : 'M', value : 'Miles'}];
+      if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
+        this.unitTypes= [
+                          {
+                            enum : 'K', 
+                            value : this.translationData.lblKilometer ? this.translationData.lblKilometer : 'Kilometer'
+                          },
+                          {
+                            enum : 'M',
+                            value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
+                          }
+                        ];
+        this.alertForm.get('unitType').setValue('K');                
+      }
+      else if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
+        this.unitTypes= [
+          {
+            enum : 'H', 
+            value : this.translationData.lblHours ? this.translationData.lblHours : 'Hours'
+          },
+          {
+            enum : 'I',
+            value : this.translationData.lblMinutes ? this.translationData.lblMinutes : 'Minutes'
+          },
+          {
+            enum : 'S',
+            value : this.translationData.lblSeconds ? this.translationData.lblSeconds : 'Seconds'
+          }
+        ];
+      }
 
       switch(this.alert_category_selected+this.alert_type_selected){
         case "LY": { //Excessive under utilization in days
@@ -275,19 +303,20 @@ export class CreateEditViewAlertsComponent implements OnInit {
         case "LD": { //Excessive distance done
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
-          this.unitTypeEnum= this.alertForm.controls.distanceUnit.value;
+          this.unitTypeEnum= "K"
           break;
         }
         case "LU": { //Excessive Driving duration
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
           this.unitTypeEnum= "H";
+          this.alertForm.get('unitType').setValue(this.unitTypeEnum);
           break;
         }
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
-          this.unitTypeEnum= this.alertForm.controls.distanceUnit.value;
+          this.unitTypeEnum= "K";
           break;
         }
         case "FP": { //Fuel Increase During stop
@@ -312,6 +341,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
           this.unitTypeEnum= "S";
+          this.alertForm.get('unitType').setValue(this.unitTypeEnum);
           break;
         }
         case "FA": { //Excessive Average speed
@@ -331,7 +361,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeVehicleGroup(event){
-    
+    this.alertForm.get('vehicle').setValue('');
+    this.isUnsubscribedVehicle= false;
     if(event.value == 'ALL'){
       this.vehicleByVehGroupList = this.getUnique(this.vehicleList, "vehicleId");
     }
@@ -343,14 +374,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeVehicle(event){
+    this.isUnsubscribedVehicle= false;
     this.vehicle_group_selected= event.value;
-    this.updateVehiclesDataSource(this.vehicleList.filter(item => item.vehicleId == event.value));
+    let vehicleSelected= this.vehicleList.filter(item => item.vehicleId == event.value);
+    this.updateVehiclesDataSource(vehicleSelected);
+    if(!vehicleSelected[0].subcriptionStatus)
+      this.isUnsubscribedVehicle= true;
   }
 
-  onChangeDistanceUnit(value){
-    this.unitForThreshold= this.distanceUnits.filter(item => item.enum == value)[0].value;
+  onChangeUnitType(value){
+    this.unitForThreshold= this.unitTypes.filter(item => item.enum == value)[0].value;
     this.unitTypeEnum= value;
-    console.log("unitForThreshold = "+this.unitForThreshold, "unitTypeEnum = "+this.unitTypeEnum);
   }
 
   loadMap() {

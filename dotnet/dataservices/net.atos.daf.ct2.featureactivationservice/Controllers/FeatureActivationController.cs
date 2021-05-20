@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -51,8 +52,15 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     Objsubs.VINs = new List<string>();
 
                     if (objsubscriptionActivation.SubscribeEvent.VINs != null && objsubscriptionActivation.SubscribeEvent.VINs.Count > 0)
+                    {
+                        if(objsubscriptionActivation.SubscribeEvent.VINs
+                            .GroupBy(x => x)
+                            .Where(g => g.Count() > 1).Count() > 0)
+                            return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.VINs);
+                        
                         Objsubs.VINs.AddRange(objsubscriptionActivation.SubscribeEvent.VINs);
-
+                    } 
+                        
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.StartDateTime))
@@ -89,7 +97,6 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     if (string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.OrderID))
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
 
-
                     if (!long.TryParse(objsubscriptionActivation.UnsubscribeEvent.OrderID, out _))
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
 
@@ -99,7 +106,14 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     Objunsubs.VINs = new List<string>();
 
                     if(objsubscriptionActivation.UnsubscribeEvent.VINs != null && objsubscriptionActivation.UnsubscribeEvent.VINs.Count > 0)
+                    {
+                        if (objsubscriptionActivation.UnsubscribeEvent.VINs
+                            .GroupBy(x => x)
+                            .Where(g => g.Count() > 1).Count() > 0)
+                            return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.VINs);
+
                         Objunsubs.VINs.AddRange(objsubscriptionActivation.UnsubscribeEvent.VINs);
+                    }                        
                     
                     try
                     {
