@@ -491,6 +491,8 @@ message AccountVehicles
     string Name=2;
     bool IsGroup=3;
     int32 Count=4;
+    string VIN=5;
+    string RegistrationNo=6;
 }
 message AccountVehiclesResponse {
     Responcecode code=1;

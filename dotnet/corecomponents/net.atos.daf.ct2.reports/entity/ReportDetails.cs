@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.reports.entity
 {
-	public class UserPreferenceRequest
+	public class UserPreferenceCreateRequest
 	{
 		public List<Atribute> AtributesShowNoShow { get; set; }
 	}

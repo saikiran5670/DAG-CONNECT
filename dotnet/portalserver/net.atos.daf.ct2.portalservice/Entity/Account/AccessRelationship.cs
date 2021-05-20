@@ -49,6 +49,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Account
         public string Name { get; set; }
         public bool IsGroup { get; set; }
         public int Count { get; set; }
+        public string VIN { get; set; }
+        public string RegistrationNo { get; set; }
     }
     
 }

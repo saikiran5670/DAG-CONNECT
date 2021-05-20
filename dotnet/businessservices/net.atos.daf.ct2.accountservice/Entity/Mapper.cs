@@ -199,6 +199,10 @@ namespace net.atos.daf.ct2.accountservice
                 else accountVehicle.Name = string.Empty;
                 accountVehicle.IsGroup = record.is_group;
                 accountVehicle.Count = record.count;
+                if (!string.IsNullOrEmpty(record.VIN)) accountVehicle.VIN = record.VIN;
+                else accountVehicle.VIN = string.Empty;
+                if (!string.IsNullOrEmpty(record.RegistrationNo)) accountVehicle.RegistrationNo = record.RegistrationNo;
+                else accountVehicle.RegistrationNo = string.Empty;
                 response.Add(accountVehicle);
             }
             return response;

@@ -27,5 +27,23 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return userPreferenceResult;
         }
+
+        internal  net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest MapCreateUserPrefences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        {
+            net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest obj
+                   = new net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest();
+            obj.AtributesShowNoShow = new List<reports.entity.Atribute>();
+            for (int i = 0; i < objUserPreferenceCreateRequest.AtributesShowNoShow.Count; i++)
+            {
+                obj.AtributesShowNoShow.Add(new net.atos.daf.ct2.reports.entity.Atribute
+                {
+                    AccountId = objUserPreferenceCreateRequest.AccountId,
+                    ReportId = objUserPreferenceCreateRequest.ReportId,
+                    DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
+                    IsExclusive = objUserPreferenceCreateRequest.AtributesShowNoShow[i].IsExclusive.ToUpper() == ((char)IsExclusive.Yes).ToString() ? Convert.ToChar(IsExclusive.Yes) : Convert.ToChar(IsExclusive.No),
+                });
+            }
+            return obj;
+        }
     }
 }

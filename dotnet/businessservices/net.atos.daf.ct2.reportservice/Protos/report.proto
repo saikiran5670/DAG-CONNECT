@@ -7,6 +7,7 @@ package report;
 
 service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
+rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
 }
 
 enum Responsecode{
@@ -37,3 +38,18 @@ message UserPreferenceDataColumnResponse{
     string Message = 3;
 }
 
+message UserPreferenceCreateRequest{
+ repeated Atribute AtributesShowNoShow =1;
+  int32 AccountId =2;
+ int32 ReportId =3;
+}
+
+message Atribute{
+ int32 DataAttributeId =1;
+ string IsExclusive =2;
+}
+
+message UserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
+}
