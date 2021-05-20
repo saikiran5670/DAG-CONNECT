@@ -39,7 +39,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))
 
   - stage: stage2
     jobs:
@@ -53,7 +53,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))
        
   - stage: stage3
     jobs:
@@ -67,5 +67,5 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')     
+    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))     
 
