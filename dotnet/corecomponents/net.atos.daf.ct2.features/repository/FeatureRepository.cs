@@ -786,14 +786,15 @@ namespace net.atos.daf.ct2.features.repository
                     featureSet.FeatureSetID = InsertedFeatureSetId;
                 }
                 List<int> temp = new List<int>();
-                foreach (var item in featureSet.Features)
+                if (featureSet.Features != null)
+                {
+                    foreach (var item in featureSet.Features)
                 {
                     temp.Add(item.Id);
 
                 }
 
-                if (featureSet.Features != null)
-                {
+                
                     foreach (var item in featureSet.Features)
                     {
                         var parameterfeature = CreateFeatureSetMapping(InsertedFeatureSetId, item.Id);

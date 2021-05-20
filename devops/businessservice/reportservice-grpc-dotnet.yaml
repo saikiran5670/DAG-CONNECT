@@ -1,0 +1,71 @@
+trigger:
+  branches:
+    include:
+    - development
+    - release
+    - testing
+  paths:
+    include:
+    - dotnet/businessservices/net.atos.daf.ct2.reportservice
+
+variables:
+ - name: imageName
+   value: 'reportservice-grpc'
+ - name: dockerFile
+   value: 'dotnet/ReportService_Dockerfile'
+ - name: manifestFile
+   value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+ - name: appsettingsFile
+   value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
+ - name: log4netConfigFile
+   value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
+ - name: developmentBranch
+   value: 'development'
+ - name: testingBranch
+   value: 'testing'
+ - name: releaseBranch
+   value: 'release'
+
+stages:
+  - stage: stage1
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'ats-sub1-d-app-automation'
+        containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
+        variableGroup: 'DEV0-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+
+  - stage: stage2
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE DEV1'
+        containerRegistry: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
+        variableGroup: 'DEV01-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+       
+  - stage: stage3
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE DEV2'
+        containerRegistry: '{"loginServer":"acraksvyajhwtrez6ou.azurecr.io", "id" : "/subscriptions/160509b9-0278-4c38-8a1b-c967aab4381d/resourceGroups/daf-lan2-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksvyajhwtrez6ou"}'
+        variableGroup: 'DEV02-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], 'sprint4')     
+
