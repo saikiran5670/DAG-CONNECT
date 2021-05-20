@@ -1,7 +1,7 @@
 trigger:
-- branches:
+  branches:
     include:
-    - developmet
+    - development
     - release
     - testing
   paths:
@@ -15,6 +15,16 @@ variables:
    value: 'dotnet/ReportService_Dockerfile'
  - name: manifestFile
    value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+ - name: appsettingsFile
+   value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
+ - name: log4netConfigFile
+   value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
+ - name: developmentBranch
+   value: 'development'
+ - name: testingBranch
+   value: 'testing'
+ - name: releaseBranch
+   value: 'release'
 
 stages:
   - stage: stage1
@@ -27,8 +37,9 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        projectPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice'
-    condition: and(eq(variables['Build.SourceBranchName'], 'Development'))
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))
 
   - stage: stage2
     jobs:
@@ -40,8 +51,9 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        projectPath: 'dotnet/businessservices/net.atos.daf.ct2.alertservice'
-    condition: and(eq(variables['Build.SourceBranchName'], 'Development'))
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))
        
   - stage: stage3
     jobs:
@@ -53,7 +65,7 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        projectPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice'
-    condition: and(eq(variables['Build.SourceBranchName'], 'Development'))
-     
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))     
 

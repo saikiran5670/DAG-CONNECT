@@ -58,6 +58,7 @@ export class RouteCalculatingComponent implements OnInit {
   mapGroup ;
   searchStr : string = "";
   searchEndStr : string = "";
+  corridorName : string = "";
   startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
@@ -121,7 +122,7 @@ export class RouteCalculatingComponent implements OnInit {
       weightPerAxle: ['', [Validators.required]]
 
     });
-    if(this.actionType === 'edit' && this.selectedElementData){
+    if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData()
     }
     console.log(this.selectedElementData)
@@ -131,12 +132,18 @@ export class RouteCalculatingComponent implements OnInit {
   setCorridorData(){
     let _selectedElementData = this.selectedElementData;
     if(_selectedElementData){
+      this.corridorId = _selectedElementData.id;
+      if(this.corridorId){
+          this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
+              console.log(data);
+          })
+      }
+      this.corridorName = _selectedElementData.corridoreName;
+      console.log(this.corridorName)
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
       this.searchEndStr = _selectedElementData.endPoint;
       this.corridorWidth = _selectedElementData.width;
-      this.corridorId = _selectedElementData.id;
-
     }
   }
 

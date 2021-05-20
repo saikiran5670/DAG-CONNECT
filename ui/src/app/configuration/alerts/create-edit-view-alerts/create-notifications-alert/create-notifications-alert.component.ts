@@ -78,12 +78,15 @@ mailDescription: any;
         CustomValidators.specialCharValidationForName('recipientLabel', 'FormArrayItems'),
       ]
     });
+    // this.ArrayList = this.notificationForm.controls.FormArrayItems['controls'][0].controls;
+      this.ArrayList = this.notificationForm.get('FormArrayItems')['controls'];
+    console.log(this.ArrayList);
     
     }
 
     initItems(): FormGroup{
       return this._formBuilder.group({
-        recipientLabel: ['', [ Validators.required ]],
+        recipientLabel: ['',[Validators.required]],
         contactMode: ['', [Validators.required]],
         emailAddress: ['', [Validators.required, Validators.email]],
         mailSubject: ['', [Validators.required]],
