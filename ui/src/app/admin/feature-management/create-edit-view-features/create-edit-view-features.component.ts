@@ -36,7 +36,11 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   duplicateMsg:boolean;
   isDataAttributeSetExist: boolean = false;
   duplicateEmailMsg: boolean = false;
-
+  featuresSelected = [];
+  featuresData : any = [];
+  allChildrenIds : any = [];
+  selectedChildrens : any = []; 
+  preSelectedValues: any = []
   constructor(private _formBuilder: FormBuilder, private featureService: FeatureService) { }
 
   ngOnInit() {
@@ -54,8 +58,9 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.breadcumMsg = this.getBreadcum(this.actionType);
     if(this.actionType == 'view' || this.actionType == 'edit' ){
       this.setDefaultValue();
-    }
+    } 
     this.loadGridData(this.dataAttributeList);
+    this.featuresData = this.dataAttributeList;
   }
 
   setDefaultValue(){
@@ -85,7 +90,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     this.updateDataSource(tableData);
     if(this.actionType == 'edit' ){
       this.selectTableRows();
-    }
+    }    
   }
 
   selectTableRows() {
@@ -162,7 +167,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
             tableData: filterTypeData
           }    
           this.createViewEditFeatureEmit.emit(emitObj);
-        });
+        });       
       }, (err) => {
         //console.log(err);
         if (err.status == 409) {
@@ -200,8 +205,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
             successMsg: this.userCreatedMsg,
             tableData: filterTypeData
           }    
-          this.createViewEditFeatureEmit.emit(emitObj); 
-        });
+          this.createViewEditFeatureEmit.emit(emitObj);        
+        });      
       }
       // , (err) => {
       //   //console.log(err);
@@ -220,7 +225,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   masterToggleForDataAttribute() {
-    this.isAllSelectedForDataAttribute()
+    this.isAllSelectedForDataAttribute() 
       ? this.selectionForDataAttribute.clear()
       : this.dataSource.data.forEach((row: any) =>
         this.selectionForDataAttribute.select(row)
@@ -264,5 +269,68 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   onStatusChange(event: any){
     this.selectedStatus = event.value;
   }
+
+  onCheckboxChange(event: any, row: any) {
+    var selectedName = row.name;
+    let selectedParentId = row.id;
+    const isChecked = this.selectionForDataAttribute.isSelected(row) ? true : false;
+  
+    if (selectedName.includes('.')) {
+      //*****when the selected element is a child****
+      var splitString = selectedName.split('.');
+      let selectedElementParent = splitString[0];
+      this.selectedChildrens = [...this.preSelectedValues];
+      if (isChecked) {
+        if(!(this.selectedChildrens.includes(row.id))){
+          this.selectedChildrens.push(row.id);
+          // AllSelectedChilds = [...selectedChildrens, row.id]
+        }
+        this.dataSource.data.forEach((row) => {
+          if (selectedElementParent) {
+            if (selectedElementParent == row.name) {
+              selectedParentId = row.id;
+              this.selectionForDataAttribute.select(row);
+            }
+          }
+        });
+        //adding parent ID's in selectedList
+        if(!(this.selectedChildrens.includes(selectedParentId))){
+          this.selectedChildrens.push(selectedParentId);
+        }
+        console.log('parent Id is:- ', selectedParentId);
+        console.log("---selectedChildrens---",this.selectedChildrens)
+      } 
+      //when unchecking(OFF)child toggle
+        else if(!isChecked) {
+          const index = this.selectedChildrens.indexOf(row.id);
+            if (index > -1) {
+             let removedValue =  this.selectedChildrens.splice(index, 1);
+              // console.log("--removing from array--",removedValue )
+            }
+            console.log("---selectedChildrens---",this.selectedChildrens)
+      }
+     }
+     else {
+      //***when the selected element is a parent****
+      let childOfSelectedElement = [];
+      this.featuresData.map((getData) => {
+        if (getData.name.startsWith(selectedName)) {
+          childOfSelectedElement.push(getData);
+        }
+      });
+      if (isChecked) {
+        this.dataSource.data.forEach((row) => {
+          if (childOfSelectedElement.length > 0) {
+            if (childOfSelectedElement.find((x) => x.id == row.id)) {
+              this.allChildrenIds.push(row.id);
+              this.selectionForDataAttribute.select(row);
+            }
+          }
+        });
+        console.log("--allChildrenElements Id's--",this.allChildrenIds)
+      }
+    }
+  }
+
 
 }
