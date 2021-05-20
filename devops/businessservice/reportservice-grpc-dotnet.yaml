@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-    - developmet
+    - development
     - release
     - testing
   paths:
@@ -15,6 +15,16 @@ variables:
    value: 'dotnet/ReportService_Dockerfile'
  - name: manifestFile
    value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+ - name: appsettingsFile
+   value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
+ - name: log4netConfigFile
+   value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
+ - name: developmentBranch
+   value: 'development'
+ - name: testingBranch
+   value: 'testing'
+ - name: releaseBranch
+   value: 'release'
 
 stages:
   - stage: stage1
@@ -27,8 +37,8 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        appsettingsPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
-        log4netConfigPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'], 'sprint4')
 
   - stage: stage2
@@ -41,8 +51,8 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        appsettingsPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
-        log4netConfigPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'], 'sprint4')
        
   - stage: stage3
@@ -55,7 +65,7 @@ stages:
         imageName: $(imageName)
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
-        appsettingsPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
-        log4netConfigPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'], 'sprint4')     
 
