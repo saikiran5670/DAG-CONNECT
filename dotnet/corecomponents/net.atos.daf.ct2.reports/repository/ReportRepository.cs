@@ -52,11 +52,12 @@ namespace net.atos.daf.ct2.reports.repository
             int rowsEffected = 0; var userPreference = new DynamicParameters();
             userPreference.Add("account_id", objUserPreferenceRequest.AccountId);
             userPreference.Add("report_id", objUserPreferenceRequest.ReportId);
-            await _dataAccess.ExecuteAsync(queryDelete, userPreference);
+            
             using (var transactionScope = _dataAccess.connection.BeginTransaction())
             {
                 try
                 {
+                    await _dataAccess.ExecuteAsync(queryDelete, userPreference);
                     for (int i = 0; i < objUserPreferenceRequest.AtributesShowNoShow.Count; i++)
                     {
                         userPreference.Add("data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
