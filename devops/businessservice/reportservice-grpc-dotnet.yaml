@@ -4,11 +4,9 @@ trigger:
     - development
     - release
     - testing
-    - sprint4
   paths:
     include:
     - dotnet/businessservices/net.atos.daf.ct2.reportservice
-    - devops/businessservice
 
 variables:
  - name: imageName
@@ -35,7 +33,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+    condition: eq(variables['Build.SourceBranchName'], 'development')
 
   - stage: stage2
     jobs:
@@ -49,7 +47,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], 'sprint4')
+    condition: eq(variables['Build.SourceBranchName'], 'development')
        
   - stage: stage3
     jobs:
@@ -63,5 +61,5 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'sprint4')     
+    condition: eq(variables['Build.SourceBranchName'],  'development')     
 
