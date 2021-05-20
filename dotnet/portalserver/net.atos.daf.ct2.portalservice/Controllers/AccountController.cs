@@ -1890,13 +1890,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
-                //ssoRequest.Email = request.Email;
                 ssoRequest.AccountID = _userDetails.accountId;
                 ssoRequest.RoleID = _userDetails.roleId;
                 ssoRequest.OrganizationID = _userDetails.orgId;
                 if (_userDetails.accountId <= 0 || _userDetails.roleId <= 0 || _userDetails.orgId <= 0)
                 {
-                    return StatusCode(400, "Please provide mandatory and valid inputs");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING_PARAMETER", nameof(HeaderObj));
                 }
                 var response = await _accountClient.GenerateSSOAsync(ssoRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
@@ -1909,10 +1908,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
                 {
-                    return StatusCode(404, response.Message);
+                    return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_USER!", Convert.ToString(_userDetails.accountId));
                 }
                 else
-                    return StatusCode(500, "Internal server error!");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "BAD REQUEST", Convert.ToString(_userDetails.accountId));
             }
             catch (Exception ex)
             {
@@ -1923,6 +1922,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        private IActionResult GenerateErrorResponse(HttpStatusCode StatusCode, string Massage, string Value)
+        {
+            return base.StatusCode((int)StatusCode, new ErrorResponse()
+            {
+                ResponseCode = ((int)StatusCode).ToString(),
+                Message = Massage,
+                Value = Value
+            });
         }
         #endregion
 
