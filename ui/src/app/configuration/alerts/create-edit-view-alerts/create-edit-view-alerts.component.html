@@ -237,11 +237,11 @@
                     <mat-label>{{ translationData.lblLevel || 'Level' }} <span class='mandatoryColor'>*</span></mat-label>  
                   </div> 
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left"></div>
-                  <div *ngIf="distanceUnits.length != 0" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="unitTypes.length != 0" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
-                      <mat-select formControlName="distanceUnit" class="matSelect"
-                          (selectionChange)="onChangeDistanceUnit($event.value)">
-                          <mat-option *ngFor="let unit of distanceUnits" [value]="unit.enum">
+                      <mat-select formControlName="unitType" class="matSelect"
+                          (selectionChange)="onChangeUnitType($event.value)">
+                          <mat-option *ngFor="let unit of unitTypes" [value]="unit.enum">
                               &nbsp;{{ unit.value }}
                           </mat-option>
                       </mat-select>         
