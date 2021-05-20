@@ -107,9 +107,15 @@ export class CustomValidators {
   //   };
   // }
 
-  static specialCharValidationForName(name) {
+  static specialCharValidationForName(name, formArrayName?) {
+    
     return (formGroup: FormGroup) => {
-      const NAME = formGroup.controls[name];
+      let NAME;
+      if(formArrayName){
+        NAME = formGroup.controls[formArrayName]['controls'][0]['controls'][name];
+      }else{
+        NAME = formGroup.controls[name];
+      }
       var regex = /[!@#\$%&*]/;
 
       if (!NAME.value) {
