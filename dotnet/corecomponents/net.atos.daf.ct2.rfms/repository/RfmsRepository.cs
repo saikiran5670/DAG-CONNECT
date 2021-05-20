@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 }
                 var rfmsVehicles = new RfmsVehicles();
-                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
                 return rfmsVehicles;
 
             }
