@@ -110,12 +110,12 @@ namespace net.atos.daf.ct2.organization.repository
                     groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                     groupVehicle = await groupManager.Create(groupVehicle);
 
-                    // Create access relationship
-                    AccessRelationship accessRelationship = new AccessRelationship();
-                    accessRelationship.AccountGroupId = groupAccount.Id;
-                    accessRelationship.VehicleGroupId = groupVehicle.Id;
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
-                    await accountManager.CreateAccessRelationship(accessRelationship);
+                    //// Create access relationship
+                    //AccessRelationship accessRelationship = new AccessRelationship();
+                    //accessRelationship.AccountGroupId = groupAccount.Id;
+                    //accessRelationship.VehicleGroupId = groupVehicle.Id;
+                    //accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
+                    //await accountManager.CreateAccessRelationship(accessRelationship);
 
                 }
             }
