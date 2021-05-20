@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 VehicleFilter ObjVehicleFilter = new VehicleFilter();
                 ObjVehicleFilter = _mapper.ToVehicleFilterEntity(request);
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetRelationshipVehicles(ObjVehicleFilter);
                 VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {

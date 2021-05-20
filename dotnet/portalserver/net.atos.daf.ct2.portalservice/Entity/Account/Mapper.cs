@@ -411,6 +411,8 @@ namespace net.atos.daf.ct2.portalservice.Account
                 accessRelationship.Name = request.Name ?? string.Empty;
                 accessRelationship.IsGroup = request.IsGroup;
                 accessRelationship.Count = request.Count;
+                accessRelationship.VIN = request.VIN ?? string.Empty;
+                accessRelationship.RegistrationNo = request.RegistrationNo ?? string.Empty;
             }
 
             return accessRelationship;
