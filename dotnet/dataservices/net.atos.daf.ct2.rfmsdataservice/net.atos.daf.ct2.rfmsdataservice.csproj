@@ -10,4 +10,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
+  </ItemGroup>
+
 </Project>
