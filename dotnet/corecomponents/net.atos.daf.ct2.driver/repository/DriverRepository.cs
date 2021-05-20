@@ -46,7 +46,7 @@ namespace net.atos.daf.ct2.driver
             {
                 log.Info("Delete get method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.driver
             {
                 log.Info("Driver update method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.driver
             {
                 log.Info("Delete driver method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus)
@@ -151,7 +151,7 @@ namespace net.atos.daf.ct2.driver
             {
                 log.Info("UpdateOptinOptout driver method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -333,7 +333,7 @@ namespace net.atos.daf.ct2.driver
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
     }

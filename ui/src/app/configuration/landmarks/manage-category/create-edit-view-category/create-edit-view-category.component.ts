@@ -5,6 +5,7 @@ import { CustomValidators } from '../../../../shared/custom.validators';
 import * as XLSX from 'xlsx';
 import { LandmarkCategoryService } from '../../../../services/landmarkCategory.service';
 import { DomSanitizer } from '@angular/platform-browser'; 
+import { count } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-edit-view-category',
@@ -18,6 +19,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
   @Input() actionType: any;
   @Output() backToPage = new EventEmitter<any>();
   @Input() parentCategoryList: any;
+  
   breadcumMsg: any = '';
   categoryForm: FormGroup;
   accountOrganizationId: any;
@@ -35,7 +37,10 @@ export class CreateEditViewCategoryComponent implements OnInit {
   types = ['Global', 'Regular'];
   duplicateCategory: boolean = false;
   duplicateCatMsg: any = '';
-
+  isDisabledType= false;
+  dataGlobalTypes:any=[];
+  dataRegularTypes:any=[];
+  typeCount: boolean = true;
   constructor(private _formBuilder: FormBuilder, private landmarkCategoryService: LandmarkCategoryService, private domSanitizer: DomSanitizer) { }
 
   ngOnInit() {
@@ -46,7 +51,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
       categoryName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       type: ['Regular', [Validators.required]],
       categoryType: ['', []],
-      parentCategory: [],
+      parentCategory: [],       
       categoryDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
       uploadFile: [
         undefined,
@@ -136,11 +141,11 @@ export class CreateEditViewCategoryComponent implements OnInit {
     this.selectedCategoryType = event.value;
     if(this.selectedCategoryType == 'subcategory'){
       this.categoryForm.get('parentCategory').setValue((this.parentCategoryList.length > 0) ? this.parentCategoryList[0].id : 0);
-    }
+   }
   }
-
+  
   onParentCategoryChange(){
-
+    
   }
 
   onReset(){
@@ -166,7 +171,7 @@ export class CreateEditViewCategoryComponent implements OnInit {
         modified_At: 0,
         modified_By: 0,
         icon: this.uploadIcon //-- base64
-      }
+      }     
       this.landmarkCategoryService.addLandmarkCategory(createdObj).subscribe((createdData: any) => {
         this.loadLandmarkCategoryData();
       }, (error) => {
@@ -210,12 +215,12 @@ export class CreateEditViewCategoryComponent implements OnInit {
       Orgid: this.accountOrganizationId
     }
     this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((parentCategoryData: any) => {
-      categoryList = parentCategoryData.categories;
+      categoryList = parentCategoryData.categories;    
       this.getSubCategoryData(categoryList);
     }, (error) => {
       categoryList = [];
       this.getSubCategoryData(categoryList);
-    }); 
+    });  
   }
 
   getSubCategoryData(categoryList: any){
@@ -261,5 +266,36 @@ export class CreateEditViewCategoryComponent implements OnInit {
       return '';
     }
   }
+ 
+  onCategoryTypeChange(event){ 
+    
+      if(this.typeCount){
+      this.categoryForm.get('parentCategory').setValue((this.parentCategoryList.length > 0) ? this.parentCategoryList[0].id : 0);
+      this.dataRegularTypes=this.parentCategoryList;
+      this.typeCount = false;
+      }
+      if(event.value == 'Global'){
+        let objData = {
+          type:'C',
+          Orgid: 0
+        }
+        if(this.dataGlobalTypes.length > 0)
+        {
+          this.isDisabledType=true; 
+          this.parentCategoryList= this.dataGlobalTypes;
+        }
+        else{
+        this.landmarkCategoryService.getLandmarkCategoryType(objData).subscribe((data) => {
+          this.isDisabledType=true;
+          this.dataGlobalTypes= data["categories"];
+          this.parentCategoryList= this.dataGlobalTypes;
+          });
+        }
+      }
+      else{
+        this.parentCategoryList= this.dataRegularTypes;
+      }
+  }
+
 
 }

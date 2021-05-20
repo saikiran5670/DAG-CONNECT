@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.reportservice.Services;
 
 namespace net.atos.daf.ct2.reportservice
@@ -42,7 +44,9 @@ namespace net.atos.daf.ct2.reportservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
-            
+            services.AddTransient<IReportManager, ReportManager>();
+            services.AddTransient<IReportRepository, ReportRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

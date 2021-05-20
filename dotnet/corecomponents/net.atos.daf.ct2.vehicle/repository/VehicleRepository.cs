@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 log.Info("GetVehicleBySubscriptionId Vehicle method in repository failed.");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -180,7 +180,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -533,7 +533,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -844,7 +844,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    ,v.oem_organisation_id
                                    ,os.name as relationship
                                    from master.vehicle v
-                                   left join master.orgrelationshipmapping as om on v.id = om.vehicle_id
+                                   inner join master.orgrelationshipmapping as om on v.id = om.vehicle_id
                                    inner join master.orgrelationship as os on om.relationship_id=os.id 
                                    where 1=1";
             var parameter = new DynamicParameters();
@@ -860,7 +860,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (vehiclefilter.OrganizationId > 0)
             {
                 parameter.Add("@organization_id", vehiclefilter.OrganizationId);
-                QueryStatement = QueryStatement + " and (v.organization_id=@organization_id or (om.created_org_id=@organization_id or om.target_org_id=@organization_id))";
+                QueryStatement = QueryStatement + " and (v.organization_id=@organization_id or ((om.created_org_id=@organization_id and os.code<>'Owner') or (om.target_org_id=@organization_id and os.code<>'Owner')))";
 
             }
 
@@ -928,7 +928,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -975,7 +975,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<Vehicle> VehicleLicensePlateNumberExists(Vehicle vehicle)
@@ -1010,7 +1010,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1061,6 +1061,64 @@ namespace net.atos.daf.ct2.vehicle.repository
                 IEnumerable<VehicleGroupList> vehiclegrouplist = await dataAccess.QueryAsync<VehicleGroupList>(QueryStatement, parameter);
 
                 return vehiclegrouplist;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = string.Empty;
+                List<AccountVehicleEntity> response = new List<AccountVehicleEntity>();
+                // org filter
+                if (organizationId > 0 && is_vehicle)
+                {
+                    query = @"select distinct id,name,count,true as is_group from (
+                                     select vg.id,vg.name,
+                                            case when (vg.group_type ='D') then 
+                                                (select count(gr.group_id) 
+                                                            from master.groupref gr inner join master.group g on g.id=gr.group_id and (g.organization_id=@organization_id or (om.created_org_id=@organization_id or om.target_org_id=@organization_id)))
+                                            else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count
+                                            from master.group vg 
+                                            inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+                                            inner join master.orgrelationship as os on om.relationship_id=os.id 
+                                            where length(vg.name) > 0 and (vg.organization_id=@organization_id or ((om.created_org_id=@organization_id and os.code<>'Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))) and vg.object_type='V' and vg.group_type in ('G','D')
+                                            ) vehicleGroup";
+                }
+                else
+                {
+                    query = @"select distinct id,name,0 as count,true as is_group from (
+                                select vg.id,vg.name
+                                from master.group vg
+								inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+								inner join master.orgrelationship as os on om.relationship_id=os.id 
+                                where (vg.organization_id=@organization_id or ((om.created_org_id=@organization_id and os.code<>'Owner') or (om.target_org_id=@organization_id and os.code<>'Owner')))  and vg.object_type='V' and vg.group_type in ('G','D') 
+                                and length(vg.name) > 0
+                                ) vehicleGroup";
+                }
+                parameter.Add("@organization_id", organizationId);
+                IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
+                response = accessRelationship.ToList();
+                VehicleFilter vehiclefilter = new VehicleFilter();
+                vehiclefilter.OrganizationId = organizationId;
+                IEnumerable<Vehicle> vehicles = await GetRelationshipVehicles(vehiclefilter);
+                foreach (var item in vehicles.ToList())
+                {
+                    AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
+                    accountVehicleEntity.id = item.ID;
+                    accountVehicleEntity.name = item.Name;
+                    accountVehicleEntity.count = 0;
+                    accountVehicleEntity.is_group = false;
+                    accountVehicleEntity.VIN = item.VIN;
+                    accountVehicleEntity.RegistrationNo = item.License_Plate_Number;
+                    response.Add(accountVehicleEntity);
+                }
+                return response;
             }
             catch (Exception ex)
             {
@@ -1304,7 +1362,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<bool> CreateVehicleAxelInformation(List<VehicleAxelInformation> vehicleaxelinfo, int vehicleId)
@@ -1826,7 +1884,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1862,7 +1920,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1875,7 +1933,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         //    }
         //    catch(Exception ex)
         //    {
-        //        throw ex;
+        //        throw;
         //    }
         //}
 
@@ -1922,7 +1980,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -1946,7 +2004,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -2057,7 +2115,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -2076,7 +2134,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -2097,7 +2155,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

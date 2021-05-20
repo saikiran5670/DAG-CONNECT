@@ -17,8 +17,8 @@
     "landmarkCategoryRESTServiceURL": "https://api.dev1.ct2.atos.net/poigeofence",
     "geofenceRESTServiceURL": "https://api.dev1.ct2.atos.net/geofence",
     "alertRESTServiceURL": "https://api.dev1.ct2.atos.net/alert",
-    "corridorRESTServiceURL": "https://api.dev1.ct2.atos.net/corridor"
-
+    "corridorRESTServiceURL": "https://api.dev1.ct2.atos.net/corridor",
+    "authZuoraSSOServiceURL": "https://api.dev1.ct2.atos.net/account/sso"
   },
   "hereMap":{
     "app_id":"LRJH9LmTMNbwteXRz03L",

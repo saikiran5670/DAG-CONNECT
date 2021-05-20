@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
@@ -90,12 +90,13 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
         public async Task<bool> Delete(int accountid, int organization_id)
         {
+            TransactionScope transactionScope = null;
             try
             {
                 var parameter = new DynamicParameters();
@@ -104,7 +105,7 @@ namespace net.atos.daf.ct2.account
                 string query = string.Empty;
                 int result = 0;
 
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                using (transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     // check in user need to delete 
                     // Delete Account Group Reference
@@ -141,7 +142,12 @@ namespace net.atos.daf.ct2.account
 
             catch (Exception ex)
             {
-                throw ex;
+                throw;
+            }
+            finally
+            {
+                if (transactionScope != null)
+                    transactionScope.Dispose();
             }
         }
 
@@ -201,7 +207,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -282,7 +288,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -300,7 +306,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -318,7 +324,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -337,7 +343,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<Account> AddAccountToOrg(Account account)
@@ -365,7 +371,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
@@ -391,7 +397,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> UpdateIsReminderSent(int accountId, bool isReminderSent = true)
@@ -408,7 +414,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -439,7 +445,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -459,7 +465,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -477,7 +483,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -527,7 +533,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -549,7 +555,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -565,7 +571,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -603,7 +609,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return accountBlob;
         }
@@ -631,7 +637,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -667,7 +673,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return entity;
         }
@@ -701,7 +707,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return entity;
         }
@@ -719,7 +725,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 return false;
-                throw ex;
+                throw;
             }
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
@@ -767,7 +773,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -888,7 +894,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -944,7 +950,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<AccountVehicleEntity>> GetAccount(AccountVehicleAccessRelationshipFilter filter, bool is_account)
@@ -1001,7 +1007,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1029,7 +1035,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1078,7 +1084,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -1101,7 +1107,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -1134,7 +1140,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return accountIds;
         }
@@ -1161,7 +1167,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return Roles;
         }
@@ -1215,7 +1221,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return keyValueList;
         }
@@ -1236,7 +1242,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return AccountOrgRoleList;
         }
@@ -1265,7 +1271,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return resetPasswordToken;
         }
@@ -1286,7 +1292,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1306,7 +1312,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1326,7 +1332,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1374,7 +1380,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -1566,7 +1572,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
