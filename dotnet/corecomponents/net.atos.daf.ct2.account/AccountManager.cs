@@ -17,6 +17,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -391,7 +392,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate" + ex.Message, 1, 2, emailId);
-                throw ex;
+                throw;
             }
         }
 
@@ -419,7 +420,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Get Reset Password Token Status" + ex.Message, 1, 2, processToken.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -467,7 +468,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password: " + ex.Message, 1, 2, accountInfo.ProcessToken.Value.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<Response> ResetPasswordInvalidate(Guid ResetToken)
@@ -490,7 +491,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password Invalidate: " + ex.Message, 1, 2, ResetToken.ToString());
-                throw ex;
+                throw;
             }
 
             return response;
@@ -663,10 +664,10 @@ namespace net.atos.daf.ct2.account
 
         #region Account SSO Details
 
-        public async Task<SSOTokenResponse> GetAccountSSODetails(int accountId)
+        public async Task<SSOTokenResponse> GetAccountSSODetails(IdentitySessionEntity.AccountToken account)
         {
             List<SSOTokenResponse> _responses = new List<SSOTokenResponse>();
-            _responses = await repository.GetAccountSSODetails(accountId);
+            _responses = await repository.GetAccountSSODetails(account);
             return _responses.FirstOrDefault();
         }
 

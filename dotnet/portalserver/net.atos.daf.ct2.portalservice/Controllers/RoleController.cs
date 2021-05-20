@@ -8,10 +8,10 @@ using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.featureservice;
+//using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
-using net.atos.daf.ct2.portalservice.Entity.Feature;
+//using net.atos.daf.ct2.portalservice.Entity.Feature;
 using net.atos.daf.ct2.portalservice.Entity.Role;
 using net.atos.daf.ct2.roleservice;
 using RoleBusinessService = net.atos.daf.ct2.roleservice;
@@ -41,9 +41,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Constructor
-        public RoleController(RoleBusinessService.RoleService.RoleServiceClient Featureclient, AuditHelper auditHelper)
+        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper)
         {
-            _roleclient = Featureclient;
+            _roleclient = roleclient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _auditHelper = auditHelper;
@@ -182,6 +182,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 ObjRole.RoleID = roleId;
                 ObjRole.UpdatedBy = updatedby;
                 var role_Id = await _roleclient.DeleteAsync(ObjRole);
+                if (role_Id.Code == Responcecode.Assigned)
+                {
+                    return StatusCode(400,"Role_In_Use");
+                }
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete method in Role manager", roleId, roleId, JsonConvert.SerializeObject(roleId));
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
                      "Role service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,

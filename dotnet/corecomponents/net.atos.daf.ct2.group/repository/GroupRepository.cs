@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return group;
         }
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return group;
         }
@@ -132,7 +132,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -235,7 +235,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -267,7 +267,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<bool> UpdateRef(Group group)
@@ -302,7 +302,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -355,7 +355,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<Group> CheckSingleGroup(Group groupRequest)
@@ -399,7 +399,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private Group Map(dynamic record)
@@ -495,7 +495,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<GroupRef>> GetRef(int groupid)
@@ -510,7 +510,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> GetRefCount(int groupid)
@@ -525,7 +525,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> GetAccountCount(int organization_id)
@@ -543,7 +543,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<bool> RemoveRef(int groupid)
@@ -558,7 +558,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -574,7 +574,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -693,7 +693,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -719,7 +719,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -744,7 +744,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -769,7 +769,7 @@ namespace net.atos.daf.ct2.group
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

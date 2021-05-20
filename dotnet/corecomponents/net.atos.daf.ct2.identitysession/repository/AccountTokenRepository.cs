@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
             
         }
@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> DeleteTokenbyAccountId(int sessionId)
@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<AccountToken>> GetTokenDetails(int AccountID)
@@ -180,7 +180,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<AccountToken>> GetTokenDetails(string TokenId)
@@ -219,7 +219,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<bool> ValidateToken(string TokenId)
@@ -243,7 +243,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> GetTokenCount(int AccountID)
@@ -260,7 +260,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private AccountToken Map(dynamic record)

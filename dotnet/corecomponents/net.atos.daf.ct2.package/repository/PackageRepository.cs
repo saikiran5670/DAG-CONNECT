@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return package;
         }
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return package;
         }
@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return packages;
         }
@@ -239,7 +239,7 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -258,7 +258,7 @@ namespace net.atos.daf.ct2.package.repository
             {
                 log.Info("Delete Package method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(packageId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<Package> UpdatePackageState(Package package)
@@ -278,7 +278,7 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return package;
         }

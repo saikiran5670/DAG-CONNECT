@@ -2,11 +2,13 @@ using Dapper;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -64,7 +66,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
@@ -88,12 +90,13 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
         public async Task<bool> Delete(int accountid, int organization_id)
         {
+            TransactionScope transactionScope = null;
             try
             {
                 var parameter = new DynamicParameters();
@@ -102,7 +105,7 @@ namespace net.atos.daf.ct2.account
                 string query = string.Empty;
                 int result = 0;
 
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                using (transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     // check in user need to delete 
                     // Delete Account Group Reference
@@ -139,7 +142,12 @@ namespace net.atos.daf.ct2.account
 
             catch (Exception ex)
             {
-                throw ex;
+                throw;
+            }
+            finally
+            {
+                if (transactionScope != null)
+                    transactionScope.Dispose();
             }
         }
 
@@ -199,7 +207,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -280,7 +288,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -298,7 +306,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -316,7 +324,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -335,7 +343,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<Account> AddAccountToOrg(Account account)
@@ -363,7 +371,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
@@ -389,7 +397,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> UpdateIsReminderSent(int accountId, bool isReminderSent = true)
@@ -406,7 +414,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -437,7 +445,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -457,7 +465,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -475,7 +483,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -525,7 +533,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -547,7 +555,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -563,7 +571,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -601,7 +609,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return accountBlob;
         }
@@ -629,7 +637,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -665,7 +673,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return entity;
         }
@@ -699,7 +707,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return entity;
         }
@@ -717,7 +725,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 return false;
-                throw ex;
+                throw;
             }
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
@@ -765,7 +773,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -886,7 +894,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -942,7 +950,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<AccountVehicleEntity>> GetAccount(AccountVehicleAccessRelationshipFilter filter, bool is_account)
@@ -999,7 +1007,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1027,7 +1035,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1076,7 +1084,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -1099,7 +1107,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -1132,7 +1140,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return accountIds;
         }
@@ -1159,7 +1167,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return Roles;
         }
@@ -1186,7 +1194,8 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+                return false;
             }
         }
         // End Add Account to Role
@@ -1212,7 +1221,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return keyValueList;
         }
@@ -1233,7 +1242,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return AccountOrgRoleList;
         }
@@ -1262,7 +1271,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return resetPasswordToken;
         }
@@ -1283,7 +1292,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1303,7 +1312,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1323,7 +1332,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1371,7 +1380,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -1499,14 +1508,14 @@ namespace net.atos.daf.ct2.account
         #endregion
 
         #region AccountSSO
-        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(int AccountID)
+        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(AccountToken account)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 List<SSOTokenResponse> response = new List<SSOTokenResponse>();
-                if (AccountID > 0)
+                if (account.AccountId > 0)
                 {
                     query = @"WITH cte_account
                                 AS (
@@ -1514,6 +1523,7 @@ namespace net.atos.daf.ct2.account
 		                                ,act.id AS accountid
 		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
 		                                ,actrole.role_id AS roleid
+										,org.id AS orgdefault_id
 		                                ,org.org_id AS organizationid
 		                                ,org.name AS organizationname
 	                                FROM master.account act
@@ -1526,8 +1536,9 @@ namespace net.atos.daf.ct2.account
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
 		                                ,_unit.name AS UnitDisplay
+                                        ,_vehicledisplay.name as VehicleDisplay
 		                                ,actp.id AS accountpreferenceid
-		                                ,actp.vehicle_display_id AS VehicleDisplay
+		                                ,actp.vehicle_display_id AS VehicleDisplayId
 		                                ,actp.timezone_id AS TimeZone
 		                                ,actp.date_format_id
 		                                ,actp.unit_id
@@ -1548,10 +1559,12 @@ namespace net.atos.daf.ct2.account
 	                                ,cte_actp.vehicledisplay
                                 FROM cte_actpreference cte_actp
                                 RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid
-                                WHERE cte_act.accountID = @accountID
+                                WHERE cte_act.accountID = @accountID AND cte_act.roleid = @roleID AND cte_act.orgdefault_id = @OrganizationID
                                 ";
                     //}
-                    parameter.Add("@accountID", AccountID);
+                    parameter.Add("@accountID", account.AccountId);
+                    parameter.Add("@roleID", account.RoleId);
+                    parameter.Add("@organizationID", account.OrganizationId);
                     IEnumerable<SSOTokenResponse> accountDetails = await dataAccess.QueryAsync<SSOTokenResponse>(query, parameter);
                     response = accountDetails.ToList();
                 }
@@ -1559,7 +1572,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion

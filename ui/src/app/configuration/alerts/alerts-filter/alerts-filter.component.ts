@@ -24,7 +24,7 @@ export class AlertsFilterComponent implements OnInit {
   isDisabledAlerts = true; 
   localData : any; 
   tempData: any;
-  urgencyLevel = false; 
+  alertType:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -65,25 +65,32 @@ export class AlertsFilterComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)  
    }
 
-  handleCategoryChange(filter, event) {   
-    this.dataResultTypes=[];      
+  handleCategoryChange(filter, event) {
+    //  this.alertType='';
     if(event.value == ''){  
-         this.isDisabledAlerts = true;
-         // this.dataResultTypes = this.alertTypeList;  
+        this.dataResultTypes =this.alertTypeList;
+        this.isDisabledAlerts = true;
+        this.filterListValues['type'] = '';
     }
     else{     
-        this.isDisabledAlerts = false;
+        this.isDisabledAlerts = false;  
+        this.dataResultTypes =[];
         this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
-    }  
+     }  
      this.filterChange(filter, event);
     }
 
     filterAlertTypeChange(filter, event) {
-      this.updatedTableData(this.initData); 
-      let event_val = event.value.value.trim().toLowerCase();
-      this.dataSource.filter = event_val; 
-      this.filterValues.emit(this.dataSource);   
-      this.updatedTableData(this.initData);     
+      let event_val;
+      if(event.value == ''){  
+        event_val = event.value;       
+      }
+      else{    
+        event_val = event.value.value.trim().toLowerCase(); 
+      } 
+      this.filterListValues[filter] =event_val;
+      this.dataSource.filter = JSON.stringify(this.filterListValues);
+      this.filterValues.emit(this.dataSource); 
      }
 
    updatedTableData(tableData : any) {   
@@ -95,47 +102,43 @@ export class AlertsFilterComponent implements OnInit {
   }
    
   // Called on Filter change
-  filterChange(filter, event) {    
+  filterChange(filter, event) {     
     let event_val;      
-      if(filter == "highUrgencyLevel"){  
+      if(filter == "highUrgencyLevel"){          
           if(event.value == ''){          
-            event_val = event.value.trim();  
+            event_val = event.value;  
           }
           else{
-            event_val = event.value.enum.trim().toLowerCase(); 
+            event_val = event.value.enum; 
           }
-      }else if(filter == "vehicleName"){
-        if(event.value == ''){
-          event_val = event.value.trim();  
-        }
-        else{
-          event_val = event.value.vehicleName.trim().toLowerCase();
-        }
-      }     
-      else if(filter == "category"){      
-        if(event.value == ''){
-          this.dataResultTypes = [];
-          event_val = event.value.trim();          
-          }
-          else{
-            event_val = event.value.value.trim().toLowerCase();
-          }
-      }
-      else{
+          }else if(filter == "vehicleGroupName"){
+            if(event.value == ''){
+              event_val = event.value.trim();  
+            }
+            else{
+              if(event.value.vehicleName != undefined){
+                event_val = event.value.vehicleName.trim();
+              }
+              else{
+                event_val = event.value.value.trim();  
+              }
+            }
+       } 
+      else{   
       if(event.value == ''){
       event_val = event.value.trim();  
       }
       else{
-        event_val = event.value.value.trim().toLowerCase();
+        event_val = event.value.value.trim();
       }
     }
    this.filterListValues[filter] =event_val;
-   this.dataSource.filter = JSON.stringify(this.filterListValues);  
+   this.dataSource.filter = JSON.stringify(this.filterListValues);
    this.filterValues.emit(this.dataSource); 
+   
   }
 
   createFilter() {
-   // this.ngOnInit(); 
     let filterFunction = function (data: any, filter: string): boolean {
       let searchTerms = JSON.parse(filter);
       let isFilterSet = false;
@@ -151,14 +154,32 @@ export class AlertsFilterComponent implements OnInit {
 
       let nameSearch = () => {
         let found = false;
-        if (isFilterSet) {
-          for (const col in searchTerms) {
-            searchTerms[col].trim().toLowerCase().split(' ').forEach(word => {              
-              if (data[col].toString().toLowerCase().indexOf(word) != -1 && isFilterSet) {
-                found = true
-              }
-            });         
+        if (isFilterSet) {  
+          for (const col in searchTerms) {         
+           if( col == "highUrgencyLevel"){
+            data.alertUrgencyLevelRefs.forEach(obj => { 
+              if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
+                found = true;
+                data["highUrgencyLevel"]=obj.urgencyLevelType;
+                data["highThresholdValue"]=obj.thresholdValue;
+              }             
+            });          
+           }  
+           else if(col == "type"){  
+            if (data['category'].toString().indexOf(searchTerms['category']) != -1 && isFilterSet) {
+              found = false; 
+              if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
+                  found = true;      
+              }     
+             }       
+            }          
+           else{                                
+            if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
+            found = true
+             }                     
+            }
            }
+         
           return found
         } else {
           return true;

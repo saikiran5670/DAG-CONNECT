@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> DeleteSession(string SessionId)
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<AccountSession>> GetAccountSession(int AccountId)
@@ -142,7 +142,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -161,7 +161,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private AccountSession Map(dynamic record)
@@ -206,7 +206,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }

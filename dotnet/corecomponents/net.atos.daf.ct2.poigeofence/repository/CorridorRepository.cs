@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -131,7 +131,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -154,7 +154,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -269,7 +269,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("AddRouteCorridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(routeCorridor.Id));
                 log.Error(ex.ToString());
-                // throw ex;
+                // throw;
             }
             return routeCorridor;
         }
@@ -353,7 +353,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -479,7 +479,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             catch (Exception ex)
             {
                 log.Error(ex.ToString());
-                // throw ex;
+                // throw;
             }
             return tripList;
 
@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -569,7 +569,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -768,7 +768,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -802,7 +802,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -835,7 +835,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -867,7 +867,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -908,7 +908,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete Corridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(CorridorId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -929,7 +929,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1182,7 +1182,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 log.Info($"UpdateRouteCorridor method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(routeCorridor.Id)}");
                 log.Error(ex.ToString());
                 transactionScope.Rollback();
-                throw ex;
+                throw;
             }
             finally
             {

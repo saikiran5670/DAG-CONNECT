@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.alert
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion

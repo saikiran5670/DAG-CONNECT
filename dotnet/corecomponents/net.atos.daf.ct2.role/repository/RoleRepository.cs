@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.role.repository
 	                                RETURNING id";
 
             var Roleparameter = new DynamicParameters();
-            Roleparameter.Add("@organization_id", roleMaster.Organization_Id == 0 ?null : roleMaster.Organization_Id);
+            Roleparameter.Add("@organization_id", roleMaster.Organization_Id == 0 ? null : roleMaster.Organization_Id);
             Roleparameter.Add("@name", roleMaster.Name);
             Roleparameter.Add("@state", 'A');
             Roleparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
@@ -44,8 +44,8 @@ namespace net.atos.daf.ct2.role.repository
             // {
             //     var RoleFeatureQueryStatement = @" INSERT INTO dafconnectmaster.rolefeatureset
             //                         (rolemasterid,featuresetid,isactive,createddate,createdby) 
-	        //                         VALUES (@rolemasterid,@featuresetid,@isactive,@createddate,@createdby)
-	        //                         RETURNING rolefeaturesetid";
+            //                         VALUES (@rolemasterid,@featuresetid,@isactive,@createddate,@createdby)
+            //                         RETURNING rolefeaturesetid";
 
             //     var RoleFeatureparameter = new DynamicParameters();
             //     RoleFeatureparameter.Add("@rolemasterid", InsertedRoleId);
@@ -60,9 +60,9 @@ namespace net.atos.daf.ct2.role.repository
             return InsertedRoleId;
         }
 
-        public async Task<int>  Updaterolefeatureset(int RoleId,int FeatureSetId)
+        public async Task<int> Updaterolefeatureset(int RoleId, int FeatureSetId)
         {
-             var RoleQueryStatement = @"UPDATE master.role
+            var RoleQueryStatement = @"UPDATE master.role
                                     SET feature_set_id = @feature_set_id
                                     ,updated_date = @modified_date
                                     ,updated_by = @modified_by
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.role.repository
             var Roleparameter = new DynamicParameters();
             Roleparameter.Add("@feature_set_id", FeatureSetId);
             Roleparameter.Add("@role_id", RoleId);
-           
+
 
             int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             return InsertedRoleId;
@@ -81,34 +81,63 @@ namespace net.atos.daf.ct2.role.repository
 
         public async Task<int> DeleteRole(int roleid, int Accountid)
         {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@roleid", roleid);
+                parameter.Add("@state", 'D');
+                parameter.Add("@updated_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameter.Add("@updated_by", Accountid);
 
-            var parameter = new DynamicParameters();
-            parameter.Add("@roleid", roleid);
-            parameter.Add("@state", 'D');
-            parameter.Add("@updated_date", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-            parameter.Add("@updated_by", Accountid);
-
-            var RoleQueryStatement = @"UPDATE master.role
+                var RoleQueryStatement = @"UPDATE master.role
                                     SET state = @state
-                                    ,modified_at = @modified_at
-                                    ,modified_by = @modified_by
+                                    ,modified_at = @updated_date
+                                    ,modified_by = @updated_by
                                     WHERE id = @roleid
                                     RETURNING id;";
 
-            int resultDeletedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
+                int resultDeletedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
 
-            // var RoleFeatureQueryStatement = @"UPDATE dafconnectmaster.rolefeatureset 
-            //                         SET isactive = @isactive
-            //                         ,updateddate = @updateddate
-            //                         ,updatedby = @updatedby
-            //                         WHERE rolemasterid = @roleid
-            //                         RETURNING rolefeaturesetid;";
-            // int resultDeleteRoleFeature = await dataAccess.ExecuteScalarAsync<int>(RoleFeatureQueryStatement, parameter);
-            // if (resultDeleteRoleFeature > 0)
-            // {
-            //     return resultDeleteRoleFeature;
-            // }
-            return resultDeletedRole;
+                // var RoleFeatureQueryStatement = @"UPDATE dafconnectmaster.rolefeatureset 
+                //                         SET isactive = @isactive
+                //                         ,updateddate = @updateddate
+                //                         ,updatedby = @updatedby
+                //                         WHERE rolemasterid = @roleid
+                //                         RETURNING rolefeaturesetid;";
+                // int resultDeleteRoleFeature = await dataAccess.ExecuteScalarAsync<int>(RoleFeatureQueryStatement, parameter);
+                // if (resultDeleteRoleFeature > 0)
+                // {
+                //     return resultDeleteRoleFeature;
+                // }
+                return resultDeletedRole;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+        }
+
+        public async Task<bool> IsRoleAssigned(int roleid)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@roleid", roleid);
+
+                string RoleQueryStatement = @"Select account_id from master.accountrole where role_id= @roleid";
+                int accountid = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
+                
+                return accountid > 0;
+                
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
 
         public async Task<IEnumerable<RoleMaster>> GetRoles(RoleFilter roleFilter)
@@ -128,7 +157,7 @@ namespace net.atos.daf.ct2.role.repository
             //                             WHERE (role.rolemasterid=@roleid or @roleid=0)
             //                             and role.isactive=true;";
 
-            var QueryStatement= @"SELECT role.id, 
+            var QueryStatement = @"SELECT role.id, 
                                 role.organization_id, 
                                 role.name, 
                                 role.state, 
@@ -148,7 +177,7 @@ namespace net.atos.daf.ct2.role.repository
             if (roleFilter.RoleId > 0)
             {
                 parameter.Add("@id", roleFilter.RoleId);
-                QueryStatement = QueryStatement + " and id  = @id";                
+                QueryStatement = QueryStatement + " and id  = @id";
 
             }
             // organization id filter
@@ -157,7 +186,7 @@ namespace net.atos.daf.ct2.role.repository
                 parameter.Add("@organization_id", roleFilter.Organization_Id);
                 QueryStatement = QueryStatement + " and organization_id  = @organization_id";
 
-                if(roleFilter.IsGlobal == true)
+                if (roleFilter.IsGlobal == true)
                 {
                     parameter.Add("@id", roleFilter.RoleId);
                     QueryStatement = QueryStatement + " or (organization_id  is null and state = 'A')";
@@ -165,9 +194,9 @@ namespace net.atos.daf.ct2.role.repository
                 }
 
             }
-            else if(roleFilter.Organization_Id == 0)
+            else if (roleFilter.Organization_Id == 0)
             {
-                 if(roleFilter.IsGlobal == true)
+                if (roleFilter.IsGlobal == true)
                 {
                     QueryStatement = QueryStatement + " and  organization_id  is null";
 
@@ -175,7 +204,7 @@ namespace net.atos.daf.ct2.role.repository
 
             }
 
-                   
+
             IEnumerable<RoleMaster> roledetails = await dataAccess.QueryAsync<RoleMaster>(QueryStatement, parameter);
             return roledetails;
 
@@ -191,7 +220,7 @@ namespace net.atos.daf.ct2.role.repository
             parameter.Add("@name", roleMaster.Name);
             parameter.Add("@feature_set_id", roleMaster.Feature_set_id);
             parameter.Add("@updatedby", roleMaster.Updatedby);
-            parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));            
+            parameter.Add("@updateddate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
             parameter.Add("@description", roleMaster.Description);
             parameter.Add("@level", roleMaster.Level);
 
@@ -220,22 +249,22 @@ namespace net.atos.daf.ct2.role.repository
             return resultUpdatedRole;
         }
 
-        public int CheckRoleNameExist(string roleName,int Organization_Id,int roleid)
+        public int CheckRoleNameExist(string roleName, int Organization_Id, int roleid)
         {
             var QueryStatement = @" SELECT CASE WHEN id IS NULL THEN 0 ELSE id END
                                     FROM master.role 
                                     WHERE state='A'
                                     AND LOWER(name) = LOWER(@roleName) and (organization_id = @organization_id or organization_id is null)";
-           var parameter = new DynamicParameters();
-            if(roleid>0)
+            var parameter = new DynamicParameters();
+            if (roleid > 0)
             {
                 parameter.Add("@roleid", roleid);
                 QueryStatement = QueryStatement + " and id != @roleid";
             }
-            
+
             parameter.Add("@roleName", roleName.Trim());
             parameter.Add("@organization_id", Organization_Id);
-            int resultRoleId =  dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+            int resultRoleId = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
             return resultRoleId;
 
         }

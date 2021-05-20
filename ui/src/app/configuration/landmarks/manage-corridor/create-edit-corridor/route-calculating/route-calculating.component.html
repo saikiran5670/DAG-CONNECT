@@ -8,7 +8,7 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         </mat-label>
         <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
+            <mat-form-field class="form-control form-control-small" appearance="outline" class="full-width">
                 <input maxlength="50" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
                     formControlName="label" required>
             </mat-form-field>
@@ -36,9 +36,9 @@
 
         </mat-label>
         <div>
-            <ng2-completer input-class="form-control form-control-small" [(ngModel)]="searchStr" 
-            [datasource]="dataService" [minSearchLength]="0" (keyup)="onLocationKeyPress($event)" 
-            [minSearchLength]="0" (selected)="onSelected($event)" [selectOnClick]="true" [ngModelOptions]="{standalone: true}"></ng2-completer>
+            <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
+            [minSearchLength]="0" (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
             <!-- <mat-form-field appearance="outline" class='full-width'>
                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
                     matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required> 
@@ -63,9 +63,9 @@
 
         </mat-label>
         <div>
-            <ng2-completer input-class="form-control form-control-small" [(ngModel)]="searchEndStr" 
-            [datasource]="dataService" [minSearchLength]="0"
-            [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true" [ngModelOptions]="{standalone: true}"></ng2-completer>
+            <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
+            [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer>
            
             <!-- <mat-form-field appearance="outline" class='full-width'>
                 <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
@@ -87,7 +87,7 @@
 <div fxLayout="row" class="margin-bottom-sm">
     <div class="col-sm-3 areaWidth min-width-30-per">
         <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
-            <input class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()" disabled>
+            <input class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
         <div *ngIf="actionType != 'view'">
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->

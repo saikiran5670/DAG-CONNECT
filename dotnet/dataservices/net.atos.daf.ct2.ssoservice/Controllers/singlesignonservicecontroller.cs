@@ -6,6 +6,7 @@ using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.singlesignonservice.CustomAttributes;
 using net.atos.daf.ct2.singlesignonservice.Entity;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using AccountComponent = net.atos.daf.ct2.account;
 
@@ -17,24 +18,17 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
     {
         private readonly ILogger<singlesignonservicecontroller> logger;
         AccountComponent.IAccountIdentityManager accountIdentityManager;
-        // private readonly IVehicleManager vehicleManager;
-        //private readonly IOrganizationManager organizationManager;
         public IConfiguration Configuration { get; }
         public singlesignonservicecontroller(
             AccountComponent.IAccountIdentityManager _accountIdentityManager,
             ILogger<singlesignonservicecontroller> _logger,
             IConfiguration configuration
-            //IOrganizationManager _organizationManager,
-            //IVehicleManager _vehicleManager,
             )
         {
 
             accountIdentityManager = _accountIdentityManager;
             Configuration = configuration;
             logger = _logger;
-
-            //organizationManager = _organizationManager;
-            //vehicleManager = _vehicleManager;
         }
 
         [HttpGet]
@@ -46,36 +40,53 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
                 UserDetails _details = new UserDetails();
                 if (!string.IsNullOrEmpty(token))
                 {
-                    SSOTokenResponse result = await accountIdentityManager.ValidateSSOToken(token);
+                    SSOResponse result = await accountIdentityManager.ValidateSSOToken(token);
                     if (result != null)
                     {
-                        _details.AccountID = result.AccountID;
-                        _details.AccountName = result.AccountName;
-                        _details.RoleID = result.RoleID;
-                        _details.OrganizationID = result.OrganizationID;
-                        _details.OraganizationName = result.OrganizationName;
-                        _details.DateFormat = result.DateFormat;
-                        _details.TimeZone = result.TimeZone;
-                        _details.UnitDisplay = result.UnitDisplay;
-                        _details.VehicleDisplay = result.VehicleDisplay;
+                        if (result.Details != null)
+                        {
+                            _details.AccountID = result.Details.AccountID;
+                            _details.AccountName = result.Details.AccountName;
+                            _details.RoleID = result.Details.RoleID;
+                            _details.OrganizationID = result.Details.OrganizationID;
+                            _details.OraganizationName = result.Details.OrganizationName;
+                            _details.DateFormat = result.Details.DateFormat;
+                            _details.TimeZone = result.Details.TimeZone;
+                            _details.UnitDisplay = result.Details.UnitDisplay;
+                            _details.VehicleDisplay = result.Details.VehicleDisplay;
 
-                        return Ok(_details);
+                            return Ok(_details);
+                        }
+                        else
+                        {
+                            return GenerateErrorResponse(result.StatusCode, result.Message, nameof(token));
+                        }
                     }
                     else
                     {
-                        return StatusCode(400, string.Empty);
+                        return GenerateErrorResponse(result.StatusCode, result.Message, nameof(token));
                     }
                 }
                 else
                 {
-                    return StatusCode(400, string.Empty);
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING_PARAMETER", nameof(token));
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return StatusCode(500, string.Empty);
+                return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_TOKEN", nameof(token));
             }
+        }
+
+        private IActionResult GenerateErrorResponse(HttpStatusCode StatusCode, string Massage, string Value)
+        {
+            return base.StatusCode((int)StatusCode, new ErrorResponse()
+            {
+                ResponseCode = ((int)StatusCode).ToString(),
+                Message = Massage,
+                Value = Value
+            });
         }
     }
 }

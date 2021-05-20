@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.relationship.repository
             {
                 log.Info("Create Organization Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationship));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return relationship;
         }
@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.relationship.repository
             {
                 log.Info("Update Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationship));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return relationship;
         }
@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.relationship.repository
             {
                 log.Info("Delete  Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationshipId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.relationship.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -379,7 +379,7 @@ namespace net.atos.daf.ct2.relationship.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

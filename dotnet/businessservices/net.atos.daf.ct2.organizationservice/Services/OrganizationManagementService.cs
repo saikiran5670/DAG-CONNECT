@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.organizationservice
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                throw;
             }
         }
         //Relationship Management
