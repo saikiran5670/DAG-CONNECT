@@ -100,7 +100,7 @@ export class AlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
-      this.vehicleList= data["vehicleGroup"].filter(item=>item.vehicleName!='');
+      this.vehicleList= data["vehicleGroup"];
     
       this.alertStatusList=[{
        id: 1,

@@ -19,6 +19,8 @@ using Newtonsoft.Json;
 using log4net;
 using net.atos.daf.ct2.identity.entity;
 using System.Reflection;
+using net.atos.daf.ct2.vehicle;
+using vehicleEntity = net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -29,13 +31,13 @@ namespace net.atos.daf.ct2.accountservice
         private readonly Preference.IPreferenceManager preferencemanager;
         private readonly Group.IGroupManager groupmanager;
         private readonly Mapper _mapper;
-
+        private readonly IVehicleManager _vehicelManager;
         private ILog _logger;
 
         private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
 
         #region Constructor
-        public AccountManagementService(AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        public AccountManagementService(AccountComponent.IAccountManager _accountmanager, Preference.IPreferenceManager _preferencemanager, Group.IGroupManager _groupmanager, AccountComponent.IAccountIdentityManager _accountIdentityManager, IVehicleManager vehicelManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             accountmanager = _accountmanager;
@@ -43,6 +45,7 @@ namespace net.atos.daf.ct2.accountservice
             groupmanager = _groupmanager;
             accountIdentityManager = _accountIdentityManager;
             _mapper = new Mapper();
+            _vehicelManager = vehicelManager;
         }
         #endregion
 
@@ -1455,21 +1458,21 @@ namespace net.atos.daf.ct2.accountservice
                 if (request.OrganizationId > 0)
                 {
                     AccountVehicleAccessRelationshipFilter filter = new AccountVehicleAccessRelationshipFilter();
-                    List<AccountVehicleEntity> vehicleList = new List<AccountVehicleEntity>();
+                    List<vehicleEntity.AccountVehicleEntity> vehicleList = new List<vehicleEntity.AccountVehicleEntity>();
                     List<AccountVehicleEntity> accountList = new List<AccountVehicleEntity>();
                     filter.OrganizationId = request.OrganizationId;
                     if (request.IsAccount)
                     {
                         accountList = await accountmanager.GetAccount(filter, true);
-                        vehicleList = await accountmanager.GetVehicle(filter, false);
+                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, false);
                     }
                     else
                     {
                         accountList = await accountmanager.GetAccount(filter, false);
-                        vehicleList = await accountmanager.GetVehicle(filter, true);
+                        vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
                     }
-
-                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(vehicleList));
+                    List<AccountVehicleEntity> Objvehiclelist = vehicleList.Select(a => new AccountVehicleEntity { id = a.id, name = a.name, is_group = a.is_group, count = a.count,RegistrationNo=a.RegistrationNo,VIN=a.VIN }).ToList();
+                    accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(Objvehiclelist));
                     accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
                     _logger.Info("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
                 }

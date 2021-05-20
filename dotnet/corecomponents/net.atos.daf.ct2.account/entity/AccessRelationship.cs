@@ -63,6 +63,8 @@ namespace net.atos.daf.ct2.account.entity
         public string name { get; set; }        
         public int count { get; set; }
         public bool is_group { get; set; }
+        public string VIN { get; set; }
+        public string RegistrationNo { get; set; }
     }
     public class AccountVehicleAccessRelationship
     {

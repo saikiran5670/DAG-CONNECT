@@ -1,8 +1,19 @@
 
 using System.Collections.Generic;
 
-namespace net.atos.daf.ct2.report.entity
+namespace net.atos.daf.ct2.reports.entity
 {
+	public class UserPreferenceCreateRequest
+	{
+		public List<Atribute> AtributesShowNoShow { get; set; }
+	}
+	public class Atribute
+	{
+		public int AccountId { get; set; }
+		public int ReportId { get; set; }
+		public int DataAttributeId { get; set; }
+		public char IsExclusive { get; set; }
+	}
 	public class ReportListedParamaters
 	{
 		public string FromDate { get; set; }
