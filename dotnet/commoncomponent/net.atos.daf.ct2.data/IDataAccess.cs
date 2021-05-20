@@ -412,6 +412,20 @@ namespace net.atos.daf.ct2.data
 
         Task<T> ExecuteScalarAsync<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null);
 
+        //start: Changes for Moq
+        //Task<T> ExecuteScalarAsync<T>(string sql, object param = null);
+        //int Execute(
+        //    string sql,
+        //    object param = null);
+
+        //Task<IEnumerable<T>> QueryAsync<T>(
+        //  string sql,
+        //  object param = null
+        //  );
+
+
+        // END : changes for Moq
+
         // Task<object> ExecuteScalarAsync(CommandDefinition command);
 
         // Task<T> ExecuteScalarAsync<T>(CommandDefinition command);
