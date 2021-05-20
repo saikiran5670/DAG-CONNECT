@@ -8,6 +8,7 @@ package report;
 service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
+rpc GetVinsFromTripStatistics (VehicleFilterRequest) returns (VehicleFilterResponse);
 }
 
 enum Responsecode{
@@ -52,4 +53,16 @@ message Atribute{
 message UserPreferenceCreateResponse{
     Responsecode Code = 1;
     string Message = 2;
+}
+
+message VehicleFilterRequest{
+int64 FromDate = 1;
+int64 ToDate = 2;
+repeated string VinList = 3;
+}
+
+message VehicleFilterResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated string VinList = 3;
 }

@@ -10,5 +10,6 @@ namespace net.atos.daf.ct2.reports.repository
     {
         Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId);
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
+        Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate, IEnumerable<string> vinList);
     }
 }
