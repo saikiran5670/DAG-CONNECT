@@ -17,9 +17,13 @@ parameters:
 - name: manifestFile
   type: string
   default: 'manifestFile'
-- name: projectPath
+- name: appsettingsPath
   type: string
-  default: 'projectPath'
+  default: 'appsettingsPath'
+- name: log4NetConfigPath
+  type: string
+  default: 'log4NetConfigPath'
+
 
 
 jobs:
@@ -30,7 +34,7 @@ jobs:
   steps:
   - task: replacetokens@3
     inputs:
-      targetFiles: ${{ parameters.projectPath }} + '/appsettings.Production.json'
+      targetFiles: ${{ parameters.appsettingsPath }}
       encoding: 'auto'
       writeBOM: true
       actionOnMissing: 'warn'
@@ -43,11 +47,11 @@ jobs:
   - task: CmdLine@2
     inputs:
         script: |
-          cat ${{ parameters.projectPath }} + '/appsettings.Production.json'
+          cat ${{ parameters.appsettingsPath }}
 
   - task: replacetokens@3
     inputs:
-      targetFiles: ${{ parameters.projectPath }} + '/log4net.config'
+      targetFiles: ${{ parameters.log4NetConfigPath }}
       encoding: 'auto'
       writeBOM: true
       actionOnMissing: 'warn'
