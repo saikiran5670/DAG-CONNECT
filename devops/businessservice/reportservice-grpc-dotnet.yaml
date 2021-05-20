@@ -19,12 +19,6 @@ variables:
    value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
  - name: log4netConfigFile
    value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/log4net.config'
- - name: developmentBranch
-   value: 'development'
- - name: testingBranch
-   value: 'testing'
- - name: releaseBranch
-   value: 'release'
 
 stages:
   - stage: stage1
@@ -39,7 +33,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))
+    condition: eq(variables['Build.SourceBranchName'], 'development')
 
   - stage: stage2
     jobs:
@@ -53,7 +47,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))
+    condition: eq(variables['Build.SourceBranchName'], 'development')
        
   - stage: stage3
     jobs:
@@ -67,5 +61,5 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'], $(developmentBranch))     
+    condition: eq(variables['Build.SourceBranchName'],  'development')     
 
