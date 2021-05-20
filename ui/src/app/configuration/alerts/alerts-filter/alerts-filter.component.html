@@ -10,7 +10,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblName || 'Category' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select (selectionChange)="handleCategoryChange('category',$event)" placeholder="{{translationData.lblSelectUserGroup || 'Select Category'}}">
+                <mat-select (selectionChange)="handleCategoryChange('category', $event.value.enum ,$event)" placeholder="{{translationData.lblSelectUserGroup || 'Select Category'}}">
                     <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
                       <mat-option *ngFor="let catList of alertCategoryList | removeDuplicates" [value]="catList">
                       {{ catList.value }}                                           
@@ -23,7 +23,7 @@
                 {{ translationData.lblGroup || 'Type' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterChange('type',$event)" [(ngModel)]="alertType">
+                <mat-select [disabled]="isDisabledAlerts" placeholder="Select Type" (selectionChange)="filterAlertTypeChange('type',$event)" [(ngModel)]="alertType">
                     <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
                     <mat-option *ngFor="let typeList of dataResultTypes | removeDuplicates" [value]="typeList">{{typeList.value}}</mat-option>
                 </mat-select>
