@@ -1,0 +1,91 @@
+parameters:
+- name: subscription
+  type: string
+  default: 'subscription'
+- name: containerRegistry
+  type: string
+  default: 'containerRegistry'
+- name: variableGroup
+  type: string
+  default: 'variableGroup'
+- name: dockerFile
+  type: string
+  default: 'dockerFile'
+- name: imageName
+  type: string
+  default: 'imageName'
+- name: manifestFile
+  type: string
+  default: 'manifestFile'
+- name: projectPath
+  type: string
+  default: 'projectPath'
+
+
+jobs:
+- job:
+  pool: $(PRIVATEAGENT)
+  variables:
+  - group: ${{ parameters.variableGroup }}
+  steps:
+  - task: replacetokens@3
+    inputs:
+      targetFiles: ${{ parameters.projectPath }} + '/appsettings.Production.json'
+      encoding: 'auto'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      tokenPrefix: '#{'
+      tokenSuffix: '}#'
+      useLegacyPattern: false
+      enableTelemetry: true
+
+  - task: CmdLine@2
+    inputs:
+        script: |
+          cat ${{ parameters.projectPath }} + '/appsettings.Production.json'
+
+  - task: replacetokens@3
+    inputs:
+      targetFiles: ${{ parameters.projectPath }} + '/log4net.config'
+      encoding: 'auto'
+      writeBOM: true
+      actionOnMissing: 'warn'
+      keepToken: false
+      tokenPrefix: '#{'
+      tokenSuffix: '}#'
+      useLegacyPattern: false
+      enableTelemetry: true
+      
+  - task: Docker@0
+    displayName: 'Build an image'
+    inputs:
+      azureSubscription: ${{ parameters.Subscription }}
+      azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
+      dockerFile: ${{ parameters.dockerFile }}
+      imageName: ${{ parameters.imageName }}
+
+  - task: Docker@0
+    displayName: 'Push an image'
+    inputs:
+      azureSubscription:  ${{ parameters.Subscription }}
+      azureContainerRegistry:  ${{ parameters.ContainerRegistry }}
+      action: 'Push an image'
+      imageName: ${{ parameters.imageName }}
+  
+  - task: CmdLine@2
+    inputs:
+      script: |
+        echo ${{ parameters.manifestFile }}
+
+  - task: CopyFiles@2
+    displayName: 'Copy Kubernetes manifest'
+    inputs:
+      SourceFolder: '$(system.defaultworkingdirectory)'
+      Contents: ${{ parameters.manifestFile }} 
+      TargetFolder: '$(build.artifactstagingdirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: Drop'
+    inputs:
+      PathtoPublish: '$(build.artifactstagingdirectory)'
