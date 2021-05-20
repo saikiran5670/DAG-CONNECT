@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -439,7 +439,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                throw;
             }
         }
 

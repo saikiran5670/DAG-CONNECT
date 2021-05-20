@@ -111,7 +111,7 @@ namespace net.atos.daf.ct2.alert.repository
             catch (Exception ex)
             {
                 transactionScope.Rollback();
-                throw ex;
+                throw;
             }
             finally
             {
@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> CreateAlertUrgencyLevelRef(AlertUrgencyLevelRef urgencylevel)
@@ -183,7 +183,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> CreateAlertFilterRef(AlertFilterRef alertfilter)
@@ -232,7 +232,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> CreateNotification(Notification notification)
@@ -264,7 +264,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> CreateNotificationAvailabilityPeriod(NotificationAvailabilityPeriod availabilityperiod)
@@ -292,7 +292,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> CreateNotificationLimit(NotificationLimit limit)
@@ -320,7 +320,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<int> CreateNotificationrecipient(NotificationRecipient recipient)
@@ -357,7 +357,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -459,7 +459,7 @@ namespace net.atos.daf.ct2.alert.repository
             catch (Exception ex)
             {
                 transactionScope.Rollback();
-                throw ex;
+                throw;
             }
             finally
             {
@@ -485,7 +485,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -501,7 +501,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -523,7 +523,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -717,7 +717,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -737,7 +737,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -796,7 +796,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }        
 

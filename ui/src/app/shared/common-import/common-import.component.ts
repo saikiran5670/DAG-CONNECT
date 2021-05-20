@@ -52,7 +52,7 @@ export class CommonImportComponent implements OnInit {
   parsedGPXData : any;
   accountOrganizationId: any = 0;
   filetypeError : boolean = false;
-  fileIcon = 'assets/images/icons/microsoftExcel/excel_icon.svg';
+  fileIcon = 'assets/images/icons/microsoftExcel/file-download.svg';
 
   constructor(private _formBuilder: FormBuilder, private packageService: PackageService ,private dialog: MatDialog, 
     private poiService: POIService,private geofenceService : GeofenceService,private ngxXml2jsonService : NgxXml2jsonService) { }
@@ -65,7 +65,7 @@ export class CommonImportComponent implements OnInit {
     }
     else if(this.importFileComponent === 'geofence'){
       this.fileExtension = '.gpx';
-      this.fileIcon = 'assets/images/icons/microsoftExcel/gpx_icon_30.png';
+     // this.fileIcon = 'assets/images/icons/microsoftExcel/gpx_icon_30.png';
     }
     this.importPackageFormGroup = this._formBuilder.group({
       uploadFile: [
@@ -204,7 +204,6 @@ export class CommonImportComponent implements OnInit {
           const parser = new DOMParser();
           const xml = parser.parseFromString(text, 'text/xml');
           this.parsedGPXData = this.ngxXml2jsonService.xmlToJson(xml);
-          //this.formatGPXData();
           this.formatNewData();
         }
       }
@@ -401,19 +400,19 @@ export class CommonImportComponent implements OnInit {
           
             "organizationId": this.accountOrganizationId,//this.filelist[i]["OrganizationId"],
             "categoryId": this.filelist[i]["CategoryId"],
-            "categoryName":this.filelist[i]["CategoryName"],
+            "categoryName":this.filelist[i]["CategoryName"] == undefined ? '' : this.filelist[i]["CategoryName"],
             "subCategoryId":this.filelist[i]["SubCategoryId"],
-            "subCategoryName": this.filelist[i]["SubCategoryName"],
+            "subCategoryName": this.filelist[i]["SubCategoryName"] == undefined ? '' : this.filelist[i]["SubCategoryName"],
             "name": this.filelist[i]["POIName"],
-            "address": this.filelist[i]["Address"],
-            "city": this.filelist[i]["City"],
-            "country": this.filelist[i]["Country"],
-            "zipcode":String(this.filelist[i]["Zipcode"]),
+            "address": this.filelist[i]["Address"] == undefined ? '' : this.filelist[i]["Address"],
+            "city": this.filelist[i]["City"] == undefined ? '' : this.filelist[i]["City"],
+            "country": this.filelist[i]["Country"] == undefined ? '' : this.filelist[i]["Country"],
+            "zipcode":String(this.filelist[i]["Zipcode"] == undefined ? '' : this.filelist[i]["Zipcode"]),
             "latitude": this.filelist[i]["Latitude"],
             "longitude": this.filelist[i]["Longitude"],
-            "distance": this.filelist[i]["Distance"],
-            "state": this.filelist[i]["State"],
-            "type": this.filelist[i]["Type"]
+            "distance": this.filelist[i]["Distance"] == undefined ? '' : this.filelist[i]["Distance"],
+            "state": this.filelist[i]["State"] == undefined ? '' : this.filelist[i]["State"],
+            "type": this.filelist[i]["Type"]== undefined ? '' : this.filelist[i]["Type"]
         
         }
       )
@@ -582,16 +581,16 @@ export class CommonImportComponent implements OnInit {
         }
         organizedGPXData.push(
           {
-            "id": Number(gpxInfo[i].id),
+            "id":Object.keys(gpxInfo[i].id).length === 0  ? 0 : Number(gpxInfo[i].id),
             "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
             "categoryId": Number(gpxInfo[i].categoryId),
             "subCategoryId": Number(gpxInfo[i].subCategoryId),
             "name": gpxInfo[i].geofencename,
             "type": gpxInfo[i].type,
-            "address": gpxInfo[i].address,
-            "city": gpxInfo[i].city,
-            "country": gpxInfo[i].country,
-            "zipcode": gpxInfo[i].zipcode,
+            "address": Object.keys(gpxInfo[i].address).length === 0  ? "" : String(gpxInfo[i].address),
+            "city": Object.keys(gpxInfo[i].city).length === 0  ? "" : String(gpxInfo[i].city),
+            "country": Object.keys(gpxInfo[i].country).length === 0  ? "" : String(gpxInfo[i].country),
+            "zipcode": Object.keys(gpxInfo[i].zipcode).length === 0  ? "" : String(gpxInfo[i].zipcode),
             "latitude": Number(gpxInfo[i].latitude),
             "longitude":Number( gpxInfo[i].longitude),
             "distance": Number(gpxInfo[i].distance),
@@ -624,16 +623,16 @@ export class CommonImportComponent implements OnInit {
       }
       organizedGPXData.push(
         {
-          "id": Number(gpxInfo.id),
+          "id":Object.keys(gpxInfo.id).length === 0  ? 0 : Number(gpxInfo.id),
           "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
           "categoryId": Number(gpxInfo.categoryId),
           "subCategoryId": Number(gpxInfo.subCategoryId),
           "name": gpxInfo.geofencename,
           "type": gpxInfo.type,
-          "address": gpxInfo.address,
-          "city": gpxInfo.city,
-          "country": gpxInfo.country,
-          "zipcode": gpxInfo.zipcode,
+          "address": Object.keys(gpxInfo.address).length === 0  ? "" : String(gpxInfo.address),
+          "city": Object.keys(gpxInfo.city).length === 0  ? "" : String(gpxInfo.city),
+          "country": Object.keys(gpxInfo.country).length === 0  ? "" : String(gpxInfo.country),
+          "zipcode":  Object.keys(gpxInfo.zipcode).length === 0  ? "" : String(gpxInfo.zipcode),
           "latitude": Number(gpxInfo.latitude),
           "longitude":Number( gpxInfo.longitude),
           "distance": Number(gpxInfo.distance),
@@ -646,94 +645,7 @@ export class CommonImportComponent implements OnInit {
       this.filelist = organizedGPXData;
       
   }
-  formatGPXData(){
-    let gpxData = this.parsedGPXData;
-    let gpxInfo = gpxData["gpx"]["metadata"];
-    let nodeInfo = gpxData["gpx"]["trk"];
-    //console.log(gpxInfo);
-    //console.log(nodeInfo)
-    let organizedGPXData = [];
-    let nodeArray = [],nodeObj ={};
-    let nodeArraySet = [];
 
-    if (nodeInfo.length) {
-       for (var i in nodeInfo) {
-        nodeArray.push(nodeInfo[i]["trkseg"]["trkpt"]);
-      }
-    }
-    else {
-      nodeArray.push(nodeInfo["trkseg"]["trkpt"]);
-    }
-    for(let i = 0; i < nodeArray.length ; i++){
-      let nodeArrayForEach = [];
-      for(let j = 0; j < nodeArray[i].length ; j++){
-        nodeArrayForEach.push({
-            "id": 0,
-            "landmarkId": 0,
-            "seqNo": j+1,
-            "latitude": Number(nodeArray[i][j]["@attributes"]["lat"]),
-            "longitude": Number(nodeArray[i][j]["@attributes"]["lon"]),
-            "createdBy": 0
-
-          })
-      }
-      nodeArraySet.push(nodeArrayForEach)
-    }
-
-   // console.log("nodeArraySet");
-    //console.log(nodeArraySet)
-    if(gpxInfo.length){
-      for(let i = 0; i < gpxInfo.length ; i++){
-      
-        organizedGPXData.push(
-          {
-            "id": Number(gpxInfo[i].id),
-            "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
-            "categoryId": Number(gpxInfo[i].categoryId),
-            "subCategoryId": Number(gpxInfo[i].subCategoryId),
-            "name": gpxInfo[i].geofencename,
-            "type": gpxInfo[i].type,
-            "address": gpxInfo[i].address,
-            "city": gpxInfo[i].city,
-            "country": gpxInfo[i].country,
-            "zipcode": gpxInfo[i].zipcode,
-            "latitude": Number(gpxInfo[i].latitude),
-            "longitude":Number( gpxInfo[i].longitude),
-            "distance": Number(gpxInfo[i].distance),
-            "tripId":Number(gpxInfo[i].tripId),
-            "createdBy":Number(gpxInfo[i].createdBy),
-            "nodes": nodeArraySet[i]
-          })
-        }
-    }
-    else{
-      organizedGPXData.push(
-        {
-          "id": Number(gpxInfo.id),
-          "organizationId": this.accountOrganizationId,//Number(gpxInfo[i].organizationId),
-          "categoryId": Number(gpxInfo.categoryId),
-          "subCategoryId": Number(gpxInfo.subCategoryId),
-          "name": gpxInfo.geofencename,
-          "type": gpxInfo.type,
-          "address": gpxInfo.address,
-          "city": gpxInfo.city,
-          "country": gpxInfo.country,
-          "zipcode": gpxInfo.zipcode,
-          "latitude": Number(gpxInfo.latitude),
-          "longitude":Number( gpxInfo.longitude),
-          "distance": Number(gpxInfo.distance),
-          "tripId":Number(gpxInfo.tripId),
-          "createdBy":Number(gpxInfo.createdBy),
-          "nodes": nodeArraySet
-        })
-    }
-   
-      this.filelist = organizedGPXData;
-      
-      //console.log(organizedGPXData);
-      //console.log(this.filelist)
-      //console.log(nodeArray)
-  }
 
   prepareGeofenceDataToImport(removableInput){
     let validData: any = [];
@@ -1004,7 +916,7 @@ export class CommonImportComponent implements OnInit {
       }
     }
     if(type === 'Geofence Name'){
-      if((!value || value == '') && value.length <= 50){
+      if((!value || value == '') || value.length >= 50){
         obj.status = false;
         obj.reason = this.importTranslationData.valueCannotExceed;
         return obj;

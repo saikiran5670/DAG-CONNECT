@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -131,7 +131,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -144,7 +144,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -170,7 +170,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

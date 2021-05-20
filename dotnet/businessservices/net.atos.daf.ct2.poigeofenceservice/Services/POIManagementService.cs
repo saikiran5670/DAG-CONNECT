@@ -91,7 +91,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                throw;
             }
         }
         public override async Task<POIResponse> CreatePOI(POIRequest request, ServerCallContext context)
@@ -272,7 +272,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw ex;
+                throw;
             }
         }
 

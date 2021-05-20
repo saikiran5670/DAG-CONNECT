@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 log.Info("GetVehicleBySubscriptionId Vehicle method in repository failed.");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -180,7 +180,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -533,7 +533,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -928,7 +928,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -975,7 +975,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         private async Task<Vehicle> VehicleLicensePlateNumberExists(Vehicle vehicle)
@@ -1010,7 +1010,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1064,7 +1064,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1362,7 +1362,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<bool> CreateVehicleAxelInformation(List<VehicleAxelInformation> vehicleaxelinfo, int vehicleId)
@@ -1884,7 +1884,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1920,7 +1920,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1933,7 +1933,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         //    }
         //    catch(Exception ex)
         //    {
-        //        throw ex;
+        //        throw;
         //    }
         //}
 
@@ -1980,7 +1980,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -2004,7 +2004,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -2115,7 +2115,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -2134,7 +2134,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -2155,7 +2155,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

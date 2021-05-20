@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<Icon>> GetIcons(int icon_id)
@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.translation
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
     }

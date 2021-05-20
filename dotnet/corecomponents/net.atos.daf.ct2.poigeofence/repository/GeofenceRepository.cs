@@ -133,7 +133,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             log.Error(ex.ToString());
                             item.IsFailed = true;
                             item.Message = $"There was an error inserting node data";
-                            if (!IsBulkImport) throw ex;
+                            if (!IsBulkImport) throw;
                         }
                     }
                 }
@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 log.Error(ex.ToString());
                 geofence.IsFailed = true;
                 geofence.Message = $"There was an error inserting polygon data";
-                if (!IsBulkImport) throw ex;
+                if (!IsBulkImport) throw;
             }
             return geofence;
         }
@@ -177,7 +177,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("Delete geofenceIds method in repository failed :");
                 log.Error(ex.ToString());
-                // throw ex;
+                // throw;
                 return false;
             }
         }
@@ -225,7 +225,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("GetAllGeofence  method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -278,7 +278,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("GetGeofenceByGeofenceID  method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<List<Geofence>> CreateCircularGeofence(List<Geofence> geofences, bool IsBulkImport = false)
@@ -398,7 +398,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
             return geofences;
@@ -437,7 +437,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return geofence;
         }
@@ -455,7 +455,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return geofenceList;
         }
@@ -512,7 +512,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -553,7 +553,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return geofence;
         }
@@ -802,7 +802,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 log.Info("GetGeofenceByGeofenceID  method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public Geofence Map(dynamic record)

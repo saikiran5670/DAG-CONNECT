@@ -1,5 +1,7 @@
-<form [formGroup]="notificationForm">
+<form [formGroup]="notificationForm" formArrayName="FormArrayItems" *ngFor="let item of ArrayList; let i = index" [formGroupName]="i">
     <!-- for level selection -->
+    <!-- <div > -->
+   
     <div *ngIf="(alert_category_selected === 'L') && (alert_type_selected === 'Y')" class="areaWidth min-width-30-per"
         fxLayout="column" fxLayoutAlign="left">
         <div class="full-width filter-direction margin-bottom-sm" fxLayout="row" fxLayoutAlign="left">
@@ -60,7 +62,7 @@
             </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <button class='no-margin' mat-raised-button color="primary" (click)='onNotificationAdd()'>{{ actionType ==
+            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems()'>{{ actionType ==
                 'create'
                 ? (translationData.lblAdd || 'Add') :
                 (translationData.lblAdd || 'Add') }}</button>
@@ -168,9 +170,7 @@
                             <input placeholder="{{ translationData.lblhttpsTestCom || 'https://Test.com' }}" matInput
                                 formControlName="webURL" >
                         </mat-form-field>
-                        <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
-                            with comma (;)
-                            separated' }}</mat-hint>
+                        <mat-hint>{{translationData.lblEnterWebServiceURL || 'Enter web service URL'}}</mat-hint>
                             <mat-error *ngIf="notificationForm.get('webURL').hasError('required')">
                                 {{ translationData.lblPleaseenterWebServiceURL || 'Please enter Web Service URL' }}
                                   </mat-error>
@@ -276,4 +276,6 @@
             </mat-card>
         </div>
     </div>
+
+<!-- </div> -->
 </form>

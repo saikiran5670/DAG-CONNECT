@@ -132,7 +132,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create vehicle in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(veh));
-                throw ex;
+                throw;
             }
 
             return veh;
@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "update vehicle in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(veh));
-                throw ex;
+                throw;
             }
             return veh;
         }
@@ -276,7 +276,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, organizationId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create org relationship in TCU Vehicle Component_Failed", 0, vehicleId, JsonConvert.SerializeObject(relationship));
-                throw ex;
+                throw;
             }
         }
 

@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.poigeofence
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return objRouteCorridorResponse;
         }
