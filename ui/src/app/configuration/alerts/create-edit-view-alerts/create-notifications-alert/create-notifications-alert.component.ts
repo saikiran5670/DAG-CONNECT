@@ -75,7 +75,7 @@ mailDescription: any;
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForName('recipientLabel'),
+        CustomValidators.specialCharValidationForName('recipientLabel', 'FormArrayItems'),
       ]
     });
     
