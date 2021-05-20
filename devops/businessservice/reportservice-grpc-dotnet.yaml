@@ -28,7 +28,7 @@ stages:
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
         projectPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice'
-    condition: and(eq(variables['Build.SourceBranchName'], 'Development'))
+    condition: eq(variables['Build.SourceBranchName'], 'Development')
 
   - stage: stage2
     jobs:
@@ -41,7 +41,7 @@ stages:
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
         projectPath: 'dotnet/businessservices/net.atos.daf.ct2.alertservice'
-    condition: and(eq(variables['Build.SourceBranchName'], 'Development'))
+    condition: eq(variables['Build.SourceBranchName'], 'Development')
        
   - stage: stage3
     jobs:
@@ -54,6 +54,5 @@ stages:
         dockerFile: $(dockerFile)
         manifestFile: $(manifestFile)
         projectPath: 'dotnet/businessservices/net.atos.daf.ct2.reportservice'
-    condition: and(eq(variables['Build.SourceBranchName'], 'Development'))
-     
+    condition: eq(variables['Build.SourceBranchName'], 'Development')     
 
