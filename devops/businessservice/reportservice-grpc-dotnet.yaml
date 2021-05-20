@@ -4,6 +4,7 @@ trigger:
     - development
     - release
     - testing
+    - sprint4
   paths:
     include:
     - dotnet/businessservices/net.atos.daf.ct2.reportservice
