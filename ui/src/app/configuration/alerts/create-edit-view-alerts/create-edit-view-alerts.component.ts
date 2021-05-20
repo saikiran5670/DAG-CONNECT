@@ -31,7 +31,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() alertTypeList: any;
   @Input() vehicleGroupList: any;
   @Input() vehicleList: any;
-  displayedColumnsVehicles: string[] = ['vehicleName', 'vehicleGroupName', 'subcriptionStatus']
+  displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
   displayedColumnsGroup: string[] = ['select', 'name', 'poiCount', 'geofenceCount'];
@@ -90,6 +90,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   panelOpenState: boolean = false;
   notifications: any= [];
   unitTypes: any= [];
+  isUnsubscribedVehicle: boolean= false;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -361,6 +362,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   onChangeVehicleGroup(event){
     this.alertForm.get('vehicle').setValue('');
+    this.isUnsubscribedVehicle= false;
     if(event.value == 'ALL'){
       this.vehicleByVehGroupList = this.getUnique(this.vehicleList, "vehicleId");
     }
@@ -372,8 +374,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
   }
 
   onChangeVehicle(event){
+    this.isUnsubscribedVehicle= false;
     this.vehicle_group_selected= event.value;
-    this.updateVehiclesDataSource(this.vehicleList.filter(item => item.vehicleId == event.value));
+    let vehicleSelected= this.vehicleList.filter(item => item.vehicleId == event.value);
+    this.updateVehiclesDataSource(vehicleSelected);
+    if(!vehicleSelected[0].subcriptionStatus)
+      this.isUnsubscribedVehicle= true;
   }
 
   onChangeUnitType(value){
