@@ -25,6 +25,7 @@ export class AlertsFilterComponent implements OnInit {
   localData : any; 
   tempData: any;
   alertType:any;
+  alertTypeEnum:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -65,8 +66,7 @@ export class AlertsFilterComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)  
    }
 
-  handleCategoryChange(filter, event) {
-    //  this.alertType='';
+  handleCategoryChange(filter, tempEnum, event) {
     if(event.value == ''){  
         this.dataResultTypes =this.alertTypeList;
         this.isDisabledAlerts = true;
@@ -74,32 +74,31 @@ export class AlertsFilterComponent implements OnInit {
     }
     else{     
         this.isDisabledAlerts = false;  
-        this.dataResultTypes =[];
+        this.dataResultTypes =[]; 
         this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
-     }  
+     
+      }  
+      if(this.alertTypeEnum != undefined){
+        if(this.alertTypeEnum != event.value.enum){
+          this.filterListValues['type'] = '';
+        }
+      }    
      this.filterChange(filter, event);
     }
 
     filterAlertTypeChange(filter, event) {
       let event_val;
-      if(event.value == ''){  
-        event_val = event.value;       
-      }
-      else{    
-        event_val = event.value.value.trim().toLowerCase(); 
-      } 
-      this.filterListValues[filter] =event_val;
-      this.dataSource.filter = JSON.stringify(this.filterListValues);
-      this.filterValues.emit(this.dataSource); 
-     }
-
-   updatedTableData(tableData : any) {   
-    this.dataSource = new MatTableDataSource(tableData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
+      this.alertTypeEnum=event.value.parentEnum ;
+        this.filterChange(filter, event);
+    }
+    
+    updatedTableData(tableData : any) {   
+      this.dataSource = new MatTableDataSource(tableData);
+      setTimeout(()=>{
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    }
    
   // Called on Filter change
   filterChange(filter, event) {     
@@ -123,7 +122,7 @@ export class AlertsFilterComponent implements OnInit {
                 event_val = event.value.value.trim();  
               }
             }
-       } 
+       }       
       else{   
       if(event.value == ''){
       event_val = event.value.trim();  
@@ -171,8 +170,8 @@ export class AlertsFilterComponent implements OnInit {
               if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
                   found = true;      
               }     
-             }       
-            }          
+             }                  
+            }  
            else{                                
             if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
             found = true

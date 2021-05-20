@@ -8,7 +8,7 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         </mat-label>
         <div *ngIf="actionType != 'view'">
-            <mat-form-field class="form-control form-control-small" appearance="outline" class="full-width">
+            <mat-form-field appearance="outline" class="full-width corridorLineHt">
                 <input maxlength="50" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
                     formControlName="label" required>
             </mat-form-field>
@@ -25,8 +25,8 @@
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
-        <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'></span>
+        <div *ngIf="actionType === 'view'">
+            <span style='font-weight: 500!important;'>{{corridorName}}</span>
         </div>
     </div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -35,7 +35,7 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
-        <div>
+        <div  *ngIf="actionType != 'view'">
             <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
             [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
             [minSearchLength]="0" (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
@@ -53,7 +53,7 @@
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'></span>
+            <span style='font-weight: 500!important;'>{{searchStr}}</span>
         </div>
     </div>
     <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -62,7 +62,7 @@
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
-        <div>
+        <div  *ngIf="actionType != 'view'">
             <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
             [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
             [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer>
@@ -80,7 +80,7 @@
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'></span>
+            <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
         </div>
     </div>
 </div>
@@ -338,8 +338,8 @@
                 </mat-expansion-panel>
                 </mat-accordion>
        
-                <div class="example-button-row pt-2" fxLayoutAlign="right">
-                    <button mat-flat-button color="primary" (click)="resetValues()">
+                <div class="example-button-row pt-2" fxLayoutAlign="right" *ngIf="actionType !== 'view'">
+                    <button mat-flat-button color="primary" (click)="resetValues()"  [disabled]="corridorFormGroup.pristine">
                         <span>Reset</span>
                     </button>
                 </div>
@@ -347,13 +347,23 @@
 </mat-accordion>
 <div class='fixDiv'></div>
 
-<div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;">
+<div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
+    <span *ngIf="actionType !== 'view'">
     <button mat-flat-button color="primary" (click)="backToCorridorList()">
         <span>Cancel</span>
     </button>
+    </span>
+
+    <span *ngIf="actionType === 'edit'">
+    <button mat-flat-button color="primary" (click)="resetToEditData()" [disabled]="corridorFormGroup.pristine">
+        <span>Reset</span>
+    </button>
+</span>
+<span *ngIf="actionType !== 'view'">
     <button mat-flat-button  color="primary" (click)="createCorridorClicked()" ><!-- [disabled]="!corridorFormGroup.valid"-->
         <span>Create</span>
     </button>
+</span>
 </div>
 </mat-card>
 </form>

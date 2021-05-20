@@ -18,7 +18,8 @@ declare var H: any;
 export class RouteCalculatingComponent implements OnInit {
   @Input() translationData: any;
   @Input() exclusionList :  any;
-  @Input() actionType: any;
+  @Input() actionType: any; 
+  @Input() selectedElementData : any;
   @Output() backToPage = new EventEmitter<any>();
   @Output() backToCreate = new EventEmitter<any>();
   @Output() backToReject = new EventEmitter<any>();
@@ -39,6 +40,7 @@ export class RouteCalculatingComponent implements OnInit {
   public mapElement: ElementRef;
   hereMapService: any;
   organizationId: number;
+  corridorId : number = 0;
   localStLanguage: any;
   accountId: any = 0;
   hereMap: any;
@@ -56,6 +58,7 @@ export class RouteCalculatingComponent implements OnInit {
   mapGroup ;
   searchStr : string = "";
   searchEndStr : string = "";
+  corridorName : string = "";
   startAddressPositionLat :number = 0; // = {lat : 18.50424,long : 73.85286};
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
@@ -119,8 +122,31 @@ export class RouteCalculatingComponent implements OnInit {
       weightPerAxle: ['', [Validators.required]]
 
     });
+    if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
+      this.setCorridorData()
+    }
+    console.log(this.selectedElementData)
     //this.configureAutoCompleteForLocationSearch();
   }
+
+  setCorridorData(){
+    let _selectedElementData = this.selectedElementData;
+    if(_selectedElementData){
+      this.corridorId = _selectedElementData.id;
+      if(this.corridorId){
+          this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
+              console.log(data);
+          })
+      }
+      this.corridorName = _selectedElementData.corridoreName;
+      console.log(this.corridorName)
+      this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
+      this.searchStr = _selectedElementData.startPoint;
+      this.searchEndStr = _selectedElementData.endPoint;
+      this.corridorWidth = _selectedElementData.width;
+    }
+  }
+
 
   public ngAfterViewInit() {
     this.initMap();
@@ -208,7 +234,6 @@ export class RouteCalculatingComponent implements OnInit {
 
   transportDataCheckedFn(_checked){
     this.transportDataChecked = _checked;
-    console.log(this.transportDataChecked)
   }
 
   
@@ -291,7 +316,7 @@ export class RouteCalculatingComponent implements OnInit {
   createCorridorClicked(){
    
     var corridorObj = {
-      "id": 0,
+      "id": this.corridorId ? this.corridorId : 0,
       "organizationId": this.organizationId,
       "corridorType": "R",
       "corridorLabel":this.corridorFormGroup.controls.label.value,
@@ -395,6 +420,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.poisonInhaleChecked  = false;
     this.waterHarmChecked  = false;
     this.othersChecked  = false;
+    this.transportDataChecked = false;
+    this.trafficFlowChecked = false;
     this.corridorFormGroup.controls.vehicleHeight.setValue("");
     this.corridorFormGroup.controls.vehicleLength.setValue("");
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
@@ -402,7 +429,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
     this.corridorFormGroup.controls.startaddress.setValue("");
     this.corridorFormGroup.controls.endaddress.setValue("");
-    this.clearMap();
   }
 
   clearMap(){
@@ -433,6 +459,10 @@ export class RouteCalculatingComponent implements OnInit {
       this.plotEndPoint(locationId)
     }
 
+  }
+
+  resetToEditData(){
+    this.setCorridorData();
   }
   plotStartPoint(_locationId){
     let geocodingParameters = {

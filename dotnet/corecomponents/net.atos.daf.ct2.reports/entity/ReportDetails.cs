@@ -5,12 +5,12 @@ namespace net.atos.daf.ct2.reports.entity
 {
 	public class UserPreferenceCreateRequest
 	{
+		public int AccountId { get; set; }
+		public int ReportId { get; set; }
 		public List<Atribute> AtributesShowNoShow { get; set; }
 	}
 	public class Atribute
 	{
-		public int AccountId { get; set; }
-		public int ReportId { get; set; }
 		public int DataAttributeId { get; set; }
 		public char IsExclusive { get; set; }
 	}

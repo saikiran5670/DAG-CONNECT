@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.13" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
+  </ItemGroup>
+
+</Project>
