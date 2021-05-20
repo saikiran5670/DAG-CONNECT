@@ -117,8 +117,8 @@ spec:
           servicePort: 80
         path: /health-check
       - backend:
-            serviceName: reportservice
-            servicePort: 80
+          serviceName: portalservice
+          servicePort: 80
         path: /report
       - backend:
           serviceName: applicationservice
