@@ -67,8 +67,8 @@
               <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
               <!-- <button *ngIf="editUserContent" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
-              <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid" mat-raised-button color="primary"
-                (click)='onCreate()' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
+              <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid || orgRltShipCreateButton" mat-raised-button color="primary"
+                (click)='onCreate();orgRltShipCreateButton=true' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
                 (translationData.lblConfirm || 'Confirm') }}</button>
             </div>
           </div>
