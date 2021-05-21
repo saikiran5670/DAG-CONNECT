@@ -49,6 +49,7 @@ export class RouteCalculatingComponent implements OnInit {
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
   corridorWidth : number;
+  corridorWidthKm : number;
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
@@ -91,6 +92,15 @@ export class RouteCalculatingComponent implements OnInit {
   getVehicleSize : any;
   additionalData : any;
 
+  
+  tollRoadValue : any ;
+  motorWayValue : any;
+  boatFerriesValue : any;
+  railFerriesValue : any;
+  tunnelValue : any;
+  dirtRoadValue :any;
+  trailerValue : any;
+
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -104,7 +114,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.configureAutoCompleteForLocationSearch();
    }
 
-  ngOnInit(): void {
+  ngOnInit(){
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.corridorFormGroup = this.formBuilder.group({
@@ -131,7 +141,7 @@ export class RouteCalculatingComponent implements OnInit {
     });
     this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
-      this.setCorridorData()
+      this.setCorridorData();
     }
     console.log(this.selectedElementData)
     //this.configureAutoCompleteForLocationSearch();
@@ -156,6 +166,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.searchStr = _selectedElementData.startPoint;
       this.searchEndStr = _selectedElementData.endPoint;
       this.corridorWidth = _selectedElementData.width;
+      this.corridorWidthKm = this.corridorWidth / 1000;
     }
   }
   vehicleHeightValue: number = 0;
@@ -207,14 +218,20 @@ export class RouteCalculatingComponent implements OnInit {
 
   initiateDropDownValues(){
     this.corridorFormGroup.controls.trailer.setValue(this.selectedTrailerId);
+    this.trailerValue = this.selectedTrailerId;
     this.corridorFormGroup.controls.tollRoad.setValue(this.tollRoadId);
-    let tollValue = this.exclusionList.filter(e=> e.enum == this.tollRoadId);
-    console.log(tollValue)
+    this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
     this.corridorFormGroup.controls.motorWay.setValue(this.motorWayId);
+    this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
     this.corridorFormGroup.controls.boatFerries.setValue(this.boatFerriesId);
+    this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
     this.corridorFormGroup.controls.railFerries.setValue(this.railFerriesId);
+    this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
     this.corridorFormGroup.controls.tunnels.setValue(this.tunnelId);
+    this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
     this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
+    this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
+
  }
 
   public ngAfterViewInit() {
