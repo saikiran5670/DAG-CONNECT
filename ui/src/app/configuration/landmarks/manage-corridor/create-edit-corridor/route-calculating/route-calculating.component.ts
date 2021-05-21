@@ -84,6 +84,13 @@ export class RouteCalculatingComponent implements OnInit {
   tunnelId ='D';
   dirtRoadId = 'D';
   boatFerriesId = 'D';
+  
+
+  getAttributeData : any;
+  getExclusionList : any;
+  getVehicleSize : any;
+  additionalData : any;
+
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -122,6 +129,7 @@ export class RouteCalculatingComponent implements OnInit {
       weightPerAxle: ['', [Validators.required]]
 
     });
+    this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData()
     }
@@ -135,18 +143,79 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              console.log(data);
+              console.log(data)
+              if(data[0]["corridorProperties"]){
+                 this.additionalData =  data[0]["corridorProperties"];
+                 this.setAdditionalData();
+              
+              }
           })
       }
       this.corridorName = _selectedElementData.corridoreName;
-      console.log(this.corridorName)
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
       this.searchEndStr = _selectedElementData.endPoint;
       this.corridorWidth = _selectedElementData.width;
     }
   }
+  vehicleHeightValue: number = 0;
+  vehicleWidthValue: number = 0;
+  vehicleLengthValue: number = 0;
+  vehicleLimitedWtValue: number = 0;
+  vehicleWtPerAxleValue: number = 0;
+  setAdditionalData(){
+    let _data = this.additionalData;
+    this.getAttributeData = _data["attribute"];
+    this.getExclusionList = _data["exclusion"];
+    this.combustibleChecked = this.getAttributeData["isCombustible"];
+    this.corrosiveChecked = this.getAttributeData["isCorrosive"];
+    this.explosiveChecked = this.getAttributeData["isExplosive"];
+    this.flammableChecked = this.getAttributeData["isFlammable"];
+    this.gasChecked = this.getAttributeData["isGas"];
+    this.organicChecked = this.getAttributeData["isOrganic"];
+    this.othersChecked = this.getAttributeData["isOther"];
+    this.poisonChecked = this.getAttributeData["isPoision"];
+    this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
+    this.radioactiveChecked = this.getAttributeData["isRadioActive"];
+    this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
+    this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
+    this.trafficFlowChecked = _data["isTrafficFlow"];
+    this.transportDataChecked = _data["isTransportData"];
+    this.getVehicleSize = _data["vehicleSize"];
+    this.vehicleHeightValue = this.getVehicleSize.vehicleHeight;
+    this.vehicleWidthValue = this.getVehicleSize.vehicleWidth;
+    this.vehicleLengthValue = this.getVehicleSize.vehicleLength;
+    this.vehicleLimitedWtValue = this.getVehicleSize.vehicleLimitedWeight;
+    this.vehicleWtPerAxleValue = this.getVehicleSize.vehicleWeightPerAxle;
 
+
+    this.corridorFormGroup.controls.vehicleHeight.setValue(this.getVehicleSize.vehicleHeight);
+    this.corridorFormGroup.controls.vehicleWidth.setValue(this.getVehicleSize.vehicleWidth);
+    this.corridorFormGroup.controls.vehicleLength.setValue(this.getVehicleSize.vehicleLength);
+    this.corridorFormGroup.controls.limitedWeight.setValue(this.getVehicleSize.vehicleLimitedWeight);
+    this.corridorFormGroup.controls.weightPerAxle.setValue(this.getVehicleSize.vehicleWeightPerAxle);
+    this.tollRoadId = this.getExclusionList["tollRoadType"];
+    this.boatFerriesId = this.getExclusionList["boatFerriesType"];
+    this.dirtRoadId = this.getExclusionList["dirtRoadType"];
+    this.motorWayId = this.getExclusionList["mortorway"];
+    this.tunnelId = this.getExclusionList["tunnelsType"];
+    this.railFerriesId = this.getExclusionList["railFerriesType"];
+
+    this.initiateDropDownValues();
+
+  }
+
+  initiateDropDownValues(){
+    this.corridorFormGroup.controls.trailer.setValue(this.selectedTrailerId);
+    this.corridorFormGroup.controls.tollRoad.setValue(this.tollRoadId);
+    let tollValue = this.exclusionList.filter(e=> e.enum == this.tollRoadId);
+    console.log(tollValue)
+    this.corridorFormGroup.controls.motorWay.setValue(this.motorWayId);
+    this.corridorFormGroup.controls.boatFerries.setValue(this.boatFerriesId);
+    this.corridorFormGroup.controls.railFerries.setValue(this.railFerriesId);
+    this.corridorFormGroup.controls.tunnels.setValue(this.tunnelId);
+    this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
+ }
 
   public ngAfterViewInit() {
     this.initMap();
@@ -403,6 +472,8 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   resetValues(){
+    if(this.actionType === 'create'){
+        
     this.tollRoadId = 'D';
     this.motorWayId ='D';
     this.railFerriesId = 'D';
@@ -429,6 +500,10 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
     this.corridorFormGroup.controls.startaddress.setValue("");
     this.corridorFormGroup.controls.endaddress.setValue("");
+    }
+    else{
+      this.setAdditionalData();
+    }
   }
 
   clearMap(){
