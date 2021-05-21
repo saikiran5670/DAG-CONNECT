@@ -20,14 +20,14 @@
 
     </div>
 
-    <div style="margin-right:30px">
+    <div style="width: 170px; margin-right: 30px;">
       <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span>
       </mat-label>
       <!-- <mat-form-field class="full-width"> -->
-      <mat-select placeholder="{{ translationData.lblVehicleGroup || 'Vehicle Group' }}" formControlName="vehicleGroup"
+      <mat-select (selectionChange)="vehicleGroupSelection($event)" placeholder="{{ translationData.lblDefaultBase || 'Default Base' }}" formControlName="vehicleGroup"
         required>
-        <mat-option>
-          Hello Options
+        <mat-option *ngFor="let vehicleGroupData of vehicleGroupIdsSet" [value]="vehicleGroupData">
+          {{ vehicleGroupData}}
         </mat-option>
       </mat-select>
       <!-- </mat-form-field> -->
@@ -103,9 +103,9 @@
       <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span>
       </mat-label>
       <!-- <mat-form-field class="full-width"> -->
-      <mat-select placeholder="{{ translationData.lblVehicle || 'Vehicle' }}" formControlName="vehicle" required>
-        <mat-option>
-          Hello Options
+      <mat-select (selectionChange)="vinSelection($event)" placeholder="{{ translationData.lblVehicle || 'Vehicle' }}" formControlName="vehicle" required>
+        <mat-option *ngFor="let vinListData of vinList" [value]="vinListData">
+          {{ vinListData }}
         </mat-option>
       </mat-select>
       <!-- </mat-form-field> -->
