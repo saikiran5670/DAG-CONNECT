@@ -15,6 +15,8 @@ variables:
    value: 'dotnet/ReportService_Dockerfile'
  - name: manifestFile
    value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+ - name: manifestFileDev0
+   value: 'devops/businessservice/reportservice-grpc-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/businessservices/net.atos.daf.ct2.reportservice/appsettings.Production.json'
  - name: log4netConfigFile
@@ -30,7 +32,7 @@ stages:
         variableGroup: 'DEV0-Build-Variables'
         imageName: $(imageName)
         dockerFile: $(dockerFile)
-        manifestFile: $(manifestFile)
+        manifestFile: $(manifestFileDev0)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'], 'development')

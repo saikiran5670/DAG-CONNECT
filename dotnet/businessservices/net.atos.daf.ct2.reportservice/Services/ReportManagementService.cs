@@ -4,6 +4,7 @@ using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportservice.entity;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -96,6 +97,36 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Message = ex.Message,
                     Code = Responsecode.InternalServerError
                 });
+            }
+        }
+        #endregion
+
+        #region Get Vins from data mart trip_statistics
+        //This code is not in use, may require in future use.
+        public override async Task<VehicleFilterResponse> GetVinsFromTripStatistics(VehicleFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var vinList = await _reportManager.GetVinsFromTripStatistics(request.FromDate, request.ToDate, request.VinList);
+
+                var response = new VehicleFilterResponse
+                {
+                    Message = ReportConstants.GET_VIN_SUCCESS_MSG,
+                    Code = Responsecode.Success
+                };                
+                response.VinList.AddRange(_mapper.MapVinList(vinList));
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                var errorResponse = new VehicleFilterResponse
+                {
+                    Message = ex.Message,
+                    Code = Responsecode.InternalServerError
+                };
+                errorResponse.VinList.Add(new List<string>());
+                return await Task.FromResult(errorResponse);
             }
         }
         #endregion
