@@ -28,7 +28,6 @@ namespace net.atos.daf.ct2.vehicle.entity
     public class VehicleGroupDetails
     {
         public int Id { get; set; }
-        public string Name { get; set; }
         public string GroupType { get; set; }
         public string GroupMethod { get; set; }
         public int RefId { get; set; }
