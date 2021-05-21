@@ -97,15 +97,20 @@ namespace net.atos.daf.ct2.reports.repository
         {
             _dataAccess.connection.Open();
             string queryInsert = @"INSERT INTO master.reportpreference
-                                    (account_id, report_id, data_attribute_id, is_exlusive)
-                             VALUES (@account_id,@report_id,@data_attribute_id,@is_exlusive)";
+                                    (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at)
+                             VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at)";
 
             string queryDelete = @"DELETE FROM master.reportpreference
-                                  WHERE account_id=account_id AND report_id=@report_id";
+                                  WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
             int rowsEffected = 0; var userPreference = new DynamicParameters();
-            userPreference.Add("account_id", objUserPreferenceRequest.AccountId);
-            userPreference.Add("report_id", objUserPreferenceRequest.ReportId);
-            
+            userPreference.Add("@account_id", objUserPreferenceRequest.AccountId);
+            userPreference.Add("@report_id", objUserPreferenceRequest.ReportId);
+            userPreference.Add("@organization_id", objUserPreferenceRequest.OrganizationId);
+            userPreference.Add("@type", objUserPreferenceRequest.Type);
+            userPreference.Add("@created_at", objUserPreferenceRequest.CreatedAt);
+            userPreference.Add("@modified_at", objUserPreferenceRequest.ModifiedAt);
+            userPreference.Add("@chart_type", objUserPreferenceRequest.ChartType);
+
             using (var transactionScope = _dataAccess.connection.BeginTransaction())
             {
                 try
@@ -113,8 +118,8 @@ namespace net.atos.daf.ct2.reports.repository
                     await _dataAccess.ExecuteAsync(queryDelete, userPreference);
                     for (int i = 0; i < objUserPreferenceRequest.AtributesShowNoShow.Count; i++)
                     {
-                        userPreference.Add("data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
-                        userPreference.Add("is_exlusive", objUserPreferenceRequest.AtributesShowNoShow[i].IsExclusive);
+                        userPreference.Add("@data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
+                        userPreference.Add("@state", objUserPreferenceRequest.AtributesShowNoShow[i].State);
                         rowsEffected = await _dataAccess.ExecuteAsync(queryInsert, userPreference);
                     }
                     transactionScope.Commit();
