@@ -104,6 +104,8 @@ namespace net.atos.daf.ct2.portalservice
                     }
                 };
             });
+            services.AddDistributedMemoryCache();
+
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat)); ;
                 options.Cookie.HttpOnly = true;
