@@ -13,15 +13,15 @@
 
     <mat-card class='mat-elevation-z' *ngIf="actionType!=='view'">
         <mat-card-content>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
                 <span>{{ translationData.lblAddNewCorridor || 'Add New Corridor' }}</span>
             </div>
-            <mat-label *ngIf="actionType != 'view'">{{ translationData.lblCorridorType || 'Corridor Type' }} <span
-                    class='mandatoryColor'>*</span></mat-label>
+            <div *ngIf="actionType != 'view'">{{ translationData.lblCorridorType || 'Corridor Type' }} <span
+                    class='mandatoryColor'>*</span></div>
 
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <span class="col-sm">
-                <mat-form-field appearance="outline" class="half-width">
+                <mat-form-field appearance="outline">
                     <mat-select [(value)]="selectedCorridorTypeId" (selectionChange)="corridorTypeChanged($event)" required>
                         <mat-option *ngFor="let type of corridorTypeList" [value]="type.id">
                             {{ type.value }}
