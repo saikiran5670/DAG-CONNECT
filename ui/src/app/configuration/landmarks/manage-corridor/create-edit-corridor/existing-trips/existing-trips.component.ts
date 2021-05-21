@@ -25,7 +25,7 @@ export class ExistingTripsComponent implements OnInit {
   //   start: new FormControl(),
   //   end: new FormControl()
   // });
-  translationData: any;
+  // translationData: any;
   OrgId: any = 0;
   @Output() backToPage = new EventEmitter<any>();
   // displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
@@ -42,10 +42,16 @@ export class ExistingTripsComponent implements OnInit {
   existingTripForm: FormGroup;
   // groupTypeList: any = [];
   // showUserList: boolean = true;
-
+  @Input() translationData: any;
+  @Input() vehicleGroupList: any;
+  vinList: any = [];
+  vinListSelectedValue: any = [];
+  
   constructor(private _formBuilder: FormBuilder) { }
-
+  
   ngOnInit(): void {
+    // console.log("----vinList on Selection---",this.vinList)
+    
     this.translationData = {
       lblVehicleGroup : '',
       lblToday : '',
@@ -56,7 +62,7 @@ export class ExistingTripsComponent implements OnInit {
       lblGroupType: '',
       lblTimeRanges: '',
       lblPleasechoosevehicleGroup: ''
-
+      
     }
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.existingTripForm = this._formBuilder.group({
@@ -71,6 +77,22 @@ export class ExistingTripsComponent implements OnInit {
         // CustomValidators.specialCharValidationForNameWithoutRequired('userGroupDescription')
       ]
     });
+  }
+  
+  vehicleGroupSelection(vehicleGroupValue: any) {
+    this.vinList = [];
+    // console.log("----vehicleGroupList---",this.vehicleGroupList)
+    this.vehicleGroupList.forEach(item => {
+      if(item.vehicleGroupId == vehicleGroupValue.value){
+        this.vinList.push(item.vin)
+      }
+    });
+    // console.log("----selectionValue from First dropdown--",vehicleGroupValue)
+  }
+  vinSelection(vinSelectedValue: any) {
+    this.vinListSelectedValue = vinSelectedValue;
+    // console.log("----selectionValue from Second dropdown--",vinSelectedValue)
+
   }
 
 }

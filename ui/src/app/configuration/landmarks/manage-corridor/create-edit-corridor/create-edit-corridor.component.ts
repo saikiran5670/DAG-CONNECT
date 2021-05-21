@@ -38,13 +38,14 @@ export class CreateEditCorridorComponent implements OnInit {
   loadDropdownData(){
     this.alertService.getAlertFilterData(this.accountId, this.organizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
+      let vehicleGroup = data["vehicleGroup"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
       });
       this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
-      this.vehicleGroupList= filterData.filter(item => item.type == 'T');
-      console.log(this.vehicleGroupList)
+      this.vehicleGroupList= vehicleGroup;
+      // console.log(this.vehicleGroupList)
     });
   }
   
