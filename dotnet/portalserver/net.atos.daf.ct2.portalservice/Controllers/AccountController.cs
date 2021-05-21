@@ -38,17 +38,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
         private readonly HeaderObj _userDetails;
+        private readonly SessionHelper _sessionHelper;
 
         #endregion
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _cache = cache;
+            _sessionHelper = sessionHelper;
+            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
