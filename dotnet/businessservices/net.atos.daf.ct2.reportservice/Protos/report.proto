@@ -30,9 +30,10 @@ message UserPreferenceDataColumn{
     string Name=2;
     string Description = 3;
     string Type = 4;
-    string Key =5;
-    string State=6;
-    string ChartType = 7;
+    string ReportReferenceType = 5;
+    string Key =6;
+    string State=7;
+    string ChartType = 8;
 }
 
 message UserPreferenceDataColumnResponse{

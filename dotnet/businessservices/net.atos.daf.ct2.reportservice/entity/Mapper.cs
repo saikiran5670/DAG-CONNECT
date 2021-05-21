@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf.Collections;
-using net.atos.daf.ct2.alert.ENUM;
+using net.atos.daf.ct2.reports.ENUM;
 using net.atos.daf.ct2.reports.entity;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                     Description = userpreference.Description ?? string.Empty,
                     Type = userpreference.Type,
                     Key = userpreference.Key,
-                    State = userpreference.IsExclusive ?? ((char)IsExclusive.Yes).ToString(),
+                    State = userpreference.State ?? ((char)ReportPreferenceState.InActive).ToString(),
                 });
             }
             return userPreferenceResult;
@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                 obj.AtributesShowNoShow.Add(new net.atos.daf.ct2.reports.entity.Atribute
                 {
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
-                    IsExclusive = objUserPreferenceCreateRequest.AtributesShowNoShow[i].IsExclusive.ToUpper() == ((char)IsExclusive.Yes).ToString() ? Convert.ToChar(IsExclusive.Yes) : Convert.ToChar(IsExclusive.No),
+                    IsExclusive = objUserPreferenceCreateRequest.AtributesShowNoShow[i].IsExclusive.ToUpper() == ((char)ReportPreferenceState.InActive).ToString() ? Convert.ToChar(ReportPreferenceState.InActive) : Convert.ToChar(ReportPreferenceState.Active),
                 });
             }
             return obj;
