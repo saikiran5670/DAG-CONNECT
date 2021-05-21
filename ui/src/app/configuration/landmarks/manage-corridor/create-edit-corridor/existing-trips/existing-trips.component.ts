@@ -46,10 +46,16 @@ export class ExistingTripsComponent implements OnInit {
   @Input() vehicleGroupList: any;
   vinList: any = [];
   vinListSelectedValue: any = [];
+  vehicleGroupIdsSet:any = [];
+
   
   constructor(private _formBuilder: FormBuilder) { }
   
   ngOnInit(): void {
+    this.vehicleGroupList.forEach(item => {
+      this.vehicleGroupIdsSet.push(item.vehicleGroupId);
+      this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)];
+    });
     // console.log("----vinList on Selection---",this.vinList)
     
     this.translationData = {
@@ -83,11 +89,14 @@ export class ExistingTripsComponent implements OnInit {
     this.vinList = [];
     // console.log("----vehicleGroupList---",this.vehicleGroupList)
     this.vehicleGroupList.forEach(item => {
+      // this.vehicleGroupIdsSet.push(item.vehicleGroupId)
       if(item.vehicleGroupId == vehicleGroupValue.value){
         this.vinList.push(item.vin)
       }
+      // this.vehicleGroupIdsSet = [...new Set(this.vehicleGroupIdsSet)]
+      // console.log("---unique this.vehicleGroupIdsSet---",this.vehicleGroupIdsSet)
     });
-    // console.log("----selectionValue from First dropdown--",vehicleGroupValue)
+    // console.log("----vinList--",this.vinList)
   }
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue;

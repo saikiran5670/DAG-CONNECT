@@ -26,8 +26,8 @@
       <!-- <mat-form-field class="full-width"> -->
       <mat-select (selectionChange)="vehicleGroupSelection($event)" placeholder="{{ translationData.lblDefaultBase || 'Default Base' }}" formControlName="vehicleGroup"
         required>
-        <mat-option *ngFor="let vehicleGroupData of vehicleGroupList" [value]="vehicleGroupData.vehicleGroupId">
-          {{ vehicleGroupData.vehicleGroupId }}
+        <mat-option *ngFor="let vehicleGroupData of vehicleGroupIdsSet" [value]="vehicleGroupData">
+          {{ vehicleGroupData}}
         </mat-option>
       </mat-select>
       <!-- </mat-form-field> -->
