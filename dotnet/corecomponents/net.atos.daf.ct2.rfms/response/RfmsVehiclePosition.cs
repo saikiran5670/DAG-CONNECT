@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.rfms.response
 {
-        public class TachoDriverIdentification
+    public class TachoDriverIdentification
     {
         public string DriverIdentification { get; set; }
         public string CardIssuingMemberState { get; set; }
@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.rfms.response
     public class OemDriverIdentification
     {
         public string IdType { get; set; }
-        public string OemDriverIdentification { get; set; }
+        public string DriverIdentification { get; set; }
     }
 
     public class DriverId
@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.rfms.response
 
     public class TriggerType
     {
-        public string TriggerType { get; set; }
+        public string Type { get; set; } //TriggerType
         public string Context { get; set; }
         public List<string> TriggerInfo { get; set; }
         public DriverId DriverId { get; set; }
@@ -67,8 +67,6 @@ namespace net.atos.daf.ct2.rfms.response
         public List<VehiclePosition> VehiclePositions { get; set; }
     }
 
-
-
     public class RfmsVehiclePosition
     {
         public VehiclePositionResponse VehiclePositionResponse { get; set; }
@@ -76,4 +74,5 @@ namespace net.atos.daf.ct2.rfms.response
         public string MoreDataAvailableLink { get; set; }
         public DateTime RequestServerDateTime { get; set; }
     }
+
 }

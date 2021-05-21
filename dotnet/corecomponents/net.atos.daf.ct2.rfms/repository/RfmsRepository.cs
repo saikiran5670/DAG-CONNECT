@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.rfms.repository
         {
             try
             {
-                var queryStatement = @"select vin
+                var queryStatement = @"select id,vin
                                    ,customer_vehicle_name
                                    ,brand 
                                    ,type 
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 }
                 if (rfmsVehicleRequest.MoreDataAvailable && rfmsVehicleRequest.LastVin != null) // LastVin is mendatory when rfmsVehicleRequest is true and it is required for pagination
-                { 
+                {
                     parameter.Add("@vin", "%" + rfmsVehicleRequest.LastVin + "%");
                     queryStatement = queryStatement + " and vin LIKE @id";
 
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.rfms.repository
         {
             try
             {
-                var queryStatement = @"select trigger_type
+                var queryStatement = @"select id, trigger_type
                                    ,request_server_date_time
                                    , received_date_time
                                    ,latitude
@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.rfms.repository
                                    where 1=1";
                 var parameter = new DynamicParameters();
 
-                 //filter by date type
+                //filter by date type
 
 
                 //filter start time
@@ -101,46 +101,42 @@ namespace net.atos.daf.ct2.rfms.repository
 
                 }
 
-                  //filter stop time  
+                //filter stop time  
                 if (rfmsVehiclePositionRequest.StopTime != null)
                 {
                     parameter.Add("@stop_time", "%" + rfmsVehiclePositionRequest.StopTime + "%");
                     queryStatement = queryStatement + " and stop_time > @stop_time";
 
                 }
-                    //filter vin
-                   if (rfmsVehiclePositionRequest.Vin != null)
+                //filter vin
+                if (rfmsVehiclePositionRequest.Vin != null)
                 {
                     parameter.Add("@vin", "%" + rfmsVehiclePositionRequest.Vin + "%");
                     queryStatement = queryStatement + " and vin LIKE @vin";
 
                 }
 
-                    //filter latest only*****
-                     if (rfmsVehiclePositionRequest.LatestOnly == true)
+                //filter latest only*****
+                if (rfmsVehiclePositionRequest.LatestOnly == true)
                 {
                     parameter.Add("@vin", "%" + rfmsVehiclePositionRequest.Vin + "%");
                     queryStatement = queryStatement + " and vin LIKE @vin";
 
                 }
 
-                  // filter trigger 
-                   if (rfmsVehiclePositionRequest.TriggerFilter != null)
+                // filter trigger 
+                if (rfmsVehiclePositionRequest.TriggerFilter != null)
                 {
                     parameter.Add("@trigger_filter", "%" + rfmsVehiclePositionRequest.TriggerFilter + "%");
                     queryStatement = queryStatement + " and trigger_filter LIKE @trigger_filter";
 
                 }
+                var rfmsVehiclePosition = new RfmsVehiclePosition();
 
-                    List<RfmsVehiclePosition> rfmsVehiclePosition = new List<RfmsVehiclePosition>();
-                    dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
 
-                     
+                return rfmsVehiclePosition;
 
-                //var rfmsVehicles = new RfmsVehicles();
-                //dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
-               // return rfmsVehicles;
-               
             }
 
             catch (Exception ex)
