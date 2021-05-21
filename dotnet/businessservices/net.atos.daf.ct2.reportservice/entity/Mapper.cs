@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                     Description = userpreference.Description ?? string.Empty,
                     Type = userpreference.Type,
                     Key = userpreference.Key,
-                    IsExclusive = userpreference.IsExclusive ?? ((char)IsExclusive.Yes).ToString(),
+                    State = userpreference.IsExclusive ?? ((char)IsExclusive.Yes).ToString(),
                 });
             }
             return userPreferenceResult;
