@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,8 +108,8 @@ namespace net.atos.daf.ct2.reports.repository
             userPreference.Add("@report_id", objUserPreferenceRequest.ReportId);
             userPreference.Add("@organization_id", objUserPreferenceRequest.OrganizationId);
             userPreference.Add("@type", objUserPreferenceRequest.Type);
-            userPreference.Add("@created_at", objUserPreferenceRequest.CreatedAt);
-            userPreference.Add("@modified_at", objUserPreferenceRequest.ModifiedAt);
+            userPreference.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@chart_type", objUserPreferenceRequest.ChartType);
 
             using (var transactionScope = _dataAccess.connection.BeginTransaction())

@@ -9,6 +9,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
 		public int AccountId { get; set; }
 		[Range(1, int.MaxValue, ErrorMessage = "Report Id is required.")]
 		public int ReportId { get; set; }
+		[Range(1, int.MaxValue, ErrorMessage = "Organization Id is required.")]
+		public int OrganizationId { get; set; }
+		public long CreatedAt { get; set; }
+		public long ModifiedAt { get; set; }
+		[StringLength(1, MinimumLength = 1)]
+		public string Type { get; set; }
+		[StringLength(1, MinimumLength = 1)]
+		public string ChartType { get; set; }
 		public List<Atribute> AtributesShowNoShow { get; set; }
 	}
 	public class Atribute
@@ -16,7 +24,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
 		[Range(1, int.MaxValue, ErrorMessage = "DataAttribute Id is required.")]
 		public int DataAttributeId { get; set; }
 		[StringLength(1, MinimumLength = 1)]
-		public string IsExclusive { get; set; }
+		public string State { get; set; }
 	}
 	public class ReportListedParamaters
 	{
