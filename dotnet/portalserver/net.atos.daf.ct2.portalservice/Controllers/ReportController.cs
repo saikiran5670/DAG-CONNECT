@@ -44,13 +44,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Select User Preferences
         [HttpGet]
         [Route("getuserpreferencereportdatacolumn")]
-        public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId)
         {
             try
             {
                 if (!(reportId > 0)) return BadRequest("Report id cannot be zero.");
                 if (!(accountId > 0)) return BadRequest("Account id cannot be zero.");
-                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId });
+                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId, OrganizationId = organizationId });
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)

@@ -23,6 +23,7 @@ enum Responsecode{
 message IdRequest {
   int32 ReportId = 1;
   int32 AccountId=2;
+  int32 OrganizationId=3;
 }
 message UserPreferenceDataColumn{
     int32 DataAtrributeId =1;
@@ -30,7 +31,8 @@ message UserPreferenceDataColumn{
     string Description = 3;
     string Type = 4;
     string Key =5;
-    string IsExclusive=6;
+    string State=6;
+    string ChartType = 7;
 }
 
 message UserPreferenceDataColumnResponse{

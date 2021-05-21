@@ -8,6 +8,7 @@ package report;
 service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
+rpc GetVinsFromTripStatistics (VehicleFilterRequest) returns (VehicleFilterResponse);
 }
 
 enum Responsecode{
@@ -22,6 +23,7 @@ enum Responsecode{
 message IdRequest {
   int32 ReportId = 1;
   int32 AccountId=2;
+  int32 OrganizationId=3;
 }
 message UserPreferenceDataColumn{
     int32 DataAtrributeId =1;
@@ -29,7 +31,8 @@ message UserPreferenceDataColumn{
     string Description = 3;
     string Type = 4;
     string Key =5;
-    string IsExclusive=6;
+    string State=6;
+    string ChartType = 7;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -39,9 +42,9 @@ message UserPreferenceDataColumnResponse{
 }
 
 message UserPreferenceCreateRequest{
-  int32 AccountId = 1;
-  int32 ReportId = 2;
-  repeated Atribute AtributesShowNoShow = 3;
+ repeated Atribute AtributesShowNoShow =1;
+  int32 AccountId =2;
+ int32 ReportId =3;
 }
 
 message Atribute{
@@ -52,4 +55,16 @@ message Atribute{
 message UserPreferenceCreateResponse{
     Responsecode Code = 1;
     string Message = 2;
+}
+
+message VehicleFilterRequest{
+int64 FromDate = 1;
+int64 ToDate = 2;
+repeated string VinList = 3;
+}
+
+message VehicleFilterResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated string VinList = 3;
 }
