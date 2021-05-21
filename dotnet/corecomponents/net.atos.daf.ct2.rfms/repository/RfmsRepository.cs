@@ -6,7 +6,7 @@ using Dapper;
 using net.atos.daf.ct2.rfms.responce;
 using net.atos.daf.ct2.rfms.entity;
 using System;
-using net.atos.daf.ct2.rfms.response;
+//using net.atos.daf.ct2.rfms.response;
 
 namespace net.atos.daf.ct2.rfms.repository
 {
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
         }
 
-        public async Task<RfmsVehiclePosition> Get(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+        public async Task<RfmsVehiclePositionRequest> Get(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
             try
             {
@@ -90,7 +90,8 @@ namespace net.atos.daf.ct2.rfms.repository
                                    where 1=1";
                 var parameter = new DynamicParameters();
 
-                //filter by date type
+                //filter by date type****
+
 
 
                 //filter start time
@@ -117,12 +118,8 @@ namespace net.atos.daf.ct2.rfms.repository
                 }
 
                 //filter latest only*****
-                if (rfmsVehiclePositionRequest.LatestOnly == true)
-                {
-                    parameter.Add("@vin", "%" + rfmsVehiclePositionRequest.Vin + "%");
-                    queryStatement = queryStatement + " and vin LIKE @vin";
+                
 
-                }
 
                 // filter trigger 
                 if (rfmsVehiclePositionRequest.TriggerFilter != null)
@@ -131,7 +128,7 @@ namespace net.atos.daf.ct2.rfms.repository
                     queryStatement = queryStatement + " and trigger_filter LIKE @trigger_filter";
 
                 }
-                var rfmsVehiclePosition = new RfmsVehiclePosition();
+                var rfmsVehiclePosition = new RfmsVehiclePositionRequest();
 
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
 
