@@ -6,6 +6,7 @@ using Dapper;
 using net.atos.daf.ct2.rfms.responce;
 using net.atos.daf.ct2.rfms.entity;
 using System;
+using net.atos.daf.ct2.rfms.response;
 
 namespace net.atos.daf.ct2.rfms.repository
 {
@@ -57,6 +58,89 @@ namespace net.atos.daf.ct2.rfms.repository
                 dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
                 return rfmsVehicles;
 
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
+
+        public async Task<RfmsVehiclePosition> Get(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+        {
+            try
+            {
+                var queryStatement = @"select trigger_type
+                                   ,request_server_date_time
+                                   , received_date_time
+                                   ,latitude
+                                   ,longitude 
+                                   ,heading 
+                                   ,altitude 
+                                   ,speed
+                                   ,position_date_time 
+                                   ,created_date_time
+                                   ,vin
+                                   ,wheel_based_speed
+                                   ,tachograph_speed
+                                   ,more_data_availabe
+                                   from master.vehicle 
+                                   where 1=1";
+                var parameter = new DynamicParameters();
+
+                 //filter by date type
+
+
+                //filter start time
+                if (rfmsVehiclePositionRequest.StartTime != null)
+                {
+                    parameter.Add("@start_time", "%" + rfmsVehiclePositionRequest.StartTime + "%");
+                    queryStatement = queryStatement + " and start_time < @start_time";
+
+                }
+
+                  //filter stop time  
+                if (rfmsVehiclePositionRequest.StopTime != null)
+                {
+                    parameter.Add("@stop_time", "%" + rfmsVehiclePositionRequest.StopTime + "%");
+                    queryStatement = queryStatement + " and stop_time > @stop_time";
+
+                }
+                    //filter vin
+                   if (rfmsVehiclePositionRequest.Vin != null)
+                {
+                    parameter.Add("@vin", "%" + rfmsVehiclePositionRequest.Vin + "%");
+                    queryStatement = queryStatement + " and vin LIKE @vin";
+
+                }
+
+                    //filter latest only*****
+                     if (rfmsVehiclePositionRequest.LatestOnly == true)
+                {
+                    parameter.Add("@vin", "%" + rfmsVehiclePositionRequest.Vin + "%");
+                    queryStatement = queryStatement + " and vin LIKE @vin";
+
+                }
+
+                  // filter trigger 
+                   if (rfmsVehiclePositionRequest.TriggerFilter != null)
+                {
+                    parameter.Add("@trigger_filter", "%" + rfmsVehiclePositionRequest.TriggerFilter + "%");
+                    queryStatement = queryStatement + " and trigger_filter LIKE @trigger_filter";
+
+                }
+
+                    List<RfmsVehiclePosition> rfmsVehiclePosition = new List<RfmsVehiclePosition>();
+                    dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+
+                     
+
+                //var rfmsVehicles = new RfmsVehicles();
+                //dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+               // return rfmsVehicles;
+               
             }
 
             catch (Exception ex)

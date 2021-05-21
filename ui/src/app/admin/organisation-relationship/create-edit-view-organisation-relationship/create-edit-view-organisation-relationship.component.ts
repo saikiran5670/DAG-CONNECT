@@ -53,6 +53,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   userCreatedMsg: any = '';
   @Input() actionType: any;
   @Input() roleData:any;
+  orgRltShipCreateButton: boolean = false;
 
   ngOnInit(): void {
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
