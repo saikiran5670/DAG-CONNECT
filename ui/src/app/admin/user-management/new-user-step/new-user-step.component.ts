@@ -39,7 +39,7 @@ export class NewUserStepComponent implements OnInit {
   
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  thirdFormGroup: FormGroup;
+  // thirdFormGroup: FormGroup;
   selectionForRole = new SelectionModel(true, []);
   selectionForUserGrp = new SelectionModel(true, []);
   roleDisplayedColumns: string[] = ['select', 'roleName', 'featureIds'];
@@ -84,6 +84,7 @@ export class NewUserStepComponent implements OnInit {
     now.setDate(now.getDate() - 1);
     return date > now;
   }
+  mapRoleIds: any = [];
 
   constructor(private _formBuilder: FormBuilder, private cdref: ChangeDetectorRef, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
 
@@ -126,9 +127,9 @@ export class NewUserStepComponent implements OnInit {
     this.secondFormGroup = this._formBuilder.group({
       secondCtrl: ['', Validators.required]
     });
-    this.thirdFormGroup = this._formBuilder.group({
-      thirdCtrl: ['', Validators.required]
-    });
+    // this.thirdFormGroup = this._formBuilder.group({
+    //   thirdCtrl: ['', Validators.required]
+    // });
     this.userTypeList = [
       {
         name: this.translationData.lblPortalUser || 'Portal Account',
@@ -227,7 +228,6 @@ export class NewUserStepComponent implements OnInit {
           vehicleDisplayId: this.firstFormGroup.controls.vehDisplay.value != '' ?  this.firstFormGroup.controls.vehDisplay.value : ((this.orgPreference.vehicleDisplay && this.orgPreference.vehicleDisplay != '') ? this.orgPreference.vehicleDisplay : this.defaultSetting.vehicleDisplayDropdownData[0].id),
           landingPageDisplayId: this.firstFormGroup.controls.landingPage.value != '' ?  this.firstFormGroup.controls.landingPage.value : ((this.orgPreference.landingPageDisplay && this.orgPreference.landingPageDisplay != '') ? this.orgPreference.landingPageDisplay : this.defaultSetting.landingPageDisplayDropdownData[0].id)
         }
-
         let createPrefFlag = false;
         for (const [key, value] of Object.entries(this.orgDefaultFlag)) {
           if(!value){
@@ -273,6 +273,30 @@ export class NewUserStepComponent implements OnInit {
             }
         }
        });
+      
+    //---- Role obj----------//
+
+    this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
+    let mapRoleData: any = [];
+    
+    if(this.mapRoleIds.length > 0){
+      mapRoleData = this.mapRoleIds;
+    }
+    else{
+      mapRoleData = [0];
+    }
+
+    let roleObj = {
+      accountId: this.linkFlag ? this.linkAccountId :  this.userData.id,
+      organizationId: this.linkFlag ? this.accountOrganizationId : this.userData.organizationId,
+      roles: mapRoleData
+    }
+
+    if(this.mapRoleIds.length > 0){
+      this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
+           this.updateTableData(false);
+      }, (error) => {  });
+    }
   }
 
   goForword(_createStatus: any){
@@ -340,11 +364,11 @@ export class NewUserStepComponent implements OnInit {
 
   onUpdateUserData(){
     //---- Role obj----------//
-    let mapRoleIds :any = this.selectionForRole.selected.map(resp => resp.roleId);
+    this.mapRoleIds = this.selectionForRole.selected.map(resp => resp.roleId);
     let mapRoleData: any = [];
     
-    if(mapRoleIds.length > 0){
-      mapRoleData = mapRoleIds;
+    if(this.mapRoleIds.length > 0){
+      mapRoleData = this.mapRoleIds;
     }
     else{
       mapRoleData = [0];
@@ -379,17 +403,17 @@ export class NewUserStepComponent implements OnInit {
       accounts: mapGrpData 
     }
 
-    if(mapRoleIds.length > 0 && mapGrpIds.length > 0){
+    if(this.mapRoleIds.length > 0 && mapGrpIds.length > 0){
       this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
         this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
           this.updateTableData(false);
         }, (error) => {  });
       }, (error) => {  });
-    }else if(mapRoleIds.length > 0 && mapGrpIds.length == 0){
+    }else if(this.mapRoleIds.length > 0 && mapGrpIds.length == 0){
       this.accountService.addAccountRoles(roleObj).subscribe((data)=>{
            this.updateTableData(false);
       }, (error) => {  });
-    }else if(mapRoleIds.length == 0 && mapGrpIds.length > 0){
+    }else if(this.mapRoleIds.length == 0 && mapGrpIds.length > 0){
         this.accountService.addAccountGroups(grpObj).subscribe((data)=>{
           this.updateTableData(false);
       }, (error) => {  });

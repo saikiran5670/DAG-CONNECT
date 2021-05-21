@@ -6,6 +6,7 @@ namespace net.atos.daf.ct2.rfms.entity
     {
         public string RequestId{ get; set; }
         // enum
+       public DataType Type { get; set; }
 
         public string StartTime { get; set; }
 
