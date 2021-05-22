@@ -120,6 +120,3 @@ stages:
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'release')
-
-  
-
