@@ -50,6 +50,7 @@ password: any;
 emailAddress: any;
 mailSubject: any;
 mailDescription: any;
+notifyPeriod: any;
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -57,37 +58,22 @@ mailDescription: any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.notificationForm = this._formBuilder.group({
-      // recipientLabel: ['', [ Validators.required ]],
-      // contactMode: ['', [Validators.required]],
-      // emailAddress: ['', [Validators.required, Validators.email]],
-      // mailSubject: ['', [Validators.required]],
-      // mailDescription: ['', [Validators.required]],
-      // wsDescription: ['', [Validators.required]],
-      // authentication:['', [Validators.required]],
-      // loginId: ['', [Validators.required, Validators.email]],
-      // password: ['', [Validators.required]],
-      // webURL:['', [Validators.required]],
-      // wsTextDescription:[''],
-      // criticalLevel: [''],
-      // warningLevel: [''],
-      // advisoryLevel: ['']
+      recipientLabel: ['', [ Validators.required ]],
+      contactMode: ['', [Validators.required]],
       FormArrayItems : this._formBuilder.array([this.initItems()]),
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForName('recipientLabel', 'FormArrayItems'),
+        CustomValidators.specialCharValidationForName('recipientLabel'),
       ]
     });
-    // this.ArrayList = this.notificationForm.controls.FormArrayItems['controls'][0].controls;
-      this.ArrayList = this.notificationForm.get('FormArrayItems')['controls'];
-    console.log(this.ArrayList);
     
     }
 
     initItems(): FormGroup{
       return this._formBuilder.group({
-        recipientLabel: ['',[Validators.required]],
-        contactMode: ['', [Validators.required]],
+        // recipientLabel: ['',[Validators.required]],
+        // contactMode: ['', [Validators.required]],
         emailAddress: ['', [Validators.required, Validators.email]],
         mailSubject: ['', [Validators.required]],
         mailDescription: ['', [Validators.required]],
@@ -99,19 +85,21 @@ mailDescription: any;
         wsTextDescription:[''],
         criticalLevel: [''],
         warningLevel: [''],
-        advisoryLevel: ['']
+        advisoryLevel: [''],
+        notifyPeriod: ['A']
         });
     }
 
-//     get formArr(): FormArray{
-// return this.notificationForm.get("FormArrayItems") as FormArray;
-//     }
-
     addMultipleItems() :void{
-      // const creds = this.notificationForm.controls.credentials as FormArray;
-      // this.formArr.push(this.initItems());
-      this.ArrayList = this.notificationForm.get("FormArrayItems") as FormArray;
-      this.ArrayList.push(this.initItems());
+      console.log(this.FormArrayItems);
+      this.addFlag = true;
+      if(!this.FormArrayItems)
+      {
+      this.FormArrayItems = this.notificationForm.get("FormArrayItems") as FormArray;
+      }
+      else{
+        this.FormArrayItems.push(this.initItems());
+      }
     }
 
   setDefaultValueForws(){
@@ -134,7 +122,7 @@ mailDescription: any;
 
   onChangeContactMode(event :any){
    this.contactModeType = event.value;
-   this.addFlag = false;
+  //  this.addFlag = false;
    //for Web service
   //  if(this.contactModeType == 0){
   //   this.recipientLabel = this.notificationForm.controls.recipientLabel.value;

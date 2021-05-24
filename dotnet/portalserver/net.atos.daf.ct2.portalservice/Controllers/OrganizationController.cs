@@ -689,6 +689,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objRelationship.CreatedOrgId = request.CreatedOrgId;
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.allow_chain;
+                objRelationship.Isconfirmed = request.IsConfirm;
                 var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(objRelationship);
                 if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {

@@ -12,5 +12,6 @@ namespace net.atos.daf.ct2.role
         Task<int> UpdateRole(RoleMaster roleMaster);
       Task<int> DeleteRole(int roleid, int Accountid);
         int  CheckRoleNameExist(string roleName,int Organization_Id,int roleid);
+        Task<IEnumerable<AssignedRoles>> IsRoleAssigned(int roleid);
     }
 }

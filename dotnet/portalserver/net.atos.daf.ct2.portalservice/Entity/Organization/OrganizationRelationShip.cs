@@ -15,7 +15,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             public int CreatedOrgId { get; set; }
             public int[] TargetOrgId { get; set; }
             public bool allow_chain { get; set; }
+           public bool IsConfirm { get; set; }
 
-        }
+    }
     
 }

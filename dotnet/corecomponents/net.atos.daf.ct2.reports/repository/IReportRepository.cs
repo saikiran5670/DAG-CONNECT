@@ -8,8 +8,10 @@ namespace net.atos.daf.ct2.reports.repository
 {
     public interface IReportRepository
     {
-        Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId);
+        Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountIdint, int organizationId);
+        Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountIdint, int organizationId);
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate, IEnumerable<string> vinList);
+        Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripEntityRequest);
     }
 }

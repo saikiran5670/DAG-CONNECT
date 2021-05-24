@@ -121,37 +121,46 @@ namespace net.atos.daf.ct2.roleservice
 
         }
 
-        public override Task<RoleResponce> Delete(RoleRequest request, ServerCallContext context)
+        public async override Task<DeleteRoleResponce> Delete(RoleRequest request, ServerCallContext context)
         {
             try
             {
 
-                var role = _RoleManagement.DeleteRole(request.RoleID, request.OrganizationId).Result;
-
-                if (role < 0)
+                var Assignedrole = await _RoleManagement.IsRoleAssigned(request.RoleID);
+                DeleteRoleResponce responce = new DeleteRoleResponce();
+                foreach (var item in Assignedrole)
                 {
-                    return Task.FromResult(new RoleResponce
+                    responce.Role.Add(new AssignedRole
+                    { 
+                        FirstName=item.firstname,
+                        LastName =item.lastname,
+                        Salutation=item.salutation,
+                        AccountId=item.accountid,
+                        Roleid=item.roleid
+                    });
+                }
+                int role = 0;
+                if (responce.Role.Count() == 0)
+                {
+                    role = _RoleManagement.DeleteRole(request.RoleID, request.OrganizationId).Result;
+                    return await Task.FromResult(new DeleteRoleResponce
                     {
-                        Message = "ROLE_IN_USE",
-                        Code = Responcecode.Assigned
-
+                        Message = role.ToString(),
+                        Code = Responcecode.Success
                     });
                 }
                 else
                 {
-                    return Task.FromResult(new RoleResponce
-                    {
-                        Message = "Role Updated id:- " + role,
-                        Code = Responcecode.Success
-
-                    });
+                    responce.Message = "Role_in_use";
+                    responce.Code = Responcecode.Assigned;
+                   return await Task.FromResult(responce);
                 }
-
+                
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return Task.FromResult(new RoleResponce
+                return await Task.FromResult(new DeleteRoleResponce
                 {
                     Message = "Exception :-" + ex.Message,
                     Code = Responcecode.Failed

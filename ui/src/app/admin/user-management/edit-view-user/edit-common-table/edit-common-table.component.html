@@ -21,6 +21,14 @@
                       </mat-form-field>
                     </div>
                   </div>
+                  <div  *ngIf="data.type == 'role'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+                    <div fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign='center center'>
+                          <mat-icon class='margin-right-10'>info</mat-icon>
+                          <span>Select atleast one role.<span class='mandatoryColor'>*</span></span>
+                      </div>
+                    </div>
+                  </div>
                 <mat-table [dataSource]="dataSource" class="table-items" matSort>
                     <ng-container *ngFor="let disCol of data.colsList; let colIndex = index" matColumnDef="{{disCol}}">
                         <div *ngIf="disCol == 'select'">
@@ -71,7 +79,7 @@
                 data.translationData.lblCancel || 'Cancel' }}</button>
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)="onReset()">{{
                 data.translationData.lblReset || 'Reset' }}</button>
-            <button mat-raised-button color="primary" (click)="onConfirm()">{{
+            <button mat-raised-button color="primary" [disabled]="data.type == 'role' ? selectionData.selected.length == 0 : false" (click)="onConfirm()">{{
                 data.translationData.lblConfirm || 'Confirm' }}</button>
         </div>
     </mat-card-actions>

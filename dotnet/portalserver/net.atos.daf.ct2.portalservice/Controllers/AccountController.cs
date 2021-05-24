@@ -167,6 +167,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             try
             {
+                try
+                {
+                    var token = HttpContext.Session.GetString("session_id");
+                    _logger.Info($"Value from Session - { token }");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error occurred while retrieving session value", ex);
+                }
                 bool isSameEmail = false;
 
                 // Validation 
@@ -621,7 +630,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetMenuFeatures([FromBody] MenuFeatureRequest request)
         {
             try
-            {
+            {                
                 var menuFeatureRequest = new AccountBusinessService.MenuFeatureRequest();
                 menuFeatureRequest.AccountId = request.AccountId;
                 menuFeatureRequest.RoleId = request.RoleId;

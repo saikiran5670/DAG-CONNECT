@@ -9,6 +9,7 @@ service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
 rpc GetVinsFromTripStatistics (VehicleFilterRequest) returns (VehicleFilterResponse);
+rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponce);
 }
 
 enum Responsecode{
@@ -30,9 +31,10 @@ message UserPreferenceDataColumn{
     string Name=2;
     string Description = 3;
     string Type = 4;
-    string Key =5;
-    string State=6;
-    string ChartType = 7;
+    string ReportReferenceType = 5;
+    string Key =6;
+    string State=7;
+    string ChartType = 8;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -43,13 +45,18 @@ message UserPreferenceDataColumnResponse{
 
 message UserPreferenceCreateRequest{
  repeated Atribute AtributesShowNoShow =1;
-  int32 AccountId =2;
- int32 ReportId =3;
+   int32 AccountId =2;
+  int32 ReportId =3;
+  int32 OrganizationId =4;
+  string Type =5;
+  int64 CreatedAt =6;
+  int64 ModifiedAt =7;
+  string CharType = 8;
 }
 
 message Atribute{
  int32 DataAttributeId =1;
- string IsExclusive =2;
+ string State =2;
 }
 
 message UserPreferenceCreateResponse{
@@ -68,3 +75,44 @@ Responsecode Code = 1;
 string Message = 2;
 repeated string VinList = 3;
 }
+
+// Start Trip Report Table
+message TripFilterRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+
+}
+
+message TripResponce {
+    repeated TripDetils TripData=1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+message TripDetils {
+    int32 Id =1;
+    string TripId=2;
+    string VIN=3;
+    string DriverFirstName=4;
+    string DriverLastName=5; 
+    string DriverId1=6;
+    string DriverId2=7;
+    int32 Distance=8; 
+    string StartAddress=9;
+    string EndAddress=10;
+    double StartPositionlattitude=11;
+    double StartPositionLongitude=12;
+    double EndPositionLattitude=13;
+    double EndPositionLongitude=14;
+    int64 StartTimeStamp=15;
+    int64 EndTimeStamp=16;
+    repeated LiveFleetPosition LiveFleetPosition=17;
+}
+message LiveFleetPosition {
+    int64 GpsAltitude=1;
+    int64 GpsHeading=2; 
+    int64 GpsLatitude=3;
+    int64 GpsLongitude=4; 
+    int32 Id=5;
+}
+// End Trip Report Table
