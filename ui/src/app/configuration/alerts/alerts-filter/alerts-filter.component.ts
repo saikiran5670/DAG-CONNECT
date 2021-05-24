@@ -25,6 +25,7 @@ export class AlertsFilterComponent implements OnInit {
   localData : any; 
   tempData: any;
   alertType:any;
+  vehicleGroup:any;
   alertTypeEnum:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
@@ -73,6 +74,7 @@ export class AlertsFilterComponent implements OnInit {
         this.filterListValues['type'] = '';
     }
     else{     
+        this.alertType='';
         this.isDisabledAlerts = false;  
         this.dataResultTypes =[]; 
         this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
@@ -112,6 +114,7 @@ export class AlertsFilterComponent implements OnInit {
         }
         }else if(filter == "vehicleGroupName"){
           if(event.value == ''){
+            this.vehicleGroup='';
             event_val = event.value.trim();  
           }
           else{
@@ -135,7 +138,7 @@ export class AlertsFilterComponent implements OnInit {
    this.dataSource.filter = JSON.stringify(this.filterListValues);
    this.filterValues.emit(this.dataSource);    
   }
-
+  
   createFilter() {
     let filterFunction = function (data: any, filter: string): boolean {
       let searchTerms = JSON.parse(filter);
@@ -143,29 +146,29 @@ export class AlertsFilterComponent implements OnInit {
       for (const col in searchTerms) {
         if (searchTerms[col].toString() !== '') {
           isFilterSet = true;
-        } else {
+        } else {    
           if( col == "highUrgencyLevel"){
-            let critical  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
-            let warning   = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
-            let advisory  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
-           if(critical.length > 0){
-              critical.forEach(obj => { 
-              data["highUrgencyLevel"]=obj.urgencyLevelType;
-              data["highThresholdValue"]=obj.thresholdValue;
-              });
-            }else if(warning.length > 0){
-              warning.forEach(obj => { 
-              data["highUrgencyLevel"]=obj.urgencyLevelType;
-              data["highThresholdValue"]=obj.thresholdValue;
+          let critical  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
+          let warning   = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
+          let advisory  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
+         if(critical.length > 0){
+            critical.forEach(obj => { 
+            data["highUrgencyLevel"]=obj.urgencyLevelType;
+            data["highThresholdValue"]=obj.thresholdValue;
             });
-            }
-            else {
-              advisory.forEach(obj => { 
-              data["highUrgencyLevel"]=obj.urgencyLevelType;
-              data["highThresholdValue"]=obj.thresholdValue;
-            });
-            }                     
-           }  
+          }else if(warning.length > 0){
+            warning.forEach(obj => { 
+            data["highUrgencyLevel"]=obj.urgencyLevelType;
+            data["highThresholdValue"]=obj.thresholdValue;
+          });
+          }
+          else {
+            advisory.forEach(obj => { 
+            data["highUrgencyLevel"]=obj.urgencyLevelType;
+            data["highThresholdValue"]=obj.thresholdValue;
+          });
+          }                     
+         }         
           delete searchTerms[col];
         }
       }
@@ -173,37 +176,77 @@ export class AlertsFilterComponent implements OnInit {
       let nameSearch = () => {
         let found = false;
         if (isFilterSet) {          
-          for (const col in searchTerms) {  
-           if( col == "highUrgencyLevel"){
-            let levelVal= searchTerms['highUrgencyLevel'];
-            let levelData  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == levelVal);
-            levelData.forEach(obj => { 
-              if(obj.urgencyLevelType == levelVal ){
-                  found = true;
-                  data["highUrgencyLevel"]=obj.urgencyLevelType;
-                  data["highThresholdValue"]=obj.thresholdValue;
-              }                        
-             });          
-           }  
-           else if(col == "type"){  
-             found = false;        
-             if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
-               found = true;    
-             }        
-            }   
-            else if(col == "vehicleGroupName"){
-              found = false;        
-              if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
-                found = true;    
-              }  
-                 
-             }   
-             else{                                
-              if (data[col].toString().indexOf(searchTerms[col]) != -1 && isFilterSet) {
-                  found = true
-               }                     
+          if(searchTerms.category){
+            let category = '';
+            category = data.category;
+            if(category.includes(searchTerms.category)){
+              found = true;    
+            }     
+          else{
+            return false;
+          }
+        }
+        if(searchTerms.type){          
+          let type = '';
+            type = data.type;
+            if(type.includes(searchTerms.type)){
+              found = true;    
+          }
+        else{
+          return false;
+        }
+      }
+
+        if(searchTerms.vehicleGroupName){          
+          let vehicleGroupName = '';
+          vehicleGroupName = data.vehicleGroupName;
+            if(vehicleGroupName.includes(searchTerms.vehicleGroupName)){
+              found = true;    
+          }
+        else{
+          return false;
+        }
+      }
+
+      if(searchTerms.highUrgencyLevel){              
+        let highUrgencyLevel = '';
+        let levelVal = searchTerms.highUrgencyLevel;
+        let criticality  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == levelVal);
+      
+        if(criticality.length < 1){
+          criticality=data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
+        }
+        if( levelVal == searchTerms.highUrgencyLevel){
+          if(criticality.length > 0){
+              criticality.forEach(obj => { 
+              data["highUrgencyLevel"]=obj.urgencyLevelType;
+              data["highThresholdValue"]=obj.thresholdValue;
+              });     
+              highUrgencyLevel = data.highUrgencyLevel;
+              if(highUrgencyLevel.includes(searchTerms.highUrgencyLevel)){
+                  found = true;    
               }      
-        }   
+              else{
+                return false;             
+              }  
+            }   
+            else{
+              return false;
+            }
+          }
+        }
+
+        if(searchTerms.state){          
+          let state = '';
+          state = data.state;
+            if(state.includes(searchTerms.state)){
+              found = true;    
+          }
+          else{
+          return false;
+          }
+        }
+
           return found
         } else {
           return true;
