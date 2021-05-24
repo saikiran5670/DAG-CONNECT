@@ -9,7 +9,7 @@
         </mat-label>
         <div *ngIf="actionType != 'view'">
             <mat-form-field appearance="outline" class="full-width corridorLineHt">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
+                <input maxlength="100" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
                     formControlName="label" required>
             </mat-form-field>
             <mat-error
@@ -45,11 +45,8 @@
                 </mat-form-field>  -->
 
             <mat-error
-                *ngIf="corridorFormGroup.get('startaddress').hasError('required') && corridorFormGroup.get('startaddress').touched">
+                *ngIf="searchStrError">
                 {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
-            </mat-error>
-            <mat-error *ngIf="corridorFormGroup.get('startaddress').hasError('specialCharsNotAllowed')">
-                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
@@ -72,11 +69,8 @@
                     matInput formControlName="endaddress" (focusout)="endAddressFocusOut()" required>
             </mat-form-field> -->
             <mat-error
-                *ngIf="corridorFormGroup.get('endaddress').hasError('required') && corridorFormGroup.get('endaddress').touched">
+                *ngIf="searchEndStrError">
                 {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
-            </mat-error>
-            <mat-error *ngIf="corridorFormGroup.get('endaddress').hasError('specialCharsNotAllowed')">
-                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">

@@ -109,6 +109,9 @@ export class RouteCalculatingComponent implements OnInit {
     floor: 0,
     ceil: 10000
   };
+  searchStrError : boolean = false;
+  searchEndStrError : boolean = false;
+
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -128,8 +131,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup = this.formBuilder.group({
       corridorType:['Regular'],
       label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
-      startaddress: ['', [Validators.required]],
-      endaddress:  ['', [Validators.required]],
       widthInput : ['', [Validators.required]],
       viaroute1: ['', [Validators.required]],
       viaroute2: ['', [Validators.required]],
@@ -146,7 +147,10 @@ export class RouteCalculatingComponent implements OnInit {
       limitedWeight: ['', [Validators.required]],
       weightPerAxle: ['', [Validators.required]]
 
-    });
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForNameWithoutRequired('label')]});
     this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData();
@@ -182,8 +186,15 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
       this.searchEndStr = _selectedElementData.endPoint;
+      this.startAddressPositionLat = _selectedElementData.startLat;
+      this.startAddressPositionLong = _selectedElementData.startLong;
+      this.endAddressPositionLat = _selectedElementData.endLat;
+      this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
       this.corridorWidthKm = this.corridorWidth / 1000;
+      this.plotStartPoint(this.searchStr);
+      this.plotEndPoint(this.searchEndStr);
+      this.calculateAB()
     }
   }
   vehicleHeightValue: number = 0;
@@ -419,10 +430,10 @@ export class RouteCalculatingComponent implements OnInit {
       "organizationId": this.organizationId,
       "corridorType": "R",
       "corridorLabel":this.corridorFormGroup.controls.label.value,
-      "startAddress": this.corridorFormGroup.controls.startaddress.value,
+      "startAddress": this.searchStr,
       "startLatitude": this.startAddressPositionLat,
       "startLongitude": this.startAddressPositionLong,
-      "endAddress": this.corridorFormGroup.controls.endaddress.value,
+      "endAddress": this.searchEndStr,
       "endLatitude": this.endAddressPositionLat,
       "endLongitude": this.endAddressPositionLong,
       "width": this.corridorWidth,
@@ -547,6 +558,7 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   onStartFocus(){
+    this.searchStrError = true;
     this.searchStr = null;
     this.startAddressPositionLat = 0;
     if(this.startMarker){
@@ -554,6 +566,8 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
   onEndFocus(){
+    this.searchEndStrError = true;
+
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
     if(this.endMarker){
@@ -563,6 +577,9 @@ export class RouteCalculatingComponent implements OnInit {
 
   onSelected(selectedAddress: CompleterItem){
     //console.log(item.title)
+    if(this.searchStr){
+       this.searchStrError = false;
+    }
     if(selectedAddress){
       let postalCode = selectedAddress["originalObject"]["label"];
       this.plotStartPoint(postalCode)
@@ -571,6 +588,10 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   onEndSelected(selectedAddress: CompleterItem){
+    
+    if(this.searchEndStr){
+      this.searchEndStrError = false;
+      }
     if(selectedAddress){
       let locationId = selectedAddress["originalObject"]["label"]
       this.plotEndPoint(locationId)
@@ -596,9 +617,10 @@ export class RouteCalculatingComponent implements OnInit {
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
   
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
+      var group = new H.map.Group();
       this.hereMap.addObject(this.startMarker);
-      //this.hereMap.getViewModel().setLookAtData({bounds: this.startMarker.getBoundingBox()});
-      this.hereMap.setZoom(2);
+      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
+      //this.hereMap.setZoom(8);
       this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
       this.checkRoutePlot();
 
@@ -619,7 +641,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
       this.hereMap.addObject(this.endMarker);
      // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-      //this.hereMap.setZoom(2);
+      //this.hereMap.setZoom(8);
       this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
       this.checkRoutePlot();
 
