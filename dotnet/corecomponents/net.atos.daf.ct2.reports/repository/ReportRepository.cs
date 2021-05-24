@@ -75,14 +75,15 @@ namespace net.atos.daf.ct2.reports.repository
 						                     INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = da.id
 						                     INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' and das.is_exlusive = false
 						                     INNER JOIN master.Feature f ON f.data_attribute_set_id = das.id AND f.state = 'A' and f.type = 'D'
-						                     INNER JOIN master.FeatureSetFeature fsf ON f.id = fsf.feature_id
+						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id
 						                     INNER JOIN master.FeatureSet fset ON fsf.feature_set_id = fset.id AND fset.state = 'A'
-						                     INNER JOIN master.Role ro ON ro.feature_set_id = fsf.feature_set_id AND ro.state = 'A'
+						                     INNER JOIN master.Role ro ON ro.feature_set_id = fset.id AND ro.state = 'A'
 						                     INNER JOIN master.AccountRole ar ON ro.id = ar.role_id and ar.organization_id = @organization_id
-						                     INNER JOIN master.account acc on  acc.id = @account_id AND acc.id = ar.account_id AND acc.state = 'A'
-	 			                         ) t 
-		                      ON t.id = d.id
-                              where acc.id = @account_id and ar.Organization_id = @organization_id and r.id = @report_id";
+						                     INNER JOIN master.account acc ON  acc.id = @account_id AND acc.id = ar.account_id AND acc.state = 'A'
+	 			                          WHERE acc.id = @account_id AND ar.Organization_id = @organization_id AND r.id = @report_id
+                                        ) t 
+		                                ON t.id = d.id
+                              WHERE  rd.report_id = @report_id";
                 #endregion
                 return _dataAccess.QueryAsync<UserPrefernceReportDataColumn>(query, parameter);
             }
