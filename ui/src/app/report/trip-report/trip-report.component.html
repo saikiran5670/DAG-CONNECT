@@ -1,9 +1,95 @@
 <div class="bgtrans">
-    <mat-card class='margin-top-lg border-none bg-none no-padding full-width margin-top-40 mat-elevation-z' fxLayout="column" fxLayoutAlign="start start">
-    <mat-card-content class="full-width">
-      <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-        <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+            <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+            <div style='margin-top: 5px;'>
+              <button class='margin-right-10 no-margin' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
+              <button class='margin-right-10 no-margin' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+              <button class='margin-right-10 no-margin' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+              <button class='margin-right-10 no-margin' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+              <button class='no-margin' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline">
+              <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}">
+                <mat-option value="0">--All--</mat-option>
+                <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.id">
+                    {{ rer.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+              </div>
+              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+              </div>
+            </div>
+          </div>
+          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+            <mat-form-field appearance="outline">
+              <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}">
+                <mat-option value="0">--All--</mat-option>
+                <mat-option *ngFor="let rer of vehicleListData" [value]="rer.id">
+                    {{ rer.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
+          <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+            (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+          <button class='no-margin' mat-raised-button color="primary"
+            (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+        </div>
       </div>
-    </mat-card-content>
+    </mat-expansion-panel>
+  </mat-card>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showMapPanel'>
+    <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView || 'Map View' }}</span>
+            <span><mat-icon style='vertical-align: middle;'>info</mat-icon>&nbsp;{{ translationData.lblMapInfoText || 'You can select trip (single/multiple from below list to view on map)' }}</span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+    </mat-expansion-panel>
+  </mat-card>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngIf='initData.length == 0'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
+      </div>
+      <div *ngIf='initData.length > 0'></div>
+    </mat-expansion-panel>
   </mat-card>
 </div>

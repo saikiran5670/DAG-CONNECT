@@ -13,5 +13,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
 
         public const string GET_VIN_SUCCESS_MSG = "VIN fetched successfully for given date range";
         public const string GET_VIN_FAILURE_MSG = "VIN fetched failed for given date range";
+
+        public const string REPORT_REQUIRED_MSG = "Report id is required.";
+        public const string ACCOUNT_REQUIRED_MSG = "Account id is required.";
+        public const string ORGANIZATION_REQUIRED_MSG = "Organization id is required.";
     }
 }

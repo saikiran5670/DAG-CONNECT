@@ -698,6 +698,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                     return Ok(CreateResponce);
                 }
+                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Conflict)
+                {
+                    return StatusCode(409,CreateResponce);
+                }
                 else
                 {
                     return StatusCode(500, "Error in creating relationships");

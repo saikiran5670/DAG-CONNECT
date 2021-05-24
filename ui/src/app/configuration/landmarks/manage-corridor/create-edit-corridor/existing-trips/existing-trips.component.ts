@@ -14,13 +14,16 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
   styleUrls: ['./existing-trips.component.less']
 })
 export class ExistingTripsComponent implements OnInit {
-  startDate = new FormControl();
   endDate = new FormControl();
+  startDate = new FormControl();
+  startTime = new FormControl();
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() disabled: boolean;
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
-
+  selectedStartTime: any = '12:00 AM'
+  selectedEndTime: any = '12:00 AM'
+  timeValue: any = 0;
   // range = new FormGroup({
   //   start: new FormControl(),
   //   end: new FormControl()
@@ -191,6 +194,12 @@ export class ExistingTripsComponent implements OnInit {
     else {
       return data;
     }
+  }
+  timeChanged(selectedTime: any) {
+    this.selectedStartTime = selectedTime;
+  }
+  endtimeChanged(endTime: any) {
+    this.selectedEndTime = endTime;
   }
 
   vinSelection(vinSelectedValue: any) {
