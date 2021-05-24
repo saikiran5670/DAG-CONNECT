@@ -111,6 +111,8 @@ export class RouteCalculatingComponent implements OnInit {
   };
   searchStrError : boolean = false;
   searchEndStrError : boolean = false;
+  strPresentStart: boolean = false;
+  strPresentEnd: boolean = false;
 
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
@@ -132,8 +134,8 @@ export class RouteCalculatingComponent implements OnInit {
       corridorType:['Regular'],
       label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       widthInput : ['', [Validators.required]],
-      viaroute1: ['', [Validators.required]],
-      viaroute2: ['', [Validators.required]],
+      viaroute1: [''],
+      viaroute2: [''],
       trailer:["Regular"],
       tollRoad:['Regular'],
       motorWay:['Regular'],
@@ -141,16 +143,24 @@ export class RouteCalculatingComponent implements OnInit {
       railFerries:['Regular'],
       tunnels:['Regular'],
       dirtRoad:['Regular'],
-      vehicleHeight:['', [Validators.required]],
-      vehicleWidth: ['', [Validators.required]],
-      vehicleLength : ['', [Validators.required]],
-      limitedWeight: ['', [Validators.required]],
-      weightPerAxle: ['', [Validators.required]]
+      vehicleHeight:[''],
+      vehicleWidth: [''],
+      vehicleLength : [''],
+      limitedWeight: [''],
+      weightPerAxle: ['']
 
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForNameWithoutRequired('label')]});
+        CustomValidators.specialCharValidationForNameWithoutRequired('label'),
+        CustomValidators.numberFieldValidation('vehicleHeight',50),
+        CustomValidators.numberFieldValidation('vehicleWidth',50),
+        CustomValidators.numberFieldValidation('vehicleLength',300),
+        CustomValidators.numberFieldValidation('limitedWeight',1000),
+        CustomValidators.numberFieldValidation('weightPerAxle',1000),
+        CustomValidators.numberFieldValidation('widthInput',10)
+
+      ]});
     this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData();
@@ -559,6 +569,7 @@ export class RouteCalculatingComponent implements OnInit {
 
   onStartFocus(){
     this.searchStrError = true;
+    this.strPresentStart = false;
     this.searchStr = null;
     this.startAddressPositionLat = 0;
     if(this.startMarker){
@@ -567,7 +578,7 @@ export class RouteCalculatingComponent implements OnInit {
   }
   onEndFocus(){
     this.searchEndStrError = true;
-
+    this.strPresentEnd = false;
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
     if(this.endMarker){
@@ -579,6 +590,7 @@ export class RouteCalculatingComponent implements OnInit {
     //console.log(item.title)
     if(this.searchStr){
        this.searchStrError = false;
+       this.strPresentStart = true;
     }
     if(selectedAddress){
       let postalCode = selectedAddress["originalObject"]["label"];
@@ -591,6 +603,7 @@ export class RouteCalculatingComponent implements OnInit {
     
     if(this.searchEndStr){
       this.searchEndStrError = false;
+      this.strPresentEnd = true;
       }
     if(selectedAddress){
       let locationId = selectedAddress["originalObject"]["label"]
