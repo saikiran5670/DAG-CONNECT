@@ -1,7 +1,7 @@
 <form [formGroup]="notificationForm">
     <!-- for level selection -->
-<div  formArrayName="FormArrayItems" *ngFor="let item of notificationForm.controls['FormArrayItems']['controls']; let i = index" >
-    <div  [formGroupName]="i">
+<!-- <div  formArrayName="FormArrayItems"> -->
+    <!-- <div  [formGroupName]="i"> -->
    
     <div *ngIf="(alert_category_selected === 'L') && (alert_type_selected === 'Y')" class="areaWidth min-width-30-per"
         fxLayout="column" fxLayoutAlign="left">
@@ -35,10 +35,10 @@
             </mat-form-field>
             <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization || 'Enter max 10 recipient label for
                 categorization' }}</mat-hint>
-            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('recipientLabel').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('recipientLabel').touched">
+            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('required') && notificationForm.get('recipientLabel').touched">
                 {{translationData.lblPleaseEnterRecipientLabel|| 'Please enter recipient label' }}
             </mat-error>
-            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('recipientLabel').hasError('specialCharsNotAllowed')">
+            <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
@@ -58,7 +58,7 @@
             </mat-form-field>
             <mat-hint>{{translationData.lblSelectContactModeAndAddWithList || 'Select contact mode and add with list'}}
             </mat-hint>
-            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('contactMode').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('contactMode').touched">
+            <mat-error *ngIf="notificationForm.get('contactMode').hasError('required') && notificationForm.get('contactMode').touched">
                 {{translationData.lblPleaseSelectContactMode|| 'Please select contact Mode' }}
             </mat-error>
         </div>
@@ -69,7 +69,9 @@
                 (translationData.lblAdd || 'Add') }}</button>
         </div>
     </div>
-
+<div  formArrayName="FormArrayItems">
+    <div  *ngFor="let item of notificationForm.controls['FormArrayItems']['controls']; let i = index" >
+    <div  [formGroupName]="i">
     <!-- For email -->
     <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 && addFlag" style="border: 1px solid #000">
         <mat-panel-title>
@@ -201,7 +203,7 @@
                                 formControlName="wsDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
-                        <mat-error *ngIf="notificationForm.get('wsDescription').hasError('required') && notificationForm.get('wsDescription').touched">
+                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('wsDescription').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('wsDescription').touched">
                             {{ translationData.lblPleaseenterwsDescription || 'Please enter ws Description' }}
                               </mat-error>
                     </div>
@@ -277,6 +279,7 @@
             </mat-card>
         </div>
     </div>
+</div>
 </div>
 </div>
 </form>
