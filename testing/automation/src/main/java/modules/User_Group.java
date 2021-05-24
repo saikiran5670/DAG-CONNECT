@@ -136,7 +136,7 @@ public class User_Group extends CommonFunctionLib {
 			ColNo= i;
 			}
 			}
-			CommonFunctionLib.clickOnCount(ColNo,"","");				
+			CommonFunctionLib.clickOnCount(ColNo,"","", "Main");				
 			}catch (Exception e) {
 				test.log(LogStatus.FAIL, e.getMessage());
 				Log.error("Data is not present in table..." + e.getMessage());
