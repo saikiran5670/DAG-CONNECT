@@ -118,16 +118,16 @@
             <ng-container matColumnDef="action">
               <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
               <mat-cell *matCellDef="let row" class="action">
-                <button class='actionBtn' mat-flat-button (click)="editViewAlertData(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="editViewAlertData(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
+                <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">
                   <mat-icon>create</mat-icon>
                 </button>
-                <button class='actionBtn'  mat-flat-button (click)="editAlertData(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate || 'Duplicate' }}">
+                <button class='actionBtn'  mat-flat-button (click)="onEditDuplicateAlert(row, 'duplicate')" matTooltip="{{ translationData.lblDuplicate || 'Duplicate' }}">
                   <mat-icon>content_copy</mat-icon>
               </button>
-                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="deleteAlertData(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                <button *ngIf="adminAccessType.adminFullAccess" class='actionBtn' mat-flat-button (click)="onDeleteAlert(row)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
                   <mat-icon class="deleteIcon">delete_outline</mat-icon>
                 </button>
               </mat-cell>
@@ -142,7 +142,7 @@
       </mat-card>
   </div>
   <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="selectedRowData"
+      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
        [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [vehicleGroupList]='vehicleGroupList' [vehicleList]='vehicleList' (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
   </div>
 </div>
