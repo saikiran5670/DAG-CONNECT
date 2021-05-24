@@ -104,6 +104,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             try
                             {
                                 HttpContext.Session.SetString("session_id", response.TokenIdentifier);
+                                _logger.Info($"Value set in Session - { response.TokenIdentifier }");
                             }
                             catch (Exception ex)
                             {
