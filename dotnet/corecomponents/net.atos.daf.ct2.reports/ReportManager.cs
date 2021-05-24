@@ -47,5 +47,14 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetVinsFromTripStatistics(fromDate, toDate, vinList);
         }
         #endregion
+
+        #region Trip Report Table Details
+
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter)
+        {
+            return await _reportRepository.GetFilteredTripDetails(tripFilter);
+        }
+
+        #endregion
     }
 }
