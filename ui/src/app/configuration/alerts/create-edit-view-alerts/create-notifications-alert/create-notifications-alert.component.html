@@ -145,9 +145,14 @@
                     alert notifications per vehicle' }}</span>
                 <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
                         class='mandatoryColor'>*</span></span>
-                <mat-radio-button [checked]="true" style='margin-right: 20px;' value="Always">{{
+                <!-- <mat-radio-button formControlName="notifyPeriod" checked style='margin-right: 20px;' [value]="'A'">{{
                     translationData.lblAlways || 'Always' }}
-                </mat-radio-button>
+                </mat-radio-button> -->
+                <mat-radio-group formControlName="notifyPeriod" style='margin-right: 20px;'>
+                    <mat-radio-button style='margin-right: 20px;' value="A">
+                        {{ translationData.lblAlways || 'Always' }}
+                    </mat-radio-button>
+                </mat-radio-group>
                 <!-- </div> -->
             </div>
         </div>
@@ -239,7 +244,7 @@
                         </mat-form-field>
                         <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('password').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('password').touched">
                             {{ translationData.lblPleaseEnterPassword || 'Please enter password' }}
-                              </mat-error>
+                        </mat-error>
                     </div>
                     </div>
             </div>
@@ -252,9 +257,14 @@
                     alert notifications per vehicle' }}</span>
                 <span style="padding-left: 10px;" class='radioLabel'>{{ translationData.lblNotify || 'Notify' }}<span
                         class='mandatoryColor'>*</span></span>
-                <mat-radio-button [checked]="true" style='margin-right: 20px;' value="Always">{{
+                <!-- <mat-radio-button checked style='margin-right: 20px;' [value]="'A'">{{
                     translationData.lblAlways || 'Always' }}
-                </mat-radio-button>
+                </mat-radio-button> -->
+                <mat-radio-group formControlName="notifyPeriod" style='margin-right: 20px;'>
+                    <mat-radio-button style='margin-right: 20px;' value="A">
+                        {{ translationData.lblAlways || 'Always' }}
+                    </mat-radio-button>
+                </mat-radio-group>
                 <!-- </div> -->
             </div>
         </div>
