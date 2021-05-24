@@ -8,8 +8,8 @@
     <PackageReference Include="npgsql" Version="5.0.1.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="entity\" />
     <Folder Include="enum\" />
+    <Folder Include="repository\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />

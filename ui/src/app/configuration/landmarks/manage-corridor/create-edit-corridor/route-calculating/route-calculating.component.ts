@@ -50,7 +50,7 @@ export class RouteCalculatingComponent implements OnInit {
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
   corridorWidth : number = 100;
-  corridorWidthKm : number;
+  corridorWidthKm : number = 0.1;
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
@@ -65,6 +65,8 @@ export class RouteCalculatingComponent implements OnInit {
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
   endMarker :any;
+  routeCorridorMarker : any;
+  routeOutlineMarker : any;
   endAddressPositionLat : number = 0;
   endAddressPositionLong : number = 0;
   
@@ -149,7 +151,6 @@ export class RouteCalculatingComponent implements OnInit {
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData();
     }
-    console.log(this.selectedElementData)
     this.subscribeWidthValue()
    
     //this.configureAutoCompleteForLocationSearch();
@@ -160,6 +161,7 @@ export class RouteCalculatingComponent implements OnInit {
       console.log(x)
       this.corridorWidthKm = Number(x);
       this.corridorWidth = this.corridorWidthKm  * 1000;
+      this.calculateAB();
    })
   }
   setCorridorData(){
@@ -246,7 +248,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
     this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
     this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
-
+    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
  }
 
   public ngAfterViewInit() {
@@ -305,10 +307,6 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
       this.checkRoutePlot();
       //this.calculateRouteFromAtoB();
-  }
-
-  valueChanges(_event){
-    console.log(_event)
   }
 
   checkRoutePlot(){
@@ -525,6 +523,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.othersChecked  = false;
     this.transportDataChecked = false;
     this.trafficFlowChecked = false;
+    this.corridorWidth = 100;
+    this.corridorWidthKm = 0.1;
     this.corridorFormGroup.controls.vehicleHeight.setValue("");
     this.corridorFormGroup.controls.vehicleLength.setValue("");
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
@@ -539,17 +539,26 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   clearMap(){
-    this.hereMap.removeObjects();
+    if(this.startMarker && this.endMarker ){
+    this.hereMap.removeObjects([this.startMarker,this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+
+    }
 
   }
 
   onStartFocus(){
     this.searchStr = null;
     this.startAddressPositionLat = 0;
+    if(this.startMarker){
+      this.hereMap.removeObjects([this.startMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    }
   }
   onEndFocus(){
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
+    if(this.endMarker){
+      this.hereMap.removeObjects([this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    }
   }
 
   onSelected(selectedAddress: CompleterItem){
@@ -655,7 +664,10 @@ export class RouteCalculatingComponent implements OnInit {
 
   addRouteShapeToMap(result){
     var group = new H.map.Group();
-  
+    if(this.routeOutlineMarker){
+      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+
+    }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
@@ -665,26 +677,34 @@ export class RouteCalculatingComponent implements OnInit {
       // });
       // this.hereMap.addObject(routeLine);
       // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+      if (this.corridorWidthKm > 0) {
+        this.routeOutlineMarker = new H.map.Polyline(linestring, {
+          style: {
+            lineWidth: this.corridorWidthKm,
+            strokeColor: '#b5c7ef',
+          }
+        });
+        // Create a patterned polyline:
+        this.routeCorridorMarker = new H.map.Polyline(linestring, {
+          style: {
+            lineWidth: 3,
+            strokeColor: '#436ddc'
+          }
+        }
+        );
+        // create a group that represents the route line and contains
+        // outline and the pattern
+        var routeLine = new H.map.Group();
+        // routeLine.addObjects([routeOutline, routeArrows]);
+        this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+        this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
-      var routeOutline = new H.map.Polyline(linestring, {
-        style: {
-          lineWidth: this.corridorWidthKm,
-          strokeColor: '#b5c7ef',
-        }
-      });
-      // Create a patterned polyline:
-      var routeArrows = new H.map.Polyline(linestring, {
-        style: {
-          lineWidth: 3,
-          strokeColor: '#436ddc'}
-        }
-      );
-      // create a group that represents the route line and contains
-      // outline and the pattern
-      var routeLine = new H.map.Group();
-     // routeLine.addObjects([routeOutline, routeArrows]);
-      this.hereMap.addObjects([routeOutline, routeArrows]);
-      this.hereMap.getViewModel().setLookAtData({bounds: routeArrows.getBoundingBox()});
+      }
+      else{
+        this.routeOutlineMarker = null;
+        this.routeCorridorMarker = null;
+
+      }
 
     });
   

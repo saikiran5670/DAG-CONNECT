@@ -95,6 +95,11 @@ export class OrganisationRelationshipComponent implements OnInit {
                     this.dataSource = new MatTableDataSource(this.initData);
                     this.dataSource.paginator = this.paginator;
                     this.dataSource.sort = this.sort;
+                    this.dataSource.filterPredicate = function(data, filter: any){
+                      return data.relationshipName.toLowerCase().includes(filter) || 
+                              data.vehicleGroupName.toLowerCase().includes(filter) ||
+                              data.organizationName.toLowerCase().includes(filter)
+                    };
                     });
              }
 
