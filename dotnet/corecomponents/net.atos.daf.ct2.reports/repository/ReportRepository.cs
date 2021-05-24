@@ -164,6 +164,12 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Trip Report Table Details
+
+        /// <summary>
+        /// Fetch Filtered trips along with Live Fleet Position
+        /// </summary>
+        /// <param name="TripFilters"></param>
+        /// <returns>List of Trips Data with LiveFleet attached under *LiveFleetPosition* property</returns>
         public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest TripFilters)
         {
             try
@@ -204,11 +210,26 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@vin", TripFilters.VIN);
 
                 List<TripDetails> data = (List<TripDetails>)await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
-                foreach (var item in data)
+                if (data?.Count > 0)
                 {
-                    await GetFleetOfTrip(item);
+
+                    // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
+                    string[] TripIds = data.Select(item => item.TripId).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(TripIds);
+                    if (lstLiveFleetPosition.Count > 0)
+                        foreach (TripDetails trip in data)
+                        {
+                            trip.LiveFleetPosition = lstLiveFleetPosition.Where(fleet => fleet.TripId == trip.TripId).ToList();
+                        }
+
+                    /** Old way To pull respective trip fleet position
+                    foreach (var item in data)
+                    {
+                        await GetLiveFleetPosition(item);
+                    }
+                    */
+                    lstTripEntityResponce = data.ToList();
                 }
-                lstTripEntityResponce = data.ToList();
                 return lstTripEntityResponce;
             }
             catch (System.Exception ex)
@@ -217,11 +238,17 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        private async Task GetFleetOfTrip(TripDetails item)
+        //TODO :: Remove this method after implementation of new way to Live Fleet Position
+        /// <summary>
+        /// Pull Live Fleet positions with specific (one) trip details
+        /// </summary>
+        /// <param name="Trip"></param>
+        /// <returns></returns>
+        private async Task<List<LiveFleetPosition>> GetLiveFleetPosition(TripDetails Trip)
         {
             var parameterPosition = new DynamicParameters();
-            parameterPosition.Add("@vin", item.VIN);
-            parameterPosition.Add("@trip_id", item.TripId);
+            parameterPosition.Add("@vin", Trip.VIN);
+            parameterPosition.Add("@trip_id", Trip.TripId);
             string queryPosition = @"select id, 
                               vin,
                               gps_altitude, 
@@ -246,9 +273,86 @@ namespace net.atos.daf.ct2.reports.repository
                     objLiveFleetPosition.Id = positionData.Id;
                     lstLiveFleetPosition.Add(objLiveFleetPosition);
                 }
-                item.LiveFleetPosition = lstLiveFleetPosition;
+            }
+            return lstLiveFleetPosition;
+        }
+
+        private async Task<List<LiveFleetPosition>> GetLiveFleetPosition(String[] TripIds)
+        {
+            try
+            {
+                //Creating chunk of 1000 trip ids because IN clause support till 1000 paramters only
+                List<string> combineTrips = CreateChunks(TripIds);
+
+                List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
+                if (combineTrips.Count > 0)
+                {
+                    foreach (var item in combineTrips)
+                    {
+                        // Collecting all batch to add under respective trip
+                        lstLiveFleetPosition.AddRange(await GetFleetOfTripWithINClause(item));
+                    }
+                }
+                return lstLiveFleetPosition;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
             }
         }
+
+        /// <summary>
+        /// Get Live Fleet Position as per trip given Trip id with IN clause (Optimized pull opration)
+        /// </summary>
+        /// <param name="CommaSparatedTripIDs"> Comma Sparated Trip IDs (max 1000 ids)</param>
+        /// <returns>List of LiveFleetPosition Object</returns>
+        private async Task<List<LiveFleetPosition>> GetFleetOfTripWithINClause(string CommaSparatedTripIDs)
+        {
+            var parameterPosition = new DynamicParameters();
+            parameterPosition.Add("@trip_id", CommaSparatedTripIDs);
+            string queryPosition = @"select id, 
+                                         vin,
+                                    	 trip_id as tripid,
+                                         gps_altitude, 
+                                         gps_heading,
+                                         gps_latitude,
+                                         gps_longitude
+                                    from livefleet.livefleet_position_statistics
+                                    where trip_id IN (@trip_id)
+                                    order by id desc";
+            List<LiveFleetPosition> lstLiveFleetPosition = (List<LiveFleetPosition>)await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
+
+            if (lstLiveFleetPosition.Count() > 0)
+            {
+                return lstLiveFleetPosition;
+            }
+            else
+            {
+                return new List<LiveFleetPosition>();
+            }
+        }
+
+        #region Generic code to Prepare In query String
+
+        /// <summary>
+        ///   Create Batch of values on dynamic chunk size
+        /// </summary>
+        /// <param name="ArrayForChuk">Array of IDs or values for creating batch for e.g. Batch of 100. </param>
+        /// <returns>List of all batchs including comma separated id in one item</returns>
+        private List<string> CreateChunks(string[] ArrayForChuk)
+        {
+            // Creating batch of 1000 ids as IN clause support only 1000 parameters
+            var TripChunks = Common.CommonExtention.Split<string>(ArrayForChuk, 1000);
+            List<string> combineTrips = new List<string>();
+            foreach (var chunk in TripChunks)
+            {
+                combineTrips.Add(string.Join(",", chunk));
+            }
+
+            return combineTrips;
+        }
+
+        #endregion
 
 
         #endregion
