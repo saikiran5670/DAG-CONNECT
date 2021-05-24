@@ -184,7 +184,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var role_Id = await _roleclient.DeleteAsync(ObjRole);
                 if (role_Id.Code == Responcecode.Assigned)
                 {
-                    return StatusCode(400,"Role_In_Use");
+                    return StatusCode(400,role_Id);
                 }
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete method in Role manager", roleId, roleId, JsonConvert.SerializeObject(roleId));
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",

@@ -24,4 +24,14 @@ namespace net.atos.daf.ct2.role.entity
         public string Code { get; set; }
 
     }
+
+
+    public class  AssignedRoles
+    {
+        public int roleid { get; set; }
+        public int accountid { get; set; }
+        public string salutation { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+    }
 }

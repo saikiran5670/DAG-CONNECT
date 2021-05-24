@@ -32,8 +32,8 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   selectedType: any = true;
   organizationId: number;
   localStLanguage: any;
-  vehicleGroupDisplayColumn: string[]= ['select', 'vehicleGroupName'];
-  organisationNameDisplayColumn: string[]= ['select', 'organisationName'];
+  vehicleGroupDisplayColumn: string[]= ['select', 'groupName'];
+  organisationNameDisplayColumn: string[]= ['select', 'organizationName'];
   initData: any;
   selectedOrgRelations = new SelectionModel(true, []);
   selectedOrganisation = new SelectionModel(true, []);
@@ -53,6 +53,7 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   userCreatedMsg: any = '';
   @Input() actionType: any;
   @Input() roleData:any;
+  orgRltShipCreateButton: boolean = false;
 
   ngOnInit(): void {
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({

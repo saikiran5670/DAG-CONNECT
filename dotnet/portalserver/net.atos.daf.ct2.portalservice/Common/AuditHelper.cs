@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Google.Protobuf.WellKnownTypes;
 
 namespace net.atos.daf.ct2.portalservice.Common
@@ -47,7 +44,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit_Error", ex);
+                _logger.LogError("Error occurred while fetching request header object.", ex);
                 return new HeaderObj();
             }
         }
@@ -81,12 +78,11 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit_Error", logs, ex);
+                _logger.LogError("Error occurred while adding audit logs.", logs, ex);
                 return 1;
             }
 
         }
-
 
         public static int ToInt32(string value)
         {
@@ -131,13 +127,4 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
     }
-    public class HeaderObj
-    {
-        public int roleId { get; set; }
-        public int accountId { get; set; }
-        public int orgId { get; set; }
-
-    }
-
-
 }

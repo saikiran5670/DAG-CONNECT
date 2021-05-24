@@ -32,7 +32,7 @@ export class AlertsComponent implements OnInit {
   dataSource: any; 
   initData: any = [];
   rowsData: any;
-  createStatus: boolean;
+  //createStatus: boolean;
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   accountOrganizationId: any;
@@ -87,7 +87,7 @@ export class AlertsComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    console.log("process translationData:: ", this.translationData)
+    //console.log("process translationData:: ", this.translationData)
   }
 
   loadFiltersData(){    
@@ -100,7 +100,7 @@ export class AlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
-      this.vehicleList= data["vehicleGroup"];
+      this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
     
       this.alertStatusList=[{
        id: 1,
@@ -198,7 +198,30 @@ export class AlertsComponent implements OnInit {
       typeVal.forEach(obj => { 
         item["type"]=obj.value;
       });  
-     
+      
+      let alertUrgency=({
+      alertFilterRefs: [],
+      alertId: 42,
+      createdAt: 1621588594280,
+      dayType: [],
+      id: 38,
+      modifiedAt: 0,
+      periodType: "A",
+      state: "A",
+      thresholdValue: 25,
+      unitType: "H",
+      urgencyLevelType: "W",
+      urgencylevelEndDate: 0,
+      urgencylevelStartDate: 0
+    })
+      // let alertUrgency =({      
+      // thresholdValue: 300,
+      // urgencyLevelType: "A"      
+      // })
+
+     // item.alertUrgencyLevelRefs.push(alertUrgency);
+      //item.alertUrgencyLevelRefs.push(alertUrgency);
+      
       let critical  = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
       let warning   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
       let advisory   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
@@ -278,7 +301,7 @@ export class AlertsComponent implements OnInit {
         else{
           row.newTag = false;
         }
-      }
+      } 
       else{
         row.newTag = false;
       }
@@ -290,7 +313,7 @@ export class AlertsComponent implements OnInit {
     return newTrueData;
   }
 
-  deleteAlertData(item: any) {
+  onDeleteAlert(item: any) {
     const options = {
       title: this.translationData.lblDeleteAlert || "Delete Alert",
       message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?",
@@ -316,20 +339,21 @@ export class AlertsComponent implements OnInit {
       return ("Alert '$' was successfully deleted").replace('$', alertName);
   }
 
-  editViewAlertData(element: any, type: any) {
+  onViewAlert(element: any, type: any) {
    
   }
 
-  editAlertData(row: any, action : string) {
-    this.duplicateFlag = false;
+  onEditDuplicateAlert(row: any, action : string) {
+    this.createViewEditStatus= true;
+    this.actionType = 'edit';
     if(action == 'duplicate'){
-      this.duplicateFlag = true;
+      this.actionType = 'duplicate';
     }
-    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Alert" : this.translationData.lblEditUserRoleDetails || "Edit Alert Details";
-    this.rowsData = [];
-    this.rowsData.push(row);
-    this.editFlag = true;
-    this.createStatus = false;    
+    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert" : this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.rowsData = row;
+    //this.rowsData.push(row);
+    //this.editFlag = true;
+    //this.createStatus = false;    
   }
 
    successMsgBlink(msg: any){

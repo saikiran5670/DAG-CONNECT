@@ -11,6 +11,7 @@ using static net.atos.daf.ct2.reportservice.ReportService;
 using Report = net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.portalservice.Entity.Report;
 using System;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -43,13 +44,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Select User Preferences
         [HttpGet]
         [Route("getuserpreferencereportdatacolumn")]
-        public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId)
         {
             try
             {
-                if (!(reportId > 0)) return BadRequest("Report id cannot be zero.");
-                if (!(accountId > 0)) return BadRequest("Account id cannot be zero.");
-                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId });
+                if (!(reportId > 0)) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
+                if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
+                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
+                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId, OrganizationId = organizationId });
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");
                 if (response.Code == Responsecode.Success)
@@ -75,5 +77,70 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+
+        #region Trip Report Table Details
+        [HttpGet]
+        [Route("gettripdetails")]
+        public async Task<IActionResult> GetFilteredTripDetails([FromQuery] TripFilterRequest request)
+        {
+            try
+            {
+                _logger.Info("GetFilteredTripDetailsAsync method in Report API called.");
+                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, "No Result Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"Get Filtered Trip Details Async", 0, 0, JsonConvert.SerializeObject(request),
+                 Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
+        [HttpPost]
+        [Route("createuserpreference")]
+        public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        {
+            try
+            {
+                var request = _mapper.MapCreateUserPrefences(objUserPreferenceCreateRequest);
+                var response = await _reportServiceClient.CreateUserPreferenceAsync(request);
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.");
+
+                switch (response.Code)
+                {
+                    case Responsecode.Success:
+                        return Ok(response);
+                    case Responsecode.Failed:
+                        return StatusCode((int)response.Code, response.Message);
+                    case Responsecode.InternalServerError:
+                        return StatusCode((int)response.Code, response.Message);
+                    default:
+                        return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                 $"createuserpreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                  Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
     }
 }

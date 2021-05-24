@@ -21,7 +21,7 @@ service RoleService {
   
   rpc Create (RoleRequest) returns (RoleResponce);
   rpc Update (RoleRequest) returns (RoleResponce);  
-  rpc Delete (RoleRequest) returns (RoleResponce);
+  rpc Delete (RoleRequest) returns (DeleteRoleResponce);
   rpc Get (RoleFilterRequest) returns (RoleListResponce);  
   rpc GetFeatures (FeaturesFilterRequest) returns (FeaturesListResponce);
 }
@@ -48,6 +48,20 @@ message RoleRequest {
   message RoleResponce {
     Responcecode code=1;
     string message = 2;
+  }
+  message DeleteRoleResponce {
+    Responcecode code=1;
+    string message = 2;
+    repeated AssignedRole role=3;
+  }
+
+  message AssignedRole
+  {
+    int32 Roleid= 1;
+    int32 AccountId= 2;
+    string Salutation= 3;
+    string FirstName= 4;
+    string LastName= 5;
   }
 
   message RoleFilterRequest {

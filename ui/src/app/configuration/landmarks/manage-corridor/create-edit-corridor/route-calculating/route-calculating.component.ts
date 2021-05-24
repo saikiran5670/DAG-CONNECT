@@ -7,6 +7,7 @@ import {
   CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData
 } from 'ng2-completer';
 import { ConfigService } from '@ngx-config/core';
+import { Options } from '@angular-slider/ngx-slider';
 
 declare var H: any;
 
@@ -48,7 +49,8 @@ export class RouteCalculatingComponent implements OnInit {
   viaRouteCount : boolean = false;
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
-  corridorWidth : number;
+  corridorWidth : number = 100;
+  corridorWidthKm : number = 0.1;
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
@@ -63,6 +65,8 @@ export class RouteCalculatingComponent implements OnInit {
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
   endMarker :any;
+  routeCorridorMarker : any;
+  routeOutlineMarker : any;
   endAddressPositionLat : number = 0;
   endAddressPositionLong : number = 0;
   
@@ -84,6 +88,27 @@ export class RouteCalculatingComponent implements OnInit {
   tunnelId ='D';
   dirtRoadId = 'D';
   boatFerriesId = 'D';
+  
+
+  getAttributeData : any;
+  getExclusionList : any;
+  getVehicleSize : any;
+  additionalData : any;
+
+  
+  tollRoadValue : any ;
+  motorWayValue : any;
+  boatFerriesValue : any;
+  railFerriesValue : any;
+  tunnelValue : any;
+  dirtRoadValue :any;
+  trailerValue : any;
+
+  value: number = 100;
+  options: Options = {
+    floor: 0,
+    ceil: 10000
+  };
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -97,7 +122,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.configureAutoCompleteForLocationSearch();
    }
 
-  ngOnInit(): void {
+  ngOnInit(){
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.corridorFormGroup = this.formBuilder.group({
@@ -122,31 +147,109 @@ export class RouteCalculatingComponent implements OnInit {
       weightPerAxle: ['', [Validators.required]]
 
     });
+    this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
-      this.setCorridorData()
+      this.setCorridorData();
     }
-    console.log(this.selectedElementData)
+    this.subscribeWidthValue()
+   
     //this.configureAutoCompleteForLocationSearch();
   }
 
+  subscribeWidthValue(){
+    this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
+      console.log(x)
+      this.corridorWidthKm = Number(x);
+      this.corridorWidth = this.corridorWidthKm  * 1000;
+      this.calculateAB();
+   })
+  }
   setCorridorData(){
     let _selectedElementData = this.selectedElementData;
     if(_selectedElementData){
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              console.log(data);
+              console.log(data)
+              if(data[0]["corridorProperties"]){
+                 this.additionalData =  data[0]["corridorProperties"];
+                 this.setAdditionalData();
+              
+              }
           })
       }
       this.corridorName = _selectedElementData.corridoreName;
-      console.log(this.corridorName)
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
       this.searchEndStr = _selectedElementData.endPoint;
       this.corridorWidth = _selectedElementData.width;
+      this.corridorWidthKm = this.corridorWidth / 1000;
     }
   }
+  vehicleHeightValue: number = 0;
+  vehicleWidthValue: number = 0;
+  vehicleLengthValue: number = 0;
+  vehicleLimitedWtValue: number = 0;
+  vehicleWtPerAxleValue: number = 0;
+  setAdditionalData(){
+    let _data = this.additionalData;
+    this.getAttributeData = _data["attribute"];
+    this.getExclusionList = _data["exclusion"];
+    this.combustibleChecked = this.getAttributeData["isCombustible"];
+    this.corrosiveChecked = this.getAttributeData["isCorrosive"];
+    this.explosiveChecked = this.getAttributeData["isExplosive"];
+    this.flammableChecked = this.getAttributeData["isFlammable"];
+    this.gasChecked = this.getAttributeData["isGas"];
+    this.organicChecked = this.getAttributeData["isOrganic"];
+    this.othersChecked = this.getAttributeData["isOther"];
+    this.poisonChecked = this.getAttributeData["isPoision"];
+    this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
+    this.radioactiveChecked = this.getAttributeData["isRadioActive"];
+    this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
+    this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
+    this.trafficFlowChecked = _data["isTrafficFlow"];
+    this.transportDataChecked = _data["isTransportData"];
+    this.getVehicleSize = _data["vehicleSize"];
+    this.vehicleHeightValue = this.getVehicleSize.vehicleHeight;
+    this.vehicleWidthValue = this.getVehicleSize.vehicleWidth;
+    this.vehicleLengthValue = this.getVehicleSize.vehicleLength;
+    this.vehicleLimitedWtValue = this.getVehicleSize.vehicleLimitedWeight;
+    this.vehicleWtPerAxleValue = this.getVehicleSize.vehicleWeightPerAxle;
 
+
+    this.corridorFormGroup.controls.vehicleHeight.setValue(this.getVehicleSize.vehicleHeight);
+    this.corridorFormGroup.controls.vehicleWidth.setValue(this.getVehicleSize.vehicleWidth);
+    this.corridorFormGroup.controls.vehicleLength.setValue(this.getVehicleSize.vehicleLength);
+    this.corridorFormGroup.controls.limitedWeight.setValue(this.getVehicleSize.vehicleLimitedWeight);
+    this.corridorFormGroup.controls.weightPerAxle.setValue(this.getVehicleSize.vehicleWeightPerAxle);
+    this.tollRoadId = this.getExclusionList["tollRoadType"];
+    this.boatFerriesId = this.getExclusionList["boatFerriesType"];
+    this.dirtRoadId = this.getExclusionList["dirtRoadType"];
+    this.motorWayId = this.getExclusionList["mortorway"];
+    this.tunnelId = this.getExclusionList["tunnelsType"];
+    this.railFerriesId = this.getExclusionList["railFerriesType"];
+
+    this.initiateDropDownValues();
+
+  }
+
+  initiateDropDownValues(){
+    this.corridorFormGroup.controls.trailer.setValue(this.selectedTrailerId);
+    this.trailerValue = this.selectedTrailerId;
+    this.corridorFormGroup.controls.tollRoad.setValue(this.tollRoadId);
+    this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
+    this.corridorFormGroup.controls.motorWay.setValue(this.motorWayId);
+    this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
+    this.corridorFormGroup.controls.boatFerries.setValue(this.boatFerriesId);
+    this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
+    this.corridorFormGroup.controls.railFerries.setValue(this.railFerriesId);
+    this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
+    this.corridorFormGroup.controls.tunnels.setValue(this.tunnelId);
+    this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
+    this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
+    this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
+    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+ }
 
   public ngAfterViewInit() {
     this.initMap();
@@ -178,16 +281,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.mapGroup = group;
   }
 
-  addPolylineToMap(){
-    var lineString = new H.geo.LineString();
-    lineString.pushPoint({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
-    lineString.pushPoint({lat:this.endAddressPositionLat , lng:this.endAddressPositionLong});
-    this.hereMap.addObject(new H.map.Polyline(
-      lineString, { style: { lineWidth: 4 }}
-    ));
-  }
-
-
   createHomeMarker(){
     const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -208,16 +301,22 @@ export class RouteCalculatingComponent implements OnInit {
     return endMarker;
   }
 
-  sliderChanged(_event){
-      let distanceinMtr = _event.value;
-      this.corridorWidth = _event.value;
-      this.distanceinKM = distanceinMtr/1000;
-      this.corridorFormGroup.controls.widthInput.setValue(this.distanceinKM);
+  sliderChanged(){
+     // this.corridorWidth = _event.value;
+      this.corridorWidthKm = this.corridorWidth / 1000;
+      this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+      this.checkRoutePlot();
+      //this.calculateRouteFromAtoB();
   }
 
+  checkRoutePlot(){
+    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
+      this.calculateAB();
+    }
+  }
   changeSliderInput(){
-    this.distanceinKM = this.corridorFormGroup.controls.widthInput.value;
-    this.sliderValue = this.distanceinKM * 1000;
+    this.corridorWidthKm = this.corridorFormGroup.controls.widthInput.value;
+    this.corridorWidth = this.corridorWidthKm * 1000;
   }
   
   formatLabel(value:number){
@@ -403,6 +502,8 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   resetValues(){
+    if(this.actionType === 'create'){
+        
     this.tollRoadId = 'D';
     this.motorWayId ='D';
     this.railFerriesId = 'D';
@@ -422,6 +523,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.othersChecked  = false;
     this.transportDataChecked = false;
     this.trafficFlowChecked = false;
+    this.corridorWidth = 100;
+    this.corridorWidthKm = 0.1;
     this.corridorFormGroup.controls.vehicleHeight.setValue("");
     this.corridorFormGroup.controls.vehicleLength.setValue("");
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
@@ -429,25 +532,39 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
     this.corridorFormGroup.controls.startaddress.setValue("");
     this.corridorFormGroup.controls.endaddress.setValue("");
+    }
+    else{
+      this.setAdditionalData();
+    }
   }
 
   clearMap(){
-    this.hereMap.removeObject(this.startMarker);
-    this.hereMap.removeObject(this.endMarker);
+    if(this.startMarker && this.endMarker ){
+    this.hereMap.removeObjects([this.startMarker,this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+
+    }
 
   }
 
   onStartFocus(){
     this.searchStr = null;
+    this.startAddressPositionLat = 0;
+    if(this.startMarker){
+      this.hereMap.removeObjects([this.startMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    }
   }
   onEndFocus(){
     this.searchEndStr = null;
+    this.endAddressPositionLat = 0;
+    if(this.endMarker){
+      this.hereMap.removeObjects([this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    }
   }
 
   onSelected(selectedAddress: CompleterItem){
     //console.log(item.title)
     if(selectedAddress){
-      let postalCode = selectedAddress["originalObject"]["label"]
+      let postalCode = selectedAddress["originalObject"]["label"];
       this.plotStartPoint(postalCode)
     }
 
@@ -464,12 +581,14 @@ export class RouteCalculatingComponent implements OnInit {
   resetToEditData(){
     this.setCorridorData();
   }
+
+
+  // ------------- Map Functions ------------------------//
   plotStartPoint(_locationId){
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
     this.here.getLocationDetails(geocodingParameters).then((result) => {
-      console.log(result)
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createHomeMarker();
@@ -478,12 +597,11 @@ export class RouteCalculatingComponent implements OnInit {
   
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
       this.hereMap.addObject(this.startMarker);
-      //this.mapGroup.addObject(this.startMarker);
+      //this.hereMap.getViewModel().setLookAtData({bounds: this.startMarker.getBoundingBox()});
       this.hereMap.setZoom(2);
-      // this.hereMap.getViewModel().setLookAtData({
-      //     bounds: this.mapGroup.getBoundingBox()
-      // });
       this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+      this.checkRoutePlot();
+
     });
   }
 
@@ -500,11 +618,13 @@ export class RouteCalculatingComponent implements OnInit {
   
       this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
       this.hereMap.addObject(this.endMarker);
-      this.hereMap.setZoom(2);
-
+     // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
+      //this.hereMap.setZoom(2);
       this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
+      this.checkRoutePlot();
 
     });
+    
   }
 
   suggestionData :  any;
@@ -524,4 +644,76 @@ export class RouteCalculatingComponent implements OnInit {
     this.dataService = this.suggestionData;
     console.log(this.dataService);
   }
+
+  calculateAB(){
+    let routeRequestParams = {
+      'routingMode': 'fast',
+      'transportMode': 'truck',
+      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
+      'return': 'polyline'
+    };
+    this.here.calculateRoutePoints(routeRequestParams).then((data)=>{
+      
+       this.addRouteShapeToMap(data);
+      console.log(data)
+    },(error)=>{
+       console.error(error);
+    })
+  }
+
+  addRouteShapeToMap(result){
+    var group = new H.map.Group();
+    if(this.routeOutlineMarker){
+      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+
+    }
+    result.routes[0].sections.forEach((section) =>{
+      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
+
+      // Create a polyline to display the route:
+      // let routeLine = new H.map.Polyline(linestring, {
+      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
+      // });
+      // this.hereMap.addObject(routeLine);
+      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+      if (this.corridorWidthKm > 0) {
+        this.routeOutlineMarker = new H.map.Polyline(linestring, {
+          style: {
+            lineWidth: this.corridorWidthKm,
+            strokeColor: '#b5c7ef',
+          }
+        });
+        // Create a patterned polyline:
+        this.routeCorridorMarker = new H.map.Polyline(linestring, {
+          style: {
+            lineWidth: 3,
+            strokeColor: '#436ddc'
+          }
+        }
+        );
+        // create a group that represents the route line and contains
+        // outline and the pattern
+        var routeLine = new H.map.Group();
+        // routeLine.addObjects([routeOutline, routeArrows]);
+        this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+        this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
+
+      }
+      else{
+        this.routeOutlineMarker = null;
+        this.routeCorridorMarker = null;
+
+      }
+
+    });
+  
+    // // Add the polyline to the map
+    // this.map.addObject(group);
+    // // And zoom to its bounding rectangle
+    // this.map.getViewModel().setLookAtData({
+    //   bounds: group.getBoundingBox()
+    // });
+  }
+  
 }

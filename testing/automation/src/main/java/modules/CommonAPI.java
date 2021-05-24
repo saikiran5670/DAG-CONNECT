@@ -420,7 +420,7 @@ public class CommonAPI extends CommonFunctionLib {
 					Object obj = parser.parse(new FileReader(path+ Un_Sub_fileName));
 			        JSONObject jsonObject = (JSONObject)obj;
 			    	System.out.println(jsonObject.toString());
-			    	JSONObject updated_jsonObject =replaceINTkeyInJSONObject(jsonObject,"orderID",Integer.parseInt(p1));
+			    	JSONObject updated_jsonObject =replacekeyInJSONObject(jsonObject,"orderID",p1);
 			    	System.out.println(updated_jsonObject.toString());
 			    	JSONObject updated_jsonObject1 =replacekeyInJSONObject(updated_jsonObject,"organizationID", OrgID);
 			    	System.out.println(updated_jsonObject1.toString());

@@ -104,6 +104,8 @@ namespace net.atos.daf.ct2.portalservice
                     }
                 };
             });
+            services.AddDistributedMemoryCache();
+
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat)); ;
                 options.Cookie.HttpOnly = true;
@@ -132,6 +134,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddMemoryCache();
             services.AddControllers();
             services.AddTransient<AuditHelper, AuditHelper>();
+            services.AddSingleton<SessionHelper>();
             services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();

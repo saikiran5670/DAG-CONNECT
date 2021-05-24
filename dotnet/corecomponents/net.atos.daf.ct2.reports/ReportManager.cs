@@ -17,9 +17,18 @@ namespace net.atos.daf.ct2.reports
         }
 
         #region Select User Preferences
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId)
+        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, 
+                                                                                                  int accountId,
+                                                                                                  int organizationId)
         {
-            return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId);
+            return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId, organizationId);
+        }
+
+        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId,
+                                                                                                  int accountId,
+                                                                                                  int organizationId)
+        {
+            return _reportRepository.GetRoleBasedDataColumn(reportId, accountId, organizationId);
         }
         #endregion
 
@@ -28,6 +37,24 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.CreateUserPreference(objUserPreferenceRequest);
         }
+        #endregion
+
+        #region Get Vins from data mart trip_statistics
+        //This code is not in use, may require in future use.
+        public Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate,
+                                                                   IEnumerable<string> vinList)
+        {
+            return _reportRepository.GetVinsFromTripStatistics(fromDate, toDate, vinList);
+        }
+        #endregion
+
+        #region Trip Report Table Details
+
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter)
+        {
+            return await _reportRepository.GetFilteredTripDetails(tripFilter);
+        }
+
         #endregion
     }
 }

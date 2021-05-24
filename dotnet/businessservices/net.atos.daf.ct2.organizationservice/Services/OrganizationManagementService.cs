@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.organizationservice
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
 
-       
+
         private readonly IAuditTraillib _AuditTrail;
         private readonly IAuditTraillib auditlog;
 
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.organizationservice
                                              IAuditTraillib _auditlog,
                                              IRelationshipManager relationshipManager)
         {
-            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _AuditTrail = AuditTrail;
             organizationtmanager = _organizationmanager;
             preferencemanager = _preferencemanager;
@@ -237,7 +237,26 @@ namespace net.atos.daf.ct2.organizationservice
             try
             {
                 OrgRelationshipCreateResponse responce = new OrgRelationshipCreateResponse();
+                
+                var relationships = await _relationshipManager.GetOrgRelationships(request.OwnerOrId);
+                int Relationscount = 0;
+                if (request.Isconfirmed == false)
+                {
+                    foreach (var organization in request.TargetOrgId)
+                    {
+                        foreach (var vehgroup in request.VehicleGroupID)
+                        {
+                            if (relationships.Any(i => i.target_org_id == organization && i.vehicle_group_id == vehgroup && i.relationship_id == request.RelationShipId))
+                            {
+                                Relationscount++;
+                                responce.Code = Responcecode.Conflict;
+                            }
+                        }
+                        request.Isconfirmed = Relationscount==0;
+                    }
+                }
 
+                int orgrelationid = 0;
                 foreach (var organization in request.TargetOrgId)
                 {
                     foreach (var vehgroup in request.VehicleGroupID)
@@ -248,15 +267,30 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.created_org_id = request.CreatedOrgId;
                         objRelationship.target_org_id = organization;
                         objRelationship.allow_chain = request.AllowChain;
-                        var orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
+                        if (relationships.Any(i => i.target_org_id == objRelationship.target_org_id && i.vehicle_group_id == objRelationship.vehicle_group_id && i.relationship_id == objRelationship.relationship_id))
+                        {
+                            OrgRelationshipMappingGetRequest Presetrelationships = new OrgRelationshipMappingGetRequest();
+                            Presetrelationships.RelationShipId = request.RelationShipId;
+                            Presetrelationships.VehicleGroupID = vehgroup;
+                            Presetrelationships.OwnerOrId = request.OwnerOrId;
+                            Presetrelationships.CreatedOrgId = request.CreatedOrgId;
+                            Presetrelationships.TargetOrgId = organization;
+                            responce.OrgRelationshipMappingList.Add(Presetrelationships);
+                        }
+                        else if (request.Isconfirmed)
+                        {
+                            orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
+                            responce.Code = Responcecode.Success;
+                        }
+
                         request.OrgRelationId = orgrelationid;
 
-                        responce.Code = Responcecode.Success;
+                        //responce.Code = Responcecode.Success;
                         responce.Relationship.Add(orgrelationid);
 
                     }
                 }
-                responce.Code = Responcecode.Success;
+                
                 return await Task.FromResult(responce);
 
             }
@@ -325,7 +359,7 @@ namespace net.atos.daf.ct2.organizationservice
                 throw;
             }
         }
-        
+
         public async override Task<OrgRelationshipGetResponse> GetOrgRelationshipMapping(OrgRelationshipMappingGetRequest request, ServerCallContext context)
         {
             try
@@ -347,7 +381,7 @@ namespace net.atos.daf.ct2.organizationservice
                                          RelationShipId = x.relationship_id,
                                          TargetOrgId = x.target_org_id,
                                          CreatedOrgId = x.created_org_id,
-                                         StartDate=x.start_date,
+                                         StartDate = x.start_date,
                                          CreatedAt = x.created_at,
                                          EndDate = x.end_date,
                                          AllowChain = x.allow_chain,
@@ -356,7 +390,7 @@ namespace net.atos.daf.ct2.organizationservice
                                          OrgRelationId = x.relationship_id,
                                          RelationshipName = x.RelationshipName,
                                          VehicleGroupName = x.VehicleGroupName
-                                         
+
                                      }).ToList());
                 _logger.Info("Get  relationship mapping details.");
                 response.Code = Responcecode.Success;
@@ -415,7 +449,7 @@ namespace net.atos.daf.ct2.organizationservice
             {
                 Organization organization = new Organization();
                 OrganizationUpdateData response = new OrganizationUpdateData();
-                organization.Id = request.Id;               
+                organization.Id = request.Id;
                 organization.vehicle_default_opt_in = request.VehicleDefaultOptIn;
                 organization.driver_default_opt_in = request.DriverDefaultOptIn;
                 var OrgId = await organizationtmanager.Update(organization);
@@ -568,7 +602,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -627,7 +661,7 @@ namespace net.atos.daf.ct2.organizationservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new OrganizationPreferenceResponse
                 {
                     Code = Responcecode.Failed,
@@ -641,7 +675,7 @@ namespace net.atos.daf.ct2.organizationservice
             net.atos.daf.ct2.organization.entity.Organization organization = new net.atos.daf.ct2.organization.entity.Organization();
             ListOfOrganization response = new ListOfOrganization();
             _logger.Info("GetAllOrganizations .");
-            var result = await organizationtmanager.GetAllOrganizations(request.Id);           
+            var result = await organizationtmanager.GetAllOrganizations(request.Id);
             if (result.Count() > 0)
             {
                 foreach (net.atos.daf.ct2.organization.entity.Organization entity in result)
@@ -656,14 +690,14 @@ namespace net.atos.daf.ct2.organizationservice
                 response.Code = Responcecode.NotFound;
                 response.Message = "Organization not found.";
             }
-            return await Task.FromResult(response);            
+            return await Task.FromResult(response);
         }
 
         public override async Task<LevelResponse> GetLevelByRoleId(LevelByRoleRequest request, ServerCallContext context)
         {
             _logger.Info("GetLevelByRoleId method Called.");
             LevelResponse objLevelResponse = new LevelResponse();
-            int level = await organizationtmanager.GetLevelByRoleId(request.OrgId,request.RoleId);
+            int level = await organizationtmanager.GetLevelByRoleId(request.OrgId, request.RoleId);
             if (level > 0)
             {
                 objLevelResponse.Level = level;
