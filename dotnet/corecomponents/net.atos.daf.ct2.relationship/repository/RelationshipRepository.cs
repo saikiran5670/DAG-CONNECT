@@ -320,6 +320,25 @@ namespace net.atos.daf.ct2.relationship.repository
             return OwnerRelationshipId;
         }
 
+        public async Task<IEnumerable<OrganizationRelationShip>> GetOrgRelationships(int OrganizationID)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@owner_org_id", OrganizationID);
+                
+                string query = @"select relationship_id,vehicle_group_id,
+                     owner_org_id,created_org_id,target_org_id from master.orgrelationshipmapping where owner_org_id=@owner_org_id";
+                var relationships = await _dataAccess.QueryAsync<OrganizationRelationShip>(query, parameter);
+                return relationships;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
 
         public async Task<List<OrganizationRelationShip>> GetRelationshipMapping(OrganizationRelationShip filter)
         {
@@ -372,7 +391,7 @@ namespace net.atos.daf.ct2.relationship.repository
                     foreach (dynamic record in result)
                     {
 
-                         relationships.Add(MapOrgData(record));
+                        relationships.Add(MapOrgData(record));
                     }
                 }
                 return relationships;
