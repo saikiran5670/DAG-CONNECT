@@ -1,4 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import {  catchError } from 'rxjs/internal/operators';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+  HttpParams
+} from '@angular/common/http';
 
 declare var H: any;
 
@@ -10,12 +18,13 @@ export class HereService {
 
   public platform: any;
   public geocoder: any;
-
-  public constructor() {
+    public router : any;
+  public constructor(private httpClient: HttpClient) {
       this.platform = new H.service.Platform({
         "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
       });
       this.geocoder = this.platform.getGeocodingService();
+      this.router = this.platform.getRoutingService(null, 8);
   }
 
   public getAddress(query: string) {
@@ -68,4 +77,24 @@ public getAddressFromLatLng(query: string) {
   });
 }
 
+getRoutes(params : any): Observable<any> {
+   let routeURL =   'https://route.api.here.com/routing/7.2/calculateroute.json?';
+    
+    return this.httpClient.get<any>(routeURL+params);
+  } 
+
+  public calculateRoutePoints(parameters:any) {
+    return new Promise((resolve, reject) => {
+        this.router.calculateRoute(parameters,
+			(result) => {
+                if(result) {
+                    resolve(result);
+                } else {
+                    reject({ message: "no results found" });
+                }
+            }, (error) => {
+            reject(error);
+        });
+    });
+}
 }

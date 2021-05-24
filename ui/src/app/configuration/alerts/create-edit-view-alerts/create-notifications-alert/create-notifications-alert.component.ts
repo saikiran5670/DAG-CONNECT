@@ -50,6 +50,7 @@ password: any;
 emailAddress: any;
 mailSubject: any;
 mailDescription: any;
+notifyPeriod: any;
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -84,7 +85,8 @@ mailDescription: any;
         wsTextDescription:[''],
         criticalLevel: [''],
         warningLevel: [''],
-        advisoryLevel: ['']
+        advisoryLevel: [''],
+        notifyPeriod: ['A']
         });
     }
 
