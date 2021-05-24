@@ -23,6 +23,8 @@ export class TripReportComponent implements OnInit {
   initData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
+  vehicleGroupListData: any = [];
+  vehicleListData: any = [];
 
   constructor(private translationService: TranslationService) {
     this.platform = new H.service.Platform({
@@ -76,6 +78,22 @@ export class TripReportComponent implements OnInit {
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
     this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+  }
+
+  onSearch(){
+
+  }
+
+  onReset(){
+
+  }
+
+  onVehicleGroupChange(event: any){
+
+  }
+
+  onVehicleChange(event: any){
+
   }
 
 }
