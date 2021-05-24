@@ -15,5 +15,6 @@ namespace net.atos.daf.ct2.relationship
         Task<int> EndRelationShipMapping(int OrgRelationId);
         Task<int> AllowChaining(int OrgRelationId, bool AllowChaining);
         Task<List<OrganizationRelationShip>> GetRelationshipMapping(OrganizationRelationShip filter);
+        Task<IEnumerable<OrganizationRelationShip>> GetOrgRelationships(int OrganizationID);
     }
 }
