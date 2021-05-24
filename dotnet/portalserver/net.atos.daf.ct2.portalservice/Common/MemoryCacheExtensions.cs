@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     return binaryFormatter.Deserialize(memoryStream) as T;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.portalservice.Common
 
                 mStream.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             {
                await _cache.RemoveAsync(key);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     return binaryFormatter.Deserialize(memoryStream) as T;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.portalservice.Common
 
                 mStream.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             {
                _cache.Remove(key);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

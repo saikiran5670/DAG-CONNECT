@@ -11,6 +11,7 @@ import { AlertService } from '../../../../services/alert.service';
 export class CreateEditCorridorComponent implements OnInit {
   @Input() translationData: any;
   @Input() actionType: any;
+  @Input() selectedElementData : any;
   @Output() backToPage = new EventEmitter<any>();
   typeForm: FormGroup;
   breadcumMsg: any = '';
@@ -20,7 +21,7 @@ export class CreateEditCorridorComponent implements OnInit {
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
   selectedCorridorTypeId : any = 46;
   exclusionList : any;
-
+  vehicleGroupList : any;
 
   constructor(private alertService: AlertService) {
    }
@@ -37,11 +38,14 @@ export class CreateEditCorridorComponent implements OnInit {
   loadDropdownData(){
     this.alertService.getAlertFilterData(this.accountId, this.organizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
+      let vehicleGroup = data["vehicleGroup"];
       filterData.forEach(element => {
         element["value"]= this.translationData[element["key"]];
       });
       this.corridorTypeList= filterData.filter(item => item.type == 'R');
       this.exclusionList= filterData.filter(item => item.type == 'E');
+      this.vehicleGroupList= vehicleGroup;
+      // console.log(this.vehicleGroupList)
     });
   }
   

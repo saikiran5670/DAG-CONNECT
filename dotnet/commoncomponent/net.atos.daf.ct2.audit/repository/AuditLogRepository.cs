@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.audit.repository
                 // return dataAccess.QuerySingle<int>("INSERT INTO dafconnectmaster.auditlog (userorgid, eventid, eventperformed, activitydescription, component, eventtime, eventstatus, createddate, createdby) VALUES(@userorgid, @eventid, @eventperformed, @activitydescription, @component, @eventtime, @eventstatus, @createddate, @createdby) RETURNING auditlogid",parameter);
                 return await dataAccess.QuerySingleAsync<int>("INSERT INTO auditlog.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data,role_id,organization_id) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data,@role_id,@organization_id) RETURNING id", parameter);
            }
-           catch(Exception ex)
+           catch(Exception)
            {
                throw;
                

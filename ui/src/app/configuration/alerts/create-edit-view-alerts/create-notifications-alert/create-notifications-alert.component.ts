@@ -1,6 +1,6 @@
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { EmailValidator, FormBuilder } from '@angular/forms';
+import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { CustomValidators } from 'src/app/shared/custom.validators';
@@ -13,6 +13,8 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 export class CreateNotificationsAlertComponent implements OnInit {
   @Input() translationData: any = [];
   notificationForm: FormGroup;
+  FormArrayItems : FormArray;
+  ArrayList : any =[];
   @Input() alert_category_selected: any;
   @Input() alertTypeName: string;
   @Input() isCriticalLevelSelected :any;
@@ -55,27 +57,61 @@ mailDescription: any;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.notificationForm = this._formBuilder.group({
-      recipientLabel: ['', [ Validators.required ]],
-      contactMode: ['', [Validators.required]],
-      emailAddress: ['', [Validators.required, Validators.email]],
-      mailSubject: ['', [Validators.required]],
-      mailDescription: ['', [Validators.required]],
-      wsDescription: ['', [Validators.required]],
-      authentication:['', [Validators.required]],
-      loginId: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
-      webURL:['', [Validators.required]],
-      wsTextDescription:[''],
-      criticalLevel: [''],
-      warningLevel: [''],
-      advisoryLevel: ['']
+      // recipientLabel: ['', [ Validators.required ]],
+      // contactMode: ['', [Validators.required]],
+      // emailAddress: ['', [Validators.required, Validators.email]],
+      // mailSubject: ['', [Validators.required]],
+      // mailDescription: ['', [Validators.required]],
+      // wsDescription: ['', [Validators.required]],
+      // authentication:['', [Validators.required]],
+      // loginId: ['', [Validators.required, Validators.email]],
+      // password: ['', [Validators.required]],
+      // webURL:['', [Validators.required]],
+      // wsTextDescription:[''],
+      // criticalLevel: [''],
+      // warningLevel: [''],
+      // advisoryLevel: ['']
+      FormArrayItems : this._formBuilder.array([this.initItems()]),
     },
     {
       validator: [
-        CustomValidators.specialCharValidationForName('recipientLabel'),
+        CustomValidators.specialCharValidationForName('recipientLabel', 'FormArrayItems'),
       ]
     });
+    // this.ArrayList = this.notificationForm.controls.FormArrayItems['controls'][0].controls;
+      this.ArrayList = this.notificationForm.get('FormArrayItems')['controls'];
+    console.log(this.ArrayList);
     
+    }
+
+    initItems(): FormGroup{
+      return this._formBuilder.group({
+        recipientLabel: ['',[Validators.required]],
+        contactMode: ['', [Validators.required]],
+        emailAddress: ['', [Validators.required, Validators.email]],
+        mailSubject: ['', [Validators.required]],
+        mailDescription: ['', [Validators.required]],
+        wsDescription: ['', [Validators.required]],
+        authentication:['', [Validators.required]],
+        loginId: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required]],
+        webURL:['', [Validators.required]],
+        wsTextDescription:[''],
+        criticalLevel: [''],
+        warningLevel: [''],
+        advisoryLevel: ['']
+        });
+    }
+
+//     get formArr(): FormArray{
+// return this.notificationForm.get("FormArrayItems") as FormArray;
+//     }
+
+    addMultipleItems() :void{
+      // const creds = this.notificationForm.controls.credentials as FormArray;
+      // this.formArr.push(this.initItems());
+      this.ArrayList = this.notificationForm.get("FormArrayItems") as FormArray;
+      this.ArrayList.push(this.initItems());
     }
 
   setDefaultValueForws(){

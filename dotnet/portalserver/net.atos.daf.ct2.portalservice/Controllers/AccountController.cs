@@ -38,17 +38,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
         private readonly HeaderObj _userDetails;
+        private readonly SessionHelper _sessionHelper;
 
         #endregion
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _cache = cache;
+            _sessionHelper = sessionHelper;
+            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
@@ -164,6 +167,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
             try
             {
+                try
+                {
+                    var token = HttpContext.Session.GetString("session_id");
+                    _logger.Info($"Value from Session - { token }");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error occurred while retrieving session value", ex);
+                }
                 bool isSameEmail = false;
 
                 // Validation 
@@ -618,7 +630,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetMenuFeatures([FromBody] MenuFeatureRequest request)
         {
             try
-            {
+            {                
                 var menuFeatureRequest = new AccountBusinessService.MenuFeatureRequest();
                 menuFeatureRequest.AccountId = request.AccountId;
                 menuFeatureRequest.RoleId = request.RoleId;
@@ -1890,13 +1902,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
-                //ssoRequest.Email = request.Email;
                 ssoRequest.AccountID = _userDetails.accountId;
                 ssoRequest.RoleID = _userDetails.roleId;
                 ssoRequest.OrganizationID = _userDetails.orgId;
                 if (_userDetails.accountId <= 0 || _userDetails.roleId <= 0 || _userDetails.orgId <= 0)
                 {
-                    return StatusCode(400, "Please provide mandatory and valid inputs");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING_PARAMETER", nameof(HeaderObj));
                 }
                 var response = await _accountClient.GenerateSSOAsync(ssoRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
@@ -1909,10 +1920,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
                 {
-                    return StatusCode(404, response.Message);
+                    return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_USER!", Convert.ToString(_userDetails.accountId));
                 }
                 else
-                    return StatusCode(500, "Internal server error!");
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "BAD REQUEST", Convert.ToString(_userDetails.accountId));
             }
             catch (Exception ex)
             {
@@ -1923,6 +1934,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        private IActionResult GenerateErrorResponse(HttpStatusCode StatusCode, string Massage, string Value)
+        {
+            return base.StatusCode((int)StatusCode, new ErrorResponse()
+            {
+                ResponseCode = ((int)StatusCode).ToString(),
+                Message = Massage,
+                Value = Value
+            });
         }
         #endregion
 

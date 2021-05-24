@@ -517,7 +517,8 @@ namespace net.atos.daf.ct2.subscription.repository
                     (@"SELECT id FROM master.vehicle where vin=@vin and organization_id=@orgId", parameters);
                 if (vehicleId > 0)
                 {
-                    vehicleIds.Add(item, vehicleId);
+                    if(!vehicleIds.ContainsKey(item)) 
+                        vehicleIds.Add(item, vehicleId);
                 }
             }
             return vehicleIds;
@@ -545,7 +546,8 @@ namespace net.atos.daf.ct2.subscription.repository
 
                 if (vinExist!= null && vinExist.id > 0 && vinExist.state.ToUpper() == "A")
                 {
-                    subscriptionIds.Add(item, vinExist.id);
+                    if (!subscriptionIds.ContainsKey(item))
+                        subscriptionIds.Add(item, vinExist.id);
                 }
 
                 if (vinExist != null && vinExist.state.ToUpper() == "I")
