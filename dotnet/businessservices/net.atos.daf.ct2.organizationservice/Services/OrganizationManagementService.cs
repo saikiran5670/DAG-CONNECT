@@ -237,7 +237,7 @@ namespace net.atos.daf.ct2.organizationservice
             try
             {
                 OrgRelationshipCreateResponse responce = new OrgRelationshipCreateResponse();
-                OrgRelationshipMappingGetRequest Presetrelationships = new OrgRelationshipMappingGetRequest();
+                
                 var relationships = await _relationshipManager.GetOrgRelationships(request.OwnerOrId);
                 int Relationscount = 0;
                 if (request.Isconfirmed == false)
@@ -269,6 +269,7 @@ namespace net.atos.daf.ct2.organizationservice
                         objRelationship.allow_chain = request.AllowChain;
                         if (relationships.Any(i => i.target_org_id == objRelationship.target_org_id && i.vehicle_group_id == objRelationship.vehicle_group_id && i.relationship_id == objRelationship.relationship_id))
                         {
+                            OrgRelationshipMappingGetRequest Presetrelationships = new OrgRelationshipMappingGetRequest();
                             Presetrelationships.RelationShipId = request.RelationShipId;
                             Presetrelationships.VehicleGroupID = vehgroup;
                             Presetrelationships.OwnerOrId = request.OwnerOrId;

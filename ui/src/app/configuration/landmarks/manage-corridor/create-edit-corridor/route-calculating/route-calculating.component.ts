@@ -7,6 +7,7 @@ import {
   CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData
 } from 'ng2-completer';
 import { ConfigService } from '@ngx-config/core';
+import { Options } from '@angular-slider/ngx-slider';
 
 declare var H: any;
 
@@ -48,7 +49,7 @@ export class RouteCalculatingComponent implements OnInit {
   viaRouteCount : boolean = false;
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
-  corridorWidth : number;
+  corridorWidth : number = 100;
   corridorWidthKm : number;
   sliderValue : number = 0;
   min : number = 0;
@@ -101,6 +102,11 @@ export class RouteCalculatingComponent implements OnInit {
   dirtRoadValue :any;
   trailerValue : any;
 
+  value: number = 100;
+  options: Options = {
+    floor: 0,
+    ceil: 10000
+  };
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -144,9 +150,18 @@ export class RouteCalculatingComponent implements OnInit {
       this.setCorridorData();
     }
     console.log(this.selectedElementData)
+    this.subscribeWidthValue()
+   
     //this.configureAutoCompleteForLocationSearch();
   }
 
+  subscribeWidthValue(){
+    this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
+      console.log(x)
+      this.corridorWidthKm = Number(x);
+      this.corridorWidth = this.corridorWidthKm  * 1000;
+   })
+  }
   setCorridorData(){
     let _selectedElementData = this.selectedElementData;
     if(_selectedElementData){
@@ -284,13 +299,16 @@ export class RouteCalculatingComponent implements OnInit {
     return endMarker;
   }
 
-  sliderChanged(_event){
-      let distanceinMtr = _event.value;
-      this.corridorWidth = _event.value;
-      this.distanceinKM = distanceinMtr/1000;
-      this.corridorFormGroup.controls.widthInput.setValue(this.distanceinKM);
+  sliderChanged(){
+     // this.corridorWidth = _event.value;
+      this.corridorWidthKm = this.corridorWidth / 1000;
+      this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
       this.checkRoutePlot();
       //this.calculateRouteFromAtoB();
+  }
+
+  valueChanges(_event){
+    console.log(_event)
   }
 
   checkRoutePlot(){
@@ -299,8 +317,8 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
   changeSliderInput(){
-    this.distanceinKM = this.corridorFormGroup.controls.widthInput.value;
-    this.sliderValue = this.distanceinKM * 1000;
+    this.corridorWidthKm = this.corridorFormGroup.controls.widthInput.value;
+    this.corridorWidth = this.corridorWidthKm * 1000;
   }
   
   formatLabel(value:number){
@@ -642,11 +660,32 @@ export class RouteCalculatingComponent implements OnInit {
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
       // Create a polyline to display the route:
-      let routeLine = new H.map.Polyline(linestring, {
-        style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
+      // let routeLine = new H.map.Polyline(linestring, {
+      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
+      // });
+      // this.hereMap.addObject(routeLine);
+      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+
+      var routeOutline = new H.map.Polyline(linestring, {
+        style: {
+          lineWidth: this.corridorWidthKm,
+          strokeColor: '#b5c7ef',
+        }
       });
-      this.hereMap.addObject(routeLine);
-      this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+      // Create a patterned polyline:
+      var routeArrows = new H.map.Polyline(linestring, {
+        style: {
+          lineWidth: 3,
+          strokeColor: '#436ddc'}
+        }
+      );
+      // create a group that represents the route line and contains
+      // outline and the pattern
+      var routeLine = new H.map.Group();
+     // routeLine.addObjects([routeOutline, routeArrows]);
+      this.hereMap.addObjects([routeOutline, routeArrows]);
+      this.hereMap.getViewModel().setLookAtData({bounds: routeArrows.getBoundingBox()});
+
     });
   
     // // Add the polyline to the map
