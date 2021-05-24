@@ -77,6 +77,37 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+
+        #region Trip Report Table Details
+        [HttpGet]
+        [Route("gettripdetails")]
+        public async Task<IActionResult> GetFilteredTripDetails([FromQuery] TripFilterRequest request)
+        {
+            try
+            {
+                _logger.Info("GetFilteredTripDetailsAsync method in Report API called.");
+                var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
+                if (data != null)
+                {
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, "No Result Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                $"Get Filtered Trip Details Async", 0, 0, JsonConvert.SerializeObject(request),
+                 Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
         [HttpPost]
         [Route("createuserpreference")]
         public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)

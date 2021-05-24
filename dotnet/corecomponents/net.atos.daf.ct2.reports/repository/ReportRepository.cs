@@ -162,5 +162,82 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
         #endregion
+
+        #region Trip Report Table Details
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripEntityRequest)
+        {
+            try
+            {
+                List<TripDetails> lstTripEntityResponce = new List<TripDetails>();
+                string query = string.Empty;
+                query = @"Select
+                TS.Id Id,
+                TS.trip_id TripId,
+                TS.VIN VIN,
+                D.first_name DriverFirstName,
+                D.last_name DriverLastName,
+                TS.driver2_id DriverId2,
+                TS.driver1_id DriverId1,
+                TS.last_odometer - TS.start_odometer Distance,
+                TS.start_position StartAddress,
+                TS.end_position EndAddress,
+                TS.start_position_lattitude StartPositionlattitude,
+                TS.start_position_longitude StartPositionLongitude,
+                TS.end_position_lattitude EndPositionLattitude,
+                TS.end_position_longitude EndPositionLongitude,
+                TS.start_time_stamp StartTimeStamp,
+                TS.end_time_stamp EndTimeStamp
+               
+                from tripdetail.trip_statistics TS
+                left join master.driver D on TS.driver1_id=D.driver_id
+                left join master.vehicle V on TS.vin=V.vin
+                where TS.vin=@vin and (TS.start_time_stamp>=@StartDateTime and TS.end_time_stamp<=@EndDateTime)";
+
+                var parameter = new DynamicParameters();
+                parameter.Add("@StartDateTime", tripEntityRequest.StartDateTime);
+                parameter.Add("@EndDateTime", tripEntityRequest.EndDateTime);
+                parameter.Add("@vin", tripEntityRequest.VIN);
+
+                var data = await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
+                foreach (var item in data)
+                {
+                    var parameterPosition = new DynamicParameters();
+                    parameterPosition.Add("@vin", item.VIN);
+                    parameterPosition.Add("@trip_id", item.TripId);
+                    string queryPosition = @"select id, 
+                              vin,
+                              gps_altitude, 
+                              gps_heading,
+                              gps_latitude,
+                              gps_longitude
+                              from livefleet.livefleet_position_statistics
+                              where vin=@vin and trip_id = @trip_id order by id desc";
+                    var PositionData = await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
+                    List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
+
+                    if (PositionData.Count() > 0)
+                    {
+                        foreach (var positionData in PositionData)
+                        {
+                            LiveFleetPosition objLiveFleetPosition = new LiveFleetPosition();
+                            objLiveFleetPosition.GpsAltitude = positionData.GpsAltitude;
+                            objLiveFleetPosition.GpsHeading = positionData.GpsHeading;
+                            objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
+                            objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
+                            objLiveFleetPosition.Id = positionData.Id;
+                            lstLiveFleetPosition.Add(objLiveFleetPosition);
+                        }
+                        item.LiveFleetPosition = lstLiveFleetPosition;
+                    }
+                }
+                lstTripEntityResponce = data.ToList();
+                return lstTripEntityResponce;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
