@@ -1,9 +1,41 @@
 <div class="bgtrans">
-    <mat-card class='margin-top-lg border-none bg-none no-padding full-width margin-top-40 mat-elevation-z' fxLayout="column" fxLayoutAlign="start start">
-    <mat-card-content class="full-width">
-      <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-        <p style="color: darkgray; font-size: 2em">This screen is part of services feature</p>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+            <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+  </mat-card>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showMapPanel'>
+    <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif; margin-right: 20px;'>{{ translationData.lblMapView || 'Map View' }}</span>
+            <span><mat-icon style='vertical-align: middle;'>info</mat-icon>&nbsp;{{ translationData.lblMapInfoText || 'You can select trip (single/multiple from below list to view on map)' }}</span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+    </mat-expansion-panel>
+  </mat-card>
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngIf='initData.length == 0'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
       </div>
-    </mat-card-content>
+      <div *ngIf='initData.length > 0'></div>
+    </mat-expansion-panel>
   </mat-card>
 </div>

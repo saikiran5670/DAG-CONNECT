@@ -93,20 +93,28 @@ message TripDetils {
     int32 Id =1;
     string TripId=2;
     string VIN=3;
-    string DriverFirstName=4;
-    string DriverLastName=5; 
-    string DriverId1=6;
-    string DriverId2=7;
-    int32 Distance=8; 
-    string StartAddress=9;
-    string EndAddress=10;
-    double StartPositionlattitude=11;
-    double StartPositionLongitude=12;
-    double EndPositionLattitude=13;
-    double EndPositionLongitude=14;
-    int64 StartTimeStamp=15;
-    int64 EndTimeStamp=16;
-    repeated LiveFleetPosition LiveFleetPosition=17;
+    int64 StartTimeStamp=4;
+    int64 EndTimeStamp=5; 
+    int32 Distance=6; 
+    int32 IdleDuration=7;
+    
+    int32 AverageSpeed=8;
+    int32 AverageWeight=9;
+    int64 Odometer=10;
+    string StartPosition =11;
+    string EndPosition=12;
+    double FuelConsumed=13;
+    int32 DrivingTime =14;
+    int32 Alert =15;
+    int32 Events=16;
+    double FuelConsumed100km=17;
+
+    repeated LiveFleetPosition LiveFleetPosition=18;
+
+    double StartPositionLattitude=19;
+    double StartPositionLongitude=20;
+    double EndPositionLattitude=21;
+    double EndPositionLongitude=22;
 }
 message LiveFleetPosition {
     int64 GpsAltitude=1;
