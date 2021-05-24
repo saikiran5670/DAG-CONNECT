@@ -267,7 +267,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       description:this.relationshipFormGroup.controls.relationshipDescription.value,
       featureIds: featureIds,
       // isActive: this.gridData[0].isActive
-       isActive: this.gridData[0].state === "Active" ? "A" : "I"
+      state: this.gridData[0].state === "Active" ? "A" : "I"
     }
 
     this.organizationService.updateRelationship(objData).subscribe((res) => {
