@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.visibility.entity
 {
-    public class VehicleDetails
+    public class VehicleDetailsAccountVisibilty
     {
         public int VehicleGroupId { get; set; }
         public int AccountId { get; set; }

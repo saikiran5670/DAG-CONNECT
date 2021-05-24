@@ -8,6 +8,8 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.repository;
 using net.atos.daf.ct2.reportservice.Services;
+using net.atos.daf.ct2.visibility;
+using net.atos.daf.ct2.visibility.repository;
 
 namespace net.atos.daf.ct2.reportservice
 {
@@ -46,7 +48,8 @@ namespace net.atos.daf.ct2.reportservice
             });
             services.AddTransient<IReportManager, ReportManager>();
             services.AddTransient<IReportRepository, ReportRepository>();
-
+            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
+            services.AddTransient<IVisibilityManager, VisibilityManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

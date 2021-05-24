@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.visibility.repository
 			return featureSet;
 		}
 
-		public Task<IEnumerable<VehicleDetails>> GetVehicleByAccountVisibility(int accountId,
+		public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
 																			   int OrganizationId)
 		{
 			try
@@ -316,7 +316,7 @@ namespace net.atos.daf.ct2.visibility.repository
 									, RegistrationNo 
 						 from cte_account_vehicle_CompleteList where organization_id=@organization_id order by 1;";
 				#endregion
-				return _dataAccess.QueryAsync<VehicleDetails>(query, parameter);
+				return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
 			}
 			catch (Exception)
 			{
