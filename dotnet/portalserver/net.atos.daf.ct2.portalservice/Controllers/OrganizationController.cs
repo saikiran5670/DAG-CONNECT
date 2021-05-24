@@ -693,9 +693,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(objRelationship);
                 if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
-                  //  await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
-                  //"Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  //"CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Organization Component",
+                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                     return Ok(CreateResponce);
                 }
                 else
