@@ -57,10 +57,7 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                if (await roleRepository.IsRoleAssigned(roleid))
-                {
-                    return -1;
-                }
+                
                 int RoleId= await roleRepository.DeleteRole(roleid, Accountid);
                 // auditlog.AddLogs(userId,userId,1,"Delete Role", RoleId > 0,"Role Management", "Role Deleted With Role Id " + RoleId.ToString());
                 return RoleId;
@@ -69,6 +66,11 @@ namespace net.atos.daf.ct2.role
             {
                 throw;
             }
+        }
+
+        public async Task<IEnumerable<AssignedRoles>> IsRoleAssigned(int roleid)
+        {
+            return await roleRepository.IsRoleAssigned(roleid);
         }
 
         public async Task<IEnumerable<RoleMaster>> GetRoles(RoleFilter rolefilter)
