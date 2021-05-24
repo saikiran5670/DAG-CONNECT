@@ -264,16 +264,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.mapGroup = group;
   }
 
-  addPolylineToMap(){
-    var lineString = new H.geo.LineString();
-    lineString.pushPoint({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
-    lineString.pushPoint({lat:this.endAddressPositionLat , lng:this.endAddressPositionLong});
-    this.hereMap.addObject(new H.map.Polyline(
-      lineString, { style: { lineWidth: 4 }}
-    ));
-  }
-
-
   createHomeMarker(){
     const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -299,8 +289,15 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorWidth = _event.value;
       this.distanceinKM = distanceinMtr/1000;
       this.corridorFormGroup.controls.widthInput.setValue(this.distanceinKM);
+      this.checkRoutePlot();
+      //this.calculateRouteFromAtoB();
   }
 
+  checkRoutePlot(){
+    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
+      this.calculateAB();
+    }
+  }
   changeSliderInput(){
     this.distanceinKM = this.corridorFormGroup.controls.widthInput.value;
     this.sliderValue = this.distanceinKM * 1000;
@@ -524,22 +521,23 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   clearMap(){
-    this.hereMap.removeObject(this.startMarker);
-    this.hereMap.removeObject(this.endMarker);
+    this.hereMap.removeObjects();
 
   }
 
   onStartFocus(){
     this.searchStr = null;
+    this.startAddressPositionLat = 0;
   }
   onEndFocus(){
     this.searchEndStr = null;
+    this.endAddressPositionLat = 0;
   }
 
   onSelected(selectedAddress: CompleterItem){
     //console.log(item.title)
     if(selectedAddress){
-      let postalCode = selectedAddress["originalObject"]["label"]
+      let postalCode = selectedAddress["originalObject"]["label"];
       this.plotStartPoint(postalCode)
     }
 
@@ -556,12 +554,14 @@ export class RouteCalculatingComponent implements OnInit {
   resetToEditData(){
     this.setCorridorData();
   }
+
+
+  // ------------- Map Functions ------------------------//
   plotStartPoint(_locationId){
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
     this.here.getLocationDetails(geocodingParameters).then((result) => {
-      console.log(result)
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createHomeMarker();
@@ -570,12 +570,11 @@ export class RouteCalculatingComponent implements OnInit {
   
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
       this.hereMap.addObject(this.startMarker);
-      //this.mapGroup.addObject(this.startMarker);
+      //this.hereMap.getViewModel().setLookAtData({bounds: this.startMarker.getBoundingBox()});
       this.hereMap.setZoom(2);
-      // this.hereMap.getViewModel().setLookAtData({
-      //     bounds: this.mapGroup.getBoundingBox()
-      // });
       this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+      this.checkRoutePlot();
+
     });
   }
 
@@ -592,11 +591,13 @@ export class RouteCalculatingComponent implements OnInit {
   
       this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
       this.hereMap.addObject(this.endMarker);
-      this.hereMap.setZoom(2);
-
+     // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
+      //this.hereMap.setZoom(2);
       this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
+      this.checkRoutePlot();
 
     });
+    
   }
 
   suggestionData :  any;
@@ -616,4 +617,44 @@ export class RouteCalculatingComponent implements OnInit {
     this.dataService = this.suggestionData;
     console.log(this.dataService);
   }
+
+  calculateAB(){
+    let routeRequestParams = {
+      'routingMode': 'fast',
+      'transportMode': 'truck',
+      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
+      'return': 'polyline'
+    };
+    this.here.calculateRoutePoints(routeRequestParams).then((data)=>{
+      
+       this.addRouteShapeToMap(data);
+      console.log(data)
+    },(error)=>{
+       console.error(error);
+    })
+  }
+
+  addRouteShapeToMap(result){
+    var group = new H.map.Group();
+  
+    result.routes[0].sections.forEach((section) =>{
+      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
+
+      // Create a polyline to display the route:
+      let routeLine = new H.map.Polyline(linestring, {
+        style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
+      });
+      this.hereMap.addObject(routeLine);
+      this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+    });
+  
+    // // Add the polyline to the map
+    // this.map.addObject(group);
+    // // And zoom to its bounding rectangle
+    // this.map.getViewModel().setLookAtData({
+    //   bounds: group.getBoundingBox()
+    // });
+  }
+  
 }
