@@ -48,8 +48,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (!(reportId > 0)) return BadRequest("Report id cannot be zero.");
-                if (!(accountId > 0)) return BadRequest("Account id cannot be zero.");
+                if (!(reportId > 0)) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
+                if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
+                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
                 var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId, OrganizationId = organizationId });
                 if (response == null)
                     return StatusCode(500, "Internal Server Error.(01)");

@@ -39,11 +39,16 @@ namespace net.atos.daf.ct2.reportservice.Services
                         Code = Responsecode.Failed
                     });
                 }
-                if (!userPrefernces.Any(a => !string.IsNullOrEmpty(a.State))) {
-
-                    foreach (var userpreferece in userPrefernces) {
-                        userpreferece.State = ((char)ReportPreferenceState.Active).ToString();
-                    }
+                if (!userPrefernces.Any(a => !string.IsNullOrEmpty(a.State))) 
+                {
+                    var roleBasedUserPrefernces = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
+                    var roleBadresponse = new UserPreferenceDataColumnResponse
+                    {
+                        Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.AccountId, request.ReportId),
+                        Code = Responsecode.Success
+                    };
+                    roleBadresponse.UserPreferences.AddRange(_mapper.MapUserPrefences(roleBasedUserPrefernces));
+                    return await Task.FromResult(roleBadresponse);
                 }
 
                 var response = new UserPreferenceDataColumnResponse
@@ -52,7 +57,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Code = Responsecode.Success
                 };
                 response.UserPreferences.AddRange(_mapper.MapUserPrefences(userPrefernces));
-                return await Task.FromResult(response); ;
+                return await Task.FromResult(response);
 
             }
             catch (Exception ex)

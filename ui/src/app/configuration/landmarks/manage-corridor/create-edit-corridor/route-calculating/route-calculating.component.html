@@ -38,7 +38,7 @@
         <div  *ngIf="actionType != 'view'">
             <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
             [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
-            [minSearchLength]="0" (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
+            [minSearchLength]="0" (selected)="onSelected($event)" (opened)="onOpenStart($event)" [selectOnClick]="true"></ng2-completer>
             <!-- <mat-form-field appearance="outline" class='full-width'>
                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
                     matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required> 
@@ -87,17 +87,18 @@
 <div fxLayout="row" class="margin-bottom-sm">
     <div class="col-sm-3 areaWidth min-width-30-per">
         <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
-            <input *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
+            <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
         <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
         </div>
         <div *ngIf="actionType != 'view'">
+            <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()"></ngx-slider>
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
-        <mat-label>{{min}}</mat-label>
+        <!-- <mat-label>{{min}}</mat-label>
             <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
                 thumbLabel [displayWith]="formatLabel"></mat-slider>
-        <mat-label>{{max}}</mat-label>
+        <mat-label>{{max}}</mat-label> -->
 
         </div>
         
