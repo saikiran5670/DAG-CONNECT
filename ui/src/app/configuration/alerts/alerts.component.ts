@@ -100,7 +100,7 @@ export class AlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
-      this.vehicleList= data["vehicleGroup"];
+      this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
     
       this.alertStatusList=[{
        id: 1,
@@ -198,7 +198,30 @@ export class AlertsComponent implements OnInit {
       typeVal.forEach(obj => { 
         item["type"]=obj.value;
       });  
-     
+      
+      let alertUrgency=({
+      alertFilterRefs: [],
+      alertId: 42,
+      createdAt: 1621588594280,
+      dayType: [],
+      id: 38,
+      modifiedAt: 0,
+      periodType: "A",
+      state: "A",
+      thresholdValue: 25,
+      unitType: "H",
+      urgencyLevelType: "W",
+      urgencylevelEndDate: 0,
+      urgencylevelStartDate: 0
+    })
+      // let alertUrgency =({      
+      // thresholdValue: 300,
+      // urgencyLevelType: "A"      
+      // })
+
+     // item.alertUrgencyLevelRefs.push(alertUrgency);
+      //item.alertUrgencyLevelRefs.push(alertUrgency);
+      
       let critical  = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
       let warning   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
       let advisory   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
@@ -278,7 +301,7 @@ export class AlertsComponent implements OnInit {
         else{
           row.newTag = false;
         }
-      }
+      } 
       else{
         row.newTag = false;
       }
