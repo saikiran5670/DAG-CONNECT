@@ -183,17 +183,17 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var result = await _reportManager.GetFilteredTripDetails(objTripFilter);
                 TripResponce response = new TripResponce();
-                if (result.Count > 0)
+                if (result?.Count > 0)
                 {
                     var res = JsonConvert.SerializeObject(result);
-                    response.TripData.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res)
-                        );
-
-                    //foreach (ReportComponent.entity.TripFilterRequest entity in result)
-                    //{
-                    //    response.TripData.Add(_mapper.ToTripResponce(entity));
-                    //}
+                    response.TripData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res));
+                    response.Code = Responsecode.Success;
+                    response.Message= Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
                 }
                 return await Task.FromResult(response);
             }
