@@ -249,6 +249,7 @@ namespace net.atos.daf.ct2.organizationservice
                             if (relationships.Any(i => i.target_org_id == organization && i.vehicle_group_id == vehgroup && i.relationship_id == request.RelationShipId))
                             {
                                 Relationscount++;
+                                responce.Code = Responcecode.Conflict;
                             }
                         }
                         request.Isconfirmed = Relationscount==0;
@@ -278,16 +279,17 @@ namespace net.atos.daf.ct2.organizationservice
                         else if (request.Isconfirmed)
                         {
                             orgrelationid = await _relationshipManager.CreateRelationShipMapping(objRelationship);
+                            responce.Code = Responcecode.Success;
                         }
 
                         request.OrgRelationId = orgrelationid;
 
-                        responce.Code = Responcecode.Success;
+                        //responce.Code = Responcecode.Success;
                         responce.Relationship.Add(orgrelationid);
 
                     }
                 }
-                responce.Code = Responcecode.Success;
+                
                 return await Task.FromResult(responce);
 
             }
