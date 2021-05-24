@@ -80,7 +80,7 @@ public class Constants {
     public static final String UrlTest  = "https://portal.tst2.ct2.atos.net/";
    
     public static String Read_Txt = null;
-    public static final String Path_File_Upload = "xyz";
+    public static final String Path_File_Upload = "\\src\\main\\resources\\testdata\\";
     
     public static final String Sign_In = "DAF CT 2.0";
     

@@ -1,10 +1,10 @@
 {
   "SubscribeEvent": {
-  "organizationID": "JMTR001",
-   "packageId": "PTest222222",
+  "organizationID": "12346",
+   "packageId": "PTest100",
   "viNs": [ 
-     "XLR0998HGFFT76638",
-      "XLR0998HGFFT74597"
+     "XLR0998HGFFT74592",
+      "XLR0998HGFFT74591"
   ],
   "startdatetime": ""
   } 
