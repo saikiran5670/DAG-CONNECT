@@ -253,16 +253,17 @@
         </mat-card-content>
       </mat-card>
       <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
-        <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(false)'>{{ translationData.lblCancel || 'Cancel' }}</button>
-        <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onCreate(true)'>{{ ( translationData.lblCreate || 'Create' ) }}</button>
-        <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onCreate(false)'>{{ translationData.lblCreateContinue || 'Create & Continue' }}</button>
-        <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onLink(true)'>{{ ( translationData.lblLink || 'Link' ) }}</button>
-        <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onLink(false)'>{{ translationData.lblLinkContinue || 'Link & Continue' }}</button>
+        <!-- <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(false)'>{{ translationData.lblCancel || 'Cancel' }}</button>
+        <button mat-raised-button color="primary" [disabled]="!firstFormGroup.valid" matStepperNext>{{ translationData.lblNext || 'Next' }}</button> -->
+        <!-- <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onCreate(true)'>{{ ( translationData.lblCreate || 'Create' ) }}</button>
+        <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onCreate(false)'>{{ translationData.lblCreateContinue || 'Create & Continue' }}</button> -->
+        <!-- <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" class='margin-right-10' mat-raised-button color="primary" (click)='onLink(true)'>{{ ( translationData.lblLink || 'Link' ) }}</button>
+        <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid" mat-raised-button color="primary" (click)='onLink(false)'>{{ translationData.lblLinkContinue || 'Link & Continue' }}</button> -->
       </div>
     </form>
-  </mat-step>
-  <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup">
+  <!-- </mat-step>
+  <mat-step [stepControl]="firstFormGroup"> -->
+    <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 2: {{ translationData.lblSelectUserRole || 'Select Account Role' }}</ng-template>
       <mat-card>
         <mat-card-content>
@@ -274,6 +275,15 @@
               </mat-form-field>
             </div>
           </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign='center center'>
+                  <mat-icon class='margin-right-10'>info</mat-icon>
+                  <span>{{ translationData.lblMessage || 'Select atleast one role.'}}<span class='mandatoryColor'>*</span></span>
+              </div>
+            </div>
+          </div>
+          <!-- <span>Select atleast one role to continue.</span> -->
           <div fxLayout="row">
             <div fxLayout="column" class='full-width'>
               <mat-table [dataSource]="roleDataSource" matSort>
@@ -319,15 +329,20 @@
         <mat-card-actions fxLayoutAlign="end end">
           <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
-            <button mat-raised-button color="primary" matStepperNext>{{ translationData.lblNext || 'Next' }}</button>
+            <!-- <button mat-raised-button color="primary" matStepperPrevious>{{ translationData.lblPrevious || 'Previous' }}</button>  -->
+            <!-- <button mat-raised-button [disabled]="selectionForRole.selected.length == 0" color="primary" matStepperNext>{{ translationData.lblNext || 'Next' }}</button> -->
+            <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid || selectionForRole.selected.length == 0" class='margin-right-10' mat-raised-button color="primary" (click)='onCreate(true)'>{{ ( translationData.lblCreate || 'Create' ) }}</button>
+            <button *ngIf='!linkFlag' [disabled]="!firstFormGroup.valid || selectionForRole.selected.length == 0" mat-raised-button color="primary" (click)='onCreate(false)'>{{ translationData.lblCreateContinue || 'Create & Continue' }}</button> 
+            <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid || selectionForRole.selected.length == 0" class='margin-right-10' mat-raised-button color="primary" (click)='onLink(true)'>{{ ( translationData.lblLink || 'Link' ) }}</button>
+        <button *ngIf='linkFlag' [disabled]="!firstFormGroup.valid || selectionForRole.selected.length == 0" mat-raised-button color="primary" (click)='onLink(false)'>{{ translationData.lblLinkContinue || 'Link & Continue' }}</button>
           </div>
         </mat-card-actions>
       </mat-card>
     </form>
   </mat-step>
-  <mat-step [stepControl]="thirdFormGroup">
-    <form [formGroup]="thirdFormGroup">
-      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 3: {{ translationData.lblSelectUserGroup || 'Select Account Group' }}</ng-template>
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 2: {{ translationData.lblSelectUserGroup || 'Select Account Group' }}</ng-template>
       <mat-card>
         <mat-card-content>
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
@@ -379,7 +394,7 @@
         <mat-card-actions fxLayoutAlign="end end">
           <div fxLayout="row" fxLayoutAlign="end end" class="full-width areaWidth">
             <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel(true)'>{{ translationData.lblCancel || 'Cancel' }}</button>
-            <button class='margin-right-10' mat-raised-button color="primary" matStepperPrevious>{{ translationData.lblPrevious || 'Previous' }}</button>
+            <!-- <button class='margin-right-10' mat-raised-button color="primary" matStepperPrevious>{{ translationData.lblPrevious || 'Previous' }}</button> -->
             <button mat-raised-button color="primary" (click)='nextToSummaryStep()'>{{ translationData.lblNext || 'Next' }}</button>
           </div>
         </mat-card-actions>
@@ -387,7 +402,7 @@
     </form>
   </mat-step>
   <mat-step>
-    <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 4: {{ translationData.lblSummary || 'Summary' }}</ng-template>
+    <ng-template matStepLabel>{{ translationData.lblStep || 'Step' }} 3: {{ translationData.lblSummary || 'Summary' }}</ng-template>
     <ng-template matStepLabel></ng-template>
     <app-summary-step *ngIf='summaryStepFlag' [defaultSetting]='defaultSetting' [profilePath]='croppedImage' [translationData]='translationData' [accountInfoData]='firstFormGroup.controls' [selectedRoleData]='selectionForRole.selected' [selectedUserGrpData]='selectionForUserGrp.selected' [privilegeAccess]='privilegeAccess'></app-summary-step>
     <mat-card class='bg-theme mat-elevation-z' class='background-transparent no-padding'>

@@ -1,6 +1,6 @@
 ﻿using Grpc.Core;
 using log4net;
-using net.atos.daf.ct2.alert.ENUM;
+using net.atos.daf.ct2.reports.ENUM;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reportservice.entity;
 using System;
@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         {
             try
             {
-                var userPrefernces = await _reportManager.GetUserPreferenceReportDataColumn(request.ReportId, request.AccountId);
+                var userPrefernces = await _reportManager.GetUserPreferenceReportDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
                 if(userPrefernces.Count() == 0)
                 {
                     return  await Task.FromResult(new UserPreferenceDataColumnResponse
@@ -37,9 +37,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                         Code = Responsecode.Failed
                     }); 
                 }
-                if (!userPrefernces.Any(a => !string.IsNullOrEmpty(a.IsExclusive))) {
+                if (!userPrefernces.Any(a => !string.IsNullOrEmpty(a.State))) {
+
                     foreach (var userpreferece in userPrefernces) {
-                        userpreferece.IsExclusive = ((char)IsExclusive.No).ToString();
+                        userpreferece.State = ((char)ReportPreferenceState.Active).ToString();
                     }
                 }
 
