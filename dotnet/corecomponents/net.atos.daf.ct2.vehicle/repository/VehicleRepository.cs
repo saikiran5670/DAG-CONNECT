@@ -846,7 +846,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    from master.vehicle v
                                    inner join master.orgrelationshipmapping as om on v.id = om.vehicle_id
                                    inner join master.orgrelationship as os on om.relationship_id=os.id 
-                                   where 1=1";
+                                   where 1=1
+                                   and os.state='A'
+                                   and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+								    else COALESCE(end_date,0) =0 end";
             var parameter = new DynamicParameters();
 
             // Vehicle Id Filter
@@ -1131,8 +1134,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                 from master.group vg
 								inner join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
 								inner join master.orgrelationship as os on om.relationship_id=os.id 
-                                where (vg.organization_id=@organization_id or ((om.created_org_id=@organization_id and os.code<>'Owner') or (om.target_org_id=@organization_id and os.code<>'Owner')))  and vg.object_type='V' and vg.group_type in ('G','D') 
-                                and length(vg.name) > 0
+                                where (vg.organization_id=@organization_id or ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner')))  and vg.object_type='V' and vg.group_type in ('G','D') 
                                 ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
