@@ -95,16 +95,13 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
                 {
-
-
-
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = (Responcecode)accIdentity.StatusCode,
                         Message = accIdentity.ErrorMessage,
                         ResetPasswordExpiryResponse = new ResetPasswordExpiryResponse { ProcessToken = accIdentity.Token != null ? accIdentity.Token?.ProcessToken : string.Empty }
-                    }); ;
+                    });
                 }
                 else
                 {

@@ -22,21 +22,21 @@ namespace net.atos.daf.ct2.portalservice.Common
             {
                 if (session != null)
                 {
-                    if (session.Keys.Any(x => x.Equals("accountId")))
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.AccountKey)))
                     {
-                        headerObj.accountId = Convert.ToInt32(session.GetString("accountId"));
+                        headerObj.accountId = session.GetInt32(SessionConstants.AccountKey).Value;
                     }
-                    if (session.Keys.Any(x => x.Equals("roleId")))
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.RoleKey)))
                     {
-                        headerObj.roleId = Convert.ToInt32(session.GetString("roleId"));
+                        headerObj.roleId = session.GetInt32(SessionConstants.RoleKey).Value;
                     }
-                    if (session.Keys.Any(x => x.Equals("orgId")))
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.OrgKey)))
                     {
-                        headerObj.orgId = Convert.ToInt32(session.GetString("orgId"));
+                        headerObj.orgId = session.GetInt32(SessionConstants.OrgKey).Value;
                     }
-                    if (session.Keys.Any(x => x.Equals("contextOrgId")))
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.ContextOrgKey)))
                     {
-                        headerObj.contextOrgId = Convert.ToInt32(session.GetString("contextOrgId"));
+                        headerObj.contextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
                     }
                 }
                 return headerObj;

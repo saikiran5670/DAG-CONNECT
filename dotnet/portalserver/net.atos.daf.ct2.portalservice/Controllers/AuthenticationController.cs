@@ -102,14 +102,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             try
                             {
-                                HttpContext.Session.SetInt32("account_id", accIdentity.AccountInfo.Id);
+                                if (!string.IsNullOrEmpty(response.TokenIdentifier))
+                                    HttpContext.Session.SetString(SessionConstants.TokenKey, response.TokenIdentifier);
+
+                                HttpContext.Session.SetInt32(SessionConstants.AccountKey, accIdentity.AccountInfo.Id);
                                 _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id }");
                             }
                             catch (Exception ex)
                             {
                                 _logger.Error("Error while setting value in session", ex);
                             }
-                            
+
                             var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Email, accIdentity.AccountInfo.EmailId),
@@ -163,10 +166,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
-            "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-            "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
-             Request);
-                _logger.Error(null, ex);
+                "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
+                 Request);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
         }
@@ -179,7 +181,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                
+
+                //Flush session related information from database
+                string tokenId = HttpContext.Session.GetString(SessionConstants.TokenKey);
+                if (!string.IsNullOrEmpty(tokenId))
+                {
+                    request.TokenId = tokenId;
+                    await _accountClient.LogoutAsync(request);
+                }
+
                 //Clear session information
                 HttpContext.Session.Clear();
                 foreach (var cookie in Request.Cookies.Keys)
@@ -188,16 +198,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         Response.Cookies.Delete(cookie);
                         break;
-                    }                        
+                    }
                 }
 
-                string sessionid = HttpContext.Session.GetString("session_id");
-                if (!string.IsNullOrEmpty(sessionid))
-                {
-
-                    request.TokenId = sessionid;
-                    await _accountClient.LogoutAsync(request);
-                }
                 return Ok(new { Message = "You are logged out" });
             }
             catch (Exception ex)
