@@ -115,7 +115,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 _logger.Error(null, ex);
                 return await Task.FromResult(new UserPreferenceCreateResponse
                 {
-                    Message = ex.Message,
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
                     Code = Responsecode.InternalServerError
                 });
             }

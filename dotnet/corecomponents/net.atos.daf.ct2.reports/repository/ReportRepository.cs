@@ -132,7 +132,6 @@ namespace net.atos.daf.ct2.reports.repository
                     log.Error(ex.ToString());
                     transactionScope.Rollback();
                     rowsEffected = 0;
-                    throw ex;
                 }
                 finally
                 {
