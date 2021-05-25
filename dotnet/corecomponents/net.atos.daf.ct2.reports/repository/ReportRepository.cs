@@ -153,7 +153,10 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@fromdate", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-90)));
                 parameter.Add("@todate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@vins", vinList.ToArray());
-                var query = $"SELECT DISTINCT vin,start_time_stamp AS StartDate,end_time_stamp AS EndDate FROM tripdetail.trip_statistics WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND vin = Any(@vins)";
+                var query = @"SELECT DISTINCT vin,start_time_stamp AS StartDate,
+                                     end_time_stamp AS EndDate FROM tripdetail.trip_statistics 
+                              WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
+                                     vin = Any(@vins)";
                 return _dataMartdataAccess.QueryAsync<string>(query, parameter);
             }
             catch (Exception)

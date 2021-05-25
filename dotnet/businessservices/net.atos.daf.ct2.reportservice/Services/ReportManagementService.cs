@@ -114,14 +114,14 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         #region Get Vins from data mart trip_statistics
         //This code is not in use, may require in future use.
-        public override async Task<VehicleListAndDetailsResponse> GetVinsFromTripStatistics(VehicleListRequest request, ServerCallContext context)
+        public override async Task<VehicleListAndDetailsResponse> GetVinsFromTripStatisticsWithVehicleDetails(VehicleListRequest request, ServerCallContext context)
         {
             var response = new VehicleListAndDetailsResponse();
             try
             {
                 var vehicleDeatilsWithAccountVisibility =
                                 await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
-                
+
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {
 
@@ -137,12 +137,12 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var vinList = await _reportManager
                                         .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
-                                                                       .Select(s => s.Vin));
+                                                                       .Select(s => s.Vin).Distinct());
                 if (vinList.Count() == 0)
                 {
-
                     response.Message = string.Format(ReportConstants.GET_VIN_TRIP_NOTFOUND_MSG, request.AccountId, request.OrganizationId);
                     response.Code = Responsecode.Failed;
+                    response.VinTripList.Add(new List<VehicleFromTripDetails>());
                     return response;
                 }
 
@@ -157,14 +157,11 @@ namespace net.atos.daf.ct2.reportservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                var errorResponse = new VehicleListAndDetailsResponse
-                {
-                    Message = ex.Message,
-                    Code = Responsecode.InternalServerError
-                };
-                errorResponse.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
-                errorResponse.VinTripList.Add(new List<VehicleFromTripDetails>());
-                return await Task.FromResult(errorResponse);
+                response.Message = ex.Message;
+                response.Code = Responsecode.InternalServerError;
+                response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
+                response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                return await Task.FromResult(response);
             }
         }
         #endregion
