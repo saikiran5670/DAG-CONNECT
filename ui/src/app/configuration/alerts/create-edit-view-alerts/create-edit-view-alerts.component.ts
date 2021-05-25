@@ -140,11 +140,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
-      criticalLevel: [''],
       criticalLevelThreshold: [''],
-      warningLevel: [''],
       warningLevelThreshold: [''],
-      advisoryLevel: [''],
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
       unitType: ['']
@@ -235,6 +232,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.unitTypes= [];
     this.alert_type_selected= value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
+      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
+      }
       this.loadMap();
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){ //Entering zone & Exiting Zone
         this.loadPOIData();
@@ -242,6 +242,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.loadGroupData();
       }
       else if(this.alert_type_selected === 'C'){ // Exiting Corridor
+        if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
+        }
         this.loadCorridorData();
       }
     }
@@ -257,6 +260,22 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
             (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
 
+      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
+          if(element.urgencyLevelType == 'C'){
+            this.isCriticalLevelSelected= true;
+            this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+          }
+          else if(element.urgencyLevelType == 'W'){
+            this.isWarningLevelSelected= true;
+            this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+          }
+          else if(element.urgencyLevelType == 'A'){
+            this.isAdvisoryLevelSelected= true;
+            this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
+          }          
+        });
+      }
       if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
         this.unitTypes= [
                           {
@@ -268,7 +287,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
                             value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
                           }
                         ];
-        this.alertForm.get('unitType').setValue('K');                
       }
       else if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
         this.unitTypes= [
@@ -304,19 +322,39 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           this.unitTypeEnum= "K"
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "LU": { //Excessive Driving duration
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
           this.unitTypeEnum= "H";
-          this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
           this.unitTypeEnum= "K";
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "FP": { //Fuel Increase During stop
@@ -341,7 +379,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
           this.unitTypeEnum= "S";
-          this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "FA": { //Excessive Average speed
@@ -676,15 +720,15 @@ PoiCheckboxClicked(event: any, row: any) {
   }
   
   setDefaultValue(){
-    // this.selectedRowData.category = "L";
-    // this.selectedRowData.type = "N";
-    // this.selectedRowData.applyOn = "G";
-    // console.log(this.selectedRowData);
+     console.log(this.selectedRowData);
     this.alertForm.get('alertName').setValue(this.selectedRowData.name);
     this.alertForm.get('alertCategory').setValue(this.selectedRowData.category);
+
     this.onChangeAlertCategory(this.selectedRowData.category);
+    
     this.alertForm.get('alertType').setValue(this.selectedRowData.type);
     this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    
     if(this.selectedRowData.applyOn == 'G'){
       this.alertForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroupId);
       this.onChangeVehicleGroup(this.selectedRowData.vehicleGroupId);
@@ -694,6 +738,7 @@ PoiCheckboxClicked(event: any, row: any) {
       this.onChangeVehicle(this.selectedRowData.vehicleGroupId);
 
     }
+    
     this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
     this.onChangeAlertType(this.selectedRowData.type);
   }

@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ChartsModule } from 'ng2-charts';
 import { TripReportComponent } from './trip-report/trip-report.component';
 import { TripTracingComponent } from './trip-tracing/trip-tracing.component';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
   declarations: [ReportComponent, TripReportComponent, TripTracingComponent],
@@ -16,7 +17,8 @@ import { TripTracingComponent } from './trip-tracing/trip-tracing.component';
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    ChartsModule
-    ]
+    ChartsModule,
+    NgxMaterialTimepickerModule
+  ]
 })
 export class ReportModule { }

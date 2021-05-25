@@ -1,70 +1,104 @@
 <div class="bgtrans">
-  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-    <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
-      <mat-expansion-panel-header class="full-width">
-        <mat-panel-title>
-          <span>
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
-            <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span>
-          </span>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
-            <div style='margin-top: 5px;'>
-              <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
-              <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
-              <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
-              <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
-              <button class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
-            </div>
-          </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
-            <mat-form-field appearance="outline">
-              <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}">
-                <mat-option value="0">--All--</mat-option>
-                <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.id">
-                    {{ rer.name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
-        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-          <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
-              </div>
-              <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+  <form [formGroup]="tripForm">
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+      <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+              <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span>
+            </span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+              <div style='margin-top: 5px;'>
+                <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
+                <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+                <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+                <button class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                <button class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
               </div>
             </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-form-field appearance="outline">
+                <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}">
+                  <mat-option value="0">--All--</mat-option>
+                  <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.id">
+                      {{ rer.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
           </div>
-          <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
-            <mat-form-field appearance="outline">
-              <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}">
-                <mat-option value="0">--All--</mat-option>
-                <mat-option *ngFor="let rer of vehicleListData" [value]="rer.id">
-                    {{ rer.name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+                        <input class='inputBox' [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+                        <input class='inputBox' [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+              <mat-form-field appearance="outline">
+                <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}">
+                  <mat-option value="0">--All--</mat-option>
+                  <mat-option *ngFor="let rer of vehicleListData" [value]="rer.id">
+                      {{ rer.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
+            <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin' mat-raised-button color="primary"
+              (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
           </div>
         </div>
-        <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
-          <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-            (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-          <button class='no-margin' mat-raised-button color="primary"
-            (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
-        </div>
-      </div>
-    </mat-expansion-panel>
-  </mat-card>
+      </mat-expansion-panel>
+    </mat-card>
+  </form>
   <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='showMapPanel'>
     <mat-expansion-panel [(expanded)]="showMap" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
