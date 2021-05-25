@@ -263,7 +263,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 accountRequest.Id = AccountId;
                 accountRequest.EmailId = EmailId;
-                accountRequest.OrganizationId = OrganizationId;
+                accountRequest.OrganizationId = AssignOrgContextByAccountId(AccountId);
                 response = await _accountClient.DeleteAsync(accountRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -300,7 +300,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.ChangePasswordRequest changePasswordRequest = new AccountBusinessService.ChangePasswordRequest();
                 changePasswordRequest.EmailId = request.EmailId;
                 changePasswordRequest.Password = request.Password;
-                changePasswordRequest.OrgId = _userDetails.orgId;
+                changePasswordRequest.OrgId = GetUserSelectedOrgId();
                 var response = await _accountClient.ChangePasswordAsync(changePasswordRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -330,6 +330,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpPost]
         [Route("get")]
         public async Task<IActionResult> Get(AccountFilterRequest request)
@@ -345,6 +346,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountFilter accountFilter = new AccountBusinessService.AccountFilter();
                 accountFilter = _mapper.ToAccountFilter(request);
+                accountFilter.OrganizationId = AssignOrgContextByAccountId(request.Id);
                 AccountBusinessService.AccountDataList accountResponse = await _accountClient.GetAsync(accountFilter);
                 List<AccountResponse> response = new List<AccountResponse>();
                 response = _mapper.ToAccounts(accountResponse);
@@ -384,6 +386,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountGroupDetailsRequest accountRequest = new AccountBusinessService.AccountGroupDetailsRequest();
                 accountRequest = _mapper.ToAccountDetailsFilter(request);
+                accountRequest.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
                 AccountBusinessService.AccountDetailsResponse accountResponse = await _accountClient.GetAccountDetailAsync(accountRequest);
 
                 if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Success)
@@ -413,8 +416,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("organization/add")]
         public async Task<IActionResult> AddAccountOrg(AccountOrganizationRequest request)
         {
-
-
             try
             {
                 // Validation 
@@ -424,7 +425,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
 
                 var accountRequest = new AccountBusinessService.AccountOrganization();
-                accountRequest.OrganizationId = request.OrganizationId;
+                accountRequest.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
                 accountRequest.AccountId = request.AccountId;
                 accountRequest.StartDate = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                 accountRequest.EndDate = 0;
@@ -460,6 +461,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [AllowAnonymous]
         [HttpPost]
         [Route("resetpasswordinitiate")]
@@ -469,7 +471,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 var resetPasswordInitiateRequest = new AccountBusinessService.ResetPasswordInitiateRequest();
                 resetPasswordInitiateRequest.EmailId = request.EmailId;
-                resetPasswordInitiateRequest.OrgId = _userDetails.orgId;
                 var response = await _accountClient.ResetPasswordInitiateAsync(resetPasswordInitiateRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -549,7 +550,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var resetPasswordRequest = new AccountBusinessService.ResetPasswordRequest();
                 resetPasswordRequest.ProcessToken = request.ProcessToken;
                 resetPasswordRequest.Password = request.Password;
-                resetPasswordRequest.OrgId = _userDetails.orgId;
                 var response = await _accountClient.ResetPasswordAsync(resetPasswordRequest);
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -622,13 +622,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetMenuFeatures([FromBody] MenuFeatureRequest request)
         {
             try
-            {                
-                var menuFeatureRequest = new AccountBusinessService.MenuFeatureRequest();
-                menuFeatureRequest.AccountId = request.AccountId;
-                menuFeatureRequest.RoleId = request.RoleId;
-                menuFeatureRequest.OrganizationId = request.OrganizationId;
-                menuFeatureRequest.LanguageCode = request.LanguageCode;
-                menuFeatureRequest.ContextOrgId = HttpContext.Session.GetInt32(SessionConstants.ContextOrgKey).Value;
+            {
+                var menuFeatureRequest = new AccountBusinessService.MenuFeatureRequest
+                {
+                    AccountId = request.AccountId,
+                    RoleId = request.RoleId,
+                    OrganizationId = request.OrganizationId,
+                    LanguageCode = request.LanguageCode,
+                    ContextOrgId = GetContextOrgId()
+                };
 
                 var response = await _accountClient.GetMenuFeaturesAsync(menuFeatureRequest);
 
@@ -645,17 +647,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         #endregion
 
         #region Account Picture
-
 
         // Save Profile Picture
         [HttpPost]
         [Route("savepprofilepicture")]
         public async Task<IActionResult> SaveProfilePicture(AccountBlobRequest accountBlobRequest)
         {
-
             try
             {
                 // Validation                 
@@ -697,6 +698,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpGet]
         [Route("getprofilepicture")]
         public async Task<IActionResult> GetProfilePicture(int BlobId)
@@ -777,9 +779,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("preference/create")]
         public async Task<IActionResult> CreateAccountPreference(AccountPreferenceRequest request)
         {
-            //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
-
-
             try
             {
                 // Validation                 
@@ -824,11 +823,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpPost]
         [Route("preference/update")]
         public async Task<IActionResult> UpdateAccountPreference(AccountPreferenceRequest request)
         {
-
             try
             {
                 // Validation                 
@@ -871,15 +870,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpDelete]
         [Route("preference/delete")]
         public async Task<IActionResult> DeleteAccountPreference(int preferenceId)
         {
             AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
             try
-            {
-
-                // Validation                 
+            {        
                 if (preferenceId <= 0)
                 {
                     return StatusCode(400, "The preferenceId Id is required");
@@ -919,13 +917,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpGet]
         [Route("preference/get")]
         public async Task<IActionResult> GetAccountPreference(int preferenceId)
         {
             try
-            {
-                // Validation                 
+            {        
                 if ((preferenceId <= 0))
                 {
                     return StatusCode(400, "The preferenceId Id is required");
@@ -956,6 +954,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         #endregion
 
         #region Account Vehicle Relationship
@@ -965,11 +964,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("accessrelationship/vehicle/create")]
         public async Task<IActionResult> CreateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
-            //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
-
             try
-            {
-                // Validation                 
+            {            
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return StatusCode(400, "Invalid Payload");
@@ -982,6 +978,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 var accessRelationship = new AccountBusinessService.VehicleAccessRelationship();
                 accessRelationship = _mapper.ToAccessRelationship(request);
+                accessRelationship.OrganizationId = GetContextOrgId();
                 var result = await _accountClient.CreateVehicleAccessRelationshipAsync(accessRelationship);
                 if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1014,22 +1011,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Empty);
             }
         }
+        
         // update vehicle access relationship
         [HttpPost]
         [Route("accessrelationship/vehicle/update")]
         public async Task<IActionResult> UpdateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
-
             try
-            {
-
-                // Validation                 
+            {             
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return BadRequest();
                 }
                 var accessRelationship = new AccountBusinessService.VehicleAccessRelationship();
                 accessRelationship = _mapper.ToAccessRelationship(request);
+                accessRelationship.OrganizationId = GetContextOrgId();
                 var result = await _accountClient.UpdateVehicleAccessRelationshipAsync(accessRelationship);
                 if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1061,7 +1057,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         // delete vehicle access relationship
-
         [HttpDelete]
         [Route("accessrelationship/vehicle/delete")]
         public async Task<IActionResult> DeleteVehicleAccessRelationship(int organizationId, int Id, bool isGroup)
@@ -1075,7 +1070,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return BadRequest();
                 }
 
-                deleteRequest.OrganizationId = organizationId;
+                deleteRequest.OrganizationId = GetContextOrgId();
                 deleteRequest.Id = Id;
                 deleteRequest.IsGroup = isGroup;
                 var result = await _accountClient.DeleteVehicleAccessRelationshipAsync(deleteRequest);
@@ -1102,20 +1097,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Empty);
             }
         }
+        
         // create account access relationship
         [HttpPost]
         [Route("accessrelationship/account/create")]
         public async Task<IActionResult> CreateAccountAccessRelationshipAsync(AccessRelationshipRequest request)
         {
-            //Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, 
             try
-            {
-                // Validation                 
+            {              
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return BadRequest();
                 }
                 var accessRelationship = _mapper.ToAccountAccessRelationship(request);
+                accessRelationship.OrganizationId = GetContextOrgId();
                 var result = await _accountClient.CreateAccountAccessRelationshipAsync(accessRelationship);
                 if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1146,18 +1141,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         // update vehicle access relationship
+        
         [HttpPost]
         [Route("accessrelationship/account/update")]
         public async Task<IActionResult> UpdateAccountAccessRelationship(AccessRelationshipRequest request)
         {
             try
             {
-                // Validation                 
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return BadRequest();
                 }
                 var accessRelationship = _mapper.ToAccountAccessRelationship(request);
+                accessRelationship.OrganizationId = GetContextOrgId();
                 var result = await _accountClient.UpdateAccountAccessRelationshipAsync(accessRelationship);
                 if (result != null && result.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1189,7 +1185,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         // delete account access relationship
-
         [HttpDelete]
         [Route("accessrelationship/account/delete")]
         public async Task<IActionResult> DeleteAccountAccessRelationship(int organizationId, int Id, bool isGroup)
@@ -1197,13 +1192,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             AccountBusinessService.DeleteAccessRelationRequest deleteRequest = new AccountBusinessService.DeleteAccessRelationRequest();
             try
             {
-                // Validation                 
                 if ((organizationId <= 0) || (Id <= 0))
                 {
                     return StatusCode(400, string.Empty);
                 }
 
-                deleteRequest.OrganizationId = organizationId;
+                deleteRequest.OrganizationId = GetContextOrgId();
                 deleteRequest.Id = Id;
                 deleteRequest.IsGroup = isGroup;
                 var result = await _accountClient.DeleteAccountAccessRelationshipAsync(deleteRequest);
@@ -1230,20 +1224,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
             }
         }
-        // update vehicle access relationship
+        
+        // Get vehicle access relationship
         [HttpGet]
         [Route("accessrelationship/get")]
         public async Task<IActionResult> GetAccessRelationship(int organizationId)
         {
             try
-            {
-                // Validation                 
+            {              
                 if (organizationId <= 0)
                 {
                     return BadRequest();
                 }
                 AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
-                filter.OrganizationId = organizationId;
+                filter.OrganizationId = GetContextOrgId();
                 var vehicleAccessRelation = await _accountClient.GetAccessRelationshipAsync(filter);
                 AccessRelationshipResponse response = new AccessRelationshipResponse();
                 if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
@@ -1274,14 +1268,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                // Validation                 
                 if (organizationId <= 0)
                 {
                     return BadRequest();
                 }
                 AccountBusinessService.AccessRelationshipFilter filter = new AccountBusinessService.AccessRelationshipFilter();
                 filter.IsAccount = isAccount;
-                filter.OrganizationId = organizationId;
+                filter.OrganizationId = GetContextOrgId();
                 var vehicleAccessRelation = await _accountClient.GetAccountsVehiclesAsync(filter);
                 AccessRelationshipResponseDetail response = new AccessRelationshipResponseDetail();
                 if (vehicleAccessRelation != null && vehicleAccessRelation.Code == AccountBusinessService.Responcecode.Success)
@@ -1308,178 +1301,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
-
-        #region OLD AccessRelationship  Need to be Deleted
-        //TODO: Need to refactor this based on screen.
-        // Begin - AccessRelationship
-        //[HttpPost]
-        //[Route("accessrelationship/create")]
-        //public async Task<IActionResult> CreateAccessRelationship(AccountBusinessService.AccessRelationship request)
-        //{
-        //    try
-        //    {
-        //        // Validation                 
-        //        if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
-        //        {
-        //            return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
-        //        }
-        //        else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
-        //        {
-        //            return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
-        //        }
-        //        AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.CreateAccessRelationshipAsync(request);
-        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
-        //        {
-        //            return Ok(accessRelationship.AccessRelationship);
-        //        }
-        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-        //            && accessRelationship.Message == "The AccessType should be ReadOnly / ReadWrite.(R/W).")
-        //        {
-        //            return StatusCode(400, "The AccessType should be ReadOnly / ReadWrite.(R/W).");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-        //        // check for fk violation
-        //        if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
-        //        {
-        //            return StatusCode(400, "The foreign key violation in one of dependant data.");
-        //        }
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
-        //[HttpPost]
-        //[Route("accessrelationship/update")]
-        //public async Task<IActionResult> UpdateAccessRelationship(AccountBusinessService.AccessRelationship request)
-        //{
-        //    try
-        //    {
-        //        // Validation                 
-        //        if ((request.AccountGroupId <= 0) || (request.VehicleGroupId <= 0) || (string.IsNullOrEmpty(Convert.ToString(request.AccessRelationType))))
-        //        {
-        //            return StatusCode(400, "The AccountGroupId,VehicleGroupId and AccessRelationshipType is required");
-        //        }
-        //        else if ((!request.AccessRelationType.Equals("R")) && (!request.AccessRelationType.Equals("W")))
-        //        {
-        //            return StatusCode(400, "The AccessRelationshipType should be ReadOnly and ReadWrite (R/W) only.");
-        //        }
-        //        AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.UpdateAccessRelationshipAsync(request);
-        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
-        //        {
-        //            return Ok(accessRelationship.AccessRelationship);
-        //        }
-        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-        //            && accessRelationship.Message == "The AccessType should be ReadOnly / ReadWrite.(R/W).")
-        //        {
-        //            return StatusCode(400, "The AccessType should be ReadOnly / ReadWrite.(R/W).");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
-        //[HttpPost]
-        //[Route("accessrelationship/delete")]
-        //public async Task<IActionResult> DeleteAccessRelationship(AccountBusinessService.AccessRelationshipDeleteRequest request)
-        //{
-        //    try
-        //    {
-        //        // Validation                 
-        //        if (request.AccountGroupId <= 0 || request.VehicleGroupId <= 0)
-        //        {
-        //            return StatusCode(400, "The AccountGroupId,VehicleGroupId is required");
-        //        }
-        //        AccountBusinessService.AccessRelationshipResponse accessRelationship = await _accountClient.DeleteAccessRelationshipAsync(request);
-        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
-        //        {
-        //            return Ok(accessRelationship.AccessRelationship);
-        //        }
-        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-        //            && accessRelationship.Message == "The delete access group , Account Group Id and Vehicle Group Id is required.")
-        //        {
-        //            return StatusCode(400, "The delete access group , Account Group Id and Vehicle Group Id is required.");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "accessRelationship is null" + accessRelationship.Message);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:create access relationship with exception - " + ex.Message);
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
-        //[HttpGet]
-        //[Route("accessrelationship/get")]
-        //public async Task<IActionResult> GetAccessRelationship(int AccountId, int AccountGroupId, int VehicleGroupId)
-        //{
-        //    try
-        //    {
-        //        // Validation                 
-        //        if ((AccountId <= 0) && (AccountGroupId <= 0))
-        //        {
-        //            return StatusCode(400, "The AccountId or AccountGroupId is required");
-        //        }
-        //        AccountBusinessService.AccessRelationshipFilter request = new AccountBusinessService.AccessRelationshipFilter();
-        //        request.AccountId = AccountId;
-        //        request.AccountGroupId = AccountGroupId;
-        //        request.VehicleGroupId = VehicleGroupId;
-        //        AccountBusinessService.AccessRelationshipDataList accessRelationship = await _accountClient.GetAccessRelationshipAsync(request);
-        //        if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Success)
-        //        {
-        //            if (accessRelationship.AccessRelationship != null && accessRelationship.AccessRelationship.Count > 0)
-        //            {
-        //                return Ok(accessRelationship.AccessRelationship);
-        //            }
-        //            else
-        //            {
-        //                return StatusCode(404, "access relationship details are found.");
-        //            }
-        //        }
-        //        else if (accessRelationship != null && accessRelationship.Code == AccountBusinessService.Responcecode.Failed
-        //            && accessRelationship.Message == "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.")
-        //        {
-        //            return StatusCode(400, "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, accessRelationship.Message);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
-        // End - AccessRelationshhip
-        #endregion
-
         #region Account Group
 
         [HttpPost]
         [Route("accountgroup/create")]
         public async Task<IActionResult> CreateAccountGroup(AccountGroupRequest request)
         {
-
-
             try
             {
-                // Validation                 
                 if ((string.IsNullOrEmpty(request.Name)) || (request.OrganizationId <= 0) || (string.IsNullOrEmpty(request.GroupType)))
                 {
                     return StatusCode(400, "The Account group name, organization id and group type is required");
@@ -1492,6 +1321,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 AccountBusinessService.AccountGroupRequest accountGroupRequest = new AccountBusinessService.AccountGroupRequest();
                 accountGroupRequest = _mapper.ToAccountGroup(request);
+                accountGroupRequest.OrganizationId = GetContextOrgId();
                 AccountBusinessService.AccountGroupResponce response = await _accountClient.CreateGroupAsync(accountGroupRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1522,20 +1352,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500);
             }
         }
+        
         [HttpPost]
         [Route("accountgroup/update")]
         public async Task<IActionResult> UpdateAccountGroup(AccountGroupRequest request)
         {
-
             try
-            {
-                // Validation                 
+            {                
                 if ((request.Id <= 0) || (string.IsNullOrEmpty(request.Name)))
                 {
                     return StatusCode(400, "The AccountGroup name and id is required");
                 }
                 AccountBusinessService.AccountGroupRequest accountGroupRequest = new AccountBusinessService.AccountGroupRequest();
                 accountGroupRequest = _mapper.ToAccountGroup(request);
+                accountGroupRequest.OrganizationId = GetContextOrgId();
                 AccountBusinessService.AccountGroupResponce response = await _accountClient.UpdateGroupAsync(accountGroupRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1564,6 +1394,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         [HttpPut]
         [Route("accountgroup/delete")]
         public async Task<IActionResult> DeleteAccountGroup(int id)
@@ -1571,7 +1402,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
             try
             {
-                // Validation                 
                 if ((Convert.ToInt32(id) <= 0))
                 {
                     return StatusCode(400, "The account group id is required.");
@@ -1602,19 +1432,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         [HttpPost]
         [Route("accountgroup/addaccounts")]
         public async Task<IActionResult> AddAccountsToGroup(AccountGroupAccount request)
         {
             try
             {
-                // Validation  
                 if (request == null)
                 {
                     return StatusCode(400, "The AccountGroup account is required");
                 }
                 AccountBusinessService.AccountGroupRefRequest groupRequest = new AccountBusinessService.AccountGroupRefRequest();
-
 
                 if (request != null && request.Accounts != null)
                 {
@@ -1652,6 +1481,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         [HttpPut]
         [Route("accountgroup/deleteaccounts")]
         public async Task<IActionResult> DeleteAccountFromGroup(int id)
@@ -1702,11 +1532,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                // Validation  
                 if (request.OrganizationId <= 0)
                 {
                     return StatusCode(400, "The Organization id is required");
                 }
+                request.OrganizationId = GetContextOrgId();
                 AccountBusinessService.AccountGroupDataList response = await _accountClient.GetAccountGroupAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1730,18 +1560,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         [HttpPost]
         [Route("accountgroup/getdetails")]
         public async Task<IActionResult> GetAccountGroupDetails(AccountBusinessService.AccountGroupDetailsRequest request)
         {
             try
             {
-                // Validation  
                 if (request.OrganizationId <= 0)
                 {
                     return StatusCode(400, "The Organization id is required");
                 }
-                //AccountBusinessService.AccountGroupDetailsRequest accountGroupRequest = _mapper.ToAccountGroupFilter(request);
+                request.OrganizationId = GetContextOrgId();
                 AccountBusinessService.AccountGroupDetailsDataList response = await _accountClient.GetAccountGroupDetailAsync(request);
 
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
@@ -1777,7 +1607,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                // Validation  
                 if (request.AccountId <= 0 || request.OrganizationId <= 0
                    || Convert.ToInt16(request.Roles.Count) <= 0)
                 {
@@ -1786,6 +1615,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.AccountRoleRequest roles = new AccountBusinessService.AccountRoleRequest();
 
                 roles = _mapper.ToRole(request);
+                roles.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+                
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.AddRolesAsync(roles);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1815,17 +1646,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         [HttpPost]
         [Route("deleteroles")]
         public async Task<IActionResult> RemoveRoles(AccountBusinessService.AccountRoleDeleteRequest request)
         {
             try
             {
-                // Validation  
                 if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
                 {
                     return StatusCode(400, "The Organization id and account id is required");
                 }
+                request.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.RemoveRolesAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1855,6 +1688,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         [HttpPost]
         [Route("getroles")]
         public async Task<IActionResult> GetRoles(AccountBusinessService.AccountRoleDeleteRequest request)
@@ -1865,6 +1699,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Organization id and account id is required");
                 }
+                request.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
+
                 AccountBusinessService.AccountRoles response = await _accountClient.GetRolesAsync(request);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1886,6 +1722,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         #endregion
 
         #region Single Sign On
