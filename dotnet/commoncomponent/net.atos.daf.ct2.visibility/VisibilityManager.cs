@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.visibility
             _visibilityRepository = visibilityRepository;
         }
 
-        public Task<IEnumerable<VehicleDetails>> GetVehicleByAccountVisibility(int accountId, int OrganizationId)
+        public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int OrganizationId)
         {
             return _visibilityRepository.GetVehicleByAccountVisibility(accountId, OrganizationId);
         }

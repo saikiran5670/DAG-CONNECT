@@ -99,18 +99,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     accIdentity.AccountRole.Add(accRole);
                                 }
                             }
-                            //if (!string.IsNullOrEmpty(response.TokenIdentifier))
-                            // {
+
                             try
                             {
-                                HttpContext.Session.SetString("session_id", response.TokenIdentifier);
-                                _logger.Info($"Value set in Session - { response.TokenIdentifier }");
+                                if (!string.IsNullOrEmpty(response.TokenIdentifier))
+                                    HttpContext.Session.SetString(SessionConstants.TokenKey, response.TokenIdentifier);
+
+                                HttpContext.Session.SetInt32(SessionConstants.AccountKey, accIdentity.AccountInfo.Id);
+                                _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id }");
                             }
                             catch (Exception ex)
                             {
                                 _logger.Error("Error while setting value in session", ex);
                             }
-                            
+
                             var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Email, accIdentity.AccountInfo.EmailId),
@@ -119,8 +121,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                            // }
-
 
                             await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
                                     "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -166,10 +166,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
-            "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-            "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
-             Request);
-                _logger.Error(null, ex);
+                "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
+                 Request);
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
         }
@@ -182,13 +181,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                string sessionid = HttpContext.Session.GetString("session_id");
-                if (!string.IsNullOrEmpty(sessionid))
-                {
 
-                    request.TokenId = sessionid;
+                //Flush session related information from database
+                string tokenId = HttpContext.Session.GetString(SessionConstants.TokenKey);
+                if (!string.IsNullOrEmpty(tokenId))
+                {
+                    request.TokenId = tokenId;
                     await _accountClient.LogoutAsync(request);
                 }
+
+                //Clear session information
+                HttpContext.Session.Clear();
+                foreach (var cookie in Request.Cookies.Keys)
+                {
+                    if (cookie.Equals(".AspNetCore.Session"))
+                    {
+                        Response.Cookies.Delete(cookie);
+                        break;
+                    }
+                }
+
                 return Ok(new { Message = "You are logged out" });
             }
             catch (Exception ex)

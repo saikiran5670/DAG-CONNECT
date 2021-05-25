@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.visibility.repository
     public interface IVisibilityRepository
     {
         //IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid );
-        Task<IEnumerable<VehicleDetails>> GetVehicleByAccountVisibility(int accountId, int OrganizationId);
+        Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int OrganizationId);
     }
 }

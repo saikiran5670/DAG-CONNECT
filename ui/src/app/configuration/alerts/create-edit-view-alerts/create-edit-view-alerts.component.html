@@ -257,7 +257,7 @@
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical</mat-checkbox>
+                    <mat-checkbox (change)="onChangeCriticalLevel($event)" [checked]="isCriticalLevelSelected">Critical</mat-checkbox>
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
@@ -273,7 +273,7 @@
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning</mat-checkbox>
+                    <mat-checkbox (change)="onChangeWarningLevel($event)" [checked]="isWarningLevelSelected">Warning</mat-checkbox>
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
@@ -289,7 +289,7 @@
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory</mat-checkbox>
+                    <mat-checkbox (change)="onChangeAdvisoryLevel($event)" [checked]="isAdvisoryLevelSelected">Advisory</mat-checkbox>
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         

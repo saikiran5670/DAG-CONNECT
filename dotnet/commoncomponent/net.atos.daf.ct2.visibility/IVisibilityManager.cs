@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.visibility
 {
     public interface IVisibilityManager
     {
-        Task<IEnumerable<VehicleDetails>> GetVehicleByAccountVisibility(int accountId, int OrganizationId);
+        Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int OrganizationId);
     }
 }

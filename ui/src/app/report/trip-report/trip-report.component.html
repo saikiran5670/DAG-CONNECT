@@ -89,7 +89,7 @@
         <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
       </div>
-      <div *ngIf='initData.length > 0'>
+      <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
         <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -161,9 +161,6 @@
                 <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" class="max-width-10-per">
-                <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-                <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-                <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
                 <mat-checkbox (click)='$event.stopPropagation()'
                   (change)='$event ? selectedTrip.toggle(row) : null; tripCheckboxClicked($event, row)' [checked]='selectedTrip.isSelected(row)'
                   [aria-label]='checkboxLabelForTrip(row)' matTooltip="{{ translationData.lblCheckboxViewTooltipMsg || 'Select to view on map' }}">
@@ -181,24 +178,54 @@
               <mat-cell *matCellDef="let row">{{ row.endDate != '' ? row.endDate : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="distance">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{ translationData.lblkm || 'km' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.distance != '' ? row.distance : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="idleDuration">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.idleDuration != '' ? row.idleDuration : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="avgSpeed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ translationData.lblkmh || 'km/h' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.avgSpeed != '' ? row.avgSpeed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="avgWeight">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }}
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ translationData.lblt || 't' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.avgWeight != '' ? row.avgWeight : '-' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="startPosition">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPosition || 'Start Position' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.startPosition != '' ? row.startPosition : '-' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="endPosition">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPosition || 'End Position' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.endPosition != '' ? row.endPosition : '-' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="fuelConsumption">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} <span style="font-weight: normal;">({{ translationData.lblLtr100Km || 'Ltr/100 Km' }})</span>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.fuelConsumption != '' ? row.fuelConsumption : '-' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="drivingTime">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime || 'Driving Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.drivingTime != '' ? row.drivingTime : '-' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="alerts">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts || 'Alerts' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.alerts != '' ? row.alerts : '-' }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="events">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEvents || 'Events' }}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.events != '' ? row.events : '-' }}</mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;">
@@ -206,6 +233,7 @@
           </mat-table>
           <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
       </div>
+      <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
     </mat-expansion-panel>
   </mat-card>
 </div>

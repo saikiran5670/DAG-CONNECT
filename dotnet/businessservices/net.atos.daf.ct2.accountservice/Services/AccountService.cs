@@ -95,16 +95,13 @@ namespace net.atos.daf.ct2.accountservice
                 }
                 if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
                 {
-
-
-
                     return Task.FromResult(new AccountIdentityResponse
                     {
                         //Account not present  in IDP or IDP related error
                         Code = (Responcecode)accIdentity.StatusCode,
                         Message = accIdentity.ErrorMessage,
                         ResetPasswordExpiryResponse = new ResetPasswordExpiryResponse { ProcessToken = accIdentity.Token != null ? accIdentity.Token?.ProcessToken : string.Empty }
-                    }); ;
+                    });
                 }
                 else
                 {
@@ -786,7 +783,14 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId, request.LanguageCode);
+                var result = await accountmanager.GetMenuFeatures(new MenuFeatureRquest() 
+                { 
+                    AccountId = request.AccountId,
+                    ContextOrgId = request.ContextOrgId,
+                    LanguageCode = request.LanguageCode,
+                    OrganizationId = request.OrganizationId,
+                    RoleId = request.RoleId
+                });
 
                 MenuFeatureResponse response = new MenuFeatureResponse();
                 if (result.Count() > 0)

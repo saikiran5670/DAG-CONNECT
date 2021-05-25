@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.reports.entity
         public long GpsLatitude { get; set; }
         public long GpsLongitude { get; set; }
         public int Id { get; set; }
+        public string TripId { get; set; }
     }
 }

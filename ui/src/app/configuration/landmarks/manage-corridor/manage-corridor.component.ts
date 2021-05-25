@@ -170,9 +170,16 @@ export class ManageCorridorComponent implements OnInit {
         if(data.code === 200){
           this.successMsgBlink(this.getDeletMsg(rowData.corridoreName));
         }
-        else{
-          this.failureMsgBlink(this.getNoDeletMsg(rowData.corridoreName));
-
+      },
+      (error)=>{
+        if(error.status === 500){
+          const options = {
+            title: this.translationData.lblDelete || "Delete",
+            message: this.translationData.lblAreyousureyouwanttodelete || "Alert exists for corridor. You cannot deleted this corridor if there is an alert set for it. To remove this Corridor, first remove connected alerts.",
+            cancelText: this.translationData.lblCancel || "Cancel",
+            confirmText: 'hide-btn'
+          };
+          this.dialogService.DeleteModelOpen(options);
         }
       })
        

@@ -1,22 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.utilities;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.translationservice;
-using net.atos.daf.ct2.portalservice.Entity.Translation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using net.atos.daf.ct2.portalservice.Common;
-using net.atos.daf.ct2.portalservice.Entity.Audit;
-using Newtonsoft.Json;
+﻿using Google.Protobuf;
 using log4net;
-using Google.Protobuf;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Translation;
+using net.atos.daf.ct2.translationservice;
+using net.atos.daf.ct2.utilities;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
 using System.Reflection;
-
+using System.Threading.Tasks;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [Route("translation")]
@@ -30,14 +26,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
          private ILog _logger;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
         private readonly Mapper _mapper;
-
+        private readonly SessionHelper _sessionHelper;
+        private readonly HeaderObj _userDetails;
         //Constructor
-        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper)
+        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
         {
             _translationServiceClient = translationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
-            _mapper = new Mapper();
+            _mapper = new Mapper();           
+            _sessionHelper = sessionHelper;
+            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
             _Audit = auditHelper;
+            _userDetails = _Audit.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         
@@ -618,6 +618,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                request.Organization_Id = _userDetails.contextOrgId;
                 //Validation
                 if (request.Account_Id <= 0)
                 {
@@ -681,6 +683,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                objVersionByID.orgId = _userDetails.contextOrgId;
                 switch (objVersionByID.levelCode)
                 {
                     case 0:
@@ -766,6 +770,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                OrganizationId = _userDetails.contextOrgId;
                 if (OrganizationId <= 0)
                 {
                     return StatusCode(400, "Organization Id is required.");
@@ -800,6 +806,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                OrganizationId = _userDetails.contextOrgId;
                 if (OrganizationId <= 0 || AccountId <= 0)
                 {
                     return StatusCode(400, "Organization Id and Account Id both are required.");
@@ -834,6 +842,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                OrganizationId = _userDetails.contextOrgId;
                 if (OrganizationId <= 0 || AccountId <= 0)
                 {
                     return StatusCode(400, "Organization Id and Account Id both are required.");
