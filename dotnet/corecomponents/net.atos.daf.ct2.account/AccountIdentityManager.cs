@@ -549,7 +549,7 @@ namespace net.atos.daf.ct2.account
         {
             try
             {
-                var result = await accountManager.ResetPasswordInitiate(user.UserName, 0, EmailEventType.PasswordExpiryNotification);
+                var result = await accountManager.ResetPasswordInitiate(user.UserName, EmailEventType.PasswordExpiryNotification);
                 result.StatusCode = result.StatusCode == HttpStatusCode.OK ? HttpStatusCode.Redirect : HttpStatusCode.NotFound;
                 return result;
             }

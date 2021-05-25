@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using log4net;
 using System.Reflection;
 
@@ -34,10 +33,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                     {
                         headerObj.orgId = session.GetInt32(SessionConstants.OrgKey).Value;
                     }
-                    if (session.Keys.Any(x => x.Equals(SessionConstants.ContextOrgKey)))
-                    {
-                        headerObj.contextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
-                    }
+                    //if (session.Keys.Any(x => x.Equals(SessionConstants.ContextOrgKey)))
+                    //{
+                    //    headerObj.contextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
+                    //}
                 }
                 return headerObj;
             }

@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.account
         Task<List<int>> GetRoleAccounts(int roleId);
         Task<List<KeyValue>> GetAccountOrg(int accountId);
         Task<List<AccountOrgRole>> GetAccountRole(int accountId);
-        Task<Response> ResetPasswordInitiate(string emailId, int orgId, EmailEventType eventType = EmailEventType.ResetPassword);
+        Task<Response> ResetPasswordInitiate(string emailId, EmailEventType eventType = EmailEventType.ResetPassword);
         Task<Response> ResetPassword(Account account);
         Task<Response> ResetPasswordInvalidate(Guid ResetToken);
         Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(MenuFeatureRquest request);
