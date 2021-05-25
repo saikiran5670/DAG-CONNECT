@@ -42,16 +42,26 @@ namespace net.atos.daf.ct2.reportservice.Services
                         Code = Responsecode.Failed
                     });
                 }
-                if (!userPrefernces.Any(a => !string.IsNullOrEmpty(a.State)))
+                if (!userPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
                 {
                     var roleBasedUserPrefernces = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
-                    var roleBadresponse = new UserPreferenceDataColumnResponse
+                    
+                    if (!roleBasedUserPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
+                    {
+                        foreach (var item in roleBasedUserPrefernces)
+                        {
+                            item.State = ((char)ReportPreferenceState.Active).ToString();
+                        }
+                    }
+
+                    var roleBasedresponse = new UserPreferenceDataColumnResponse
                     {
                         Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.AccountId, request.ReportId),
                         Code = Responsecode.Success
                     };
-                    roleBadresponse.UserPreferences.AddRange(_mapper.MapUserPrefences(roleBasedUserPrefernces));
-                    return await Task.FromResult(roleBadresponse);
+
+                    roleBasedresponse.UserPreferences.AddRange(_mapper.MapUserPrefences(roleBasedUserPrefernces));
+                    return await Task.FromResult(roleBasedresponse);
                 }
 
                 var response = new UserPreferenceDataColumnResponse
@@ -105,7 +115,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 _logger.Error(null, ex);
                 return await Task.FromResult(new UserPreferenceCreateResponse
                 {
-                    Message = ex.Message,
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
                     Code = Responsecode.InternalServerError
                 });
             }
@@ -124,16 +134,10 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {
-
                     response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
                     response.Code = Responsecode.Failed;
                     return response;
-                }
-
-                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
-                response.VehicleDetailsWithAccountVisibiltyList.AddRange(
-                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
-                    );
+                }                
 
                 var vinList = await _reportManager
                                         .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
@@ -145,7 +149,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.VinTripList.Add(new List<VehicleFromTripDetails>());
                     return response;
                 }
-
+                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                response.VehicleDetailsWithAccountVisibiltyList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
+                    );
                 response.Message = ReportConstants.GET_VIN_SUCCESS_MSG;
                 response.Code = Responsecode.Success;
                 res = JsonConvert.SerializeObject(vinList);

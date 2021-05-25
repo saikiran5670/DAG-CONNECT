@@ -26,9 +26,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("account")]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController
     {
-
         #region Private Variable
         private readonly AuditHelper _auditHelper;
         //private readonly ILogger<AccountController> _logger;
@@ -38,21 +37,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         private ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
-        private readonly HeaderObj _userDetails;
-        private readonly SessionHelper _sessionHelper;
 
         #endregion
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, Common.AccountPrivilegeChecker privilegeChecker)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, Common.AccountPrivilegeChecker privilegeChecker): base(_httpContextAccessor, sessionHelper)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _cache = cache;
-            _sessionHelper = sessionHelper;
-            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             _privilegeChecker = privilegeChecker;
@@ -76,9 +71,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, PortalConstants.AccountValidation.CreateRequired);
                 }
                 // Length validation
-                Int32 validOrgId = 0;
                 if ((request.EmailId.Length > 50) || (request.FirstName.Length > 30)
-                || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out validOrgId))
+                || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out int validOrgId))
                 {
                     return StatusCode(400, PortalConstants.AccountValidation.InvalidData);
                 }
@@ -94,6 +88,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, PortalConstants.AccountValidation.InvalidAccountType);
                 }
                 var accountRequest = _mapper.ToAccount(request);
+                accountRequest.OrganizationId = GetContextOrgId();
+
                 accountResponse = await _accountClient.CreateAsync(accountRequest);
                 AccountResponse response = new AccountResponse();
                 response = _mapper.ToAccount(accountResponse.Account);
@@ -162,22 +158,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "04"));
             }
         }
+
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> Update(AccountRequest request)
         {
-
             try
             {
-                try
-                {
-                    var token = HttpContext.Session.GetString("session_id");
-                    _logger.Info($"Value from Session - { token }");
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error("Error occurred while retrieving session value", ex);
-                }
                 bool isSameEmail = false;
 
                 // Validation 
@@ -187,9 +174,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The AccountId, EmailId address, first name, last name is required.");
                 }
                 // Length validation
-                Int32 validOrgId = 0;
                 if ((request.EmailId.Length > 50) || (request.FirstName.Length > 30)
-                || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out validOrgId))
+                || (request.LastName.Length > 20) || !Int32.TryParse(request.OrganizationId.ToString(), out int validOrgId))
                 {
                     return StatusCode(400, "The EmailId address, first name, last name and organization id should be valid.");
                 }
@@ -224,6 +210,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var accountResponse = new AccountBusinessService.AccountData();
                 var accountRequest = new AccountBusinessService.AccountRequest();
                 accountRequest = _mapper.ToAccount(request);
+                accountRequest.OrganizationId = AssignOrgContextByAccountId(request.Id);
+
                 accountResponse = await _accountClient.UpdateAsync(accountRequest);
                 if (accountResponse != null && accountResponse.Code == AccountBusinessService.Responcecode.Failed)
                 {
@@ -258,6 +246,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "04"));
             }
         }
+
         [HttpDelete]
         [Route("delete")]
         public async Task<IActionResult> Delete(string EmailId, int AccountId, int OrganizationId)
@@ -297,6 +286,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpPost]
         [Route("changepassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
@@ -1959,7 +1949,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.AccountId == HttpContext.Session.GetInt32(SessionConstants.AccountKey))
+                if (request.AccountId == _userDetails.accountId)
                 {
                     HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
                     HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
@@ -1986,10 +1976,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int s_accountId = HttpContext.Session.GetInt32(SessionConstants.AccountKey).Value;
-                int s_roleId = HttpContext.Session.GetInt32(SessionConstants.RoleKey).Value;
-                int s_orgId = HttpContext.Session.GetInt32(SessionConstants.OrgKey).Value;
-                int s_contextOrgId = HttpContext.Session.GetInt32(SessionConstants.ContextOrgKey).Value;
+                int s_accountId = _userDetails.accountId;
+                int s_roleId = _userDetails.roleId;
+                int s_orgId = _userDetails.orgId;
+                int s_contextOrgId = _userDetails.contextOrgId;
 
                 if (request.AccountId != s_accountId)
                     return BadRequest("Account Id mismatched");
