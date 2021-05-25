@@ -123,7 +123,6 @@ namespace net.atos.daf.ct2.reportservice.Services
         #endregion
 
         #region Get Vins from data mart trip_statistics
-        //This code is not in use, may require in future use.
         public override async Task<VehicleListAndDetailsResponse> GetVinsFromTripStatisticsWithVehicleDetails(VehicleListRequest request, ServerCallContext context)
         {
             var response = new VehicleListAndDetailsResponse();

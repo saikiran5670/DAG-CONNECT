@@ -16,7 +16,8 @@ export class ActiveInactiveDailogComponent implements OnInit {
                   message: string,
                   title: string,
                   status: string,
-                  name: string
+                  name: string,
+                  list?: string
               }, private mdDialogRef: MatDialogRef<ActiveInactiveDailogComponent>) {
                 this.alertMsg = this.data.message.replace('#', this.data.status);
                 this.alertMsg = this.alertMsg.replace('$', this.data.name);

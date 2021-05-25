@@ -9,6 +9,8 @@ import { RoleService } from 'src/app/services/role.service';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-dailog/active-inactive-dailog.component';
 
 @Component({
   selector: 'app-user-role-management',
@@ -39,8 +41,14 @@ export class UserRoleManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
+  dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
 
-  constructor(private translationService: TranslationService, private roleService: RoleService, private dialogService: ConfirmDialogService, private _snackBar: MatSnackBar) {
+  constructor(
+    private translationService: TranslationService, 
+    private roleService: RoleService, 
+    private dialogService: ConfirmDialogService, 
+    private _snackBar: MatSnackBar,
+    private dialog: MatDialog) {
     this.defaultTranslation();
   }
 
@@ -201,7 +209,31 @@ export class UserRoleManagementComponent implements OnInit {
         .subscribe((d) => {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadInitData();
-        });
+        },(err) => {
+          if (err.status == 400) {
+          let errorList : any = "";
+          err.error.role.forEach(element => {
+            errorList += `${element.salutation} ${element.firstName}  ${element.lastName}` + ', ';
+          });
+          if (errorList != '') {
+            errorList = errorList.slice(0,-2);
+          }
+          const options = {
+            title: this.translationData.lblAlert || "Alert",
+            message: this.translationData.lblRoleCantBeDeletedmsg || `This role is in use by the following ${err.error.role.length} users, hence cannot be deleted.`,
+            list: errorList,
+            confirmText: this.translationData.lblOk || "OK"
+          };
+      
+          const dialogConfig = new MatDialogConfig();
+          dialogConfig.disableClose = true;
+          dialogConfig.autoFocus = true;
+          dialogConfig.data = options;
+          this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+          this.dialogRef.afterClosed().subscribe((res: any) => {
+          });
+       }
+      });
     }
    });
   }
