@@ -64,15 +64,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
-                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
-                  Request);
+                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
+                //  Request);
                 // check for fk violation
                 if (ex.Message.Contains(SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
+                _logger.Error(null,ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -105,14 +106,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(
-                    DateTime.Now, DateTime.Now, this.GetType().Name,
-                    MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
-                    Entity.Audit.AuditTrailEnum.Event_type.GET, 
-                    Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                    MethodBase.GetCurrentMethod().Name, 0, 0, 
-                    JsonConvert.SerializeObject(request), Request
-                 );
+                //await _auditHelper.AddLogs(
+                //    DateTime.Now, DateTime.Now, this.GetType().Name,
+                //    MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
+                //    Entity.Audit.AuditTrailEnum.Event_type.GET, 
+                //    Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                //    MethodBase.GetCurrentMethod().Name, 0, 0, 
+                //    JsonConvert.SerializeObject(request), Request
+                // );
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -133,6 +134,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 switch (response.Code)
                 {
                     case Responsecode.Success:
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,"Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                 Request);
                         return Ok(response);
                     case Responsecode.Failed:
                         return StatusCode((int)response.Code, response.Message);
@@ -180,11 +184,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
-                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
-                  Request);
+                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                // $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
+                //  Request);
                 // check for fk violation
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
