@@ -47,7 +47,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblAlertCategory || 'Alert Category' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" (selectionChange)="onChangeAlertCategory($event)" formControlName="alertCategory">
+                <mat-select placeholder="{{ translationData.lblSelectCategory || 'Select Alert Category' }}" (selectionChange)="onChangeAlertCategory($event.value)" formControlName="alertCategory">
                     <mat-option *ngFor="let category of alertCategoryList" [value]="category.enum">
                         {{category.value}}
                     </mat-option>
@@ -60,7 +60,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblAlertType || 'Alert Type' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event)">
+                <mat-select placeholder="{{ translationData.lblSelectAlertType || 'Select Alert Type' }}" formControlName="alertType" (selectionChange)="onChangeAlertType($event.value)">
                     <mat-option *ngFor="let type of alertTypeByCategoryList" [value]="type.enum">
                         {{type.value}}
                     </mat-option>
@@ -90,7 +90,7 @@
         <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblFilterVehiclesByGroup || 'Filter Vehicles By Group' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event)" formControlName="vehicleGroup" >
+                <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" (selectionChange)="onChangeVehicleGroup($event.value)" formControlName="vehicleGroup" >
                   <mat-option value="ALL">--All--</mat-option>  
                   <mat-option *ngFor="let vehGrp of vehicleGroupList" [value]="vehGrp.vehicleGroupId">
                         {{vehGrp.vehicleGroupName}}
@@ -104,7 +104,7 @@
         <div *ngIf="selectedApplyOn == 'S'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event)" formControlName="vehicle">
+                <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" (selectionChange)="onChangeVehicle($event.value)" formControlName="vehicle">
                     <mat-option *ngFor="let vehicle of vehicleByVehGroupList" [value]="vehicle.vehicleId">
                         {{vehicle.vin}}
                     </mat-option>
@@ -257,7 +257,7 @@
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical</mat-checkbox>
+                    <mat-checkbox (change)="onChangeCriticalLevel($event)" [checked]="isCriticalLevelSelected">Critical</mat-checkbox>
                   </div> 
                   <div *ngIf="isCriticalLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
@@ -273,7 +273,7 @@
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning</mat-checkbox>
+                    <mat-checkbox (change)="onChangeWarningLevel($event)" [checked]="isWarningLevelSelected">Warning</mat-checkbox>
                   </div> 
                   <div *ngIf="isWarningLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
@@ -289,7 +289,7 @@
                 </div>
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                   <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory</mat-checkbox>
+                    <mat-checkbox (change)="onChangeAdvisoryLevel($event)" [checked]="isAdvisoryLevelSelected">Advisory</mat-checkbox>
                   </div> 
                   <div *ngIf="isAdvisoryLevelSelected" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ labelForThreshold }} <span class='mandatoryColor'>*</span></mat-label>         
@@ -643,7 +643,7 @@
              (!isWarningLevelSelected || this.alertForm.get('warningLevelThreshold').value == '') &&
              (!isAdvisoryLevelSelected || this.alertForm.get('advisoryLevelThreshold').value == '')))
              " mat-raised-button color="primary"
-            (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+            (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
       </div>

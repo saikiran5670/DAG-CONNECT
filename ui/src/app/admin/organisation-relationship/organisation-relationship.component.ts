@@ -95,6 +95,14 @@ export class OrganisationRelationshipComponent implements OnInit {
                     this.dataSource = new MatTableDataSource(this.initData);
                     this.dataSource.paginator = this.paginator;
                     this.dataSource.sort = this.sort;
+                    this.dataSource.filterPredicate = function(data, filter: any){
+                      return data.relationshipName.toLowerCase().includes(filter) || 
+                              data.vehicleGroupName.toLowerCase().includes(filter) ||
+                              data.organizationName.toLowerCase().includes(filter) ||
+                              (getDt(data.startDate)).toString().toLowerCase().includes(filter) ||
+                              (getDt(data.startDate)).toString().toLowerCase().includes(filter) ||
+                              getChaining(data.allowChain).includes(filter)
+                      };
                     });
              }
 
@@ -412,3 +420,27 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
 }
+
+function getDt(date){
+    if (date === 0) {​​​​​​​​
+      return '-';
+    }​​​​​​​​
+    else {​​​​​​​​
+      var newdate = new Date(date);
+      var day = newdate.getDate();
+      var month = newdate.getMonth();
+      var year = newdate.getFullYear();
+      return (`${​​​​​​​​day}​​​​​​​​/${​​​​​​​​month + 1}​​​​​​​​/${​​​​​​​​year}​​​​​​​​`);
+    }​​​​​​​​
+}
+
+function getChaining(data: any){
+  if(((data.toString()).toLowerCase()) === 'true'){
+    return 'true active';
+  } else if (((data.toString()).toLowerCase()) === 'false'){
+    return 'false inactive';
+  } else {
+    return (data.toString()).toLowerCase();
+  }
+}
+

@@ -33,6 +33,7 @@ import { RouteCalculatingComponent } from './landmarks/manage-corridor/create-ed
 import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-corridor/existing-trips/existing-trips.component';
 import { Ng2CompleterModule } from 'ng2-completer';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     ChartsModule,
     MatTableExporterModule,
     Ng2CompleterModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    NgxSliderModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [

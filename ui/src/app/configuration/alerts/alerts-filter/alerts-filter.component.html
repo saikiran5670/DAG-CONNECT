@@ -34,7 +34,7 @@
                 {{ translationData.lblRole || 'Vehicle Group' }}
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" (selectionChange)="filterChange('vehicleGroupName',$event)" >
+                <mat-select placeholder="{{ translationData.lblSelectUserRole || 'Select Vehicle Group' }}" (selectionChange)="filterChange('vehicleGroupName',$event)" [(ngModel)]="vehicleGroup">
                     <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
                     <mat-option *ngFor="let vehGroupList of vehicleGroupList | removeDuplicates" [value]="vehGroupList"> {{vehGroupList.value}}
                     </mat-option>
@@ -47,7 +47,7 @@
                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblName || 'Vehicle' }}</mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select placeholder="{{translationData.lblSelectUserGroup || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleGroupName',$event)">
+                <mat-select placeholder="{{translationData.lblSelectUserGroup || 'Select Vehicle'}}" (selectionChange)="filterChange('vehicleGroupName',$event)"  [(ngModel)]="vehicleGroup">
                 <mat-option value=''>{{ translationData.lblAll || 'All' }}</mat-option>
                 <mat-option *ngFor="let vehList of vehicleList | removeDuplicates"  [value]="vehList">
                     {{vehList.vehicleName}}

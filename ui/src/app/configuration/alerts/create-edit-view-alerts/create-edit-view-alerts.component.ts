@@ -140,11 +140,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       vehicle: [''],
       statusMode: ['A', [Validators.required]],
       alertLevel: ['C', [Validators.required]],
-      criticalLevel: [''],
       criticalLevelThreshold: [''],
-      warningLevel: [''],
       warningLevelThreshold: [''],
-      advisoryLevel: [''],
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
       unitType: ['']
@@ -156,7 +153,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     });
 
     this.selectedApplyOn= 'G';
-    if(this.actionType == 'edit' ){
+    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultValue();
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
@@ -225,16 +222,19 @@ export class CreateEditViewAlertsComponent implements OnInit {
     });
   }
 
-  onChangeAlertCategory(event){
-    this.alert_category_selected= event.value;
+  onChangeAlertCategory(value){
+    this.alert_category_selected= value;
     this.alertForm.get('alertType').setValue('');
-    this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == event.value);
+    this.alertTypeByCategoryList= this.alertTypeList.filter(item => item.parentEnum == value);
   }
 
-  onChangeAlertType(event){
+  onChangeAlertType(value){
     this.unitTypes= [];
-    this.alert_type_selected= event.value;
+    this.alert_type_selected= value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
+      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
+      }
       this.loadMap();
       if(this.alert_type_selected === 'N' || this.alert_type_selected === 'X'){ //Entering zone & Exiting Zone
         this.loadPOIData();
@@ -242,6 +242,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
         this.loadGroupData();
       }
       else if(this.alert_type_selected === 'C'){ // Exiting Corridor
+        if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
+        }
         this.loadCorridorData();
       }
     }
@@ -257,6 +260,22 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
             (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
 
+      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
+          if(element.urgencyLevelType == 'C'){
+            this.isCriticalLevelSelected= true;
+            this.alertForm.get('criticalLevelThreshold').setValue(element.thresholdValue);
+          }
+          else if(element.urgencyLevelType == 'W'){
+            this.isWarningLevelSelected= true;
+            this.alertForm.get('warningLevelThreshold').setValue(element.thresholdValue);
+          }
+          else if(element.urgencyLevelType == 'A'){
+            this.isAdvisoryLevelSelected= true;
+            this.alertForm.get('advisoryLevelThreshold').setValue(element.thresholdValue);
+          }          
+        });
+      }
       if(this.alert_category_selected+this.alert_type_selected == 'LD' || this.alert_category_selected+this.alert_type_selected == 'LG'){        
         this.unitTypes= [
                           {
@@ -268,7 +287,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
                             value : this.translationData.lblMiles ? this.translationData.lblMiles : 'Miles'
                           }
                         ];
-        this.alertForm.get('unitType').setValue('K');                
       }
       else if(this.alert_category_selected+this.alert_type_selected == 'LU' || this.alert_category_selected+this.alert_type_selected == 'FI'){
         this.unitTypes= [
@@ -304,19 +322,39 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           this.unitTypeEnum= "K"
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "LU": { //Excessive Driving duration
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
           this.unitTypeEnum= "H";
-          this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "LG": { //Excessive Global Mileage
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
           this.unitTypeEnum= "K";
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "FP": { //Fuel Increase During stop
@@ -341,7 +379,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
           this.unitTypeEnum= "S";
-          this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
+            this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
+          }
+          else{                
+            this.alertForm.get('unitType').setValue(this.unitTypeEnum);
+          }
           break;
         }
         case "FA": { //Excessive Average speed
@@ -360,23 +404,23 @@ export class CreateEditViewAlertsComponent implements OnInit {
     } 
   }
 
-  onChangeVehicleGroup(event){
+  onChangeVehicleGroup(value){
     this.alertForm.get('vehicle').setValue('');
     this.isUnsubscribedVehicle= false;
-    if(event.value == 'ALL'){
+    if(value == 'ALL'){
       this.vehicleByVehGroupList = this.getUnique(this.vehicleList, "vehicleId");
     }
     else{
-      this.vehicleByVehGroupList= this.vehicleList.filter(item => item.vehicleGroupId == event.value)
-      this.vehicle_group_selected= event.value;
+      this.vehicleByVehGroupList= this.vehicleList.filter(item => item.vehicleGroupId == value)
+      this.vehicle_group_selected= value;
     }
     this.updateVehiclesDataSource(this.vehicleByVehGroupList);
   }
 
-  onChangeVehicle(event){
+  onChangeVehicle(value){
     this.isUnsubscribedVehicle= false;
-    this.vehicle_group_selected= event.value;
-    let vehicleSelected= this.vehicleList.filter(item => item.vehicleId == event.value);
+    this.vehicle_group_selected= value;
+    let vehicleSelected= this.vehicleList.filter(item => item.vehicleId == value);
     this.updateVehiclesDataSource(vehicleSelected);
     if(!vehicleSelected[0].subcriptionStatus)
       this.isUnsubscribedVehicle= true;
@@ -407,7 +451,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
 }
 
 PoiCheckboxClicked(event: any, row: any) {
-  console.log(row);
   if(event.checked){ //-- add new marker
     this.markerArray.push(row);
   }else{ //-- remove existing marker
@@ -636,10 +679,8 @@ PoiCheckboxClicked(event: any, row: any) {
     }
   
     addPolylineToMap(){
-      console.log(this.markerArray)
       var lineString = new H.geo.LineString();
       this.markerArray.forEach(element => {
-        console.log(element.startLat)
       lineString.pushPoint({lat : element.startLat, lng: element.startLong});
       lineString.pushPoint({lat : element.endLat, lng: element.endLong});
       // lineString.pushPoint({lat:48.8567, lng:2.3508});
@@ -679,9 +720,27 @@ PoiCheckboxClicked(event: any, row: any) {
   }
   
   setDefaultValue(){
-    // this.landmarkGroupForm.get('landmarkGroupName').setValue(this.selectedRowData.name);
-    // if(this.selectedRowData.description)
-    //   this.landmarkGroupForm.get('landmarkGroupDescription').setValue(this.selectedRowData.description);
+     console.log(this.selectedRowData);
+    this.alertForm.get('alertName').setValue(this.selectedRowData.name);
+    this.alertForm.get('alertCategory').setValue(this.selectedRowData.category);
+
+    this.onChangeAlertCategory(this.selectedRowData.category);
+    
+    this.alertForm.get('alertType').setValue(this.selectedRowData.type);
+    this.alertForm.get('applyOn').setValue(this.selectedRowData.applyOn);
+    
+    if(this.selectedRowData.applyOn == 'G'){
+      this.alertForm.get('vehicleGroup').setValue(this.selectedRowData.vehicleGroupId);
+      this.onChangeVehicleGroup(this.selectedRowData.vehicleGroupId);
+    }
+    else{
+      this.alertForm.get('vehicle').setValue(this.selectedRowData.vehicleGroupId);
+      this.onChangeVehicle(this.selectedRowData.vehicleGroupId);
+
+    }
+    
+    this.alertForm.get('statusMode').setValue(this.selectedRowData.state);
+    this.onChangeAlertType(this.selectedRowData.type);
   }
 
   getBreadcum() {
@@ -703,7 +762,7 @@ PoiCheckboxClicked(event: any, row: any) {
         });
         this.poiGridData = poilist;
         this.updatePOIDataSource(this.poiGridData);
-        if(this.actionType == 'view' || this.actionType == 'edit')
+        if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
         this.loadPOISelectedData(this.poiGridData);
       }
       
@@ -714,32 +773,47 @@ PoiCheckboxClicked(event: any, row: any) {
     let selectedPOIList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
+        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
         if (search.length > 0) {
           selectedPOIList.push(row);
+          setTimeout(() => {
+            this.PoiCheckboxClicked({checked : true}, row);  
+          }, 1000);
         }
       });
       tableData = selectedPOIList;
       this.displayedColumnsPOI= ['icon', 'name', 'categoryName', 'subCategoryName', 'address'];
       this.updatePOIDataSource(tableData);
     }
-    else if(this.actionType == 'edit' ){
-      // this.selectPOITableRows(this.selectedRowData);
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.selectPOITableRows(this.selectedRowData);
     }
   }
 
-  selectPOITableRows(event:any,rowData: any){
-    this.poiDataSource.data.forEach((row: any) => {
-      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
-      if (search.length > 0) {
-        if(event.checked)
+  selectPOITableRows(rowData: any, event?:any){
+    if(event){
+      this.poiDataSource.data.forEach((row: any) => {
+        let search = rowData.landmarks.filter(item => item.landmarkid == row.id && item.type == "P");
+        if(search.length > 0) {
+          if(event.checked)
+            this.selectedPOI.select(row);
+          else
+            this.selectedPOI.deselect(row);  
+            this.PoiCheckboxClicked(event,row);
+        }
+      });
+    }
+    else{
+      this.poiDataSource.data.forEach((row: any) => {
+        let search = rowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
+        if(search.length > 0) {
           this.selectedPOI.select(row);
-        else
-          this.selectedPOI.deselect(row);  
-        this.PoiCheckboxClicked(event,row);
-
-      }
-    });
+          setTimeout(() => {
+            this.PoiCheckboxClicked({checked : true}, row);  
+          }, 1000);
+        }
+      });
+    }
   }
 
   loadGeofenceData() {
@@ -758,31 +832,47 @@ PoiCheckboxClicked(event: any, row: any) {
     let selectedGeofenceList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
         if (search.length > 0) {
           selectedGeofenceList.push(row);
+          setTimeout(() => {
+            this.geofenceCheckboxClicked({checked : true}, row);  
+          }, 1000);
         }
       });
       tableData = selectedGeofenceList;
       this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName'];
       this.updateGeofenceDataSource(tableData);
     }
-    else if(this.actionType == 'edit' ){
-      // this.selectGeofenceTableRows(this.selectedRowData);
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.selectGeofenceTableRows(this.selectedRowData);
     }
   }
 
-  selectGeofenceTableRows(event: any,rowData: any){
-    this.geofenceDataSource.data.forEach((row: any) => {
-      let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
-      if (search.length > 0) {
-        if(event.checked)
+  selectGeofenceTableRows(rowData: any, event?: any){
+    if(event){
+      this.geofenceDataSource.data.forEach((row: any) => {
+        let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
+        if (event && search.length > 0) {
+          if(event.checked)
+            this.selectedGeofence.select(row);
+          else
+            this.selectedGeofence.deselect(row);
+          this.geofenceCheckboxClicked(event,row);
+        }
+      });
+    }
+    else{
+      this.geofenceDataSource.data.forEach((row: any) => {
+        let search = rowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
+        if(search.length > 0) {
           this.selectedGeofence.select(row);
-        else
-          this.selectedGeofence.deselect(row);
-        this.geofenceCheckboxClicked(event,row);
-      }
-    });
+          setTimeout(() => {
+            this.geofenceCheckboxClicked({checked : true}, row);  
+          }, 1000);
+        }
+      });
+    }
   }
 
   loadGroupData(){
@@ -840,13 +930,16 @@ PoiCheckboxClicked(event: any, row: any) {
     let selectedGroupList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "R" || item.landmarkType == "E"));
         if (search.length > 0) {
           selectedGroupList.push(row);
+          setTimeout(() => {
+            this.corridorCheckboxClicked({checked : true}, row);  
+          }, 1000);
         }
       });
       tableData = selectedGroupList;
-      this.displayedColumnsCorridor= ['name', 'poiCount', 'geofenceCount'];
+      this.displayedColumnsCorridor= ['corridoreName', 'startPoint', 'endPoint', 'distance', 'width'];
       this.updateCorridorDatasource(tableData);
     }
     else if(this.actionType == 'edit'){
@@ -856,9 +949,12 @@ PoiCheckboxClicked(event: any, row: any) {
 
   selectCorridorTableRows(){
     this.corridorDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.groupId == row.id);
+      let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "R" || item.landmarkType == "E"));
       if (search.length > 0) {
         this.selectedCorridor.select(row);
+        setTimeout(() => {
+          this.corridorCheckboxClicked({checked : true}, row);  
+        }, 1000);
       }
     });
   }
@@ -1151,14 +1247,25 @@ PoiCheckboxClicked(event: any, row: any) {
             alertLandmarkRefs.push(tempObj);
           });
         }
+        if(this.selectedGroup.selected.length > 0){
+          this.selectedGroup.selected.forEach(element => {
+            let tempObj= {
+              "landmarkType": element.type,
+              "refId": element.id,
+              "distance": element.distance,
+              "unitType": ""
+            }
+            alertLandmarkRefs.push(tempObj);
+          });
+        }
       }
       else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'C'){ // Exiting Corridor
         if(this.selectedCorridor.selected.length > 0){
           this.selectedCorridor.selected.forEach(element => {
             let tempObj= {
-              "landmarkType": "P",
+              "landmarkType": element.corridorType,
               "refId": element.id,
-              "distance": 100,
+              "distance": element.distance,
               "unitType": ""
             }
             alertLandmarkRefs.push(tempObj);
@@ -1214,38 +1321,43 @@ PoiCheckboxClicked(event: any, row: any) {
       }
     }
 
-      let alertObjData= {
-        "organizationId": this.accountOrganizationId,
-        "name": this.alertForm.get('alertName').value,
-        "category": this.alert_category_selected,
-        "type": this.alert_type_selected,
-        "validityPeriodType": "A",
-        "validityStartDate": 0,
-        "validityEndDate": 0,
-        "vehicleGroupId": this.vehicle_group_selected,
-        "state": this.alertForm.get('statusMode').value,
-        "applyOn": this.alertForm.get('applyOn').value,
-        "createdBy": this.accountId,
-        "notifications": this.notifications,
-        "alertUrgencyLevelRefs": alertUrgencyLevelRefs,
-        "alertLandmarkRefs": alertLandmarkRefs
-      }
+    if(this.actionType == 'create' || this.actionType == 'duplicate'){
+        let alertObjData= {
+          "organizationId": this.accountOrganizationId,
+          "name": this.alertForm.get('alertName').value,
+          "category": this.alert_category_selected,
+          "type": this.alert_type_selected,
+          "validityPeriodType": "A",
+          "validityStartDate": 0,
+          "validityEndDate": 0,
+          "vehicleGroupId": this.vehicle_group_selected,
+          "state": this.alertForm.get('statusMode').value,
+          "applyOn": this.alertForm.get('applyOn').value,
+          "createdBy": this.accountId,
+          "notifications": this.notifications,
+          "alertUrgencyLevelRefs": alertUrgencyLevelRefs,
+          "alertLandmarkRefs": alertLandmarkRefs
+        }
 
-      this.alertService.createAlert(alertObjData).subscribe((data) => {
-        if(data){
-          this.alertCreatedMsg = this.getAlertCreatedMessage();
-          let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
-           this.backToPage.emit(emitObj);
-        }  
-      }, (error) => {
-        if(error.status == 409)
-          this.isDuplicateAlert= true;
-      })
+        this.alertService.createAlert(alertObjData).subscribe((data) => {
+          if(data){
+            this.alertCreatedMsg = this.getAlertCreatedMessage();
+            let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
+            this.backToPage.emit(emitObj);
+          }  
+        }, (error) => {
+          if(error.status == 409)
+            this.isDuplicateAlert= true;
+        })
+    }
+    else if(this.actionType == 'edit'){
+
+    }
   }
 
   getAlertCreatedMessage() {
     let alertName = `${this.alertForm.controls.alertName.value}`;
-    if(this.actionType == 'create') {
+    if(this.actionType == 'create' || this.actionType == 'duplicate') {
       if(this.translationData.lblAlertCreatedSuccessfully)
         return this.translationData.lblAlertCreatedSuccessfully.replace('$', alertName);
       else
@@ -1387,8 +1499,8 @@ PoiCheckboxClicked(event: any, row: any) {
     };
     this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
       groupDetails = groupData["groups"][0];
-      this.selectPOITableRows(event,groupDetails);
-      this.selectGeofenceTableRows(event,groupDetails);
+      this.selectPOITableRows(groupDetails, event);
+      this.selectGeofenceTableRows(groupDetails, event);
     });
   }
 

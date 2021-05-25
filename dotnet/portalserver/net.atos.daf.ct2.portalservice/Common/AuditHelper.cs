@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit_Error", ex);
+                _logger.LogError("Error occurred while fetching request header object.", ex);
                 return new HeaderObj();
             }
         }
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit_Error", logs, ex);
+                _logger.LogError("Error occurred while adding audit logs.", logs, ex);
                 return 1;
             }
 

@@ -22,10 +22,10 @@ namespace net.atos.daf.ct2.reports.repository
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
-        }
+        }   
 
         #region Select User Preferences
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, 
+        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
                                                                                                   int accountId,
                                                                                                   int OrganizationId)
         {
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@organization_id", OrganizationId);
                 #region Query Select User Preferences
                 var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,
-	                                 d.key as Key,rp.state as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType
+	                                 d.key as Key,case when rp.state != null then rp.state else 'I' end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType
                               FROM  master.reportattribute rd     
                                     INNER JOIN master.dataattribute d  	 ON rd.report_id = @report_id and d.id =rd.data_attribute_id 
                                     LEFT JOIN master.reportpreference rp ON rp.account_id = @account_id and rp.organization_id = @organization_id 
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
-        
+
         public Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId,
                                                                                        int accountId,
                                                                                        int OrganizationId)
@@ -75,14 +75,15 @@ namespace net.atos.daf.ct2.reports.repository
 						                     INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = da.id
 						                     INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' and das.is_exlusive = false
 						                     INNER JOIN master.Feature f ON f.data_attribute_set_id = das.id AND f.state = 'A' and f.type = 'D'
-						                     INNER JOIN master.FeatureSetFeature fsf ON f.id = fsf.feature_id
+						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id
 						                     INNER JOIN master.FeatureSet fset ON fsf.feature_set_id = fset.id AND fset.state = 'A'
-						                     INNER JOIN master.Role ro ON ro.feature_set_id = fsf.feature_set_id AND ro.state = 'A'
+						                     INNER JOIN master.Role ro ON ro.feature_set_id = fset.id AND ro.state = 'A'
 						                     INNER JOIN master.AccountRole ar ON ro.id = ar.role_id and ar.organization_id = @organization_id
-						                     INNER JOIN master.account acc on  acc.id = @account_id AND acc.id = ar.account_id AND acc.state = 'A'
-	 			                         ) t 
-		                      ON t.id = d.id
-                              where acc.id = @account_id and ar.Organization_id = @organization_id and r.id = @report_id";
+						                     INNER JOIN master.account acc ON  acc.id = @account_id AND acc.id = ar.account_id AND acc.state = 'A'
+	 			                          WHERE acc.id = @account_id AND ar.Organization_id = @organization_id AND r.id = @report_id
+                                        ) t 
+		                                ON t.id = d.id
+                              WHERE  rd.report_id = @report_id";
                 #endregion
                 return _dataAccess.QueryAsync<UserPrefernceReportDataColumn>(query, parameter);
             }
@@ -131,7 +132,6 @@ namespace net.atos.daf.ct2.reports.repository
                     log.Error(ex.ToString());
                     transactionScope.Rollback();
                     rowsEffected = 0;
-                    throw ex;
                 }
                 finally
                 {
@@ -143,18 +143,19 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Get Vins from data mart trip_statistics
-        //This code is not in use, may require in future use.
-        public Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate, 
-                                                                   IEnumerable<string> vinList)
+        public Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@fromdate", fromDate);
-                parameter.Add("@todate", toDate);
+                parameter.Add("@fromdate", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-90)));
+                parameter.Add("@todate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@vins", vinList.ToArray());
-                var query = $"SELECT DISTINCT vin FROM tripdetail.trip_statistics WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND vin = Any(@vins)";
-                return _dataMartdataAccess.QueryAsync<string>(query, parameter);
+                var query = @"SELECT DISTINCT vin,start_time_stamp AS StartTimeStamp,
+                                     end_time_stamp AS EndTimeStamp FROM tripdetail.trip_statistics 
+                              WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
+                                     vin = Any(@vins)";
+                return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
             catch (Exception)
             {
@@ -164,73 +165,72 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Trip Report Table Details
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripEntityRequest)
+
+        /// <summary>
+        /// Fetch Filtered trips along with Live Fleet Position
+        /// </summary>
+        /// <param name="TripFilters"></param>
+        /// <returns>List of Trips Data with LiveFleet attached under *LiveFleetPosition* property</returns>
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest TripFilters)
         {
             try
             {
                 List<TripDetails> lstTripEntityResponce = new List<TripDetails>();
                 string query = string.Empty;
-                query = @"Select
-                TS.Id Id,
-                TS.trip_id TripId,
-                TS.VIN VIN,
-                D.first_name DriverFirstName,
-                D.last_name DriverLastName,
-                TS.driver2_id DriverId2,
-                TS.driver1_id DriverId1,
-                TS.last_odometer - TS.start_odometer Distance,
-                TS.start_position StartAddress,
-                TS.end_position EndAddress,
-                TS.start_position_lattitude StartPositionlattitude,
-                TS.start_position_longitude StartPositionLongitude,
-                TS.end_position_lattitude EndPositionLattitude,
-                TS.end_position_longitude EndPositionLongitude,
-                TS.start_time_stamp StartTimeStamp,
-                TS.end_time_stamp EndTimeStamp
-               
-                from tripdetail.trip_statistics TS
-                left join master.driver D on TS.driver1_id=D.driver_id
-                left join master.vehicle V on TS.vin=V.vin
-                where TS.vin=@vin and (TS.start_time_stamp>=@StartDateTime and TS.end_time_stamp<=@EndDateTime)";
+                query = @"SELECT id
+	                        ,trip_id AS tripId
+	                        ,vin AS VIN
+	                        ,start_time_stamp AS StartDate
+	                        ,end_time_stamp AS EndDate
+	                        ,veh_message_distance AS Distance
+	                        ,idle_duration AS IdleDuration
+	                        ,average_speed AS AverageSpeed
+	                        ,average_weight AS AverageWeight
+	                        ,last_odometer AS Odometer
+                            ,CASE WHEN start_position IS NULL THEN 'NA' ELSE start_position END AS StartPosition
+                            ,CASE WHEN end_position IS NULL THEN 'NA' ELSE end_position END AS EndPosition
+	                        ,start_position_lattitude AS StartPositionLattitude
+	                        ,start_position_longitude AS StartPositionLongitude
+	                        ,end_position_lattitude AS EndPositionLattitude
+	                        ,end_position_longitude AS EndPositionLongitude
+	                        ,fuel_consumption AS FuelConsumed
+	                        ,veh_message_driving_time AS DrivingTime
+	                        ,no_of_alerts AS Alerts
+	                        ,no_of_events AS Events
+	                        ,(fuel_consumption / 100) AS FuelConsumed100km
+                        FROM tripdetail.trip_statistics
+                        WHERE vin = @vin
+	                        AND (
+		                        start_time_stamp >= @StartDateTime
+		                        AND end_time_stamp <= @EndDateTime
+		                        )";
 
                 var parameter = new DynamicParameters();
-                parameter.Add("@StartDateTime", tripEntityRequest.StartDateTime);
-                parameter.Add("@EndDateTime", tripEntityRequest.EndDateTime);
-                parameter.Add("@vin", tripEntityRequest.VIN);
+                parameter.Add("@StartDateTime", TripFilters.StartDateTime);
+                parameter.Add("@EndDateTime", TripFilters.EndDateTime);
+                parameter.Add("@vin", TripFilters.VIN);
 
-                var data = await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
-                foreach (var item in data)
+                List<TripDetails> data = (List<TripDetails>)await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
+                if (data?.Count > 0)
                 {
-                    var parameterPosition = new DynamicParameters();
-                    parameterPosition.Add("@vin", item.VIN);
-                    parameterPosition.Add("@trip_id", item.TripId);
-                    string queryPosition = @"select id, 
-                              vin,
-                              gps_altitude, 
-                              gps_heading,
-                              gps_latitude,
-                              gps_longitude
-                              from livefleet.livefleet_position_statistics
-                              where vin=@vin and trip_id = @trip_id order by id desc";
-                    var PositionData = await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
-                    List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
 
-                    if (PositionData.Count() > 0)
-                    {
-                        foreach (var positionData in PositionData)
+                    // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
+                    string[] TripIds = data.Select(item => item.TripId).ToArray();
+                    List<LiveFleetPosition> lstLiveFleetPosition = await GetLiveFleetPosition(TripIds);
+                    if (lstLiveFleetPosition.Count > 0)
+                        foreach (TripDetails trip in data)
                         {
-                            LiveFleetPosition objLiveFleetPosition = new LiveFleetPosition();
-                            objLiveFleetPosition.GpsAltitude = positionData.GpsAltitude;
-                            objLiveFleetPosition.GpsHeading = positionData.GpsHeading;
-                            objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
-                            objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
-                            objLiveFleetPosition.Id = positionData.Id;
-                            lstLiveFleetPosition.Add(objLiveFleetPosition);
+                            trip.LiveFleetPosition = lstLiveFleetPosition.Where(fleet => fleet.TripId == trip.TripId).ToList();
                         }
-                        item.LiveFleetPosition = lstLiveFleetPosition;
+
+                    /** Old way To pull respective trip fleet position
+                    foreach (var item in data)
+                    {
+                        await GetLiveFleetPosition(item);
                     }
+                    */
+                    lstTripEntityResponce = data.ToList();
                 }
-                lstTripEntityResponce = data.ToList();
                 return lstTripEntityResponce;
             }
             catch (System.Exception ex)
@@ -238,6 +238,124 @@ namespace net.atos.daf.ct2.reports.repository
                 throw ex;
             }
         }
+
+        //TODO :: Remove this method after implementation of new way to Live Fleet Position
+        /// <summary>
+        /// Pull Live Fleet positions with specific (one) trip details
+        /// </summary>
+        /// <param name="Trip"></param>
+        /// <returns></returns>
+        private async Task<List<LiveFleetPosition>> GetLiveFleetPosition(TripDetails Trip)
+        {
+            var parameterPosition = new DynamicParameters();
+            parameterPosition.Add("@vin", Trip.VIN);
+            parameterPosition.Add("@trip_id", Trip.TripId);
+            string queryPosition = @"select id, 
+                              vin,
+                              gps_altitude, 
+                              gps_heading,
+                              gps_latitude,
+                              gps_longitude
+                              from livefleet.livefleet_position_statistics
+                              where vin=@vin and trip_id = @trip_id order by id desc";
+            var PositionData = await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
+            List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
+
+            if (PositionData.Count() > 0)
+            {
+                foreach (var positionData in PositionData)
+                {
+
+                    LiveFleetPosition objLiveFleetPosition = new LiveFleetPosition();
+                    objLiveFleetPosition.GpsAltitude = positionData.GpsAltitude;
+                    objLiveFleetPosition.GpsHeading = positionData.GpsHeading;
+                    objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
+                    objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
+                    objLiveFleetPosition.Id = positionData.Id;
+                    lstLiveFleetPosition.Add(objLiveFleetPosition);
+                }
+            }
+            return lstLiveFleetPosition;
+        }
+
+        private async Task<List<LiveFleetPosition>> GetLiveFleetPosition(String[] TripIds)
+        {
+            try
+            {
+                //Creating chunk of 1000 trip ids because IN clause support till 1000 paramters only
+                List<string> combineTrips = CreateChunks(TripIds);
+
+                List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
+                if (combineTrips.Count > 0)
+                {
+                    foreach (var item in combineTrips)
+                    {
+                        // Collecting all batch to add under respective trip
+                        lstLiveFleetPosition.AddRange(await GetFleetOfTripWithINClause(item));
+                    }
+                }
+                return lstLiveFleetPosition;
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get Live Fleet Position as per trip given Trip id with IN clause (Optimized pull opration)
+        /// </summary>
+        /// <param name="CommaSparatedTripIDs"> Comma Sparated Trip IDs (max 1000 ids)</param>
+        /// <returns>List of LiveFleetPosition Object</returns>
+        private async Task<List<LiveFleetPosition>> GetFleetOfTripWithINClause(string CommaSparatedTripIDs)
+        {
+            var parameterPosition = new DynamicParameters();
+            parameterPosition.Add("@trip_id", CommaSparatedTripIDs);
+            string queryPosition = @"select id, 
+                                         vin,
+                                    	 trip_id as tripid,
+                                         gps_altitude, 
+                                         gps_heading,
+                                         gps_latitude,
+                                         gps_longitude
+                                    from livefleet.livefleet_position_statistics
+                                    where trip_id IN (@trip_id)
+                                    order by id desc";
+            List<LiveFleetPosition> lstLiveFleetPosition = (List<LiveFleetPosition>)await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
+
+            if (lstLiveFleetPosition.Count() > 0)
+            {
+                return lstLiveFleetPosition;
+            }
+            else
+            {
+                return new List<LiveFleetPosition>();
+            }
+        }
+
+        #region Generic code to Prepare In query String
+
+        /// <summary>
+        ///   Create Batch of values on dynamic chunk size
+        /// </summary>
+        /// <param name="ArrayForChuk">Array of IDs or values for creating batch for e.g. Batch of 100. </param>
+        /// <returns>List of all batchs including comma separated id in one item</returns>
+        private List<string> CreateChunks(string[] ArrayForChuk)
+        {
+            // Creating batch of 1000 ids as IN clause support only 1000 parameters
+            var TripChunks = Common.CommonExtention.Split<string>(ArrayForChuk, 1000);
+            List<string> combineTrips = new List<string>();
+            foreach (var chunk in TripChunks)
+            {
+                combineTrips.Add(string.Join(",", chunk));
+            }
+
+            return combineTrips;
+        }
+
+        #endregion
+
+
         #endregion
     }
 }

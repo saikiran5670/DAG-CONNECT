@@ -7,6 +7,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 // import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import * as moment from 'moment';
+import { POIService } from 'src/app/services/poi.service';
 
 @Component({
   selector: 'app-existing-trips',
@@ -14,13 +16,20 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
   styleUrls: ['./existing-trips.component.less']
 })
 export class ExistingTripsComponent implements OnInit {
-  startDate = new FormControl();
   endDate = new FormControl();
+  startDate = new FormControl();
+  startTime = new FormControl();
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() disabled: boolean;
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
-
+  selectedStartTime: any = '12:00 AM'
+  selectedEndTime: any = '12:00 AM'
+  selectedStartDateStamp: any;
+  selectedEndDateStamp: any;
+  startTimeUTC: any;
+  endTimeUTC: any;
+  timeValue: any = 0;
   // range = new FormGroup({
   //   start: new FormControl(),
   //   end: new FormControl()
@@ -64,7 +73,7 @@ export class ExistingTripsComponent implements OnInit {
   vehicleGroupIdsSet: any = [];
   localStLanguage: any;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private poiService: POIService) { }
 
   ngOnInit(): void {
     this.vehicleGroupList.forEach(item => {
@@ -192,7 +201,46 @@ export class ExistingTripsComponent implements OnInit {
       return data;
     }
   }
+  timeChanged(selectedTime: any) {
+    this.selectedStartTime = selectedTime;
+    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  }
+  endtimeChanged(endTime: any) {
+    this.selectedEndTime = endTime;
+    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+  }
 
+  selectedStartDate(startDate: any) {
+    this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
+    // console.log("---selectedStartDate---",this.selectedStartDateStamp)
+    // let dateTime = moment(this.selectedStartDateStamp + ' ' + this.selectedStartTime, 'DD/MM/YYYY HH:mm');
+    // console.log(dateTime.format('DD-MM-YYYY HH:mm'))
+    // this.startTimeUTC = moment.utc(dateTime).valueOf();
+    // console.log("--startTimeUTC----UTC format",this.startTimeUTC)
+    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  }
+  concateStartDateTimeInUTC(selectedDate: any, selectedTime: any) {
+    let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
+    // console.log("actual date and time value----",dateTime.format('DD-MM-YYYY HH:mm'))
+    this.startTimeUTC = moment.utc(dateTime).valueOf();
+    console.log("--startTimeUTC----UTC format", this.startTimeUTC)
+  }
+  selectedEndDate(endDate: any) {
+    this.selectedEndDateStamp = moment(endDate.target.value).format('DD/MM/YYYY');
+    // console.log("---selectedEndDate---",this.selectedEndDateStamp)
+    // let dateTime = moment(this.selectedEndDateStamp + ' ' + this.selectedEndTime, 'DD/MM/YYYY HH:mm');
+    // console.log(dateTime.format('DD-MM-YYYY HH:mm'))
+    // this.endTimeUTC = moment.utc(dateTime).valueOf();
+    // console.log("--endTimeUTC----UTC format",this.endTimeUTC)
+    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+  }
+  concateEndDateTimeInUTC(selectedDate: any, selectedTime: any) {
+    let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
+    let concateDateAndTime = dateTime.format('DD-MM-YYYY HH:mm');
+    // console.log("actual date and time value----",dateTime.format('DD-MM-YYYY HH:mm'))
+    this.endTimeUTC = moment.utc(dateTime).valueOf();
+    console.log("--endTimeUTC----UTC format", this.endTimeUTC)
+  }
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue;
   }
@@ -207,4 +255,21 @@ export class ExistingTripsComponent implements OnInit {
       document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     }, 100);
   }
+
+  onReset() {
+
+  }
+
+  onSearch() {
+    console.log("---Search calling---")
+    // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
+    this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripData) => {
+      console.log("--existingTripData----", existingTripData)
+
+    });
+    //   }
+
+  }
+
+
 }

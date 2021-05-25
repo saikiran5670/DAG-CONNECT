@@ -68,7 +68,7 @@
               <!-- <button *ngIf="editUserContent" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
                 (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button> -->
               <button class='no-margin' [disabled]="!OrganisationRelationshipFormGroup.valid || orgRltShipCreateButton" mat-raised-button color="primary"
-                (click)='onCreate();orgRltShipCreateButton=true' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
+                (click)='onCreate();' id="createUpdateButton">{{ createStatus ? (translationData.lblCreate || 'Create') :
                 (translationData.lblConfirm || 'Confirm') }}</button>
             </div>
           </div>
@@ -113,7 +113,7 @@
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="vehicleGroupName">
+                <ng-container matColumnDef="groupName">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleGroup || 'Vehicle Group Name'}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" >{{row.groupName}} </mat-cell>
                 </ng-container>
@@ -160,7 +160,7 @@
                   </mat-checkbox>
                 </mat-cell>
               </ng-container>
-              <ng-container matColumnDef="organisationName">
+              <ng-container matColumnDef="organizationName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOrganisationName || 'Organisation Name'}}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.organizationName}} </mat-cell>
               </ng-container>

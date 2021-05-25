@@ -31,8 +31,9 @@ export class AlertsComponent implements OnInit {
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
+  originalAlertData: any= [];
   rowsData: any;
-  createStatus: boolean;
+  //createStatus: boolean;
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   accountOrganizationId: any;
@@ -87,7 +88,7 @@ export class AlertsComponent implements OnInit {
   
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    console.log("process translationData:: ", this.translationData)
+    //console.log("process translationData:: ", this.translationData)
   }
 
   loadFiltersData(){    
@@ -188,8 +189,9 @@ export class AlertsComponent implements OnInit {
       name: ""
     }    
     this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
-     //this.initData = data["alertRequest"]; 
-      data.forEach(item => {           
+      this.initData =data; 
+      this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
+      this.initData.forEach(item => {           
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => { 
         item["category"]=obj.value;
@@ -259,7 +261,6 @@ export class AlertsComponent implements OnInit {
        ); 
       }        
      }); 
-      this.initData =data; 
       this.updateDatasource(this.initData);  
     }, (error) => {
     })   
@@ -313,7 +314,7 @@ export class AlertsComponent implements OnInit {
     return newTrueData;
   }
 
-  deleteAlertData(item: any) {
+  onDeleteAlert(item: any) {
     const options = {
       title: this.translationData.lblDeleteAlert || "Delete Alert",
       message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?",
@@ -339,20 +340,21 @@ export class AlertsComponent implements OnInit {
       return ("Alert '$' was successfully deleted").replace('$', alertName);
   }
 
-  editViewAlertData(element: any, type: any) {
+  onViewAlert(element: any, type: any) {
    
   }
 
-  editAlertData(row: any, action : string) {
-    this.duplicateFlag = false;
+  onEditDuplicateAlert(row: any, action : string) {
+    this.createViewEditStatus= true;
+    this.actionType = 'edit';
     if(action == 'duplicate'){
-      this.duplicateFlag = true;
+      this.actionType = 'duplicate';
     }
-    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Alert" : this.translationData.lblEditUserRoleDetails || "Edit Alert Details";
-    this.rowsData = [];
-    this.rowsData.push(row);
-    this.editFlag = true;
-    this.createStatus = false;    
+    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert" : this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
+    //this.rowsData.push(row);
+    //this.editFlag = true;
+    //this.createStatus = false;    
   }
 
    successMsgBlink(msg: any){
