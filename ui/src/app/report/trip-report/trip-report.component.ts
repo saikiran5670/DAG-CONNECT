@@ -16,6 +16,7 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
+  selectionTab: any = 'today';
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectedStartTime: any = '12:00 AM';
   selectedEndTime: any = '12:00 AM'; 
@@ -348,6 +349,31 @@ export class TripReportComponent implements OnInit {
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
+  }
+
+  selectionTimeRange(selection: any){
+    switch(selection){
+      case 'today': {
+        this.selectionTab = 'today';
+        break;
+      }
+      case 'yesterday': {
+        this.selectionTab = 'yesterday';
+        break;
+      }
+      case 'lastweek': {
+        this.selectionTab = 'lastweek';
+        break;
+      }
+      case 'lastmonth': {
+        this.selectionTab = 'lastmonth';
+        break;
+      }
+      case 'last3month': {
+        this.selectionTab = 'last3month';
+        break;
+      }
+    }
   }
 
 }
