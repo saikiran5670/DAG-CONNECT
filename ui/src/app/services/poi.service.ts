@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import {  catchError } from 'rxjs/internal/operators';
+import { catchError } from 'rxjs/internal/operators';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -11,41 +11,52 @@ import { ConfigService } from '@ngx-config/core';
 
 @Injectable()
 export class POIService {
-    PoiServiceUrl: string = '';
-    hereMapApiUrl: string = 'https://places.ls.hereapi.com';
+  PoiServiceUrl: string = '';
+  hereMapApiUrl: string = 'https://places.ls.hereapi.com';
 
   constructor(private httpClient: HttpClient, private config: ConfigService) {
     this.PoiServiceUrl = config.getSettings("foundationServices").poiRESTServiceURL;
   }
 
-  generateHeader(){
-    let genericHeader : object = {
-      'Content-Type' : 'application/json',
-      'accountId' : localStorage.getItem('accountId'),
-      'orgId' : localStorage.getItem('accountOrganizationId'),
-      'roleId' : localStorage.getItem('accountRoleId')
+  generateHeader() {
+    let genericHeader: object = {
+      'Content-Type': 'application/json',
+      'accountId': localStorage.getItem('accountId'),
+      'orgId': localStorage.getItem('accountOrganizationId'),
+      'roleId': localStorage.getItem('accountRoleId')
     }
     let getHeaderObj = JSON.stringify(genericHeader)
     return getHeaderObj;
   }
 
-  getPois(id : any): Observable<any[]> {
+  getPois(id: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.PoiServiceUrl}/get?OrganizationId=${id}`,headers)
+      .get<any[]>(`${this.PoiServiceUrl}/get?OrganizationId=${id}`, headers)
       .pipe(catchError(this.handleError));
   }
 
-  getAutoSuggestMap(inputKey : any): Observable<any[]> {
+  getalltripdetails(startDateTime: any, endDateTime: any, vinValue: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .get<any[]>(`${this.hereMapApiUrl}/places/v1/autosuggest?at=40.74917,-73.98529&q=${inputKey}&apiKey=${'BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw'}`,headers)
+      .get<any[]>(`${this.PoiServiceUrl}/getalltripdetails?StartDateTime=${startDateTime}&EndDateTime=${endDateTime}&VIN=${vinValue}`, headers)
+      // .get<any[]>(`${this.PoiServiceUrl}/getalltripdetails?StartDateTime=1604327461000&EndDateTime=1604336647000&VIN=NBVGF1254KLJ55`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getAutoSuggestMap(inputKey: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.hereMapApiUrl}/places/v1/autosuggest?at=40.74917,-73.98529&q=${inputKey}&apiKey=${'BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw'}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -56,7 +67,7 @@ export class POIService {
     };
     let orgId = localStorage.getItem('accountOrganizationId');
     return this.httpClient
-      .get<any[]>(`${this.PoiServiceUrl}/downloadpoiforexcel?OrganizationId=${orgId}`,headers)
+      .get<any[]>(`${this.PoiServiceUrl}/downloadpoiforexcel?OrganizationId=${orgId}`, headers)
       .pipe(catchError(this.handleError));
   }
 
@@ -67,10 +78,10 @@ export class POIService {
     };
     let orgId = localStorage.getItem('accountOrganizationId');
     return this.httpClient
-      .post<any[]>(`${this.PoiServiceUrl}/uploadexcel`,data,headers)
+      .post<any[]>(`${this.PoiServiceUrl}/uploadexcel`, data, headers)
       .pipe(catchError(this.handleError));
   }
-  
+
   createPoi(data): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
@@ -103,16 +114,16 @@ export class POIService {
   }
 
 
-//   importPoi(data): Observable<any> {
-//     let headerObj = this.generateHeader();
-//     const headers = {
-//       headers: new HttpHeaders({ headerObj }),
-//     };
-//     const importData = {packagesToImport:data}
-//     return this.httpClient
-//       .post<any>(`${this.PoiServiceUrl}/Import`, importData, headers)
-//       .pipe(catchError(this.handleError));
-//   }
+  //   importPoi(data): Observable<any> {
+  //     let headerObj = this.generateHeader();
+  //     const headers = {
+  //       headers: new HttpHeaders({ headerObj }),
+  //     };
+  //     const importData = {packagesToImport:data}
+  //     return this.httpClient
+  //       .post<any>(`${this.PoiServiceUrl}/Import`, importData, headers)
+  //       .pipe(catchError(this.handleError));
+  //   }
 
   private handleError(errResponse: HttpErrorResponse) {
     if (errResponse.error instanceof ErrorEvent) {

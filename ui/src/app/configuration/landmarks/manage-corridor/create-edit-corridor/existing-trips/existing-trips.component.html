@@ -92,6 +92,14 @@
         {{ translationData.lblPleasechoosevehicle || 'Please choose vehicle' }}
       </mat-error>
     </div>
+    <div fxLayout="row" fxLayoutAlign="space-between start">
+      <button mat-flat-button color="primary" (click)="onReset()">
+        {{translationData.lblReset || 'Reset'}}
+      </button>
+      <button mat-flat-button color="primary" (click)="onSearch()">
+        {{translationData.lblSearch || 'Search'}}
+      </button>
+    </div>
   </div>
 </form>
 

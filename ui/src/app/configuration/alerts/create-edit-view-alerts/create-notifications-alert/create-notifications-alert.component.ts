@@ -25,7 +25,9 @@ export class CreateNotificationsAlertComponent implements OnInit {
   @Input() actionType: any;
   localStLanguage: any;
   organizationId: number;
-  addFlag: boolean = false;
+  // addFlag: boolean = false;
+  addEmailFlag: boolean = false;
+  addWsFlag : boolean = false;
   contactModeType: any;
   radioButtonVal: any;
   notificationPayload: any;
@@ -51,6 +53,8 @@ emailAddress: any;
 mailSubject: any;
 mailDescription: any;
 notifyPeriod: any;
+emailCount : number = 0;
+wsCount : number = 0;
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -92,7 +96,19 @@ notifyPeriod: any;
 
     addMultipleItems() :void{
       console.log(this.FormArrayItems);
-      this.addFlag = true;
+      // this.addFlag = true;
+      this.contactModeType = this.notificationForm.get("contactMode").value;
+      if(this.contactModeType == 1)
+      {
+        this.addEmailFlag = true;
+        // this.emailCount = this.emailCount + 1;
+      }
+      else if(this.contactModeType == 0)
+      {
+        this.addWsFlag = true;
+        // this.wsCount = this.wsCount + 1;
+        console.log("emailcount=" +this.emailCount);
+      }
       if(!this.FormArrayItems)
       {
       this.FormArrayItems = this.notificationForm.get("FormArrayItems") as FormArray;
@@ -100,6 +116,7 @@ notifyPeriod: any;
       else{
         this.FormArrayItems.push(this.initItems());
       }
+      console.log(this.FormArrayItems.controls);
     }
 
   setDefaultValueForws(){
@@ -116,9 +133,9 @@ notifyPeriod: any;
     this.mailDescription = "";
   }
   
-  onNotificationAdd(){
-    this.addFlag = true;
-  }
+  // onNotificationAdd(){
+  //   this.addFlag = true;
+  // }
 
   onChangeContactMode(event :any){
    this.contactModeType = event.value;
