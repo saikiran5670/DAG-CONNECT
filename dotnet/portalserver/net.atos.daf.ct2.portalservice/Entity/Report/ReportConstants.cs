@@ -27,6 +27,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public const string GET_TRIP_SUCCESS_MSG = "Trip fetched successfully for requested Filters";
         public const string GET_TRIP_FAILURE_MSG = "No Result Found";
 
+        public const string GET_VIN_VISIBILITY_FAILURE_MSG = "No vehicle found for Account Id {0} and Organization Id {1}";
+        public const string GET_VIN_TRIP_NOTFOUND_MSG = "No trip for vehicle found for Account Id {0} and Organization Id {1}. for last 90 days.";
+        public const string GET_VIN_VISIBILITY_FAILURE_MSG2 = "Error fetching VIN and Vehicla Details for Account Id {0} and Organization Id {1}. With error: {2}.";
+
+
+
 
     }
 }

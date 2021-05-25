@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
-        }
+        }   
 
         #region Select User Preferences
         public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@organization_id", OrganizationId);
                 #region Query Select User Preferences
                 var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,
-	                                 d.key as Key,rp.state as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType
+	                                 d.key as Key,case when rp.state != null then rp.state else 'I' end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType
                               FROM  master.reportattribute rd     
                                     INNER JOIN master.dataattribute d  	 ON rd.report_id = @report_id and d.id =rd.data_attribute_id 
                                     LEFT JOIN master.reportpreference rp ON rp.account_id = @account_id and rp.organization_id = @organization_id 
