@@ -99,12 +99,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     accIdentity.AccountRole.Add(accRole);
                                 }
                             }
-                            //if (!string.IsNullOrEmpty(response.TokenIdentifier))
-                            // {
+
                             try
                             {
-                                HttpContext.Session.SetString("session_id", response.TokenIdentifier);
-                                _logger.Info($"Value set in Session - { response.TokenIdentifier }");
+                                HttpContext.Session.SetInt32("account_id", accIdentity.AccountInfo.Id);
+                                _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id }");
                             }
                             catch (Exception ex)
                             {
@@ -119,8 +118,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                            // }
-
 
                             await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
                                     "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -182,6 +179,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                //Clear session information
+                HttpContext.Session.Clear();
+                foreach (var cookie in Request.Cookies.Keys)
+                {
+                    if (cookie.Equals(".AspNetCore.Session"))
+                    {
+                        Response.Cookies.Delete(cookie);
+                        break;
+                    }                        
+                }
+
                 string sessionid = HttpContext.Session.GetString("session_id");
                 if (!string.IsNullOrEmpty(sessionid))
                 {

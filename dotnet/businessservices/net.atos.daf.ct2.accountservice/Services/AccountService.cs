@@ -786,7 +786,14 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await accountmanager.GetMenuFeatures(request.AccountId, request.RoleId, request.OrganizationId, request.LanguageCode);
+                var result = await accountmanager.GetMenuFeatures(new MenuFeatureRquest() 
+                { 
+                    AccountId = request.AccountId,
+                    ContextOrgId = request.ContextOrgId,
+                    LanguageCode = request.LanguageCode,
+                    OrganizationId = request.OrganizationId,
+                    RoleId = request.RoleId
+                });
 
                 MenuFeatureResponse response = new MenuFeatureResponse();
                 if (result.Count() > 0)

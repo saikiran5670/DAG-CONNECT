@@ -497,9 +497,9 @@ namespace net.atos.daf.ct2.account
             return response;
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(MenuFeatureRquest request)
         {
-            return await repository.GetMenuFeaturesList(accountId, roleId, organizationId, languageCode);
+            return await repository.GetMenuFeaturesList(request);
         }
 
         public async Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName)
