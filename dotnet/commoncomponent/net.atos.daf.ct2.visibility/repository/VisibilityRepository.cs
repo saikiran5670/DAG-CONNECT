@@ -306,14 +306,14 @@ namespace net.atos.daf.ct2.visibility.repository
 									,accountid as AccountId
 									,object_type as ObjectType
 									,group_type as GroupType
-									,function_enum as FunctionEnum
+									,case when function_enum is null then '' else function_enum end as FunctionEnum
 									,Organization_Id as OrganizationId
 									,access_type as AccessType
-									,VehicleGroupName 
+									,case when VehicleGroupName is null then '' else VehicleGroupName end as VehicleGroupName 
 									,VehicleId
-									,VehicleName
+									,case when VehicleName is null then '' else VehicleName end as VehicleName
 									,vin as Vin
-									, RegistrationNo 
+									, case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
 						 from cte_account_vehicle_CompleteList where organization_id=@organization_id order by 1;";
 				#endregion
 				return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);

@@ -144,8 +144,7 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Get Vins from data mart trip_statistics
-        //This code is not in use, may require in future use.
-        public Task<IEnumerable<string>> GetVinsFromTripStatistics(IEnumerable<string> vinList)
+        public Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList)
         {
             try
             {
@@ -153,11 +152,11 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@fromdate", UTCHandling.GetUTCFromDateTime(DateTime.Now.AddDays(-90)));
                 parameter.Add("@todate", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@vins", vinList.ToArray());
-                var query = @"SELECT DISTINCT vin,start_time_stamp AS StartDate,
-                                     end_time_stamp AS EndDate FROM tripdetail.trip_statistics 
+                var query = @"SELECT DISTINCT vin,start_time_stamp AS StartTimeStamp,
+                                     end_time_stamp AS EndTimeStamp FROM tripdetail.trip_statistics 
                               WHERE end_time_stamp >= @fromdate AND end_time_stamp <= @todate AND 
                                      vin = Any(@vins)";
-                return _dataMartdataAccess.QueryAsync<string>(query, parameter);
+                return _dataMartdataAccess.QueryAsync<VehicleFromTripDetails>(query, parameter);
             }
             catch (Exception)
             {

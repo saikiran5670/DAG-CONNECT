@@ -80,8 +80,8 @@ namespace net.atos.daf.ct2.reports.test
             
             var result = await _reportManager
                                     .GetVinsFromTripStatistics(new List<string> {
-                                                               "5A25561",
-                                                               "ATOSGJ6237G001973",
+                                                               "V12001",
+                                                               "V12003",
                                                                "xxxxxxxx",
                                                                "ATOSGJ6237G784859"
                                                                });
