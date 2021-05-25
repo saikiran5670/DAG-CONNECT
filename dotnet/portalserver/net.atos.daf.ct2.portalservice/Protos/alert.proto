@@ -95,10 +95,11 @@ message AlertRequest
 	int32 ModifiedBy=14;
 	string VehicleName=15;
 	string VehicleGroupName=16;
-	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=17;
-	repeated NotificationRequest Notifications=18;
-	repeated AlertLandmarkRefRequest AlertLandmarkRefs=19;
-	bool Exists=20;
+	string ApplyOn=17;
+	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=18;
+	repeated NotificationRequest Notifications=19;
+	repeated AlertLandmarkRefRequest AlertLandmarkRefs=20;
+	bool Exists=21;	
 }
 
 message AlertFilterRefRequest
