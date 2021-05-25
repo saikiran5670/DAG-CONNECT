@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.visibility;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -17,11 +18,13 @@ namespace net.atos.daf.ct2.reportservice.Services
     {
         private ILog _logger;
         private readonly IReportManager _reportManager;
+        private readonly IVisibilityManager _visibilityManager;
         private readonly Mapper _mapper;
-        public ReportManagementService(IReportManager reportManager)
+        public ReportManagementService(IReportManager reportManager, IVisibilityManager visibilityManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _reportManager = reportManager;
+            _visibilityManager = visibilityManager;
             _mapper = new Mapper();
         }
 
@@ -31,7 +34,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var userPrefernces = await _reportManager.GetUserPreferenceReportDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
-                if(userPrefernces.Count() == 0)
+                if (userPrefernces.Count() == 0)
                 {
                     return await Task.FromResult(new UserPreferenceDataColumnResponse
                     {
@@ -39,16 +42,26 @@ namespace net.atos.daf.ct2.reportservice.Services
                         Code = Responsecode.Failed
                     });
                 }
-                if (!userPrefernces.Any(a => !string.IsNullOrEmpty(a.State))) 
+                if (!userPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
                 {
                     var roleBasedUserPrefernces = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
-                    var roleBadresponse = new UserPreferenceDataColumnResponse
+                    
+                    if (!roleBasedUserPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
+                    {
+                        foreach (var item in roleBasedUserPrefernces)
+                        {
+                            item.State = ((char)ReportPreferenceState.Active).ToString();
+                        }
+                    }
+
+                    var roleBasedresponse = new UserPreferenceDataColumnResponse
                     {
                         Message = String.Format(ReportConstants.USER_PREFERENCE_SUCCESS_MSG, request.AccountId, request.ReportId),
                         Code = Responsecode.Success
                     };
-                    roleBadresponse.UserPreferences.AddRange(_mapper.MapUserPrefences(roleBasedUserPrefernces));
-                    return await Task.FromResult(roleBadresponse);
+
+                    roleBasedresponse.UserPreferences.AddRange(_mapper.MapUserPrefences(roleBasedUserPrefernces));
+                    return await Task.FromResult(roleBasedresponse);
                 }
 
                 var response = new UserPreferenceDataColumnResponse
@@ -102,7 +115,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 _logger.Error(null, ex);
                 return await Task.FromResult(new UserPreferenceCreateResponse
                 {
-                    Message = ex.Message,
+                    Message = String.Format(ReportConstants.USER_PREFERENCE_CREATE_FAILURE_MSG, objUserPreferenceCreateRequest.AccountId, objUserPreferenceCreateRequest.ReportId),
                     Code = Responsecode.InternalServerError
                 });
             }
@@ -111,30 +124,51 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         #region Get Vins from data mart trip_statistics
         //This code is not in use, may require in future use.
-        public override async Task<VehicleFilterResponse> GetVinsFromTripStatistics(VehicleFilterRequest request, ServerCallContext context)
+        public override async Task<VehicleListAndDetailsResponse> GetVinsFromTripStatisticsWithVehicleDetails(VehicleListRequest request, ServerCallContext context)
         {
+            var response = new VehicleListAndDetailsResponse();
             try
             {
-                var vinList = await _reportManager.GetVinsFromTripStatistics(request.FromDate, request.ToDate, request.VinList);
+                var vehicleDeatilsWithAccountVisibility =
+                                await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
 
-                var response = new VehicleFilterResponse
+                if (vehicleDeatilsWithAccountVisibility.Count() == 0)
                 {
-                    Message = ReportConstants.GET_VIN_SUCCESS_MSG,
-                    Code = Responsecode.Success
-                };
-                response.VinList.AddRange(_mapper.MapVinList(vinList));
+                    response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    return response;
+                }                
+
+                var vinList = await _reportManager
+                                        .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
+                                                                       .Select(s => s.Vin).Distinct());
+                if (vinList.Count() == 0)
+                {
+                    response.Message = string.Format(ReportConstants.GET_VIN_TRIP_NOTFOUND_MSG, request.AccountId, request.OrganizationId);
+                    response.Code = Responsecode.Failed;
+                    response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                    return response;
+                }
+                var res = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                response.VehicleDetailsWithAccountVisibiltyList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(res)
+                    );
+                response.Message = ReportConstants.GET_VIN_SUCCESS_MSG;
+                response.Code = Responsecode.Success;
+                res = JsonConvert.SerializeObject(vinList);
+                response.VinTripList.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromTripDetails>>(res)
+                    );
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                var errorResponse = new VehicleFilterResponse
-                {
-                    Message = ex.Message,
-                    Code = Responsecode.InternalServerError
-                };
-                errorResponse.VinList.Add(new List<string>());
-                return await Task.FromResult(errorResponse);
+                response.Message = ex.Message;
+                response.Code = Responsecode.InternalServerError;
+                response.VehicleDetailsWithAccountVisibiltyList.Add(new List<VehicleDetailsWithAccountVisibilty>());
+                response.VinTripList.Add(new List<VehicleFromTripDetails>());
+                return await Task.FromResult(response);
             }
         }
         #endregion
@@ -153,17 +187,17 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var result = await _reportManager.GetFilteredTripDetails(objTripFilter);
                 TripResponce response = new TripResponce();
-                if (result.Count > 0)
+                if (result?.Count > 0)
                 {
                     var res = JsonConvert.SerializeObject(result);
-                    response.TripData.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res)
-                        );
-
-                    //foreach (ReportComponent.entity.TripFilterRequest entity in result)
-                    //{
-                    //    response.TripData.Add(_mapper.ToTripResponce(entity));
-                    //}
+                    response.TripData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res));
+                    response.Code = Responsecode.Success;
+                    response.Message= Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
                 }
                 return await Task.FromResult(response);
             }

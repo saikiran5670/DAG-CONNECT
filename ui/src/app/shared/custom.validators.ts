@@ -201,4 +201,21 @@ export class CustomValidators {
     }
     return imageError;
   }
+
+  static numberFieldValidation(name,maxValue){
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[0-9]/;
+
+      if (NAME.value) {
+       if(NAME.value > maxValue){
+          NAME.setErrors({ cannotExceedMaxValue: true });
+        }
+        else if(NAME.value < 0){
+          NAME.setErrors({ noNegativeValueAllowed: true });
+
+        }
+      }
+    };
+  }
 }

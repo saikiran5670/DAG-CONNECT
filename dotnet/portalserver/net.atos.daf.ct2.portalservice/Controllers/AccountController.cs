@@ -34,6 +34,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //private readonly ILogger<AccountController> _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly Mapper _mapper;
+        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
 
         private ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
@@ -44,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, Common.AccountPrivilegeChecker privilegeChecker)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -54,6 +55,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _privilegeChecker = privilegeChecker;
         }
         #endregion
 
@@ -635,6 +637,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 menuFeatureRequest.AccountId = request.AccountId;
                 menuFeatureRequest.RoleId = request.RoleId;
                 menuFeatureRequest.OrganizationId = request.OrganizationId;
+                menuFeatureRequest.LanguageCode = request.LanguageCode;
+                menuFeatureRequest.ContextOrgId = HttpContext.Session.GetInt32(SessionConstants.ContextOrgKey).Value;
 
                 var response = await _accountClient.GetMenuFeaturesAsync(menuFeatureRequest);
 
@@ -1894,7 +1898,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-        #region Signle Sign On
+        #region Single Sign On
         [HttpPost]
         [Route("sso")]
         public async Task<IActionResult> GenerateSSOToken()
@@ -1947,6 +1951,91 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+        #region Session org context switching
+
+        [HttpPost]
+        [Route("setuserselection")]
+        public async Task<IActionResult> SetUserSelection([FromBody] AccountInfoRequest request)
+        {
+            try
+            {
+                if (request.AccountId == HttpContext.Session.GetInt32(SessionConstants.AccountKey))
+                {
+                    HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
+                    HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
+                    HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.OrgId);
+                    return Ok();
+                }
+                else
+                    return BadRequest("Account Id mismatch in the request.");                
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                          "SetAccountInfo method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          null, Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, "Error occurred while saving account information.");
+            }
+        }
+
+        [HttpPost]
+        [Route("switchorgcontext")]
+        public async Task<IActionResult> SwitchOrgContext([FromBody] OrgSwitchRequest request)
+        {
+            try
+            {
+                int s_accountId = HttpContext.Session.GetInt32(SessionConstants.AccountKey).Value;
+                int s_roleId = HttpContext.Session.GetInt32(SessionConstants.RoleKey).Value;
+                int s_orgId = HttpContext.Session.GetInt32(SessionConstants.OrgKey).Value;
+                int s_contextOrgId = HttpContext.Session.GetInt32(SessionConstants.ContextOrgKey).Value;
+
+                if (request.AccountId != s_accountId)
+                    return BadRequest("Account Id mismatched");
+
+                // check for DAF Admin
+                int level = await _privilegeChecker.GetLevelByRoleId(s_orgId, s_roleId);
+
+                //Add context org id to session
+                if (level >= 30)
+                    return Unauthorized("Unauthorized access");
+
+                if (s_contextOrgId != request.ContextOrgId)
+                {
+                    HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
+
+                    //return menu items
+                    var response = await _accountClient.GetMenuFeaturesAsync(new AccountBusinessService.MenuFeatureRequest()
+                    {
+                        AccountId = s_accountId,
+                        OrganizationId = s_orgId,
+                        RoleId = s_roleId,
+                        LanguageCode = request.LanguageCode,
+                        ContextOrgId = request.ContextOrgId
+                    });
+
+                    if (response.Code == AccountBusinessService.Responcecode.Success)
+                        return Ok(response.MenuFeatures);
+                    else if (response.Code == AccountBusinessService.Responcecode.NotFound)
+                        return NoContent();
+                    else
+                        return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
+                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                          "SwitchOrgContext method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          null, Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
+            }
+        }
+
+        #endregion
     }
 
 }

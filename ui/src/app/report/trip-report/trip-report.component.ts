@@ -14,7 +14,7 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
-  displayedColumns = ['All', 'startDate', 'endDate', 'distance', 'idleDuration', 'avgSpeed', 'avgWeight'];
+  displayedColumns = ['All', 'startDate', 'endDate', 'distance', 'idleDuration', 'avgSpeed', 'avgWeight', 'startPosition', 'endPosition', 'fuelConsumption', 'drivingTime', 'alerts', 'events'];
   translationData: any;
   hereMap: any;
   platform: any;
@@ -35,6 +35,7 @@ export class TripReportComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
+  showLoadingIndicator: boolean = false;
 
   constructor(private translationService: TranslationService) {
     this.platform = new H.service.Platform({
@@ -68,13 +69,20 @@ export class TripReportComponent implements OnInit {
   }
 
   loadTripData(){
+    this.showLoadingIndicator = true;
     this.tripData = [{
       startDate: '01/01/2021 00:00:00', 
       endDate: '01/01/2021 23:59:59', 
       distance: 128.9, 
       idleDuration: '00:12', 
       avgSpeed: 54.5, 
-      avgWeight: 6.45
+      avgWeight: 6.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
     },
     {
       startDate: '01/01/2021 00:00:00', 
@@ -82,7 +90,13 @@ export class TripReportComponent implements OnInit {
       distance: 123.9, 
       idleDuration: '00:18', 
       avgSpeed: 32.5, 
-      avgWeight: 7.45
+      avgWeight: 7.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
     },
     {
       startDate: '01/01/2021 00:00:00', 
@@ -90,7 +104,181 @@ export class TripReportComponent implements OnInit {
       distance: 18.9, 
       idleDuration: '00:02', 
       avgSpeed: 5.2, 
-      avgWeight: 3.0
+      avgWeight: 3.0,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 128.9, 
+      idleDuration: '00:12', 
+      avgSpeed: 54.5, 
+      avgWeight: 6.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 123.9, 
+      idleDuration: '00:18', 
+      avgSpeed: 32.5, 
+      avgWeight: 7.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 18.9, 
+      idleDuration: '00:02', 
+      avgSpeed: 5.2, 
+      avgWeight: 3.0,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 128.9, 
+      idleDuration: '00:12', 
+      avgSpeed: 54.5, 
+      avgWeight: 6.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 123.9, 
+      idleDuration: '00:18', 
+      avgSpeed: 32.5, 
+      avgWeight: 7.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 18.9, 
+      idleDuration: '00:02', 
+      avgSpeed: 5.2, 
+      avgWeight: 3.0,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 128.9, 
+      idleDuration: '00:12', 
+      avgSpeed: 54.5, 
+      avgWeight: 6.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 123.9, 
+      idleDuration: '00:18', 
+      avgSpeed: 32.5, 
+      avgWeight: 7.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 18.9, 
+      idleDuration: '00:02', 
+      avgSpeed: 5.2, 
+      avgWeight: 3.0,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 128.9, 
+      idleDuration: '00:12', 
+      avgSpeed: 54.5, 
+      avgWeight: 6.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 123.9, 
+      idleDuration: '00:18', 
+      avgSpeed: 32.5, 
+      avgWeight: 7.45,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
+    },
+    {
+      startDate: '01/01/2021 00:00:00', 
+      endDate: '01/01/2021 23:59:59', 
+      distance: 18.9, 
+      idleDuration: '00:02', 
+      avgSpeed: 5.2, 
+      avgWeight: 3.0,
+      startPosition: 'DAF Nederland S',
+      endPosition: 'DAF Nederland E',
+      fuelConsumption: 123.5,
+      drivingTime: '00:23',
+      alerts: 20,
+      events: 30
     }];
     this.updateDataSource(this.tripData);
   }
@@ -142,6 +330,17 @@ export class TripReportComponent implements OnInit {
   }
 
   updateDataSource(tableData: any) {
+    this.initData = tableData;
+    if(this.initData.length > 0){
+      this.showMapPanel = true;
+      setTimeout(() => {
+        this.initMap();
+      }, 0);
+    }
+    else{
+      this.showMapPanel = false;
+    }
+    this.hideloader(); //-- hide loader
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -158,25 +357,14 @@ export class TripReportComponent implements OnInit {
   }
 
   masterToggleForTrip() {
-    //this.geoMarkerArray = [];
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
-      //this.showMap = (this.selectedTrip.selected.length > 0 || this.selectedpois.selected.length > 0) ? true : false;
     }
     else{
       this.dataSource.data.forEach((row) =>{
         this.selectedTrip.select(row);
-        //this.geoMarkerArray.push(row);
       });
-      //this.showMap = (this.selectedTrip.selected.length > 0 || this.selectedpois.selected.length > 0) ? true : false;
     }
-    // this.removeMapObjects(); //-- remove all object first
-    // if(this.selectedTrip.selected.length > 0){ //-- add geofences
-    //   this.addCirclePolygonOnMap();
-    // }
-    // if(this.selectedpois.selected.length > 0){ //-/ add poi
-    //   this.addMarkerOnMap(this.ui);
-    // }
   }
 
   isAllSelectedForTrip() {
@@ -194,24 +382,22 @@ export class TripReportComponent implements OnInit {
   }
 
   pageSizeUpdated(_event) {
-    setTimeout(() => {
-      document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
-    }, 100);
+    // setTimeout(() => {
+    //   document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
+    // }, 100);
   }
 
   tripCheckboxClicked(event: any, row: any) {
     if(event.checked){ 
-      //this.geoMarkerArray.push(row);
-    }else{ 
-      // let arr = this.geoMarkerArray.filter(item => item.id != row.id);
-      // this.geoMarkerArray = arr;
+      
+    }else{
+
     }
-    // this.showMap = (this.selectedgeofences.selected.length > 0 || this.selectedpois.selected.length > 0) ? true : false;
-    // this.removeMapObjects();
-    // this.addCirclePolygonOnMap();
-    // if(this.selectedpois.selected.length > 0){ //-- poi selected
-    //   this.addMarkerOnMap(this.ui);
-    // }
+  }
+
+  hideloader() {
+    // Setting display of spinner
+    this.showLoadingIndicator = false;
   }
 
 }
