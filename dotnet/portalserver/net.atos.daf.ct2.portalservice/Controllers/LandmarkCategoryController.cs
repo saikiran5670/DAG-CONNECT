@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("poigeofence")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class LandmarkCategoryController : ControllerBase
+    public class LandmarkCategoryController : BaseController
     {
         private readonly CategoryService.CategoryServiceClient _categoryServiceClient;
         private readonly AuditHelper _auditHelper;
@@ -27,9 +27,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private readonly HeaderObj _userDetails;
+        
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
             AuditHelper auditHelper, OrganizationService.OrganizationServiceClient organizationClient, Common.AccountPrivilegeChecker privilegeChecker
-            , IHttpContextAccessor _httpContextAccessor)
+            , IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base (_httpContextAccessor, sessionHelper)
         {
             _categoryServiceClient = categoryServiceClient;
             _auditHelper = auditHelper;
@@ -52,6 +53,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global category.");
+                }
+                else
+                {
+                    request.Organization_Id = GetContextOrgId();
                 }
                 if (string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.IconName))
                 {
@@ -119,6 +124,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot edit global category.");
+                }
+                else
+                {
+                    request.Organization_Id = GetContextOrgId();
                 }
                 var MapRequest = _categoryMapper.MapCategoryforEdit(request);
                 var data = await _categoryServiceClient.EditCategoryAsync(MapRequest);
@@ -211,6 +220,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The category type is not valid. It should be of single character");
                 }
+                request.Organization_Id = GetContextOrgId();
                 var MapRequest = _categoryMapper.MapCategoryType(request);
                 var data = await _categoryServiceClient.GetCategoryTypeAsync(MapRequest);
 
