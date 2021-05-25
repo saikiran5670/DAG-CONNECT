@@ -772,7 +772,9 @@ namespace net.atos.daf.ct2.organization.repository
                     int OrganizationId = await UpdateCompany(keyHandOver);
                     await UpdatetVehicle(keyHandOver, OrganizationId);
 
-                    // Owner Relationship Management              
+                    // Owner Relationship Management
+
+                    keyHandOver.OwnerRelationship = OrganizationId.ToString();  
                     await OwnerRelationship(keyHandOver, isVINExist);
 
                     return keyHandOver;
@@ -788,6 +790,8 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management    
                     int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
+
+                    keyHandOver.OwnerRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
 
                     return keyHandOver;
@@ -803,6 +807,8 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management   
                     int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
+
+                    keyHandOver.OwnerRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
 
                     return keyHandOver;
@@ -813,9 +819,9 @@ namespace net.atos.daf.ct2.organization.repository
                     int organizationID = await InsertCompany(keyHandOver);
                     await UpdatetVehicle(keyHandOver, organizationID);
 
-                    // Owner Relationship Management              
+                    // Owner Relationship Management  
+                    keyHandOver.OwnerRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, isVINExist);
-
                 }
             }
             catch (Exception ex)

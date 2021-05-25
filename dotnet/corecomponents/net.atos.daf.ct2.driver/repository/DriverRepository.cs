@@ -26,14 +26,13 @@ namespace net.atos.daf.ct2.driver
         {
             throw new NotImplementedException();
         }      
-
        
-        public async Task<IEnumerable<DriverResponse>> GetDriver(int OrganizatioId, int driverId)
+        public async Task<IEnumerable<DriverResponse>> GetDriver(int organizationId, int driverId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@organization_id", OrganizatioId);
+                parameter.Add("@organization_id", organizationId);
                 parameter.Add("@id", driverId);
                 parameter.Add("@state", "A");
 

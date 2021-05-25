@@ -15,8 +15,7 @@ using System.Reflection;
 namespace net.atos.daf.ct2.driverservice
 {
     public class DriverManagementService:DriverService.DriverServiceBase
-    {
-                 
+    {                 
         private readonly IAuditTraillib _AuditTrail;      
         private readonly IAuditTraillib auditlog;     
         private readonly IDriverManager driverManager;        
@@ -37,12 +36,11 @@ namespace net.atos.daf.ct2.driverservice
         public override async Task<DriverDataList> Get(IdRequest request, ServerCallContext context)
         {
              try{
-                _logger.Info("Get Drivers .");
                 DriverDataList response = new DriverDataList();
                 var result = await driverManager.GetDriver(request.OrgID,request.DriverID);
                 if (result.Count() > 0)
                 {
-                    foreach (net.atos.daf.ct2.driver.entity.DriverResponse entity in result)
+                    foreach (driver.entity.DriverResponse entity in result)
                     {
                         response.Driver.Add(_mapper.ToDriverResponse(entity));
                     }
@@ -68,18 +66,16 @@ namespace net.atos.daf.ct2.driverservice
             } 
         }
 
-        public override async Task<net.atos.daf.ct2.driverservice.DriverUpdateResponse> Update(net.atos.daf.ct2.driverservice.DriverUpdateRequest request, ServerCallContext context)
+        public override async Task<DriverUpdateResponse> Update(DriverUpdateRequest request, ServerCallContext context)
         {
             try
             {
-                net.atos.daf.ct2.driverservice.DriverUpdateResponse response=new net.atos.daf.ct2.driverservice.DriverUpdateResponse();
-               net.atos.daf.ct2.driverservice.DriverUpdateRequest objDriver=new  DriverUpdateRequest(); 
-               driver.entity.Driver driver=new driver.entity.Driver();
-               _logger.Info("Update Drivers ."); 
+               DriverUpdateResponse response=new DriverUpdateResponse();
+               Driver driver=new Driver();
                driver= _mapper.ToDriverUpdateResponse(request);
                var result = await driverManager.UpdateDriver(driver);   
                
-               objDriver= _mapper.DriverToDriverResponse(driver);  
+               var objDriver= _mapper.DriverToDriverResponse(driver);  
                response.Code = Responcecode.Success;
                response.Message = "Updated";
                response.Driver= objDriver;
@@ -91,17 +87,16 @@ namespace net.atos.daf.ct2.driverservice
                 return await Task.FromResult(new DriverUpdateResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get faile due to - " + ex.Message
+                    Message = "Driver get failed due to - " + ex.Message
                 });
             }
         }
 
-        public override async Task<net.atos.daf.ct2.driverservice.DriverDeleteResponse> Delete(IdRequest request, ServerCallContext context)
+        public override async Task<DriverDeleteResponse> Delete(IdRequest request, ServerCallContext context)
         {
             try
             {
-                net.atos.daf.ct2.driverservice.DriverDeleteResponse response=new driverservice.DriverDeleteResponse();
-                _logger.Info("Delete Drivers ."); 
+                DriverDeleteResponse response=new DriverDeleteResponse();
                 bool result = await driverManager.DeleteDriver(request.OrgID,request.DriverID);  
                 if(result)
                 {
@@ -121,17 +116,16 @@ namespace net.atos.daf.ct2.driverservice
                 return await Task.FromResult(new DriverDeleteResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get faile due to - " + ex.Message
+                    Message = "Driver get failed due to - " + ex.Message
             });
             }
         }
 
-        public override async Task<net.atos.daf.ct2.driverservice.OptOutOptInResponse> UpdateOptinOptout(OptOutOptInRequest Optrequest, ServerCallContext context)
+        public override async Task<OptOutOptInResponse> UpdateOptinOptout(OptOutOptInRequest Optrequest, ServerCallContext context)
         {
             try
             { 
-                net.atos.daf.ct2.driverservice.OptOutOptInResponse response=new driverservice.OptOutOptInResponse();
-                _logger.Info("OptOutOptIn Drivers ."); 
+                OptOutOptInResponse response=new OptOutOptInResponse();
                 bool result = await driverManager.UpdateOptinOptout(Optrequest.OrgID,Optrequest.Optoutoptinstatus);  
                 if(result)
                 {
@@ -151,17 +145,15 @@ namespace net.atos.daf.ct2.driverservice
                 return await Task.FromResult(new OptOutOptInResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get faile due to - " + ex.Message
+                    Message = "Driver get failed due to - " + ex.Message
                 });
             }
         }
         public override async Task<DriverImportData> ImportDrivers(DriverImportRequest request, ServerCallContext context)
         {
-            try {     
-            net.atos.daf.ct2.driverservice.DriverImportData response=new net.atos.daf.ct2.driverservice.DriverImportData();
-               
-                _logger.Info("Drivers import."); 
-
+            try 
+            {     
+                DriverImportData response=new DriverImportData();
                 List<Driver> lstDriver =new List<Driver>();
                     
                 foreach (DriversImport entity in request.Drivers)
@@ -169,9 +161,8 @@ namespace net.atos.daf.ct2.driverservice
                    lstDriver.Add(_mapper.ToDriver(entity));                  
                 }
               List<driver.entity.DriverImportResponse> objDrv=new List<driver.entity.DriverImportResponse>();
-              // Dictionary<string,string> importMessage=new Dictionary<string, string>();
                objDrv= await driverManager.ImportDrivers(lstDriver,request.OrgID);
-               net.atos.daf.ct2.driverservice.DriverReturns objdrvReturn=new net.atos.daf.ct2.driverservice.DriverReturns();
+               DriverReturns objdrvReturn=new DriverReturns();
 
                 foreach (driver.entity.DriverImportResponse entity in objDrv)
                 {
@@ -185,7 +176,7 @@ namespace net.atos.daf.ct2.driverservice
                 return await Task.FromResult(new DriverImportData
                 {
                     Code = Responcecode.Failed,
-                    Message = "Driver get faile due to - " + ex.Message + " " + ex.StackTrace
+                    Message = "Driver get failed due to - " + ex.Message + " " + ex.StackTrace
                 });
             }
         }

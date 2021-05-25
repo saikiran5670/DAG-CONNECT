@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 {
                     return StatusCode(400, string.Empty);
                 }
-
+               
                 string dateformat = "yyyy-MM-ddTHH:mm:ss";
                 DateTime parsedRefDateTime;
                 if (DateTime.TryParseExact(keyHandOver.KeyHandOverEvent.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))

@@ -35,5 +35,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             return _userDetails.contextOrgId;
         }
+
+        protected int GetUserSelectedOrgId()
+        {
+            return _userDetails.orgId;
+        }
     }
 }
