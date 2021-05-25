@@ -1336,16 +1336,17 @@ namespace net.atos.daf.ct2.account
             }
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(int accountId, int roleId, int organizationId, string languageCode)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request)
         {
             try
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@account_id", accountId);
-                parameter.Add("@role_id", roleId);
-                parameter.Add("@organization_id", organizationId);
-                parameter.Add("@code", languageCode);
+                parameter.Add("@account_id", request.AccountId);
+                parameter.Add("@role_id", request.RoleId);
+                parameter.Add("@organization_id", request.OrganizationId);
+                parameter.Add("@code", request.LanguageCode);
+                parameter.Add("@context_org_id", request.ContextOrgId);
 
                 string query =
                     @"SELECT DISTINCT
@@ -1364,7 +1365,7 @@ namespace net.atos.daf.ct2.account
 	                    --Subscription Route
 	                    SELECT f.id
 	                    FROM master.Subscription s
-	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.state = 'A' AND pkg.state = 'A'
+	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
 	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
  	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'

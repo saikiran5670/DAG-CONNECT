@@ -6,6 +6,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { OrganizationService } from 'src/app/services/organization.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { ActiveInactiveDailogComponent } from 'src/app/shared/active-inactive-dailog/active-inactive-dailog.component';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+
 
 @Component({
   selector: 'app-create-edit-view-organisation-relationship',
@@ -13,7 +17,7 @@ import { OrganizationService } from 'src/app/services/organization.service';
   styleUrls: ['./create-edit-view-organisation-relationship.component.less']
 })
 export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
-  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private organizationService: OrganizationService) { 
+  constructor(private _formBuilder: FormBuilder, private _snackBar: MatSnackBar, private organizationService: OrganizationService,private dialogService: ConfirmDialogService, private dialog: MatDialog) { 
   }
   OrgId: number = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
   // createStatus: boolean = false;
@@ -54,7 +58,10 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
   @Input() actionType: any;
   @Input() roleData:any;
   orgRltShipCreateButton: boolean = false;
-
+  duplicateRecordMsg: any = '';
+  resposne: any;
+  dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
+  
   ngOnInit(): void {
     this.OrganisationRelationshipFormGroup = this._formBuilder.group({
       relationship: ['', [Validators.required]],
@@ -176,10 +183,12 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
       ownerOrgId:this.organizationId,
       createdOrgId:this.organizationId,
       targetOrgId:selectedIdOrg,
+      isConfirm : false,
       allow_chain:this.selectedType
     }
 
-    this.organizationService.createOrgRelationship(objData).subscribe((res) => {
+    this.organizationService.createOrgRelationship(objData).subscribe((res : any) => {
+      this.resposne = res;
       this.organizationService.getOrgRelationshipDetailsLandingPage().subscribe((getData: any) => {
         var tempdata = getData["orgRelationshipMappingList"];;
         let name = tempdata.find(x => x.id === res.relationship[0]).relationshipName; 
@@ -191,8 +200,69 @@ export class CreateEditViewOrganisationRelationshipComponent implements OnInit {
         }    
         this.backToPage.emit(emitObj);
       });
+        }, (error) => {
+
+      if (error.status == 409) {
+        let vehicleList: any = '';
+        let orgList: any = '';
+        let relationList;
+        let NewData = error.error['orgRelationshipMappingList'];
+        let selectedVehicles: any = [];
+        let selectedOrgs: any = [];
+        // let selectedRelation : any = [];
+        let selectedRelation = NewData[0].relationShipId;
+        NewData.forEach((row: any) => {
+
+          selectedVehicles.push(row.vehicleGroupID);
+          selectedOrgs.push(row.targetOrgId);
         });
+        
+        let newSelectedVehicles = selectedVehicles.filter((c, index) => {
+          return selectedVehicles.indexOf(c) === index;
+        });
+        let newselectedOrgs = selectedOrgs.filter((c, index) => {
+          return selectedOrgs.indexOf(c) === index;
+        });
+        const results = this.dataSourceVehicle.filteredData.filter(z => newSelectedVehicles.some(z1 => z1 === z.vehiclegroupID));
+        results.forEach(item => {
+          vehicleList += item.groupName + ', ';
+        });
+
+        const orgResult = this.dataSourceOrg.filteredData.filter(z => newselectedOrgs.some(z1 => z1 === z.organizationId));
+        orgResult.forEach(item => {
+          orgList += item.organizationName + ', ';
+        });
+        const relationResult = this.relationshipList.find(item => item.relationId == selectedRelation);
+let name = relationResult.relationName;
+if(vehicleList != '' && orgList != ''){
+  vehicleList = vehicleList.slice(0, -2);
+  orgList = orgList.slice(0,-2);
+}
+        this.getDuplicateRecordMsg(name,orgList,vehicleList);
+      }
+    }
+
+    );
+        
       
+  }
+
+  getDuplicateRecordMsg(relnName: any, orgname:any,vehicleName:any){
+    const options = {
+      title: this.translationData.lblAlert || "Alert",
+      message:  
+      `Vehicle group '${vehicleName}' is already associated with Organisation '${orgname}' under Relationship '${relnName}'.Please choose other entities.`,
+      confirmText: this.translationData.lblOk || "OK"
+    };
+
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = options;
+    this.dialogRef = this.dialog.open(ActiveInactiveDailogComponent, dialogConfig);
+    this.dialogRef.afterClosed().subscribe((res: any) => {
+    
+    });
   }
 
   getUserCreatedMessage(name1: any) {
