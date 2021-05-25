@@ -1208,17 +1208,35 @@ PoiCheckboxClicked(event: any, row: any) {
         (this.alert_type_selected == 'N' || this.alert_type_selected == 'X' || this.alert_type_selected == 'C' || this.alert_type_selected == 'S')) || 
       this.alert_category_selected == 'R'){
 
-      urgenyLevelObj = {
-        "urgencyLevelType": this.alertForm.get('alertLevel').value,
-        "thresholdValue": 0,
-        "unitType": "N",
-        "dayType": [
-          false, false, false, false, false, false, false
-        ],
-        "periodType": "A",
-        "urgencylevelStartDate": 0,
-        "urgencylevelEndDate": 0,
-        "alertFilterRefs": alertFilterRefs
+      if(this.actionType == 'create' || this.actionType == 'duplicate'){
+        urgenyLevelObj = {
+          "urgencyLevelType": this.alertForm.get('alertLevel').value,
+          "thresholdValue": 0,
+          "unitType": "N",
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "urgencylevelStartDate": 0,
+          "urgencylevelEndDate": 0,
+          "alertFilterRefs": alertFilterRefs
+        }
+      }
+      else if(this.actionType == 'edit'){
+        urgenyLevelObj = {
+          "urgencyLevelType": this.alertForm.get('alertLevel').value,
+          "thresholdValue": 0,
+          "unitType": "N",
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "urgencylevelStartDate": 0,
+          "urgencylevelEndDate": 0,
+          "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+          "alertId": this.selectedRowData.id,
+          "alertFilterRefs": alertFilterRefs
+        }
       }
       alertUrgencyLevelRefs.push(urgenyLevelObj);
 
@@ -1226,103 +1244,227 @@ PoiCheckboxClicked(event: any, row: any) {
       if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
         
         if(this.selectedPOI.selected.length > 0){
-          this.selectedPOI.selected.forEach(element => {
-            let tempObj= {
-              "landmarkType": "P",
-              "refId": element.id,
-              "distance": 100,
-              "unitType": ""
-            }
-            alertLandmarkRefs.push(tempObj);
-          });
+          if(this.actionType == 'create' || this.actionType == 'duplicate'){
+            this.selectedPOI.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": "P",
+                "refId": element.id,
+                "distance": 100,
+                "unitType": ""
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
+          else if(this.actionType == 'edit'){
+            this.selectedPOI.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": "P",
+                "refId": element.id,
+                "distance": 100,
+                "unitType": "",
+                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "alertId": this.selectedRowData.id,
+                "state": element.state
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
         }
         if(this.selectedGeofence.selected.length > 0){
-          this.selectedGeofence.selected.forEach(element => {
-            let tempObj= {
-              "landmarkType": element.type,
-              "refId": element.id,
-              "distance": element.distance,
-              "unitType": ""
-            }
-            alertLandmarkRefs.push(tempObj);
-          });
+          if(this.actionType == 'create' || this.actionType == 'duplicate'){
+            this.selectedGeofence.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": element.type,
+                "refId": element.id,
+                "distance": element.distance,
+                "unitType": ""
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
+          else if(this.actionType == 'edit'){
+            this.selectedGeofence.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": element.type,
+                "refId": element.id,
+                "distance": element.distance,
+                "unitType": "",
+                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "alertId": this.selectedRowData.id,
+                "state": element.state
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
         }
         if(this.selectedGroup.selected.length > 0){
-          this.selectedGroup.selected.forEach(element => {
-            let tempObj= {
-              "landmarkType": element.type,
-              "refId": element.id,
-              "distance": element.distance,
-              "unitType": ""
-            }
-            alertLandmarkRefs.push(tempObj);
-          });
+          if(this.actionType == 'create' || this.actionType == 'duplicate'){
+            this.selectedGroup.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": element.type,
+                "refId": element.id,
+                "distance": element.distance,
+                "unitType": ""
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
+          else if(this.actionType == 'edit'){
+            this.selectedGroup.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": element.type,
+                "refId": element.id,
+                "distance": element.distance,
+                "unitType": "",
+                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "alertId": this.selectedRowData.id,
+                "state": element.state
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
         }
       }
       else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'C'){ // Exiting Corridor
         if(this.selectedCorridor.selected.length > 0){
-          this.selectedCorridor.selected.forEach(element => {
-            let tempObj= {
-              "landmarkType": element.corridorType,
-              "refId": element.id,
-              "distance": element.distance,
-              "unitType": ""
-            }
-            alertLandmarkRefs.push(tempObj);
-          });
+          if(this.actionType == 'create' || this.actionType == 'duplicate'){
+            this.selectedCorridor.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": element.corridorType,
+                "refId": element.id,
+                "distance": element.distance,
+                "unitType": ""
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
+          else if(this.actionType == 'edit'){
+            this.selectedCorridor.selected.forEach(element => {
+              let tempObj= {
+                "landmarkType": element.corridorType,
+                "refId": element.id,
+                "distance": element.distance,
+                "unitType": "",
+                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "alertId": this.selectedRowData.id,
+                "state": element.state
+              }
+              alertLandmarkRefs.push(tempObj);
+            });
+          }
         }
       }
     }
     else{
       if(this.isCriticalLevelSelected){
-        let criticalUrgenyLevelObj = {
-          "urgencyLevelType": "C",
-          "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
-          "unitType": this.unitTypeEnum,
-          "dayType": [
-            false, false, false, false, false, false, false
-          ],
-          "periodType": "A",
-          "urgencylevelStartDate": 0,
-          "urgencylevelEndDate": 0,
-          "alertFilterRefs": alertFilterRefs
+        let criticalUrgenyLevelObj= {};
+        if(this.actionType == 'create' || this.actionType == 'duplicate'){
+          criticalUrgenyLevelObj = {
+            "urgencyLevelType": "C",
+            "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
+            "unitType": this.unitTypeEnum,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "A",
+            "urgencylevelStartDate": 0,
+            "urgencylevelEndDate": 0,
+            "alertFilterRefs": alertFilterRefs
+          }
+        }
+        else if(this.actionType == 'edit'){
+          let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'C'); 
+          criticalUrgenyLevelObj = {
+            "urgencyLevelType": "C",
+            "thresholdValue": parseInt(this.alertForm.get('criticalLevelThreshold').value),
+            "unitType": this.unitTypeEnum,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "A",
+            "urgencylevelStartDate": 0,
+            "urgencylevelEndDate": 0,
+            "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
+            "alertId": this.selectedRowData.id,
+            "alertFilterRefs": alertFilterRefs
+          }
         }
         alertUrgencyLevelRefs.push(criticalUrgenyLevelObj);
       }
       if(this.isWarningLevelSelected){
-        let warningUrgenyLevelObj = {
-          "urgencyLevelType": "W",
-          "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
-          "unitType": this.unitTypeEnum,
-          "dayType": [
-            false, false, false, false, false, false, false
-          ],
-          "periodType": "A",
-          "urgencylevelStartDate": 0,
-          "urgencylevelEndDate": 0,
-          "alertFilterRefs": alertFilterRefs
+        let warningUrgenyLevelObj= {};
+        if(this.actionType == 'create' || this.actionType == 'duplicate'){
+          warningUrgenyLevelObj = {
+            "urgencyLevelType": "W",
+            "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
+            "unitType": this.unitTypeEnum,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "A",
+            "urgencylevelStartDate": 0,
+            "urgencylevelEndDate": 0,
+            "alertFilterRefs": alertFilterRefs
+          }
+        }
+        else if(this.actionType == 'edit'){
+          let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'W'); 
+          warningUrgenyLevelObj = {
+            "urgencyLevelType": "W",
+            "thresholdValue": parseInt(this.alertForm.get('warningLevelThreshold').value),
+            "unitType": this.unitTypeEnum,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "A",
+            "urgencylevelStartDate": 0,
+            "urgencylevelEndDate": 0,
+            "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
+            "alertId": this.selectedRowData.id,
+            "alertFilterRefs": alertFilterRefs
+          }
         }
         alertUrgencyLevelRefs.push(warningUrgenyLevelObj);
       }
       if(this.isAdvisoryLevelSelected){
-        let advisoryUrgenyLevelObj = {
-          "urgencyLevelType": "A",
-          "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
-          "unitType": this.unitTypeEnum,
-          "dayType": [
-            false, false, false, false, false, false, false
-          ],
-          "periodType": "A",
-          "urgencylevelStartDate": 0,
-          "urgencylevelEndDate": 0,
-          "alertFilterRefs": alertFilterRefs
+        let advisoryUrgenyLevelObj = {};
+        if(this.actionType == 'create' || this.actionType == 'duplicate'){
+          advisoryUrgenyLevelObj= {
+            "urgencyLevelType": "A",
+            "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
+            "unitType": this.unitTypeEnum,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "A",
+            "urgencylevelStartDate": 0,
+            "urgencylevelEndDate": 0,
+            "alertFilterRefs": alertFilterRefs
+          }
+        }
+        else if(this.actionType == 'edit'){
+          let urgencyLevelRefArr = this.selectedRowData.alertUrgencyLevelRefs.filter(item => item.urgencyLevelType == 'A');
+          advisoryUrgenyLevelObj= {
+            "urgencyLevelType": "A",
+            "thresholdValue": parseInt(this.alertForm.get('advisoryLevelThreshold').value),
+            "unitType": this.unitTypeEnum,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "A",
+            "urgencylevelStartDate": 0,
+            "urgencylevelEndDate": 0,
+            "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
+            "alertId": this.selectedRowData.id,
+            "alertFilterRefs": alertFilterRefs
+          }
         }
         alertUrgencyLevelRefs.push(advisoryUrgenyLevelObj);
       }
     }
 
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
-        let alertObjData= {
+        let createAlertObjData= {
           "organizationId": this.accountOrganizationId,
           "name": this.alertForm.get('alertName').value,
           "category": this.alert_category_selected,
@@ -1339,7 +1481,7 @@ PoiCheckboxClicked(event: any, row: any) {
           "alertLandmarkRefs": alertLandmarkRefs
         }
 
-        this.alertService.createAlert(alertObjData).subscribe((data) => {
+        this.alertService.createAlert(createAlertObjData).subscribe((data) => {
           if(data){
             this.alertCreatedMsg = this.getAlertCreatedMessage();
             let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
@@ -1351,6 +1493,35 @@ PoiCheckboxClicked(event: any, row: any) {
         })
     }
     else if(this.actionType == 'edit'){
+      let editAlertObjData= {
+        "organizationId": this.accountOrganizationId,
+        "name": this.alertForm.get('alertName').value,
+        "category": this.alert_category_selected,
+        "type": this.alert_type_selected,
+        "validityPeriodType": "A",
+        "validityStartDate": 0,
+        "validityEndDate": 0,
+        "vehicleGroupId": this.vehicle_group_selected,
+        "state": this.alertForm.get('statusMode').value,
+        "applyOn": this.alertForm.get('applyOn').value,
+        "createdBy": this.accountId,
+        "id": this.selectedRowData.id,
+        "modifiedBy": this.accountId,
+        "notifications": this.notifications,
+        "alertUrgencyLevelRefs": alertUrgencyLevelRefs,
+        "alertLandmarkRefs": alertLandmarkRefs
+      }
+
+      this.alertService.updateAlert(editAlertObjData).subscribe((data) => {
+        if(data){
+          this.alertCreatedMsg = this.getAlertCreatedMessage();
+          let emitObj = { actionFlag: false, successMsg: this.alertCreatedMsg };
+          this.backToPage.emit(emitObj);
+        }  
+      }, (error) => {
+        if(error.status == 409)
+          this.isDuplicateAlert= true;
+      })
 
     }
   }

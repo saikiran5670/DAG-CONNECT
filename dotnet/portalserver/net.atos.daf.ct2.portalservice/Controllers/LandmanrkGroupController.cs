@@ -10,23 +10,30 @@ using Newtonsoft.Json;
 using log4net;
 using System.Reflection;
 using net.atos.daf.ct2.geofenceservice;
+using Microsoft.AspNetCore.Http;
+
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
     [Route("landmarkgroup")]
-    public class LandmanrkGroupController : Controller
+    public class LandmanrkGroupController : BaseController
     {
         private ILog _logger;
         private readonly GroupService.GroupServiceClient _groupServiceclient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
-        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper)
+        
+        private readonly HeaderObj _userDetails;
+        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _groupServiceclient = groupService;
             _auditHelper = auditHelper;
             _mapper = new Entity.POI.Mapper();
+            
+            _auditHelper = auditHelper;
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpPost]
@@ -38,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Info("Add Group.");
                 GroupAddRequest objgroup = new GroupAddRequest();
-                objgroup.OrganizationId = request.OrganizationId;
+                objgroup.OrganizationId = GetContextOrgId();
                 objgroup.Name = request.Name;
                 objgroup.Description = request.Description;
                 objgroup.CreatedBy = request.CreatedBy;
@@ -236,7 +243,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 GroupGetRequest objgroup = new GroupGetRequest();
                 objgroup.GroupId = groupid;
-                objgroup.OrganizationsId = organizationid;
+                objgroup.OrganizationsId = GetContextOrgId();
 
 
                 var result = await _groupServiceclient.GetAsync(objgroup);

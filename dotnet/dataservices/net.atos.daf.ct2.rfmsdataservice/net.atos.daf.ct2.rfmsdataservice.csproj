@@ -5,9 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +18,7 @@
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.organization\net.atos.daf.ct2.organization.csproj" />
     <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.vehicle\net.atos.daf.ct2.vehicle.csproj" />
+    <ProjectReference Include="..\..\corecomponents\net.atos.daf.ct2.rfms\net.atos.daf.ct2.rfms.csproj" />
   </ItemGroup>
 
 </Project>
