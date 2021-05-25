@@ -19,13 +19,11 @@ namespace net.atos.daf.ct2.utilities.geocode
         const string PROX = "prox={0}";
         public Location UserLocation { get; set; }
         public Bounds UserMapView { get; set; }
-        readonly string appId;
-        readonly string appCode;
+        private string appId;
+        private string appCode;
         public int? MaxResults { get; set; }
-        public IWebProxy Proxy { get; set; }
-
-
-        public MapGeocoder(string appId, string appCode)
+        public IWebProxy Proxy { get; set; }      
+        public void InitializeMapGeocoder(string appId, string appCode)
         {
             if (string.IsNullOrWhiteSpace(appId))
                 throw new ArgumentException("appId can not be null or empty");
@@ -37,9 +35,6 @@ namespace net.atos.daf.ct2.utilities.geocode
             this.appCode = appCode;
         }
 
-
-
-
         public async Task<string> ReverseGeocodeAsync(double latitude, double longitude, CancellationToken cancellationToken = default(CancellationToken))
         {
             try
@@ -47,7 +42,7 @@ namespace net.atos.daf.ct2.utilities.geocode
                 var url = GetQueryUrl(latitude, longitude);
                 var response = await GetResponse(url, cancellationToken).ConfigureAwait(false);
                 var address = response.View[0].Result[0].Location.Address.Label;
-                return address;// ParseResponse(response);
+                return address;
             }
             catch (Exception ex)
             {

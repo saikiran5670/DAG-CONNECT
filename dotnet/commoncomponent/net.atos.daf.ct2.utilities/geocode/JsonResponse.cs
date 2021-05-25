@@ -15,23 +15,22 @@ namespace net.atos.daf.ct2.utilities.geocode.Json
 		public string ErrorSubtype { get; set; }
 	}
 
-	[DataContract]
+	 
 	public class Response
 	{
 		[DataMember(Name = "View")]
 		public View[] View { get; set; }
 	}
 
-	[DataContract]
+	 
 	public class View
 	{
 		[DataMember(Name = "ViewId")]
 		public int ViewId { get; set; }
-		[DataMember(Name = "Result")]
 		public Result[] Result { get; set; }
 	}
 
-	[DataContract]
+	 
 	public class Result
 	{
 		[DataMember(Name = "Relevance")]
