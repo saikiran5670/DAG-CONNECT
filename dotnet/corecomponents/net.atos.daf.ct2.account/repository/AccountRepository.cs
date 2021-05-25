@@ -796,10 +796,42 @@ namespace net.atos.daf.ct2.account
                     {
                         // vehicles and vehicle groups
                         query = @"select id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
-                            select vg.id,vg.name,ar.access_type,
-                            case when (vg.group_type ='D') then 
-                            (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
-                            else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count,
+                                            select vg.id,vg.name,ar.access_type,
+                                            case when (vg.group_type ='D' and vg.function_enum='A') then 
+						                (select count(veh.id) 
+									                from master.vehicle veh 
+									                inner join master.orgrelationshipmapping org 
+									                on veh.id=org.vehicle_id 
+									                inner join master.orgrelationship ors
+									                 on ors.id=org.relationship_id
+									                and ((org.owner_org_id=@organization_id and ors.code='Owner') 
+									                or (org.target_org_id=@organization_id and ors.code<>'Owner'))
+									                and ors.state='A'
+									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+									                else COALESCE(end_date,0) =0 end)
+				                 when (vg.group_type ='D' and vg.function_enum='V') then 
+						                (select count(veh.id) 
+									                from master.vehicle veh 
+									                inner join master.orgrelationshipmapping org 
+									                on veh.id=org.vehicle_id 
+									                inner join master.orgrelationship ors
+									                 on ors.id=org.relationship_id
+									                and (org.target_org_id=@organization_id and ors.code<>'Owner')
+									                and ors.state='A'
+									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+									                else COALESCE(end_date,0) =0 end)
+				                when (vg.group_type ='D' and vg.function_enum='O') then 
+						                (select count(veh.id) 
+									                from master.vehicle veh 
+									                inner join master.orgrelationshipmapping org 
+									                on veh.id=org.vehicle_id 
+									                inner join master.orgrelationship ors
+									                 on ors.id=org.relationship_id
+									                and ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                and ors.state='A'
+									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+									                else COALESCE(end_date,0) =0 end)
+							else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))) end as count,
                             case when (a.id is NULL) then ag.id else a.id end as group_id,
                             case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
                             case when (a.id is NULL) then true else false end as is_ag_vg_group
@@ -809,6 +841,8 @@ namespace net.atos.daf.ct2.account
                             inner join master.group ag on ag.id = ar.account_group_id 
                             and ag.organization_id=@organization_id and ag.object_type='A'                             
                             left outer join master.account a on a.id = ag.ref_id 
+							left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+							left join master.orgrelationship as os on om.relationship_id=os.id 
                             where vg.organization_id=@organization_id
                             order by vg.id desc ) vehiclegroup
                             union all
