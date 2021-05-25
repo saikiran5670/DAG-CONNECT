@@ -609,10 +609,6 @@ namespace net.atos.daf.ct2.alert.repository
                     alefil.landmark_type as alefil_landmark_type,
                     alefil.ref_id as alefil_ref_id,
                     alefil.position_type as alefil_position_type,
-                    alefil.day_type as alefil_day_type,
-                    alefil.period_type as alefil_period_type,
-                    alefil.filter_start_date as alefil_filter_start_date,
-                    alefil.filter_end_date as alefil_filter_end_date,
                     alefil.state as alefil_state,
                     alefil.created_at as alefil_created_at,
                     alefil.modified_at as alefil_modified_at,
@@ -662,18 +658,10 @@ namespace net.atos.daf.ct2.alert.repository
                     notlim.period_limit as notlim_period_limit,
                     notlim.state as notlim_state,
                     notlim.created_at as notlim_created_at,
-                    notlim.modified_at as notlim_modified_at,
-                    notava.id as notava_id,
-                    notava.notification_id as notava_notification_id,
-                    notava.availability_period_type as notava_availability_period_type,
-                    notava.period_type as notava_period_type,
-                    notava.start_time as notava_start_time,
-                    notava.end_time as notava_end_time,
-                    notava.state as notava_state,
-                    notava.created_at as notava_created_at,
-                    notava.modified_at as notava_modified_at,					
+                    notlim.modified_at as notlim_modified_at,                    			
 					(CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
-					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname
+					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
+                    (CASE WHEN grp.group_type='S' THEN 'V' ELSE 'G' END) as ale_applyon
                     FROM master.alert ale
                     left join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
@@ -686,9 +674,7 @@ namespace net.atos.daf.ct2.alert.repository
                     left join master.notificationrecipient notrec
                     on noti.id=notrec.notification_id and notrec.state in ('A','I')
                     left join master.notificationlimit notlim
-                    on noti.id= notlim.notification_id and notlim.state in ('A','I')
-                    left join master.notificationavailabilityperiod notava
-                    on noti.id= notava.notification_id and notava.state in ('A','I')
+                    on noti.id= notlim.notification_id and notlim.state in ('A','I')                    
 					left join master.group grp 
 					on ale.vehicle_group_id=grp.id
 					left join master.groupref vgrpref
