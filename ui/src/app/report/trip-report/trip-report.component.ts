@@ -142,6 +142,7 @@ export class TripReportComponent implements OnInit {
   }
 
   updateDataSource(tableData: any) {
+    this.initData = tableData;
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
