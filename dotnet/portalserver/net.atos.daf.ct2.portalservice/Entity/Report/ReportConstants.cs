@@ -13,5 +13,20 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
 
         public const string GET_VIN_SUCCESS_MSG = "VIN fetched successfully for given date range";
         public const string GET_VIN_FAILURE_MSG = "VIN fetched failed for given date range";
+
+        public const string REPORT_REQUIRED_MSG = "Report id is required.";
+        public const string ACCOUNT_REQUIRED_MSG = "Account id is required.";
+        public const string ORGANIZATION_REQUIRED_MSG = "Organization id is required.";
+
+
+        public const string GET_TRIP_VALIDATION_STARTDATE_MSG = "Invalid start date.";
+        public const string GET_TRIP_VALIDATION_ENDDATE_MSG = "Invalid end date.";
+        public const string GET_TRIP_VALIDATION_VINREQUIRED_MSG = "Invalid VIN details.";
+        public const string GET_TRIP_VALIDATION_DATEMISMATCH_MSG = "Start Date should be less than End Date.";
+
+        public const string GET_TRIP_SUCCESS_MSG = "Trip fetched successfully for requested Filters";
+        public const string GET_TRIP_FAILURE_MSG = "No Result Found";
+
+
     }
 }

@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.reports
         }
 
         #region Select User Preferences
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, 
+        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
                                                                                                   int accountId,
                                                                                                   int organizationId)
         {
@@ -41,10 +41,9 @@ namespace net.atos.daf.ct2.reports
 
         #region Get Vins from data mart trip_statistics
         //This code is not in use, may require in future use.
-        public Task<IEnumerable<string>> GetVinsFromTripStatistics(long fromDate, long toDate,
-                                                                   IEnumerable<string> vinList)
+        public Task<IEnumerable<string>> GetVinsFromTripStatistics(IEnumerable<string> vinList)
         {
-            return _reportRepository.GetVinsFromTripStatistics(fromDate, toDate, vinList);
+            return _reportRepository.GetVinsFromTripStatistics(vinList);
         }
         #endregion
 

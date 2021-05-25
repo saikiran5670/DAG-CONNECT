@@ -7,6 +7,7 @@ import {
   CompleterCmp, CompleterData, CompleterItem, CompleterService, RemoteData
 } from 'ng2-completer';
 import { ConfigService } from '@ngx-config/core';
+import { Options } from '@angular-slider/ngx-slider';
 
 declare var H: any;
 
@@ -48,7 +49,8 @@ export class RouteCalculatingComponent implements OnInit {
   viaRouteCount : boolean = false;
   transportDataChecked : boolean= false;
   trafficFlowChecked : boolean = false;
-  corridorWidth : number;
+  corridorWidth : number = 100;
+  corridorWidthKm : number = 0.1;
   sliderValue : number = 0;
   min : number = 0;
   max : number = 10000;
@@ -63,6 +65,8 @@ export class RouteCalculatingComponent implements OnInit {
   startAddressPositionLong :number = 0; // = {lat : 18.50424,long : 73.85286};
   startMarker : any;
   endMarker :any;
+  routeCorridorMarker : any;
+  routeOutlineMarker : any;
   endAddressPositionLat : number = 0;
   endAddressPositionLong : number = 0;
   
@@ -91,6 +95,25 @@ export class RouteCalculatingComponent implements OnInit {
   getVehicleSize : any;
   additionalData : any;
 
+  
+  tollRoadValue : any ;
+  motorWayValue : any;
+  boatFerriesValue : any;
+  railFerriesValue : any;
+  tunnelValue : any;
+  dirtRoadValue :any;
+  trailerValue : any;
+
+  value: number = 100;
+  options: Options = {
+    floor: 0,
+    ceil: 10000
+  };
+  searchStrError : boolean = false;
+  searchEndStrError : boolean = false;
+  strPresentStart: boolean = false;
+  strPresentEnd: boolean = false;
+
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -104,17 +127,15 @@ export class RouteCalculatingComponent implements OnInit {
     this.configureAutoCompleteForLocationSearch();
    }
 
-  ngOnInit(): void {
+  ngOnInit(){
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.corridorFormGroup = this.formBuilder.group({
       corridorType:['Regular'],
       label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
-      startaddress: ['', [Validators.required]],
-      endaddress:  ['', [Validators.required]],
       widthInput : ['', [Validators.required]],
-      viaroute1: ['', [Validators.required]],
-      viaroute2: ['', [Validators.required]],
+      viaroute1: [''],
+      viaroute2: [''],
       trailer:["Regular"],
       tollRoad:['Regular'],
       motorWay:['Regular'],
@@ -122,21 +143,41 @@ export class RouteCalculatingComponent implements OnInit {
       railFerries:['Regular'],
       tunnels:['Regular'],
       dirtRoad:['Regular'],
-      vehicleHeight:['', [Validators.required]],
-      vehicleWidth: ['', [Validators.required]],
-      vehicleLength : ['', [Validators.required]],
-      limitedWeight: ['', [Validators.required]],
-      weightPerAxle: ['', [Validators.required]]
+      vehicleHeight:[''],
+      vehicleWidth: [''],
+      vehicleLength : [''],
+      limitedWeight: [''],
+      weightPerAxle: ['']
 
-    });
+    },
+    {
+      validator: [
+        CustomValidators.specialCharValidationForNameWithoutRequired('label'),
+        CustomValidators.numberFieldValidation('vehicleHeight',50),
+        CustomValidators.numberFieldValidation('vehicleWidth',50),
+        CustomValidators.numberFieldValidation('vehicleLength',300),
+        CustomValidators.numberFieldValidation('limitedWeight',1000),
+        CustomValidators.numberFieldValidation('weightPerAxle',1000),
+        CustomValidators.numberFieldValidation('widthInput',10)
+
+      ]});
     this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
-      this.setCorridorData()
+      this.setCorridorData();
     }
-    console.log(this.selectedElementData)
+    this.subscribeWidthValue()
+   
     //this.configureAutoCompleteForLocationSearch();
   }
 
+  subscribeWidthValue(){
+    this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
+      console.log(x)
+      this.corridorWidthKm = Number(x);
+      this.corridorWidth = this.corridorWidthKm  * 1000;
+      this.calculateAB();
+   })
+  }
   setCorridorData(){
     let _selectedElementData = this.selectedElementData;
     if(_selectedElementData){
@@ -155,7 +196,15 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
       this.searchEndStr = _selectedElementData.endPoint;
+      this.startAddressPositionLat = _selectedElementData.startLat;
+      this.startAddressPositionLong = _selectedElementData.startLong;
+      this.endAddressPositionLat = _selectedElementData.endLat;
+      this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
+      this.corridorWidthKm = this.corridorWidth / 1000;
+      this.plotStartPoint(this.searchStr);
+      this.plotEndPoint(this.searchEndStr);
+      this.calculateAB()
     }
   }
   vehicleHeightValue: number = 0;
@@ -207,14 +256,20 @@ export class RouteCalculatingComponent implements OnInit {
 
   initiateDropDownValues(){
     this.corridorFormGroup.controls.trailer.setValue(this.selectedTrailerId);
+    this.trailerValue = this.selectedTrailerId;
     this.corridorFormGroup.controls.tollRoad.setValue(this.tollRoadId);
-    let tollValue = this.exclusionList.filter(e=> e.enum == this.tollRoadId);
-    console.log(tollValue)
+    this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
     this.corridorFormGroup.controls.motorWay.setValue(this.motorWayId);
+    this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
     this.corridorFormGroup.controls.boatFerries.setValue(this.boatFerriesId);
+    this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
     this.corridorFormGroup.controls.railFerries.setValue(this.railFerriesId);
+    this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
     this.corridorFormGroup.controls.tunnels.setValue(this.tunnelId);
+    this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
     this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
+    this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
+    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
  }
 
   public ngAfterViewInit() {
@@ -247,16 +302,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.mapGroup = group;
   }
 
-  addPolylineToMap(){
-    var lineString = new H.geo.LineString();
-    lineString.pushPoint({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong});
-    lineString.pushPoint({lat:this.endAddressPositionLat , lng:this.endAddressPositionLong});
-    this.hereMap.addObject(new H.map.Polyline(
-      lineString, { style: { lineWidth: 4 }}
-    ));
-  }
-
-
   createHomeMarker(){
     const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -277,16 +322,22 @@ export class RouteCalculatingComponent implements OnInit {
     return endMarker;
   }
 
-  sliderChanged(_event){
-      let distanceinMtr = _event.value;
-      this.corridorWidth = _event.value;
-      this.distanceinKM = distanceinMtr/1000;
-      this.corridorFormGroup.controls.widthInput.setValue(this.distanceinKM);
+  sliderChanged(){
+     // this.corridorWidth = _event.value;
+      this.corridorWidthKm = this.corridorWidth / 1000;
+      this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+      this.checkRoutePlot();
+      //this.calculateRouteFromAtoB();
   }
 
+  checkRoutePlot(){
+    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
+      this.calculateAB();
+    }
+  }
   changeSliderInput(){
-    this.distanceinKM = this.corridorFormGroup.controls.widthInput.value;
-    this.sliderValue = this.distanceinKM * 1000;
+    this.corridorWidthKm = this.corridorFormGroup.controls.widthInput.value;
+    this.corridorWidth = this.corridorWidthKm * 1000;
   }
   
   formatLabel(value:number){
@@ -389,10 +440,10 @@ export class RouteCalculatingComponent implements OnInit {
       "organizationId": this.organizationId,
       "corridorType": "R",
       "corridorLabel":this.corridorFormGroup.controls.label.value,
-      "startAddress": this.corridorFormGroup.controls.startaddress.value,
+      "startAddress": this.searchStr,
       "startLatitude": this.startAddressPositionLat,
       "startLongitude": this.startAddressPositionLong,
-      "endAddress": this.corridorFormGroup.controls.endaddress.value,
+      "endAddress": this.searchEndStr,
       "endLatitude": this.endAddressPositionLat,
       "endLongitude": this.endAddressPositionLong,
       "width": this.corridorWidth,
@@ -493,6 +544,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.othersChecked  = false;
     this.transportDataChecked = false;
     this.trafficFlowChecked = false;
+    this.corridorWidth = 100;
+    this.corridorWidthKm = 0.1;
     this.corridorFormGroup.controls.vehicleHeight.setValue("");
     this.corridorFormGroup.controls.vehicleLength.setValue("");
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
@@ -507,28 +560,51 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   clearMap(){
-    this.hereMap.removeObject(this.startMarker);
-    this.hereMap.removeObject(this.endMarker);
+    if(this.startMarker && this.endMarker ){
+    this.hereMap.removeObjects([this.startMarker,this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+
+    }
 
   }
 
   onStartFocus(){
+    this.searchStrError = true;
+    this.strPresentStart = false;
     this.searchStr = null;
+    this.startAddressPositionLat = 0;
+    if(this.startMarker){
+      this.hereMap.removeObjects([this.startMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    }
   }
   onEndFocus(){
+    this.searchEndStrError = true;
+    this.strPresentEnd = false;
     this.searchEndStr = null;
+    this.endAddressPositionLat = 0;
+    if(this.endMarker){
+      this.hereMap.removeObjects([this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    }
   }
 
   onSelected(selectedAddress: CompleterItem){
     //console.log(item.title)
+    if(this.searchStr){
+       this.searchStrError = false;
+       this.strPresentStart = true;
+    }
     if(selectedAddress){
-      let postalCode = selectedAddress["originalObject"]["label"]
+      let postalCode = selectedAddress["originalObject"]["label"];
       this.plotStartPoint(postalCode)
     }
 
   }
 
   onEndSelected(selectedAddress: CompleterItem){
+    
+    if(this.searchEndStr){
+      this.searchEndStrError = false;
+      this.strPresentEnd = true;
+      }
     if(selectedAddress){
       let locationId = selectedAddress["originalObject"]["label"]
       this.plotEndPoint(locationId)
@@ -539,12 +615,14 @@ export class RouteCalculatingComponent implements OnInit {
   resetToEditData(){
     this.setCorridorData();
   }
+
+
+  // ------------- Map Functions ------------------------//
   plotStartPoint(_locationId){
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
     this.here.getLocationDetails(geocodingParameters).then((result) => {
-      console.log(result)
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createHomeMarker();
@@ -552,13 +630,13 @@ export class RouteCalculatingComponent implements OnInit {
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
   
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
+      var group = new H.map.Group();
       this.hereMap.addObject(this.startMarker);
-      //this.mapGroup.addObject(this.startMarker);
-      this.hereMap.setZoom(2);
-      // this.hereMap.getViewModel().setLookAtData({
-      //     bounds: this.mapGroup.getBoundingBox()
-      // });
+      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
+      //this.hereMap.setZoom(8);
       this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+      this.checkRoutePlot();
+
     });
   }
 
@@ -575,11 +653,13 @@ export class RouteCalculatingComponent implements OnInit {
   
       this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
       this.hereMap.addObject(this.endMarker);
-      this.hereMap.setZoom(2);
-
+     // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
+      //this.hereMap.setZoom(8);
       this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
+      this.checkRoutePlot();
 
     });
+    
   }
 
   suggestionData :  any;
@@ -599,4 +679,76 @@ export class RouteCalculatingComponent implements OnInit {
     this.dataService = this.suggestionData;
     console.log(this.dataService);
   }
+
+  calculateAB(){
+    let routeRequestParams = {
+      'routingMode': 'fast',
+      'transportMode': 'truck',
+      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
+      'return': 'polyline'
+    };
+    this.here.calculateRoutePoints(routeRequestParams).then((data)=>{
+      
+       this.addRouteShapeToMap(data);
+      console.log(data)
+    },(error)=>{
+       console.error(error);
+    })
+  }
+
+  addRouteShapeToMap(result){
+    var group = new H.map.Group();
+    if(this.routeOutlineMarker){
+      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+
+    }
+    result.routes[0].sections.forEach((section) =>{
+      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
+
+      // Create a polyline to display the route:
+      // let routeLine = new H.map.Polyline(linestring, {
+      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
+      // });
+      // this.hereMap.addObject(routeLine);
+      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+      if (this.corridorWidthKm > 0) {
+        this.routeOutlineMarker = new H.map.Polyline(linestring, {
+          style: {
+            lineWidth: this.corridorWidthKm,
+            strokeColor: '#b5c7ef',
+          }
+        });
+        // Create a patterned polyline:
+        this.routeCorridorMarker = new H.map.Polyline(linestring, {
+          style: {
+            lineWidth: 3,
+            strokeColor: '#436ddc'
+          }
+        }
+        );
+        // create a group that represents the route line and contains
+        // outline and the pattern
+        var routeLine = new H.map.Group();
+        // routeLine.addObjects([routeOutline, routeArrows]);
+        this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+        this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
+
+      }
+      else{
+        this.routeOutlineMarker = null;
+        this.routeCorridorMarker = null;
+
+      }
+
+    });
+  
+    // // Add the polyline to the map
+    // this.map.addObject(group);
+    // // And zoom to its bounding rectangle
+    // this.map.getViewModel().setLookAtData({
+    //   bounds: group.getBoundingBox()
+    // });
+  }
+  
 }
