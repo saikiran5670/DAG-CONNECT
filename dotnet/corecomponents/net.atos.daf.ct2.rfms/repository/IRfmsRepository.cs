@@ -6,9 +6,9 @@ namespace net.atos.daf.ct2.rfms.repository
 {
     public interface IRfmsRepository
     {
-        Task<RfmsVehicles> Get(RfmsVehicleRequest rfmsVehicleRequest);
+        Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest);
 
-         Task<RfmsVehiclePositionRequest> Get(RfmsVehiclePositionRequest rfmsVehiclePositionRequest);
+         Task<RfmsVehiclePositionRequest> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest);
            
     }
 }

@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("feature")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class FeatureController : Controller
+    public class FeatureController : BaseController
     {
 
         #region Private Variable
@@ -44,15 +44,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Constructor
         public FeatureController(FeatureService.FeatureServiceClient Featureclient, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings,
-             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
+             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _featureclient = Featureclient;
-            _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); ;
             _mapper = new Mapper();
             _cache = cache;
             _cachesettings = cachesettings.Value;
             _privilegeChecker = privilegeChecker;
+            _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             //headers = GetHeaders(Request.Headers);
         }
@@ -328,6 +328,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
                 int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
                 request.Level = level;
+                request.OrganizationID = GetContextOrgId();
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();

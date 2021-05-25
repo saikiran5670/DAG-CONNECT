@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.rfms.repository
             _dataMartDataAccess = dataMartAccess;
             _dataAccess = dataAccess;
         }
-        public async Task<RfmsVehicles> Get(RfmsVehicleRequest rfmsVehicleRequest)
+        public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
         }
 
-        public async Task<RfmsVehiclePositionRequest> Get(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+        public async Task<RfmsVehiclePositionRequest> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
             try
             {

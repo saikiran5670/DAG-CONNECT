@@ -1,9 +1,11 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../services/translation.service';
+import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 declare var H: any;
 
@@ -14,6 +16,11 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
+  selectionTab: any = 'today';
+  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  selectedStartTime: any = '12:00 AM';
+  selectedEndTime: any = '12:00 AM'; 
+  tripForm: FormGroup;
   displayedColumns = ['All', 'startDate', 'endDate', 'distance', 'idleDuration', 'avgSpeed', 'avgWeight', 'startPosition', 'endPosition', 'fuelConsumption', 'drivingTime', 'alerts', 'events'];
   translationData: any;
   hereMap: any;
@@ -37,7 +44,7 @@ export class TripReportComponent implements OnInit {
   tripData: any = [];
   showLoadingIndicator: boolean = false;
 
-  constructor(private translationService: TranslationService) {
+  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -53,6 +60,12 @@ export class TripReportComponent implements OnInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.tripForm = this._formBuilder.group({
+      vehicleGroup: ['', []],
+      vehicle: ['', []],
+      startDate: ['', []],
+      endDate: ['', []]
+    });
     let translationObj = {
       id: 0,
       code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
@@ -209,76 +222,6 @@ export class TripReportComponent implements OnInit {
       drivingTime: '00:23',
       alerts: 20,
       events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
     }];
     this.updateDataSource(this.tripData);
   }
@@ -398,6 +341,39 @@ export class TripReportComponent implements OnInit {
   hideloader() {
     // Setting display of spinner
     this.showLoadingIndicator = false;
+  }
+
+  startTimeChanged(selectedTime: any) {
+    this.selectedStartTime = selectedTime;
+  }
+
+  endTimeChanged(selectedTime: any) {
+    this.selectedEndTime = selectedTime;
+  }
+
+  selectionTimeRange(selection: any){
+    switch(selection){
+      case 'today': {
+        this.selectionTab = 'today';
+        break;
+      }
+      case 'yesterday': {
+        this.selectionTab = 'yesterday';
+        break;
+      }
+      case 'lastweek': {
+        this.selectionTab = 'lastweek';
+        break;
+      }
+      case 'lastmonth': {
+        this.selectionTab = 'lastmonth';
+        break;
+      }
+      case 'last3month': {
+        this.selectionTab = 'last3month';
+        break;
+      }
+    }
   }
 
 }

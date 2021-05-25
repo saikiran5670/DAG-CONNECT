@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("geofence")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class LandmarkGeofenceController : ControllerBase
+    public class LandmarkGeofenceController : BaseController
     {
         private ILog _logger;
         private readonly GeofenceService.GeofenceServiceClient _GeofenceServiceClient;
@@ -29,15 +29,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly HeaderObj _userDetails;
-        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker
-            , IHttpContextAccessor _httpContextAccessor)
+        
+        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _GeofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.Geofence.Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
-             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
 
         }
 
@@ -55,6 +55,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global geofence.");
+                }
+                else
+                {
+                    request.OrganizationId = GetContextOrgId();
                 }
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
@@ -125,6 +129,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         bool hasRights = await HasAdminPrivilege();
                         if (!hasRights)
                             return StatusCode(400, "You cannot create global geofence.");
+                    }
+                    else
+                    {
+                        request[0].OrganizationId = GetContextOrgId();
                     }
                 }
                 else
@@ -241,7 +249,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GetGeofenceResponse response = new GetGeofenceResponse();
             IdRequest idRequest = new IdRequest();
             try
-            {               
+            {
+                request.OrganizationId = GetContextOrgId();
                 if (request.GeofenceId < 1)
                 {
                     return StatusCode(400, "Bad request");
@@ -292,7 +301,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             GeofenceEntityResponceList response = new GeofenceEntityResponceList();            
             try
-            {              
+            {
+                request.OrganizationId = GetContextOrgId();
                 GeofenceEntityRequest objGeofenceRequest = new GeofenceEntityRequest();
                     objGeofenceRequest.OrganizationId = request.OrganizationId;
                     objGeofenceRequest.CategoryId = request.CategoryId;
@@ -332,7 +342,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                 _logger.Info("UpdatePolygonGeofence method in geofence API called.");
+                
+                _logger.Info("UpdatePolygonGeofence method in geofence API called.");
 
                 // Validate Admin Privilege
                 if (request.OrganizationId == 0)
@@ -340,6 +351,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global geofence.");
+                }
+                else
+                {
+                    request.OrganizationId = GetContextOrgId();
                 }
                 // Validation 
                 if (string.IsNullOrEmpty(request.Name))
@@ -401,7 +416,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if(requests?.Count() == 0)
+                foreach(var item in requests)
+                {
+                     item.OrganizationId = GetContextOrgId();
+                }
+                
+                if (requests?.Count() == 0)
                 {
                     return StatusCode(400, "Bulk import geofence payload is having no items.");
                 }
@@ -446,6 +466,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global geofence.");
+                }
+                else
+                {
+                    request.OrganizationId = GetContextOrgId();
                 }
 
                 // Validation 
@@ -508,6 +532,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GeofenceListResponse response = new GeofenceListResponse();
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 GeofenceRequest geofenceRequest = new GeofenceRequest();
                 geofenceRequest.Id = request.Id;
                 geofenceRequest.OrganizationId = request.OrganizationId;

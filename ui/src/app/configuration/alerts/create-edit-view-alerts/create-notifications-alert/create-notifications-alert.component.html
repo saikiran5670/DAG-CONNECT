@@ -46,7 +46,7 @@
             <mat-label>{{ translationData.lblContactMode || 'Contact Mode' }} <span class='mandatoryColor'>*</span>
             </mat-label>
             <mat-form-field appearance="outline" class="full-width">
-                <mat-select (selectionChange)="onChangeContactMode($event)" placeholder="{{ translationData.lblSelectContactMode || 'Select Contact Mode' }}"
+                <mat-select  placeholder="{{ translationData.lblSelectContactMode || 'Select Contact Mode' }}"
                     formControlName="contactMode">
                     <mat-option *ngFor="let item of contactModes" [value]="item.id">
                        {{item.value}}
@@ -73,7 +73,7 @@
     <div  *ngFor="let item of notificationForm.controls['FormArrayItems']['controls']; let i = index" >
     <div  [formGroupName]="i">
     <!-- For email -->
-    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 && addFlag" style="border: 1px solid #000">
+    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 && addEmailFlag" style="border: 1px solid #000">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
@@ -160,7 +160,7 @@
 
 
     <!-- For webservice -->
-    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 0 && addFlag" style="border: 1px solid #000;">
+    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 0 && addWsFlag " style="border: 1px solid #000;">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 01' }}</span>
