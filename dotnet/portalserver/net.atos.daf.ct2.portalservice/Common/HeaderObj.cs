@@ -11,10 +11,6 @@
             {
                 return orgId;
             }
-            set
-            {
-                contextOrgId = value;
-            }
         }            
     }
 }

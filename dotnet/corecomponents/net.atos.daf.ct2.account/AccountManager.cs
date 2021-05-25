@@ -323,7 +323,7 @@ namespace net.atos.daf.ct2.account
         }
 
         //This method is called for ResetPassword, SetupNewPassword and PassswordExpiry process
-        public async Task<Response> ResetPasswordInitiate(string emailId, int orgId, EmailEventType eventType = EmailEventType.ResetPassword)
+        public async Task<Response> ResetPasswordInitiate(string emailId, EmailEventType eventType = EmailEventType.ResetPassword)
         {
             var response = new Response(HttpStatusCode.NotFound);
             try
@@ -371,7 +371,7 @@ namespace net.atos.daf.ct2.account
                         //In cases like Create Password and Password Expiry, no need to send below email
                         if (eventType == EmailEventType.ResetPassword)
                         {
-                            account.Organization_Id = orgId;
+                            account.Organization_Id = (await repository.GetAccountOrg(account.Id)).First().Id;
                             isSent = await TriggerSendEmailRequest(account, eventType, processToken);
                         }
 
@@ -458,7 +458,7 @@ namespace net.atos.daf.ct2.account
                         await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
                         //Send confirmation email
-                        account.Organization_Id = accountInfo.Organization_Id;
+                        account.Organization_Id = (await repository.GetAccountOrg(account.Id)).First().Id;
                         await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityresult;
@@ -583,14 +583,14 @@ namespace net.atos.daf.ct2.account
 
         private async Task<bool> SetPasswordViaEmail(Account account, EmailEventType eventType)
         {
-            var response = await ResetPasswordInitiate(account.EmailId, account.Organization_Id.Value, eventType);
+            var response = await ResetPasswordInitiate(account.EmailId, eventType);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return false;
             else
             {
                 var result = await repository.GetAccountOrg(account.Id);
-                account.OrgName = result.FirstOrDefault().Name;
+                account.OrgName = result.First().Name;
                 //Send account confirmation email
                 return await TriggerSendEmailRequest(account, eventType, (Guid)response.Result);
             }
