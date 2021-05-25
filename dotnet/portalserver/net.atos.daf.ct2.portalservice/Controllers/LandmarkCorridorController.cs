@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("corridor")]
-    public class LandmarkCorridorController : ControllerBase
+    public class LandmarkCorridorController : BaseController
     {
 
         private ILog _logger;
@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private readonly CorridorMapper _corridorMapper;
         private readonly HeaderObj _userDetails;
-        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
+        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorServiceClient = corridorServiceClient;
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _logger.Info("GetCorridorList method in POI API called.");
                 net.atos.daf.ct2.corridorservice.CorridorRequest objCorridorRequest = new net.atos.daf.ct2.corridorservice.CorridorRequest();
-                objCorridorRequest.OrganizationId = request.OrganizationId;
+                objCorridorRequest.OrganizationId = GetContextOrgId();
                 objCorridorRequest.CorridorId = request.CorridorId;//non mandatory field
                 var data = await _corridorServiceClient.GetCorridorListAsync(objCorridorRequest);
 
@@ -98,6 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 if (request.OrganizationId == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -149,6 +150,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 if (request.OrganizationId == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -200,6 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 if (request.OrganizationId == 0 && request.Id ==0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -265,7 +268,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpDelete]
         [Route("deletecorridor")]
 
-        public async Task<IActionResult> DeleteCategory([FromQuery] Entity.Corridor.DeleteCorridorIdRequest request)
+        public async Task<IActionResult> DeleteCorridor([FromQuery] Entity.Corridor.DeleteCorridorIdRequest request)
         {
             try
             {
@@ -312,6 +315,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                request.OrganizationId = GetContextOrgId();
                 if (request.OrganizationId == 0)
                 {
                     return StatusCode(400, "Organization Id is required.");
