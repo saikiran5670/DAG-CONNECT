@@ -20,15 +20,15 @@ namespace net.atos.daf.ct2.rfms
             auditlog = _auditlog;
         }
 
-         public async Task<RfmsVehicles> Get(RfmsVehicleRequest rfmsVehicleRequest)
+         public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
         {
-            return await rfmsRepository.Get(rfmsVehicleRequest);
+            return await rfmsRepository.GetVehicles(rfmsVehicleRequest);
         }
 
-         public async Task<RfmsVehiclePositionRequest> Get(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+         public async Task<RfmsVehiclePositionRequest> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
 
-            return await rfmsRepository.Get(rfmsVehiclePositionRequest);
+            return await rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
         }
 
     }
