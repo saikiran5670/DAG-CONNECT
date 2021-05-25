@@ -8,7 +8,7 @@ package report;
 service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
-rpc GetVinsFromTripStatistics (VehicleListRequest) returns (VehicleListAndDetailsResponse);
+rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponce);
 }
 
