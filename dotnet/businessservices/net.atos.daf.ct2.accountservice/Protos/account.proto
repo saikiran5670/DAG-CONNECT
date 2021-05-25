@@ -143,13 +143,11 @@ message ChangePasswordRequest {
 //Account Reset Password
 message ResetPasswordInitiateRequest {
     string EmailId=1;
-    int32 OrgId=2;
 }
 
 message ResetPasswordRequest {
     string ProcessToken=1;
     string Password=2;
-    int32 OrgId=3;
 }
 
 message ResetPasswordInvalidateRequest {

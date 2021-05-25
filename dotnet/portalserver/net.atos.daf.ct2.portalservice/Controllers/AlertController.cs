@@ -20,14 +20,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("alert")]
-    public class AlertController : ControllerBase
+    public class AlertController : BaseController
     {
         private ILog _logger;
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        private readonly HeaderObj _userDetails;
         private readonly Entity.Alert.Mapper _mapper;
         private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
@@ -35,7 +34,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                AuditHelper auditHelper, 
                                Common.AccountPrivilegeChecker privilegeChecker, 
                                VehicleService.VehicleServiceClient vehicleClient, 
-                               IHttpContextAccessor httpContextAccessor)
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _alertServiceClient = alertServiceClient;
             _auditHelper = auditHelper;
@@ -163,7 +162,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (accountId == 0 || orgnizationid==0) return BadRequest("Account id or Orgnization id cannot be null.");
                 net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
                 var alertcategory = await _alertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
-                VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId() });
                 if (alertcategory.EnumTranslation != null)
                 {
                     foreach (var item in alertcategory.EnumTranslation)
@@ -279,8 +278,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        
         #endregion
-
 
         #region Update Alert
         [HttpPut]
@@ -354,7 +353,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if ( orgnizationid == 0) return BadRequest("Orgnization id cannot be null.");
-
+                orgnizationid = GetContextOrgId();
                 AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
 
                 if (response.AlertRequest != null && response.AlertRequest.Count>0)
@@ -366,8 +365,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(404, "Alerts are not found.");
                 }
-
-
             }
             catch (Exception ex)
             {

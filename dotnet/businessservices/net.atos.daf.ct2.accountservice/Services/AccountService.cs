@@ -430,7 +430,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountOrganizationResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Account Deletion Faile due to - " + ex.Message
+                    Message = "Account Deletion Failed due to - " + ex.Message
                 });
             }
         }
@@ -612,7 +612,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountDetailsResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Get faile due to with reason : " + ex.Message
+                    Message = "Get failed due to with reason : " + ex.Message
                 });
             }
         }
@@ -621,7 +621,7 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var identityResult = await accountmanager.ResetPasswordInitiate(request.EmailId, request.OrgId);
+                var identityResult = await accountmanager.ResetPasswordInitiate(request.EmailId);
 
                 ResetPasswordResponse response = new ResetPasswordResponse();
                 if (identityResult.StatusCode == System.Net.HttpStatusCode.OK)
@@ -689,7 +689,6 @@ namespace net.atos.daf.ct2.accountservice
                 AccountComponent.entity.Account account = new AccountComponent.entity.Account();
                 account.ProcessToken = new Guid(request.ProcessToken);
                 account.Password = request.Password;
-                account.Organization_Id = request.OrgId;
                 account.AccountType = AccountComponent.ENUM.AccountType.PortalAccount;
                 var identityResult = await accountmanager.ResetPassword(account);
 
@@ -878,191 +877,6 @@ namespace net.atos.daf.ct2.accountservice
             }
         }
 
-        #endregion
-
-        #region AccessRelationship
-        //public override async Task<AccessRelationshipResponse> CreateAccessRelationship(AccessRelationship request, ServerCallContext context)
-        //{
-        //    string validationMessage = string.Empty;
-        //    try
-        //    {
-        //        // access relation ship entity
-        //        AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
-        //        // response 
-        //        AccessRelationshipResponse response = new AccessRelationshipResponse();
-        //        accessRelationship.Id = request.Id;
-        //        accessRelationship.AccountGroupId = request.AccountGroupId;
-        //        accessRelationship.VehicleGroupId = request.VehicleGroupId;
-        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "V")
-        //        {
-        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
-        //        }
-        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "F")
-        //        {
-        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.FullAccess;
-        //        }
-        //        else
-        //        {
-        //            validationMessage = "The AccessType should be ReadOnly / ReadWrite.(V/F).";
-        //            response.Message = validationMessage;
-        //            response.Code = Responcecode.Failed;
-        //            return await Task.FromResult(response);
-        //        }
-        //        accessRelationship.StartDate = DateTime.Now;
-        //        accessRelationship.EndDate = null;
-        //        accessRelationship = await accountmanager.CreateAccessRelationship(accessRelationship);
-        //        var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId)).Result;
-        //        response.AccessRelationship = new AccessRelationship();
-        //        response.AccessRelationship.Id = accessRelationship.Id;
-        //        response.AccessRelationship.AccessRelationType = accessRelationship.AccessRelationType.ToString();
-        //        response.AccessRelationship.AccountGroupId = accessRelationship.AccountGroupId;
-        //        response.AccessRelationship.VehicleGroupId = accessRelationship.VehicleGroupId;
-        //        response.Code = Responcecode.Success;
-        //        response.Message = "AccessRelationship Created";
-        //        return await Task.FromResult(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-        //        return await Task.FromResult(new AccessRelationshipResponse
-        //        {
-        //            Code = Responcecode.Failed,
-        //            Message = "Account Creation Faile due to - " + ex.Message
-
-        //        });
-        //    }
-        //}
-        //public override async Task<AccessRelationshipResponse> UpdateAccessRelationship(AccessRelationship request, ServerCallContext context)
-        //{
-        //    string validationMessage = string.Empty;
-        //    try
-        //    {
-        //        // access relation ship entity
-        //        AccountComponent.entity.AccessRelationship accessRelationship = new AccountComponent.entity.AccessRelationship();
-        //        // response 
-        //        AccessRelationshipResponse response = new AccessRelationshipResponse();
-
-        //        accessRelationship.Id = request.Id;
-        //        accessRelationship.AccountGroupId = request.AccountGroupId;
-        //        accessRelationship.VehicleGroupId = request.VehicleGroupId;
-        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "V")
-        //        {
-        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
-        //        }
-        //        if (!string.IsNullOrWhiteSpace(request.AccessRelationType) && request.AccessRelationType == "F")
-        //        {
-        //            accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.FullAccess;
-        //        }
-        //        else
-        //        {
-        //            validationMessage = "The AccessType should be ReadOnly / ReadWrite.(R/W).";
-        //            response.Message = validationMessage;
-        //            response.Code = Responcecode.Failed;
-        //            return await Task.FromResult(response);
-        //        }
-        //        accessRelationship.StartDate = DateTime.Now;
-        //        accessRelationship.EndDate = null;
-        //        accessRelationship = await accountmanager.UpdateAccessRelationship(accessRelationship);
-        //        var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Access Relationship", 1, 2, Convert.ToString(accessRelationship.AccountGroupId));
-        //        response.Code = Responcecode.Success;
-        //        response.Message = "AccessRelationship Updated";
-        //        return await Task.FromResult(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:get accounts with exception - " + ex.Message + ex.StackTrace);
-        //        return await Task.FromResult(new AccessRelationshipResponse
-        //        {
-        //            Code = Responcecode.Failed,
-        //            Message = "Account Creation Faile due to - " + ex.Message
-
-        //        });
-        //    }
-        //}
-        //public override async Task<AccessRelationshipResponse> DeleteAccessRelationship(AccessRelationshipDeleteRequest request, ServerCallContext context)
-        //{
-        //    string validationMessage = string.Empty;
-        //    try
-        //    {
-        //        // response 
-        //        AccessRelationshipResponse response = new AccessRelationshipResponse();
-        //        if (request == null || request.AccountGroupId <= 0)
-        //        {
-        //            validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
-        //        }
-        //        if (request == null || request.VehicleGroupId <= 0)
-        //        {
-        //            validationMessage = "The delete access group , Account Group Id and Vehicle Group Id is required.";
-        //        }
-        //        if (!string.IsNullOrEmpty(validationMessage))
-        //        {
-
-        //            response.Message = validationMessage;
-        //            response.Code = Responcecode.Failed;
-        //            return await Task.FromResult(response);
-        //        }
-        //        var result = accountmanager.DeleteAccessRelationship(request.AccountGroupId, request.VehicleGroupId);
-        //        var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Access Relationship", 1, 2, Convert.ToString(request.AccountGroupId)).Result;
-        //        response.Code = Responcecode.Success;
-        //        response.Message = "AccessRelationship Deleted";
-        //        return await Task.FromResult(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:create access relationship with exception - " + ex.StackTrace + ex.Message);
-        //        return await Task.FromResult(new AccessRelationshipResponse
-        //        {
-        //            Code = Responcecode.Failed,
-        //            Message = "Delete Access Relationship Faile due to - " + ex.Message
-
-        //        });
-        //    }
-        //}
-        //public override async Task<AccessRelationshipDataList> GetAccessRelationship(AccessRelationshipFilter request, ServerCallContext context)
-        //{
-        //    string validationMessage = string.Empty;
-        //    try
-        //    {
-        //        // access relation ship entity
-        //        AccountComponent.entity.AccessRelationshipFilter filter = new AccountComponent.entity.AccessRelationshipFilter();
-        //        // response 
-        //        AccessRelationshipDataList response = new AccessRelationshipDataList();
-
-        //        filter.AccountId = request.AccountId;
-        //        filter.AccountGroupId = request.AccountGroupId;
-        //        filter.VehicleGroupId = request.VehicleGroupId;
-
-        //        if (request.AccountId == 0 && request.AccountGroupId == 0 && request.VehicleGroupId == 0)
-        //        {
-        //            validationMessage = "Please provide AccountId or AccountGroupId or VehicleGroupId to get AccessRelationship.";
-        //        }
-        //        if (!string.IsNullOrEmpty(validationMessage))
-        //        {
-        //            response.Message = validationMessage;
-        //            response.Code = Responcecode.Failed;
-        //            return await Task.FromResult(response);
-        //        }
-        //        var accessResult = accountmanager.GetAccessRelationship(filter).Result;
-        //        _logger.LogInformation("Get account relationship.");
-        //        foreach (AccountComponent.entity.AccessRelationship accessRelationship in accessResult)
-        //        {
-        //            response.AccessRelationship.Add(_mapper.ToAccessRelationShip(accessRelationship));
-        //        }
-        //        response.Code = Responcecode.Success;
-        //        response.Message = "AccessRelationship Get";
-        //        return await Task.FromResult(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Error in account service:get accessrelatioship with exception - " + ex.Message + ex.StackTrace);
-        //        return await Task.FromResult(new AccessRelationshipDataList
-        //        {
-        //            Code = Responcecode.Failed,
-        //            Message = "Account Creation Faile due to - " + ex.Message
-
-        //        });
-        //    }
-        //}
         #endregion
 
         #region VehicleAccount AccessRelationship
@@ -1521,7 +1335,7 @@ namespace net.atos.daf.ct2.accountservice
                 return await Task.FromResult(new AccountPreferenceResponse
                 {
                     Code = Responcecode.Failed,
-                    Message = "Preference Creation Faile due to - " + ex.Message,
+                    Message = "Preference Creation Failed due to - " + ex.Message,
                     AccountPreference = null
                 });
             }
@@ -2119,7 +1933,7 @@ namespace net.atos.daf.ct2.accountservice
 
         #endregion
 
-        #region Signle Sign On
+        #region Single Sign On
 
         public async override Task<SSOToken> GenerateSSO(TokenSSORequest request, ServerCallContext context)
         {

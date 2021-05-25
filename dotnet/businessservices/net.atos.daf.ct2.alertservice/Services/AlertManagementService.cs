@@ -114,7 +114,6 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 IEnumerable<net.atos.daf.ct2.alert.entity.EnumTranslation> enumTranslationList = await _alertManager.GetAlertCategory();
 
-
                 AlertCategoryResponse response = new AlertCategoryResponse();
                 foreach (var item in enumTranslationList)
                 {
