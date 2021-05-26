@@ -220,7 +220,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The category type is not valid. It should be of single character");
                 }
-                request.Organization_Id = GetContextOrgId();
+                if (request.Organization_Id != 0)
+                {
+                    request.Organization_Id = GetContextOrgId();
+                }
                 var MapRequest = _categoryMapper.MapCategoryType(request);
                 var data = await _categoryServiceClient.GetCategoryTypeAsync(MapRequest);
 
