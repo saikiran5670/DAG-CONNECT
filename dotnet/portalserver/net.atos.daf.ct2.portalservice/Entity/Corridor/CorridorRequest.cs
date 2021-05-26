@@ -33,6 +33,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public double EndLongitude { get; set; }
         public int Width { get; set; }
         public int Distance { get; set; }
+        [Required]
         public List<ViaStopDetails> ViaAddressDetails { get; set; }
         public bool TransportData { get; set; }
         public bool TrafficFlow { get; set; }
