@@ -37,14 +37,13 @@ namespace net.atos.daf.ct2.portalservice.Common
                     //{
                     //    headerObj.contextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
                     //}
-                }
-                return headerObj;
+                }                
             }
             catch (Exception ex)
             {
                 _logger.Error("Error while fetching session information", ex);
-                return new HeaderObj();
             }
+            return headerObj;
         }
     }
 }

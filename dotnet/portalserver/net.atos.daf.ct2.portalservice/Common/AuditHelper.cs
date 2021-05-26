@@ -3,23 +3,23 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 using Newtonsoft.Json;
 using Google.Protobuf.WellKnownTypes;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
     public class AuditHelper
     {
-        private readonly ILogger<AuditHelper> _logger;
         private readonly AuditService.AuditServiceClient _auditService;
-        public AuditHelper(AuditService.AuditServiceClient auditService, ILogger<AuditHelper> logger)
+        private readonly ILog _logger;
+        public AuditHelper(AuditService.AuditServiceClient auditService)
         {
             _auditService = auditService;
-            _logger = logger;
-
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public HeaderObj GetHeaderData(HttpRequest request)
@@ -40,14 +40,14 @@ namespace net.atos.daf.ct2.portalservice.Common
                         headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
                     }
                 }
-                return headerObj;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occurred while fetching request header object.", ex);
-                return new HeaderObj();
+                _logger.Error("Error occurred while fetching request header object.", ex);
             }
+            return headerObj;
         }
+
         public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
         {
             AuditRecord logs = new AuditRecord();
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occurred while adding audit logs.", logs, ex);
+                _logger.Error("Error occurred while adding audit logs.", ex);
                 return 1;
             }
 
