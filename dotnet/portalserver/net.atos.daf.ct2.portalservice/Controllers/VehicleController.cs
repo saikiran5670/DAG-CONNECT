@@ -1020,12 +1020,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getvehiclebysubscriptionid/{subscriptionId}")]
-        public async Task<IActionResult> GetVehicleBySubscriptionId([FromRoute] string subscriptionId)
+        public async Task<IActionResult> GetVehicleBySubscriptionId([FromRoute] int subscriptionId)
         {
             try
             {
                 _logger.Info("GetVehicleBySubscriptionId method in vehicle API called.");
-                if (string.IsNullOrEmpty(subscriptionId))
+                if (subscriptionId <= 0)
                 {
                     return StatusCode(400, string.Empty);
                 }
