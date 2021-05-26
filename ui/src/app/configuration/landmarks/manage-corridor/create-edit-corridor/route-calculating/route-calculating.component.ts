@@ -693,39 +693,48 @@ export class RouteCalculatingComponent implements OnInit {
 
   viaAddressPositionLat : any;
   viaAddressPositionLong : any;
-  viaRoutePlottedObject : any;
+  viaRoutePlottedObject : any = [];
   viaMarker : any;
   plotViaPoint(_viaRouteList){
     this.viaRoutePlottedObject = [];
     if(this.viaMarker){
-     // this.hereMap.removeObjects();
+      this.hereMap.removeObjects([this.viaMarker]);
+      this.viaMarker = null;
     }
-    for(var i in _viaRouteList){
+    if(_viaRouteList.length >0){
+      for(var i in _viaRouteList){
 
-    let geocodingParameters = {
-		  searchText: _viaRouteList[i],
-		};
-    this.here.getLocationDetails(geocodingParameters).then((result) => {
-      this.viaAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
-      this.viaAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-      let viaMarker = this.createViaMarker();
-      let markerSize = { w: 26, h: 32 };
-      const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-  
-      this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-      this.hereMap.addObject(this.viaMarker);
-     // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-      //this.hereMap.setZoom(8);
-      this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
-      this.viaRoutePlottedObject.push({
-        "viaRoutName": _viaRouteList[i],
-        "latitude": this.viaAddressPositionLat,
-        "longitude": this.viaAddressPositionLat
-      });
-    });
-    this.checkRoutePlot();
-  }  
-  
+        let geocodingParameters = {
+          searchText: _viaRouteList[i],
+        };
+        this.here.getLocationDetails(geocodingParameters).then((result) => {
+          this.viaAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
+          this.viaAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+          let viaMarker = this.createViaMarker();
+          let markerSize = { w: 26, h: 32 };
+          const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      
+          this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
+          this.hereMap.addObject(this.viaMarker);
+         // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
+          //this.hereMap.setZoom(8);
+          this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
+          this.viaRoutePlottedObject.push({
+            "viaRoutName": _viaRouteList[i],
+            "latitude": this.viaAddressPositionLat,
+            "longitude": this.viaAddressPositionLat
+          });
+        this.checkRoutePlot();
+    
+        });
+      }  
+      
+    }
+    else{
+      this.checkRoutePlot();
+
+    }
+    
 
     
   }
@@ -760,7 +769,7 @@ export class RouteCalculatingComponent implements OnInit {
       'routingMode': 'fast',
       'transportMode': 'truck',
       'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
-      'via':`${this.viaAddressPositionLat},${this.viaAddressPositionLong}`, //new H.service.Url.MultiValueQueryParameter(viaPoints),//
+      'via': viaPoints,//`${this.viaAddressPositionLat},${this.viaAddressPositionLong}`,
       'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
       'return': 'polyline'
     };
@@ -791,7 +800,7 @@ export class RouteCalculatingComponent implements OnInit {
     var group = new H.map.Group();
     if(this.routeOutlineMarker){
       this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-
+      this.routeOutlineMarker = null;
     }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
@@ -802,7 +811,7 @@ export class RouteCalculatingComponent implements OnInit {
       // });
       // this.hereMap.addObject(routeLine);
       // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
-      if (this.corridorWidthKm > 0) {
+     // if (this.corridorWidthKm > 0) {
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
             lineWidth: this.corridorWidthKm,
@@ -824,12 +833,12 @@ export class RouteCalculatingComponent implements OnInit {
         this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
         this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
-      }
-      else{
-        this.routeOutlineMarker = null;
-        this.routeCorridorMarker = null;
+      // }
+      // else{
+      //   this.routeOutlineMarker = null;
+      //   this.routeCorridorMarker = null;
 
-      }
+      // }
 
     });
   
