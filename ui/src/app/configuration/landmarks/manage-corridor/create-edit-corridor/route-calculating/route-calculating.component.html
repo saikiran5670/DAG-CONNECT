@@ -425,7 +425,7 @@
     </button>
 </span>
 <span *ngIf="actionType !== 'view'">
-    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!corridorFormGroup.valid || !strPresentStart || !strPresentEnd"><!--&& !strPresentStart && !strPresentEnd [disabled]="!corridorFormGroup.valid"-->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)"><!--&& !strPresentStart && !strPresentEnd [disabled]="!corridorFormGroup.valid"-->
         <span>Create</span>
     </button>
 </span>
