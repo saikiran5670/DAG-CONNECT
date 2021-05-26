@@ -57,4 +57,8 @@ export class PreferencesComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
+  onTabChanged(event: any){
+    this.selectedIndex = event.index;
+  }
+
 }

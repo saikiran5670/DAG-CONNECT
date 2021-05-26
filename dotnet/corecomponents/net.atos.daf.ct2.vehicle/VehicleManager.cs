@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.vehicle
             auditlog = _auditlog;
         }
 
-        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId)
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
         {
             return await vehicleRepository.GetVehicleBySubscriptionId(subscriptionId);
         }

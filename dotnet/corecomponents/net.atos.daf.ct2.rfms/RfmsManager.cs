@@ -6,6 +6,7 @@ using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.repository;
 using net.atos.daf.ct2.rfms.responce;
+using net.atos.daf.ct2.rfms.response;
 
 namespace net.atos.daf.ct2.rfms
 {
@@ -25,7 +26,7 @@ namespace net.atos.daf.ct2.rfms
             return await rfmsRepository.GetVehicles(rfmsVehicleRequest);
         }
 
-         public async Task<RfmsVehiclePositionRequest> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+         public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
 
             return await rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
