@@ -340,8 +340,10 @@ export class AlertsComponent implements OnInit {
       return ("Alert '$' was successfully deleted").replace('$', alertName);
   }
 
-  onViewAlert(element: any, type: any) {
-   
+  onViewAlert(row: any, action: any) {
+    this.createViewEditStatus= true;
+    this.actionType = action;
+    this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
   }
 
   onEditDuplicateAlert(row: any, action : string) {

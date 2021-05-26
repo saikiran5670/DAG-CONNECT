@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace net.atos.daf.ct2.utilities.geocode
+namespace net.atos.daf.ct2.map.geocode
 {
     public class Bounds
     {
