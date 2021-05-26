@@ -16,8 +16,8 @@ import utiliities.Log;
  * @author A718166
  *
  */
-public class Driver_Management extends CommonFunctionLib{
-	public static void verifyDriverColumnName() throws Exception {
+public class Package_Management extends CommonFunctionLib{
+	public static void verifyPackageColumnName() throws Exception {
 		try {
 			String GRPTBL = getTextFromOR("GRP_STEP1_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
@@ -36,26 +36,7 @@ public class Driver_Management extends CommonFunctionLib{
 				DriverScript.bResult = false;				
 				}	
 	}
-	public static void verifyConsentIconInTbl() throws Exception {
-		try {
-			String GRPTBL = getTextFromOR("GRP_STEP1_TBL"); 
-			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");
-			String TBLROW = getTextFromOR("GRP_ROW"); 
-			String ColDiv = "]";
-				//div/div";
-			CommonFunctionLib.checkIconInTbl(GRPTBL, COLHEAD,TBLROW, ColDiv);
-			DriverScript.bResult = true;
-				
-			}catch (Exception e) {
-				test.log(LogStatus.FAIL, e.getMessage());
-				Log.error("Data is not present in table..." + e.getMessage());
-				String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
-				test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
-				ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
-				DriverScript.bResult = false;				
-				}	
-	}
-	public static void viewDriver() throws Exception {
+	public static void viewPackage() throws Exception {
 		try {
 			String GRPTBL = getTextFromOR("GRP_STEP1_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
