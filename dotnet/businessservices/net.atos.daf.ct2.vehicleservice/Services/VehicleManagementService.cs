@@ -47,17 +47,18 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             try
             {
                 VehiclesBySubscriptionDetailsResponse objVehiclesBySubscriptionDetailsResponse = new VehiclesBySubscriptionDetailsResponse();
-                VehiclesBySubscriptionDetails objVehiclesBySubscriptionId = new VehiclesBySubscriptionDetails();
                 var data = await _vehicleManager.GetVehicleBySubscriptionId(request.SubscriptionId);
                 _logger.Info("GetVehicleBySubscriptionId method in vehicle service called.");
                 foreach (var item in data)
                 {
-                    objVehiclesBySubscriptionId.OrderId = item.orderId;
-                    objVehiclesBySubscriptionId.Id = item.id;
-                    objVehiclesBySubscriptionId.Name = item.name ?? string.Empty;
-                    objVehiclesBySubscriptionId.Vin = item.vin;
-                    objVehiclesBySubscriptionId.LicensePlateNumber = item.license_plate_number ?? string.Empty;
-                    objVehiclesBySubscriptionDetailsResponse.Vehicles.Add(objVehiclesBySubscriptionId);
+                    objVehiclesBySubscriptionDetailsResponse.Vehicles.Add(new VehiclesBySubscriptionDetails
+                    {
+                        OrderId = item.orderId,
+                        Id = item.id,
+                        Name = item.name ?? string.Empty,
+                        Vin = item.vin,
+                        LicensePlateNumber = item.license_plate_number ?? string.Empty
+                    });
                 }
                 return objVehiclesBySubscriptionDetailsResponse;
             }
