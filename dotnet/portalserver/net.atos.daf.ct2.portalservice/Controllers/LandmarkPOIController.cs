@@ -336,7 +336,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("GetPOIs method in POI API called.");
-                poiFilter.OrganizationId = GetContextOrgId();
+                if (poiFilter.OrganizationId != 0)
+                {
+                    poiFilter.OrganizationId = GetContextOrgId();
+                }
                 POIRequest poiRequest = new POIRequest();
                 poiRequest.Id = poiFilter.Id;
                 poiRequest.OrganizationId = poiFilter.OrganizationId;
