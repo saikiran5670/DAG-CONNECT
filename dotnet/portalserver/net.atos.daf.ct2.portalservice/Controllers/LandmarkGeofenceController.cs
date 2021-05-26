@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        private readonly HeaderObj _userDetails;
+       
         
         public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
