@@ -381,10 +381,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                foreach (var item in request)
-                {
-                    item.OrganizationId = GetContextOrgId();
-                }
+                //foreach (var item in request)
+                //{
+                //    item.OrganizationId = GetContextOrgId();
+                //}
                 // Validation 
                 if (request.Count <= 0)
                 {
