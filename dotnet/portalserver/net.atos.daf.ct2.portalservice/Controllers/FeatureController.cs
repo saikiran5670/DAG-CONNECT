@@ -327,7 +327,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
                 int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
                 request.Level = level;
-                request.OrganizationID = GetContextOrgId();
+                if (request.OrganizationID != 0)
+                {
+                    request.OrganizationID = GetContextOrgId();
+                }
+                
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();
