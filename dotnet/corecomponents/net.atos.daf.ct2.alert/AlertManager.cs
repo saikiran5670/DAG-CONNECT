@@ -69,5 +69,10 @@ namespace net.atos.daf.ct2.alert
             return alertRepository.DuplicateAlertType(alertId);
         }
         #endregion
+
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        {
+            return await alertRepository.IsLandmarkActiveInAlert(landmarkId);
+        }
     }
 }

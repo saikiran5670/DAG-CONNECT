@@ -100,7 +100,7 @@ export class OrganisationRelationshipComponent implements OnInit {
                               data.vehicleGroupName.toLowerCase().includes(filter) ||
                               data.organizationName.toLowerCase().includes(filter) ||
                               (getDt(data.startDate)).toString().toLowerCase().includes(filter) ||
-                              (getDt(data.startDate)).toString().toLowerCase().includes(filter) ||
+                              (getDt(data.endDate)).toString().toLowerCase().includes(filter) ||
                               getChaining(data.allowChain).includes(filter)
                       };
                     });
@@ -430,7 +430,7 @@ function getDt(date){
       var day = newdate.getDate();
       var month = newdate.getMonth();
       var year = newdate.getFullYear();
-      return (`${​​​​​​​​day}​​​​​​​​/${​​​​​​​​month + 1}​​​​​​​​/${​​​​​​​​year}​​​​​​​​`);
+      return (`${​​​​​​​​day}/${​​​​​​​​month + 1}/${​​​​​​​​year}​​​​​​​​`);
     }​​​​​​​​
 }
 
