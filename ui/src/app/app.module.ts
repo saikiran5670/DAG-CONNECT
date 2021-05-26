@@ -7,7 +7,7 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { ChartsModule } from 'ng2-charts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {HttpClientModule,HttpClient,HTTP_INTERCEPTORS} from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AlertsComponent } from './configuration/alerts/alerts.component';
 import { ConfigLoader, ConfigModule } from '@ngx-config/core';
 import { ConfigHttpLoader } from '@ngx-config/http-loader';
