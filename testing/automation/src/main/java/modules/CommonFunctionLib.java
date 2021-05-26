@@ -834,6 +834,9 @@ rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getT
 if(rowvalueF.startsWith("New")) {
 if(driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")).isDisplayed()) {
 	 rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")).getText();
+	 System.out.println("New red tag is displayed");
+	 test.log(LogStatus.PASS,  "New red tag is displayed");
+	 Log.info("New red tag is displayed");	
 }
 }
 String[] str;
@@ -1294,7 +1297,7 @@ try
 	System.out.println("Value found in expected column");
 	test.log(LogStatus.PASS,  "Value found in expected column");
 	Log.info("Value found in expected column");	
-	if (column.equals("Name")) {
+	if (column.equals("Name")||column.equals("Email ID")||column.equals("Package Code")) {
 		String Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("ROLE_DELETE");
 		System.out.println(RowPart + j + Btn_Delete);
 		driver.findElement(By.xpath(RowPart + j + Btn_Delete)).click();
@@ -1387,7 +1390,7 @@ public static void verifyDeletedRecord() throws Exception
 		  }
 }
 //*********************Check icon in TBL************************************************************
-	public static boolean checkIconInTbl(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL) throws Exception {
+public static boolean checkIconInTbl(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL) throws Exception {
 	Thread.sleep(3000);
 	try 
 	{
@@ -1619,7 +1622,7 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	for (int j = 1; j <= options1.size(); j++) 
 	{String rowvalueF = null;
 	//String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
-		if(column.equals("Vehicle")) {
+		if(column.equals("Vehicle")||column.equals("Email ID")) {//||column.equals("Package Code")
 			rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]")).getText();
 		}else {
 	 rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/span[3]")).getText();
@@ -1755,8 +1758,6 @@ public static boolean VerifyGlobalIcon(String GRPTBL, String COLHEAD, String GRP
 	return false;
 	}
 	}
-
-
 //*********************Edit Record From TBL***************************************************************
 public static boolean editRecordFrmTbl() throws Exception {
 Thread.sleep(3000);
@@ -1839,7 +1840,7 @@ System.out.println("Value found in expected column");
 test.log(LogStatus.PASS,  "Value found in expected column");
 Log.info("Value found in expected column");	
 
-if(column.equals("Name")) {
+if(column.equals("Name")||column.equals("Email ID")) {
 	String Btn_EditR = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("GRP_EDIT");//"ROLE_EDIT");
 	System.out.println(RowPart + j + Btn_EditR);
 	driver.findElement(By.xpath(RowPart + j + Btn_EditR)).click();
