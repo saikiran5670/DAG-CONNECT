@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         #region Vehicle component methods
 
-        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId)
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
         {
             log.Info("GetVehicleBySubscriptionId Vehicle method called in repository");
             try
