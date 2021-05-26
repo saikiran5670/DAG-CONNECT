@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.visibility.repository
 		}
 
 		public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
-																			   int OrganizationId)
+																							   int OrganizationId)
 		{
 			try
 			{
@@ -63,14 +63,15 @@ namespace net.atos.daf.ct2.visibility.repository
 				#region Query Select Vehicle By Account Visibility
 				var query = @"WITH cte_account_visibility_for_vehicle
 							AS (
-							select distinct ass.vehicle_group_id as vehiclegroupid,ass.access_type,vgrpref.ref_id,grp.organization_id 
-								from master.accessrelationship ass
+							select distinct ass.vehicle_group_id as vehiclegroupid,ass.access_type,
+							case when vgrpref.ref_id is null then  @account_id else vgrpref.ref_id end ref_id
+							,grp.organization_id 
+							from master.accessrelationship ass
 							inner join master.group grp 
-							on ass.account_group_id=grp.id and grp.object_type='A' and (grp.ref_id in(@account_id) or grp.ref_id is null) 
-							inner join master.groupref vgrpref
-							on  grp.id=vgrpref.group_id
-							where grp.organization_id=@organization_id
-							and	vgrpref.ref_id in(@account_id) 
+							on ass.account_group_id=grp.id and grp.object_type='A' and (grp.ref_id = @account_id or grp.ref_id is null) 
+							left join master.groupref vgrpref
+							on  grp.id=vgrpref.group_id and	vgrpref.ref_id = @account_id
+							where grp.organization_id=@organization_id							 
 							)
 
 							--select * from cte_account_visibility_for_vehicle
@@ -302,18 +303,18 @@ namespace net.atos.daf.ct2.visibility.repository
 								select distinct * from cte_account_vehicle_DynamicOEM
 							)
 							select  distinct 
-									VehicleGroupId
+									case when group_type = 'S' then 0 else VehicleGroupId end VehicleGroupId
 									,accountid as AccountId
 									,object_type as ObjectType
 									,group_type as GroupType
 									,case when function_enum is null then '' else function_enum end as FunctionEnum
 									,Organization_Id as OrganizationId
 									,access_type as AccessType
-									,case when VehicleGroupName is null then '' else VehicleGroupName end as VehicleGroupName 
+									,case when VehicleGroupName is null or group_type = 'S' then '' else VehicleGroupName end as VehicleGroupName 
 									,VehicleId
-									,case when VehicleName is null then '' else VehicleName end as VehicleName
+									,case when VehicleName is null  then '' else VehicleName end as VehicleName
 									,vin as Vin
-									, case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
+									,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
 						 from cte_account_vehicle_CompleteList where organization_id=@organization_id order by 1;";
 				#endregion
 				return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);

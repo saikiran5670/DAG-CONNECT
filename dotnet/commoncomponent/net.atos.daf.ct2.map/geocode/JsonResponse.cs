@@ -1,5 +1,5 @@
 ﻿using System.Runtime.Serialization;
-namespace net.atos.daf.ct2.utilities.geocode.Json
+namespace net.atos.daf.ct2.map.geocode.Json
 {
 
 	[DataContract]

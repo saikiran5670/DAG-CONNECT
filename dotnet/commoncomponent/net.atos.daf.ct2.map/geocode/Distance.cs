@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.utilities.geocode
+namespace net.atos.daf.ct2.map.geocode
 {
 	public enum DistanceUnits
 	{

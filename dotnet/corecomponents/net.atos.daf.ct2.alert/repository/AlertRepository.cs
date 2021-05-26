@@ -211,22 +211,24 @@ namespace net.atos.daf.ct2.alert.repository
                     parameteralertfilterref.Add("@position_type", Convert.ToChar(alertfilter.PositionType));
                 else
                     parameteralertfilterref.Add("@position_type", null);
-                BitArray bitArray = new BitArray(7);
-                for (int i = 0; i < alertfilter.DayType.Length; i++)
-                {
-                    bitArray.Set(i, alertfilter.DayType[i]);
-                }
-                parameteralertfilterref.Add("@day_type", bitArray);
-                if (alertfilter.PeriodType != null && alertfilter.PeriodType.Length > 0)
-                    parameteralertfilterref.Add("@period_type", Convert.ToChar(alertfilter.PeriodType));
-                else
-                    parameteralertfilterref.Add("@period_type", null);
-                parameteralertfilterref.Add("@filter_start_date", alertfilter.FilterStartDate);
-                parameteralertfilterref.Add("@filter_end_date", alertfilter.FilterEndDate);
+                //BitArray bitArray = new BitArray(7);
+                //for (int i = 0; i < alertfilter.DayType.Length; i++)
+                //{
+                //    bitArray.Set(i, alertfilter.DayType[i]);
+                //}
+                //parameteralertfilterref.Add("@day_type", bitArray);
+                //if (alertfilter.PeriodType != null && alertfilter.PeriodType.Length > 0)
+                //    parameteralertfilterref.Add("@period_type", Convert.ToChar(alertfilter.PeriodType));
+                //else
+                //    parameteralertfilterref.Add("@period_type", null);
+                //parameteralertfilterref.Add("@filter_start_date", alertfilter.FilterStartDate);
+                //parameteralertfilterref.Add("@filter_end_date", alertfilter.FilterEndDate);
                 parameteralertfilterref.Add("@state", 'A');
                 parameteralertfilterref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                string queryAlertfilter = @"INSERT INTO master.alertfilterref(alert_id, alert_urgency_level_id, filter_type, threshold_value, unit_type, landmark_type, ref_id, position_type, day_type, period_type, filter_start_date, filter_end_date, state, created_at)
-	                                    VALUES (@alert_id, @alert_urgency_level_id, @filter_type, @threshold_value, @unit_type, @landmark_type, @ref_id, @position_type, @day_type, @period_type, @filter_start_date, @filter_end_date, @state, @created_at) RETURNING id";
+                //string queryAlertfilter = @"INSERT INTO master.alertfilterref(alert_id, alert_urgency_level_id, filter_type, threshold_value, unit_type, landmark_type, ref_id, position_type, day_type, period_type, filter_start_date, filter_end_date, state, created_at)
+                //                     VALUES (@alert_id, @alert_urgency_level_id, @filter_type, @threshold_value, @unit_type, @landmark_type, @ref_id, @position_type, @day_type, @period_type, @filter_start_date, @filter_end_date, @state, @created_at) RETURNING id";
+                string queryAlertfilter = @"INSERT INTO master.alertfilterref(alert_id, alert_urgency_level_id, filter_type, threshold_value, unit_type, landmark_type, ref_id, position_type, state, created_at)
+	                                    VALUES (@alert_id, @alert_urgency_level_id, @filter_type, @threshold_value, @unit_type, @landmark_type, @ref_id, @position_type, @state, @created_at) RETURNING id";
                 int id = await dataAccess.ExecuteScalarAsync<int>(queryAlertfilter, parameteralertfilterref);
                 return id;
             }
@@ -738,7 +740,7 @@ namespace net.atos.daf.ct2.alert.repository
             await dataAccess.ExecuteAsync("UPDATE master.alertlandmarkref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             await dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             await dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at, modified_by=@modified_by WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, modified_by= ModifiedBy, alert_id = alertId, activeState = activeState });
-            await dataAccess.ExecuteAsync("UPDATE master.notificationavailabilityperiod SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+            //await dataAccess.ExecuteAsync("UPDATE master.notificationavailabilityperiod SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             await dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             await dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
             return true;
@@ -784,8 +786,46 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 throw;
             }
-        }        
+        }
 
         #endregion
+
+        #region Landmark Delete Validation
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = string.Empty;
+                dynamic responseId;
+
+                query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state";
+                parameter.Add("@ref_id", landmarkId);
+                parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                responseId = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                {
+                    query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state";
+                    parameter.Add("@ref_id", landmarkId);
+                    parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    responseId = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                        return false;
+                    else
+                        return true;
+                }
+                else
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+
+
     }
 }

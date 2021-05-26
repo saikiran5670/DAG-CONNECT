@@ -13,6 +13,7 @@ service AlertService {
   rpc CreateAlert (AlertRequest) returns (AlertResponse);
   rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
   rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
+  rpc IsLandmarkActiveInAlert (LandmarkIdRequest) returns (LandmarkIdExistResponse);
 }
 
 enum ResponseCode{
@@ -216,4 +217,14 @@ message NotificationRecipientRequest
 	string State=16;
 	int64 CreatedAt=17;
 	int64 ModifiedAt=18;
+}
+
+message LandmarkIdRequest {
+  repeated int32 LandmarkId = 1;
+}
+
+message LandmarkIdExistResponse{   
+    ResponseCode Code=1;
+    string Message = 2;
+	bool IsLandmarkActive =3;
 }
