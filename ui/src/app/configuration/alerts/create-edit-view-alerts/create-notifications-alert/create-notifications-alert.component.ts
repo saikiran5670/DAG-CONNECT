@@ -64,6 +64,9 @@ wsCount : number = 0;
     this.notificationForm = this._formBuilder.group({
       recipientLabel: ['', [ Validators.required ]],
       contactMode: ['', [Validators.required]],
+      criticalLevel: [''],
+      warningLevel: [''],
+      advisoryLevel: [''],
       FormArrayItems : this._formBuilder.array([this.initItems()]),
     },
     {
@@ -87,9 +90,9 @@ wsCount : number = 0;
         password: ['', [Validators.required]],
         webURL:['', [Validators.required]],
         wsTextDescription:[''],
-        criticalLevel: [''],
-        warningLevel: [''],
-        advisoryLevel: [''],
+        // criticalLevel: [''],
+        // warningLevel: [''],
+        // advisoryLevel: [''],
         notifyPeriod: ['A']
         });
     }
