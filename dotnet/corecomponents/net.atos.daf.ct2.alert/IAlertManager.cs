@@ -17,7 +17,8 @@ namespace net.atos.daf.ct2.alert
         Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid);
         Task<DuplicateAlertType> DuplicateAlertType(int alertId);
         #region Alert Category
-        Task<IEnumerable<EnumTranslation>> GetAlertCategory();        
+        Task<IEnumerable<EnumTranslation>> GetAlertCategory();
         #endregion
+        Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
     }
 }

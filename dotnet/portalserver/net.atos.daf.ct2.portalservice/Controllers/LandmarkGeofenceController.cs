@@ -13,6 +13,7 @@ using System.Linq;
 using log4net;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
+using Alert=net.atos.daf.ct2.alertservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -28,16 +29,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-       
-        
-        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        private readonly HeaderObj _userDetails;
+        private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
+        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker
+            , IHttpContextAccessor _httpContextAccessor, Alert.AlertService.AlertServiceClient alertServiceClient, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _GeofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Entity.Geofence.Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _alertServiceClient = alertServiceClient;
 
         }
 
@@ -198,27 +201,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             GeofenceDeleteResponse objGeofenceDeleteResponse = new GeofenceDeleteResponse();
             DeleteRequest objDeleteRequest = new DeleteRequest();
+            Alert.LandmarkIdRequest landmarkIdRequest = new Alert.LandmarkIdRequest();
             try
             {
-
                 foreach (var item in request.GeofenceIds)
                 {
-                    objDeleteRequest.GeofenceId.Add(item);
+                    landmarkIdRequest.LandmarkId.Add(item);
                 }
-                objDeleteRequest.ModifiedBy = request.ModifiedBy;
-                objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
+                Alert.LandmarkIdExistResponse isLandmarkavalible = await _alertServiceClient.IsLandmarkActiveInAlertAsync(landmarkIdRequest);
 
-                if (objGeofenceDeleteResponse.Code == Responsecode.Success)
+                if (isLandmarkavalible.IsLandmarkActive)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                     "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                     "DeleteGeofence  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
-                      Request);
-                    return Ok(objGeofenceDeleteResponse);
+                    return StatusCode(400, "Geofence is used in alert.");
                 }
                 else
                 {
-                    return StatusCode(400, "Bad Request");
+
+                    foreach (var item in request.GeofenceIds)
+                    {
+                        objDeleteRequest.GeofenceId.Add(item);
+                    }
+                    objDeleteRequest.ModifiedBy = request.ModifiedBy;
+                    objGeofenceDeleteResponse = await _GeofenceServiceClient.DeleteGeofenceAsync(objDeleteRequest);
+
+                    if (objGeofenceDeleteResponse.Code == Responsecode.Success)
+                    {
+                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                         "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                         "DeleteGeofence  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
+                          Request);
+                        return Ok(objGeofenceDeleteResponse);
+                    }
+                    else
+                    {
+                        return StatusCode(400, "Bad Request");
+                    }
                 }
             }
             catch (Exception ex)

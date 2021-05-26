@@ -18,7 +18,8 @@
       "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence",
       "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
       "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor",
-      "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso"
+      "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
+      "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report"
     },
     "hereMap":{
       "app_id":"LRJH9LmTMNbwteXRz03L",
