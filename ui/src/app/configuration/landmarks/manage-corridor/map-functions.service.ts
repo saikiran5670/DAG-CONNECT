@@ -59,38 +59,53 @@ export class MapFunctionsService {
     this.mapGroup = group;
   }
 
+  clearRoutesFromMap(){
+    var group = new H.map.Group();
+    group.removeAll();
+    this.hereMap.removeObjects(this.hereMap.getObjects())
+    this.startMarker = null; this.endMarker = null;
+  }
+  
+  group = new H.map.Group();
+
   viewSelectedRoutes(_selectedRoutes){
     var group = new H.map.Group();
     group.removeAll();
+    this.hereMap.removeObjects(this.hereMap.getObjects())
+    // if(this.routeOutlineMarker){
+    //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+    //   this.routeOutlineMarker = null;
+    // }
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
-        let startLat = _selectedRoutes[i].startLat;
-        let startLong = _selectedRoutes[i].startLong;
-        let endLat = _selectedRoutes[i].endLat;
-        let endLong = _selectedRoutes[i].endLong;
-
+        this.startAddressPositionLat = _selectedRoutes[i].startLat;
+        this.startAddressPositionLong = _selectedRoutes[i].startLong;
+        this.endAddressPositionLat= _selectedRoutes[i].endLat;
+        this.endAddressPositionLong= _selectedRoutes[i].endLong;
+        this.corridorWidth = _selectedRoutes[i].width;
+        this.corridorWidthKm = this.corridorWidth/1000;
 
 
 
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-        this.startMarker = new H.map.Marker({lat:startLat, lng:startLong},{icon:icon});
+        this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
 
         let endMarker = this.createEndMarker();
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
   
-        this.endMarker = new H.map.Marker({lat:endLat, lng:endLong},{icon:iconEnd});
+        this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:iconEnd});
      
-        var group = new H.map.Group();
-
-        group.addObjects([this.startMarker,this.endMarker]);
-        this.hereMap.addObject(group);
-        this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
+       
+        this.group.addObjects([this.startMarker,this.endMarker]);
+        this.calculateAB('view');
+       // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
+       // let successRoute = this.calculateAB('view');
       }
     }
   }
-  
+
   plotStartPoint(_locationId){
     let geocodingParameters = {
 		  searchText: _locationId ,
@@ -115,7 +130,7 @@ export class MapFunctionsService {
 
   checkRoutePlot(){
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
-      this.calculateAB();
+      this.calculateAB('');
     }
   }
 
@@ -161,7 +176,7 @@ export class MapFunctionsService {
     return endMarker;
   }
 
-  calculateAB(){
+  calculateAB(_type){
     let routeRequestParams = {
       'routingMode': 'fast',
       'transportMode': 'truck',
@@ -171,16 +186,16 @@ export class MapFunctionsService {
     };
     this.hereSerive.calculateRoutePoints(routeRequestParams).then((data)=>{
       
-       this.addRouteShapeToMap(data);
+       this.addRouteShapeToMap(data,_type);
       console.log(data)
     },(error)=>{
        console.error(error);
     })
   }
 
-  addRouteShapeToMap(result){
-    var group = new H.map.Group();
-    if(this.routeOutlineMarker){
+  addRouteShapeToMap(result,_type?){
+  //  var group = new H.map.Group();
+    if(this.routeOutlineMarker && _type != 'view'){
       this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
 
     }
@@ -193,7 +208,7 @@ export class MapFunctionsService {
       // });
       // this.hereMap.addObject(routeLine);
       // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
-      if (this.corridorWidthKm > 0) {
+      //if (this.corridorWidthKm > 0) {
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
             lineWidth: this.corridorWidthKm,
@@ -212,15 +227,26 @@ export class MapFunctionsService {
         // outline and the pattern
         var routeLine = new H.map.Group();
         // routeLine.addObjects([routeOutline, routeArrows]);
-        this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+        this.group.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+        this.hereMap.addObject(this.group);
+        this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+
+
+        if(_type != 'view'){
         this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
-      }
-      else{
-        this.routeOutlineMarker = null;
-        this.routeCorridorMarker = null;
+        }
+        else{
+       // this.hereMap.getViewModel().setLookAtData({ bounds: this.group.getBoundingBox() });
 
-      }
+        }
+
+      // }
+      // else{
+      //   this.routeOutlineMarker = null;
+      //   this.routeCorridorMarker = null;
+
+      // }
 
     });
   

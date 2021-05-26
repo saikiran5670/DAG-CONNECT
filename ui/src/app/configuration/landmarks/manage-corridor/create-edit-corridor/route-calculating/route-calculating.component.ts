@@ -811,7 +811,7 @@ export class RouteCalculatingComponent implements OnInit {
       // });
       // this.hereMap.addObject(routeLine);
       // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
-      if (this.corridorWidthKm > 0) {
+     // if (this.corridorWidthKm > 0) {
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
             lineWidth: this.corridorWidthKm,
@@ -833,12 +833,12 @@ export class RouteCalculatingComponent implements OnInit {
         this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
         this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
-      }
-      else{
-        this.routeOutlineMarker = null;
-        this.routeCorridorMarker = null;
+      // }
+      // else{
+      //   this.routeOutlineMarker = null;
+      //   this.routeCorridorMarker = null;
 
-      }
+      // }
 
     });
   

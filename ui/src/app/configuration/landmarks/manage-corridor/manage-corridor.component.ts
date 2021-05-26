@@ -230,6 +230,7 @@ export class ManageCorridorComponent implements OnInit {
     this.markerArray = [];
     if(this.isAllSelectedForCorridor()){
       this.selectedCorridors.clear();
+      this.mapFunctions.clearRoutesFromMap();
       this.showMap = false;
     }
     else{
@@ -237,10 +238,11 @@ export class ManageCorridorComponent implements OnInit {
         this.selectedCorridors.select(row);
         this.markerArray.push(row);
       });
+      this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.showMap = true;
     }
     console.log(this.markerArray);
-    this.mapFunctions.viewSelectedRoutes(this.markerArray);
+    
     //this.addPolylineToMap();
   }
 
@@ -264,12 +266,15 @@ export class ManageCorridorComponent implements OnInit {
     //console.log(row);
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
+      
+    this.mapFunctions.viewSelectedRoutes(this.markerArray);
     }else{ //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
+      this.mapFunctions.clearRoutesFromMap();
+
       }
-    this.mapFunctions.viewSelectedRoutes(this.markerArray);
 
      // this.addPolylineToMap();
   }
@@ -330,7 +335,9 @@ export class ManageCorridorComponent implements OnInit {
         this.failureMsgBlink(_msg);
     }
     this.loadCorridorData();
-
+    setTimeout(() => {
+      this.mapFunctions.initMap(this.mapElement);
+      }, 0);
   }
 
   pageSizeUpdated(_event){
