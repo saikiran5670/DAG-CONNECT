@@ -108,5 +108,6 @@ namespace net.atos.daf.ct2.alert.entity
         public long notava_modified_at { get; set; }
         public string vehiclename { get; set; }
         public string vehiclegroupname { get; set; }
+        public string vin { get; set; }
     }
 }
