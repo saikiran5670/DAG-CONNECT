@@ -1,4 +1,5 @@
-﻿using System;
+﻿using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -17,6 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 
         public double ThresholdValue { get; set; }
         [StringLength(1, MinimumLength = 0,ErrorMessage = "Unit type should be 1 character")]
+        [AlertUnitTypeCheck(ErrorMessage = "Unit Type is invalid")]
         public string UnitType { get; set; }
         [StringLength(1, MinimumLength = 0, ErrorMessage = "Landmark type should be 1 character")]
         public string LandmarkType { get; set; }
