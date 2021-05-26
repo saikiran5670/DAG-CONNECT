@@ -72,7 +72,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
   alert_type_selected: string= '';
-  vehicle_group_selected: number= 26;
+  vehicle_group_selected: number;
+  alertCategoryName: string= '';
   alertTypeName: string= '';
   isCriticalLevelSelected: boolean= false;
   isWarningLevelSelected: boolean= false;
@@ -158,6 +159,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     }
     else if(this.actionType == 'view'){
       this.alert_category_selected = this.selectedRowData.category;
+      this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
       this.onChangeAlertType(this.selectedRowData.type);
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
@@ -235,6 +237,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   onChangeAlertType(value){
     this.unitTypes= [];
     this.alert_type_selected= value;
+    this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
@@ -253,7 +256,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
     }
     else if(this.alert_category_selected == 'R'){ // Repair and maintenance
-      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
       if(this.alert_type_selected === 'O'){ // Status Change to Stop Now
         this.alertForm.get('alertLevel').setValue('C');
       }
@@ -264,7 +266,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
             (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
 
-      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
         this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
           if(element.urgencyLevelType == 'C'){
             this.isCriticalLevelSelected= true;
