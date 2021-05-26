@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CorridorService } from 'src/app/services/corridor.service';
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
-
+import { MapFunctionsService } from './map-functions.service';
 declare var H: any;
 
 @Component({
@@ -46,7 +46,8 @@ export class ManageCorridorComponent implements OnInit {
   constructor( 
     private dialogService: ConfirmDialogService, 
     private corridorService : CorridorService,
-    private _snackBar: MatSnackBar) {
+    private _snackBar: MatSnackBar,
+    private mapFunctions: MapFunctionsService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -56,7 +57,7 @@ export class ManageCorridorComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
-    this.loadCorridorData()
+    this.loadCorridorData();
   }
 
   loadCorridorData(){
@@ -112,7 +113,7 @@ export class ManageCorridorComponent implements OnInit {
 
   public ngAfterViewInit() {
     setTimeout(() => {
-    this.initMap();
+    this.mapFunctions.initMap(this.mapElement);
     }, 0);
   }
 
@@ -238,7 +239,9 @@ export class ManageCorridorComponent implements OnInit {
       });
       this.showMap = true;
     }
-    this.addPolylineToMap();
+    console.log(this.markerArray);
+    this.mapFunctions.viewSelectedRoutes(this.markerArray);
+    //this.addPolylineToMap();
   }
 
   isAllSelectedForCorridor() {
@@ -266,11 +269,13 @@ export class ManageCorridorComponent implements OnInit {
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       }
-      this.addPolylineToMap();
+    this.mapFunctions.viewSelectedRoutes(this.markerArray);
+
+     // this.addPolylineToMap();
   }
 
   addPolylineToMap(){
-    console.log(this.markerArray)
+    console.log(this.markerArray);
     var lineString = new H.geo.LineString();
     this.markerArray.forEach(element => {
       console.log(element.startLat)
@@ -319,12 +324,13 @@ export class ManageCorridorComponent implements OnInit {
     if(_eventObj.successMsg=="create"){
       var _msg = "Corridor created successfully!"
       this.successMsgBlink(_msg);
-      this.loadCorridorData();
     }
     else if(_eventObj.successMsg=="reject"){
         var _msg = "Corridor label exists!"
         this.failureMsgBlink(_msg);
     }
+    this.loadCorridorData();
+
   }
 
   pageSizeUpdated(_event){
