@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     _logger.Info("Relationship create function called ");
                     //Assign context orgId
-                    request.OrganizationId = _userDetails.contextOrgId;
+                    request.OrganizationId =GetContextOrgId();
                     if (request.OrganizationId == 0)
                     {
                         return StatusCode(400, "Please provide OrganizationId:");

@@ -36,8 +36,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly FeatuseBusinessService.FeatureService.FeatureServiceClient _featureclient;
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
-        private IMemoryCacheProvider _cache;
-        private readonly HeaderObj _userDetails;
+        private IMemoryCacheProvider _cache;       
         private readonly PortalCacheConfiguration _cachesettings;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         #endregion
