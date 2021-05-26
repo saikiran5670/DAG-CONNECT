@@ -6,13 +6,19 @@
             </div>
         </div>
         <div style="background: rgb(241, 242, 243); padding: 0px 25px;">
-            <mat-tab-group [(selectedIndex)]="selectedIndex">
+            <mat-tab-group [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
                 <mat-tab label="{{ translationData.lblAccountInfoSettings || 'Account Info & Settings' }}"> 
-                    <app-account-info-settings [translationData]='translationData'></app-account-info-settings>
+                    <app-account-info-settings *ngIf="selectedIndex == 0" [translationData]='translationData'></app-account-info-settings>
                 </mat-tab>
-                <mat-tab label="{{ translationData.lblDashboard || 'Dashboard' }}">{{ translationData.lblDashboard || 'Dashboard' }}</mat-tab>
-                <mat-tab label="{{ translationData.lblReports || 'Reports' }}">{{ translationData.lblReports || 'Reports' }}</mat-tab>
-                <mat-tab label="{{ translationData.lblFleetOverview || 'Fleet Overview' }}">{{ translationData.lblFleetOverview || 'Fleet Overview' }}</mat-tab>
+                <mat-tab label="{{ translationData.lblDashboard || 'Dashboard' }}">
+                    <app-dashboard-preferences *ngIf="selectedIndex == 1"></app-dashboard-preferences>
+                </mat-tab>
+                <mat-tab label="{{ translationData.lblReports || 'Reports' }}">
+                    <app-reports-preferences *ngIf="selectedIndex == 2"></app-reports-preferences>
+                </mat-tab>
+                <mat-tab label="{{ translationData.lblFleetOverview || 'Fleet Overview' }}">
+                    <app-fleet-overview-preferences *ngIf="selectedIndex == 3"></app-fleet-overview-preferences>    
+                </mat-tab>
             </mat-tab-group>
         </div>
     </div> 
