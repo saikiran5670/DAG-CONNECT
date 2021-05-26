@@ -118,7 +118,7 @@
             <ng-container matColumnDef="action">
               <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Action' }} </mat-header-cell>
               <mat-cell *matCellDef="let row" class="action">
-                <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView || 'View' }}">
+                <button class='actionBtn' mat-flat-button (click)="onViewAlert(row, 'view')" matTooltip="{{ translationData.lblView || 'view' }}">
                   <mat-icon>visibility</mat-icon>
                 </button>
                 <button *ngIf="!adminAccessType.adminReadOnlyAccess" class='actionBtn' mat-flat-button (click)="onEditDuplicateAlert(row, 'edit')" matTooltip="{{ translationData.lblEdit || 'Edit' }}">

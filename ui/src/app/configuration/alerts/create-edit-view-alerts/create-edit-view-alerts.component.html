@@ -1,6 +1,6 @@
 
 <div class='bgtrans'>
-<div *ngIf="actionType == 'create'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<div *ngIf="actionType == 'edit' || actionType == 'view'" fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span>{{ breadcumMsg }}</span>
     </div>
@@ -639,8 +639,13 @@
             (alert_category_selected != 'R' &&
             (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
             (selectedCorridor.selected.length == 0) && 
-            ((!isCriticalLevelSelected || this.alertForm.get('criticalLevelThreshold').value == '') && 
-             (!isWarningLevelSelected || this.alertForm.get('warningLevelThreshold').value == '') &&
+            !((!isCriticalLevelSelected || 
+                (this.alertForm.get('criticalLevelThreshold').value == '' || 
+                  (isWarningLevelSelected && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ) ||
+                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))) && 
+             (!isWarningLevelSelected || 
+                this.alertForm.get('warningLevelThreshold').value == '' ||
+                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value )) &&
              (!isAdvisoryLevelSelected || this.alertForm.get('advisoryLevelThreshold').value == '')))
              " mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
