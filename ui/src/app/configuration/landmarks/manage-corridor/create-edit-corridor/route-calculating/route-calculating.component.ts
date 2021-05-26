@@ -115,6 +115,7 @@ export class RouteCalculatingComponent implements OnInit {
   strPresentStart: boolean = false;
   strPresentEnd: boolean = false;
 
+  createFlag : boolean = true;
   constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -165,6 +166,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData();
+      this.createFlag = false;
+      this.strPresentStart = true;
+      this.strPresentEnd = true;
     }
     this.subscribeWidthValue()
    
@@ -341,7 +345,7 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   checkRoutePlot(){
-    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
+    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
       this.calculateAB();
     }
   }
@@ -582,17 +586,22 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentStart = false;
     this.searchStr = null;
     this.startAddressPositionLat = 0;
-    if(this.startMarker){
-      this.hereMap.removeObjects([this.startMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    this.hereMap.removeObjects(this.hereMap.getObjects());
+    
+    if(this.searchEndStr){
+      this.plotEndPoint(this.searchEndStr);
     }
+    
   }
   onEndFocus(){
     this.searchEndStrError = true;
     this.strPresentEnd = false;
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
-    if(this.endMarker){
-      this.hereMap.removeObjects([this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    this.hereMap.removeObjects(this.hereMap.getObjects());
+    
+    if(this.searchStr){
+      this.plotStartPoint(this.searchStr);
     }
   }
 
@@ -642,6 +651,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.plotViaPoint(this.viaRoutesList)
   }
   resetToEditData(){
+    this.searchStrError = false;
+    this.searchEndStrError = false;
     this.setCorridorData();
   }
 
@@ -798,10 +809,10 @@ export class RouteCalculatingComponent implements OnInit {
 
   addRouteShapeToMap(result){
     var group = new H.map.Group();
-    if(this.routeOutlineMarker){
-      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-      this.routeOutlineMarker = null;
-    }
+    // if(this.routeOutlineMarker){
+    //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+    //   this.routeOutlineMarker = null;
+    // }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
