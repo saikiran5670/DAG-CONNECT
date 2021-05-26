@@ -138,12 +138,7 @@ namespace net.atos.daf.ct2.features.repository
                 QueryStatement = QueryStatement + " and r.organization_id  = @organization_id";
 
             }
-            if (Featuretype != 0)
-            {
-                 parameter.Add("@type", Featuretype);
-                QueryStatement = QueryStatement + " and f.type  = @type";
-
-            }
+           
             if(RoleId == 0  && Organizationid ==0)
             {
                  QueryStatement = @"SELECT f.id, f.name,t.value, f.type, f.state, f.data_attribute_set_id, f.key, f.level, f.state
@@ -151,12 +146,7 @@ namespace net.atos.daf.ct2.features.repository
 									Left join translation.translation t
                                     on f.Key = t.name and t.code=@Code
                                     where f.state IN ('A', 'I')";
-               if (Featuretype != '0')
-                {
-                    parameter.Add("@type", Featuretype);
-                    QueryStatement = QueryStatement + " and f.type  = @type";
-
-                }
+               
                 if (FeatureId > 0)
                 {
                     parameter.Add("@id", FeatureId);
