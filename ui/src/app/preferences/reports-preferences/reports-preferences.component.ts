@@ -8,17 +8,20 @@ import { Component, Input, OnInit } from '@angular/core';
 
 export class ReportsPreferencesComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   updateMsgVisible: boolean = false;
 
   constructor() { }
 
   ngOnInit() {
-    console.log("fdfdfdsf");
   }
 
   onClose() {
     this.updateMsgVisible = false;
+  }
+
+  editTripReportPreferences(){
+    
   }
 
 }
