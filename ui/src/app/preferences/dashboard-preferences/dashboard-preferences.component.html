@@ -1,0 +1,15 @@
+<div class="account-info-settings-container" style="background: white;">
+    <mat-card class='margin-bottom-xlg mat-elevation-z'>
+        <mat-card-content>
+            <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+                style='padding:10px; color:#fff; background: #5dc24e;'>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+                    {{ 'displayMessage' }}
+                </div>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+                    <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
