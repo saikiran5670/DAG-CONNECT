@@ -784,8 +784,46 @@ namespace net.atos.daf.ct2.alert.repository
             {
                 throw;
             }
-        }        
+        }
 
         #endregion
+
+        #region Landmark Delete Validation
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                var query = string.Empty;
+                dynamic responseId;
+
+                query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state";
+                parameter.Add("@ref_id", landmarkId);
+                parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                responseId = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                {
+                    query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state";
+                    parameter.Add("@ref_id", landmarkId);
+                    parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    responseId = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                        return false;
+                    else
+                        return true;
+                }
+                else
+                    return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
+
+
     }
 }

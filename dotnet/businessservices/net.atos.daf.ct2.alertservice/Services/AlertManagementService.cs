@@ -269,5 +269,32 @@ namespace net.atos.daf.ct2.alertservice.Services
             return alertResponse;
         }
         #endregion
+
+        #region Landmark Delete Validation
+
+        public override async Task<LandmarkIdExistResponse> IsLandmarkActiveInAlert(LandmarkIdRequest request, ServerCallContext context)
+        {
+            var landmarkResponse = new LandmarkIdExistResponse();
+            try
+            {
+                List<int> landmarkIds = new List<int>();
+                foreach (int item in request.LandmarkId)
+                {
+                    landmarkIds.Add(item);
+                }
+                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds);
+                landmarkResponse.IsLandmarkActive = IsLandmarkIdActive != false ? true : false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                landmarkResponse.Code = ResponseCode.InternalServerError;
+                landmarkResponse.Message = String.Format("IsLandmarkActiveInAlert Method in alert service", request.LandmarkId, ex.Message);
+            }
+            return landmarkResponse;
+        }
+
+        #endregion
+
     }
 }
