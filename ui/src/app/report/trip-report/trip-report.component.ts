@@ -114,78 +114,6 @@ export class TripReportComponent implements OnInit {
      this.wholeTripData = tripData;
      this.filterDateData();
     });
-
-    this.tripData = [{
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    }];
-    this.updateDataSource(this.tripData);
   }
 
   processTranslation(transData: any) {
@@ -218,7 +146,35 @@ export class TripReportComponent implements OnInit {
     let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     if(_vinData.length > 0){
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-        console.log("current trip data:: ", _tripData);
+        this.tripData = [{
+          startDate: '01/01/2021 00:00:00', 
+          endDate: '01/01/2021 23:59:59', 
+          distance: 128.9, 
+          idleDuration: '00:12', 
+          avgSpeed: 54.5, 
+          avgWeight: 6.45,
+          startPosition: 'DAF Nederland S',
+          endPosition: 'DAF Nederland E',
+          fuelConsumption: 123.5,
+          drivingTime: '00:23',
+          alerts: 20,
+          events: 30
+        },
+        {
+          startDate: '01/01/2021 00:00:00', 
+          endDate: '01/01/2021 23:59:59', 
+          distance: 123.9, 
+          idleDuration: '00:18', 
+          avgSpeed: 32.5, 
+          avgWeight: 7.45,
+          startPosition: 'DAF Nederland S',
+          endPosition: 'DAF Nederland E',
+          fuelConsumption: 123.5,
+          drivingTime: '00:23',
+          alerts: 20,
+          events: 30
+        }];
+        this.updateDataSource(this.tripData);
       });
     }
   }
