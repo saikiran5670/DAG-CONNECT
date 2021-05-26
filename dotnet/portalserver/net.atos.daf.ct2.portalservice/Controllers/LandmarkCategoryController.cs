@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly CategoryMapper _categoryMapper;
         private ILog _logger;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private readonly HeaderObj _userDetails;
+       
         
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
             AuditHelper auditHelper, OrganizationService.OrganizationServiceClient organizationClient, Common.AccountPrivilegeChecker privilegeChecker
