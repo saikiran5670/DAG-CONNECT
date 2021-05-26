@@ -848,7 +848,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "Organization Id and Account Id both are required.");
                 }
                 //Assign context orgId
-                OrganizationId = GetContextOrgId();
+                //OrganizationId = GetContextOrgId();
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
