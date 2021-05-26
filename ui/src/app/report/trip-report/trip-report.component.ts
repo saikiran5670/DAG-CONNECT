@@ -5,9 +5,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../services/translation.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { filter } from 'rxjs/operators';
 
 declare var H: any;
 
@@ -50,6 +51,7 @@ export class TripReportComponent implements OnInit {
   endDateValue: any;
   last3MonthDate: any;
   todayDate: any;
+  wholeTripData: any = [];
 
   constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
     this.platform = new H.service.Platform({
@@ -69,8 +71,8 @@ export class TripReportComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.tripForm = this._formBuilder.group({
-      vehicleGroup: ['', []],
-      vehicle: ['', []],
+      vehicleGroup: ['', [Validators.required]],
+      vehicle: ['', [Validators.required]],
       startDate: ['', []],
       endDate: ['', []],
       startTime: ['', []],
@@ -87,24 +89,30 @@ export class TripReportComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.setDefaultTodayDate();
       this.setDefaultStartEndTime();
-      this.loadTripData();
+      this.setDefaultTodayDate();
+      this.loadWholeTripData();
     });
+  }
+
+  setDefaultStartEndTime(){
+    this.selectedStartTime = "00:00";
+    this.selectedEndTime = "23:59";
   }
 
   setDefaultTodayDate(){
     this.selectionTab = 'today';
-    this.startDateValue = this.getTodayDate();
-    this.endDateValue = this.getTodayDate();
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
   }
 
-  loadTripData(){
+  loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-     // console.log("tripData:: ", tripData)
+     this.wholeTripData = tripData;
+     this.filterDateData();
     });
 
     this.tripData = [{
@@ -205,11 +213,29 @@ export class TripReportComponent implements OnInit {
   }
 
   onSearch(){
-
+    let _startTime = this.startDateValue.getTime();
+    let _endTime = this.endDateValue.getTime();
+    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(_vinData.length > 0){
+      this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
+        console.log("current trip data:: ", _tripData);
+      });
+    }
   }
 
   onReset(){
+    this.setDefaultStartEndTime();
+    this.setDefaultTodayDate();
+    this.filterDateData();
+    this.tripData = [];
+    this.resetTripFormControlValue();
+  }
 
+  resetTripFormControlValue(){
+    this.tripForm.setValue({
+      vehicle: '',
+      vehicleGroup: ''
+   });
   }
 
   onVehicleGroupChange(event: any){
@@ -334,59 +360,65 @@ export class TripReportComponent implements OnInit {
     return date;
   }
 
-  setDefaultStartEndTime(){
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
-  }
-
   selectionTimeRange(selection: any){
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
-        this.startDateValue = this.getTodayDate();
-        this.endDateValue = this.getTodayDate();
+        //this.startDateValue = this.getTodayDate();
+        //this.endDateValue = this.getTodayDate();
         // this.tripForm.get('startDate').setValue(this.getTodayDate());
         // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'yesterday': {
         this.selectionTab = 'yesterday';
-        this.startDateValue = this.getYesterdaysDate();
-        this.endDateValue = this.getTodayDate();
+        // this.startDateValue = this.getYesterdaysDate();
+        // this.endDateValue = this.getTodayDate();
         // this.tripForm.get('startDate').setValue(this.getYesterdaysDate());
         // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
-        this.startDateValue = this.getLastWeekDate();
-        this.endDateValue = this.getTodayDate();
+        // this.startDateValue = this.getLastWeekDate();
+        // this.endDateValue = this.getTodayDate();
         // this.tripForm.get('startDate').setValue(this.getLastWeekDate());
         // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
-        this.startDateValue = this.getLastMonthDate();
-        this.endDateValue = this.getTodayDate();
+        // this.startDateValue = this.getLastMonthDate();
+        // this.endDateValue = this.getTodayDate();
         // this.tripForm.get('startDate').setValue(this.getLastMonthDate());
         // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
-        this.startDateValue = this.getLast3MonthDate();
-        this.endDateValue = this.getTodayDate();
+        // this.startDateValue = this.getLast3MonthDate();
+        // this.endDateValue = this.getTodayDate();
         // this.tripForm.get('startDate').setValue(this.getLast3MonthDate());
         // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
     }
+    this.filterDateData();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
@@ -397,6 +429,37 @@ export class TripReportComponent implements OnInit {
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
     //console.log("end: ", event.value)
     this.endDateValue = event.value;
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+    date.setHours(timeObj.split(":")[0]);
+    date.setMinutes(timeObj.split(":")[1]);
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  filterDateData(){
+    let distinctVIN: any = [];
+    let finalVINDataList: any = [];
+    let currentStartTime = this.startDateValue.getTime();
+    let currentEndTime = this.endDateValue.getTime();
+    console.log(currentStartTime + "<->" + currentEndTime);
+    let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+    if(filterVIN.length > 0){
+      distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      console.log("distinctVIN:: ", distinctVIN);
+      if(distinctVIN.length > 0){
+        distinctVIN.forEach(element => {
+          let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+          if(_item.length > 0){
+            finalVINDataList.push(_item[0])
+          }
+        });
+        console.log("finalVINDataList:: ", finalVINDataList); 
+      }
+    }
+    this.vehicleGroupListData = finalVINDataList;
+    this.vehicleListData = finalVINDataList;
   }
 
 }
