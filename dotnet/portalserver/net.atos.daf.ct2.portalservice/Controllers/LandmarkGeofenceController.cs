@@ -267,7 +267,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             IdRequest idRequest = new IdRequest();
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId != 0)
+                {
+                    request.OrganizationId = GetContextOrgId();
+                }
                 if (request.GeofenceId < 1)
                 {
                     return StatusCode(400, "Bad request");
@@ -319,7 +322,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GeofenceEntityResponceList response = new GeofenceEntityResponceList();            
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId != 0)
+                {
+                    request.OrganizationId = GetContextOrgId();
+                }
                 GeofenceEntityRequest objGeofenceRequest = new GeofenceEntityRequest();
                     objGeofenceRequest.OrganizationId = request.OrganizationId;
                     objGeofenceRequest.CategoryId = request.CategoryId;
@@ -549,7 +555,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             GeofenceListResponse response = new GeofenceListResponse();
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId != 0)
+                {
+                    request.OrganizationId = GetContextOrgId();
+                }
                 GeofenceRequest geofenceRequest = new GeofenceRequest();
                 geofenceRequest.Id = request.Id;
                 geofenceRequest.OrganizationId = request.OrganizationId;
