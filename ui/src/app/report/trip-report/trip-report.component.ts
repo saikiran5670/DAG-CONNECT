@@ -7,6 +7,7 @@ import { TranslationService } from '../../services/translation.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 declare var H: any;
 
@@ -17,10 +18,10 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
-  selectionTab: any = 'today';
+  selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  selectedStartTime: any = '12:00 AM';
-  selectedEndTime: any = '12:00 AM'; 
+  selectedStartTime: any = '00:00';
+  selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
   displayedColumns = ['All', 'startDate', 'endDate', 'distance', 'idleDuration', 'avgSpeed', 'avgWeight', 'startPosition', 'endPosition', 'fuelConsumption', 'drivingTime', 'alerts', 'events'];
   translationData: any;
@@ -45,6 +46,10 @@ export class TripReportComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
   showLoadingIndicator: boolean = false;
+  startDateValue: any;
+  endDateValue: any;
+  last3MonthDate: any;
+  todayDate: any;
 
   constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
     this.platform = new H.service.Platform({
@@ -67,7 +72,9 @@ export class TripReportComponent implements OnInit {
       vehicleGroup: ['', []],
       vehicle: ['', []],
       startDate: ['', []],
-      endDate: ['', []]
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
     });
     let translationObj = {
       id: 0,
@@ -80,8 +87,18 @@ export class TripReportComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
+      this.setDefaultTodayDate();
+      this.setDefaultStartEndTime();
       this.loadTripData();
     });
+  }
+
+  setDefaultTodayDate(){
+    this.selectionTab = 'today';
+    this.startDateValue = this.getTodayDate();
+    this.endDateValue = this.getTodayDate();
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
   }
 
   loadTripData(){
@@ -153,76 +170,6 @@ export class TripReportComponent implements OnInit {
       idleDuration: '00:18', 
       avgSpeed: 32.5, 
       avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
       startPosition: 'DAF Nederland S',
       endPosition: 'DAF Nederland E',
       fuelConsumption: 123.5,
@@ -358,29 +305,98 @@ export class TripReportComponent implements OnInit {
     this.selectedEndTime = selectedTime;
   }
 
+  getTodayDate(){
+    let todayDate = new Date(); //-- UTC
+    return todayDate;
+  }
+
+  getYesterdaysDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-1);
+    return date;
+  }
+
+  getLastWeekDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-7);
+    return date;
+  }
+
+  getLastMonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-1);
+    return date;
+  }
+
+  getLast3MonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-3);
+    return date;
+  }
+
+  setDefaultStartEndTime(){
+    this.selectedStartTime = "00:00";
+    this.selectedEndTime = "23:59";
+  }
+
   selectionTimeRange(selection: any){
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
+        this.startDateValue = this.getTodayDate();
+        this.endDateValue = this.getTodayDate();
+        // this.tripForm.get('startDate').setValue(this.getTodayDate());
+        // this.tripForm.get('endDate').setValue(this.getTodayDate());
+        this.setDefaultStartEndTime();
         break;
       }
       case 'yesterday': {
         this.selectionTab = 'yesterday';
+        this.startDateValue = this.getYesterdaysDate();
+        this.endDateValue = this.getTodayDate();
+        // this.tripForm.get('startDate').setValue(this.getYesterdaysDate());
+        // this.tripForm.get('endDate').setValue(this.getTodayDate());
+        this.setDefaultStartEndTime();
         break;
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
+        this.startDateValue = this.getLastWeekDate();
+        this.endDateValue = this.getTodayDate();
+        // this.tripForm.get('startDate').setValue(this.getLastWeekDate());
+        // this.tripForm.get('endDate').setValue(this.getTodayDate());
+        this.setDefaultStartEndTime();
         break;
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
+        this.startDateValue = this.getLastMonthDate();
+        this.endDateValue = this.getTodayDate();
+        // this.tripForm.get('startDate').setValue(this.getLastMonthDate());
+        // this.tripForm.get('endDate').setValue(this.getTodayDate());
+        this.setDefaultStartEndTime();
         break;
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
+        this.startDateValue = this.getLast3MonthDate();
+        this.endDateValue = this.getTodayDate();
+        // this.tripForm.get('startDate').setValue(this.getLast3MonthDate());
+        // this.tripForm.get('endDate').setValue(this.getTodayDate());
+        this.setDefaultStartEndTime();
         break;
       }
     }
+  }
+
+  changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
+    //console.log("start:: ", event.value)
+    this.startDateValue = event.value;
+  }
+
+  changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
+    //console.log("end: ", event.value)
+    this.endDateValue = event.value;
   }
 
 }
