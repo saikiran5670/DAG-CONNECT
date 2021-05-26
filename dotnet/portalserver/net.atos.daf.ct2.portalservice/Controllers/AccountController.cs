@@ -30,12 +30,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         #region Private Variable
         private readonly AuditHelper _auditHelper;
-        //private readonly ILogger<AccountController> _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly Mapper _mapper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
 
         #endregion
