@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../services/translation.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ReportService } from '../../services/report.service';
 
 declare var H: any;
 
@@ -35,6 +36,7 @@ export class TripReportComponent implements OnInit {
   initData: any = [];
   localStLanguage: any;
   accountOrganizationId: any;
+  accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
   dataSource: any = new MatTableDataSource([]);
@@ -44,7 +46,7 @@ export class TripReportComponent implements OnInit {
   tripData: any = [];
   showLoadingIndicator: boolean = false;
 
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder) {
+  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -60,6 +62,7 @@ export class TripReportComponent implements OnInit {
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
+    this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.tripForm = this._formBuilder.group({
       vehicleGroup: ['', []],
       vehicle: ['', []],
@@ -83,6 +86,10 @@ export class TripReportComponent implements OnInit {
 
   loadTripData(){
     this.showLoadingIndicator = true;
+    this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
+     // console.log("tripData:: ", tripData)
+    });
+
     this.tripData = [{
       startDate: '01/01/2021 00:00:00', 
       endDate: '01/01/2021 23:59:59', 
