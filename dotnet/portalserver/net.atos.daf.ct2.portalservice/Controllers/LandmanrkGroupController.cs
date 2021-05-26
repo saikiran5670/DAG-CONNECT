@@ -22,9 +22,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly GroupService.GroupServiceClient _groupServiceclient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
-        
-        private readonly HeaderObj _userDetails;
+        private string FK_Constraint = "violates foreign key constraint";        
+      
         public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
