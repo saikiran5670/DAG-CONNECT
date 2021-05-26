@@ -156,6 +156,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultValue();
     }
+    else if(this.actionType == 'view'){
+      this.alert_category_selected = this.selectedRowData.category;
+      this.onChangeAlertType(this.selectedRowData.type);
+    }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
     }
@@ -746,8 +750,8 @@ PoiCheckboxClicked(event: any, row: any) {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditGroupDetails ? this.translationData.lblEditGroupDetails : 'Edit Group Details') : (this.translationData.lblViewGroupDetails ? this.translationData.lblViewGroupDetails : 'View Group Details')}`;
+    ${this.translationData.lblLandmarks ? this.translationData.lblAlerts : "Alerts"} / 
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditAlertDetails ? this.translationData.lblEditAlertDetails : 'Edit Alert Details') : (this.translationData.lblViewAlertDetails ? this.translationData.lblViewAlertDetails : 'View Alert Details')}`;
   }
 
   loadPOIData() {
@@ -823,7 +827,7 @@ PoiCheckboxClicked(event: any, row: any) {
       this.geofenceGridData = geofencelist;
      this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
       this.updateGeofenceDataSource(this.geofenceGridData);
-      if(this.actionType == 'view' || this.actionType == 'edit')
+      if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
         this.loadGeofenceSelectedData(this.geofenceGridData);
     });
   }
@@ -884,6 +888,9 @@ PoiCheckboxClicked(event: any, row: any) {
       if(data){
         this.groupGridData = data["groups"];
         this.updateGroupDatasource(this.groupGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+          this.loadGroupSelectedData(this.groupGridData);
+        }
       }
     }, (error) => {
       //console.log(error)
@@ -894,23 +901,23 @@ PoiCheckboxClicked(event: any, row: any) {
     let selectedGroupList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
         if (search.length > 0) {
           selectedGroupList.push(row);
         }
       });
       tableData = selectedGroupList;
-      this.displayedColumnsGeofence= ['name', 'poiCount', 'geofenceCount'];
+      this.displayedColumnsGroup= ['name', 'poiCount', 'geofenceCount'];
       this.updateGroupDatasource(tableData);
     }
-    else if(this.actionType == 'edit'){
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.selectGroupTableRows();
     }
   }
 
   selectGroupTableRows(){
     this.groupDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.groupId == row.id);
+      let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
       if (search.length > 0) {
         this.selectedGroup.select(row);
       }
@@ -1257,14 +1264,15 @@ PoiCheckboxClicked(event: any, row: any) {
           }
           else if(this.actionType == 'edit'){
             this.selectedPOI.selected.forEach(element => {
+              let poiLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id); 
               let tempObj= {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
                 "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "id": poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
-                "state": element.state
+                "state": element.state == 'Active' ? 'A' : 'I'
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1276,7 +1284,7 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": element.type,
                 "refId": element.id,
-                "distance": element.distance,
+                "distance": 0,
                 "unitType": ""
               }
               alertLandmarkRefs.push(tempObj);
@@ -1284,14 +1292,15 @@ PoiCheckboxClicked(event: any, row: any) {
           }
           else if(this.actionType == 'edit'){
             this.selectedGeofence.selected.forEach(element => {
+              let geofenceLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id); 
               let tempObj= {
                 "landmarkType": element.type,
                 "refId": element.id,
                 "distance": element.distance,
                 "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "id": geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
-                "state": element.state
+                "state": element.state == 'Active' ? 'A' : 'I'
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1301,9 +1310,9 @@ PoiCheckboxClicked(event: any, row: any) {
           if(this.actionType == 'create' || this.actionType == 'duplicate'){
             this.selectedGroup.selected.forEach(element => {
               let tempObj= {
-                "landmarkType": element.type,
+                "landmarkType": "G",
                 "refId": element.id,
-                "distance": element.distance,
+                "distance": 0,
                 "unitType": ""
               }
               alertLandmarkRefs.push(tempObj);
@@ -1311,14 +1320,15 @@ PoiCheckboxClicked(event: any, row: any) {
           }
           else if(this.actionType == 'edit'){
             this.selectedGroup.selected.forEach(element => {
+              let groupLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
               let tempObj= {
-                "landmarkType": element.type,
+                "landmarkType": "G",
                 "refId": element.id,
-                "distance": element.distance,
+                "distance": 0,
                 "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "id": groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
-                "state": element.state
+                "state": 'A'
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1340,12 +1350,13 @@ PoiCheckboxClicked(event: any, row: any) {
           }
           else if(this.actionType == 'edit'){
             this.selectedCorridor.selected.forEach(element => {
+              let corridorLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id); 
               let tempObj= {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
                 "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "id": corridorLandmarkRefArr.length > 0 ? corridorLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
                 "state": element.state
               }
