@@ -8,7 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 export class DashboardPreferencesComponent implements OnInit {
 
-  @Input() translationData: any;
+  @Input() translationData: any = {};
   updateMsgVisible: boolean = false;
 
   constructor() { }
