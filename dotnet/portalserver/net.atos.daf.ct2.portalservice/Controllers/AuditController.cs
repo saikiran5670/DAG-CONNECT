@@ -28,7 +28,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             _auditService = auditService;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         }
 
         [HttpPost]
@@ -37,8 +36,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.Info("Add Logs method " );
-
                 AuditResponce auditresponse = await _auditService.AddlogsAsync(request);
 
                 if (auditresponse != null
@@ -54,8 +51,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "GetTranslations Response is null");
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -70,8 +65,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.Info("All langauges method get");
-                
                 AuditLogResponse allauditLogs = await _auditService.GetAuditLogsAsync(request);
                 if (allauditLogs != null
                  && allauditLogs.Message == "There is an error In GetTranslation.")
@@ -86,17 +79,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "GetTranslations Response is null");
                 }
-
-
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal server error.");
             }
-
         }
-
-
     }
 }

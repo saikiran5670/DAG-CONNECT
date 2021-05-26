@@ -25,27 +25,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("subscribe")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class SubscriptionController : Controller
+    public class SubscriptionController : BaseController
     {
 
         #region Private Variable
         //private readonly ILogger<SubscriptionController> _logger;
 
         private ILog _logger;
-        private readonly SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient  _subscribeClient;
-        private readonly SessionHelper _sessionHelper;
-        private readonly HeaderObj _userDetails;
+        private readonly SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient  _subscribeClient;       
         private readonly AuditHelper _auditHelper;
 
         #endregion
 
         #region Constructor
-        public SubscriptionController(SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient subscribeClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
+        public SubscriptionController(SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient subscribeClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _subscribeClient = subscribeClient;
-            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _sessionHelper = sessionHelper;
-            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);           
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
@@ -59,12 +55,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("GetSubscriptionDetails method in Subscription API called.");
-                //Assign context orgId
-                objSubscriptionDetailsRequest.organization_id = _userDetails.contextOrgId;
+                
                 if (objSubscriptionDetailsRequest.organization_id == 0)
                 {
                     return StatusCode(400, string.Empty);
                 }
+                //Assign context orgId
+                objSubscriptionDetailsRequest.organization_id = GetContextOrgId();
+
                 SubscriptionBusinessService.SubscriptionDetailsRequest objBusinessEntity = new SubscriptionBusinessService.SubscriptionDetailsRequest();
                 objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.organization_id; 
                 objBusinessEntity.Type = objSubscriptionDetailsRequest.type == null ? string.Empty : objSubscriptionDetailsRequest.type;
