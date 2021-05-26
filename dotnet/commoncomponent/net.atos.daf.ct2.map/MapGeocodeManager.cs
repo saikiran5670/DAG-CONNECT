@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.utilities
+namespace net.atos.daf.ct2.map
 {
     public class MapGeocodeManager: IMapGeocodeManager
     {
