@@ -19,6 +19,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   FormEmailArray : FormArray;
   FormWebArray : FormArray;
   ArrayList : any =[];
+  notificationIndex : any = 0;
   @Input() alert_category_selected: any;
   @Input() alertTypeName: string;
   @Input() isCriticalLevelSelected :any;
@@ -136,16 +137,15 @@ wsLabel: any;
         if (!this.FormEmailArray) {
           this.FormEmailArray = this.notificationForm.get("FormEmailArray") as FormArray;
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormEmailArray.at(0).get("emailRecipientLabel").setValue(this.emailLabel);
-          this.FormEmailArray.at(0).get("emailContactModes").setValue(this.contactModeType);
+          this.FormEmailArray.at(this.notificationIndex).get("emailRecipientLabel").setValue(this.emailLabel);
+          this.FormEmailArray.at(this.notificationIndex).get("emailContactModes").setValue(this.contactModeType);
         }
         else {
-          let i = 0;
-          i = i+1;
+          this.notificationIndex = this.notificationIndex+1;
           this.FormEmailArray.push(this.initEmailItems());
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormEmailArray.at(i).get("emailRecipientLabel").setValue(this.emailLabel);
-          this.FormEmailArray.at(i).get("emailContactModes").setValue(this.contactModeType);
+          this.FormEmailArray.at(this.notificationIndex).get("emailRecipientLabel").setValue(this.emailLabel);
+          this.FormEmailArray.at(this.notificationIndex).get("emailContactModes").setValue(this.contactModeType);
         }
         console.log("FormEmailArray=" +this.notificationForm['controls']['FormEmailArray']['controls'][0]['controls']);
       }
@@ -156,21 +156,20 @@ wsLabel: any;
         if (!this.FormWebArray) {
           this.FormWebArray = this.notificationForm.get("FormWebArray") as FormArray;
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormWebArray.at(0).get("webRecipientLabel").setValue(this.wsLabel);
-          this.FormWebArray.at(0).get("webContactModes").setValue(this.contactModeType);
+          this.FormWebArray.at(this.notificationIndex).get("webRecipientLabel").setValue(this.wsLabel);
+          this.FormWebArray.at(this.notificationIndex).get("webContactModes").setValue(this.contactModeType);
         }
         else {
-          let i = 0;
-          i = i+1;
+          this.notificationIndex = this.notificationIndex+1;
           this.FormWebArray.push(this.initWebItems());
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormWebArray.at(i).get("webRecipientLabel").setValue(this.wsLabel);
-          this.FormWebArray.at(i).get("webContactModes").setValue(this.contactModeType);
+          this.FormWebArray.at(this.notificationIndex).get("webRecipientLabel").setValue(this.wsLabel);
+          this.FormWebArray.at(this.notificationIndex).get("webContactModes").setValue(this.contactModeType);
         }
         console.log("FormWebArray= " +this.notificationForm['controls']['FormEmailArray']['controls'][0]['controls']);
       }
       console.log("----------------last details--------");
-      console.log("formArray= "+data);
+      console.log("formArray= "+JSON.stringify(data));
     }
 
   setDefaultValueForws(){
@@ -188,46 +187,6 @@ wsLabel: any;
   }
   
 
-  onChangeContactMode(event :any){
-   this.contactModeType = event.value;
-  //  this.addFlag = false;
-   //for Web service
-  //  if(this.contactModeType == 0){
-  //   this.recipientLabel = this.notificationForm.controls.recipientLabel.value;
-  //   this.contactMode = this.notificationForm.controls.contactMode.value
-  //   this.webURL = this.notificationForm.controls.webURL.value;
-  //   this.wsDescription = this.notificationForm.controls.wsDescription.value;
-  //   this.authentication = this.notificationForm.controls.authentication.value;
-  //   this.loginId = this.notificationForm.controls.loginId.value;
-  //   this.password = this.notificationForm.controls.password.value;
-  //   this.setDefaultValueForemail()
-  //  }
-  //  // for Email
-  //  if(this.contactModeType == 1){
-  //  this.recipientLabel = this.notificationForm.controls.recipientLabel.value;
-  //  this.contactMode = this.notificationForm.controls.contactMode.value
-  //   this.emailAddress = this.notificationForm.controls.emailAddress.value;
-  //   this.mailSubject = this.notificationForm.controls.mailSubject.value;
-  //   this.mailDescription = this.notificationForm.controls.mailDescription.value;
-  //   this.setDefaultValueForws();
-  //  }
-  //  this.notificationPayload = {
-  //    recipientLabel: this.recipientLabel,
-  //        accountGroupId: this.organizationId,
-  //        notificationModeType: this.contactMode,
-  //        phoneNo: "",
-  //        sms: "",
-  //        emailId: this.emailAddress,
-  //        emailSub: this.mailSubject,
-  //        emailText: this.mailDescription,
-  //        wsUrl: this.webURL,
-  //        wsType: this.authentication,
-  //        wsText: this.wsDescription,
-  //        wsLogin: this.loginId,
-  //        wsPassword: this.password
-  //  }
-  //  console.log(this.notificationPayload);
-  }
 
   onRadioButtonChange(event: any){
     this.radioButtonVal = event.value;
@@ -251,10 +210,59 @@ wsLabel: any;
   }
 
   getNotificationDetails() : any{
-    let tempObj= {
-      name: "ABCD"
+    // let tempObj= {
+    //   name: "ABCD"
+    // }
+    // return tempObj;
+
+   let WsData;
+   let EmailData;
+   if(this.contactModeType == 0){
+   this.FormWebArray.controls.forEach((element, index) => {
+let webPayload = {
+  recipientLabel: WsData.webRecipientLabel.value,
+  accountGroupId: this.organizationId,
+  notificationModeType: WsData.webContactModes.value,
+  phoneNo: "",
+  sms: "",
+  emailId: "",
+  emailSub: "",
+  emailText: "",
+  wsUrl: WsData.webURL.value,
+  wsType: WsData.authentication.value,
+  wsText: WsData.wsDescription.value,
+  wsLogin: WsData.loginId.value,
+  wsPassword: WsData.password.value
+}
+this.notificationPayload.push(webPayload);
+console.log("this is web=" +JSON.stringify(this.notificationPayload));
+   });
+
+  }
+
+  if(this.contactModeType == 1)
+  {
+  this.FormEmailArray.controls.forEach((item,index)=>{
+    let emailPayload = {
+          recipientLabel: WsData.emailRecipientLabel,
+          accountGroupId: this.organizationId,
+          notificationModeType: WsData.emailContactModes,
+          phoneNo: "",
+          sms: "",
+          emailId: EmailData.emailAddress,
+          emailSub: EmailData.mailSubject,
+          emailText: EmailData.mailDescription,
+          wsUrl: "",
+          wsType: "",
+          wsText: "",
+          wsLogin: "",
+          wsPassword: ""
     }
-    return tempObj;
+    this.notificationPayload.push(emailPayload);
+    console.log("this is email=" +this.notificationPayload);
+  });
+}
+
   }
 
 }
