@@ -1,7 +1,7 @@
 ﻿
 using net.atos.daf.ct2.data;
 
-namespace net.atos.daf.ct2.utilities.repository
+namespace net.atos.daf.ct2.map.repository
 {
     public class MapGeocodeRepository : IMapGeocodeRepository
     {

@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.visibility.repository
 							from master.accessrelationship ass
 							inner join master.group grp 
 							on ass.account_group_id=grp.id and grp.object_type='A' and (grp.ref_id = @account_id or grp.ref_id is null) 
-							inner join master.groupref vgrpref
+							left join master.groupref vgrpref
 							on  grp.id=vgrpref.group_id and	vgrpref.ref_id = @account_id
 							where grp.organization_id=@organization_id							 
 							)

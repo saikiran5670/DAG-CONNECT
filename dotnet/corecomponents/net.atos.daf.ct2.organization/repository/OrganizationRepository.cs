@@ -723,15 +723,15 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 RelationshipMapping relationshipMapping = new RelationshipMapping();
                 relationshipMapping.relationship_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.owner_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.target_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.created_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.owner_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.target_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.created_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
                 relationshipMapping.vehicle_id = VehicleID;
                 relationshipMapping.start_date = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 relationshipMapping.created_at = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 relationshipMapping.allow_chain = true;
                 //relationshipMapping.isFirstRelation=true;  
-                relationshipMapping.isFirstRelation = false;
+                relationshipMapping.isFirstRelation = true;
                 await CreateOwnerRelationship(relationshipMapping);
             }
             catch (Exception ex)
@@ -774,7 +774,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management
 
-                    keyHandOver.OwnerRelationship = OrganizationId.ToString();  
+                    keyHandOver.OEMRelationship = OrganizationId.ToString();  
                     await OwnerRelationship(keyHandOver, isVINExist);
 
                     return keyHandOver;
@@ -791,7 +791,7 @@ namespace net.atos.daf.ct2.organization.repository
                     // Owner Relationship Management    
                     int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
 
-                    keyHandOver.OwnerRelationship = organizationID.ToString();
+                    keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
 
                     return keyHandOver;
@@ -808,7 +808,7 @@ namespace net.atos.daf.ct2.organization.repository
                     // Owner Relationship Management   
                     int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
 
-                    keyHandOver.OwnerRelationship = organizationID.ToString();
+                    keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
 
                     return keyHandOver;
@@ -820,7 +820,7 @@ namespace net.atos.daf.ct2.organization.repository
                     await UpdatetVehicle(keyHandOver, organizationID);
 
                     // Owner Relationship Management  
-                    keyHandOver.OwnerRelationship = organizationID.ToString();
+                    keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, isVINExist);
                 }
             }
@@ -891,11 +891,12 @@ namespace net.atos.daf.ct2.organization.repository
                     return OwnerRelationshipId;
                 }
 
-                else if (isRelationshipExist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist          
+                else if (isRelationshipExist > 1 && (!(relationshipMapping.isFirstRelation))) // relationship exist          
                 {
                     // update previuse relationship end date and insert new relationship              
                     var Updateparameter = new DynamicParameters();
-                    Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                    // Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                    Updateparameter.Add("@relationship_id", isRelationshipExist);
                     Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
                     var queryUpdate = @"update master.orgrelationshipmapping 

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.utilities.geocode
+namespace net.atos.daf.ct2.map.geocode
 {
     public class MapGeocoder
     {
