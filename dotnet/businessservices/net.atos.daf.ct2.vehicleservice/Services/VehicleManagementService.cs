@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
     public class VehicleManagementService : VehicleService.VehicleServiceBase
     {
         //private readonly ILogger<VehicleManagementService> _logger;
-        private readonly IVehicleManager _vehicelManager;
+        private readonly IVehicleManager _vehicleManager;
         private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
 
@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         public VehicleManagementService( IVehicleManager vehicelManager, Group.IGroupManager groupManager, IAuditTraillib auditlog,AccountComponent.IAccountManager _accountmanager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _vehicelManager = vehicelManager;
+            _vehicleManager = vehicelManager;
             _groupManager = groupManager;
             _auditlog = auditlog;
             accountmanager = _accountmanager;
@@ -48,15 +48,15 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 VehiclesBySubscriptionDetailsResponse objVehiclesBySubscriptionDetailsResponse = new VehiclesBySubscriptionDetailsResponse();
                 VehiclesBySubscriptionDetails objVehiclesBySubscriptionId = new VehiclesBySubscriptionDetails();
-                var data = await _vehicelManager.GetVehicleBySubscriptionId(request.SubscriptionId);
+                var data = await _vehicleManager.GetVehicleBySubscriptionId(request.SubscriptionId);
                 _logger.Info("GetVehicleBySubscriptionId method in vehicle service called.");
                 foreach (var item in data)
                 {
                     objVehiclesBySubscriptionId.OrderId = item.orderId;
                     objVehiclesBySubscriptionId.Id = item.id;
-                    objVehiclesBySubscriptionId.Name = item.name;
+                    objVehiclesBySubscriptionId.Name = item.name ?? string.Empty;
                     objVehiclesBySubscriptionId.Vin = item.vin;
-                    objVehiclesBySubscriptionId.LicensePlateNumber = item.license_plate_number;
+                    objVehiclesBySubscriptionId.LicensePlateNumber = item.license_plate_number ?? string.Empty;
                     objVehiclesBySubscriptionDetailsResponse.Vehicles.Add(objVehiclesBySubscriptionId);
                 }
                 return objVehiclesBySubscriptionDetailsResponse;
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 Vehicle Objvehicle = new Vehicle();
                 Objvehicle = _mapper.ToVehicleEntity(request);
-                Objvehicle = await _vehicelManager.Create(Objvehicle);
+                Objvehicle = await _vehicleManager.Create(Objvehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "vehicle Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Vehicle Create", 1, 2, JsonConvert.SerializeObject(request));
                 _logger.Info("Create method in vehicle service called.");
 
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 Vehicle Objvehicle = new Vehicle();
                
                 Objvehicle = _mapper.ToVehicleEntity(request);
-                Objvehicle = await _vehicelManager.Update(Objvehicle);
+                Objvehicle = await _vehicleManager.Update(Objvehicle);
 
                 if (Objvehicle.VehicleNameExists)
                 {
@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 VehicleFilter ObjVehicleFilter = new VehicleFilter();
                 ObjVehicleFilter = _mapper.ToVehicleFilterEntity(request);
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetRelationshipVehicles(ObjVehicleFilter);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetRelationshipVehicles(ObjVehicleFilter);
                 VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjvehicleOptInOptOutResponce.Status = (vehicle.VehicleStatusType)Enum.Parse(typeof(vehicle.VehicleStatusType), request.Status.ToString()); //GetVehicleStatusEnum((int)request.Status);
                 ObjvehicleOptInOptOutResponce.Date = DateTime.Now;
                 ObjvehicleOptInOptOutResponce.Type = (vehicle.OptInOptOutType)Enum.Parse(typeof(vehicle.OptInOptOutType), request.OptInOptOutType.ToString()); //GetOptInOptOutEnum((int)request.OptInOptOutType);
-                ObjvehicleOptInOptOutResponce = _vehicelManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
+                ObjvehicleOptInOptOutResponce = _vehicleManager.UpdateStatus(ObjvehicleOptInOptOutResponce).Result;
 
                 _logger.Info("UpdateStatus method in vehicle service called.");
 
@@ -405,7 +405,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.OrganizationId = ObjGroupFilter.OrganizationId;
                     ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
-                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.Get(ObjVehicleFilter);
 
                     foreach (var item in ObjRetrieveVehicleList)
                     {
@@ -474,7 +474,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 {
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
-                    IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicelManager.Get(ObjVehicleFilter).Result;
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = _vehicleManager.Get(ObjVehicleFilter).Result;
 
                     foreach (var item in ObjRetrieveVehicleList)
                     {
@@ -518,7 +518,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
                 OrgVehicleGroupListResponse response = new OrgVehicleGroupListResponse();
-                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicelManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupRequest> ObjOrgVehicleGroupList = await _vehicleManager.GetOrganizationVehicleGroupdetails(request.OrganizationId);
                 foreach (var item in ObjOrgVehicleGroupList)
                 {
                     if (string.IsNullOrEmpty(item.VehicleGroupName))
@@ -551,7 +551,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             {
                 _logger.Info("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
                 VehicleGroupDetailsResponse response = new VehicleGroupDetailsResponse();
-                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroup> vehicleGroupList = await _vehicelManager.GetVehicleGroup(request.OrganizationId, request.VehicleId);
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroup> vehicleGroupList = await _vehicleManager.GetVehicleGroup(request.OrganizationId, request.VehicleId);
 
                 foreach (var item in vehicleGroupList)
                 {
@@ -630,7 +630,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         {
                             if (vGroup.GroupType == Group.GroupType.Dynamic && vGroup.FunctionEnum == Group.FunctionEnum.OwnedVehicles)
                             {
-                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicOwnedVehicle(request.OrganizationId, 0, 0);
+                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetDynamicOwnedVehicle(request.OrganizationId, 0, 0);
                                 foreach (var item in ObjRetrieveVehicleList)
                                 {
                                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
@@ -645,7 +645,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             }
                             else if (vGroup.GroupType == Group.GroupType.Dynamic && vGroup.FunctionEnum == Group.FunctionEnum.VisibleVehicles)
                             {
-                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicVisibleVehicle(request.OrganizationId, 0, 0);
+                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetDynamicVisibleVehicle(request.OrganizationId, 0, 0);
                                 foreach (var item in ObjRetrieveVehicleList)
                                 {
                                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
@@ -660,7 +660,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             }
                             else
                             {
-                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicAllVehicle(request.OrganizationId, 0, 0);
+                                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetDynamicAllVehicle(request.OrganizationId, 0, 0);
                                 foreach (var item in ObjRetrieveVehicleList)
                                 {
                                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
@@ -683,7 +683,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     VehicleFilter ObjVehicleFilter = new VehicleFilter();
                     ObjVehicleFilter.VehicleIdList = VehicleIdList.ToString();
                     ObjVehicleFilter.OrganizationId = request.OrganizationId;
-                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.Get(ObjVehicleFilter);
+                    IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.Get(ObjVehicleFilter);
                   
                     foreach (var item in ObjRetrieveVehicleList)
                     {
@@ -734,7 +734,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                bool result = await _vehicelManager.SetOTAStatus(request.IsOta, request.ModifiedBy,request.VehicleId);
+                bool result = await _vehicleManager.SetOTAStatus(request.IsOta, request.ModifiedBy,request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOTAStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set OTA status", 1, 2, Convert.ToString(request.VehicleId)).Result;
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -758,7 +758,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                bool result = await _vehicelManager.Terminate(request.IsTerminate, request.ModifiedBy, request.VehicleId);
+                bool result = await _vehicleManager.Terminate(request.IsTerminate, request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Terminate", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Terminate status", 1, 2, Convert.ToString(request.VehicleId)).Result;
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -782,7 +782,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                bool result = await _vehicelManager.SetOptInStatus(Convert.ToChar(request.IsOptIn), request.ModifiedBy, request.VehicleId);
+                bool result = await _vehicleManager.SetOptInStatus(Convert.ToChar(request.IsOptIn), request.ModifiedBy, request.VehicleId);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "SetOptInStatus", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request.VehicleId)).Result;
                 return await Task.FromResult(new VehicleGroupDeleteResponce
                 {
@@ -808,7 +808,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             try
             {
               
-                Vehicle ObjRetrieveVehicle = await _vehicelManager.GetVehicle(request.VehicleId);
+                Vehicle ObjRetrieveVehicle = await _vehicleManager.GetVehicle(request.VehicleId);
                 VehicleDetailsResponce responce = new VehicleDetailsResponce();
                 responce.Vehicle=_mapper.ToVehicle(ObjRetrieveVehicle);
                 responce.Message = "Vehicles data retrieved";
@@ -905,7 +905,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 int VehicleGroupId = request.VehicleGroupId;
                 int RelationShipId = request.RelationShipId;
 
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicAllVehicle(OrganizationId,VehicleGroupId,RelationShipId);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetDynamicAllVehicle(OrganizationId,VehicleGroupId,RelationShipId);
                 VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {
@@ -935,7 +935,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 int VehicleGroupId = request.VehicleGroupId;
                 int RelationShipId = request.RelationShipId;
 
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
                 VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {
@@ -966,7 +966,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 int VehicleGroupId = request.VehicleGroupId;
                 int RelationShipId = request.RelationShipId;
 
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetDynamicOwnedVehicle(OrganizationId, VehicleGroupId, RelationShipId);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetDynamicOwnedVehicle(OrganizationId, VehicleGroupId, RelationShipId);
                 VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {
@@ -997,7 +997,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 ObjVehicleFilter.VehicleIdList = null;
                 ObjVehicleFilter.OrganizationId = request.OrganizationId;
                 ObjVehicleFilter.VehicleId = request.VehicleId;
-                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicelManager.GetRelationshipVehicles(ObjVehicleFilter);
+                IEnumerable<Vehicle> ObjRetrieveVehicleList = await _vehicleManager.GetRelationshipVehicles(ObjVehicleFilter);
                 VehicleListResponce responce = new VehicleListResponce();
                 foreach (var item in ObjRetrieveVehicleList)
                 {
@@ -1024,7 +1024,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
         {
             try
             {
-                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupList> VehicleGroupList = await _vehicelManager.GetVehicleGroupbyAccountId(request.AccountId, request.OrganizationId);
+                IEnumerable<net.atos.daf.ct2.vehicle.entity.VehicleGroupList> VehicleGroupList = await _vehicleManager.GetVehicleGroupbyAccountId(request.AccountId, request.OrganizationId);
                 VehicleGroupResponse response = new VehicleGroupResponse();
                 foreach (var item in VehicleGroupList)
                 {

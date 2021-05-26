@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("role")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class RoleController : Controller
+    public class RoleController : BaseController
     {
 
         #region Private Variable
@@ -38,18 +38,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private string FK_Constraint = "violates foreign key constraint";
         private readonly AuditHelper _auditHelper;
-        private readonly SessionHelper _sessionHelper;
-        private readonly HeaderObj _userDetails;
+
         #endregion
 
         #region Constructor
-        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
+        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _roleclient = roleclient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
-            _sessionHelper = sessionHelper;
-            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
@@ -62,7 +59,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Assign context orgId
-                request.OrganizationId = _userDetails.contextOrgId;
+                request.OrganizationId = GetContextOrgId();
 
                 if ((string.IsNullOrEmpty(request.RoleName)))
                 {
@@ -132,10 +129,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             //context org id is only set when role id is different
             //Assign context orgId
-            if (roleMaster.RoleId != _userDetails.roleId)
-            {
-                roleMaster.OrganizationId = _userDetails.contextOrgId;
-            }
+            roleMaster.OrganizationId = AssignOrgContextByRoleId(roleMaster.RoleId);
+
             try
             {
                 RoleRequest ObjRole = new RoleRequest();
@@ -229,7 +224,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "Is global role filter is required");
                 }
                 //Assign context orgId
-                Organizationid = _userDetails.contextOrgId;
+                Organizationid = GetContextOrgId();
                 RoleFilterRequest obj = new RoleFilterRequest();
                 obj.RoleId = Roleid;
                 obj.OrganizationId = Organizationid == null ? 0 : Convert.ToInt32(Organizationid);
