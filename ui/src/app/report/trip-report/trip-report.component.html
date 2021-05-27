@@ -32,7 +32,7 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field> 
-              <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required')">
+              <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGroupListData.length > 0">
                 {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
               </mat-error>
             </div>
@@ -90,7 +90,7 @@
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              <mat-error *ngIf="tripForm.get('vehicle').hasError('required')">
+              <mat-error *ngIf="tripForm.get('vehicle').hasError('required') && vehicleListData.length > 0">
                 {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
               </mat-error>
             </div>
