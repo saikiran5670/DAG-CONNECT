@@ -119,11 +119,16 @@ export class OrganizationService {
     // return this.httpClient
     //   .post<any>(`${this.organizationServiceUrl}/relationship/create`, data, headers)
     //   .pipe(catchError(this.handleError));
-    const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+      responseType: 'text' as 'json'
+    };
+    //const headers = new HttpHeaders().set('Content-Type', 'application/json'); 
     return this.httpClient.post<any[]>(
       `${this.organizationServiceUrl}/relationship/create`, 
        data , 
-      { headers, responseType: 'text' as 'json'}
+       headers
     ).pipe(catchError(this.handleError));
   }
 
