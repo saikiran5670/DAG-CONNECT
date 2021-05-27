@@ -15,7 +15,7 @@ service AlertService {
   rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
   rpc IsLandmarkActiveInAlert (LandmarkIdRequest) returns (LandmarkIdExistResponse);
   rpc GetNotificationTemplate(AccountIdRequest) returns (NotificationTemplateResponse);
-
+  rpc GetRecipientLabelList(OrgIdRequest) returns (NotificationRecipientResponse);
 }
 
 enum ResponseCode{
@@ -244,6 +244,16 @@ message NotificationTemplate
 message NotificationTemplateResponse
 {
 	repeated NotificationTemplate NotificationTemplatelist=1;
+	ResponseCode Code=2;
+    string Message = 3;
+}
+message OrgIdRequest {
+  int32 OrganizationId = 1;
+}
+
+message NotificationRecipientResponse
+{
+	repeated NotificationRecipientRequest NotificationRecipient=1;
 	ResponseCode Code=2;
     string Message = 3;
 }

@@ -333,6 +333,38 @@ namespace net.atos.daf.ct2.alertservice.Services
             }
         }
         #endregion
+
+        #region Get Recipient Label
+
+        public override async Task<NotificationRecipientResponse> GetRecipientLabelList(OrgIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                IEnumerable<NotificationRecipient> NotificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
+                NotificationRecipientResponse response = new NotificationRecipientResponse();
+                foreach (var item in NotificationRecipientResponseList)
+                {
+                    response.NotificationRecipient.Add(_mapper.MapNotificationRecipientEntity(item));
+                }
+                response.Message = "Notification Recipient data retrieved";
+                response.Code = ResponseCode.Success;
+                _logger.Info("Get notification recipient method in alert service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new NotificationRecipientResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get notification recipient list fail : " + ex.Message
+                });
+            }
+        }
+
+        #endregion
+
     }
 }
 
