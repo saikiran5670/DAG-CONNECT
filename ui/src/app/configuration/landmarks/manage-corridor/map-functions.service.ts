@@ -100,12 +100,19 @@ export class MapFunctionsService {
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
   
         this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:iconEnd});
-        let endMarkerHtml = `<div>Corridor Name:${corridorName} <br>Start Point:${startAddress}<br>End Point:${endAddress}<br>Width:${this.corridorWidthKm} km</div>`
+        let endMarkerHtml = `<div style="font-size:11px;font-family:Times New Roman">
+        <table>
+        <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
+        <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
+        <tr><td><b>End Point:</b></td><td>${endAddress}</td></tr>
+        <tr><td><b>Width:</b></td><td>${this.corridorWidthKm} km</td></tr>
+        </table>
+        </div>`
         this.endMarker.setData(endMarkerHtml);
        
         this.group.addObjects([this.startMarker,this.endMarker]);
         this.calculateAB('view');
-        this.addInfoBubble();
+        this.addInfoBubble(group);
        // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
        // let successRoute = this.calculateAB('view');
       }
@@ -258,7 +265,7 @@ export class MapFunctionsService {
   }
 
   ui: any;
-  addInfoBubble() {
+  addInfoBubble(markerGroup) {
 
     var group = new H.map.Group();
   
