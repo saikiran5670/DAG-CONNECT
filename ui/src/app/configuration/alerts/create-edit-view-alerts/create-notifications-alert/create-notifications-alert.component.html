@@ -76,7 +76,7 @@
     <div *ngFor="let item of notificationForm.controls['FormEmailArray']['controls']; let i = index">
         <div [formGroupName]="i">
     <!-- For email -->
-    <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 1 && addEmailFlag) || emailCount > 0" style="border: 1px solid #000">
+    <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addEmailFlag) || emailCount > 0" style="border: 1px solid #000">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
@@ -174,7 +174,7 @@
         <div *ngFor="let item of notificationForm.controls['FormWebArray']['controls']; let i = index">
             <div [formGroupName]="i">
     <!-- For webservice -->
-    <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 0 && addWsFlag) || wsCount > 0" style="border: 1px solid #000;">
+    <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'W' && addWsFlag) || wsCount > 0" style="border: 1px solid #000;">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 01' }}</span>
