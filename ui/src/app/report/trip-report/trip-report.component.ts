@@ -111,7 +111,8 @@ export class TripReportComponent implements OnInit {
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-     this.wholeTripData = tripData;
+     this.hideloader();
+      this.wholeTripData = tripData;
      this.filterDateData();
     });
   }
@@ -145,7 +146,9 @@ export class TripReportComponent implements OnInit {
     let _endTime = this.endDateValue.getTime();
     let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     if(_vinData.length > 0){
+      this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
+        this.hideloader();
         this.tripData = [{
           startDate: '01/01/2021 00:00:00', 
           endDate: '01/01/2021 23:59:59', 
@@ -188,10 +191,8 @@ export class TripReportComponent implements OnInit {
   }
 
   resetTripFormControlValue(){
-    this.tripForm.setValue({
-      vehicle: '',
-      vehicleGroup: ''
-   });
+  this.tripForm.get('vehicle').setValue('');
+  this.tripForm.get('vehicleGroup').setValue('');
   }
 
   onVehicleGroupChange(event: any){
@@ -219,7 +220,6 @@ export class TripReportComponent implements OnInit {
     else{
       this.showMapPanel = false;
     }
-    this.hideloader(); //-- hide loader
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;

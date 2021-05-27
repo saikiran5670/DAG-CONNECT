@@ -346,7 +346,8 @@ message VehicleGroupList{
     int32 VehicleId=3;
     string VehicleName=4;  
 	string Vin=5;
-    bool SubcriptionStatus=6;
+    string RegNo=6;
+    bool SubcriptionStatus=7;
 }
 message VehicleGroupListRequest {
   int32 AccountId = 1;

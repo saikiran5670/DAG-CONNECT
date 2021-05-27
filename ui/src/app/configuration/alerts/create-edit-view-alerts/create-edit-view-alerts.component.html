@@ -279,13 +279,13 @@
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth min-width-75-per" fxLayout="column" fxLayoutAlign="left">
                 <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-                  <div class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                  <div class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblLevel || 'Level' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>  
                   </div>
-                  <div *ngIf="actionType == 'view'" class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="actionType == 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-label>{{ translationData.lblThreshold || 'Threshold' }} </mat-label>  
                   </div> 
-                  <div *ngIf="actionType != 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left"></div>
+                  <div *ngIf="actionType == 'view'" class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left"></div>
                   <div *ngIf="unitTypes.length != 0 && actionType != 'view'" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-select formControlName="unitType" class="matSelect"
@@ -704,16 +704,16 @@
             ((alertForm.controls.vehicle.value == '' || isUnsubscribedVehicle) ? true : false)) ||
             (alert_category_selected != 'R' &&
             (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
-            (selectedCorridor.selected.length == 0) && 
-            ((!isCriticalLevelSelected || 
+            (selectedCorridor.selected.length == 0)) && 
+            (!isCriticalLevelSelected && !isWarningLevelSelected && !isAdvisoryLevelSelected) ||
+            (((isCriticalLevelSelected && 
                 (this.alertForm.get('criticalLevelThreshold').value == '' || 
                   (isWarningLevelSelected && this.alertForm.get('warningLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ) ||
-                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))) && 
-             (!isWarningLevelSelected || 
+                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('criticalLevelThreshold').value ))) ||
+             (isWarningLevelSelected &&
                 this.alertForm.get('warningLevelThreshold').value == '' ||
-                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value )) &&
-             (!isAdvisoryLevelSelected || this.alertForm.get('advisoryLevelThreshold').value == '')))
-             " mat-raised-button color="primary"
+                  (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value )) ||
+             (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value == '')))" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
