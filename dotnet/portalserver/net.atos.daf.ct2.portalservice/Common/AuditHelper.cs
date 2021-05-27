@@ -30,14 +30,19 @@ namespace net.atos.daf.ct2.portalservice.Common
                 if (request != null)
                 {
                     var Headers = request.Headers;
+                    var settings = new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        MissingMemberHandling = MissingMemberHandling.Ignore
+                    };
 
                     if (Headers.Any(item => item.Key == "headerObj"))
                     {
-                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
+                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"], settings);
                     }
                     else if (Headers.Any(item => item.Key == "Headerobj"))
                     {
-                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
+                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"], settings);
                     }
                 }
             }

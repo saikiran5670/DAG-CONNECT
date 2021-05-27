@@ -462,19 +462,28 @@ namespace net.atos.daf.ct2.features.repository
         }
          public async Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID)
         {
-            int MaxSetFeatureID = GetMaxFeatureID();  // Dataattribute set ID will start from 10000
-            var parameter = new DynamicParameters();
-                            parameter.Add("@id", MaxSetFeatureID);
-                            parameter.Add("@name", feature.Name);
-                            parameter.Add("@type", 'D');
-                            parameter.Add("@state", 'A');
-                            parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
-                            parameter.Add("@key", feature.Description);
-                            parameter.Add("@level", feature.Level);
-            int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
+            try
+            {
+                int MaxSetFeatureID = GetMaxFeatureID();  // Dataattribute set ID will start from 10000
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", MaxSetFeatureID);
+                parameter.Add("@name", feature.Name);
+                parameter.Add("@type", 'D');
+                parameter.Add("@state", (char)feature.FeatureState);
+                parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
+                parameter.Add("@key", feature.Description);
+                parameter.Add("@level", feature.Level);
+                int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
 	                                                 id, name, type, state, data_attribute_set_id, key,level)
 	                                           VALUES (@id, @name, @type, @state, @data_attribute_set_id, @key,@level) RETURNING id", parameter);
-                                        return resultAddFeatureSet;
+                return resultAddFeatureSet;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
 
          public int CreateDataAttributeSetMapping(int DataAttributeSetId, int ID)
