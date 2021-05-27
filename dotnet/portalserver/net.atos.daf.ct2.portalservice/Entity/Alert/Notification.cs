@@ -30,6 +30,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long CreatedAt { get; set; }
         //public long ModifiedAt { get; set; }
         //public int ModifiedBy { get; set; }
+        [MaxLength(10, ErrorMessage = "Maximum 10 recipient can be added in notification.")]
         public List<NotificationRecipient> NotificationRecipients { get; set; }
         public List<NotificationLimit> NotificationLimits { get; set; }
         public List<NotificationAvailabilityPeriod> NotificationAvailabilityPeriods { get; set; }
@@ -41,6 +42,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long CreatedAt { get; set; }
         //public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+        [MaxLength(10,ErrorMessage = "Maximum 10 recipient can be added in notification.")]
         public List<NotificationRecipientEdit> NotificationRecipients { get; set; }
         public List<NotificationLimitEdit> NotificationLimits { get; set; }
         public List<NotificationAvailabilityPeriodEdit> NotificationAvailabilityPeriods { get; set; }

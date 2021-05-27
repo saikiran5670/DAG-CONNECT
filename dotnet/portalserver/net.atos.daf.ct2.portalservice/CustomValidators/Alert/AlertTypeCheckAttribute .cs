@@ -29,13 +29,12 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
             if ((comparisonValue.ToUpper() == "L" &&
                 (currentValue.ToUpper() == "C" || currentValue.ToUpper() == "D" || currentValue.ToUpper() == "G" ||
                  currentValue.ToUpper() == "N" || currentValue.ToUpper() == "S" || currentValue.ToUpper() == "U" ||
-                 currentValue.ToUpper() == "X" || currentValue.ToUpper() == "Y")
+                 currentValue.ToUpper() == "X" || currentValue.ToUpper() == "Y" || currentValue.ToUpper() == "H")
                  )
                 ||
                 (comparisonValue.ToUpper() == "F" &&
-                (currentValue.ToUpper() == "A" || currentValue.ToUpper() == "F" || currentValue.ToUpper() == "H" ||
-                 currentValue.ToUpper() == "I" || currentValue.ToUpper() == "L" || currentValue.ToUpper() == "P" ||
-                 currentValue.ToUpper() == "T"))
+                (currentValue.ToUpper() == "A" || currentValue.ToUpper() == "F"  ||currentValue.ToUpper() == "I" || 
+                currentValue.ToUpper() == "L" || currentValue.ToUpper() == "P" || currentValue.ToUpper() == "T"))
                 ||
                 (comparisonValue.ToUpper() == "R" &&
                  (currentValue.ToUpper() == "E" || currentValue.ToUpper() == "O"))

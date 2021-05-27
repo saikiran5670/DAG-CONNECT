@@ -60,11 +60,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class VehicleSize
     {
-        public int VehicleSizeHeight { get; set; }
-        public int VehicleSizeWidth { get; set; }
-        public int VehicleSizeLength { get; set; }
-        public int VehicleSizeLimitedWeight { get; set; }
-        public int VehicleSizeWeightPerAxle { get; set; }
+       // [RegularExpression(@"\d{1,3}cm")]
+        public double VehicleSizeHeight { get; set; }
+        public double VehicleSizeWidth { get; set; }
+        public double VehicleSizeLength { get; set; }
+        public double VehicleSizeLimitedWeight { get; set; }
+        public double VehicleSizeWeightPerAxle { get; set; }
     }
 
     public class Exclusion

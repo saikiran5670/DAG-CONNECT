@@ -74,11 +74,11 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string TunnelsType { get; set; }
         public string DirtRoadType { get; set; }
 
-        public int VehicleHeight { get; set; }
-        public int VehicleWidth { get; set; }
-        public int VehicleLength { get; set; }
-        public int VehicleLimitedWeight { get; set; }
-        public int VehicleWeightPerAxle { get; set; }
+        public double VehicleHeight { get; set; }
+        public double VehicleWidth { get; set; }
+        public double VehicleLength { get; set; }
+        public double VehicleLimitedWeight { get; set; }
+        public double VehicleWeightPerAxle { get; set; }
     }
 
 
