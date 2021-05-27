@@ -414,11 +414,15 @@ export class TripReportComponent implements OnInit {
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
     ////console.log("start:: ", event.value)
     this.startDateValue = event.value;
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
     ////console.log("end: ", event.value)
     this.endDateValue = event.value;
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
