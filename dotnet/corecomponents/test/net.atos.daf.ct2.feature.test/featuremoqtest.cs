@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.feature.test
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         [TestMethod]

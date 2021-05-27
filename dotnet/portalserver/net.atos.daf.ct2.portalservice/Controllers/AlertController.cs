@@ -210,7 +210,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     VehicleGroupRequest.GroupType = "S";
                     VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
                     VehicleGroupRequest.FunctionEnum = "N";
-                    VehicleGroupRequest.OrganizationId = alertRequest.OrganizationId;
+                    VehicleGroupRequest.OrganizationId = GetContextOrgId();
                     VehicleGroupRequest.Description = "Single vehicle group for alert:-  " + alertRequest.Name + "  org:- " + alertRequest.OrganizationId;
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
@@ -299,7 +299,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     VehicleGroupRequest.GroupType = "S";
                     VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
                     VehicleGroupRequest.FunctionEnum = "N";
-                    VehicleGroupRequest.OrganizationId = alertRequest.OrganizationId;
+                    VehicleGroupRequest.OrganizationId = GetContextOrgId();
                     VehicleGroupRequest.Description = "Single vehicle group for alert:-  " + alertRequest.Name + "  org:- " + alertRequest.OrganizationId;
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
