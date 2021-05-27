@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { RoleService } from 'src/app/services/role.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { OrganizationService } from 'src/app/services/organization.service';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras  } from '@angular/router';
 
 @Component({
   selector: 'app-create-view-edit-relationship',
@@ -48,7 +48,8 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   levelList: any = [];
   codeList: any =[];
   userType: any;
-
+  createButtonClicked: boolean = false;
+  backToOrgRel: boolean = false;
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
   ngAfterViewInit() {}
@@ -107,7 +108,17 @@ export class CreateViewEditRelationshipComponent implements OnInit {
 
     backToOrgRelationPage= function () {
     // this.router.navigate(['/admin/organisationrelationship']);
-    this.router.navigate(['/admin/organisationrelationshipmanagement']);
+    if(this.backToOrgRel){
+      this.router.navigate(['/admin/organisationrelationshipmanagement']);
+    }else{
+      let navigationExtras: NavigationExtras = {
+        queryParams: {
+          "name": this.relationshipFormGroup.controls.relationshipName.value             
+        }
+      };
+     this.router.navigate(['/admin/organisationrelationshipmanagement'], navigationExtras);
+    }
+       
 };
 
   getBreadcum(){
@@ -119,6 +130,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
     {
       this.viewFlag =false;
       this.editFlag =false;
+      this.backToOrgRel=true;
       this.backToOrgRelationPage();
     }
     else{
@@ -129,6 +141,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   toBack(){
     if(this.viewRelationshipFromOrg)
     {
+      this.backToOrgRel=true;
       this.backToOrgRelationPage();
     }
     else{
@@ -171,6 +184,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   onCreate() {
+    this.createButtonClicked = true;
     const relationshipnameInput = this.relationshipFormGroup.controls.relationshipName.value;
     if(this.createStatus){
       this.createRelationship(relationshipnameInput);

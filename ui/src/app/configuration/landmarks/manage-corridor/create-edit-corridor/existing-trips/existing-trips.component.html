@@ -102,7 +102,7 @@
       {{translationData.lblSearch || 'Search'}}
     </button>
   </div>
-</form>
+
 
 
 
@@ -113,19 +113,118 @@
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Existing Trip Details</span>
     </div>
     <!-- <div class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+        <div fxLayout="row" class='areaWidth'>
           <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-              <div fxLayout="row" class='areaWidth'>
-                  <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                      <button mat-flat-button color="primary" (click)="onNewCorridor()">
-                          <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCorridor || 'New Corridor'
-                          }}
-                      </button>
-                  </div>
-              </div>
-          </div>
-      </div> -->
+            <button mat-flat-button color="primary" (click)="onNewCorridor()">
+              <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCorridor || 'New Corridor'
+            }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+</div>
+<div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+
+<div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
+  <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
+      <mat-label>
+          <span>{{ translationData.lblCorridorLabel || 'Corridor Label' }}</span>
+          <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+      </mat-label>
+      <div *ngIf="actionType != 'view'">
+          <mat-form-field appearance="outline" class="full-width corridorLineHt">
+              <input maxlength="100" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
+                  formControlName="label" required>
+          </mat-form-field>
+          <mat-error
+              *ngIf="existingTripForm.get('label').hasError('required') && existingTripForm.get('label').touched">
+              {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
+          </mat-error>
+          <mat-error
+              *ngIf="!existingTripForm.get('label').hasError('required')  && existingTripForm.get('label').hasError('whitespace')">
+              {{ translationData.lblNamecannotcontainonlywhitespace || 'Name cannot contain only whitespace'
+              }}
+          </mat-error>
+          <mat-error *ngIf="existingTripForm.get('label').hasError('specialCharsNotAllowed')">
+              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+          </mat-error>
+      </div>
+      <div *ngIf="actionType === 'view'">
+          <span style='font-weight: 500!important;'>{{corridorName}}</span>
+      </div>
   </div>
-  <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+  <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
+      <mat-label>
+          <span>{{ translationData.lblStartAddress || 'Start Address' }}</span>
+          <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+
+      </mat-label>
+      <div  *ngIf="actionType != 'view'">
+          <!-- <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+          [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
+          (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer> -->
+          <mat-form-field appearance="outline" class='full-width'>
+             <input maxlength="50"  style='cursor: none;' placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                  matInput formControlName="startaddress" readonly required> 
+              </mat-form-field> 
+
+          <mat-error
+              *ngIf="searchStrError">
+              {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
+          </mat-error>
+      </div>
+      <div *ngIf="actionType == 'view'">
+          <span style='font-weight: 500!important;'>{{searchStr}}</span>
+      </div>
+  </div>
+  <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
+      <mat-label>
+          <span>{{ translationData.lblEndAddress || 'End Address' }}</span>
+          <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+
+      </mat-label>
+      <div  *ngIf="actionType != 'view'">
+          <!-- <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+          [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
+          [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer> -->
+         
+          <mat-form-field appearance="outline" class='full-width'>
+              <input style='cursor: none;' maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                  matInput formControlName="endaddress" readonly required>
+          </mat-form-field>
+          <mat-error
+              *ngIf="searchEndStrError">
+              {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
+          </mat-error>
+      </div>
+      <div *ngIf="actionType == 'view'">
+          <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
+      </div>
+  </div>
+</div>
+<div class="col-sm-4 areaWidth">
+  <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+      <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
+  </span>
+  <div *ngIf="actionType == 'view'">
+      <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
+  </div>
+  <div *ngIf="actionType != 'view'">
+      <ngx-slider [(value)]="corridorWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
+      <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
+  <!-- <mat-label>{{min}}</mat-label>
+      <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
+          thumbLabel [displayWith]="formatLabel"></mat-slider>
+  <mat-label>{{max}}</mat-label> -->
+
+  </div>
+  
+</div>
+
+
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <mat-form-field appearance="outline">
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search ">
@@ -135,6 +234,9 @@
       </mat-form-field>
     </div>
   </div>
+
+  
+
 
   <div *ngIf='initData.length == 0'>No Record Found</div>
   <div *ngIf='initData.length > 0'>
@@ -167,7 +269,7 @@
       <ng-container matColumnDef="DriverName">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.driverFirstName }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.driverFirstName }} {{ row.driverLastName }}</mat-cell>
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">sadasd</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="distance">
@@ -178,19 +280,21 @@
       </ng-container>
       <ng-container matColumnDef="date">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
-        <mat-cell *matCellDef="let row">Date WBD</mat-cell>
+        <mat-cell *matCellDef="let row"></mat-cell>
         <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="startPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'StartPoint' }}
         </mat-header-cell>
         <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startAddress }}</mat-cell>
+        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setStartAddress}}</mat-cell> -->
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfds</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="endPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'EndPoint' }}
         </mat-header-cell>
         <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endAddress }}</mat-cell>
+        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setEndAddress}}</mat-cell> -->
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfdsfd</mat-cell> -->
       </ng-container>
      
@@ -202,3 +306,4 @@
   </div>
 
 </mat-card>
+</form>

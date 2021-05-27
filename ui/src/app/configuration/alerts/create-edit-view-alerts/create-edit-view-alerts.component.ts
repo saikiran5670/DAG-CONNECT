@@ -328,7 +328,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           this.unitTypeEnum= "K"
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -341,7 +341,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
           this.unitTypeEnum= "H";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -354,7 +354,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
           this.unitTypeEnum= "K";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -385,7 +385,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
           this.unitTypeEnum= "S";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -1259,7 +1259,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1271,7 +1271,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
-                "unitType": "",
+                "unitType": "N",
                 "id": poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
                 "state": element.state == 'Active' ? 'A' : 'I'
@@ -1287,7 +1287,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.type,
                 "refId": element.id,
                 "distance": 0,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1299,7 +1299,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.type,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": "",
+                "unitType": "N",
                 "id": geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
                 "state": element.state == 'Active' ? 'A' : 'I'
@@ -1315,7 +1315,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "G",
                 "refId": element.id,
                 "distance": 0,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1327,7 +1327,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "G",
                 "refId": element.id,
                 "distance": 0,
-                "unitType": "",
+                "unitType": "N",
                 "id": groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
                 "state": 'A'
@@ -1345,7 +1345,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1357,7 +1357,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": "",
+                "unitType": "N",
                 "id": corridorLandmarkRefArr.length > 0 ? corridorLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
                 "state": element.state

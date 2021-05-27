@@ -8,6 +8,7 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { ReportMapService } from './report-map.service';
 import { filter } from 'rxjs/operators';
 
 declare var H: any;
@@ -26,9 +27,9 @@ export class TripReportComponent implements OnInit {
   tripForm: FormGroup;
   displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
   translationData: any;
-  hereMap: any;
-  platform: any;
-  ui: any;
+  // hereMap: any;
+  // platform: any;
+  // ui: any;
   @ViewChild("map")
   public mapElement: ElementRef;
   showMap: boolean = false;
@@ -53,11 +54,12 @@ export class TripReportComponent implements OnInit {
   todayDate: any;
   wholeTripData: any = [];
   tableInfoObj: any = {};
+  tripTraceArray: any = [];
 
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
-    this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
+    // this.platform = new H.service.Platform({
+    //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    // });
     this.defaultTranslation();
   }
 
@@ -125,21 +127,8 @@ export class TripReportComponent implements OnInit {
 
   public ngAfterViewInit() {
     // setTimeout(() => {
-    // this.initMap();
+     //this.reportMapService.initMap(this.mapElement);
     // }, 0);
-  }
-
-  initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    this.hereMap = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
-      center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      zoom: 4,
-      pixelRatio: window.devicePixelRatio || 1
-    });
-    window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
   }
 
   onSearch(){
@@ -152,6 +141,12 @@ export class TripReportComponent implements OnInit {
         this.hideloader();
         this.tripData = _tripData.tripData;
         this.setTableInfo();
+        this.updateDataSource(this.tripData);
+      }, (error)=>{
+        //console.log(error);
+        this.hideloader();
+        this.tripData = [];
+        this.tableInfoObj = {};
         this.updateDataSource(this.tripData);
       });
     }
@@ -232,11 +227,17 @@ export class TripReportComponent implements OnInit {
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
     if(this.initData.length > 0){
-      this.showMapPanel = true;
-      setTimeout(() => {
-        this.initMap();
-      }, 0);
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.reportMapService.initMap(this.mapElement);
+        }, 0);
+      }else{
+        this.reportMapService.clearRoutesFromMap();
+      }
     }
     else{
       this.showMapPanel = false;
@@ -257,13 +258,19 @@ export class TripReportComponent implements OnInit {
   }
 
   masterToggleForTrip() {
+    this.tripTraceArray = [];
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
+      this.reportMapService.clearRoutesFromMap();
+      this.showMap = false;
     }
     else{
-      this.dataSource.data.forEach((row) =>{
+      this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
+        this.tripTraceArray.push(row);
       });
+      this.showMap = true;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
@@ -288,10 +295,15 @@ export class TripReportComponent implements OnInit {
   }
 
   tripCheckboxClicked(event: any, row: any) {
-    if(event.checked){ 
-      
-    }else{
-
+    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    if(event.checked){ //-- add new marker
+      this.tripTraceArray.push(row);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+    }
+    else{ //-- remove existing marker
+      let arr = this.tripTraceArray.filter(item => item.id != row.id);
+      this.tripTraceArray = arr;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
@@ -302,10 +314,16 @@ export class TripReportComponent implements OnInit {
 
   startTimeChanged(selectedTime: any) {
     this.selectedStartTime = selectedTime;
+    this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
+    this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   getTodayDate(){
@@ -341,10 +359,6 @@ export class TripReportComponent implements OnInit {
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
-        //this.startDateValue = this.getTodayDate();
-        //this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getTodayDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -352,10 +366,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'yesterday': {
         this.selectionTab = 'yesterday';
-        // this.startDateValue = this.getYesterdaysDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getYesterdaysDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -363,10 +373,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
-        // this.startDateValue = this.getLastWeekDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getLastWeekDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -374,10 +380,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
-        // this.startDateValue = this.getLastMonthDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getLastMonthDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -385,27 +387,28 @@ export class TripReportComponent implements OnInit {
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
-        // this.startDateValue = this.getLast3MonthDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getLast3MonthDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
     }
+    this.resetTripFormControlValue();
     this.filterDateData();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
     ////console.log("start:: ", event.value)
     this.startDateValue = event.value;
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
     ////console.log("end: ", event.value)
     this.endDateValue = event.value;
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
