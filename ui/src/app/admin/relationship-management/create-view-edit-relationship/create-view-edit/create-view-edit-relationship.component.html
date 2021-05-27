@@ -154,7 +154,7 @@
                         <button class='resetCancelBtnColor no-margin margin-right-10' mat-raised-button color="primary"
                             *ngIf="!createStatus" (click)='onReset()'>{{ translationData.lblReset || 'Reset' }}</button>
                         <button class='no-margin'
-                            [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0"
+                            [disabled]="!relationshipFormGroup.valid || selectionForFeatures.selected.length == 0 || createButtonClicked"
                             mat-raised-button color="primary" (click)='onCreate()'>
                             {{ createStatus ? (translationData.lblCreate || 'Create') : (translationData.lblConfirm ||
                             'Confirm') }}</button>

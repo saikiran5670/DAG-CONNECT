@@ -48,6 +48,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   levelList: any = [];
   codeList: any =[];
   userType: any;
+  createButtonClicked: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private roleService: RoleService, private organizationService: OrganizationService, private router: Router) { }
 
@@ -171,6 +172,7 @@ export class CreateViewEditRelationshipComponent implements OnInit {
   }
 
   onCreate() {
+    this.createButtonClicked = true;
     const relationshipnameInput = this.relationshipFormGroup.controls.relationshipName.value;
     if(this.createStatus){
       this.createRelationship(relationshipnameInput);
