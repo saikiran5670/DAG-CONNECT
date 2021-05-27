@@ -120,7 +120,7 @@ export class TripReportComponent implements OnInit {
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   public ngAfterViewInit() {
@@ -212,7 +212,12 @@ export class TripReportComponent implements OnInit {
   }
 
   onVehicleGroupChange(event: any){
-
+    this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+    if(parseInt(event.value) == 0){ //-- all group
+      this.vehicleListData = this.vehicleGroupListData;
+    }else{
+      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+    }
   }
 
   onVehicleChange(event: any){
@@ -394,12 +399,12 @@ export class TripReportComponent implements OnInit {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
-    //console.log("start:: ", event.value)
+    ////console.log("start:: ", event.value)
     this.startDateValue = event.value;
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
-    //console.log("end: ", event.value)
+    ////console.log("end: ", event.value)
     this.endDateValue = event.value;
   }
 
@@ -415,11 +420,11 @@ export class TripReportComponent implements OnInit {
     let finalVINDataList: any = [];
     let currentStartTime = this.startDateValue.getTime();
     let currentEndTime = this.endDateValue.getTime();
-    console.log(currentStartTime + "<->" + currentEndTime);
+    //console.log(currentStartTime + "<->" + currentEndTime);
     let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
     if(filterVIN.length > 0){
       distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
-      console.log("distinctVIN:: ", distinctVIN);
+      ////console.log("distinctVIN:: ", distinctVIN);
       if(distinctVIN.length > 0){
         distinctVIN.forEach(element => {
           let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
@@ -427,7 +432,7 @@ export class TripReportComponent implements OnInit {
             finalVINDataList.push(_item[0])
           }
         });
-        console.log("finalVINDataList:: ", finalVINDataList); 
+        ////console.log("finalVINDataList:: ", finalVINDataList); 
       }
     }
     this.vehicleGroupListData = finalVINDataList;
