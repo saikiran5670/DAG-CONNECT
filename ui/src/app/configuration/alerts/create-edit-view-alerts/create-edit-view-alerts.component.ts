@@ -328,7 +328,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           this.unitTypeEnum= "K"
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -341,7 +341,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
           this.unitTypeEnum= "H";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -354,7 +354,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
           this.unitTypeEnum= "K";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -385,7 +385,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
           this.unitTypeEnum= "S";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
