@@ -826,7 +826,32 @@ namespace net.atos.daf.ct2.alert.repository
 
         #endregion
 
+        #region Alert Category Notification Template
+        public async Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate()
+        {
+            try
+            {
+                var queryStatement = @"SELECT 
+                                        id as Id, 
+                                        alert_category_type as AlertCategoryType, 
+                                        alert_type as AlertType, 
+                                        text as Text, 
+                                        created_at as CreatedAt, 
+                                        modified_at as ModifiedAt, 
+                                        subject as Subject
+                                        FROM 
+                                        master.notificationtemplate; ";
 
+                IEnumerable<NotificationTemplate>  notificationTemplatelist = await dataAccess.QueryAsync<NotificationTemplate>(queryStatement, null);
+
+                return notificationTemplatelist;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        #endregion
 
     }
 }

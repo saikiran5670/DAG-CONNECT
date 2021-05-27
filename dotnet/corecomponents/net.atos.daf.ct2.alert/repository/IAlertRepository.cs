@@ -21,5 +21,6 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
+        Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate();
     }
 }

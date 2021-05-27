@@ -20,5 +20,6 @@ namespace net.atos.daf.ct2.alert
         Task<IEnumerable<EnumTranslation>> GetAlertCategory();
         #endregion
         Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
+        Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate();
     }
 }
