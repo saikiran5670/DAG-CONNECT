@@ -227,11 +227,17 @@ export class TripReportComponent implements OnInit {
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
     if(this.initData.length > 0){
-      this.showMapPanel = true;
-      setTimeout(() => {
-        this.reportMapService.initMap(this.mapElement);
-      }, 0);
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.reportMapService.initMap(this.mapElement);
+        }, 0);
+      }else{
+        this.reportMapService.clearRoutesFromMap();
+      }
     }
     else{
       this.showMapPanel = false;
