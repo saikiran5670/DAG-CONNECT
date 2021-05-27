@@ -8,6 +8,7 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { ReportMapService } from './report-map.service';
 import { filter } from 'rxjs/operators';
 
 declare var H: any;
@@ -26,9 +27,9 @@ export class TripReportComponent implements OnInit {
   tripForm: FormGroup;
   displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
   translationData: any;
-  hereMap: any;
-  platform: any;
-  ui: any;
+  // hereMap: any;
+  // platform: any;
+  // ui: any;
   @ViewChild("map")
   public mapElement: ElementRef;
   showMap: boolean = false;
@@ -53,11 +54,12 @@ export class TripReportComponent implements OnInit {
   todayDate: any;
   wholeTripData: any = [];
   tableInfoObj: any = {};
+  tripTraceArray: any = [];
 
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
-    this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
+    // this.platform = new H.service.Platform({
+    //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    // });
     this.defaultTranslation();
   }
 
@@ -125,21 +127,8 @@ export class TripReportComponent implements OnInit {
 
   public ngAfterViewInit() {
     // setTimeout(() => {
-    // this.initMap();
+     //this.reportMapService.initMap(this.mapElement);
     // }, 0);
-  }
-
-  initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    this.hereMap = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
-      center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      zoom: 4,
-      pixelRatio: window.devicePixelRatio || 1
-    });
-    window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
   }
 
   onSearch(){
@@ -238,11 +227,17 @@ export class TripReportComponent implements OnInit {
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
     if(this.initData.length > 0){
-      this.showMapPanel = true;
-      setTimeout(() => {
-        this.initMap();
-      }, 0);
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.reportMapService.initMap(this.mapElement);
+        }, 0);
+      }else{
+        this.reportMapService.clearRoutesFromMap();
+      }
     }
     else{
       this.showMapPanel = false;
@@ -263,13 +258,19 @@ export class TripReportComponent implements OnInit {
   }
 
   masterToggleForTrip() {
+    this.tripTraceArray = [];
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
+      this.reportMapService.clearRoutesFromMap();
+      this.showMap = false;
     }
     else{
-      this.dataSource.data.forEach((row) =>{
+      this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
+        this.tripTraceArray.push(row);
       });
+      this.showMap = true;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
@@ -294,10 +295,15 @@ export class TripReportComponent implements OnInit {
   }
 
   tripCheckboxClicked(event: any, row: any) {
-    if(event.checked){ 
-      
-    }else{
-
+    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    if(event.checked){ //-- add new marker
+      this.tripTraceArray.push(row);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+    }
+    else{ //-- remove existing marker
+      let arr = this.tripTraceArray.filter(item => item.id != row.id);
+      this.tripTraceArray = arr;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
@@ -401,6 +407,7 @@ export class TripReportComponent implements OnInit {
         break;
       }
     }
+    this.resetTripFormControlValue();
     this.filterDateData();
   }
 

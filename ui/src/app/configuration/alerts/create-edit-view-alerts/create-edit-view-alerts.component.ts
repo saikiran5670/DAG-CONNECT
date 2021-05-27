@@ -1259,7 +1259,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1271,7 +1271,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
-                "unitType": "",
+                "unitType": "N",
                 "id": poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
                 "state": element.state == 'Active' ? 'A' : 'I'
@@ -1287,7 +1287,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.type,
                 "refId": element.id,
                 "distance": 0,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1299,7 +1299,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.type,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": "",
+                "unitType": "N",
                 "id": geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
                 "state": element.state == 'Active' ? 'A' : 'I'
@@ -1315,7 +1315,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "G",
                 "refId": element.id,
                 "distance": 0,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1327,7 +1327,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "G",
                 "refId": element.id,
                 "distance": 0,
-                "unitType": "",
+                "unitType": "N",
                 "id": groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
                 "state": 'A'
@@ -1345,7 +1345,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1357,7 +1357,7 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": "",
+                "unitType": "N",
                 "id": corridorLandmarkRefArr.length > 0 ? corridorLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
                 "state": element.state

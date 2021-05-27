@@ -210,34 +210,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> update(Features featureRequest)
-        {
-            
-
+        {            
             try
             {
                 _logger.Info("Update method in FeatureSet API called.");
-
 
                 if (string.IsNullOrEmpty(featureRequest.Name))
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                //if (string.IsNullOrEmpty(featureRequest.Key))
-                //{
-                //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
-                //}
+
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Id = featureRequest.Id;
-                FeatureObj.Level = featureRequest.Level;
-                FeatureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
+                FeatureObj.State = featureRequest.FeatureState;
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.Name;
                 FeatureObj.DataAttribute.Description = featureRequest.Description;
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 FeatureObj.DataAttribute.DataAttributeSetId = featureRequest.DataattributeSet.ID;
-                //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
                 foreach (var item in featureRequest.DataAttributeIds)
                 {

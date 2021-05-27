@@ -74,7 +74,10 @@ export class ExistingTripsComponent implements OnInit {
   markerArray: any = [];
   showLoadingIndicator: boolean;
   selectedCorridors = new SelectionModel(true, []);
-
+  public position: string;
+  public locations: Array<any>;
+  setEndAddress: any = "";
+  setStartAddress: any = ""; 
   // @Input() translationData: any;
   // @Input() selectedRowData: any;
   // @Input() actionType: any;
@@ -183,6 +186,8 @@ export class ExistingTripsComponent implements OnInit {
       corridorType:['Regular'],
       label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       widthInput : ['', [Validators.required]],
+      endaddress : ['', [Validators.required]],
+      startaddress : ['', [Validators.required]],
       viaroute1: [''],
       viaroute2: [''],
       // trailer:["Regular"],
@@ -943,6 +948,47 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   checkboxClicked(event: any, row: any) {
+    
+    let startAddress =  row.startPositionlattitude + "," + row.startPositionLongitude;
+    let endAddress =  row.endPositionlattitude + "," + row.endPositionLongitude;
+    // this.position = row.startPositionlattitude + "," + row.startPositionLongitude;
+    this.here.getAddressFromLatLng(startAddress).then(result => {
+      this.locations = <Array<any>>result;
+      
+      console.log("---location--",this.locations)
+      this.setStartAddress = this.locations[0].Location.Address.Label;
+      console.log("--hey Chckbox clicked startAddress---",this.setStartAddress)
+      
+      this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
+      // // //console.log(this.locations[0].Location.Address);
+      // let pos = this.locations[0].Location.DisplayPosition;
+      // // //console.log(data);
+      // this.data = data;
+      // thisRef.poiFlag = false;
+      // thisRef.setAddressValues(data, pos);
+    }, error => {
+      // console.error(error);
+    });
+    
+    this.here.getAddressFromLatLng(endAddress).then(result => {
+      this.locations = <Array<any>>result;
+      
+      console.log("---location--",this.locations)
+      this.setEndAddress = this.locations[0].Location.Address.Label;
+      console.log("--hey Chckbox clicked endAddress---",this.setEndAddress)
+      this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
+      // // //console.log(this.locations[0].Location.Address);
+      // let pos = this.locations[0].Location.DisplayPosition;
+      // // //console.log(data);
+      // this.data = data;
+      // thisRef.poiFlag = false;
+      // thisRef.setAddressValues(data, pos);
+    }, error => {
+      // console.error(error);
+    });
+
+
+
     this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
     //console.log(this.selectedpois.selected.length)
     //console.log(row);

@@ -210,13 +210,11 @@ wsLabel: any;
     // let tempObj= {
     //   name: "ABCD"
     // }
-    // return tempObj;
-    let isNotificationFormValid : boolean =   this.notificationForm.valid;
 
 
      let WsData;
     let EmailData;
-   if(this.FormWebArray.length > 0){
+   if(this.FormWebArray && this.FormWebArray.length > 0){
    this.FormWebArray.controls.forEach((element, index) => {
      WsData = element['controls'];
   let webPayload = {
@@ -240,7 +238,7 @@ this.notificationPayload.push(webPayload);
 
 }
 
-  if(this.FormEmailArray.length > 0)
+  if(this.FormEmailArray && this.FormEmailArray.length > 0)
   {
   this.FormEmailArray.controls.forEach((item,index)=>{
     EmailData = item['controls'];
@@ -278,7 +276,7 @@ this.notifications = [
   }
   ]
 
-  return {'isValid' :isNotificationFormValid, 'notificationsData' :this.notifications};
+  return this.notifications;
   }
 
  
