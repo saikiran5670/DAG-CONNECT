@@ -15,8 +15,6 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             string val = Convert.ToString(value);
-            
-            bool valid = false;
 
             switch (val)
             {
@@ -34,16 +32,11 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
                 case "C"://Celsius: Systemm unit for Temparature
                 case "T"://Second: System unit for Time
                 case "L"://Liter: System unit for Volume
-                    valid = true;
-                    break;
-            }
-
-            if (valid)
-                return null;
-
-            return new ValidationResult(base.FormatErrorMessage(validationContext.MemberName)
+                    return null;
+                default:
+                    return new ValidationResult(base.FormatErrorMessage(validationContext.MemberName)
                 , new string[] { validationContext.MemberName });
+            }
         }
     }
-
 }
