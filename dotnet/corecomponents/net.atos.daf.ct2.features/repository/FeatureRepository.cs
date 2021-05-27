@@ -652,14 +652,12 @@ namespace net.atos.daf.ct2.features.repository
             parameter.Add("@id", feature.Id);
             parameter.Add("@data_attribute_set_id", UpdatedDataAttributeSetId);
             parameter.Add("@key", feature.Key);
-            parameter.Add("@level", feature.Level);
             parameter.Add("@State", (char)feature.FeatureState);
 
             int resultUpdateDataAttributeFeature = dataAccess.Execute(@"UPDATE master.feature
 	                                                SET 
                                                         name= @name,                                                       
-                                                        key= @key,
-                                                        level= @level,      
+                                                        key= @key,    
                                                         state= @State
 	                                                WHERE data_attribute_set_id = @data_attribute_set_id", parameter);
             return resultUpdateDataAttributeFeature;
