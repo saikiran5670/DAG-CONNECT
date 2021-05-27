@@ -662,6 +662,7 @@ namespace net.atos.daf.ct2.alert.repository
                     notlim.created_at as notlim_created_at,
                     notlim.modified_at as notlim_modified_at,
                     (CASE WHEN grp.group_type='S' THEN vehs.vin END) as vin,
+                    (CASE WHEN grp.group_type='S' THEN vehs.license_plate_number END) as regno,
 					(CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
 					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
                     (CASE WHEN grp.group_type='S' THEN 'V' ELSE 'G' END) as ale_applyon

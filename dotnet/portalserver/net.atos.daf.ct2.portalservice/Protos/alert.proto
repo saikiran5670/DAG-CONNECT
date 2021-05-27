@@ -97,11 +97,12 @@ message AlertRequest
 	string VehicleName=15;
 	string VehicleGroupName=16;
 	string Vin=17;
-	string ApplyOn=18;	
-	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=19;
-	repeated NotificationRequest Notifications=20;
-	repeated AlertLandmarkRefRequest AlertLandmarkRefs=21;
-	bool Exists=22;
+	string RegNo=18;
+	string ApplyOn=19;	
+	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=20;
+	repeated NotificationRequest Notifications=21;
+	repeated AlertLandmarkRefRequest AlertLandmarkRefs=22;
+	bool Exists=23;	
 }
 
 message AlertFilterRefRequest
