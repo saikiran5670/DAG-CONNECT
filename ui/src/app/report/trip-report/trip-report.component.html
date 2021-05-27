@@ -129,19 +129,19 @@
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblFrom || 'From' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>01/01/2021 00:00:00</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>All</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>VIN0123456789</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
               </span>
             </div>
           </div>
@@ -149,19 +149,19 @@
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>01/01/2021 23:59:59</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>VIN 007</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblRegPlateNumber || 'Reg. Plate Number' }}: </span>
-                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>007 007 007</span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
               </span>
             </div>
           </div>
@@ -201,15 +201,15 @@
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="startDate">
+            <ng-container matColumnDef="startTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.startDate != '' ? row.startDate : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.startTimeStamp != '' ? row.startTimeStamp : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="endDate">
+            <ng-container matColumnDef="endTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.endDate != '' ? row.endDate : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.endTimeStamp != '' ? row.endTimeStamp : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="distance">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{ translationData.lblkm || 'km' }})</span>
@@ -221,15 +221,15 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.idleDuration != '' ? row.idleDuration : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="avgSpeed">
+            <ng-container matColumnDef="averageSpeed">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ translationData.lblkmh || 'km/h' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.avgSpeed != '' ? row.avgSpeed : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.averageSpeed != '' ? row.averageSpeed : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="avgWeight">
+            <ng-container matColumnDef="averageWeight">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{ translationData.lblt || 't' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.avgWeight != '' ? row.avgWeight : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.averageWeight != '' ? row.averageWeight : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="startPosition">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPosition || 'Start Position' }}
@@ -241,20 +241,20 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.endPosition != '' ? row.endPosition : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="fuelConsumption">
+            <ng-container matColumnDef="fuelConsumed100Km">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} <span style="font-weight: normal;">({{ translationData.lblLtr100Km || 'Ltr/100 Km' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.fuelConsumption != '' ? row.fuelConsumption : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.fuelConsumed100Km != '' ? row.fuelConsumed100Km : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="drivingTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime || 'Driving Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.drivingTime != '' ? row.drivingTime : '-' }}</mat-cell>
             </ng-container>
-            <ng-container matColumnDef="alerts">
+            <ng-container matColumnDef="alert">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts || 'Alerts' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.alerts != '' ? row.alerts : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.alert != '' ? row.alert : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="events">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEvents || 'Events' }}

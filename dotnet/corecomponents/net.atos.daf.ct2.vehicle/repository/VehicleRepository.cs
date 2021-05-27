@@ -1052,7 +1052,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 									inner join master.groupref vgrpref
 									on  grp.id=vgrpref.group_id
 									where vgrpref.ref_id=@accountid) AND veh.status <>'T'
-									AND veh.organization_id =@orgnizationid AND sub.state='A'";
+									AND veh.organization_id =@orgnizationid";
                 //Start date and end date need to be discuss in subscription
 
                 var parameter = new DynamicParameters();
