@@ -154,8 +154,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
       key: "",
       dataAttributeIds: selectedId,
       level: 0,
-      featureState: this.selectedStatus === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE'
-    }
+      featureState: this.selectedStatus === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE'
+     }
     if(this.actionType == 'create'){
       this.featureService.createFeature(createFeatureParams).subscribe((data: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {
@@ -194,8 +194,8 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         key: "",
         dataAttributeIds: selectedId,
         level: 0,
-        featureState: this.selectedStatus === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE'
-      }        
+        featureState: this.selectedStatus === 'ACTIVE' ? 'ACTIVE' : 'INACTIVE'
+        }        
       this.featureService.updateFeature(updatedFeatureParams).subscribe((dataUpdated: any) => {
         this.featureService.getFeatures().subscribe((getData: any) => {
           let filterTypeData = getData.filter(item => item.type == "D");
