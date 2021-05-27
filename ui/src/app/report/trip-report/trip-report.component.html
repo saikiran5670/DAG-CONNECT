@@ -27,8 +27,8 @@
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
                   <mat-option value="0">--All--</mat-option>
-                  <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.id">
-                      {{ rer.name }}
+                  <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
+                      {{ rer.vehicleGroupName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -81,9 +81,9 @@
               <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                  <mat-option value="0">--All--</mat-option>
-                  <mat-option *ngFor="let rer of vehicleListData" [value]="rer.id">
-                      {{ rer.name }}
+                  <!-- <mat-option value="0">--All--</mat-option> -->
+                  <mat-option *ngFor="let rer of vehicleListData" [value]="rer.vehicleId">
+                      {{ rer.vehicleName }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -92,7 +92,7 @@
           <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
             <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
-            <button class='no-margin' mat-raised-button color="primary"
+            <button [disabled]="!tripForm.valid" class='no-margin' mat-raised-button color="primary"
               (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
           </div>
         </div>

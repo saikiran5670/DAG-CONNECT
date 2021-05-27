@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, Common.AccountPrivilegeChecker privilegeChecker): base(_httpContextAccessor, sessionHelper)
+             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, Common.AccountPrivilegeChecker privilegeChecker) : base(_httpContextAccessor, sessionHelper)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -876,7 +876,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             AccountBusinessService.IdRequest request = new AccountBusinessService.IdRequest();
             try
-            {        
+            {
                 if (preferenceId <= 0)
                 {
                     return StatusCode(400, "The preferenceId Id is required");
@@ -922,7 +922,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetAccountPreference(int preferenceId)
         {
             try
-            {        
+            {
                 if ((preferenceId <= 0))
                 {
                     return StatusCode(400, "The preferenceId Id is required");
@@ -964,7 +964,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> CreateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
             try
-            {            
+            {
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return StatusCode(400, "Invalid Payload");
@@ -1010,14 +1010,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Empty);
             }
         }
-        
+
         // update vehicle access relationship
         [HttpPost]
         [Route("accessrelationship/vehicle/update")]
         public async Task<IActionResult> UpdateVehicleAccessRelationship(AccessRelationshipRequest request)
         {
             try
-            {             
+            {
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return BadRequest();
@@ -1096,14 +1096,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Empty);
             }
         }
-        
+
         // create account access relationship
         [HttpPost]
         [Route("accessrelationship/account/create")]
         public async Task<IActionResult> CreateAccountAccessRelationshipAsync(AccessRelationshipRequest request)
         {
             try
-            {              
+            {
                 if ((request.Id <= 0) || (request.OrganizationId <= 0) || (request.AssociatedData == null))
                 {
                     return BadRequest();
@@ -1140,7 +1140,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         // update vehicle access relationship
-        
+
         [HttpPost]
         [Route("accessrelationship/account/update")]
         public async Task<IActionResult> UpdateAccountAccessRelationship(AccessRelationshipRequest request)
@@ -1223,14 +1223,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, string.Format(PortalConstants.ResponseError.InternalServerError, "02"));
             }
         }
-        
+
         // Get vehicle access relationship
         [HttpGet]
         [Route("accessrelationship/get")]
         public async Task<IActionResult> GetAccessRelationship(int organizationId)
         {
             try
-            {              
+            {
                 if (organizationId <= 0)
                 {
                     return BadRequest();
@@ -1351,13 +1351,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500);
             }
         }
-        
+
         [HttpPost]
         [Route("accountgroup/update")]
         public async Task<IActionResult> UpdateAccountGroup(AccountGroupRequest request)
         {
             try
-            {                
+            {
                 if ((request.Id <= 0) || (string.IsNullOrEmpty(request.Name)))
                 {
                     return StatusCode(400, "The AccountGroup name and id is required");
@@ -1393,7 +1393,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         [HttpPut]
         [Route("accountgroup/delete")]
         public async Task<IActionResult> DeleteAccountGroup(int id)
@@ -1431,7 +1431,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         [HttpPost]
         [Route("accountgroup/addaccounts")]
         public async Task<IActionResult> AddAccountsToGroup(AccountGroupAccount request)
@@ -1480,7 +1480,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         [HttpPut]
         [Route("accountgroup/deleteaccounts")]
         public async Task<IActionResult> DeleteAccountFromGroup(int id)
@@ -1559,7 +1559,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         [HttpPost]
         [Route("accountgroup/getdetails")]
         public async Task<IActionResult> GetAccountGroupDetails(AccountBusinessService.AccountGroupDetailsRequest request)
@@ -1615,7 +1615,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 roles = _mapper.ToRole(request);
                 roles.OrganizationId = AssignOrgContextByAccountId(request.AccountId);
-                
+
                 AccountBusinessService.AccountRoleResponse response = await _accountClient.AddRolesAsync(roles);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -1645,7 +1645,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         [HttpPost]
         [Route("deleteroles")]
         public async Task<IActionResult> RemoveRoles(AccountBusinessService.AccountRoleDeleteRequest request)
@@ -1687,7 +1687,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         [HttpPost]
         [Route("getroles")]
         public async Task<IActionResult> GetRoles(AccountBusinessService.AccountRoleDeleteRequest request)
@@ -1721,7 +1721,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         #endregion
 
         #region Single Sign On
@@ -1734,8 +1734,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
                 ssoRequest.AccountID = _userDetails.accountId;
                 ssoRequest.RoleID = _userDetails.roleId;
-                ssoRequest.OrganizationID = _userDetails.orgId;
-                if (_userDetails.accountId <= 0 || _userDetails.roleId <= 0 || _userDetails.orgId <= 0)
+                ssoRequest.OrganizationID = _userDetails.contextOrgId > 0 ? _userDetails.contextOrgId : _userDetails.orgId;
+                if (ssoRequest.AccountID <= 0 || ssoRequest.RoleID <= 0 || ssoRequest.OrganizationID <= 0)
                 {
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING_PARAMETER", nameof(HeaderObj));
                 }
@@ -1744,16 +1744,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                           "GenerateSSOToken method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                           "GenerateSSOToken method in Account controller", ssoRequest.AccountID, ssoRequest.AccountID,
                                            JsonConvert.SerializeObject(ssoRequest), Request);
                     return Ok(response.Token);
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
                 {
-                    return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_USER!", Convert.ToString(_userDetails.accountId));
+                    return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_USER!", Convert.ToString(ssoRequest.AccountID));
                 }
                 else
-                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "BAD REQUEST", Convert.ToString(_userDetails.accountId));
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, "BAD REQUEST", Convert.ToString(ssoRequest.AccountID));
             }
             catch (Exception ex)
             {
@@ -1793,7 +1793,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return Ok();
                 }
                 else
-                    return BadRequest("Account Id mismatch in the request.");                
+                    return BadRequest("Account Id mismatch in the request.");
             }
             catch (Exception ex)
             {
