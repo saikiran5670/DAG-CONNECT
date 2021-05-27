@@ -40,11 +40,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
   openAdvancedFilter: boolean= false;
  contactModes : any = [
   {
-    id : 0,
+    id : 'W',
     value: 'Web Service'
   },
   {
-    id : 1,
+    id : "E",
     value: 'Email'
   }
 ];
@@ -133,7 +133,7 @@ wsLabel: any;
 
       this.contactModeType = this.notificationForm.get("contactMode").value;
       //this is for email
-      if (this.contactModeType == 1) {
+      if (this.contactModeType == 'E') {
         this.addEmailFlag = true;
         this.emailCount = this.emailCount + 1;
         if (!this.FormEmailArray) {
@@ -149,10 +149,9 @@ wsLabel: any;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
         }
-        console.log("FormEmailArray=" +this.notificationForm['controls']['FormEmailArray']['controls'][0]['controls']);
       }
       //this is for web service
-      else if (this.contactModeType == 0) {
+      else if (this.contactModeType == 'W') {
         this.addWsFlag = true;
         this.wsCount = this.wsCount + 1;
         if (!this.FormWebArray) {
@@ -168,11 +167,8 @@ wsLabel: any;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
         }
-        console.log("FormWebArray= " +this.notificationForm['controls']['FormEmailArray']['controls'][0]['controls']);
-      }
-      console.log("----------------last details--------");
-      console.log("formArray= "+JSON.stringify(data));
-    }
+     }
+     }
 
   setDefaultValueForws(){
     this.webURL = "";
@@ -215,13 +211,15 @@ wsLabel: any;
     //   name: "ABCD"
     // }
     // return tempObj;
-    
-   let WsData;
-   let EmailData;
-   if(this.contactModeType == 0){
+    let isNotificationFormValid : boolean =   this.notificationForm.valid;
+
+
+     let WsData;
+    let EmailData;
+   if(this.FormWebArray.length > 0){
    this.FormWebArray.controls.forEach((element, index) => {
      WsData = element['controls'];
-let webPayload = {
+  let webPayload = {
   recipientLabel: WsData.webRecipientLabel.value,
   accountGroupId: this.organizationId,
   notificationModeType: WsData.webContactModes.value,
@@ -237,14 +235,15 @@ let webPayload = {
   wsPassword: WsData.password.value
 }
 this.notificationPayload.push(webPayload);
-console.log("this is web=" +JSON.stringify(this.notificationPayload));
+
    });
 
-  }
+}
 
-  if(this.contactModeType == 1)
+  if(this.FormEmailArray.length > 0)
   {
   this.FormEmailArray.controls.forEach((item,index)=>{
+    EmailData = item['controls'];
     let emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
@@ -261,13 +260,14 @@ console.log("this is web=" +JSON.stringify(this.notificationPayload));
           wsPassword: ""
     }
     this.notificationPayload.push(emailPayload);
-    console.log("this is email=" +this.notificationPayload);
   });
+
 }
+    
 
 this.notifications = [
   {
-    "alertUrgencyLevelType": "",
+    "alertUrgencyLevelType": "C",
     "frequencyType": "O",
     "frequencyThreshholdValue": 0,
     "validityType": "A",
@@ -278,7 +278,7 @@ this.notifications = [
   }
   ]
 
-  console.log(this.notificationForm);
+  return {'isValid' :isNotificationFormValid, 'notificationsData' :this.notifications};
   }
 
  
