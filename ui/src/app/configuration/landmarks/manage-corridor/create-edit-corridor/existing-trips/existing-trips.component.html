@@ -162,13 +162,13 @@
 
       </mat-label>
       <div  *ngIf="actionType != 'view'">
-          <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+          <!-- <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
           [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
-          (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
-          <!-- <mat-form-field appearance="outline" class='full-width'>
-             <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
-                  matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required> 
-              </mat-form-field>  -->
+          (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer> -->
+          <mat-form-field appearance="outline" class='full-width'>
+             <input maxlength="50"  style='cursor: none;' placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                  matInput formControlName="startaddress" readonly required> 
+              </mat-form-field> 
 
           <mat-error
               *ngIf="searchStrError">
@@ -186,14 +186,14 @@
 
       </mat-label>
       <div  *ngIf="actionType != 'view'">
-          <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+          <!-- <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
           [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
-          [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer>
+          [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer> -->
          
-          <!-- <mat-form-field appearance="outline" class='full-width'>
-              <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
-                  matInput formControlName="endaddress" (focusout)="endAddressFocusOut()" required>
-          </mat-form-field> -->
+          <mat-form-field appearance="outline" class='full-width'>
+              <input style='cursor: none;' maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                  matInput formControlName="endaddress" readonly required>
+          </mat-form-field>
           <mat-error
               *ngIf="searchEndStrError">
               {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
@@ -269,7 +269,7 @@
       <ng-container matColumnDef="DriverName">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.driverFirstName }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.driverFirstName }} {{ row.driverLastName }}</mat-cell>
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">sadasd</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="distance">
@@ -280,19 +280,21 @@
       </ng-container>
       <ng-container matColumnDef="date">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
-        <mat-cell *matCellDef="let row">Date WBD</mat-cell>
+        <mat-cell *matCellDef="let row"></mat-cell>
         <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="startPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'StartPoint' }}
         </mat-header-cell>
         <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startAddress }}</mat-cell>
+        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setStartAddress}}</mat-cell> -->
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfds</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="endPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'EndPoint' }}
         </mat-header-cell>
         <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endAddress }}</mat-cell>
+        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setEndAddress}}</mat-cell> -->
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfdsfd</mat-cell> -->
       </ng-container>
      
