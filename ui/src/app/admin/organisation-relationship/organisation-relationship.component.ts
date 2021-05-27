@@ -277,6 +277,8 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   }
 
+ 
+
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;
@@ -325,22 +327,31 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   deleteOrgRelationship(){
-    let selectedOptions = this.selectedOrgRelations.selected.map(item=>item.id);
+    let relList: any = '';
+    let relId = 
+    { 
+      id: this.selectedOrgRelations.selected.map(item=>item.id)
+    }
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
     };
-    let name = this.selectedOrgRelations.selected[0].relationshipName;
-    this.dialogService.DeleteModelOpen(options, name);
+    //let name = this.selectedOrgRelations.selected[0].relationshipName;
+    let name = this.selectedOrgRelations.selected.forEach(item => {
+      relList += item.relationshipName + ', ';
+    });
+    if(relList != ''){
+      relList = relList.slice(0, -2);
+    }
+    this.dialogService.DeleteModelOpen(options, relList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
        {
-        this.organizationService
-        .deleteOrgRelationship(selectedOptions) //need to change
+        this.organizationService.deleteOrgRelationship(relId) //need to change
         .subscribe((d) => {
-          this.successMsgBlink(this.getDeletMsg(name));
+          this.successMsgBlink(this.getDeletMsg(relList));
           this.loadInitData();
         });
         }

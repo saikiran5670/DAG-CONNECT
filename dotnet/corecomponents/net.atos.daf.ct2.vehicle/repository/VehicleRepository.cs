@@ -1158,7 +1158,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
