@@ -437,6 +437,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
 			objvehiclegroup.VehicleId = vehiclegroup.VehicleId;
 			objvehiclegroup.VehicleName = string.IsNullOrEmpty(vehiclegroup.VehicleName) ? string.Empty : vehiclegroup.VehicleName;
 			objvehiclegroup.Vin = string.IsNullOrEmpty(vehiclegroup.Vin) ? string.Empty : vehiclegroup.Vin;
+			objvehiclegroup.RegNo = string.IsNullOrEmpty(vehiclegroup.RegNo) ? string.Empty : vehiclegroup.RegNo;
 			objvehiclegroup.SubcriptionStatus = vehiclegroup.SubcriptionStatus;
 			return objvehiclegroup;
 		}

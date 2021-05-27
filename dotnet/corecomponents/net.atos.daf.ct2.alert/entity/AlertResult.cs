@@ -109,5 +109,6 @@ namespace net.atos.daf.ct2.alert.entity
         public string vehiclename { get; set; }
         public string vehiclegroupname { get; set; }
         public string vin { get; set; }
+        public string regno { get; set; }
     }
 }

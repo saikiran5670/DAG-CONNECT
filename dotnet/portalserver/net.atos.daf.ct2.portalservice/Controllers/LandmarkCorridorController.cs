@@ -98,12 +98,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                
                 if (request.OrganizationId == 0)
                 {
-                    //bool hasRights = await HasAdminPrivilege();
-                    //if (!hasRights)
                      return StatusCode(400, "Organization_Id Required .");
+                }
+                else
+                {
+                    request.OrganizationId = GetContextOrgId();
                 }
                 if (request.ViaAddressDetails.Count >5)
                 {

@@ -662,6 +662,7 @@ namespace net.atos.daf.ct2.alert.repository
                     notlim.created_at as notlim_created_at,
                     notlim.modified_at as notlim_modified_at,
                     (CASE WHEN grp.group_type='S' THEN vehs.vin END) as vin,
+                    (CASE WHEN grp.group_type='S' THEN vehs.license_plate_number END) as regno,
 					(CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
 					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
                     (CASE WHEN grp.group_type='S' THEN 'V' ELSE 'G' END) as ale_applyon
@@ -826,7 +827,32 @@ namespace net.atos.daf.ct2.alert.repository
 
         #endregion
 
+        #region Alert Category Notification Template
+        public async Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate()
+        {
+            try
+            {
+                var queryStatement = @"SELECT 
+                                        id as Id, 
+                                        alert_category_type as AlertCategoryType, 
+                                        alert_type as AlertType, 
+                                        text as Text, 
+                                        created_at as CreatedAt, 
+                                        modified_at as ModifiedAt, 
+                                        subject as Subject
+                                        FROM 
+                                        master.notificationtemplate; ";
 
+                IEnumerable<NotificationTemplate>  notificationTemplatelist = await dataAccess.QueryAsync<NotificationTemplate>(queryStatement, null);
+
+                return notificationTemplatelist;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        #endregion
 
     }
 }

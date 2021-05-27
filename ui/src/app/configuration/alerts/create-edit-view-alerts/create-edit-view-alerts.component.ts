@@ -1204,8 +1204,8 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onCreateUpdate(){
     if(this.panelOpenState){
-      let tempObj= this.notificationComponent.getNotificationDetails();
-      console.log(tempObj);
+      this.notifications= this.notificationComponent.getNotificationDetails();
+      console.log(this.notifications);
     }
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
