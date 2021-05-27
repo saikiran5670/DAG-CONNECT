@@ -153,6 +153,12 @@ export class TripReportComponent implements OnInit {
         this.tripData = _tripData.tripData;
         this.setTableInfo();
         this.updateDataSource(this.tripData);
+      }, (error)=>{
+        //console.log(error);
+        this.hideloader();
+        this.tripData = [];
+        this.tableInfoObj = {};
+        this.updateDataSource(this.tripData);
       });
     }
   }
