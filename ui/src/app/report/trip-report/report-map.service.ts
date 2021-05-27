@@ -47,17 +47,14 @@ export class ReportMapService {
   }
 
   clearRoutesFromMap(){
-    let group = new H.map.Group();
-    group.removeAll();
     this.hereMap.removeObjects(this.hereMap.getObjects())
+    this.group.removeAll();
     this.startMarker = null; 
     this.endMarker = null;
   }
 
   viewSelectedRoutes(_selectedRoutes: any){
-    var group = new H.map.Group();
-    group.removeAll();
-    this.hereMap.removeObjects(this.hereMap.getObjects());
+    this.clearRoutesFromMap();
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
         this.startAddressPositionLat = _selectedRoutes[i].startPositionLattitude;
@@ -78,55 +75,6 @@ export class ReportMapService {
       }
     }
    }
-
-  // plotStartPoint(_locationId){
-  //   let geocodingParameters = {
-	// 	  searchText: _locationId ,
-	// 	};
-  //   this.hereSerive.getLocationDetails(geocodingParameters).then((result) => {
-  //     this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
-  //     this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-  //     let houseMarker = this.createHomeMarker();
-  //     let markerSize = { w: 26, h: 32 };
-  //     const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-  
-  //     this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
-  //     var group = new H.map.Group();
-  //     this.hereMap.addObject(this.startMarker);
-  //     //this.hereMap.getViewModel().setLookAtData({zoom: 8});
-  //     //this.hereMap.setZoom(8);
-  //     this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
-  //     this.checkRoutePlot();
-  //   });
-  // }
-
-  // checkRoutePlot(){
-  //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
-  //     this.calculateAtoB('');
-  //   }
-  // }
-
-  // plotEndPoint(_locationId){
-  //   let geocodingParameters = {
-	// 	  searchText: _locationId ,
-	// 	};
-  //   this.hereSerive.getLocationDetails(geocodingParameters).then((result) => {
-  //     this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
-  //     this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-  //     let houseMarker = this.createEndMarker();
-  //     let markerSize = { w: 26, h: 32 };
-  //     const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-  
-  //     this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
-  //     this.hereMap.addObject(this.endMarker);
-  //    // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-  //     //this.hereMap.setZoom(8);
-  //     this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
-  //     this.checkRoutePlot();
-
-  //   });
-    
-  // }
 
   createHomeMarker(){
     const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">

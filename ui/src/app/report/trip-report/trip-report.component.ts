@@ -289,10 +289,15 @@ export class TripReportComponent implements OnInit {
   }
 
   tripCheckboxClicked(event: any, row: any) {
-    if(event.checked){ 
-      
-    }else{
-
+    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    if(event.checked){ //-- add new marker
+      this.tripTraceArray.push(row);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+    }
+    else{ //-- remove existing marker
+      let arr = this.tripTraceArray.filter(item => item.id != row.id);
+      this.tripTraceArray = arr;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
