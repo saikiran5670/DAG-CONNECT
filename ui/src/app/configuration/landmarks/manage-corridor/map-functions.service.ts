@@ -54,7 +54,7 @@ export class MapFunctionsService {
 
 
     // Create the default UI components
-    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
   }
@@ -84,6 +84,10 @@ export class MapFunctionsService {
         this.endAddressPositionLong= _selectedRoutes[i].endLong;
         this.corridorWidth = _selectedRoutes[i].width;
         this.corridorWidthKm = this.corridorWidth/1000;
+        let corridorName = _selectedRoutes[i].corridoreName;
+        let startAddress = _selectedRoutes[i].startPoint;
+        let endAddress = _selectedRoutes[i].endPoint;
+
 
 
 
@@ -96,10 +100,12 @@ export class MapFunctionsService {
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
   
         this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:iconEnd});
-     
+        let endMarkerHtml = `<div>Corridor Name:${corridorName} <br>Start Point:${startAddress}<br>End Point:${endAddress}<br>Width:${this.corridorWidthKm} km</div>`
+        this.endMarker.setData(endMarkerHtml);
        
         this.group.addObjects([this.startMarker,this.endMarker]);
         this.calculateAB('view');
+        this.addInfoBubble();
        // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
        // let successRoute = this.calculateAB('view');
       }
@@ -201,13 +207,6 @@ export class MapFunctionsService {
     }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-
-      // Create a polyline to display the route:
-      // let routeLine = new H.map.Polyline(linestring, {
-      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
-      // });
-      // this.hereMap.addObject(routeLine);
-      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
       //if (this.corridorWidthKm > 0) {
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
@@ -257,5 +256,27 @@ export class MapFunctionsService {
     //   bounds: group.getBoundingBox()
     // });
   }
+
+  ui: any;
+  addInfoBubble() {
+
+    var group = new H.map.Group();
   
+    this.hereMap.addObject(group);
+  
+    // add 'tap' event listener, that opens info bubble, to the group
+    this.hereMap.addEventListener('tap',  (evt)=> {
+      // event target is the marker itself, group is a parent event target
+      // for all objects that it contains
+      var bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+        // read custom data
+        content: evt.target.getData()
+      });
+      // show info bubble
+      if(evt.target.getData()){
+      this.ui.addBubble(bubble);
+
+      }
+    }, false);
+  }
 }
