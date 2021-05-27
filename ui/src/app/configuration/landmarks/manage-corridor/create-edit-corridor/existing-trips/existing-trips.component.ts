@@ -43,6 +43,7 @@ export class ExistingTripsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns = ['All', 'DriverName', 'distance', 'date', 'startPoint', 'endPoint'];
+  existingTripData: any = [];
   createEditStatus = false;
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
@@ -88,6 +89,10 @@ export class ExistingTripsComponent implements OnInit {
       // userGroupName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
+      startDate: ['', [Validators.required]],
+      startTime: ['', [Validators.required]],
+      endDate: ['', [Validators.required]],
+      endTime: ['', [Validators.required]],
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
     },
       {
@@ -99,7 +104,7 @@ export class ExistingTripsComponent implements OnInit {
     this.loadExistingTripData();
   }
   loadExistingTripData() {
-    this.showLoadingIndicator = true;
+    // this.showLoadingIndicator = true;
     // this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
     //   this.initData = data;
     //   this.hideloader();
@@ -172,6 +177,7 @@ export class ExistingTripsComponent implements OnInit {
   updatedTableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
     this.dataSource = new MatTableDataSource(tableData);
+    console.log("------dataSource--", this.dataSource)
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -242,7 +248,8 @@ export class ExistingTripsComponent implements OnInit {
     console.log("--endTimeUTC----UTC format", this.endTimeUTC)
   }
   vinSelection(vinSelectedValue: any) {
-    this.vinListSelectedValue = vinSelectedValue;
+    this.vinListSelectedValue = vinSelectedValue.value;
+    console.log("------vins selection--",this.vinListSelectedValue)
   }
 
   applyFilter(filterValue: string) {
@@ -256,6 +263,42 @@ export class ExistingTripsComponent implements OnInit {
     }, 100);
   }
 
+  dateSelection(getDateValue:any) {
+    console.log("---start date value--",this.existingTripForm.controls.startDate.value)
+    let testDate= moment().format('DD/MM/YYYY HH:mm');
+    // console.log("---getValue--",testDate);
+
+    switch (getDateValue) {
+      case "today" : 
+      // let a = moment().subtract(1, 'day');
+      this.selectedStartDateStamp = testDate;
+      
+      // let testValue = this.existingTripForm.get('startDate').setValue(testDate);
+      // let a = moment(startDate.target.value).format('DD/MM/YYYY');
+      // console.log("---from today--",testDate,"convertedValue--",testValue)
+      // return a;
+      break;
+      
+      case "yesterday" : 
+      let b = moment().subtract(2, 'day');
+      console.log("---from today--",b)
+      return b;
+      break;
+      
+      case "lastWeek" : ""
+      break;
+
+      case "lastMonth" : ""
+      break;
+
+      case "last3Months": ""
+      break;
+      
+      default: 
+      return "hey default";
+   }
+  }
+
   onReset() {
 
   }
@@ -263,9 +306,30 @@ export class ExistingTripsComponent implements OnInit {
   onSearch() {
     console.log("---Search calling---")
     // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
-    this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripData) => {
-      console.log("--existingTripData----", existingTripData)
+    //     VIN: 5A65654
+    // start date: 1616961846000
+    // end date: 1616963318000
 
+    //     VIN: NBVGF1254KLJ55
+    // start date: 1604327461000
+    // end date: 1604336647000
+
+    //----------This is only test data-----
+    this.startTimeUTC = 1616961846000;
+    this.endTimeUTC = 1616963318000;
+    this.vinListSelectedValue= "5A65654";
+
+    this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
+      console.log("--existingTripData----", existingTripDetails)
+      this.showLoadingIndicator = true;
+      this.initData = existingTripDetails.tripData;
+      console.log("--initData----", this.initData.length)
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
+      this.updatedTableData(this.initData);
     });
     //   }
 

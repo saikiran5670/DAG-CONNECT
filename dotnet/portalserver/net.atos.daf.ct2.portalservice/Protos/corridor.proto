@@ -168,11 +168,11 @@ enum Responsecode{
          string RailFerries =31;
          string Tunnels =32;
          string DirtRoad =33;
-         int32 VehicleSizeHeight =34;
-         int32 VehicleSizeWidth =35;
-         int32 VehicleSizeLength =36;
-         int32 VehicleSizeLimitedWeight =37;
-         int32 VehicleSizeWeightPerAxle =38;
+         double VehicleSizeHeight =34;
+         double VehicleSizeWidth =35;
+         double VehicleSizeLength =36;
+         double VehicleSizeLimitedWeight =37;
+         double VehicleSizeWeightPerAxle =38;
          string State =39;
          int64 Created_At =40;
          int32 Created_By =41;
