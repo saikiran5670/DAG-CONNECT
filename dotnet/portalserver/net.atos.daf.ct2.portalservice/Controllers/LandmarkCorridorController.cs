@@ -98,14 +98,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
+                request.OrganizationId = GetContextOrgId();
                 if (request.OrganizationId == 0)
                 {
                      return StatusCode(400, "Organization_Id Required .");
-                }
-                else
-                {
-                    request.OrganizationId = GetContextOrgId();
                 }
                 if (request.ViaAddressDetails.Count >5)
                 {
@@ -322,6 +318,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization Id is required.");
                 }
+                
                 if (request.ViaAddressDetails.Count > 5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");

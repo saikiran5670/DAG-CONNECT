@@ -104,11 +104,11 @@ message Exclusion{
 }
 
 message VehicleSize{
-        int32 VehicleHeight = 1;
-        int32 vehicleWidth = 2;
-        int32 vehicleLength = 3;
-        int32 vehicleLimitedWeight = 4;
-        int32 vehicleWeightPerAxle = 5;
+        double VehicleHeight = 1;
+        double vehicleWidth = 2;
+        double vehicleLength = 3;
+        double vehicleLimitedWeight = 4;
+        double vehicleWeightPerAxle = 5;
 }
 
 message CorridorResponseList  {
