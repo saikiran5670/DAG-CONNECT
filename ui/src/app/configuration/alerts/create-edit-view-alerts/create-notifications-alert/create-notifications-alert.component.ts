@@ -19,7 +19,8 @@ export class CreateNotificationsAlertComponent implements OnInit {
   FormEmailArray : FormArray;
   FormWebArray : FormArray;
   ArrayList : any =[];
-  notificationIndex : any = 0;
+  emailIndex : any = 0;
+  wsIndex : any = 0;
   @Input() alert_category_selected: any;
   @Input() alertTypeName: string;
   @Input() isCriticalLevelSelected :any;
@@ -33,8 +34,9 @@ export class CreateNotificationsAlertComponent implements OnInit {
   addEmailFlag: boolean = false;
   addWsFlag : boolean = false;
   contactModeType: any;
-  radioButtonVal: any;
+  radioButtonVal: any = 'N';
   notificationPayload: any = [];
+  notifications : any = [];
   openAdvancedFilter: boolean= false;
  contactModes : any = [
   {
@@ -114,14 +116,14 @@ wsLabel: any;
     initWebItems(): FormGroup{
       return this._formBuilder.group({
         wsDescription: ['', [Validators.required]],
-        authentication:['', [Validators.required]],
+        authentication:['N', [Validators.required]],
         loginId: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required]],
         webURL:['', [Validators.required]],
         wsTextDescription:[''],
         notifyPeriodweb: ['A'],        
         webRecipientLabel: [''],
-        webContactModes: ['']
+        webContactModes: [''],
       });
 
     }
@@ -137,15 +139,15 @@ wsLabel: any;
         if (!this.FormEmailArray) {
           this.FormEmailArray = this.notificationForm.get("FormEmailArray") as FormArray;
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormEmailArray.at(this.notificationIndex).get("emailRecipientLabel").setValue(this.emailLabel);
-          this.FormEmailArray.at(this.notificationIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
         }
         else {
-          this.notificationIndex = this.notificationIndex+1;
+          this.emailIndex = this.emailIndex+1;
           this.FormEmailArray.push(this.initEmailItems());
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormEmailArray.at(this.notificationIndex).get("emailRecipientLabel").setValue(this.emailLabel);
-          this.FormEmailArray.at(this.notificationIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
         }
         console.log("FormEmailArray=" +this.notificationForm['controls']['FormEmailArray']['controls'][0]['controls']);
       }
@@ -156,15 +158,15 @@ wsLabel: any;
         if (!this.FormWebArray) {
           this.FormWebArray = this.notificationForm.get("FormWebArray") as FormArray;
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormWebArray.at(this.notificationIndex).get("webRecipientLabel").setValue(this.wsLabel);
-          this.FormWebArray.at(this.notificationIndex).get("webContactModes").setValue(this.contactModeType);
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
         }
         else {
-          this.notificationIndex = this.notificationIndex+1;
+          this.wsIndex = this.wsIndex+1;
           this.FormWebArray.push(this.initWebItems());
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
-          this.FormWebArray.at(this.notificationIndex).get("webRecipientLabel").setValue(this.wsLabel);
-          this.FormWebArray.at(this.notificationIndex).get("webContactModes").setValue(this.contactModeType);
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
         }
         console.log("FormWebArray= " +this.notificationForm['controls']['FormEmailArray']['controls'][0]['controls']);
       }
@@ -190,7 +192,6 @@ wsLabel: any;
 
   onRadioButtonChange(event: any){
     this.radioButtonVal = event.value;
-
   }
 
   onClickAdvancedFilter(){
@@ -214,11 +215,12 @@ wsLabel: any;
     //   name: "ABCD"
     // }
     // return tempObj;
-
+    
    let WsData;
    let EmailData;
    if(this.contactModeType == 0){
    this.FormWebArray.controls.forEach((element, index) => {
+     WsData = element['controls'];
 let webPayload = {
   recipientLabel: WsData.webRecipientLabel.value,
   accountGroupId: this.organizationId,
@@ -244,14 +246,14 @@ console.log("this is web=" +JSON.stringify(this.notificationPayload));
   {
   this.FormEmailArray.controls.forEach((item,index)=>{
     let emailPayload = {
-          recipientLabel: WsData.emailRecipientLabel,
+          recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
-          notificationModeType: WsData.emailContactModes,
+          notificationModeType: EmailData.emailContactModes.value,
           phoneNo: "",
           sms: "",
-          emailId: EmailData.emailAddress,
-          emailSub: EmailData.mailSubject,
-          emailText: EmailData.mailDescription,
+          emailId: EmailData.emailAddress.value,
+          emailSub: EmailData.mailSubject.value,
+          emailText: EmailData.mailDescription.value,
           wsUrl: "",
           wsType: "",
           wsText: "",
@@ -263,6 +265,22 @@ console.log("this is web=" +JSON.stringify(this.notificationPayload));
   });
 }
 
+this.notifications = [
+  {
+    "alertUrgencyLevelType": "",
+    "frequencyType": "O",
+    "frequencyThreshholdValue": 0,
+    "validityType": "A",
+    "createdBy": 0,
+    "notificationRecipients": this.notificationPayload,
+    "notificationLimits": [],
+    "notificationAvailabilityPeriods": []
   }
+  ]
+
+  console.log(this.notificationForm);
+  }
+
+ 
 
 }
