@@ -235,7 +235,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
             catch (System.Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -298,7 +298,7 @@ namespace net.atos.daf.ct2.reports.repository
             }
             catch (System.Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
