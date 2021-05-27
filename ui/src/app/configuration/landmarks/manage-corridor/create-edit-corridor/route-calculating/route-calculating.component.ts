@@ -126,7 +126,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-    this.configureAutoCompleteForLocationSearch();
+   // this.configureAutoCompleteForLocationSearch();
+    this.configureAutoSuggest()
    }
 
   ngOnInit(){
@@ -347,6 +348,7 @@ export class RouteCalculatingComponent implements OnInit {
   checkRoutePlot(){
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
       this.calculateAB();
+      //this.calculateNewRoute()
     }
   }
   changeSliderInput(){
@@ -768,6 +770,17 @@ export class RouteCalculatingComponent implements OnInit {
     console.log(this.dataService);
   }
 
+  private configureAutoSuggest(){
+    let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
+    let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    this.suggestionData = this.completerService.remote(
+      URL,
+      "label",
+      "label");
+    this.suggestionData.dataField("suggestions");
+    this.dataService = this.suggestionData;
+    console.log(this.dataService);
+  }
   calculateAB(){
     let viaPoints = [];
     for(var i in this.viaRoutePlottedObject){
@@ -809,23 +822,20 @@ export class RouteCalculatingComponent implements OnInit {
 
   addRouteShapeToMap(result){
     var group = new H.map.Group();
-    // if(this.routeOutlineMarker){
-    //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-    //   this.routeOutlineMarker = null;
-    // }
+    if(this.routeOutlineMarker){
+      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+      this.routeOutlineMarker = null;
+      this.routeCorridorMarker = null;
+    }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
       // Create a polyline to display the route:
-      // let routeLine = new H.map.Polyline(linestring, {
-      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
-      // });
-      // this.hereMap.addObject(routeLine);
-      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
      // if (this.corridorWidthKm > 0) {
+       let drawWidth = this.corridorWidthKm * 10;
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
-            lineWidth: this.corridorWidthKm,
+            lineWidth: drawWidth,
             strokeColor: '#b5c7ef',
           }
         });
@@ -860,5 +870,21 @@ export class RouteCalculatingComponent implements OnInit {
     //   bounds: group.getBoundingBox()
     // });
   }
+  //
+
+  calculateNewRoute(){
   
+    let param = 
+      'waypoint0='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
+      '&waypoint1='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
+      '&waypoint2='+ `${this.viaAddressPositionLat},${this.viaAddressPositionLong}`+
+      '&representation=display'+
+      '&mode=fastest;truck'+
+      '&app_id='+this.map_id+
+      '&app_code='+this.map_code
+
+    this.here.getRoutes(param).subscribe((data)=>{
+        console.log(data)
+    })
+  }
 }

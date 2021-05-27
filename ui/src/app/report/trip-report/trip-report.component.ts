@@ -24,7 +24,7 @@ export class TripReportComponent implements OnInit {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
-  displayedColumns = ['All', 'startDate', 'endDate', 'distance', 'idleDuration', 'avgSpeed', 'avgWeight', 'startPosition', 'endPosition', 'fuelConsumption', 'drivingTime', 'alerts', 'events'];
+  displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
   translationData: any;
   hereMap: any;
   platform: any;
@@ -52,6 +52,7 @@ export class TripReportComponent implements OnInit {
   last3MonthDate: any;
   todayDate: any;
   wholeTripData: any = [];
+  tableInfoObj: any = {};
 
   constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
     this.platform = new H.service.Platform({
@@ -113,13 +114,13 @@ export class TripReportComponent implements OnInit {
     this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
      this.hideloader();
       this.wholeTripData = tripData;
-     this.filterDateData();
+      this.filterDateData();
     });
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   public ngAfterViewInit() {
@@ -149,54 +150,80 @@ export class TripReportComponent implements OnInit {
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
-        this.tripData = [{
-          startDate: '01/01/2021 00:00:00', 
-          endDate: '01/01/2021 23:59:59', 
-          distance: 128.9, 
-          idleDuration: '00:12', 
-          avgSpeed: 54.5, 
-          avgWeight: 6.45,
-          startPosition: 'DAF Nederland S',
-          endPosition: 'DAF Nederland E',
-          fuelConsumption: 123.5,
-          drivingTime: '00:23',
-          alerts: 20,
-          events: 30
-        },
-        {
-          startDate: '01/01/2021 00:00:00', 
-          endDate: '01/01/2021 23:59:59', 
-          distance: 123.9, 
-          idleDuration: '00:18', 
-          avgSpeed: 32.5, 
-          avgWeight: 7.45,
-          startPosition: 'DAF Nederland S',
-          endPosition: 'DAF Nederland E',
-          fuelConsumption: 123.5,
-          drivingTime: '00:23',
-          alerts: 20,
-          events: 30
-        }];
+        this.tripData = _tripData.tripData;
+        this.setTableInfo();
+        this.updateDataSource(this.tripData);
+      }, (error)=>{
+        //console.log(error);
+        this.hideloader();
+        this.tripData = [];
+        this.tableInfoObj = {};
         this.updateDataSource(this.tripData);
       });
     }
   }
 
+  setTableInfo(){
+    let vehName: any = '';
+    let vehGrpName: any = '';
+    let vin: any = '';
+    let plateNo: any = '';
+    this.vehicleGroupListData.forEach(element => {
+      if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
+        vehName = element.vehicleName;
+        vin = element.vin;
+        plateNo = element.registrationNo;
+      }
+      if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
+        if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
+          vehGrpName = element.vehicleGroupName;
+        }
+      }
+    });
+
+    if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
+      vehGrpName = this.translationData.lblAll || 'All';
+    }
+    this.tableInfoObj = {
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName: vehGrpName,
+      vehicleName: vehName,
+      vin: vin,
+      regNo: plateNo
+    }
+  }
+
+  formStartDate(date: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _date = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()} ${h}:${m}:${s}`;
+    return _date;
+  }
+
   onReset(){
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    this.filterDateData();
     this.tripData = [];
+    this.updateDataSource(this.tripData);
+    this.filterDateData();
     this.resetTripFormControlValue();
+    this.tableInfoObj = {};
   }
 
   resetTripFormControlValue(){
-  this.tripForm.get('vehicle').setValue('');
-  this.tripForm.get('vehicleGroup').setValue('');
+    this.tripForm.get('vehicle').setValue('');
+    this.tripForm.get('vehicleGroup').setValue('');
   }
 
   onVehicleGroupChange(event: any){
-
+    this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+    if(parseInt(event.value) == 0){ //-- all group
+      this.vehicleListData = this.vehicleGroupListData;
+    }else{
+      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+    }
   }
 
   onVehicleChange(event: any){
@@ -378,12 +405,12 @@ export class TripReportComponent implements OnInit {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
-    //console.log("start:: ", event.value)
+    ////console.log("start:: ", event.value)
     this.startDateValue = event.value;
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
-    //console.log("end: ", event.value)
+    ////console.log("end: ", event.value)
     this.endDateValue = event.value;
   }
 
@@ -399,11 +426,11 @@ export class TripReportComponent implements OnInit {
     let finalVINDataList: any = [];
     let currentStartTime = this.startDateValue.getTime();
     let currentEndTime = this.endDateValue.getTime();
-    console.log(currentStartTime + "<->" + currentEndTime);
+    //console.log(currentStartTime + "<->" + currentEndTime);
     let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
     if(filterVIN.length > 0){
       distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
-      console.log("distinctVIN:: ", distinctVIN);
+      ////console.log("distinctVIN:: ", distinctVIN);
       if(distinctVIN.length > 0){
         distinctVIN.forEach(element => {
           let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
@@ -411,7 +438,7 @@ export class TripReportComponent implements OnInit {
             finalVINDataList.push(_item[0])
           }
         });
-        console.log("finalVINDataList:: ", finalVINDataList); 
+        ////console.log("finalVINDataList:: ", finalVINDataList); 
       }
     }
     this.vehicleGroupListData = finalVINDataList;

@@ -1,4 +1,4 @@
-package net.atos.daf.postgre.bo;
+package net.atos.daf.ct2.etl.common.bo;
 
 import java.io.Serializable;
 
@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+public class TripStatusAggregation implements Serializable {
 
-
-
-public class Trip implements Serializable {
 	/**
 	 * 
 	 */
@@ -26,7 +24,6 @@ public class Trip implements Serializable {
 	private Integer gpsTripDist;
 	private Long tripCalDist;
 	private Integer vIdleDuration;
-	private Double vGrossWeightCombination;
 	private Double tripCalAvgSpeed;
 	private Long gpsStartVehDist;
 	private Long gpsStopVehDist;
@@ -41,8 +38,6 @@ public class Trip implements Serializable {
 	private Long receivedTimestamp;
 	private Double tripCalC02Emission;
 	private Double tripCalFuelConsumption;
-	private Double vTachographSpeed;
-	private Double tripCalAvgGrossWtComb;
 	private Double tripCalPtoDuration;
 	private Double triCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
@@ -57,12 +52,11 @@ public class Trip implements Serializable {
 	private Double tripCalfuelNonActiveCnsmpt;
 	private Double tripCalDpaScore;
 	private String driverId;
-	private String driver2Id;
 	private Long tripCalGpsVehTime;
 	//private Long hbaseInsertionTS;
 	private Long tripProcessingTS;
 	private Long etlProcessingTS;
 	private Long kafkaProcessingTS;
-	private Double vGrossWtSum; 
 	private Integer numberOfIndexMessage;
+	
 }

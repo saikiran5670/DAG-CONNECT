@@ -118,7 +118,7 @@
 			<artifactId>flink-connector-jdbc_${scala.dependency.version}</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
-
+        
 		<!-- commented while integration 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -172,6 +172,16 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.13</version>
 		</dependency> -->
+		
+		<!-- <dependency>
+
+    <groupId>org.apache.flink</groupId>
+
+    <artifactId>flink-connector-filesystem_2.12</artifactId>
+
+    <version>1.11.3</version>
+
+</dependency> -->
 
 	</dependencies>
 
@@ -183,7 +193,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>net.atos.daf.etl.App</mainClass>
+							<mainClass>net.atos.daf.ct2.etl.App</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
