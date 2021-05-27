@@ -67,7 +67,7 @@ public class IndexDataProcess {
 		      consumerStream.addSink(hdfsSink);*/
 			consumerStream.addSink(new IndexDataHbaseSink()); // Writing into HBase Table
 
-			consumerStream.addSink(new LiveFleetDriverActivityPostgreSink()); // Writing into Driver Activity PostgreSQL Table
+			//consumerStream.addSink(new LiveFleetDriverActivityPostgreSink()); // Writing into Driver Activity PostgreSQL Table
 			
 			consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing into Current Trip PostgreSQL Table
 
