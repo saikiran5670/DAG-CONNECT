@@ -126,7 +126,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-   // this.configureAutoCompleteForLocationSearch();
+    //this.configureAutoCompleteForLocationSearch();
     this.configureAutoSuggest()
    }
 
@@ -422,8 +422,6 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   exclusionSelected(_event,type){
-    console.log(this.exclusionList);
-    console.log(_event)
     switch (type) {
       case 'tollRoad':
           this.tollRoadId = _event.value;
@@ -808,7 +806,6 @@ export class RouteCalculatingComponent implements OnInit {
       'return': 'polyline'
     };
     }
-    console.log(viaPoints)
     // if(viaPoints.length>0){
     //   routeRequestParams["via"] = new H.service.Url.MultiValueQueryParameter(viaPoints);
     // }
@@ -863,28 +860,60 @@ export class RouteCalculatingComponent implements OnInit {
 
     });
   
-    // // Add the polyline to the map
-    // this.map.addObject(group);
-    // // And zoom to its bounding rectangle
-    // this.map.getViewModel().setLookAtData({
-    //   bounds: group.getBoundingBox()
-    // });
   }
   //
 
   calculateNewRoute(){
-  
+    if(this.routeOutlineMarker){
+      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+      this.routeOutlineMarker = null;
+      this.routeCorridorMarker = null;
+    }
     let param = 
       'waypoint0='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
       '&waypoint1='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
-      '&waypoint2='+ `${this.viaAddressPositionLat},${this.viaAddressPositionLong}`+
       '&representation=display'+
       '&mode=fastest;truck'+
       '&app_id='+this.map_id+
       '&app_code='+this.map_code
 
     this.here.getRoutes(param).subscribe((data)=>{
-        console.log(data)
+        var drawPoints = data.response.route[0].shape;
+        this.plotRoute(drawPoints);
     })
   }
+
+  plotRoute(_points){
+    var lineString = new H.geo.LineString();
+    _points.forEach(element => {
+    let _split = element.split(',')
+    lineString.pushPoint({lat : _split[0], lng: _split[1]});
+    });
+    let drawWidth = this.corridorWidthKm * 10;
+    this.routeOutlineMarker = new H.map.Polyline(lineString, {
+      style: {
+        lineWidth: drawWidth,
+        strokeColor: '#b5c7ef',
+      }
+    });
+    // Create a patterned polyline:
+    this.routeCorridorMarker = new H.map.Polyline(lineString, {
+      style: {
+        lineWidth: 3,
+        strokeColor: '#436ddc'
+      }
+    }
+    );
+    var routeLine = new H.map.Group();
+    // routeLine.addObjects([routeOutline, routeArrows]);
+    this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
+    this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
+
+      // this.hereMap.addObject(new H.map.Polyline(lineString, {
+      //   style: { lineWidth: 3, strokeColor: 'blue' }
+      // }));
+   
+    
+  }
+
 }

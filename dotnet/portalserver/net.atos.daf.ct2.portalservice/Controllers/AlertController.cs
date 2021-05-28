@@ -288,6 +288,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+
+                var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
+
+                if (result.Count() > 0)
+                {
+                    return StatusCode(409, "Duplicate notification recipient label");
+                }
+
                 var alertRequest = new AlertRequest();
                 alertRequest = _mapper.ToAlertEditRequest(request);
                 // create single vehicle group with selected vehicle  
@@ -377,5 +385,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region Get Recipient Label
+
+        [HttpGet]
+        [Route("getnotificationrecipients")]
+        public async Task<IActionResult> GetRecipientLabel(int orgnizationId)
+        {
+            try
+            {
+                if (orgnizationId == 0) return BadRequest("Orgnization id cannot be null.");
+                orgnizationId = GetContextOrgId();
+                NotificationRecipientResponse response = await _alertServiceClient.GetRecipientLabelListAsync(new OrgIdRequest { OrganizationId = orgnizationId });
+
+                if (response.NotificationRecipient != null && response.NotificationRecipient.Count > 0)
+                {
+                    response.Code = ResponseCode.Success;
+                    return Ok(response.NotificationRecipient);
+                }
+                else
+                {
+                    return StatusCode(200, "Recipient Label are not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"Get recipient label method Failed", 1, 2, Convert.ToString(orgnizationId),
+                  Request);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+
+        #endregion
+
     }
 }
