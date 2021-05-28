@@ -323,7 +323,7 @@
     class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <!-- for web service -->
     <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-        <div *ngFor="let item of selectedRowData[0].notificationRecipients">
+        <div *ngFor="let item of selectedRowData.notifications[0].notificationRecipients">
             <div *ngIf="item.notificationModeType == 'W'">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
                     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">

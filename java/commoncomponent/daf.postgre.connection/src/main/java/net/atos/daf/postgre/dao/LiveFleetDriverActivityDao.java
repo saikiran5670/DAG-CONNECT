@@ -74,7 +74,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 	public void driver_update(String DriverID, Long endTime, Long duration) throws TechnicalException, SQLException {
 
 		PreparedStatement stmt_update_driver_activity = null;
-		ResultSet rs_driver = null;
+		//ResultSet rs_driver = null;
 
 		try {
 
@@ -88,22 +88,22 @@ public class LiveFleetDriverActivityDao implements Serializable {
 				stmt_update_driver_activity.setString(3, DriverID);
 				stmt_update_driver_activity.setString(4, DriverID);
 				
-				rs_driver = stmt_update_driver_activity.executeQuery();
-				rs_driver.close();
+				int i = stmt_update_driver_activity.executeUpdate() ;//executeQuery();
+				//rs_driver.close();
 
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 
-			if (null != rs_driver) {
+			/*if (null != rs_driver) {
 
 				try {
 					rs_driver.close();
 				} catch (SQLException ignore) {
-					/** ignore any errors here */
+					*//** ignore any errors here *//*
 				}
-			}
+			}*/
 		}
 
 	}
