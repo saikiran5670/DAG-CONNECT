@@ -32,6 +32,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   @Input() actionType: any;
   localStLanguage: any;
   organizationId: number;
+  accountId: number;
   addEmailFlag: boolean = false;
   addWsFlag : boolean = false;
   contactModeType: any;
@@ -70,6 +71,7 @@ wsLabel: any;
     console.log("action type=" +this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.accountId= parseInt(localStorage.getItem("accountId"));
     this.notificationForm = this._formBuilder.group({
       recipientLabel: ['', [ Validators.required ]],
       contactMode: ['', [Validators.required]],
@@ -100,7 +102,8 @@ wsLabel: any;
         mailDescription: ['This is default text for ' +this.alertTypeName, [Validators.required]],
         notifyPeriod: ['A'],
         emailRecipientLabel: [''],
-        emailContactModes: ['']
+        emailContactModes: [''],
+        receipientId: []
       });
 
     }
@@ -116,6 +119,7 @@ wsLabel: any;
         notifyPeriodweb: ['A'],        
         webRecipientLabel: [''],
         webContactModes: [''],
+        receipientId: []
       });
 
     }
@@ -168,7 +172,7 @@ if(isButtonClicked){
         }
      }
     }
-    //for edit or duuplicate functionality
+    //for edit or duplicate functionality
     else{
       this.contactModeType = data.notificationModeType;
       //this is for email
@@ -181,6 +185,8 @@ if(isButtonClicked){
           this.FormEmailArray.at(this.emailIndex).get("mailDescription").setValue(data.emailText);
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(data.recipientLabel);
           this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
+          this.FormEmailArray.at(this.emailIndex).get("receipientId").setValue(data.id);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(data.notificationModeType);
         }
         else {
           this.emailIndex = this.emailIndex+1;
@@ -189,6 +195,8 @@ if(isButtonClicked){
           this.FormEmailArray.at(this.emailIndex).get("mailDescription").setValue(data.emailText);
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(data.recipientLabel);
           this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
+          this.FormEmailArray.at(this.emailIndex).get("receipientId").setValue(data.id);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(data.notificationModeType);
         }
       }
       //this is for web service
@@ -200,7 +208,9 @@ if(isButtonClicked){
           this.FormWebArray.at(this.wsIndex).get("webURL").setValue(data.wsUrl);
           this.FormWebArray.at(this.wsIndex).get("wsDescription").setValue(data.wsText);
           this.FormWebArray.at(this.wsIndex).get("authentication").setValue(data.wsType);
-          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel);     
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel); 
+          this.FormWebArray.at(this.wsIndex).get("receipientId").setValue(data.id);    
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(data.notificationModeType);
           if(data.wsType == 'A'){
           this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
           this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
@@ -214,6 +224,8 @@ if(isButtonClicked){
           this.FormWebArray.at(this.wsIndex).get("wsDescription").setValue(data.wsText);
           this.FormWebArray.at(this.wsIndex).get("authentication").setValue(data.wsType);
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel);
+          this.FormWebArray.at(this.wsIndex).get("receipientId").setValue(data.id);   
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(data.notificationModeType); 
           if(data.wsType == 'A'){
           this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
           this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
@@ -277,38 +289,66 @@ if(isButtonClicked){
   getNotificationDetails() : any{
    this.notificationReceipients= [];
 
-
-     let WsData;
+  let WsData;
     let EmailData;
-   if(this.FormWebArray && this.FormWebArray.length > 0){
-   this.FormWebArray.controls.forEach((element, index) => {
-     WsData = element['controls'];
-  let webPayload = {
-  recipientLabel: WsData.webRecipientLabel.value,
-  accountGroupId: this.organizationId,
-  notificationModeType: WsData.webContactModes.value,
-  phoneNo: "",
-  sms: "",
-  emailId: "",
-  emailSub: "",
-  emailText: "",
-  wsUrl: WsData.webURL.value,
-  wsType: WsData.authentication.value,
-  wsText: WsData.wsDescription.value,
-  wsLogin: WsData.loginId.value,
-  wsPassword: WsData.password.value
-}
-this.notificationReceipients.push(webPayload);
+    let webPayload= {};
+
+  if(this.FormWebArray && this.FormWebArray.length > 0){
+    if(this.actionType == 'create' || this.actionType == 'duplicate'){
+        this.FormWebArray.controls.forEach((element, index) => {
+          WsData = element['controls'];
+        webPayload = {
+        recipientLabel: WsData.webRecipientLabel.value,
+        accountGroupId: this.organizationId,
+        notificationModeType: WsData.webContactModes.value,
+        phoneNo: "",
+        sms: "",
+        emailId: "",
+        emailSub: "",
+        emailText: "",
+        wsUrl: WsData.webURL.value,
+        wsType: WsData.authentication.value,
+        wsText: WsData.wsDescription.value,
+        wsLogin: WsData.loginId.value,
+        wsPassword: WsData.password.value
+      }
+      this.notificationReceipients.push(webPayload);
 
    });
+  }
+  else if(this.actionType == 'edit'){
+    this.FormWebArray.controls.forEach((element, index) => {
+      WsData = element['controls'];
+    webPayload = {
+    recipientLabel: WsData.webRecipientLabel.value,
+    accountGroupId: this.organizationId,
+    notificationModeType: WsData.webContactModes.value,
+    phoneNo: "",
+    sms: "",
+    emailId: "",
+    emailSub: "",
+    emailText: "",
+    wsUrl: WsData.webURL.value,
+    wsType: WsData.authentication.value,
+    wsText: WsData.wsDescription.value,
+    wsLogin: WsData.loginId.value,
+    wsPassword: WsData.password.value,
+    id: WsData.receipientId.value ? WsData.receipientId.value : 0,
+    notificationId: this.selectedRowData.notifications[0].id
+  }
+  this.notificationReceipients.push(webPayload);
+});
+  }
 
 }
 
-  if(this.FormEmailArray && this.FormEmailArray.length > 0)
-  {
+  if(this.FormEmailArray && this.FormEmailArray.length > 0){
+  let emailPayload= {};
+  
+    if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.FormEmailArray.controls.forEach((item,index)=>{
     EmailData = item['controls'];
-    let emailPayload = {
+    emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
           notificationModeType: EmailData.emailContactModes.value,
@@ -325,21 +365,64 @@ this.notificationReceipients.push(webPayload);
     }
     this.notificationReceipients.push(emailPayload);
   });
+}
+else if(this.actionType == 'edit'){
+  this.FormEmailArray.controls.forEach((item,index)=>{
+    EmailData = item['controls'];
+     emailPayload = {
+          recipientLabel: EmailData.emailRecipientLabel.value,
+          accountGroupId: this.organizationId,
+          notificationModeType: EmailData.emailContactModes.value,
+          phoneNo: "",
+          sms: "",
+          emailId: EmailData.emailAddress.value,
+          emailSub: EmailData.mailSubject.value,
+          emailText: EmailData.mailDescription.value,
+          wsUrl: "",
+          wsType: "",
+          wsText: "",
+          wsLogin: "",
+          wsPassword: "",
+          id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
+          notificationId: this.selectedRowData.notifications[0].id
+    }
+    this.notificationReceipients.push(emailPayload);
+  });
+}
+
 
 }   
-
-this.notifications = [
-  {
-    "alertUrgencyLevelType": "C",
-    "frequencyType": "O",
-    "frequencyThreshholdValue": 0,
-    "validityType": "A",
-    "createdBy": 0,
-    "notificationRecipients": this.notificationReceipients,
-    "notificationLimits": [],
-    "notificationAvailabilityPeriods": []
-  }
+if(this.actionType == 'create' || this.actionType == 'duplicate'){
+  this.notifications = [
+    {
+      "alertUrgencyLevelType": "C",
+      "frequencyType": "O",
+      "frequencyThreshholdValue": 0,
+      "validityType": "A",
+      "createdBy": this.accountId,
+      "notificationRecipients": this.notificationReceipients,
+      "notificationLimits": [],
+      "notificationAvailabilityPeriods": []
+    }
   ]
+}
+else if(this.actionType == 'edit'){
+  this.notifications = [
+    {
+      "alertUrgencyLevelType": "C",
+      "frequencyType": "O",
+      "frequencyThreshholdValue": 0,
+      "validityType": "A",
+      "createdBy": this.selectedRowData.createdBy,
+      "id": this.selectedRowData.notifications[0].id,
+      "alertId": this.selectedRowData.id,
+      "modifiedBy": this.accountId,
+      "notificationRecipients": this.notificationReceipients,
+      "notificationLimits": [],
+      "notificationAvailabilityPeriods": []
+    }
+  ]
+}
 
   return this.notifications;
 }
