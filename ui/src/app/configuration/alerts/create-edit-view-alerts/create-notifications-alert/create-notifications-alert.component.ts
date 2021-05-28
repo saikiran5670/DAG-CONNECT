@@ -14,6 +14,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 })
 export class CreateNotificationsAlertComponent implements OnInit {
   @Input() translationData: any = [];
+  @Input() selectedRowData: any;
   notificationForm: FormGroup;
   FormArrayItems : FormArray;
   FormEmailArray : FormArray;
@@ -35,7 +36,7 @@ export class CreateNotificationsAlertComponent implements OnInit {
   addWsFlag : boolean = false;
   contactModeType: any;
   radioButtonVal: any = 'N';
-  notificationPayload: any = [];
+  notificationReceipients: any = [];
   notifications : any = [];
   openAdvancedFilter: boolean= false;
  contactModes : any = [
@@ -66,6 +67,7 @@ wsLabel: any;
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    console.log("action type=" +this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.notificationForm = this._formBuilder.group({
@@ -83,8 +85,8 @@ wsLabel: any;
         CustomValidators.specialCharValidationForName('recipientLabel'),
       ]
     });
-    
-    }
+    console.log(this.selectedRowData);
+  }
 
     initItems(): FormGroup{
       return this._formBuilder.group({
@@ -173,11 +175,15 @@ wsLabel: any;
      deleteWebNotificationRow(index :number){
       this.FormWebArray.removeAt(index);
       console.log("deleted");
+      this.wsIndex = this.wsIndex - 1;
+      this.wsCount = this.wsCount - 1;
      }
 
      deleteEmailNotificationRow(index :number){
       this.FormEmailArray.removeAt(index);
       console.log("deleted");
+      this.emailIndex = this.emailIndex - 1;
+      this.emailCount = this.emailCount - 1;
      }
 
   setDefaultValueForws(){
@@ -217,9 +223,7 @@ wsLabel: any;
   }
 
   getNotificationDetails() : any{
-    // let tempObj= {
-    //   name: "ABCD"
-    // }
+   this.notificationReceipients= [];
 
 
      let WsData;
@@ -242,7 +246,7 @@ wsLabel: any;
   wsLogin: WsData.loginId.value,
   wsPassword: WsData.password.value
 }
-this.notificationPayload.push(webPayload);
+this.notificationReceipients.push(webPayload);
 
    });
 
@@ -267,11 +271,10 @@ this.notificationPayload.push(webPayload);
           wsLogin: "",
           wsPassword: ""
     }
-    this.notificationPayload.push(emailPayload);
+    this.notificationReceipients.push(emailPayload);
   });
 
-}
-    
+}   
 
 this.notifications = [
   {
@@ -280,15 +283,13 @@ this.notifications = [
     "frequencyThreshholdValue": 0,
     "validityType": "A",
     "createdBy": 0,
-    "notificationRecipients": this.notificationPayload,
+    "notificationRecipients": this.notificationReceipients,
     "notificationLimits": [],
     "notificationAvailabilityPeriods": []
   }
   ]
 
   return this.notifications;
-  }
-
- 
+}
 
 }

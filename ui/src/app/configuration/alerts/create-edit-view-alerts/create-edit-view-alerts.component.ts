@@ -12,6 +12,7 @@ import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
 import { POIService } from 'src/app/services/poi.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 
@@ -121,7 +122,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
               private domSanitizer: DomSanitizer, 
               private dialog: MatDialog,
               private alertService: AlertService,
-              private corridorService: CorridorService) 
+              private corridorService: CorridorService,
+              private dialogService: ConfirmDialogService) 
   {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -156,13 +158,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultValue();
-      this.panelOpenState= true;
+      if(this.selectedRowData.notifications.length != 0)
+        this.panelOpenState= true;
     }
     else if(this.actionType == 'view'){
       this.alert_category_selected = this.selectedRowData.category;
       this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
       this.onChangeAlertType(this.selectedRowData.type);
-      this.panelOpenState= true;
+      if(this.selectedRowData.notifications.length != 0)
+        this.panelOpenState= true;
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
@@ -1691,9 +1695,23 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onAddNotification(){
-    if(this.actionType == 'edit' && this.panelOpenState){
-    //  this.notificationComponent.deleteNotification();
+     this.panelOpenState = !this.panelOpenState;    
+  }
+
+  onDeleteNotification(){
+    const options = {
+      title: this.translationData.lblDeleteAlertNotification || "Delete Notification",
+      message: this.translationData.lblAreousureyouwanttodeleteNotification || "Are you sure you want to delete notification for '$' alert?",
+      cancelText: this.translationData.lblCancel || "Cancel",
+      confirmText: this.translationData.lblDelete || "Delete"
+    };
+    let name = this.selectedRowData.name;
+    this.dialogService.DeleteModelOpen(options, name);
+    this.dialogService.confirmedDel().subscribe((res) => {
+    if (res) {
+      this.notifications= [];
+      this.panelOpenState = !this.panelOpenState;    
     }
-    this.panelOpenState = !this.panelOpenState;    
+   });
   }
 }

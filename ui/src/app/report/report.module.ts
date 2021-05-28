@@ -8,6 +8,7 @@ import { ChartsModule } from 'ng2-charts';
 import { TripReportComponent } from './trip-report/trip-report.component';
 import { TripTracingComponent } from './trip-tracing/trip-tracing.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { MatTableExporterModule } from 'mat-table-exporter';
 
 @NgModule({
   declarations: [ReportComponent, TripReportComponent, TripTracingComponent],
@@ -18,7 +19,8 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     ReactiveFormsModule,
     SharedModule,
     ChartsModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    MatTableExporterModule
   ]
 })
 export class ReportModule { }
