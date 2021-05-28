@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.mapservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<MapManagementService>();
 
                 endpoints.MapGet("/", async context =>
                 {
