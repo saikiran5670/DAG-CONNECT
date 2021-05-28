@@ -174,11 +174,15 @@ wsLabel: any;
      deleteWebNotificationRow(index :number){
       this.FormWebArray.removeAt(index);
       console.log("deleted");
+      this.wsIndex = this.wsIndex - 1;
+      this.wsCount = this.wsCount - 1;
      }
 
      deleteEmailNotificationRow(index :number){
       this.FormEmailArray.removeAt(index);
       console.log("deleted");
+      this.emailIndex = this.emailIndex - 1;
+      this.emailCount = this.emailCount - 1;
      }
 
   setDefaultValueForws(){
