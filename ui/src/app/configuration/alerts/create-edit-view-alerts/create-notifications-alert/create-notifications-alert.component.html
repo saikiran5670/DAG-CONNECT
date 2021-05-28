@@ -80,7 +80,7 @@
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
-            <mat-icon style="color: red;">deleteicon</mat-icon>
+            <mat-icon style="color: red;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
         </mat-panel-title>
         <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -178,7 +178,7 @@
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 01' }}</span>
-            <mat-icon style="color: red;" (click)="deleteNotificationRow(i)">deleteicon</mat-icon>
+            <mat-icon style="color: red;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
         </mat-panel-title>
         <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"  style="padding-right: 15px;">

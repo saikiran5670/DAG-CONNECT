@@ -170,8 +170,13 @@ wsLabel: any;
      }
      }
 
-     deleteNotificationRow(index :number){
+     deleteWebNotificationRow(index :number){
       this.FormWebArray.removeAt(index);
+      console.log("deleted");
+     }
+
+     deleteEmailNotificationRow(index :number){
+      this.FormEmailArray.removeAt(index);
       console.log("deleted");
      }
 
