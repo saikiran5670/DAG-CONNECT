@@ -679,7 +679,7 @@
       <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblDeleteNotification || 'Delete Notification'  }}</button>   
       <app-create-notifications-alert *ngIf= "(alert_category_selected !== '') && (alert_type_selected !== '') && panelOpenState"
       [translationData]='translationData'
-      [selectedRowData]='selectedRowData.notifications'
+      [selectedRowData]='selectedRowData'
       [actionType]='actionType'
       [alert_category_selected] ='alert_category_selected'
       [alertTypeName] = 'alertTypeName'
