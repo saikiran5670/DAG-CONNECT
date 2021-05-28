@@ -10,6 +10,10 @@ import { ReportService } from '../../services/report.service';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ReportMapService } from './report-map.service';
 import { filter } from 'rxjs/operators';
+import { MatTableExporterDirective } from 'mat-table-exporter';
+// import * as jsPDF from 'jspdf';
+import 'jspdf-autotable';
+var jsPDF = require('jspdf');
 
 declare var H: any;
 
@@ -20,6 +24,7 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
+  
   selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectedStartTime: any = '00:00';
@@ -44,6 +49,7 @@ export class TripReportComponent implements OnInit {
   vehicleListData: any = [];
   dataSource: any = new MatTableDataSource([]);
   selectedTrip = new SelectionModel(true, []);
+  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
@@ -119,6 +125,59 @@ export class TripReportComponent implements OnInit {
       this.filterDateData();
     });
   }
+
+  // dummyData(){
+  //   [ 
+  //     {
+  //       "id": 214681,
+  //       "tripId": "3",
+  //       "vin": "V12003",
+  //       "startTimeStamp": 0,
+  //       "endTimeStamp": 0,
+  //       "distance": 0,
+  //       "idleDuration": 0,
+  //       "averageSpeed": 0,
+  //       "averageWeight": 0,
+  //       "odometer": 0,
+  //       "startPosition": "NA",
+  //       "endPosition": "NA",
+  //       "fuelConsumed": 0,
+  //       "drivingTime": 0,
+  //       "alert": 0,
+  //       "events": 0,
+  //       "fuelConsumed100Km": 0,
+  //       "liveFleetPosition": [],
+  //       "startPositionLattitude": 0,
+  //       "startPositionLongitude": 0,
+  //       "endPositionLattitude": 0,
+  //       "endPositionLongitude": 0
+  //     },
+  //     {
+  //       "id": 214681,
+  //       "tripId": "3",
+  //       "vin": "V12003",
+  //       "startTimeStamp": 0,
+  //       "endTimeStamp": 0,
+  //       "distance": 0,
+  //       "idleDuration": 0,
+  //       "averageSpeed": 0,
+  //       "averageWeight": 0,
+  //       "odometer": 0,
+  //       "startPosition": "NA",
+  //       "endPosition": "NA",
+  //       "fuelConsumed": 0,
+  //       "drivingTime": 0,
+  //       "alert": 0,
+  //       "events": 0,
+  //       "fuelConsumed100Km": 0,
+  //       "liveFleetPosition": [],
+  //       "startPositionLattitude": 0,
+  //       "startPositionLongitude": 0,
+  //       "endPositionLattitude": 0,
+  //       "endPositionLongitude": 0
+  //     }
+  //   ]
+  // }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -250,11 +309,33 @@ export class TripReportComponent implements OnInit {
   }
 
   exportAsExcelFile(){
-
+    this.matTableExporter.exportTable('xlsx', {fileName:'Package_Data', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
-    
+   
+    var doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('My Team Detail', 11, 8);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+
+
+    (doc as any).autoTable({
+      head: this.displayedColumns,
+      body: this.initData,
+      theme: 'plain',
+      didDrawCell: data => {
+        console.log(data.column.index)
+      }
+    })
+
+    // below line for Open PDF document in new tab
+    doc.output('dataurlnewwindow')
+
+    // below line for Download PDF document  
+    doc.save('tripReport.pdf');
   }
 
   masterToggleForTrip() {
