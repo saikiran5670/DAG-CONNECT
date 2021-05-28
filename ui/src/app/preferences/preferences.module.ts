@@ -6,9 +6,12 @@ import { ChangePasswordComponent } from './account-info-settings/change-password
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { DirectivesModule } from '../directives/directives.module';
+import { DashboardPreferencesComponent } from './dashboard-preferences/dashboard-preferences.component';
+import { FleetOverviewPreferencesComponent } from './fleet-overview-preferences/fleet-overview-preferences.component';
+import { ReportsPreferencesComponent } from './reports-preferences/reports-preferences.component';
 
 @NgModule({
-  declarations: [AccountInfoSettingsComponent, ChangePasswordComponent],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent ],
   imports: [
     CommonModule,
     SharedModule,
@@ -18,9 +21,9 @@ import { DirectivesModule } from '../directives/directives.module';
     DirectivesModule
   ],
   schemas: [
-    CUSTOM_ELEMENTS_SCHEMA,
+    CUSTOM_ELEMENTS_SCHEMA
   ],
-  exports: [ AccountInfoSettingsComponent ],
-  entryComponents: [ AccountInfoSettingsComponent ]
+  exports: [ AccountInfoSettingsComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent ],
+  //entryComponents: [ AccountInfoSettingsComponent ]
 })
 export class PreferencesModule { }

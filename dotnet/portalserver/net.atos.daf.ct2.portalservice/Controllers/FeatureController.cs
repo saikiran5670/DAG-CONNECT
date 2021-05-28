@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("feature")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class FeatureController : Controller
+    public class FeatureController : BaseController
     {
 
         #region Private Variable
@@ -36,23 +36,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly FeatuseBusinessService.FeatureService.FeatureServiceClient _featureclient;
         private readonly Mapper _mapper;
         private string FK_Constraint = "violates foreign key constraint";
-        private IMemoryCacheProvider _cache;
-        private readonly HeaderObj _userDetails;
+        private IMemoryCacheProvider _cache;       
         private readonly PortalCacheConfiguration _cachesettings;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         #endregion
 
         #region Constructor
         public FeatureController(FeatureService.FeatureServiceClient Featureclient, IMemoryCacheProvider cache, IOptions<PortalCacheConfiguration> cachesettings,
-             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
+             AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _featureclient = Featureclient;
-            _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); ;
             _mapper = new Mapper();
             _cache = cache;
             _cachesettings = cachesettings.Value;
             _privilegeChecker = privilegeChecker;
+            _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             //headers = GetHeaders(Request.Headers);
         }
@@ -211,34 +210,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> update(Features featureRequest)
-        {
-            
-
+        {            
             try
             {
                 _logger.Info("Update method in FeatureSet API called.");
-
 
                 if (string.IsNullOrEmpty(featureRequest.Name))
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                //if (string.IsNullOrEmpty(featureRequest.Key))
-                //{
-                //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
-                //}
+
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Id = featureRequest.Id;
-                FeatureObj.Level = featureRequest.Level;
-                FeatureObj.State = featureRequest.FeatureState;//(FeatureState)Enum.Parse(typeof(FeatureState), featureRequest.FeatureState.ToString());
+                FeatureObj.State = featureRequest.FeatureState;
                 FeatureObj.Description = featureRequest.Description;
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.Name;
                 FeatureObj.DataAttribute.Description = featureRequest.Description;
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 FeatureObj.DataAttribute.DataAttributeSetId = featureRequest.DataattributeSet.ID;
-                //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
                 foreach (var item in featureRequest.DataAttributeIds)
                 {
@@ -328,6 +319,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
                 int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
                 request.Level = level;
+                if (request.OrganizationID != 0)
+                {
+                    request.OrganizationID = GetContextOrgId();
+                }
+                
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();

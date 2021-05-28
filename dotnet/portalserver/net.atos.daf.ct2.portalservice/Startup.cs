@@ -1,4 +1,4 @@
-using System; 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,6 +35,7 @@ using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.reportservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -64,6 +65,7 @@ namespace net.atos.daf.ct2.portalservice
             var subscriptionservice = Configuration["ServiceConfiguration:subscriptionservice"];
             var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
+            var reportservice = Configuration["ServiceConfiguration:reportservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -102,11 +104,13 @@ namespace net.atos.daf.ct2.portalservice
                     }
                 };
             });
+            services.AddDistributedMemoryCache();
+
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat)); ;
+                options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                options.Cookie.SecurePolicy= string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
             });
             services.AddAuthorization(options =>
             {
@@ -130,6 +134,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddMemoryCache();
             services.AddControllers();
             services.AddTransient<AuditHelper, AuditHelper>();
+            services.AddSingleton<SessionHelper>();
             services.AddTransient<AccountPrivilegeChecker, AccountPrivilegeChecker>();
             services.AddDistributedMemoryCache();
             services.AddScoped<IMemoryCacheExtensions, MemoryCacheExtensions>();
@@ -202,7 +207,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(landmarkservice);
             });
-
+            services.AddGrpcClient<ReportService.ReportServiceClient>(o =>
+            {
+                o.Address = new Uri(reportservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });

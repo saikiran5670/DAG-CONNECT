@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
     //      public async Task<int> UpdateVehicle(Vehicle vehicle)
@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         catch (Exception ex)
     //         {
     //             string err=ex.Message;
-    //             throw ex;
+    //             throw;
 
     //         }
     //     }
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
 
@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
 
@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
 
@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)            
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
     //      public async Task<int> DeleteVehicleGroup(int vehicleGroupID, int userId)
@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
 
@@ -104,7 +104,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
     
@@ -116,7 +116,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
         
@@ -129,7 +129,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
 
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //         }
     //         catch (Exception ex)
     //         {
-    //             throw ex;
+    //             throw;
     //         }
     //     }
     //     // public async Task<IEnumerable<User>> GetUsersDetailsByGroupID(int orgid,int usergroupid)
@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.vehiclerepository
     //     //     }
     //     //     catch (Exception ex)
     //     //     {
-    //     //         throw ex;
+    //     //         throw;
     //     //     }
     //     // }
 
@@ -164,7 +164,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -176,7 +176,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -188,7 +188,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota)
@@ -223,7 +223,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async  Task<char> GetOrganisationStatusofVehicle(int org_id)
@@ -234,7 +234,7 @@ namespace net.atos.daf.ct2.vehiclerepository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         // public async Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime)
@@ -245,7 +245,7 @@ namespace net.atos.daf.ct2.vehiclerepository
         //     }
         //     catch (Exception ex)
         //     {
-        //         throw ex;
+        //         throw;
         //     }
         // }     
         //  public async Task<int> Create(int orgId, string vin,string tcuId,string tcuactivation,string referenceDateTime)
@@ -256,7 +256,7 @@ namespace net.atos.daf.ct2.vehiclerepository
         //     }
         //     catch (Exception ex)
         //     {
-        //         throw ex;
+        //         throw;
         //     }
         // }         
     }

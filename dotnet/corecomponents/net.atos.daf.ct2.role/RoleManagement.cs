@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.role
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -57,14 +57,20 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
+                
                 int RoleId= await roleRepository.DeleteRole(roleid, Accountid);
                 // auditlog.AddLogs(userId,userId,1,"Delete Role", RoleId > 0,"Role Management", "Role Deleted With Role Id " + RoleId.ToString());
                 return RoleId;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
+        }
+
+        public async Task<IEnumerable<AssignedRoles>> IsRoleAssigned(int roleid)
+        {
+            return await roleRepository.IsRoleAssigned(roleid);
         }
 
         public async Task<IEnumerable<RoleMaster>> GetRoles(RoleFilter rolefilter)
@@ -88,7 +94,7 @@ namespace net.atos.daf.ct2.role
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -113,7 +119,7 @@ namespace net.atos.daf.ct2.role
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

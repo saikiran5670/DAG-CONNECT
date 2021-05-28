@@ -126,11 +126,13 @@ message OrgRelationshipCreateRequest
     int64 EndDate=8;
     bool AllowChain = 9;
     int64 createdAt=10;
+    bool isconfirmed=11;
 }
 message OrgRelationshipCreateResponse{
   Responcecode Code=1;
   string Message = 2;
   repeated int32 relationship = 3;
+  repeated OrgRelationshipMappingGetRequest OrgRelationshipMappingList=4;
  
 }
 

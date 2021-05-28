@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("corridor")]
-    public class LandmarkCorridorController : ControllerBase
+    public class LandmarkCorridorController : BaseController
     {
 
         private ILog _logger;
@@ -25,8 +25,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private readonly CorridorMapper _corridorMapper;
-        private readonly HeaderObj _userDetails;
-        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
+        
+        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorServiceClient = corridorServiceClient;
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _logger.Info("GetCorridorList method in POI API called.");
                 net.atos.daf.ct2.corridorservice.CorridorRequest objCorridorRequest = new net.atos.daf.ct2.corridorservice.CorridorRequest();
-                objCorridorRequest.OrganizationId = request.OrganizationId;
+                objCorridorRequest.OrganizationId = GetContextOrgId();
                 objCorridorRequest.CorridorId = request.CorridorId;//non mandatory field
                 var data = await _corridorServiceClient.GetCorridorListAsync(objCorridorRequest);
 
@@ -98,16 +98,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                
                 if (request.OrganizationId == 0)
                 {
-                    //bool hasRights = await HasAdminPrivilege();
-                    //if (!hasRights)
                      return StatusCode(400, "Organization_Id Required .");
                 }
                 if (request.ViaAddressDetails.Count >5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
+                request.OrganizationId = GetContextOrgId();
                 var MapRequest = _corridorMapper.MapCorridor(request);
                 var data = await _corridorServiceClient.AddRouteCorridorAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -149,6 +149,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                
                 if (request.OrganizationId == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -159,6 +160,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "ExistingTrips required");
                 }
+                request.OrganizationId = GetContextOrgId();
                 var MapRequest = _corridorMapper.MapExistingTripCorridorRequest(request);
                 var data = await _corridorServiceClient.AddExistingTripCorridorAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -200,6 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                
                 if (request.OrganizationId == 0 && request.Id ==0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -210,6 +213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "ExistingTrips required");
                 }
+                request.OrganizationId = GetContextOrgId();
                 var MapRequest = _corridorMapper.MapExistingTripCorridorRequest(request);
                 var data = await _corridorServiceClient.UpdateExistingTripCorridorAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -265,7 +269,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [HttpDelete]
         [Route("deletecorridor")]
 
-        public async Task<IActionResult> DeleteCategory([FromQuery] Entity.Corridor.DeleteCorridorIdRequest request)
+        public async Task<IActionResult> DeleteCorridor([FromQuery] Entity.Corridor.DeleteCorridorIdRequest request)
         {
             try
             {
@@ -316,11 +320,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization Id is required.");
                 }
+                
                 if (request.ViaAddressDetails.Count > 5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
-
+                request.OrganizationId = GetContextOrgId();
                 UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
                 objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);
                 var data = await _corridorServiceClient.UpdateRouteCorridorAsync(objUpdateRouteCorridorRequest);

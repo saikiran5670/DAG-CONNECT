@@ -1,0 +1,156 @@
+
+syntax = "proto3";
+//import "google/protobuf/wrappers.proto";
+option csharp_namespace = "net.atos.daf.ct2.reportservice";
+
+package report;
+
+service ReportService{
+rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
+rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
+rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
+rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponce);
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message IdRequest {
+  int32 ReportId = 1;
+  int32 AccountId=2;
+  int32 OrganizationId=3;
+}
+message UserPreferenceDataColumn{
+    int32 DataAtrributeId =1;
+    string Name=2;
+    string Description = 3;
+    string Type = 4;
+    string ReportReferenceType = 5;
+    string Key =6;
+    string State=7;
+    string ChartType = 8;
+}
+
+message UserPreferenceDataColumnResponse{
+    repeated UserPreferenceDataColumn UserPreferences = 1;
+    Responsecode Code = 2;
+    string Message = 3;
+}
+
+message UserPreferenceCreateRequest{
+ repeated Atribute AtributesShowNoShow =1;
+   int32 AccountId =2;
+  int32 ReportId =3;
+  int32 OrganizationId =4;
+  string Type =5;
+  int64 CreatedAt =6;
+  int64 ModifiedAt =7;
+  string CharType = 8;
+}
+
+message Atribute{
+ int32 DataAttributeId =1;
+ string State =2;
+}
+
+message UserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
+}
+
+message VehicleFilterRequest{
+int64 FromDate = 1;
+int64 ToDate = 2;
+repeated string VinList = 3;
+}
+
+// Start Trip Report Table
+message TripFilterRequest{
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+
+}
+
+message TripResponce {
+    repeated TripDetils TripData=1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+message TripDetils {
+    int32 Id =1;
+    string TripId=2;
+    string VIN=3;
+    int64 StartTimeStamp=4;
+    int64 EndTimeStamp=5; 
+    int32 Distance=6; 
+    int32 IdleDuration=7;
+    
+    int32 AverageSpeed=8;
+    int32 AverageWeight=9;
+    int64 Odometer=10;
+    string StartPosition =11;
+    string EndPosition=12;
+    double FuelConsumed=13;
+    int32 DrivingTime =14;
+    int32 Alert =15;
+    int32 Events=16;
+    double FuelConsumed100km=17;
+
+    repeated LiveFleetPosition LiveFleetPosition=18;
+
+    double StartPositionLattitude=19;
+    double StartPositionLongitude=20;
+    double EndPositionLattitude=21;
+    double EndPositionLongitude=22;
+}
+message LiveFleetPosition {
+    int64 GpsAltitude=1;
+    int64 GpsHeading=2; 
+    int64 GpsLatitude=3;
+    int64 GpsLongitude=4; 
+    int32 Id=5;
+}
+// End Trip Report Table
+
+//Start Vehicle Visibility and Trip filtered records
+
+message VehicleDetailsWithAccountVisibilty {
+int32 VehicleGroupId = 1;
+int32 AccountId = 2;
+string ObjectType = 3;
+string GroupType = 4;
+string FunctionEnum = 5;
+int32 OrganizationId = 6;
+string AccessType = 7;
+string VehicleGroupName = 8;
+int32 VehicleId = 9;
+string VehicleName = 10;
+string Vin = 11;
+string RegistrationNo = 12;
+}
+
+message VehicleFromTripDetails {
+string Vin = 1;
+int64 StartTimeStamp=2;
+int64 EndTimeStamp=3;
+}
+
+message VehicleListAndDetailsResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated VehicleFromTripDetails VinTripList = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+message VehicleListRequest{
+int32 AccountId = 3;
+int32 OrganizationId = 4;
+}
+//End Vehicle Visibility and Trip filtered records

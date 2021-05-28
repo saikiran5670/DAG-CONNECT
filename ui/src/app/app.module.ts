@@ -7,7 +7,7 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { ChartsModule } from 'ng2-charts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {HttpClientModule,HttpClient,HTTP_INTERCEPTORS} from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AlertsComponent } from './configuration/alerts/alerts.component';
 import { ConfigLoader, ConfigModule } from '@ngx-config/core';
 import { ConfigHttpLoader } from '@ngx-config/http-loader';
@@ -32,7 +32,7 @@ import { CreateEditViewAlertsComponent } from './configuration/alerts/create-edi
 import { AlertsFilterComponent } from './configuration/alerts/alerts-filter/alerts-filter.component';
 import { AlertService } from './services/alert.service';
 import { CreateNotificationsAlertComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/create-notifications-alert.component';
-import { Ng2CompleterModule } from "ng2-completer";
+import { ReportService } from './services/report.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -51,7 +51,6 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     ChartsModule,
     FormsModule,
     ReactiveFormsModule,
-    Ng2CompleterModule,
     ConfigModule.forRoot({
       provide: ConfigLoader,
       useFactory: configFactory,
@@ -81,7 +80,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     POIService,
     LandmarkCategoryService,
     GeofenceService,
-    AlertService
+    AlertService,
+    ReportService
   ],
   bootstrap: [AppComponent],
 })

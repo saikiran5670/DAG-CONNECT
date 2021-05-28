@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="dapper" Version="2.0.78" />
+    <PackageReference Include="npgsql" Version="5.0.1.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="entity\" />
+    <Folder Include="enum\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.audit\net.atos.daf.ct2.audit.csproj" />
+    <ProjectReference Include="..\..\commoncomponent\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
+  </ItemGroup>
+</Project>

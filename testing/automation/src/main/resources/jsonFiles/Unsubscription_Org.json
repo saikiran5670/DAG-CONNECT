@@ -1,10 +1,1 @@
-{
-  "SubscribeEvent": {
-  "organizationID": "JMTR001",
-  "packageId": "GAPackage12345",
-  "viNs": [ 
-     
-  ],
-  "startdatetime": ""
-  }
-}
+{"UnsubscribeEvent":{"organizationID":"12346","orderID":"60","endDateTime":"","viNs":[]}}

@@ -2,14 +2,14 @@
 <mat-card  class='mat-elevation-z'>
 <div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
-    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+    <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
         <mat-label>
             <span>{{ translationData.lblCorridorLabel || 'Corridor Label' }}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
         </mat-label>
         <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
+            <mat-form-field appearance="outline" class="full-width corridorLineHt">
+                <input maxlength="100" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
                     formControlName="label" required>
             </mat-form-field>
             <mat-error
@@ -25,98 +25,120 @@
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
-        <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'></span>
+        <div *ngIf="actionType === 'view'">
+            <span style='font-weight: 500!important;'>{{corridorName}}</span>
         </div>
     </div>
-    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+    <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
         <mat-label>
             <span>{{ translationData.lblStartAddress || 'Start Address' }}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
-        <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class='full-width'>
-                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
-                    matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required>
-            </mat-form-field>
+        <div  *ngIf="actionType != 'view'">
+            <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
+            (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer>
+            <!-- <mat-form-field appearance="outline" class='full-width'>
+               <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                    matInput formControlName="startaddress" (keyup)="getSuggestion($event)" (focusout)="startAddressFocusOut()" required> 
+                </mat-form-field>  -->
+
             <mat-error
-                *ngIf="corridorFormGroup.get('startaddress').hasError('required') && corridorFormGroup.get('startaddress').touched">
+                *ngIf="searchStrError">
                 {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
-            </mat-error>
-            <mat-error *ngIf="corridorFormGroup.get('startaddress').hasError('specialCharsNotAllowed')">
-                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'></span>
+            <span style='font-weight: 500!important;'>{{searchStr}}</span>
         </div>
     </div>
-    <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+    <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
         <mat-label>
             <span>{{ translationData.lblEndAddress || 'End Address' }}</span>
             <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
         </mat-label>
-        <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class='full-width'>
+        <div  *ngIf="actionType != 'view'">
+            <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+            [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
+            [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer>
+           
+            <!-- <mat-form-field appearance="outline" class='full-width'>
                 <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
                     matInput formControlName="endaddress" (focusout)="endAddressFocusOut()" required>
-            </mat-form-field>
+            </mat-form-field> -->
             <mat-error
-                *ngIf="corridorFormGroup.get('endaddress').hasError('required') && corridorFormGroup.get('endaddress').touched">
+                *ngIf="searchEndStrError">
                 {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
-            </mat-error>
-            <mat-error *ngIf="corridorFormGroup.get('endaddress').hasError('specialCharsNotAllowed')">
-                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
         </div>
         <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'></span>
+            <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
         </div>
     </div>
 </div>
 <div fxLayout="row" class="margin-bottom-sm">
-    <div class="col-sm-3 areaWidth min-width-30-per">
+    <div class="col-sm-4 areaWidth">
         <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
-            <input class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()" disabled>
+            <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
+        <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
+        </div>
         <div *ngIf="actionType != 'view'">
+            <ngx-slider [(value)]="corridorWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
-        <mat-label>{{min}}</mat-label>
+        <!-- <mat-label>{{min}}</mat-label>
             <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
                 thumbLabel [displayWith]="formatLabel"></mat-slider>
-        <mat-label>{{max}}</mat-label>
+        <mat-label>{{max}}</mat-label> -->
 
         </div>
+        
     </div>
-    <div *ngIf="viaRouteCount" class="col-sm-3 areaWidth min-width-30-per">
-        <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline">
-                <input maxlength="50"
-                    placeholder="{{ translationData.lblEnterViaRouteAddress|| 'Enter via route address' }}"
-                    matInput formControlName="viaroute1">
-            </mat-form-field>
-            <mat-icon (click)="removeViaRoute()">close</mat-icon>
-
-            <mat-error
-                *ngIf="corridorFormGroup.get('viaroute1').hasError('required') && corridorFormGroup.get('viaroute1').touched">
-                {{translationData.lblPleaseEnterViaRouteAddress || 'Please Enter via route address' }}
-            </mat-error>
-            <mat-error *ngIf="corridorFormGroup.get('viaroute1').hasError('specialCharsNotAllowed')">
-                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
-            </mat-error>
-
+    <div *ngIf="viaRouteCount" class="col-sm-4 areaWidth">
+        <mat-label>
+            <span>{{ translationData.lblViaRoute|| 'Via Route' }}</span>
+        </mat-label>
+        <div  *ngIf="actionType != 'view'">
+            <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+            [datasource]="dataService" [minSearchLength]="0" [(ngModel)] = "searchViaStr" [ngModelOptions]="{standalone: true}"
+            [minSearchLength]="0" (selected)="onViaSelected($event)" [selectOnClick]="true"></ng2-completer>
+           
+            <!-- <mat-form-field appearance="outline" class='full-width'>
+                <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+                    matInput formControlName="endaddress" (focusout)="endAddressFocusOut()" required>
+            </mat-form-field> -->
+        </div>
+        <span class= "pt-2">
+        <mat-chip-list #viaRoutes aria-label="via route">
+            <mat-chip
+              *ngFor="let route of viaRoutesList"
+              [selectable]="true"
+              [removable]="true"
+              (removed)="remove(route)">
+              {{route}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+        </span>
+        <!-- <mat-selection-list #viaRoutes>
+            <mat-list-option *ngFor="let route of viaRoutesList">
+              {{route}}
+            </mat-list-option>
+          </mat-selection-list> -->
+        <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{searchViaStr}}</span>
         </div>
     </div>
-    
+    <div class="col-sm-4 areaWidth">
+        <button mat-flat-button color="primary" (click)="addViaRoute()" [disabled]='viaRouteCount'>
+            <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute || 'Via Route'}}
+        </button>
+    </div> 
 </div>
 
-<!-- <span style="float:left">
-    <button mat-flat-button color="primary" (click)="addViaRoute()" [disabled]='viaRouteCount'>
-        <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute || 'Via Route'}}
-    </button>
-</span> -->
 <div class="fixDiv"></div>
 <mat-accordion class="example-headers-align" style="background-color:#7e7878;">
     <mat-expansion-panel>
@@ -127,8 +149,8 @@
         </mat-expansion-panel-header>
 
         <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-sm">
-            <mat-checkbox class="example-margin" (change)="transportDataCheckedFn($event.checked)">Transaport Data</mat-checkbox>
-            <mat-checkbox class="example-margin" (change)="trafficFlowCheckedFn($event.checked)">Traffic Flow</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="transportDataChecked" (change)="transportDataCheckedFn($event.checked)" [disabled]="actionType==='view'">Transport Data</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="trafficFlowChecked" (change)="trafficFlowCheckedFn($event.checked)"  [disabled]="actionType==='view'">Traffic Flow</mat-checkbox>
         </div>
         <div class='fixDiv'></div>
             <mat-accordion class="example-headers-align pt-2" style="background-color:#7e7878;">
@@ -141,29 +163,32 @@
                     <div fxLayout="row" fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
                         <span class="col-sm">
                             <mat-label><span>{{ translationData.lblTrailer|| 'Trailer' }}</span></mat-label>
-                            <mat-form-field appearance="outline" class="full-width">
-                                <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" required>
+                            <mat-form-field *ngIf="actionType !== 'view'"appearance="outline" class="full-width">
+                                <mat-select formControlName="trailer"  [(value)]="selectedTrailerId" (selectionChange)="trailerSelected($event)" [disabled]="actionType==='view'">
                                     <mat-option *ngFor="let type of trailerList" [value]="type">
                                         {{type}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{trailerValue}}</span>
+                            </div>
                         </span>
-                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')">Explosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')">Gas</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')">Flammable</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="explosiveChecked" (change)="attributeCheck($event.checked,'explosive')" [disabled]="actionType==='view'">Explosive</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="gasChecked" (change)="attributeCheck($event.checked,'gas')" [disabled]="actionType==='view'">Gas</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="flammableChecked" (change)="attributeCheck($event.checked,'flammable')" [disabled]="actionType==='view'">Flammable</mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class=" container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')">Combustible</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')">Organic</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')">Poison</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')">Radio Active</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="combustibleChecked" (change)="attributeCheck($event.checked,'combustible')" [disabled]="actionType==='view'">Combustible</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="organicChecked" (change)="attributeCheck($event.checked,'organic')" [disabled]="actionType==='view'">Organic</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonChecked" (change)="attributeCheck($event.checked,'poison')" [disabled]="actionType==='view'">Poison</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="radioactiveChecked" (change)="attributeCheck($event.checked,'radioactive')" [disabled]="actionType==='view'">Radio Active</mat-checkbox>
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
-                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')">Corrosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonInhale')">Poisonous Inhalation</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'waterHarm')">Water Harm</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'others')">Others</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')" [disabled]="actionType==='view'">Corrosive</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonInhale')" [disabled]="actionType==='view'">Poisonous Inhalation</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'waterHarm')" [disabled]="actionType==='view'">Water Harm</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'others')" [disabled]="actionType==='view'">Others</mat-checkbox>
                      </div>
                 </mat-expansion-panel>
                 </mat-accordion>
@@ -180,37 +205,46 @@
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblTollRoad|| 'Toll Road' }}</span></mat-label>
-                                <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="tollRoad" [(value)]="tollRoadId" (selectionChange)="exclusionSelected($event,'tollRoad')" required>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class="full-width">
+                                    <mat-select formControlName="tollRoad" [(value)]="tollRoadId" (selectionChange)="exclusionSelected($event,'tollRoad')">
                                         <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{tollRoadValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblMotorWay|| 'Motor Way' }}</span></mat-label>
-                                <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="motorWay" [(value)]="motorWayId" (selectionChange)="exclusionSelected($event,'motorWay')" required>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class="full-width">
+                                    <mat-select formControlName="motorWay" [(value)]="motorWayId" (selectionChange)="exclusionSelected($event,'motorWay')">
                                         <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{motorWayValue}}</span>
+                            </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblBoatFerries || 'Boat Ferries' }}</span></mat-label>
-                                <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="boatFerries" [(value)]="boatFerriesId" (selectionChange)="exclusionSelected($event,'boatFerries')" required>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class="full-width">
+                                    <mat-select formControlName="boatFerries" [(value)]="boatFerriesId" (selectionChange)="exclusionSelected($event,'boatFerries')">
                                         <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{boatFerriesValue}}</span>
                             </div>
                         </div>
                     </div>
@@ -218,37 +252,46 @@
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblRailFerries || 'Rail Ferries' }}</span></mat-label>
-                                <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="railFerries" [(value)]="railFerriesId" (selectionChange)="exclusionSelected($event,'railFerries')" required>
+                                <mat-form-field *ngIf="actionType !== 'view'"appearance="outline" class="full-width">
+                                    <mat-select formControlName="railFerries" [(value)]="railFerriesId" (selectionChange)="exclusionSelected($event,'railFerries')">
                                         <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{railFerriesValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblTunnels|| 'Tunnels' }}</span></mat-label>
-                                <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="tunnels" [(value)]="tunnelId" (selectionChange)="exclusionSelected($event,'tunnel')" required>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class="full-width">
+                                    <mat-select formControlName="tunnels" [(value)]="tunnelId" (selectionChange)="exclusionSelected($event,'tunnel')">
                                         <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
                             </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{tunnelValue}}</span>
+                            </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblDirtRoad || 'Dirt Road' }}</span></mat-label>
-                                <mat-form-field appearance="outline" class="full-width">
-                                    <mat-select formControlName="dirtRoad"  [(value)]="dirtRoadId" (selectionChange)="exclusionSelected($event,'dirtRoad')" required>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class="full-width">
+                                    <mat-select formControlName="dirtRoad"  [(value)]="dirtRoadId" (selectionChange)="exclusionSelected($event,'dirtRoad')">
                                         <mat-option *ngFor="let type of exclusionList" [value]="type.enum">
                                             {{ type.value }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{dirtRoadValue}}</span>
                             </div>
                         </div>
                     </div>
@@ -267,37 +310,55 @@
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblHeight|| 'Height' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
-                                    <input type="number" maxlength="50" 
-                                        matInput formControlName="vehicleHeight" required>
+                                <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
+                                    <input type="number" maxlength="50"
+                                        matInput formControlName="vehicleHeight">
                                 </mat-form-field>
-                                <mat-error *ngIf="corridorFormGroup.get('vehicleHeight').hasError('specialCharsNotAllowed')">
-                                    {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                                <mat-error *ngIf="corridorFormGroup.get('vehicleHeight').hasError('noNegativeValueAllowed')">
+                                    {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
+                                <mat-error *ngIf="corridorFormGroup.get('vehicleHeight').hasError('cannotExceedMaxValue')">
+                                    {{ translationData.lblMax50 || 'Maximum Value is 50' }}
+                                </mat-error>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{vehicleHeightValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblWidth|| 'Width' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
-                                        matInput formControlName="vehicleWidth" required>
+                                        matInput formControlName="vehicleWidth">
                                 </mat-form-field>
-                                <mat-error *ngIf="corridorFormGroup.get('vehicleWidth').hasError('specialCharsNotAllowed')">
-                                    {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                                <mat-error *ngIf="corridorFormGroup.get('vehicleWidth').hasError('noNegativeValueAllowed')">
+                                    {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
+                                <mat-error *ngIf="corridorFormGroup.get('vehicleWidth').hasError('cannotExceedMaxValue')">
+                                    {{ translationData.lblMax50 || 'Maximum Value is 50' }}
+                                </mat-error>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{vehicleWidthValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblLength|| 'Length' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
-                                        matInput formControlName="vehicleLength" required>
+                                        matInput formControlName="vehicleLength">
                                 </mat-form-field>
-                                <mat-error *ngIf="corridorFormGroup.get('vehicleLength').hasError('specialCharsNotAllowed')">
-                                    {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                                <mat-error *ngIf="corridorFormGroup.get('vehicleLength').hasError('noNegativeValueAllowed')">
+                                    {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
+                                <mat-error *ngIf="corridorFormGroup.get('vehicleLength').hasError('cannotExceedMaxValue')">
+                                    {{ translationData.lblMax300 || 'Maximum Value is 300' }}
+                                </mat-error>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{vehicleLengthValue}}</span>
                             </div>
                         </div>
                     </div>
@@ -305,33 +366,45 @@
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
-                                        matInput formControlName="limitedWeight" required>
+                                        matInput formControlName="limitedWeight">
                                 </mat-form-field>
-                                <mat-error *ngIf="corridorFormGroup.get('limitedWeight').hasError('specialCharsNotAllowed')">
-                                    {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                                <mat-error *ngIf="corridorFormGroup.get('limitedWeight').hasError('noNegativeValueAllowed')">
+                                    {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
+                                <mat-error *ngIf="corridorFormGroup.get('limitedWeight').hasError('cannotExceedMaxValue')">
+                                    {{ translationData.lblMax1000 || 'Maximum Value is 1000' }}
+                                </mat-error>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{vehicleLimitedWtValue}}</span>
                             </div>
                         </div>
                         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                             <div>
                                 <mat-label><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}:</span></mat-label>
-                                <mat-form-field appearance="outline" class='full-width'>
+                                <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
                                     <input type="number" maxlength="50" 
-                                        matInput formControlName="weightPerAxle" required>
+                                        matInput formControlName="weightPerAxle">
                                 </mat-form-field>
-                                <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('specialCharsNotAllowed')">
-                                    {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+                                <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('noNegativeValueAllowed')">
+                                    {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
+                                <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('cannotExceedMaxValue')">
+                                    {{ translationData.lblMax1000 || 'Maximum Value is 1000' }}
+                                </mat-error>
+                            </div>
+                            <div *ngIf="actionType === 'view'">
+                                <span style='font-weight: 500!important;'>{{vehicleWtPerAxleValue}}</span>
                             </div>
                         </div>
                     </div>
                 </mat-expansion-panel>
                 </mat-accordion>
        
-                <div class="example-button-row pt-2" fxLayoutAlign="right">
-                    <button mat-flat-button color="primary" (click)="resetValues()">
+                <div class="example-button-row pt-2" fxLayoutAlign="right" *ngIf="actionType !== 'view'">
+                    <button mat-button color="primary" (click)="resetValues()"  [disabled]="corridorFormGroup.pristine">
                         <span>Reset</span>
                     </button>
                 </div>
@@ -339,13 +412,23 @@
 </mat-accordion>
 <div class='fixDiv'></div>
 
-<div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;">
+<div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
+    <span *ngIf="actionType !== 'view'">
     <button mat-flat-button color="primary" (click)="backToCorridorList()">
         <span>Cancel</span>
     </button>
-    <button mat-flat-button  color="primary" (click)="createCorridorClicked()" ><!-- [disabled]="!corridorFormGroup.valid"-->
+    </span>
+
+    <span *ngIf="actionType === 'edit'">
+    <button mat-button color="primary" (click)="resetToEditData()" [disabled]="corridorFormGroup.pristine">
+        <span>Reset</span>
+    </button>
+</span>
+<span *ngIf="actionType !== 'view'">
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)"><!--&& !strPresentStart && !strPresentEnd [disabled]="!corridorFormGroup.valid"-->
         <span>Create</span>
     </button>
+</span>
 </div>
 </mat-card>
 </form>

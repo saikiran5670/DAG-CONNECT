@@ -46,11 +46,11 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public char RailFerries { get; set; }
         public char Tunnels { get; set; }
         public char DirtRoad { get; set; }
-        public int VehicleSizeHeight { get; set; }
-        public int VehicleSizeWidth { get; set; }
-        public int VehicleSizeLength { get; set; }
-        public int VehicleSizeLimitedWeight { get; set; }
-        public int VehicleSizeWeightPerAxle { get; set; }
+        public double VehicleSizeHeight { get; set; }
+        public double VehicleSizeWidth { get; set; }
+        public double VehicleSizeLength { get; set; }
+        public double VehicleSizeLimitedWeight { get; set; }
+        public double VehicleSizeWeightPerAxle { get; set; }
         [Column("state")]
         public string State { get; set; }
         public long Created_At { get; set; }

@@ -1,48 +1,58 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Google.Protobuf.WellKnownTypes;
+using log4net;
+using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
     public class AuditHelper
     {
-        private readonly ILogger<AuditHelper> _logger;
         private readonly AuditService.AuditServiceClient _auditService;
-        public AuditHelper(AuditService.AuditServiceClient auditService, ILogger<AuditHelper> logger)
+        private readonly ILog _logger;
+        public AuditHelper(AuditService.AuditServiceClient auditService)
         {
             _auditService = auditService;
-            _logger = logger;
-
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public HeaderObj GetHeaderData(HttpRequest request)
         {
             var headerObj = new HeaderObj();
-            if (request != null)
+            try
             {
-                var Headers = request.Headers;
+                if (request != null)
+                {
+                    var Headers = request.Headers;
+                    var settings = new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        MissingMemberHandling = MissingMemberHandling.Ignore
+                    };
 
-                if (Headers.Any(item => item.Key == "headerObj"))
-                {
-                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"]);
+                    if (Headers.Any(item => item.Key == "headerObj"))
+                    {
+                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"], settings);
+                    }
+                    else if (Headers.Any(item => item.Key == "Headerobj"))
+                    {
+                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"], settings);
+                    }
                 }
-                else if (Headers.Any(item => item.Key == "Headerobj"))
-                {
-                    headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"]);
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error occurred while fetching request header object.", ex);
             }
             return headerObj;
         }
+
         public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
         {
             AuditRecord logs = new AuditRecord();
@@ -52,7 +62,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                 int roleid = headerData.roleId;
                 int organizationid = headerData.orgId;
                 int Accountid = headerData.accountId;
-                
+
                 logs.PerformedAt = Timestamp.FromDateTime(Performed_at.ToUniversalTime());
                 logs.PerformedBy = Accountid;
                 logs.ComponentName = Component_name;
@@ -68,17 +78,16 @@ namespace net.atos.daf.ct2.portalservice.Common
                 logs.RoleID = roleid;
                 logs.OrganizationId = organizationid;
                 AuditResponce auditresponse = await _auditService.AddlogsAsync(logs);
-                
+
                 return 0;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Audit_Error",logs,ex);
+                _logger.Error("Error occurred while adding audit logs.", ex);
                 return 1;
             }
-            
-        }
 
+        }
 
         public static int ToInt32(string value)
         {
@@ -123,13 +132,4 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
     }
-    public class HeaderObj
-    {
-        public int roleId { get; set; }
-        public int accountId { get; set; }
-        public int orgId { get; set; }
-
-    }
-
-
 }

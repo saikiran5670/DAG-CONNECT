@@ -834,6 +834,9 @@ rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getT
 if(rowvalueF.startsWith("New")) {
 if(driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")).isDisplayed()) {
 	 rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")).getText();
+	 System.out.println("New red tag is displayed");
+	 test.log(LogStatus.PASS,  "New red tag is displayed");
+	 Log.info("New red tag is displayed");	
 }
 }
 String[] str;
@@ -1294,7 +1297,7 @@ try
 	System.out.println("Value found in expected column");
 	test.log(LogStatus.PASS,  "Value found in expected column");
 	Log.info("Value found in expected column");	
-	if (column.equals("Name")) {
+	if (column.equals("Name")||column.equals("Email ID")||column.equals("Package Code")) {
 		String Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("ROLE_DELETE");
 		System.out.println(RowPart + j + Btn_Delete);
 		driver.findElement(By.xpath(RowPart + j + Btn_Delete)).click();
@@ -1386,6 +1389,90 @@ public static void verifyDeletedRecord() throws Exception
 		  DriverScript.bResult = false;		  
 		  }
 }
+//*********************Check icon in TBL************************************************************
+public static boolean checkIconInTbl(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL) throws Exception {
+	Thread.sleep(3000);
+	try 
+	{
+	Actions actions = new Actions(driver);
+	actions.sendKeys(Keys.PAGE_UP).perform();
+	String column = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+	String value = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+	List<WebElement> goptions = driver.findElements(By.xpath(GRPTBL + COLHEAD));
+	boolean temp = false;
+	Thread.sleep(3001);
+	String table = getTextFromOR("GRP_STEP1_TBL");
+	for (int i = 2; i <= goptions.size(); i++) 
+	{
+	String colnameF = driver.findElement(By.xpath(GRPTBL +  COLHEAD + "["+i+ CELL)).getText();
+	String colname = colnameF.trim();
+	if (colname.equals(column.trim())) 
+	{
+	System.out.println(column);
+	System.out.println(colname);
+	String PAGECOUNT = getTextFromOR("PAGINATION");
+	String Page = driver.findElement(By.xpath(PAGECOUNT)).getText();
+	String TotalRecord =Page.split(" ")[1];
+	String ITEMPP = getTextFromOR("GRP_ROW_COUNT_VAL");
+	String Rowcount =driver.findElement(By.xpath(ITEMPP)).getText();
+	int Page_No =Integer.parseInt(TotalRecord);
+	int remainder = 0;
+	if(Integer.parseInt(TotalRecord) > Integer.parseInt(Rowcount))
+	{
+		Page_No= Integer.parseInt(TotalRecord)/Integer.parseInt(Rowcount);
+		remainder = Integer.parseInt(TotalRecord)%Integer.parseInt(Rowcount);
+		if(remainder>0) {
+			Page_No=Page_No+1;
+		}
+	}
+	Thread.sleep(3000);
+	for (int k = 1; k <= Page_No; k++) 
+	{
+	waitForLoadingImage();
+	if (driver.findElement(getLocator("TABLE")).isDisplayed());
+	{
+	System.out.println(" Next Page button is working");
+	Thread.sleep(3000);
+	List<WebElement> options1 = driver.findElements(By.xpath(GRPTBL + GRP_ROW));
+	Thread.sleep(3000);
+	for (int j = 1; j <= options1.size(); j++) 
+	{
+	String rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW + "[" + j + "]/mat-cell["+i+"]/div/img")).getAttribute("src");
+	String rowvalue = rowvalueF.trim();
+	//src="assets/images/icons/driverOpt/opt-out.svg"
+	//src="assets/images/icons/driverOpt/opt-in.svg"		
+		//if (rowvalue.equals(value.trim()))
+		if (rowvalue.endsWith(value +".svg"))
+		{
+		System.out.println(value);
+		System.out.println(rowvalue);
+		System.out.println("Correct icon found in expected column");
+		test.log(LogStatus.PASS,  "Correct icon found in expected column");
+		Log.info("Correct icon found in expected column");
+		temp = true;
+		return temp;
+		}
+	}
+	}
+	String NP = getTextFromOR("NEXT_PAGINATION");
+	driver.findElement(By.xpath(NP)).click();
+	//driver.findElement(getLocator("NEXT_PAGINATION")).click();
+	}
+	return temp;
+	}
+	}
+	} catch (Exception e) 
+	{
+	test.log(LogStatus.FAIL, e.getMessage());
+	Log.error("Data is not present in table..." + e.getMessage());
+	String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+	test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+	ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	DriverScript.bResult = false;
+	return false;
+	}
+	return false;
+	}
 //*********************Click On Check box in TBL************************************************************
 public static boolean selectCheckBoxInTbl(String GRPTBL, String COLHEAD, String GRP_ROW, String CELL) throws Exception {
 Thread.sleep(3000);
@@ -1533,10 +1620,13 @@ public static boolean viewRecord(String GRPTBL, String COLHEAD, String GRP_ROW, 
 	List<WebElement> options1 = driver.findElements(By.xpath(GRP_ROW));
 	Thread.sleep(3000);
 	for (int j = 1; j <= options1.size(); j++) 
-	{
+	{String rowvalueF = null;
 	//String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
-	String rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/span[3]")).getText();
-	String[] str;
+		if(column.equals("Vehicle")||column.equals("Email ID")) {//||column.equals("Package Code")
+			rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]")).getText();
+		}else {
+	 rowvalueF = driver.findElement(By.xpath(GRPTBL + GRP_ROW+"[" + j +"]" + CELL+ "[" +i+"]/span[3]")).getText();
+			}String[] str;
 	if(column.equals("Vehicle Group")||column.equals("Vehicle")) {
 		 str = rowvalueF.split("\\r?\\n");
 		 rowvalueF = str[0];
@@ -1668,8 +1758,6 @@ public static boolean VerifyGlobalIcon(String GRPTBL, String COLHEAD, String GRP
 	return false;
 	}
 	}
-
-
 //*********************Edit Record From TBL***************************************************************
 public static boolean editRecordFrmTbl() throws Exception {
 Thread.sleep(3000);
@@ -1752,7 +1840,7 @@ System.out.println("Value found in expected column");
 test.log(LogStatus.PASS,  "Value found in expected column");
 Log.info("Value found in expected column");	
 
-if(column.equals("Name")) {
+if(column.equals("Name")||column.equals("Email ID")) {
 	String Btn_EditR = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("GRP_EDIT");//"ROLE_EDIT");
 	System.out.println(RowPart + j + Btn_EditR);
 	driver.findElement(By.xpath(RowPart + j + Btn_EditR)).click();
@@ -1786,7 +1874,7 @@ return false;
 }
 }
 //*********************Click on count present in row of TBL***************************************************************
-public static boolean clickOnCount(int colOfCount, String TBL, String Cell) throws Exception {
+public static boolean clickOnCount(int colOfCount, String TBL, String Cell,String pg) throws Exception {
 Thread.sleep(3000);
 try 
 {
@@ -1798,7 +1886,13 @@ String Col = getTextFromOR("GRP_COLUMNHEADER");
 List<WebElement> options = driver.findElements(By.xpath(TBL+Col));
 boolean temp = false;
 Thread.sleep(3000);	
-for (int i = 2; i <= options.size(); i++) 
+int count;
+if(pg.equals("Main")){
+	count=1;
+}else {
+	count=2;
+}
+for (int i = count; i <= options.size(); i++) 
 {	
 String PartialcolnameF =  getTextFromOR("PART_COL_F_N_FIRST");
 String PartialcolnameS =  getTextFromOR("PART_COL_F_N_SEC");
@@ -1878,7 +1972,7 @@ DriverScript.bResult = false;
 return false;
 }
 }
-//*********************Verify Data in Table*****************************************************************   
+//*********************Verify Col in Table*****************************************************************   
 public static void verifyColInTable(String GRPTBL, String COLHEAD, String ColDiv, String main) throws Exception {
 Thread.sleep(3000);
 try 
@@ -2009,17 +2103,17 @@ try
 	String tem =Rec_No.replace("(", " ");
 	String temp =tem.replace(")", " ");
 	 String Page = driver.findElement(getLocator("PAGINATION")).getText();
-	  String TotalRecord =Page.split(" ")[1];
+	  String TotalRecord =Page.split(" ")[3];
 	  //String Rowcount =driver.findElement(getLocator("GRP_ROW_COUNT_VAL")).getText();
 	  int No = Integer.parseInt(temp.trim());
 	  int Page_No =Integer.parseInt(TotalRecord);
 	  if(No == Page_No ) {
 		  test.log(LogStatus.PASS, "Correct count is displaying in Details label");
-			 Log.info(temp.trim() + "Correct count is displaying in Details label");
+			 Log.info(temp.trim() + " Correct count is displaying in Details label");
 			 DriverScript.bResult = true;
 	  }else{
 		  test.log(LogStatus.FAIL, "Incorrect count is displaying in Details label"); 
-	    	 Log.error(temp.trim() +  "Incorrect count is displaying in Details label");		    	 
+	    	 Log.error(temp.trim() +  " Incorrect count is displaying in Details label");		    	 
 	    	  String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
 			  test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
 			  DriverScript.bResult = false;
@@ -2107,4 +2201,39 @@ try{
 	  DriverScript.bResult = false;
 }
 }
+//********************Upload File************************************************   
+public static void uploadFile() throws Exception
+{	
+	  
+	  try 
+	     {
+		  String FileName = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+		  String object = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+		  String localDir = System.getProperty("user.dir");
+		  String path = localDir + Constants.Path_File_Upload + FileName + ".xlsx";
+		  Log.info(" " + path);
+		 // driver.findElement(getLocator(object)).sendKeys(path);
+		  driver.findElement(By.xpath("//input [@type='file']")).sendKeys(path);
+		  Thread.sleep(2000);
+		  
+		  waitforPageLoad(driver);
+		  
+		  test.log(LogStatus.PASS,  FileName + "File is uploaded");
+		  Log.info(FileName + "File is uploaded");		  
+		   		  
+		  }
+	  catch (Exception e)
+	      {
+		  test.log(LogStatus.FAIL, e.getMessage());
+		  Log.error("Not able to upload File..." + e.getMessage());
+		  
+		  String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+		  test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+		  
+		  ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+		  
+		  DriverScript.bResult = false;
+	      }
+}
+//******************************************************************************  
 }

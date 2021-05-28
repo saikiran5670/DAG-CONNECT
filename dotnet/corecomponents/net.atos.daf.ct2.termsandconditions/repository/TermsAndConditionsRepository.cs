@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -439,7 +439,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -506,10 +506,12 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                              (query, parameterToGetPackageId);
             return data;
         }
+
         public async Task<bool> CheckUserAcceptedTermCondition(int AccountId, int OrganizationId)
         {
-
-            var QueryStatement = @"select coalesce((select termc.id
+            try
+            {
+                var QueryStatement = @"select coalesce((select distinct termc.id
                                             from master.termsandcondition termc
                                             inner join master.accounttermsacondition acctermc
                                             on termc.id=acctermc.terms_and_condition_id
@@ -517,19 +519,18 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                             and acctermc.organization_id=@organization_id
                                             and termc.state=@state), 0)";
 
-            var parameter = new DynamicParameters();
-            parameter.Add("@account_id", AccountId);
-            parameter.Add("@organization_id", OrganizationId);
-            parameter.Add("@state", Convert.ToChar(State.Active));
-            int result = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-            if (result > 0)
-            {
-                return true;
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", AccountId);
+                parameter.Add("@organization_id", OrganizationId);
+                parameter.Add("@state", Convert.ToChar(State.Active));
+                int result = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+
+                return result > 0;
             }
-            else
+            catch (Exception)
             {
-                return false;
-            }
+                throw;
+            }            
         }
 
         #region Private methods

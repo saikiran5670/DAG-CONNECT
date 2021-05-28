@@ -20,13 +20,14 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using log4net;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
     [Route("organization")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class OrganizationController : ControllerBase
+    public class OrganizationController : BaseController
     {
         //private readonly ILogger<OrganizationController> logger;
         private readonly OrganizationMapper _mapper;
@@ -40,22 +41,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private string FK_Constraint = "violates foreign key constraint";
         public IConfiguration Configuration { get; }
+      
         public OrganizationController(
                                       OrganizationService.OrganizationServiceClient _organizationClient,
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
-                                      IConfiguration configuration, AuditHelper auditHelper)
+                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            organizationClient = _organizationClient;
-            _auditHelper = auditHelper;
+            organizationClient = _organizationClient;            
             _accountClient = accountClient;
             _mapper = new OrganizationMapper();
             _relationshipMapper = new RelationshipMapper();
             _featureSetMapper = new FeatureSetMapper(featureclient);
             _vehicleClient = vehicleClient;
-            Configuration = configuration;
+            Configuration = configuration;            
+            _auditHelper = auditHelper;
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
 
@@ -80,6 +83,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.FeaturesetId > 0)
                 {
                     _logger.Info("Relationship create function called ");
+                    //Assign context orgId
+                    request.OrganizationId =GetContextOrgId();
                     if (request.OrganizationId == 0)
                     {
                         return StatusCode(400, "Please provide OrganizationId:");
@@ -136,6 +141,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.FeaturesetId > 0)
                 {
                     _logger.Info("Relationship update function called ");
+                   
                     if (request.OrganizationId == 0 || request.Id == 0 || request.Level == 0 || string.IsNullOrEmpty(request.Code))
                     {
                         return StatusCode(400, "Please provide OrganizationId, Level,Code and org relationship id:");
@@ -153,6 +159,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         return StatusCode(400, "Please provide relationship features");
                     }
+                    //Assign context orgId
+                    request.OrganizationId = GetContextOrgId();
                     var objRequest = _relationshipMapper.ToRelationshipRequest(request);
                     var orgResponse = await organizationClient.UpdateRelationshipAsync(objRequest);
                     if (orgResponse.Relationship.Id < 1)
@@ -201,7 +209,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Info("Organization relationship get function called ");
 
-
+                //Assign context orgId
+                if (filterRequest.OrganizationId > 0)
+                {
+                    filterRequest.OrganizationId = GetContextOrgId();
+                }
+                
                 var request = new RelationshipCreateRequest()
                 {
                     Id = filterRequest.Id,
@@ -210,6 +223,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     Level = filterRequest.Level,
                     Code = filterRequest.Code == null ? string.Empty : filterRequest.Code
                 };
+               
                 var orgResponse = await organizationClient.GetRelationshipAsync(request);
                 orgResponse.RelationshipList.Where(S => S.Featuresetid > 0)
                                                .Select(S => { S.FeatureIds.AddRange(_featureSetMapper.GetFeatureIds(S.Featuresetid).Result); return S; }).ToList();
@@ -307,6 +321,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 Organization organization = new Organization();
                 _logger.Info("Organization create function called ");
+               
+
                 if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length < 1))
                 {
                     return StatusCode(400, "Please provide organization org_id:");
@@ -315,6 +331,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Please provide organization name:");
                 }
+                //Assign context orgId
+                request.org_id = GetContextOrgId().ToString();
+
                 organization.OrganizationId = request.org_id;
                 organization.Name = request.name;
                 organization.Type = request.type;
@@ -365,10 +384,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 Organization organization = new Organization();
 
                 _logger.Info("Organization update function called ");
+               
                 if (request.Id < 1)
                 {
                     return StatusCode(400, "Please provide organization ID:");
                 }
+
+                //Assign context orgId
+                request.Id = GetContextOrgId();
 
                 //if (string.IsNullOrEmpty(request.org_id) || (request.org_id.Trim().Length < 1))
                 //{
@@ -431,7 +454,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 //var objRequest = _mapper.ToOragnizationRequest(organizationId);
                 OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
-                idRequest.Id = organizationId;
+                
                 // OrganizationBusinessService.OrganizationGetData orgResponse = await organizationClient.GetAsync(idRequest);
                 // return Ok("Organization Created :" +orgResponse); 
                 _logger.Info("Organization get function called ");
@@ -439,6 +462,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Please provide organization ID:");
                 }
+                //Assign context orgId
+                organizationId = GetContextOrgId();
+                idRequest.Id = organizationId;
                 OrganizationBusinessService.OrganizationGetData orgResponse = await organizationClient.GetAsync(idRequest);
 
                 return Ok(orgResponse.Organization);
@@ -458,12 +484,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
+               
                 idRequest.Id = organizationId;
                 _logger.Info("Organization get details function called ");
+               
                 if (organizationId < 1)
                 {
                     return StatusCode(400, "Please provide organization ID:");
                 }
+                //Assign context orgId
+                organizationId = GetContextOrgId();
                 OrganizationBusinessService.OrgDetailResponse orgResponse = await organizationClient.GetOrganizationDetailsAsync(idRequest);
 
                 return Ok(orgResponse);
@@ -482,6 +512,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var idRequest = new IdRequest();
+                if (organizationId>0)
+                {
+                    organizationId = GetContextOrgId();
+                }
+                
                 idRequest.Id = organizationId;
                 _logger.Info("Organization get all function called ");
                 var orgResponse = await organizationClient.GetAllAsync(idRequest);
@@ -508,7 +543,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
-                request.PreferenceType = "A";
+                request.PreferenceType = "O";
+                request.RefId = GetContextOrgId();
                 var accountPreference = _mapper.ToAccountPreference(request);
                 AccountBusinessService.AccountPreferenceResponse preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
@@ -554,12 +590,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The Preference Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
                 }
                 request.PreferenceType = "O";
+                //Assign context orgId
+                request.RefId = GetContextOrgId();
                 var accountPreference = _mapper.ToAccountPreference(request);
                 AccountBusinessService.AccountPreferenceResponse preference = null;
                 if (request.Id == 0)
                     preference = await _accountClient.CreatePreferenceAsync(accountPreference);
                 else
-                    preference = await _accountClient.UpdatePreferenceAsync(accountPreference);          
+                    preference = await _accountClient.UpdatePreferenceAsync(accountPreference);
 
                 if (preference != null && preference.Code == AccountBusinessService.Responcecode.Success)
                 {
@@ -640,7 +678,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
+               
+
+                OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();                
                 idRequest.Id = organizationId;
                 OrganizationBusinessService.OrganizationPreferenceResponse objResponse = new OrganizationBusinessService.OrganizationPreferenceResponse();
                 // Validation                 
@@ -648,6 +688,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization Id is required");
                 }
+                //Assign context orgId
+                organizationId = GetContextOrgId();
 
                 objResponse = await organizationClient.GetPreferenceAsync(idRequest);
                 return Ok(objResponse.OrganizationPreference);
@@ -682,6 +724,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "RelationShip id required.");
                 }
+                //Assign context orgId               
+                request.OwnerOrgId = GetContextOrgId();
+                request.CreatedOrgId= GetContextOrgId();
                 OrgRelationshipCreateRequest objRelationship = new OrgRelationshipCreateRequest();
                 objRelationship.RelationShipId = request.RelationShipId;
                 objRelationship.VehicleGroupID.Add(request.VehicleGroupId);
@@ -689,6 +734,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objRelationship.CreatedOrgId = request.CreatedOrgId;
                 objRelationship.TargetOrgId.Add(request.TargetOrgId);
                 objRelationship.AllowChain = request.allow_chain;
+                objRelationship.Isconfirmed = request.IsConfirm;
                 var CreateResponce = await organizationClient.CreateOrgRelationshipAsync(objRelationship);
                 if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Success)
                 {
@@ -696,6 +742,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
                     return Ok(CreateResponce);
+                }
+                if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Conflict)
+                {
+                    return StatusCode(409, CreateResponce);
                 }
                 else
                 {
@@ -818,7 +868,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //orgvehicleIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
                 //orgvehicleIdRequest.VehicleId = Convert.ToInt32(0);
                 //VehicleBusinessService.VehicleGroupDetailsResponse response = await _vehicleClient.GetVehicleGroupAsync(orgvehicleIdRequest);
-
+                //Assign context orgId
+                OrganizationId = GetContextOrgId();
                 VehicleBusinessService.OrganizationIdRequest OrganizationIdRequest = new VehicleBusinessService.OrganizationIdRequest();
                 OrganizationIdRequest.OrganizationId = Convert.ToInt32(OrganizationId);
                 VehicleBusinessService.OrgVehicleGroupListResponse Vehicleresponse = await _vehicleClient.GetOrganizationVehicleGroupdetailsAsync(OrganizationIdRequest);
@@ -893,6 +944,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgid
+                filterRequest.created_org_id = GetContextOrgId();
                 var request = new OrgRelationshipMappingGetRequest()
                 {
                     Id = filterRequest.Id,
@@ -922,6 +975,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Organization GetAllOrganizations function called ");
+                //Assign context orgId
+                objOrganizationByID.Id = GetContextOrgId();
+
                 if (objOrganizationByID.RoleId == 0)
                 {
                     var request = Request;
@@ -944,6 +1000,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                OrganizationId = GetContextOrgId();
                 _logger.Info("Organization GetOrganizations function called ");
                 IdRequest idRequest = new IdRequest();
                 idRequest.Id = OrganizationId;
@@ -964,6 +1022,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             int level = -1;
             try
             {
+                //Assign context orgId
+                orgId = GetContextOrgId();
                 LevelByRoleRequest request = new LevelByRoleRequest();
                 request.OrgId = orgId;
                 request.RoleId = roleId;

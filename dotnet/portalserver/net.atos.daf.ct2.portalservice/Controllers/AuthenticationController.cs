@@ -20,32 +20,32 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class AuthenticationController: ControllerBase
+    public class AuthenticationController : ControllerBase
     {
         //private readonly ILogger<AuthenticationController> _logger;
         private readonly AuditHelper _auditHelper;
 
         private ILog _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
-        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient,  AuditHelper auditHelper)
+        public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient, AuditHelper auditHelper)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _auditHelper = auditHelper;
         }
         [AllowAnonymous]
-        [HttpPost]        
+        [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login()
         {
             AccountBusinessService.IdentityRequest identityRequest = new AccountBusinessService.IdentityRequest();
-            try 
+            try
             {
-                if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))  
-                {  
-                var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");  
-                var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
-                var arrUsernamePassword = identity.Split(':');
+                if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))
+                {
+                    var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");
+                    var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
+                    var arrUsernamePassword = identity.Split(':');
                     if (string.IsNullOrEmpty(arrUsernamePassword[0]))
                     {
                         return StatusCode(401, "invalid_grant: The username is Empty.");
@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else
                     {
-                     
+
                         identityRequest.UserName = arrUsernamePassword[0];
                         identityRequest.Password = arrUsernamePassword[1];
                         AccountBusinessService.AccountIdentityResponse response = new AccountBusinessService.AccountIdentityResponse();
@@ -99,19 +99,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     accIdentity.AccountRole.Add(accRole);
                                 }
                             }
-                            //if (!string.IsNullOrEmpty(response.TokenIdentifier))
-                           // {
-                               // HttpContext.Session.SetString("session_id",response.TokenIdentifier);
-                                 var claims = new List<Claim>
+
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(response.TokenIdentifier))
+                                    HttpContext.Session.SetString(SessionConstants.TokenKey, response.TokenIdentifier);
+
+                                HttpContext.Session.SetInt32(SessionConstants.AccountKey, accIdentity.AccountInfo.Id);
+                                _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id }");
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error("Error while setting value in session", ex);
+                            }
+
+                            var claims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Email, accIdentity.AccountInfo.EmailId),
                                     new Claim(ClaimTypes.Name, accIdentity.AccountInfo.FirstName)
                                 };
 
-                                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                            // }
-
+                            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
                             await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
                                     "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -146,25 +155,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             return StatusCode(500, "Unknown :- Please contact system administrator.");
                         }
                     }
+                }
+                else
+                {
+                    return StatusCode(401, "The authorization header is either empty or isn't Basic.");
+                }
             }
-            else 
+            catch (Exception ex)
             {
-                return StatusCode(401,"The authorization header is either empty or isn't Basic.");
-            }
-            }
-            catch(Exception ex)
-            {
-               _logger.Error(null, ex);              
+                _logger.Error(null, ex);
 
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
-            "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-            "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
-             Request);
-                _logger.Error(null, ex);
-                return StatusCode(500,"Please contact system administrator. "+ ex.Message );
-            }            
+                "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
+                 Request);
+                return StatusCode(500, "Please contact system administrator. " + ex.Message);
+            }
         }
-        
+
         [HttpPost]
         [Route("logout")]
         public async Task<IActionResult> Logout()
@@ -173,13 +181,26 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                string sessionid = HttpContext.Session.GetString("session_id");
-                if (!string.IsNullOrEmpty(sessionid))
+
+                //Flush session related information from database
+                string tokenId = HttpContext.Session.GetString(SessionConstants.TokenKey);
+                if (!string.IsNullOrEmpty(tokenId))
                 {
-                   
-                    request.TokenId = sessionid;
+                    request.TokenId = tokenId;
                     await _accountClient.LogoutAsync(request);
-                }               
+                }
+
+                //Clear session information
+                HttpContext.Session.Clear();
+                foreach (var cookie in Request.Cookies.Keys)
+                {
+                    if (cookie.Equals(".AspNetCore.Session"))
+                    {
+                        Response.Cookies.Delete(cookie);
+                        break;
+                    }
+                }
+
                 return Ok(new { Message = "You are logged out" });
             }
             catch (Exception ex)

@@ -49,7 +49,7 @@
               </mat-label>
                 <div *ngIf="actionType != 'view'">
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-select formControlName="type">
+                    <mat-select formControlName="type" (selectionChange)="onCategoryTypeChange($event)">
                         <mat-option *ngFor="let type of types" [value]="type">
                             {{type}}
                         </mat-option>
@@ -121,7 +121,7 @@
           <mat-label *ngIf="actionType != 'view'">{{ translationData.lblSelectParentCategory || 'Select Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
           <mat-label *ngIf="actionType == 'view'">{{ translationData.lblSelectedParentCategory || 'Selected Parent Category' }} <span class='mandatoryColor'>*</span></mat-label>
           <div *ngIf="actionType != 'view'">
-            <mat-form-field appearance="outline" class='full-width'>
+            <mat-form-field [disabled]="isDisabledType" appearance="outline" class='full-width'>
               <mat-select [disabled]="actionType == 'edit'" formControlName="parentCategory" (selectionChange)="onParentCategoryChange()" placeholder="{{ translationData.lblSelectParentCategory || 'Select Parent Category' }}">
               <mat-option *ngFor="let rer of parentCategoryList" [value]="rer.id">
                 {{ rer.name }}

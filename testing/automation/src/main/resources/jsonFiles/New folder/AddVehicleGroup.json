@@ -1,0 +1,28 @@
+{
+  "vehicleGroupID": 0,
+  "organizationID": 0,
+  "name": "string",
+  "parentID": 0,
+  "isActive": true,
+  "createdDate": "2020-12-04T11:26:36.331Z",
+  "createdBy": 0,
+  "updatedDate": "2020-12-04T11:26:36.331Z",
+  "updatedBy": 0,
+  "isDefaultGroup": true,
+  "isUserDefindGroup": true,
+  "vehicles": [
+    {
+      "vehicleID": 0,
+      "vin": "string",
+      "registrationNo": "string",
+      "chassisNo": "string",
+      "terminationDate": "2020-12-04T11:26:36.331Z",
+      "isActive": true,
+      "createdDate": "2020-12-04T11:26:36.331Z",
+      "createdBy": 0,
+      "updatedDate": "2020-12-04T11:26:36.331Z",
+      "updatedBy": 0
+    }
+  ],
+  "vehicleOrgIds": "string"
+}

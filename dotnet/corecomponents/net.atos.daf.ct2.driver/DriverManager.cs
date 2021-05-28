@@ -24,7 +24,6 @@ namespace net.atos.daf.ct2.driver
         {
             return await driverRepository.GetDriver(OrganizationId,DriverID);
         }
-
         
          public async Task<Driver> UpdateDriver(Driver driver)
           {

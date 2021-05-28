@@ -17,7 +17,13 @@
       "landmarkCategoryRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/poigeofence",
       "geofenceRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/geofence",
       "alertRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/alert",
-      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor"
-
+      "corridorRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/corridor",
+      "authZuoraSSOServiceURL": "#{AUTHENTICATIONSERVICEURL}#/account/sso",
+      "reportRESTServiceURL": "#{AUTHENTICATIONSERVICEURL}#/report"
+    },
+    "hereMap":{
+      "app_id":"LRJH9LmTMNbwteXRz03L",
+      "app_code":"o9LPYEnoFvNtmkYUhCb1Tg",
+      "api_key":"BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     }
 }

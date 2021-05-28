@@ -12,7 +12,7 @@ export class AlertsFilterComponent implements OnInit {
   OrgId = parseInt(localStorage.getItem("accountOrganizationId"));
   isGlobal: boolean = true;   
 
-  @Input() translationData: any = []; 
+  @Input() translationData: any; 
   @Input() alertCategoryList: any;
   @Input() alertTypeList: any; 
   @Input() vehicleList: any;
@@ -23,6 +23,10 @@ export class AlertsFilterComponent implements OnInit {
 
   isDisabledAlerts = true; 
   localData : any; 
+  tempData: any;
+  alertType:any;
+  vehicleGroup:any;
+  alertTypeEnum:any;
   dataResultTypes:any=[];
   @Output() filterValues : EventEmitter<any> = new EventEmitter();
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -52,51 +56,86 @@ export class AlertsFilterComponent implements OnInit {
       menuId: 18 //-- for landmark
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-    this.processTranslation(data);
-    });       
-    this.updatedTableData(this.initData );   
-    this.dataSource.filterPredicate = this.createFilter();    
+     this.processTranslation(data);  
+     this.updatedTableData(this.initData);     
+     this.dataSource.filterPredicate = this.createFilter();  
+    });
   } 
-
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    console.log("process translationData:: ", this.translationData)
-  }
+    //console.log("process translationData:: ", this.translationData)  
+   }
 
-
-  handleCategoryChange(value) {
-       if(value == "All"){
-          this.isDisabledAlerts = false;
-          this.dataResultTypes = this.alertTypeList;
+  handleCategoryChange(filter, tempEnum, event) {
+    if(event.value == ''){  
+        this.dataResultTypes =this.alertTypeList;
+        this.isDisabledAlerts = true;
+        this.filterListValues['type'] = '';
     }
-    else{
-        this.isDisabledAlerts = false;
-        this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === value.enum);
-     }
-     this.applyFilter(value)
-    // this.isDisabledOrders = true;
-    // this.dataResultOrders = [];
+    else{     
+        this.alertType='';
+        this.isDisabledAlerts = false;  
+        this.dataResultTypes =[]; 
+        this.dataResultTypes = this.alertTypeList.filter((s) => s.parentEnum === event.value.enum);
+     
+      }  
+      if(this.alertTypeEnum != undefined){
+        if(this.alertTypeEnum != event.value.enum){
+          this.filterListValues['type'] = '';
+        }
+      }    
+     this.filterChange(filter, event);
     }
 
-    applyFilter(filterValue) {
-      filterValue.value = filterValue.value.trim(); // Remove whitespace    
-      this.dataSource.filter= filterValue.value;
+    filterAlertTypeChange(filter, event) {
+      let event_val;
+      this.alertTypeEnum=event.value.parentEnum ;
+        this.filterChange(filter, event);
     }
-
-   updatedTableData(tableData : any) {
-    this.localData = tableData;
-    this.dataSource = new MatTableDataSource(this.localData);
-    setTimeout(()=>{
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
-  
+    
+    updatedTableData(tableData : any) {   
+      this.dataSource = new MatTableDataSource(tableData);
+      setTimeout(()=>{
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    }
+   
   // Called on Filter change
-  filterChange(filter, event) {    
-  this.filterListValues[filter] = event.value.trim()   
-   this.dataSource.filter = JSON.stringify(this.filterListValues)
+  filterChange(filter, event) {     
+    let event_val;      
+      if(filter == "highUrgencyLevel"){          
+        if(event.value == ''){          
+          event_val = event.value;  
+        }
+        else{
+          event_val = event.value.enum; 
+        }
+        }else if(filter == "vehicleGroupName"){
+          if(event.value == ''){
+            this.vehicleGroup='';
+            event_val = event.value.trim();  
+          }
+          else{
+            if(event.value.vehicleName != undefined){
+              event_val = event.value.vehicleName.trim();
+            }
+            else{
+              event_val = event.value.value.trim();  
+            }
+          }
+       }       
+      else{   
+      if(event.value == ''){
+      event_val = event.value.trim();  
+      }
+      else{
+        event_val = event.value.value.trim();
+      }
+    }
+   this.filterListValues[filter] =event_val;
+   this.dataSource.filter = JSON.stringify(this.filterListValues);
    this.filterValues.emit(this.dataSource);    
   }
   
@@ -107,23 +146,107 @@ export class AlertsFilterComponent implements OnInit {
       for (const col in searchTerms) {
         if (searchTerms[col].toString() !== '') {
           isFilterSet = true;
-        } else {
+        } else {    
+          if( col == "highUrgencyLevel"){
+          let critical  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
+          let warning   = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
+          let advisory  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
+         if(critical.length > 0){
+            critical.forEach(obj => { 
+            data["highUrgencyLevel"]=obj.urgencyLevelType;
+            data["highThresholdValue"]=obj.thresholdValue;
+            });
+          }else if(warning.length > 0){
+            warning.forEach(obj => { 
+            data["highUrgencyLevel"]=obj.urgencyLevelType;
+            data["highThresholdValue"]=obj.thresholdValue;
+          });
+          }
+          else {
+            advisory.forEach(obj => { 
+            data["highUrgencyLevel"]=obj.urgencyLevelType;
+            data["highThresholdValue"]=obj.thresholdValue;
+          });
+          }                     
+         }         
           delete searchTerms[col];
         }
       }
-
       console.log(searchTerms);
-
       let nameSearch = () => {
         let found = false;
-        if (isFilterSet) {
-          for (const col in searchTerms) {
-            searchTerms[col].trim().toLowerCase().split(' ').forEach(word => {
-              if (data[col].toString().toLowerCase().indexOf(word) != -1 && isFilterSet) {
-                found = true
-              }
-            });
+        if (isFilterSet) {          
+          if(searchTerms.category){
+            let category = '';
+            category = data.category;
+            if(category.includes(searchTerms.category)){
+              found = true;    
+            }     
+          else{
+            return false;
           }
+        }
+        if(searchTerms.type){          
+          let type = '';
+            type = data.type;
+            if(type.includes(searchTerms.type)){
+              found = true;    
+          }
+        else{
+          return false;
+        }
+      }
+
+        if(searchTerms.vehicleGroupName){          
+          let vehicleGroupName = '';
+          vehicleGroupName = data.vehicleGroupName;
+            if(vehicleGroupName.includes(searchTerms.vehicleGroupName)){
+              found = true;    
+          }
+        else{
+          return false;
+        }
+      }
+
+      if(searchTerms.highUrgencyLevel){              
+        let highUrgencyLevel = '';
+        let levelVal = searchTerms.highUrgencyLevel;
+        let criticality  = data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == levelVal);
+      
+        if(criticality.length < 1){
+          criticality=data.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
+        }
+        if( levelVal == searchTerms.highUrgencyLevel){
+          if(criticality.length > 0){
+              criticality.forEach(obj => { 
+              data["highUrgencyLevel"]=obj.urgencyLevelType;
+              data["highThresholdValue"]=obj.thresholdValue;
+              });     
+              highUrgencyLevel = data.highUrgencyLevel;
+              if(highUrgencyLevel.includes(searchTerms.highUrgencyLevel)){
+                  found = true;    
+              }      
+              else{
+                return false;             
+              }  
+            }   
+            else{
+              return false;
+            }
+          }
+        }
+
+        if(searchTerms.state){          
+          let state = '';
+          state = data.state;
+            if(state.includes(searchTerms.state)){
+              found = true;    
+          }
+          else{
+          return false;
+          }
+        }
+
           return found
         } else {
           return true;

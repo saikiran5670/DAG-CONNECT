@@ -43,7 +43,17 @@ export class CorridorService {
       .pipe(catchError(this.handleError));
   }
 
-  deleteCorridor(corridorId: number): Observable<void> {
+  getCorridorFullList(orgId : any, corridorId: number): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.corridorServiceUrl}/getcorridorlist?OrganizationId=${orgId}&CorridorId=${corridorId}`,headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteCorridor(corridorId: number): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),

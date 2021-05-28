@@ -21,6 +21,7 @@ namespace net.atos.daf.ct2.alert.entity
         public int ale_created_by { get; set; }
         public long ale_modified_at { get; set; }
         public int ale_modified_by { get; set; }
+        public string ale_applyon { get; set; }
         public int aleurg_id { get; set; }
         public int aleurg_alert_id { get; set; }
         public string aleurg_urgency_level_type { get; set; }
@@ -107,5 +108,7 @@ namespace net.atos.daf.ct2.alert.entity
         public long notava_modified_at { get; set; }
         public string vehiclename { get; set; }
         public string vehiclegroupname { get; set; }
+        public string vin { get; set; }
+        public string regno { get; set; }
     }
 }

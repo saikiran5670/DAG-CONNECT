@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
+using net.atos.daf.ct2.identitysession.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -41,12 +42,12 @@ namespace net.atos.daf.ct2.account
         Task<int> Update(int id, ResetTokenStatus status);
         Task<ResetPasswordToken> GetIssuedResetToken(Guid tokenSecret);
         Task<ResetPasswordToken> GetIssuedResetTokenByAccountId(int accountId);
-        Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(int accountId, int roleId, int organizationId, string languageCode);
+        Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request);
         Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName);
         Task<string> GetCodeByPreferenceId(int preferenceId);
         Task<string> GetLanguageCodePreference(string emailId, int? orgId);
         Task<IEnumerable<Account>> GetAccountOfPasswordExpiry(int noOfDays);
         Task<int> UpdateIsReminderSent(int accountId, bool isReminderSend = true);
-        Task<List<SSOTokenResponse>> GetAccountSSODetails(int AccountID);
+        Task<List<SSOTokenResponse>> GetAccountSSODetails(AccountToken AccountID);
     }
 }

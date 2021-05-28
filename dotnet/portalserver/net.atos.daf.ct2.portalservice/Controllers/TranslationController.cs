@@ -1,28 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.utilities;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.translationservice;
-using net.atos.daf.ct2.portalservice.Entity.Translation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using net.atos.daf.ct2.portalservice.Common;
-using net.atos.daf.ct2.portalservice.Entity.Audit;
-using Newtonsoft.Json;
+﻿using Google.Protobuf;
 using log4net;
-using Google.Protobuf;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Translation;
+using net.atos.daf.ct2.translationservice;
+using net.atos.daf.ct2.utilities;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
 using System.Reflection;
-
+using System.Threading.Tasks;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [Route("translation")]
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class TranslationController : ControllerBase
+    public class TranslationController : BaseController
     {
         //private readonly ILogger<TranslationController> _logger;
         private readonly AuditHelper _Audit;
@@ -30,14 +26,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
          private ILog _logger;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
         private readonly Mapper _mapper;
-
+      
         //Constructor
-        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper)
+        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _translationServiceClient = translationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
-            _mapper = new Mapper();
+            _mapper = new Mapper(); 
             _Audit = auditHelper;
+            _userDetails = _Audit.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         
@@ -617,7 +614,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> AddUserAcceptedTermCondition(AccountTermsCondition request)
         {
             try
-            {
+            {               
                 //Validation
                 if (request.Account_Id <= 0)
                 {
@@ -633,7 +630,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Terms And Conditions Id is required.");
                 }
-
+                //Assign context orgId
+                request.Organization_Id = GetContextOrgId();
                 var termsAndCondRequest = _mapper.ToAcceptedTermConditionRequestEntity(request);
                 var termsAndCondResponse = await _translationServiceClient.AddUserAcceptedTermConditionAsync(termsAndCondRequest);
 
@@ -681,6 +679,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                               
                 switch (objVersionByID.levelCode)
                 {
                     case 0:
@@ -694,6 +693,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         break;
 
                 }
+                //Assign context orgId
+                objVersionByID.orgId = GetContextOrgId();
                 net.atos.daf.ct2.translationservice.VersionID objVersionID = new VersionID();
                 objVersionID.LevelCode = objVersionByID.levelCode;
                 objVersionID.OrgId = objVersionByID.orgId;
@@ -765,11 +766,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetAcceptedTermConditionByUser([FromQuery] int AccountId, int OrganizationId)
         {
             try
-            {
+            {                
                 if (OrganizationId <= 0)
                 {
                     return StatusCode(400, "Organization Id is required.");
                 }
+                //Assign context orgId
+                OrganizationId = GetContextOrgId();
+
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -800,10 +804,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                
                 if (OrganizationId <= 0 || AccountId <= 0)
                 {
                     return StatusCode(400, "Organization Id and Account Id both are required.");
                 }
+                //Assign context orgId
+                OrganizationId = GetContextOrgId();
+
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;
@@ -834,10 +842,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                
                 if (OrganizationId <= 0 || AccountId <= 0)
                 {
                     return StatusCode(400, "Organization Id and Account Id both are required.");
                 }
+                //Assign context orgId
+                //OrganizationId = GetContextOrgId();
                 UserAcceptedTermConditionRequest request = new UserAcceptedTermConditionRequest();
                 request.AccountId = AccountId;
                 request.OrganizationId = OrganizationId;

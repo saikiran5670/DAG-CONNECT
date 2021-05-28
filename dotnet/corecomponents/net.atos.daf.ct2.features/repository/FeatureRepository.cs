@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
            
         }
@@ -138,12 +138,7 @@ namespace net.atos.daf.ct2.features.repository
                 QueryStatement = QueryStatement + " and r.organization_id  = @organization_id";
 
             }
-            if (Featuretype != 0)
-            {
-                 parameter.Add("@type", Featuretype);
-                QueryStatement = QueryStatement + " and f.type  = @type";
-
-            }
+           
             if(RoleId == 0  && Organizationid ==0)
             {
                  QueryStatement = @"SELECT f.id, f.name,t.value, f.type, f.state, f.data_attribute_set_id, f.key, f.level, f.state
@@ -151,12 +146,7 @@ namespace net.atos.daf.ct2.features.repository
 									Left join translation.translation t
                                     on f.Key = t.name and t.code=@Code
                                     where f.state IN ('A', 'I')";
-               if (Featuretype != '0')
-                {
-                    parameter.Add("@type", Featuretype);
-                    QueryStatement = QueryStatement + " and f.type  = @type";
-
-                }
+               
                 if (FeatureId > 0)
                 {
                     parameter.Add("@id", FeatureId);
@@ -339,7 +329,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex ;
+                throw ;
             }
         }
        // public async Task<bool> RemoveFeatureSetMapping(int FeatureSetId , List<int> IDs)
@@ -385,7 +375,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> CheckDataAttributeSetExist(int ID)
@@ -405,7 +395,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet)
@@ -466,25 +456,34 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw;
             }
            
         }
          public async Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID)
         {
-            int MaxSetFeatureID = GetMaxFeatureID();  // Dataattribute set ID will start from 10000
-            var parameter = new DynamicParameters();
-                            parameter.Add("@id", MaxSetFeatureID);
-                            parameter.Add("@name", feature.Name);
-                            parameter.Add("@type", 'D');
-                            parameter.Add("@state", 'A');
-                            parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
-                            parameter.Add("@key", feature.Description);
-                            parameter.Add("@level", feature.Level);
-            int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
+            try
+            {
+                int MaxSetFeatureID = GetMaxFeatureID();  // Dataattribute set ID will start from 10000
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", MaxSetFeatureID);
+                parameter.Add("@name", feature.Name);
+                parameter.Add("@type", 'D');
+                parameter.Add("@state", (char)feature.FeatureState);
+                parameter.Add("@data_attribute_set_id", InserteddataAttributeSetID);
+                parameter.Add("@key", feature.Description);
+                parameter.Add("@level", feature.Level);
+                int resultAddFeatureSet = await dataAccess.ExecuteScalarAsync<int>(@"INSERT INTO master.feature(
 	                                                 id, name, type, state, data_attribute_set_id, key,level)
 	                                           VALUES (@id, @name, @type, @state, @data_attribute_set_id, @key,@level) RETURNING id", parameter);
-                                        return resultAddFeatureSet;
+                return resultAddFeatureSet;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
 
          public int CreateDataAttributeSetMapping(int DataAttributeSetId, int ID)
@@ -575,7 +574,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -639,7 +638,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -653,14 +652,12 @@ namespace net.atos.daf.ct2.features.repository
             parameter.Add("@id", feature.Id);
             parameter.Add("@data_attribute_set_id", UpdatedDataAttributeSetId);
             parameter.Add("@key", feature.Key);
-            parameter.Add("@level", feature.Level);
             parameter.Add("@State", (char)feature.FeatureState);
 
             int resultUpdateDataAttributeFeature = dataAccess.Execute(@"UPDATE master.feature
 	                                                SET 
                                                         name= @name,                                                       
-                                                        key= @key,
-                                                        level= @level,      
+                                                        key= @key,    
                                                         state= @State
 	                                                WHERE data_attribute_set_id = @data_attribute_set_id", parameter);
             return resultUpdateDataAttributeFeature;
@@ -700,7 +697,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -745,7 +742,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public int RemoveDataAttributeSetMappingWithFeature(int dataAttributeSetID)
@@ -786,14 +783,15 @@ namespace net.atos.daf.ct2.features.repository
                     featureSet.FeatureSetID = InsertedFeatureSetId;
                 }
                 List<int> temp = new List<int>();
-                foreach (var item in featureSet.Features)
+                if (featureSet.Features != null)
+                {
+                    foreach (var item in featureSet.Features)
                 {
                     temp.Add(item.Id);
 
                 }
 
-                if (featureSet.Features != null)
-                {
+                
                     foreach (var item in featureSet.Features)
                     {
                         var parameterfeature = CreateFeatureSetMapping(InsertedFeatureSetId, item.Id);
@@ -804,7 +802,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -842,7 +840,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -911,7 +909,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -945,7 +943,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             
         }
@@ -967,7 +965,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -999,7 +997,7 @@ namespace net.atos.daf.ct2.features.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

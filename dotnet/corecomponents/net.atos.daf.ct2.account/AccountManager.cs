@@ -17,6 +17,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
 
 namespace net.atos.daf.ct2.account
 {
@@ -322,7 +323,7 @@ namespace net.atos.daf.ct2.account
         }
 
         //This method is called for ResetPassword, SetupNewPassword and PassswordExpiry process
-        public async Task<Response> ResetPasswordInitiate(string emailId, int orgId, EmailEventType eventType = EmailEventType.ResetPassword)
+        public async Task<Response> ResetPasswordInitiate(string emailId, EmailEventType eventType = EmailEventType.ResetPassword)
         {
             var response = new Response(HttpStatusCode.NotFound);
             try
@@ -370,7 +371,7 @@ namespace net.atos.daf.ct2.account
                         //In cases like Create Password and Password Expiry, no need to send below email
                         if (eventType == EmailEventType.ResetPassword)
                         {
-                            account.Organization_Id = orgId;
+                            account.Organization_Id = (await repository.GetAccountOrg(account.Id)).First().Id;
                             isSent = await TriggerSendEmailRequest(account, eventType, processToken);
                         }
 
@@ -391,7 +392,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Password Reset Initiate" + ex.Message, 1, 2, emailId);
-                throw ex;
+                throw;
             }
         }
 
@@ -419,7 +420,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Get Reset Password Token Status" + ex.Message, 1, 2, processToken.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -457,7 +458,7 @@ namespace net.atos.daf.ct2.account
                         await repository.Update(resetPasswordToken.Id, ResetTokenStatus.Used);
 
                         //Send confirmation email
-                        account.Organization_Id = accountInfo.Organization_Id;
+                        account.Organization_Id = (await repository.GetAccountOrg(account.Id)).First().Id;
                         await TriggerSendEmailRequest(account, EmailEventType.ChangeResetPasswordSuccess);
                     }
                     return identityresult;
@@ -467,7 +468,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password: " + ex.Message, 1, 2, accountInfo.ProcessToken.Value.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<Response> ResetPasswordInvalidate(Guid ResetToken)
@@ -490,15 +491,15 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Account Component", "Account Manager", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Reset Password Invalidate: " + ex.Message, 1, 2, ResetToken.ToString());
-                throw ex;
+                throw;
             }
 
             return response;
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(int accountId, int roleId, int organizationId, string languageCode)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeatures(MenuFeatureRquest request)
         {
-            return await repository.GetMenuFeaturesList(accountId, roleId, organizationId, languageCode);
+            return await repository.GetMenuFeaturesList(request);
         }
 
         public async Task<bool> CheckForFeatureAccessByEmailId(string emailId, string featureName)
@@ -582,14 +583,14 @@ namespace net.atos.daf.ct2.account
 
         private async Task<bool> SetPasswordViaEmail(Account account, EmailEventType eventType)
         {
-            var response = await ResetPasswordInitiate(account.EmailId, account.Organization_Id.Value, eventType);
+            var response = await ResetPasswordInitiate(account.EmailId, eventType);
 
             if (response.StatusCode != HttpStatusCode.OK)
                 return false;
             else
             {
                 var result = await repository.GetAccountOrg(account.Id);
-                account.OrgName = result.FirstOrDefault().Name;
+                account.OrgName = result.First().Name;
                 //Send account confirmation email
                 return await TriggerSendEmailRequest(account, eventType, (Guid)response.Result);
             }
@@ -663,10 +664,10 @@ namespace net.atos.daf.ct2.account
 
         #region Account SSO Details
 
-        public async Task<SSOTokenResponse> GetAccountSSODetails(int accountId)
+        public async Task<SSOTokenResponse> GetAccountSSODetails(IdentitySessionEntity.AccountToken account)
         {
             List<SSOTokenResponse> _responses = new List<SSOTokenResponse>();
-            _responses = await repository.GetAccountSSODetails(accountId);
+            _responses = await repository.GetAccountSSODetails(account);
             return _responses.FirstOrDefault();
         }
 

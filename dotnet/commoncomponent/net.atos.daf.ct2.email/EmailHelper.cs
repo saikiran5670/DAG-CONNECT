@@ -100,7 +100,7 @@ namespace net.atos.daf.ct2.email
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

@@ -107,9 +107,15 @@ export class CustomValidators {
   //   };
   // }
 
-  static specialCharValidationForName(name) {
+  static specialCharValidationForName(name, formArrayName?) {
+    
     return (formGroup: FormGroup) => {
-      const NAME = formGroup.controls[name];
+      let NAME;
+      if(formArrayName){
+        NAME = formGroup.controls[formArrayName]['controls'][0]['controls'][name];
+      }else{
+        NAME = formGroup.controls[name];
+      }
       var regex = /[!@#\$%&*]/;
 
       if (!NAME.value) {
@@ -194,5 +200,22 @@ export class CustomValidators {
         imageError = 'Only Images are allowed';
     }
     return imageError;
+  }
+
+  static numberFieldValidation(name,maxValue){
+    return (formGroup: FormGroup) => {
+      const NAME = formGroup.controls[name];
+      var regex = /[0-9]/;
+
+      if (NAME.value) {
+       if(NAME.value > maxValue){
+          NAME.setErrors({ cannotExceedMaxValue: true });
+        }
+        else if(NAME.value < 0){
+          NAME.setErrors({ noNegativeValueAllowed: true });
+
+        }
+      }
+    };
   }
 }

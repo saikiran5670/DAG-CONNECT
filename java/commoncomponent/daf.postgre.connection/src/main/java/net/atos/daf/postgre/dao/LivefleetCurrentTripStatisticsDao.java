@@ -5,10 +5,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import lombok.Data;
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.CurrentTrip;
+import net.atos.daf.postgre.bo.TripStatisticsPojo;
 
 public class LivefleetCurrentTripStatisticsDao implements Serializable {
 
@@ -23,12 +26,13 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 	private static final String READ_CURRENT_TRIP = "SELECT * FROM livefleet.livefleet_current_trip_statistics WHERE trip_id = ? ORDER BY created_at_m2m ASC limit 1";
 	private static final String INSERT_CURRENT_TRIP = "INSERT INTO livefleet.livefleet_current_trip_statistics ( trip_id   , vin        ,start_time_stamp          ,end_time_stamp                ,driver1_id          ,start_position_lattitude              ,start_position_longitude             ,start_position                ,last_received_position_lattitude             , last_received_position_longitude  ,last_known_position                ,vehicle_status ,driver1_status ,vehicle_health_status  ,last_odometer_val ,distance_until_next_service ,last_processed_message_time_stamp ,driver2_id ,driver2_status ,created_at_m2m ,created_at_kafka ,created_at_dm_ ,modified_at, fuel_consumption ) VALUES (? ,?         ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?            ,?                ,?            ,?            ,? ,? ,?   ,?            ,?            ,?            ,?            ,?            ,?            ,?  ,?  )";
 
-	public void insert(Index row, int distance_until_next_service) throws TechnicalException, SQLException {
+	public void insert(TripStatisticsPojo row, int distance_until_next_service) throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_current_trip = null;
 		try {
 
 			if (null != row && null != (connection = getConnection())) {
-				stmt_insert_current_trip = connection.prepareStatement(INSERT_CURRENT_TRIP);
+				//stmt_insert_current_trip = connection.prepareStatement(INSERT_CURRENT_TRIP);
+				stmt_insert_current_trip = connection.prepareStatement(INSERT_CURRENT_TRIP,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				stmt_insert_current_trip = fillStatement(stmt_insert_current_trip, row);
 				stmt_insert_current_trip.addBatch();
 				System.out.println("before LiveFleet Current TRip Statstics execute batch ");
@@ -41,7 +45,139 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		}
 	}
 
-	private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, Index row)
+	private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, TripStatisticsPojo tripStatistics)
+			throws SQLException {
+		
+		if(tripStatistics.getTripId()!=null)
+			stmt_insert_current_trip.setString(1, tripStatistics.getTripId());
+		else
+			stmt_insert_current_trip.setString(1, "NA");
+		
+		if(tripStatistics.getVin()!=null)
+			stmt_insert_current_trip.setString(2, tripStatistics.getVin());
+		else
+			stmt_insert_current_trip.setString(2, tripStatistics.getVid());
+		
+		if(tripStatistics.getStart_time_stamp()!=null)
+			stmt_insert_current_trip.setLong(3, tripStatistics.getStart_time_stamp());
+		else
+			stmt_insert_current_trip.setLong(3, 0);
+		
+		if(tripStatistics.getEnd_time_stamp()!=null)
+			stmt_insert_current_trip.setLong(4, tripStatistics.getEnd_time_stamp());
+		else
+			stmt_insert_current_trip.setLong(4, 0);
+		
+		if(tripStatistics.getDriver1ID()!=null)
+			stmt_insert_current_trip.setString(5, tripStatistics.getDriver1ID());
+		else
+			stmt_insert_current_trip.setString(5, "NA");
+		
+		if(tripStatistics.getStart_position_lattitude()!=null)
+			stmt_insert_current_trip.setDouble(6, tripStatistics.getStart_position_lattitude());
+		else
+			stmt_insert_current_trip.setDouble(6, 0);
+		
+		if(tripStatistics.getStart_position_longitude()!=null)
+			stmt_insert_current_trip.setDouble(7, tripStatistics.getStart_position_longitude());
+		else
+			stmt_insert_current_trip.setDouble(7, 0);
+		
+		if(tripStatistics.getStart_position()!=null)
+			stmt_insert_current_trip.setString(8, tripStatistics.getStart_position());
+		else
+			stmt_insert_current_trip.setString(8, "NA");
+		
+		
+		if(tripStatistics.getLast_recieved_position_lattitude()!=null)
+			stmt_insert_current_trip.setDouble(9, tripStatistics.getLast_recieved_position_lattitude());
+		else
+			stmt_insert_current_trip.setDouble(9, 0);
+		
+		if(tripStatistics.getLast_recieved_position_longitude()!=null)
+			stmt_insert_current_trip.setDouble(10, tripStatistics.getLast_recieved_position_longitude());
+		else
+			stmt_insert_current_trip.setDouble(10, 0);
+		
+		
+		
+		
+		if(tripStatistics.getLast_known_position()!=null)
+			stmt_insert_current_trip.setString(11, tripStatistics.getLast_known_position());
+		else
+			stmt_insert_current_trip.setString(11, "NA");
+		
+		if(tripStatistics.getVehicle_status()!=null)
+			stmt_insert_current_trip.setInt(12, tripStatistics.getVehicle_status());
+		else
+			stmt_insert_current_trip.setInt(12, 0);
+		
+		if(tripStatistics.getDriver1_status()!=null)
+			stmt_insert_current_trip.setInt(13, tripStatistics.getDriver1_status());
+		else
+			stmt_insert_current_trip.setInt(13, 0);
+		
+		if(tripStatistics.getVehicle_health_status()!=null)
+			stmt_insert_current_trip.setInt(14, tripStatistics.getVehicle_health_status());
+		else
+			stmt_insert_current_trip.setInt(14, 0);
+		
+		if(tripStatistics.getLast_odometer_val()!=null)
+			stmt_insert_current_trip.setInt(15, tripStatistics.getLast_odometer_val());
+		else
+			stmt_insert_current_trip.setInt(15, 0);
+		
+		if(tripStatistics.getDistance_until_next_service()!=null)
+			stmt_insert_current_trip.setInt(16, tripStatistics.getDistance_until_next_service());
+		else
+			stmt_insert_current_trip.setInt(16, 0);
+		
+		if(tripStatistics.getLast_processed_message_timestamp()!=null)
+			stmt_insert_current_trip.setLong(17, tripStatistics.getLast_processed_message_timestamp());
+		else
+			stmt_insert_current_trip.setLong(17, 0);
+		
+		if(tripStatistics.getDriver2ID()!=null)
+			stmt_insert_current_trip.setString(18, tripStatistics.getDriver2ID());
+		else
+			stmt_insert_current_trip.setString(18, "NA");
+		
+		
+		if(tripStatistics.getDriver2_status()!=null)
+			stmt_insert_current_trip.setInt(19, tripStatistics.getDriver2_status());
+		else
+			stmt_insert_current_trip.setInt(19, 0);
+		
+		if(tripStatistics.getCreated_at_m2m()!=null)
+			stmt_insert_current_trip.setLong(20, tripStatistics.getCreated_at_m2m());
+		else
+			stmt_insert_current_trip.setLong(20, 0);
+		
+		if(tripStatistics.getCreated_at_kafka()!=null)
+			stmt_insert_current_trip.setLong(21, tripStatistics.getCreated_at_kafka());
+		else
+			stmt_insert_current_trip.setLong(21, 0);
+		
+		if(tripStatistics.getCreated_at_dm()!=null)
+			stmt_insert_current_trip.setLong(22, tripStatistics.getCreated_at_dm());
+		else
+			stmt_insert_current_trip.setLong(22, 0);
+		
+		if(tripStatistics.getModified_at()!=null)
+			stmt_insert_current_trip.setLong(23, tripStatistics.getModified_at());
+		else
+			stmt_insert_current_trip.setLong(23, 0);
+		
+		if(tripStatistics.getFuel_consumption()!=null)
+			stmt_insert_current_trip.setInt(24, tripStatistics.getFuel_consumption());
+		else
+			stmt_insert_current_trip.setInt(24, 0);
+		
+		
+		return stmt_insert_current_trip;
+	}
+	
+	/*private PreparedStatement fillStatement(PreparedStatement stmt_insert_current_trip, Index row)
 			throws SQLException {
 
 		long start_time_stamp = 0;
@@ -183,7 +319,7 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		
 		return stmt_insert_current_trip;
 
-	}
+	}*/
 
 	public CurrentTrip read(String tripId, int num) throws TechnicalException, SQLException {
 		System.out.println("first sysout " +tripId +"  "+num );
@@ -201,7 +337,8 @@ public class LivefleetCurrentTripStatisticsDao implements Serializable {
 		try {
 
 			if (null != tripId && null != (connection = getConnection())) {
-				stmt_read_current_trip = connection.prepareStatement(READ_CURRENT_TRIP);
+				//stmt_read_current_trip = connection.prepareStatement(READ_CURRENT_TRIP);
+				stmt_read_current_trip = connection.prepareStatement(READ_CURRENT_TRIP,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				stmt_read_current_trip.setString(1, tripId);
 
 				rs_trip = stmt_read_current_trip.executeQuery();

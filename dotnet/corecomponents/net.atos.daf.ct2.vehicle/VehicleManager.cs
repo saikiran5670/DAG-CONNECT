@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.vehicle
             auditlog = _auditlog;
         }
 
-        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(string subscriptionId)
+        public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
         {
             return await vehicleRepository.GetVehicleBySubscriptionId(subscriptionId);
         }
@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -49,7 +49,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<VehicleGroup>> GetVehicleGroup(int organizationId, int vehicleId)
@@ -109,7 +109,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -121,7 +121,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -133,7 +133,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -157,7 +157,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -169,7 +169,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -181,7 +181,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -194,7 +194,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -206,7 +206,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -230,7 +230,7 @@ namespace net.atos.daf.ct2.vehicle
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid)
@@ -242,9 +242,22 @@ namespace net.atos.daf.ct2.vehicle
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
+        public async Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle)
+        {
+            try
+            {
+                return await vehicleRepository.GetORGRelationshipVehicleGroupVehicles(organizationId, is_vehicle);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
 
         #region Vehicle Mileage Data
         public async Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contentType, int accountId, int orgid)
@@ -306,9 +319,9 @@ namespace net.atos.daf.ct2.vehicle
                 }
                 return vehicleMileage;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -369,9 +382,9 @@ namespace net.atos.daf.ct2.vehicle
 
                 return vehicleNamelistResponse;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -384,12 +397,10 @@ namespace net.atos.daf.ct2.vehicle
             try
             {
                 List<VisibilityVehicle> vehicles = new List<VisibilityVehicle>();
-                var vehicleGroupIds = await vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId);
+                var vehicleGroups = await vehicleRepository.GetVehicleGroupsViaAccessRelationship(accountId, orgId);
 
-                foreach (var vehicleGroupId in vehicleGroupIds)
+                foreach (var vehicleGroup in vehicleGroups)
                 {
-                    var vehicleGroup = await vehicleRepository.GetVehicleGroupDetails(vehicleGroupId);
-
                     switch (vehicleGroup.GroupType)
                     {
                         case "S":
@@ -398,7 +409,7 @@ namespace net.atos.daf.ct2.vehicle
                             break;
                         case "G":
                             //Group
-                            vehicles.AddRange(await vehicleRepository.GetGroupTypeVehicles(vehicleGroupId));
+                            vehicles.AddRange(await vehicleRepository.GetGroupTypeVehicles(vehicleGroup.Id));
                             break;
                         case "D":
                             //Dynamic
@@ -418,7 +429,7 @@ namespace net.atos.daf.ct2.vehicle
                                     break;
                                 case "M":
                                     //OEM
-                                    vehicles.AddRange(await vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroupId));
+                                    vehicles.AddRange(await vehicleRepository.GetDynamicOEMVehiclesForVisibility(vehicleGroup.Id));
                                     break;
                                 default:
                                     break;
@@ -430,9 +441,9 @@ namespace net.atos.daf.ct2.vehicle
                 }
                 return vehicles.Distinct(new ObjectComparer()).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -447,7 +458,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return true;
             }
-            if (object.ReferenceEquals(x, null) || object.ReferenceEquals(y, null))
+            if (x is null || y is null)
             {
                 return false;
             }

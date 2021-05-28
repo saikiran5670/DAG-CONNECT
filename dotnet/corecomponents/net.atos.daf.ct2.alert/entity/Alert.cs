@@ -35,7 +35,9 @@ namespace net.atos.daf.ct2.alert.entity
         public int ModifiedBy { get; set; }
         public string VehicleName { get; set; }
         public string VehicleGroupName { get; set; }
-
+        public string ApplyOn { get; set; }
+        public string Vin { get; set; }
+        public string RegNo { get; set; }
         public List<Notification> Notifications { get; set; } = new List<Notification>();
 
         public List<AlertUrgencyLevelRef> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRef>();

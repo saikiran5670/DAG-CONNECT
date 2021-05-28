@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.alert
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -69,5 +69,32 @@ namespace net.atos.daf.ct2.alert
             return alertRepository.DuplicateAlertType(alertId);
         }
         #endregion
+
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        {
+            return await alertRepository.IsLandmarkActiveInAlert(landmarkId);
+        }
+        public async Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate()
+        {
+            try
+            {
+                return await alertRepository.GetAlertNotificationTemplate();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId)
+        {
+            try
+            {
+                return await alertRepository.GetRecipientLabelList(organizationId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

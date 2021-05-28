@@ -143,13 +143,11 @@ message ChangePasswordRequest {
 //Account Reset Password
 message ResetPasswordInitiateRequest {
     string EmailId=1;
-    int32 OrgId=2;
 }
 
 message ResetPasswordRequest {
     string ProcessToken=1;
     string Password=2;
-    int32 OrgId=3;
 }
 
 message ResetPasswordInvalidateRequest {
@@ -174,6 +172,7 @@ message MenuFeatureRequest {
   int32 RoleId=2;
   int32 OrganizationId=3;
   string LanguageCode=4;
+  int32 ContextOrgId=5;
 }
 
 message MenuFeatureResponse {
@@ -491,6 +490,8 @@ message AccountVehicles
     string Name=2;
     bool IsGroup=3;
     int32 Count=4;
+    string VIN=5;
+    string RegistrationNo=6;
 }
 message AccountVehiclesResponse {
     Responcecode code=1;
@@ -506,9 +507,9 @@ message DeleteAccessRelationRequest
 }
 message TokenSSORequest {
     string Email=1;
-    string AccountID=2;
-    string RoleID=3;
-    string OrganizationID=4;
+    int32 AccountID=2;
+    int32 RoleID=3;
+    int32 OrganizationID=4;
 }
 
 message SSOToken{

@@ -123,13 +123,25 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         [Required]
         public string Email { get; set; }
-        [Required]
-        public int AccountID { get; set; }
-        [Required]
-        public int RoleID { get; set; }
-        [Required]
-        public int OrganizaitonID { get; set; }
     }
 
+    public class OrgSwitchRequest
+    {
+        [Required]
+        public int AccountId { get; set; }
+        [Required]
+        public int ContextOrgId { get; set; }
+        [Required]
+        public string LanguageCode { get; set; }
+    }
 
+    public class AccountInfoRequest
+    {
+        [Required]
+        public int AccountId { get; set; }
+        [Required]
+        public int OrgId { get; set; }
+        [Required]
+        public int RoleId { get; set; }
+    }
 }

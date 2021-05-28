@@ -13,6 +13,13 @@ namespace net.atos.daf.ct2.account.entity
         public string DateFormat { get; set; }
         public string UnitDisplay { get; set; }
         public string VehicleDisplay { get; set; }
+    }
 
+    public class SSOResponse 
+    {
+        public SSOTokenResponse Details { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string Message { get; set; }
+        public string Value { get; set; }
     }
 }

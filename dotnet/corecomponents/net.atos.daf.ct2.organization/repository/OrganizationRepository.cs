@@ -110,12 +110,12 @@ namespace net.atos.daf.ct2.organization.repository
                     groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                     groupVehicle = await groupManager.Create(groupVehicle);
 
-                    // Create access relationship
-                    AccessRelationship accessRelationship = new AccessRelationship();
-                    accessRelationship.AccountGroupId = groupAccount.Id;
-                    accessRelationship.VehicleGroupId = groupVehicle.Id;
-                    accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
-                    await accountManager.CreateAccessRelationship(accessRelationship);
+                    //// Create access relationship
+                    //AccessRelationship accessRelationship = new AccessRelationship();
+                    //accessRelationship.AccountGroupId = groupAccount.Id;
+                    //accessRelationship.VehicleGroupId = groupVehicle.Id;
+                    //accessRelationship.AccessRelationType = AccountComponent.ENUM.AccessRelationType.ViewOnly;
+                    //await accountManager.CreateAccessRelationship(accessRelationship);
 
                 }
             }
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 // log.Info("Create Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organization));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return organization;
         }
@@ -143,7 +143,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Delete Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Update Organization method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return organization;
         }
@@ -241,7 +241,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId)
@@ -307,7 +307,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -350,7 +350,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -504,7 +504,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Update Customer method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return customer;
         }
@@ -586,7 +586,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("UpdateCompany method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -625,7 +625,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("InsertCompany method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -677,7 +677,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("InsertVehicle method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
         public async Task<int> UpdatetVehicle(HandOver keyHandOver, int OrganizationId)
@@ -712,7 +712,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return 1;
         }
@@ -723,22 +723,22 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 RelationshipMapping relationshipMapping = new RelationshipMapping();
                 relationshipMapping.relationship_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.owner_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.target_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.created_org_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.owner_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.target_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.created_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
                 relationshipMapping.vehicle_id = VehicleID;
                 relationshipMapping.start_date = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 relationshipMapping.created_at = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 relationshipMapping.allow_chain = true;
                 //relationshipMapping.isFirstRelation=true;  
-                relationshipMapping.isFirstRelation = false;
+                relationshipMapping.isFirstRelation = true;
                 await CreateOwnerRelationship(relationshipMapping);
             }
             catch (Exception ex)
             {
                 log.Info("UpdatetVehicle method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return 1;
         }
@@ -772,7 +772,9 @@ namespace net.atos.daf.ct2.organization.repository
                     int OrganizationId = await UpdateCompany(keyHandOver);
                     await UpdatetVehicle(keyHandOver, OrganizationId);
 
-                    // Owner Relationship Management              
+                    // Owner Relationship Management
+
+                    keyHandOver.OEMRelationship = OrganizationId.ToString();  
                     await OwnerRelationship(keyHandOver, isVINExist);
 
                     return keyHandOver;
@@ -788,6 +790,8 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management    
                     int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
+
+                    keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
 
                     return keyHandOver;
@@ -803,6 +807,8 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management   
                     int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
+
+                    keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
 
                     return keyHandOver;
@@ -813,16 +819,16 @@ namespace net.atos.daf.ct2.organization.repository
                     int organizationID = await InsertCompany(keyHandOver);
                     await UpdatetVehicle(keyHandOver, organizationID);
 
-                    // Owner Relationship Management              
+                    // Owner Relationship Management  
+                    keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, isVINExist);
-
                 }
             }
             catch (Exception ex)
             {
                 log.Info("KeyHandOverEvent method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return keyHandOver;
         }
@@ -885,50 +891,56 @@ namespace net.atos.daf.ct2.organization.repository
                     return OwnerRelationshipId;
                 }
 
-                else if (isRelationshipExist > 1 && (!relationshipMapping.isFirstRelation)) // relationship exist          
+                else if (isRelationshipExist > 1 && (relationshipMapping.isFirstRelation)) // relationship exist          
                 {
-                    // update previuse relationship end date and insert new relationship              
-                    var Updateparameter = new DynamicParameters();
-                    Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                    Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                    Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                    var queryUpdate = @"update master.orgrelationshipmapping 
+                    // Check organization relationship with vehicle
+                    //int orgRelExist = await IsOrganizationRelationshipExist(relationshipMapping);
+                    //if (orgRelExist < 0)
+                    //{
+                        // update previuse relationship end date and insert new relationship              
+                        var Updateparameter = new DynamicParameters();
+                        Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                        // Updateparameter.Add("@relationship_id", isRelationshipExist);
+                        Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+                        var queryUpdate = @"update master.orgrelationshipmapping 
                     set end_date=@end_date where relationship_id=@relationship_id and vehicle_id=@vehicle_id";
-                    await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
+                        await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
 
-                    // Insert new relationship              
-                    var Inputparameter = new DynamicParameters();
-                    Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                    Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                    if (relationshipMapping.vehicle_group_id == 0)
-                    {
-                        Inputparameter.Add("@vehicle_group_id", null);
-                    }
-                    else
-                    {
-                        Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
-                    }
+                        // Insert new relationship              
+                        var Inputparameter = new DynamicParameters();
+                        Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                        Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+                        if (relationshipMapping.vehicle_group_id == 0)
+                        {
+                            Inputparameter.Add("@vehicle_group_id", null);
+                        }
+                        else
+                        {
+                            Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                        }
 
-                    Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);
-                    Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id);
-                    Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);
-                    Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                    Inputparameter.Add("@end_date", null);
-                    Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
-                    Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);
+                        Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id);
+                        Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);
+                        Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                        Inputparameter.Add("@end_date", null);
+                        Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
+                        Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
-                    var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
+                        var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
                     target_org_id,start_date,end_date,allow_chain,created_at)
                     values(@relationship_id,@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
-                    OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
-                    return OwnerRelationshipId;
-                }
+                        OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
+                        return OwnerRelationshipId;
+                    }
+                //}
             }
             catch (Exception ex)
             {
                 log.Info("CreateOwnerRelationship method called in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
             return 0;
         }
@@ -962,7 +974,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -1039,7 +1051,7 @@ namespace net.atos.daf.ct2.organization.repository
         //     {
         //         log.Info("CraeteOrganizationRelationship method called in repository failed :");
         //         log.Error(ex.ToString());
-        //         throw ex;
+        //         throw;
         //     }
         //     return organizationRelationshipID;           
         // }
@@ -1083,7 +1095,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("Get Organization method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
 
@@ -1112,10 +1124,27 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("IsOwnerRelationshipExist method in repository failed :");
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
-
+        public async Task<int> IsOrganizationRelationshipExist(RelationshipMapping relationshipMapping)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+                parameter.Add("@created_org_id", relationshipMapping.created_org_id);
+                parameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                var query = @"select id from master.orgrelationshipmapping where end_date is null and vehicle_id=@vehicle_id and created_org_id=@created_org_id and relationship_id=@relationship_id";
+                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+            }
+            catch (Exception ex)
+            {
+                log.Info("IsOrganizationRelationshipExist method in repository failed :");
+                log.Error(ex.ToString());
+                throw;
+            }
+        }
 
         public async Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID)
         {
@@ -1135,7 +1164,7 @@ namespace net.atos.daf.ct2.organization.repository
             {
                 log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
                 log.Error(ex.ToString());
-                throw ex;
+                throw;
             }
         }
     }

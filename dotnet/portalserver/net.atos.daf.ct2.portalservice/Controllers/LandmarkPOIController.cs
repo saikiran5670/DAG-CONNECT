@@ -18,17 +18,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("poi")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class LandmarkPOIController : ControllerBase
+    public class LandmarkPOIController : BaseController
     {
         private ILog _logger;
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Entity.POI.Mapper _mapper;
-        private readonly HeaderObj _userDetails;
+        private readonly Entity.POI.Mapper _mapper;        
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, 
-            Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor)
+            Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
@@ -85,6 +85,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
                 }
+                else
+                {
+                    request.OrganizationId = GetContextOrgId();
+                }
                 var poiRequest = new POIRequest();
                 request.State= "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
@@ -138,6 +142,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     bool hasRights = await HasAdminPrivilege();
                     if (!hasRights)
                         return StatusCode(400, "You cannot create global poi.");
+                }
+                else
+                {
+                    request.OrganizationId = GetContextOrgId();
                 }
 
                 // Validation 
@@ -294,6 +302,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "OrganizationId data is required.");
                 }
                 net.atos.daf.ct2.poiservice.DownloadPOIRequest objPOIEntityRequest = new net.atos.daf.ct2.poiservice.DownloadPOIRequest();
+                OrganizationId = GetContextOrgId();
                 objPOIEntityRequest.OrganizationId = OrganizationId;
                 var data = await _poiServiceClient.DownloadPOIForExcelAsync(objPOIEntityRequest);
                 if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
@@ -327,6 +336,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("GetPOIs method in POI API called.");
+                if (poiFilter.OrganizationId != 0)
+                {
+                    poiFilter.OrganizationId = GetContextOrgId();
+                }
                 POIRequest poiRequest = new POIRequest();
                 poiRequest.Id = poiFilter.Id;
                 poiRequest.OrganizationId = poiFilter.OrganizationId;

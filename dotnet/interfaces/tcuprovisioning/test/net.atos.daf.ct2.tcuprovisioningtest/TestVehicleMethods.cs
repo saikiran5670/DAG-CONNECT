@@ -90,7 +90,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
@@ -107,7 +107,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
             catch (Exception ex)
             {
                 var messageError = ex.Message;
-                 throw ex;
+                 throw;
             }
             return veh;
         }

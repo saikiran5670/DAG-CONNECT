@@ -5,7 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="geocode\Address.cs" />
+    <Compile Remove="geocode\HereAddress.cs" />
+    <Compile Remove="geocode\HereGeocoder.cs" />
+    <Compile Remove="geocode\HereLocationType.cs" />
+    <Compile Remove="geocode\IGeocoder.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="TimeZoneConverter" Version="3.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\net.atos.daf.ct2.data\net.atos.daf.ct2.data.csproj" />
   </ItemGroup>
 
 </Project>

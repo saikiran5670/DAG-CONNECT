@@ -1,0 +1,19 @@
+{
+   "CompanyUpdatedEvent": {
+      "Company": {
+         "type": null,
+         "ID": "Null12345",         
+         "Name": null,
+         "Address":
+            {
+               "type": null,
+               "Street": null,
+               "StreetNumber": null,
+               "PostalCode": null,
+               "City": null,
+               "CountryCode": null
+            },         
+      "ReferenceDateTime": "2019-02-02T12:34:56"
+      }
+   }
+}

@@ -8,10 +8,10 @@ using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.featureservice;
+//using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
-using net.atos.daf.ct2.portalservice.Entity.Feature;
+//using net.atos.daf.ct2.portalservice.Entity.Feature;
 using net.atos.daf.ct2.portalservice.Entity.Role;
 using net.atos.daf.ct2.roleservice;
 using RoleBusinessService = net.atos.daf.ct2.roleservice;
@@ -20,13 +20,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json;
 using log4net;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
     [Route("role")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class RoleController : Controller
+    public class RoleController : BaseController
     {
 
         #region Private Variable
@@ -41,12 +42,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Constructor
-        public RoleController(RoleBusinessService.RoleService.RoleServiceClient Featureclient, AuditHelper auditHelper)
+        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
-            _roleclient = Featureclient;
+            _roleclient = roleclient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _auditHelper = auditHelper;
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
         #endregion
 
@@ -56,6 +58,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //Assign context orgId
+                request.OrganizationId = GetContextOrgId();
 
                 if ((string.IsNullOrEmpty(request.RoleName)))
                 {
@@ -100,7 +104,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                        "Role service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                        "Create  method in Role controller", 0, request.RoleId, JsonConvert.SerializeObject(request),
                         Request);
-                _logger.Error(null,ex);
+                _logger.Error(null, ex);
                 if (ex.Message.Contains(FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
@@ -123,6 +127,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 return StatusCode(400, "Feature Ids required.");
             }
+            //context org id is only set when role id is different
+            //Assign context orgId
+            roleMaster.OrganizationId = AssignOrgContextByRoleId(roleMaster.RoleId);
 
             try
             {
@@ -157,7 +164,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                    "Role service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                    "Update  method in Role controller", roleMaster.RoleId, roleMaster.RoleId, JsonConvert.SerializeObject(roleMaster),
                     Request);
-                _logger.Error(null,ex);
+                _logger.Error(null, ex);
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "Create method in Role manager", roleMaster.RoleId, 0, JsonConvert.SerializeObject(roleMaster));
                 if (ex.Message.Contains("foreign key"))
                 {
@@ -178,10 +185,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Role id required ");
                 }
-               
+
                 ObjRole.RoleID = roleId;
                 ObjRole.UpdatedBy = updatedby;
                 var role_Id = await _roleclient.DeleteAsync(ObjRole);
+                if (role_Id.Code == Responcecode.Assigned)
+                {
+                    return StatusCode(400, role_Id);
+                }
                 //auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Delete method in Role manager", roleId, roleId, JsonConvert.SerializeObject(roleId));
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Role Component",
                      "Role service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
@@ -196,7 +207,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     "Delete  method in Role controller", ObjRole.RoleID, ObjRole.RoleID, JsonConvert.SerializeObject(ObjRole),
                      Request);
                 //await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Role Component", "Role Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.FAILED, "Create method in Role manager", 0, 0, JsonConvert.SerializeObject(roleId));
-                _logger.Error(null,ex);
+                _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
@@ -212,7 +223,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Is global role filter is required");
                 }
-
+                //Assign context orgId
+                Organizationid = GetContextOrgId();
                 RoleFilterRequest obj = new RoleFilterRequest();
                 obj.RoleId = Roleid;
                 obj.OrganizationId = Organizationid == null ? 0 : Convert.ToInt32(Organizationid);
@@ -244,7 +256,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                _logger.Error(null,ex);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.ToString());
             }
         }

@@ -88,6 +88,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
   geoMarkerArray: any = [];
   marker: any;
   hereMap: any;
+  ui: any;
   categorySelectionForPOI: any = 0;
   subCategorySelectionForPOI: any = 0;
   categorySelectionForGeo: any = 0;
@@ -167,9 +168,10 @@ export class ManagePoiGeofenceComponent implements OnInit {
     });
     window.addEventListener('resize', () => this.map.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
   }
   
+
   checkboxClicked(event: any, row: any) {
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
@@ -179,7 +181,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
     this.showMap = (this.selectedpois.selected.length > 0 || this.selectedgeofences.selected.length > 0) ? true : false;
     this.removeMapObjects();
-    this.addMarkerOnMap(); 
+    this.addMarkerOnMap(this.ui); 
     if(this.selectedgeofences.selected.length > 0){ //-- geofences selected
       this.addCirclePolygonOnMap();
     }
@@ -189,10 +191,29 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.map.removeObjects(this.map.getObjects());
   }
     
-  addMarkerOnMap(){
+  addMarkerOnMap(ui){
     this.markerArray.forEach(element => {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
+      var bubble;
+      marker.addEventListener('pointerenter', function (evt) {
+        // event target is the marker itself, group is a parent event target
+        // for all objects that it contains
+        bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+          // read custom data
+          content:`<div>
+          <b>POI Name: ${element.name}</b><br>
+          <b>Category: ${element.categoryName}</b><br>
+          <b>Sub-Category: ${element.subCategoryName}</b><br>
+          <b>Address: ${element.address}</b>
+          </div>`
+        });
+        // show info bubble
+        ui.addBubble(bubble);
+      }, false);
+      marker.addEventListener('pointerleave', function(evt) {
+        bubble.close();
+      }, false);
     });
   }
 
@@ -207,7 +228,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     this.removeMapObjects();
     this.addCirclePolygonOnMap();
     if(this.selectedpois.selected.length > 0){ //-- poi selected
-      this.addMarkerOnMap();
+      this.addMarkerOnMap(this.ui);
     }
   }
 
@@ -216,7 +237,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       if(element.type == "C"){ //-- add circular geofence on map
         this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(this.marker);  
-        this.createResizableCircle(element.distance, element);
+        this.createResizableCircle(element.distance, element, this.ui);
       }   
       else{ //-- add polygon geofence on map
         let polyPoints: any = [];
@@ -225,12 +246,12 @@ export class ManagePoiGeofenceComponent implements OnInit {
           polyPoints.push(Math.abs(item.longitude.toFixed(4)));
           polyPoints.push(0);
         });
-        this.createResizablePolygon(this.map, polyPoints, this);
+        this.createResizablePolygon(this.map, polyPoints, this,this.ui, element);
       }
     });
   }
   
-  createResizableCircle(_radius: any, rowData: any) {
+  createResizableCircle(_radius: any, rowData: any, ui :any) {
     var circle = new H.map.Circle(
         { lat: rowData.latitude, lng: rowData.longitude },
         _radius,
@@ -254,9 +275,27 @@ export class ManagePoiGeofenceComponent implements OnInit {
     circleOutline.draggable = true;
     circleOutline.getGeometry().pushPoint(circleOutline.getGeometry().extractPoint(0));
     this.map.addObject(circleGroup);
+    var bubble;
+    circle.addEventListener('pointerenter', function (evt) {
+      // event target is the marker itself, group is a parent event target
+      // for all objects that it contains
+      bubble =  new H.ui.InfoBubble({lat:rowData.latitude,lng:rowData.longitude}, {
+        // read custom data
+        content:`<div>
+        <b>Geofence Name: ${rowData.name}</b><br>
+        <b>Category: ${rowData.categoryName}</b><br>
+        <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        </div>`
+      });
+      // show info bubble
+      ui.addBubble(bubble);
+    }, false);
+    circle.addEventListener('pointerleave', function(evt) {
+      bubble.close();
+    }, false);
   }
     
-  createResizablePolygon(map: any, points: any, thisRef: any){
+  createResizablePolygon(map: any, points: any, thisRef: any,ui: any, rowData: any){
     var svgCircle = '<svg width="50" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
     '<circle cx="10" cy="10" r="7" fill="transparent" stroke="red" stroke-width="4"/>' +
     '</svg>',
@@ -293,16 +332,26 @@ export class ManagePoiGeofenceComponent implements OnInit {
 
     // add group with polygon and it's vertices (markers) on the map
     map.addObject(mainGroup);
-
+    var bubble;
     // event listener for main group to show markers if moved in with mouse (or touched on touch devices)
     mainGroup.addEventListener('pointerenter', function(evt) {
       if (polygonTimeout) {
         clearTimeout(polygonTimeout);
         polygonTimeout = null;
       }
-
       // show vertice markers
       verticeGroup.setVisibility(true);
+      
+      bubble =  new H.ui.InfoBubble({ lat: rowData.latitude, lng: rowData.longitude } , {
+        // read custom data
+        content:`<div>
+        <b>Geofence Name: ${rowData.name}</b><br>
+          <b>Category: ${rowData.categoryName}</b><br>
+          <b>Sub-Category: ${rowData.subCategoryName}</b><br>
+        </div>`
+      });
+      // show info bubble
+      ui.addBubble(bubble);
     }, true);
 
     // event listener for main group to hide vertice markers if moved out with mouse (or released finger on touch devices)
@@ -315,6 +364,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
         verticeGroup.setVisibility(false);
       }, timeout);
     }, true);
+    
   }
     
   updatedPOITableData(tableData: any) {
@@ -773,7 +823,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
     }
     this.removeMapObjects(); //-- remove all object first
     if(this.selectedpois.selected.length > 0){ //-/ add poi
-      this.addMarkerOnMap();
+      this.addMarkerOnMap(this.ui);
     }
     if(this.selectedgeofences.selected.length > 0){ //-- add geofences
       this.addCirclePolygonOnMap();
@@ -812,7 +862,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.addCirclePolygonOnMap();
     }
     if(this.selectedpois.selected.length > 0){ //-/ add poi
-      this.addMarkerOnMap();
+      this.addMarkerOnMap(this.ui);
     }
   }
 
@@ -1005,7 +1055,7 @@ export class ManagePoiGeofenceComponent implements OnInit {
       this.importTranslationData.rejected = this.translationData.lblrejected || 'Rejected';
       this.importTranslationData.existError = this.translationData.lblGeofenceNamealreadyexists || 'Geofence name already exists';
       this.importTranslationData.input1mandatoryReason = this.translationData.lblNameMandatoryReason || "$ is mandatory input";
-      this.importTranslationData.valueCannotExceed = this.translationData.lblValueCannotExceed || 'Geofence name can be upto 50 characters';
+      this.importTranslationData.valueCannotExceed = this.translationData.lblValueCannotExceed100 || 'Geofence name can be upto 100 characters';
       this.importTranslationData.distanceGreaterThanZero = this.translationData.lbldistanceGreaterThanZero || 'Distance should be greater than zero';
       this.importTranslationData.nodesAreRequired = this.translationData.lblnodesAreRequired || 'Nodes are required';
       this.importTranslationData.typeCanEitherBeCorO = this.translationData.lbltypeCanEitherBeCorO || 'Geofence type can either be C or O';

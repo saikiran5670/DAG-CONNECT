@@ -119,16 +119,16 @@
                     <span>{{ translationData.lblStatus || 'Status' }}</span>
                     <div *ngIf="actionType != 'view'" class='margin-top-5'>
                         <mat-radio-group (change)='onStatusChange($event)'>
-                            <mat-radio-button [checked]="selectedStatus ===  0 ? true : false"
-                                style='margin-right: 20px;' value="0">{{ translationData.lblActive || 'Active' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'ACTIVE' ? true : false"
+                                style='margin-right: 20px;' value="ACTIVE">{{ translationData.lblActive || 'Active' }}
                             </mat-radio-button>
-                            <mat-radio-button [checked]="selectedStatus ===  1 ? true : false"
-                                style='margin-right: 20px;' value="1">{{ translationData.lblInactive || 'Inactive' }}
+                            <mat-radio-button [checked]="selectedStatus ===  'INACTIVE' ? true : false"
+                                style='margin-right: 20px;' value="INACTIVE">{{ translationData.lblInactive || 'Inactive' }}
                             </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <div *ngIf="actionType == 'view'">
-                        <span style='font-weight: 500!important;'>{{ selectedElementData.state == 0 ?
+                        <span style='font-weight: 500!important;'>{{ selectedElementData.state === 'ACTIVE' ?
                             (translationData.lblActive || 'Active') : (translationData.lblInactive || 'Inactive')
                             }}</span>
                     </div>
@@ -203,7 +203,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <mat-slide-toggle color="primary" (click)='$event.stopPropagation()'
-                                    (change)='$event ? selectionForDataAttribute.toggle(row) : null'
+                                    (change)='$event ? selectionForDataAttribute.toggle(row) : null; onCheckboxChange($event, row)'
                                     [checked]='selectionForDataAttribute.isSelected(row)'
                                     [aria-label]='checkboxLabelForDataAttribute(row)' [disabled]="actionType == 'view'">
                                 </mat-slide-toggle>

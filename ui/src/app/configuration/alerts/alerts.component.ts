@@ -19,8 +19,9 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 })
 
 export class AlertsComponent implements OnInit {
-  displayedColumns: string[] = ['urgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
+  displayedColumns: string[] = ['highUrgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
+  errorMsgVisible: boolean = false;
   displayMessage: any;
   createViewEditStatus: boolean = false;
   showLoadingIndicator: any = false;
@@ -31,8 +32,9 @@ export class AlertsComponent implements OnInit {
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
+  originalAlertData: any= [];
   rowsData: any;
-  createStatus: boolean;
+  //createStatus: boolean;
   editFlag: boolean = false;
   duplicateFlag: boolean = false;
   accountOrganizationId: any;
@@ -79,11 +81,9 @@ export class AlertsComponent implements OnInit {
         menuId: 17 //-- for alerts
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);
-        this.loadFiltersData();     
-      //  this.loadAlertsData();
-      });       
-      this.updateDatasource(this.filterValues);     
+        this.processTranslation(data);      
+        this.loadFiltersData();  
+      });  
     }
     
   
@@ -92,7 +92,8 @@ export class AlertsComponent implements OnInit {
     //console.log("process translationData:: ", this.translationData)
   }
 
-  loadFiltersData(){
+  loadFiltersData(){    
+    this.showLoadingIndicator = true;   
     this.alertService.getAlertFilterData(this.accountId, this.accountOrganizationId).subscribe((data) => {
       let filterData = data["enumTranslation"];
       filterData.forEach(element => {
@@ -101,23 +102,36 @@ export class AlertsComponent implements OnInit {
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
-      this.vehicleList= data["vehicleGroup"];
+      this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
+      this.vehicleList = this.removeDuplicates(this.vehicleList, "vehicleName");
+
       this.alertStatusList=[{
        id: 1,
-       status:"A",
-       value:'Active'
+       value:"A",
+       key:'Active'
       },{
         id: 2,
-        status:"S",
-        value:'Suspended'
+        value:"I",
+        key:'Suspended'
        }
-    ]
-   this.loadAlertsData();
+    ]    
+    this.loadAlertsData();        
     }, (error) => {
 
     })
   }
 
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {}; 
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    } 
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
+  }
   onClickNewAlert(){
     //this.titleText = this.translationData.lblAddNewGroup || "Add New Alert";
     this.actionType = 'create';
@@ -126,7 +140,7 @@ export class AlertsComponent implements OnInit {
   onClose(){
     this.grpTitleVisible = false;
   }
-
+ 
   onBackToPage(objData){
     this.createViewEditStatus = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
@@ -178,8 +192,7 @@ export class AlertsComponent implements OnInit {
     return initdata;
   }
 
-  loadAlertsData(){
-    this.showLoadingIndicator = true;   
+  loadAlertsData(){    
     let obj: any = {
       accountId: 0,
       organizationId: this.accountOrganizationId,
@@ -189,8 +202,9 @@ export class AlertsComponent implements OnInit {
       name: ""
     }    
     this.alertService.getAlertData(this.accountId,this.accountOrganizationId).subscribe((data) => {
-      //this.initData = data["alertRequest"];       
-      data.forEach(item => {         
+      this.initData =data; 
+      this.originalAlertData= JSON.parse(JSON.stringify(data)); //Clone array of objects
+      this.initData.forEach(item => {           
       let catVal = this.alertCategoryList.filter(cat => cat.enum == item.category);
       catVal.forEach(obj => { 
         item["category"]=obj.value;
@@ -198,15 +212,74 @@ export class AlertsComponent implements OnInit {
       let typeVal = this.alertTypeList.filter(type => type.enum == item.type);
       typeVal.forEach(obj => { 
         item["type"]=obj.value;
+      });  
+      
+      let alertUrgency=({
+      alertFilterRefs: [],
+      alertId: 42,
+      createdAt: 1621588594280,
+      dayType: [],
+      id: 38,
+      modifiedAt: 0,
+      periodType: "A",
+      state: "A",
+      thresholdValue: 25,
+      unitType: "H",
+      urgencyLevelType: "W",
+      urgencylevelEndDate: 0,
+      urgencylevelStartDate: 0
+    })
+      // let alertUrgency =({      
+      // thresholdValue: 300,
+      // urgencyLevelType: "A"      
+      // })
+
+     // item.alertUrgencyLevelRefs.push(alertUrgency);
+      //item.alertUrgencyLevelRefs.push(alertUrgency);
+      
+      let critical  = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'C');
+      let warning   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'W');
+      let advisory   = item.alertUrgencyLevelRefs.filter(lvl=> lvl.urgencyLevelType == 'A');
+     
+      if(critical.length > 0){
+      critical.forEach(obj => { 
+      item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
+      writable : true,enumerable : true, configurable : true});
+      item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
+      writable : true,enumerable : true, configurable : true});         
+      }); 
+      }
+      else if(warning.length > 0){
+      warning.forEach(obj => { 
+      item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
+      writable : true,enumerable : true, configurable : true});
+      item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
+      writable : true,enumerable : true, configurable : true});
+      });     
+      }       
+      else {
+      advisory.forEach(obj => { 
+      item =  Object.defineProperty(item, "highUrgencyLevel", {value : obj.urgencyLevelType,
+      writable : true,enumerable : true, configurable : true});
+      item =  Object.defineProperty(item, "highThresholdValue", {value : obj.thresholdValue,
+      writable : true,enumerable : true, configurable : true});  
       });   
-    }); 
-      this.initData =data;
-      this.updateDatasource(this.initData);   
+      }  
+      if(item.vehicleGroupName!=''){     
+        this.vehicleGroupList.push({value:item.vehicleGroupName, key:item.vehicleGroupName});
+        this.vehicleGroupList = this.vehicleGroupList.filter((test, index, array) =>
+          index === array.findIndex((findTest) =>
+          findTest.value === test.value
+          )   
+       ); 
+      }        
+     }); 
+      this.updateDatasource(this.initData);  
     }, (error) => {
     })   
    this.hideloader();     
  }
-
+ 
  getFilteredValues(dataSource){
   this.dataSource = dataSource;
   this.dataSource.paginator = this.paginator;
@@ -242,7 +315,7 @@ export class AlertsComponent implements OnInit {
         else{
           row.newTag = false;
         }
-      }
+      } 
       else{
         row.newTag = false;
       }
@@ -254,7 +327,7 @@ export class AlertsComponent implements OnInit {
     return newTrueData;
   }
 
-  deleteAlertData(item: any) {
+  onDeleteAlert(item: any) {
     const options = {
       title: this.translationData.lblDeleteAlert || "Delete Alert",
       message: this.translationData.lblAreousureyouwanttodeleteAlert || "Are you sure you want to delete '$' alert?",
@@ -268,32 +341,47 @@ export class AlertsComponent implements OnInit {
       this.alertService.deleteAlert(item.id).subscribe((res) => {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadAlertsData();
+        }, error => {
+          if(error.status == 409){
+            this.errorMsgBlink(this.getDeletMsg(name, true));
+          }
         });
     }
    });
   }
     
-  getDeletMsg(alertName: any){
-    if(this.translationData.lblAlertDelete)
-      return this.translationData.lblAlertDelete.replace('$', alertName);
-    else
-      return ("Alert '$' was successfully deleted").replace('$', alertName);
-  }
-
-  editViewAlertData(element: any, type: any) {
-   
-  }
-
-  editAlertData(row: any, action : string) {
-    this.duplicateFlag = false;
-    if(action == 'duplicate'){
-      this.duplicateFlag = true;
+  getDeletMsg(alertName: any, isError? :boolean){
+    if(!isError){
+      if(this.translationData.lblAlertDelete)
+        return this.translationData.lblAlertDelete.replace('$', alertName);
+      else
+        return ("Alert '$' was successfully deleted").replace('$', alertName);
     }
-    this.titleText = this.duplicateFlag ? this.translationData.lblCreateNewUserRole || "Create New Alert" : this.translationData.lblEditUserRoleDetails || "Edit Alert Details";
-    this.rowsData = [];
-    this.rowsData.push(row);
-    this.editFlag = true;
-    this.createStatus = false;    
+    else{
+      if(this.translationData.lblAlertDeleteError)
+        return this.translationData.lblAlertDeleteError.replace('$', alertName);
+      else
+        return ("Alert '$' cannot be deleted as notification is associated with this").replace('$', alertName);
+    }
+  }
+
+  onViewAlert(row: any, action: any) {
+    this.createViewEditStatus= true;
+    this.actionType = action;
+    this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
+  }
+
+  onEditDuplicateAlert(row: any, action : string) {
+    this.createViewEditStatus= true;
+    this.actionType = 'edit';
+    if(action == 'duplicate'){
+      this.actionType = 'duplicate';
+    }
+    this.titleText = this.actionType == 'duplicate' ? this.translationData.lblCreateNewAlert || "Create New Alert" : this.translationData.lblEditAlertDetails || "Edit Alert Details";
+    this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
+    //this.rowsData.push(row);
+    //this.editFlag = true;
+    //this.createStatus = false;    
   }
 
    successMsgBlink(msg: any){
@@ -301,6 +389,14 @@ export class AlertsComponent implements OnInit {
     this.displayMessage = msg;
     setTimeout(() => {  
       this.grpTitleVisible = false;
+    }, 5000);
+  }
+
+  errorMsgBlink(errorMsg: any){
+    this.errorMsgVisible = true;
+    this.displayMessage = errorMsg;
+    setTimeout(() => {  
+      this.errorMsgVisible = false;
     }, 5000);
   }
 

@@ -129,7 +129,7 @@ public class User extends CommonFunctionLib{
 			ColNo= i;
 			}
 			}
-			CommonFunctionLib.clickOnCount(ColNo,TBL,"/div/div");				
+			CommonFunctionLib.clickOnCount(ColNo,TBL,"/div/div","Sub");				
 			}catch (Exception e) {
 				test.log(LogStatus.FAIL, e.getMessage());
 				Log.error("Data is not present in table..." + e.getMessage());

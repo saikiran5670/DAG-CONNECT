@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<POI>> GetAllPOI(POI poiFilter)
@@ -202,7 +202,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<POI> CreatePOI(POI poi)
@@ -255,7 +255,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return poi;
         }
@@ -369,7 +369,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return await Task.FromResult(poi);
         }
@@ -389,7 +389,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -411,7 +411,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -477,7 +477,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return uploadPOIExcel;
         }
@@ -668,7 +668,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (System.Exception ex)
             {               
-                throw ex;
+                throw;
             }
         }
     }

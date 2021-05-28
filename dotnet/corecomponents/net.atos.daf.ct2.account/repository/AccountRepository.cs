@@ -2,11 +2,13 @@ using Dapper;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -64,7 +66,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
@@ -88,12 +90,13 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
         public async Task<bool> Delete(int accountid, int organization_id)
         {
+            TransactionScope transactionScope = null;
             try
             {
                 var parameter = new DynamicParameters();
@@ -102,7 +105,7 @@ namespace net.atos.daf.ct2.account
                 string query = string.Empty;
                 int result = 0;
 
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                using (transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     // check in user need to delete 
                     // Delete Account Group Reference
@@ -139,7 +142,12 @@ namespace net.atos.daf.ct2.account
 
             catch (Exception ex)
             {
-                throw ex;
+                throw;
+            }
+            finally
+            {
+                if (transactionScope != null)
+                    transactionScope.Dispose();
             }
         }
 
@@ -199,7 +207,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -280,7 +288,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -298,7 +306,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -316,7 +324,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -335,7 +343,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<Account> AddAccountToOrg(Account account)
@@ -363,7 +371,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return account;
         }
@@ -389,7 +397,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<int> UpdateIsReminderSent(int accountId, bool isReminderSent = true)
@@ -406,7 +414,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -437,7 +445,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -457,7 +465,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -475,7 +483,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -525,7 +533,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -547,7 +555,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -563,7 +571,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -601,7 +609,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return accountBlob;
         }
@@ -629,7 +637,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -665,7 +673,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return entity;
         }
@@ -699,7 +707,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return entity;
         }
@@ -717,7 +725,7 @@ namespace net.atos.daf.ct2.account
             catch (Exception ex)
             {
                 return false;
-                throw ex;
+                throw;
             }
         }
         public async Task<List<AccessRelationship>> GetAccessRelationship(AccessRelationshipFilter filter)
@@ -765,7 +773,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -788,10 +796,42 @@ namespace net.atos.daf.ct2.account
                     {
                         // vehicles and vehicle groups
                         query = @"select id,COALESCE(name,'') as name,access_type,count,true as is_group,group_id,COALESCE(group_name,'') as group_name,is_ag_vg_group from (
-                            select vg.id,vg.name,ar.access_type,
-                            case when (vg.group_type ='D') then 
-                            (select count(gr.group_id) from master.groupref gr inner join master.group g on g.id=gr.group_id and g.organization_id=@organization_id)
-                            else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id ) end as count,
+                                            select vg.id,vg.name,ar.access_type,
+                                            case when (vg.group_type ='D' and vg.function_enum='A') then 
+						                (select count(veh.id) 
+									                from master.vehicle veh 
+									                inner join master.orgrelationshipmapping org 
+									                on veh.id=org.vehicle_id 
+									                inner join master.orgrelationship ors
+									                 on ors.id=org.relationship_id
+									                and ((org.owner_org_id=@organization_id and ors.code='Owner') 
+									                or (org.target_org_id=@organization_id and ors.code<>'Owner'))
+									                and ors.state='A'
+									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+									                else COALESCE(end_date,0) =0 end)
+				                 when (vg.group_type ='D' and vg.function_enum='V') then 
+						                (select count(veh.id) 
+									                from master.vehicle veh 
+									                inner join master.orgrelationshipmapping org 
+									                on veh.id=org.vehicle_id 
+									                inner join master.orgrelationship ors
+									                 on ors.id=org.relationship_id
+									                and (org.target_org_id=@organization_id and ors.code<>'Owner')
+									                and ors.state='A'
+									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+									                else COALESCE(end_date,0) =0 end)
+				                when (vg.group_type ='D' and vg.function_enum='O') then 
+						                (select count(veh.id) 
+									                from master.vehicle veh 
+									                inner join master.orgrelationshipmapping org 
+									                on veh.id=org.vehicle_id 
+									                inner join master.orgrelationship ors
+									                 on ors.id=org.relationship_id
+									                and ((org.owner_org_id=@organization_id AND ors.code='Owner') or veh.organization_id=@organization_id)
+									                and ors.state='A'
+									                and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
+									                else COALESCE(end_date,0) =0 end)
+							else (select count(gr.group_id) from master.groupref gr where gr.group_id=vg.id or gr.group_id=om.vehicle_group_id  and ((om.owner_org_id=@organization_id and os.code='Owner') or (om.target_org_id=@organization_id and os.code<>'Owner'))) end as count,
                             case when (a.id is NULL) then ag.id else a.id end as group_id,
                             case when (a.id is NULL) then ag.name else a.salutation || ' ' || a.first_name || ' ' || a.last_name  end as group_name,
                             case when (a.id is NULL) then true else false end as is_ag_vg_group
@@ -801,6 +841,8 @@ namespace net.atos.daf.ct2.account
                             inner join master.group ag on ag.id = ar.account_group_id 
                             and ag.organization_id=@organization_id and ag.object_type='A'                             
                             left outer join master.account a on a.id = ag.ref_id 
+							left join master.orgrelationshipmapping as om on vg.id = om.vehicle_group_id
+							left join master.orgrelationship as os on om.relationship_id=os.id 
                             where vg.organization_id=@organization_id
                             order by vg.id desc ) vehiclegroup
                             union all
@@ -886,7 +928,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -942,7 +984,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         public async Task<List<AccountVehicleEntity>> GetAccount(AccountVehicleAccessRelationshipFilter filter, bool is_account)
@@ -999,7 +1041,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1027,7 +1069,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1076,7 +1118,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -1099,7 +1141,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return result;
         }
@@ -1132,7 +1174,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return accountIds;
         }
@@ -1159,7 +1201,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return Roles;
         }
@@ -1186,7 +1228,8 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+                return false;
             }
         }
         // End Add Account to Role
@@ -1212,7 +1255,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return keyValueList;
         }
@@ -1233,7 +1276,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return AccountOrgRoleList;
         }
@@ -1262,7 +1305,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return resetPasswordToken;
         }
@@ -1283,7 +1326,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1303,7 +1346,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1323,20 +1366,21 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
-        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(int accountId, int roleId, int organizationId, string languageCode)
+        public async Task<IEnumerable<MenuFeatureDto>> GetMenuFeaturesList(MenuFeatureRquest request)
         {
             try
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@account_id", accountId);
-                parameter.Add("@role_id", roleId);
-                parameter.Add("@organization_id", organizationId);
-                parameter.Add("@code", languageCode);
+                parameter.Add("@account_id", request.AccountId);
+                parameter.Add("@role_id", request.RoleId);
+                parameter.Add("@organization_id", request.OrganizationId);
+                parameter.Add("@code", request.LanguageCode);
+                parameter.Add("@context_org_id", request.ContextOrgId);
 
                 string query =
                     @"SELECT DISTINCT
@@ -1355,7 +1399,7 @@ namespace net.atos.daf.ct2.account
 	                    --Subscription Route
 	                    SELECT f.id
 	                    FROM master.Subscription s
-	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @organization_id AND s.state = 'A' AND pkg.state = 'A'
+	                    INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
 	                    INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
  	                    INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
 	                    INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type <> 'D' AND f.name not like 'api.%'
@@ -1371,7 +1415,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion
@@ -1499,14 +1543,14 @@ namespace net.atos.daf.ct2.account
         #endregion
 
         #region AccountSSO
-        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(int AccountID)
+        public async Task<List<SSOTokenResponse>> GetAccountSSODetails(AccountToken account)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
                 List<SSOTokenResponse> response = new List<SSOTokenResponse>();
-                if (AccountID > 0)
+                if (account.AccountId > 0)
                 {
                     query = @"WITH cte_account
                                 AS (
@@ -1514,6 +1558,7 @@ namespace net.atos.daf.ct2.account
 		                                ,act.id AS accountid
 		                                ,CONCAT (act.first_name,' ',act.last_name) AS accountName
 		                                ,actrole.role_id AS roleid
+										,org.id AS orgdefault_id
 		                                ,org.org_id AS organizationid
 		                                ,org.name AS organizationname
 	                                FROM master.account act
@@ -1526,8 +1571,9 @@ namespace net.atos.daf.ct2.account
 	                                SELECT _timezone.name AS timezonename
 		                                ,_dateformat.name AS dateformat
 		                                ,_unit.name AS UnitDisplay
+                                        ,_vehicledisplay.name as VehicleDisplay
 		                                ,actp.id AS accountpreferenceid
-		                                ,actp.vehicle_display_id AS VehicleDisplay
+		                                ,actp.vehicle_display_id AS VehicleDisplayId
 		                                ,actp.timezone_id AS TimeZone
 		                                ,actp.date_format_id
 		                                ,actp.unit_id
@@ -1548,10 +1594,12 @@ namespace net.atos.daf.ct2.account
 	                                ,cte_actp.vehicledisplay
                                 FROM cte_actpreference cte_actp
                                 RIGHT JOIN cte_account cte_act ON cte_act.preferenceid = cte_actp.accountpreferenceid
-                                WHERE cte_act.accountID = @accountID
+                                WHERE cte_act.accountID = @accountID AND cte_act.roleid = @roleID AND cte_act.orgdefault_id = @OrganizationID
                                 ";
                     //}
-                    parameter.Add("@accountID", AccountID);
+                    parameter.Add("@accountID", account.AccountId);
+                    parameter.Add("@roleID", account.RoleId);
+                    parameter.Add("@organizationID", account.OrganizationId);
                     IEnumerable<SSOTokenResponse> accountDetails = await dataAccess.QueryAsync<SSOTokenResponse>(query, parameter);
                     response = accountDetails.ToList();
                 }
@@ -1559,7 +1607,7 @@ namespace net.atos.daf.ct2.account
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
         #endregion

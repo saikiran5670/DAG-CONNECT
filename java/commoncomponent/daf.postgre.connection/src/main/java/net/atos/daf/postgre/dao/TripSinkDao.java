@@ -5,8 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.atos.daf.common.ct2.exception.TechnicalException;
-import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.Trip;
 import net.atos.daf.postgre.util.DafConstants;
 
@@ -16,6 +18,7 @@ public class TripSinkDao implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerFactory.getLogger(TripSinkDao.class);
 
 	private Connection connection;
 
@@ -23,12 +26,12 @@ public class TripSinkDao implements Serializable {
 	private static final String INSERT_STATEMENT = "INSERT INTO tripdetail.trip_statistics( trip_id, vin, start_time_stamp, end_time_stamp, veh_message_distance, etl_gps_distance, idle_duration"
 			+ ", average_speed, average_weight, start_odometer, last_odometer, start_position_lattitude, start_position_longitude, end_position_lattitude"
 			+ ", end_position_longitude, veh_message_fuel_consumed, etl_gps_fuel_consumed, veh_message_driving_time"
-			+ ", etl_gps_driving_time, message_received_timestamp, message_inserted_into_kafka_timestamp, message_inserted_into_hbase_timestamp, message_processed_by_etl_process_timestamp"
+			+ ", etl_gps_driving_time, message_received_timestamp, message_inserted_into_kafka_timestamp, etl_trip_record_insertion_time, message_processed_by_etl_process_timestamp"
 			+ ", co2_emission, fuel_consumption, max_speed, average_gross_weight_comb, pto_duration, harsh_brake_duration, heavy_throttle_duration"
 			+ ", cruise_control_distance_30_50, cruise_control_distance_50_75, cruise_control_distance_more_than_75"
 			+ ", average_traffic_classification, cc_fuel_consumption, v_cruise_control_fuel_consumed_for_cc_fuel_consumption, v_cruise_control_dist_for_cc_fuel_consumption"
-			+ ", fuel_consumption_cc_non_active, idling_consumption, dpa_score, driver1_id, driver2_id, etl_gps_trip_time, is_ongoing_trip) "
-			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			+ ", fuel_consumption_cc_non_active, idling_consumption, dpa_score, driver1_id, driver2_id, etl_gps_trip_time, is_ongoing_trip, msg_gross_weight_combinition, no_of_total_index_message) "
+			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 			// + " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
 			// ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
 			// ?,?)"
@@ -36,12 +39,13 @@ public class TripSinkDao implements Serializable {
 			+ "  DO UPDATE SET  vin = ?, start_time_stamp = ?, end_time_stamp = ?, veh_message_distance = ?, etl_gps_distance = ?, idle_duration = ?, average_speed = ?"
 			+ ", average_weight = ?, start_odometer = ?, last_odometer = ?, start_position_lattitude = ?, start_position_longitude = ?, end_position_lattitude = ?"
 			+ ", end_position_longitude = ?, veh_message_fuel_consumed = ?, etl_gps_fuel_consumed = ?"
-			+ ", veh_message_driving_time = ?, etl_gps_driving_time = ?,message_received_timestamp = ?, message_inserted_into_kafka_timestamp =?, message_inserted_into_hbase_timestamp = ?"
+			+ ", veh_message_driving_time = ?, etl_gps_driving_time = ?,message_received_timestamp = ?, message_inserted_into_kafka_timestamp =?, etl_trip_record_insertion_time = ?"
 			+ ", message_processed_by_etl_process_timestamp = ?, co2_emission = ?, fuel_consumption = ?, max_speed = ?, average_gross_weight_comb = ?"
 			+ ", pto_duration = ?, harsh_brake_duration = ?, heavy_throttle_duration = ?, cruise_control_distance_30_50 = ?"
 			+ ", cruise_control_distance_50_75 = ?, cruise_control_distance_more_than_75 = ?, average_traffic_classification = ?"
 			+ ", cc_fuel_consumption = ?, v_cruise_control_fuel_consumed_for_cc_fuel_consumption = ?, v_cruise_control_dist_for_cc_fuel_consumption = ?"
-			+ ", fuel_consumption_cc_non_active = ?, idling_consumption = ?, dpa_score = ?, driver1_id = ?, driver2_id = ?, etl_gps_trip_time = ?, is_ongoing_trip = ?";
+			+ ", fuel_consumption_cc_non_active = ?, idling_consumption = ?, dpa_score = ?, driver1_id = ?, driver2_id = ?, etl_gps_trip_time = ?, is_ongoing_trip = ?"
+			+ ", msg_gross_weight_combinition = ?, no_of_total_index_message =? ";
 
 	public boolean insert(Trip dataObject) throws TechnicalException {
 
@@ -56,23 +60,25 @@ public class TripSinkDao implements Serializable {
 				stmt = fillStatement(stmt, dataObject);
 
 				stmt.addBatch();
-				//System.out.println("Anshu ");
 				stmt.executeBatch();
-				System.out.println("after executeBatch ");
+				logger.info("after executeBatch ");
 			}
 		} catch (SQLException e) {
-			System.out.println("in catch");
+			logger.info("Sql Issue while inserting data to tripStatistic table : "+e.getMessage());
+			e.printStackTrace();
+		}catch (Exception e) {
+			logger.info("Issue while inserting data to tripStatistic table : "+e.getMessage());
 			e.printStackTrace();
 		}
 
 		return result;
 	}
 
-	private PreparedStatement fillStatement(PreparedStatement statement, Trip rec) throws SQLException {
+	private PreparedStatement fillStatement(PreparedStatement statement, Trip rec) throws SQLException, Exception {
 
 		statement.setString(1, rec.getTripId());
 
-		System.out.println("Sink TripId : " + rec.getTripId() + " VIN : " + rec.getVin() + " VID : " + rec.getVid());
+		logger.info("Sink TripId : " + rec.getTripId() + " VIN : " + rec.getVin() + " VID : " + rec.getVid());
 
 		if (rec.getVin() != null) {
 			statement.setString(2, rec.getVin());
@@ -176,8 +182,8 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setLong(21, 0);
 
-		if (rec.getHbaseInsertionTS() != null)
-			statement.setLong(22, rec.getHbaseInsertionTS());
+		if (rec.getTripProcessingTS() != null)
+			statement.setLong(22, rec.getTripProcessingTS());
 		else
 			statement.setLong(22, 0);
 
@@ -186,7 +192,7 @@ public class TripSinkDao implements Serializable {
 		else
 			statement.setLong(23, 0);
 		
-		System.out.println("CO2Emission==" + rec.getTripCalC02Emission());
+		logger.info("CO2Emission==" + rec.getTripCalC02Emission());
 		if (rec.getTripCalC02Emission() != null)
 			statement.setDouble(24, rec.getTripCalC02Emission());
 		else
@@ -281,215 +287,235 @@ public class TripSinkDao implements Serializable {
 			statement.setLong(43, 0);
 
 		statement.setBoolean(44, Boolean.FALSE);
+		
+		if (rec.getVGrossWtSum() != null)
+			statement.setDouble(45, rec.getVGrossWtSum());
+		else
+			statement.setDouble(45, 0);
 
+		if (rec.getNumberOfIndexMessage() != null)
+			statement.setInt(46, rec.getNumberOfIndexMessage());
+		else
+			statement.setInt(46, 0);
+
+		
 		if (rec.getVin() != null) {
-			statement.setString(45, rec.getVin());
+			statement.setString(47, rec.getVin());
 		} else if (rec.getVid() != null) {
-			statement.setString(45, rec.getVid());
+			statement.setString(47, rec.getVid());
 		} else
-			statement.setString(45, DafConstants.UNKNOWN);
+			statement.setString(47, DafConstants.UNKNOWN);
 
 		if (rec.getStartDateTime() != null)
-			statement.setLong(46, rec.getStartDateTime());
+			statement.setLong(48, rec.getStartDateTime());
 		else
-			statement.setLong(46, 0);
+			statement.setLong(48, 0);
 
 		if (rec.getEndDateTime() != null)
-			statement.setLong(47, rec.getEndDateTime());
-		else
-			statement.setLong(47, 0);
-
-		if (rec.getGpsTripDist() != null)
-			statement.setInt(48, rec.getGpsTripDist());
-		else
-			statement.setInt(48, 0);
-
-		if (rec.getTripCalDist() != null)
-			statement.setLong(49, rec.getTripCalDist());
+			statement.setLong(49, rec.getEndDateTime());
 		else
 			statement.setLong(49, 0);
 
-		if (rec.getVIdleDuration() != null)
-			statement.setInt(50, rec.getVIdleDuration());
+		if (rec.getGpsTripDist() != null)
+			statement.setInt(50, rec.getGpsTripDist());
 		else
 			statement.setInt(50, 0);
 
-		if (rec.getTripCalAvgSpeed() != null)
-			statement.setDouble(51, rec.getTripCalAvgSpeed());
+		if (rec.getTripCalDist() != null)
+			statement.setLong(51, rec.getTripCalDist());
 		else
-			statement.setDouble(51, 0);
+			statement.setLong(51, 0);
+
+		if (rec.getVIdleDuration() != null)
+			statement.setInt(52, rec.getVIdleDuration());
+		else
+			statement.setInt(52, 0);
+
+		if (rec.getTripCalAvgSpeed() != null)
+			statement.setDouble(53, rec.getTripCalAvgSpeed());
+		else
+			statement.setDouble(53, 0);
 
 		if (rec.getVGrossWeightCombination() != null)
-			statement.setDouble(52, rec.getVGrossWeightCombination());
+			statement.setDouble(54, rec.getVGrossWeightCombination());
 		else
-			statement.setDouble(52, 0);
+			statement.setDouble(54, 0);
 
 		if (rec.getGpsStartVehDist() != null)
-			statement.setLong(53, rec.getGpsStartVehDist());
+			statement.setLong(55, rec.getGpsStartVehDist());
 		else
-			statement.setLong(53, 0);
+			statement.setLong(55, 0);
 
 		if (rec.getGpsStopVehDist() != null)
-			statement.setLong(54, rec.getGpsStopVehDist());
+			statement.setLong(56, rec.getGpsStopVehDist());
 		else
-			statement.setLong(54, 0);
+			statement.setLong(56, 0);
 
 		if (rec.getGpsStartLatitude() != null)
-			statement.setDouble(55, rec.getGpsStartLatitude());
-		else
-			statement.setDouble(55, 0);
-
-		if (rec.getGpsStartLongitude() != null)
-			statement.setDouble(56, rec.getGpsStartLongitude());
-		else
-			statement.setDouble(56, 0);
-
-		if (rec.getGpsEndLatitude() != null)
-			statement.setDouble(57, rec.getGpsEndLatitude());
+			statement.setDouble(57, rec.getGpsStartLatitude());
 		else
 			statement.setDouble(57, 0);
 
-		if (rec.getGpsEndLongitude() != null)
-			statement.setDouble(58, rec.getGpsEndLongitude());
+		if (rec.getGpsStartLongitude() != null)
+			statement.setDouble(58, rec.getGpsStartLongitude());
 		else
 			statement.setDouble(58, 0);
 
+		if (rec.getGpsEndLatitude() != null)
+			statement.setDouble(59, rec.getGpsEndLatitude());
+		else
+			statement.setDouble(59, 0);
+
+		if (rec.getGpsEndLongitude() != null)
+			statement.setDouble(60, rec.getGpsEndLongitude());
+		else
+			statement.setDouble(60, 0);
+
 		if (rec.getVUsedFuel() != null)
-			statement.setInt(59, rec.getVUsedFuel());
-		else
-			statement.setInt(59, 0);
-
-		if (rec.getTripCalUsedFuel() != null)
-			statement.setLong(60, rec.getTripCalUsedFuel());
-		else
-			statement.setLong(60, 0);
-
-		if (rec.getVTripMotionDuration() != null)
-			statement.setInt(61, rec.getVTripMotionDuration());
+			statement.setInt(61, rec.getVUsedFuel());
 		else
 			statement.setInt(61, 0);
 
-		if (rec.getTripCalDrivingTm() != null)
-			statement.setLong(62, rec.getTripCalDrivingTm());
+		if (rec.getTripCalUsedFuel() != null)
+			statement.setLong(62, rec.getTripCalUsedFuel());
 		else
 			statement.setLong(62, 0);
 
-		if (rec.getReceivedTimestamp() != null)
-			statement.setLong(63, rec.getReceivedTimestamp());
+		if (rec.getVTripMotionDuration() != null)
+			statement.setInt(63, rec.getVTripMotionDuration());
 		else
-			statement.setLong(63, 0);
+			statement.setInt(63, 0);
 
-		if (rec.getKafkaProcessingTS() != null)
-			statement.setLong(64, rec.getKafkaProcessingTS());
+		if (rec.getTripCalDrivingTm() != null)
+			statement.setLong(64, rec.getTripCalDrivingTm());
 		else
 			statement.setLong(64, 0);
 
-		if (rec.getHbaseInsertionTS() != null)
-			statement.setLong(65, rec.getHbaseInsertionTS());
+		if (rec.getReceivedTimestamp() != null)
+			statement.setLong(65, rec.getReceivedTimestamp());
 		else
 			statement.setLong(65, 0);
 
-		if (rec.getEtlProcessingTS() != null)
-			statement.setLong(66, rec.getEtlProcessingTS());
+		if (rec.getKafkaProcessingTS() != null)
+			statement.setLong(66, rec.getKafkaProcessingTS());
 		else
 			statement.setLong(66, 0);
 
+		if (rec.getTripProcessingTS() != null)
+			statement.setLong(67, rec.getTripProcessingTS());
+		else
+			statement.setLong(67, 0);
+
+		if (rec.getEtlProcessingTS() != null)
+			statement.setLong(68, rec.getEtlProcessingTS());
+		else
+			statement.setLong(68, 0);
+
 		if (rec.getTripCalC02Emission() != null)
-			statement.setDouble(67, rec.getTripCalC02Emission());
-		else
-			statement.setDouble(67, 0);
-
-		if (rec.getTripCalFuelConsumption() != null)
-			statement.setDouble(68, rec.getTripCalFuelConsumption());
-		else
-			statement.setDouble(68, 0);
-
-		if (rec.getVTachographSpeed() != null)
-			statement.setDouble(69, rec.getVTachographSpeed());
+			statement.setDouble(69, rec.getTripCalC02Emission());
 		else
 			statement.setDouble(69, 0);
 
-		if (rec.getTripCalAvgGrossWtComb() != null)
-			statement.setDouble(70, rec.getTripCalAvgGrossWtComb());
+		if (rec.getTripCalFuelConsumption() != null)
+			statement.setDouble(70, rec.getTripCalFuelConsumption());
 		else
 			statement.setDouble(70, 0);
 
-		if (rec.getTripCalPtoDuration() != null)
-			statement.setDouble(71, rec.getTripCalPtoDuration());
+		if (rec.getVTachographSpeed() != null)
+			statement.setDouble(71, rec.getVTachographSpeed());
 		else
 			statement.setDouble(71, 0);
 
-		if (rec.getTriCalHarshBrakeDuration() != null)
-			statement.setDouble(72, rec.getTriCalHarshBrakeDuration());
+		if (rec.getTripCalAvgGrossWtComb() != null)
+			statement.setDouble(72, rec.getTripCalAvgGrossWtComb());
 		else
 			statement.setDouble(72, 0);
 
-		if (rec.getTripCalHeavyThrottleDuration() != null)
-			statement.setDouble(73, rec.getTripCalHeavyThrottleDuration());
+		if (rec.getTripCalPtoDuration() != null)
+			statement.setDouble(73, rec.getTripCalPtoDuration());
 		else
 			statement.setDouble(73, 0);
 
-		if (rec.getTripCalCrsCntrlDistBelow50() != null)
-			statement.setDouble(74, rec.getTripCalCrsCntrlDistBelow50());
+		if (rec.getTriCalHarshBrakeDuration() != null)
+			statement.setDouble(74, rec.getTriCalHarshBrakeDuration());
 		else
 			statement.setDouble(74, 0);
 
-		if (rec.getTripCalCrsCntrlDistAbv50() != null)
-			statement.setDouble(75, rec.getTripCalCrsCntrlDistAbv50());
+		if (rec.getTripCalHeavyThrottleDuration() != null)
+			statement.setDouble(75, rec.getTripCalHeavyThrottleDuration());
 		else
 			statement.setDouble(75, 0);
 
-		if (rec.getTripCalCrsCntrlDistAbv75() != null)
-			statement.setDouble(76, rec.getTripCalCrsCntrlDistAbv75());
+		if (rec.getTripCalCrsCntrlDistBelow50() != null)
+			statement.setDouble(76, rec.getTripCalCrsCntrlDistBelow50());
 		else
 			statement.setDouble(76, 0);
 
-		if (rec.getTripCalAvgTrafficClsfn() != null)
-			statement.setDouble(77, rec.getTripCalAvgTrafficClsfn());
+		if (rec.getTripCalCrsCntrlDistAbv50() != null)
+			statement.setDouble(77, rec.getTripCalCrsCntrlDistAbv50());
 		else
 			statement.setDouble(77, 0);
 
-		if (rec.getTripCalCCFuelConsumption() != null)
-			statement.setDouble(78, rec.getTripCalCCFuelConsumption());
+		if (rec.getTripCalCrsCntrlDistAbv75() != null)
+			statement.setDouble(78, rec.getTripCalCrsCntrlDistAbv75());
 		else
 			statement.setDouble(78, 0);
 
-		if (rec.getVCruiseControlFuelConsumed() != null)
-			statement.setInt(79, rec.getVCruiseControlFuelConsumed());
+		if (rec.getTripCalAvgTrafficClsfn() != null)
+			statement.setDouble(79, rec.getTripCalAvgTrafficClsfn());
 		else
-			statement.setInt(79, 0);
+			statement.setDouble(79, 0);
+
+		if (rec.getTripCalCCFuelConsumption() != null)
+			statement.setDouble(80, rec.getTripCalCCFuelConsumption());
+		else
+			statement.setDouble(80, 0);
+
+		if (rec.getVCruiseControlFuelConsumed() != null)
+			statement.setInt(81, rec.getVCruiseControlFuelConsumed());
+		else
+			statement.setInt(81, 0);
 
 		if (rec.getVCruiseControlDist() != null)
-			statement.setInt(80, rec.getVCruiseControlDist());
+			statement.setInt(82, rec.getVCruiseControlDist());
 		else
-			statement.setInt(80, 0);
+			statement.setInt(82, 0);
 
 		// if (rec.getTripCalfuelNonActiveCnsmpt() != null)
-		statement.setDouble(81, rec.getTripCalfuelNonActiveCnsmpt());
+		statement.setDouble(83, rec.getTripCalfuelNonActiveCnsmpt());
 		// else
 		// statement.setDouble(81, 0);
 
 		if (rec.getVIdleFuelConsumed() != null)
-			statement.setInt(82, rec.getVIdleFuelConsumed());
+			statement.setInt(84, rec.getVIdleFuelConsumed());
 		else
-			statement.setInt(82, 0);
+			statement.setInt(84, 0);
 
 		if (rec.getTripCalDpaScore() != null)
-			statement.setDouble(83, rec.getTripCalDpaScore());
+			statement.setDouble(85, rec.getTripCalDpaScore());
 		else
-			statement.setDouble(83, 0);
+			statement.setDouble(85, 0);
 
-		statement.setString(84, rec.getDriverId());
-		statement.setString(85, rec.getDriver2Id());
+		statement.setString(86, rec.getDriverId());
+		statement.setString(87, rec.getDriver2Id());
 
 		if (rec.getTripCalGpsVehTime() != null)
-			statement.setLong(86, rec.getTripCalGpsVehTime());
+			statement.setLong(88, rec.getTripCalGpsVehTime());
 		else
-			statement.setLong(86, 0);
+			statement.setLong(88, 0);
 
-		statement.setBoolean(87, Boolean.FALSE);
+		statement.setBoolean(89, Boolean.FALSE);
+		
+		if (rec.getVGrossWtSum() != null)
+			statement.setDouble(90, rec.getVGrossWtSum());
+		else
+			statement.setDouble(90, 0);
 
-		System.out.println("Prepared data for trip :: " + rec.getTripId());
+		if (rec.getNumberOfIndexMessage() != null)
+			statement.setInt(91, rec.getNumberOfIndexMessage());
+		else
+			statement.setInt(91, 0);
+
 		return statement;
 		/*
 		 * if(dataObject.getVin() != null){ statement.setString(2,

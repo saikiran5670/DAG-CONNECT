@@ -1,0 +1,53 @@
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg margin-top-20'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showReport" (opened)="showReport == true" (closed)="showReport == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+            <span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportComponent || 'Trip Report Component' }}</span>
+                <span style='margin-left: 10px; vertical-align: middle;'>
+                    <mat-icon (click)="editTripReportPreferences()" style="cursor: pointer; font-size: 20px;">edit</mat-icon>
+                </span>
+            </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div  *ngIf='initData.length > 0'>
+        <mat-table [dataSource]="dataSource" class="table-items">
+          <ng-container matColumnDef="All">
+            <mat-header-cell *matHeaderCellDef class="max-width-10-per">
+              <mat-checkbox (change)='$event ? masterToggleForColumns() : null'
+                [checked]='selectionForColumns.hasValue() && isAllSelectedForColumns()'
+                [indeterminate]='selectionForColumns.hasValue() && !isAllSelectedForColumns()'
+                [aria-label]='checkboxLabelForColumns()' [disabled] = '!editFlag'>
+              </mat-checkbox>
+              <!-- <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span> -->
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="max-width-10-per">
+              <mat-checkbox (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForColumns.toggle(row) : null'
+                [checked]="selectionForColumns.isSelected(row) || row.state ==='A'" [aria-label]='checkboxLabelForColumns(row)' [disabled] = '!editFlag'>
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef >{{ translationData.lblTripReportDetails || 'Trip report Details(Trip column view settings)' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+         
+           
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+     <div fxLayout="row" class='areaWidth'fxLayoutAlign="end">
+      <!-- <div fxLayout="column" fxLayoutAlign="end"> -->
+       
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="editFlag">{{
+                translationData.lblCancel || 'Cancel' }}</button>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="editFlag">{{ translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin'*ngIf="editFlag" mat-raised-button color="primary"
+                >{{ (translationData.lblConfirm || 'Confirm') }}</button>
+        <!-- </div> -->
+    </div>
+  </div>
+    </mat-expansion-panel>
+  </mat-card>

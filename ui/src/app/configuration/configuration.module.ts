@@ -31,6 +31,9 @@ import { CreateEditCorridorComponent } from './landmarks/manage-corridor/create-
 import { AlertsFilterComponent } from './alerts/alerts-filter/alerts-filter.component';
 import { RouteCalculatingComponent } from './landmarks/manage-corridor/create-edit-corridor/route-calculating/route-calculating.component';
 import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-corridor/existing-trips/existing-trips.component';
+import { Ng2CompleterModule } from 'ng2-completer';
+import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
   declarations: [
@@ -55,8 +58,8 @@ import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-
     DeleteCategoryPopupComponent,
     CreateEditCorridorComponent,
     RouteCalculatingComponent,
-    ExistingTripsComponent
-   ],
+    ExistingTripsComponent,
+  ],
   imports: [
     CommonModule,
     ConfigurationRoutingModule,
@@ -64,7 +67,10 @@ import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-
     ReactiveFormsModule,
     SharedModule,
     ChartsModule,
-    MatTableExporterModule
+    MatTableExporterModule,
+    Ng2CompleterModule,
+    NgxMaterialTimepickerModule,
+    NgxSliderModule
     ],
     providers: [ConfirmDialogService,VehicleService],
     schemas: [

@@ -1,11 +1,1 @@
-{
-  "UnsubscribeEvent": {
- "organizationID": "JMTR001",
-  "packageId": "Package121",
-  "viNs": [ 
-      "ATOSSH76128G364844",
-      "ATOSSH54793G657999"
-
-  ],
-  "startdatetime": ""
-  }
+{"UnsubscribeEvent":{"organizationID":"12346","orderID":"61","endDateTime":"","viNs":["XLR0998HGFFT74592","XLR0998HGFFT74591"]}}

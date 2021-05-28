@@ -2,12 +2,6 @@ package net.atos.daf.postgre.bo;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -65,7 +59,10 @@ public class Trip implements Serializable {
 	private String driverId;
 	private String driver2Id;
 	private Long tripCalGpsVehTime;
-	private Long hbaseInsertionTS;
+	//private Long hbaseInsertionTS;
+	private Long tripProcessingTS;
 	private Long etlProcessingTS;
 	private Long kafkaProcessingTS;
+	private Double vGrossWtSum; 
+	private Integer numberOfIndexMessage;
 }

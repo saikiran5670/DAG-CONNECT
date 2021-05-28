@@ -15,10 +15,15 @@
             <span class='custom-font'>{{ alertMsg }}</span>
           </div>
         </div>
+        <div *ngIf ="data.list" fxLayout="row" fxLayoutAlign="start" fxLayoutGap="30px" style="padding: 1px 1px 1px 50px;">
+          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <span class='custom-font'>{{ data.list }}</span>
+          </div>
+        </div>
       </mat-card-content>
       <mat-card-actions fxLayoutAlign="center center" class='no-margin' style="padding: 0px 20px;">
         <div fxLayout="row" fxLayoutAlign="center center" class="areaWidth full-width">
-            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='cancel()'>{{ data.cancelText }}</button>
+            <button *ngIf= "data.cancelText" class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='cancel()'>{{ data.cancelText }}</button>
             <button (click)="confirm()" class='confirmBtnColor no-margin' mat-raised-button color="primary">{{ data.confirmText }}</button>
         </div>
     </mat-card-actions>
