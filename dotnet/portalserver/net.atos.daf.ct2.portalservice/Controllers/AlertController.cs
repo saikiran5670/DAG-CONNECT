@@ -202,6 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var alertRequest = new AlertRequest();
+                alertRequest = _mapper.ToAlertRequest(request);
                 if (request.ApplyOn.ToLower() == "s")
                 {
                     var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
@@ -215,8 +216,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
-
-                alertRequest = _mapper.ToAlertRequest(request);
 
                 if (request.IsDuplicate)
                 {
@@ -293,7 +292,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (result.Count() > 0)
                 {
-                    return StatusCode(409, "Duplicate notification recipient label");
+                    return StatusCode(409, "Duplicate notification recipient label added in list.");
                 }
 
                 var alertRequest = new AlertRequest();
