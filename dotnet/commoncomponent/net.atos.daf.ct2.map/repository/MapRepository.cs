@@ -18,43 +18,43 @@ namespace net.atos.daf.ct2.map.repository
         }
 
 
-        public async Task<string> GetLookupAddress(LookupAddress lookupAddress)
-        {
-            try
-            {
-                var queryStatement = @"select id,latitude
-                                   ,longitude
-                                   ,address                                   
-                                   from master.vehicle 
-                                   where 1=1";
-                var parameter = new DynamicParameters();
+        //public async Task<string> GetLookupAddress(LookupAddress lookupAddress)
+        //{
+        //    try
+        //    {
+        //        var queryStatement = @"select id,latitude
+        //                           ,longitude
+        //                           ,address                                   
+        //                           from master.vehicle 
+        //                           where 1=1";
+        //        var parameter = new DynamicParameters();
 
 
-                if (lookupAddress.Latitude > 0)
-                {
-                    parameter.Add("@latitude", lookupAddress.Latitude);
-                    queryStatement = queryStatement + " and id LIKE @id";
+        //        if (lookupAddress.Latitude > 0)
+        //        {
+        //            parameter.Add("@latitude", lookupAddress.Latitude);
+        //            queryStatement = queryStatement + " and id LIKE @id";
 
-                }
-                if (lookupAddress.longitude > 0)
-                {
-                    parameter.Add("@vin", lookupAddress.Longitude);
-                    queryStatement = queryStatement + " and vin LIKE @id";
+        //        }
+        //        if (lookupAddress.Longitude > 0)
+        //        {
+        //            parameter.Add("@vin", lookupAddress.Longitude);
+        //            queryStatement = queryStatement + " and vin LIKE @id";
 
-                }
-                var rfmsVehicles = new RfmsVehicles();
-                dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
-                return rfmsVehicles;
+        //        }
+        //      //  var rfmsVehicles = new RfmsVehicles();
+        //        dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
+        //       // return rfmsVehicles;
 
-            }
+        //    }
 
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
 
 
-        }
+        //}
 
 
 
