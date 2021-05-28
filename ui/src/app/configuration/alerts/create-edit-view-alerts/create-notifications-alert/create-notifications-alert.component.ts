@@ -106,8 +106,8 @@ wsLabel: any;
     initEmailItems(): FormGroup{
       return this._formBuilder.group({
         emailAddress: ['', [Validators.required, Validators.email]],
-        mailSubject: ['', [Validators.required]],
-        mailDescription: ['', [Validators.required]],
+        mailSubject: ['This is default subject for ' +this.alertTypeName, [Validators.required]],
+        mailDescription: ['This is default text for ' +this.alertTypeName, [Validators.required]],
         notifyPeriod: ['A'],
         emailRecipientLabel: [''],
         emailContactModes: ['']
@@ -117,12 +117,12 @@ wsLabel: any;
 
     initWebItems(): FormGroup{
       return this._formBuilder.group({
-        wsDescription: ['', [Validators.required]],
+        wsDescription: ['This is default text for ' +this.alertTypeName, [Validators.required]],
         authentication:['N', [Validators.required]],
         loginId: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required]],
         webURL:['', [Validators.required]],
-        wsTextDescription:[''],
+        wsTextDescription:['This is default text for ' +this.alertTypeName],
         notifyPeriodweb: ['A'],        
         webRecipientLabel: [''],
         webContactModes: [''],
