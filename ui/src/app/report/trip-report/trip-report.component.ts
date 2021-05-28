@@ -120,9 +120,13 @@ export class TripReportComponent implements OnInit {
   loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-     this.hideloader();
+      this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+    }, (error)=>{
+      this.hideloader();
+      this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
+      this.wholeTripData.vinTripList = [];
     });
   }
 
@@ -505,18 +509,20 @@ export class TripReportComponent implements OnInit {
     let currentStartTime = this.startDateValue.getTime();
     let currentEndTime = this.endDateValue.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
-    let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
-    if(filterVIN.length > 0){
-      distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
-      ////console.log("distinctVIN:: ", distinctVIN);
-      if(distinctVIN.length > 0){
-        distinctVIN.forEach(element => {
-          let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
-          if(_item.length > 0){
-            finalVINDataList.push(_item[0])
-          }
-        });
-        ////console.log("finalVINDataList:: ", finalVINDataList); 
+    if(this.wholeTripData.vinTripList.length > 0){
+      let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+      if(filterVIN.length > 0){
+        distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+        ////console.log("distinctVIN:: ", distinctVIN);
+        if(distinctVIN.length > 0){
+          distinctVIN.forEach(element => {
+            let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+            if(_item.length > 0){
+              finalVINDataList.push(_item[0])
+            }
+          });
+          ////console.log("finalVINDataList:: ", finalVINDataList); 
+        }
       }
     }
     this.vehicleGroupListData = finalVINDataList;
