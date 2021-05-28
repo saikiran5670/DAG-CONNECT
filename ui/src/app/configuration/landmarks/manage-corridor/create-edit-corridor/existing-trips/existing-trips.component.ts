@@ -41,7 +41,7 @@ export class ExistingTripsComponent implements OnInit {
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
   selectedStartTime: any = '12:00 AM'
-  selectedEndTime: any = '12:00 AM'
+  selectedEndTime: any = '11:59 PM'
   selectedStartDateStamp: any;
   selectedEndDateStamp: any;
   startTimeUTC: any;
@@ -219,13 +219,33 @@ export class ExistingTripsComponent implements OnInit {
         ]
       });
     this.loadExistingTripData();
+    this.setDefaultTodayDate();
   }
 
   public ngAfterViewInit() {
     this.initMap();
   }
 
+  // setDefaultStartEndTime(){
+  //   this.selectedStartTime = "00:00";
+  //   this.selectedEndTime = "23:59";
+  // }
 
+  setDefaultTodayDate(){
+    // this.selectionTab = 'today';
+    // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+    // this.last3MonthDate = this.getLast3MonthDate();
+    // this.todayDate = this.getTodayDate();
+    let todayDate = new Date(); //-- UTC
+    // return todayDate;
+    this.selectedStartDateStamp = todayDate;
+    this.selectedEndDateStamp = todayDate;
+    this.existingTripForm.controls.startDate.setValue(this.selectedStartDateStamp);
+    this.existingTripForm.controls.endDate.setValue(this.selectedEndDateStamp);
+    console.log("------defaults dates--",this.selectedStartDateStamp)
+
+  }
   
   initMap(){
     let defaultLayers = this.platform.createDefaultLayers();
