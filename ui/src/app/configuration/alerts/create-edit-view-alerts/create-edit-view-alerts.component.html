@@ -672,12 +672,14 @@
         <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                 translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
-              <button style="margin-left: 50%;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ !panelOpenState ? translationData.lblAddNotification || 'Add
-                Notification' :translationData.lblSkipNotification || 'Skip Notification' }}</button>   
+              <button *ngIf="actionType != 'view' " style="margin-left: 50%;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ (actionType == 'create' || actionType == 'duplicate') ? (!panelOpenState ? translationData.lblAddNotification || 'Add
+                Notification' : translationData.lblSkipNotification || 'Skip Notification') :
+                 (!panelOpenState ? translationData.lblAddNotification || 'Add Notification' : translationData.lblDeleteNotification || 'Delete Notification') }}</button>   
         </mat-panel-title>
       </mat-expansion-panel-header>
       <app-create-notifications-alert *ngIf= "(alert_category_selected !== '') && (alert_type_selected !== '')"
       [translationData]='translationData'
+      [actionType]='actionType'
       [alert_category_selected] ='alert_category_selected'
       [alertTypeName] = 'alertTypeName'
       [alert_type_selected] = 'alert_type_selected'

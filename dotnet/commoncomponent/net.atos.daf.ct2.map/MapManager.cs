@@ -4,7 +4,7 @@ using System.Text;
 
 namespace net.atos.daf.ct2.map
 {
-    public class MapGeocodeManager: IMapGeocodeManager
+    public class MapManager: IMapManager
     {
     }
 }

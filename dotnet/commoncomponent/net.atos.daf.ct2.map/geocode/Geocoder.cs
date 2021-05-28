@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.map.geocode
 {
-    public class MapGeocoder
+    public class Geocoder
     {
         const string GEOCODING_QUERY = "https://geocoder.api.here.com/6.2/geocode.json?app_id={0}&app_code={1}&{2}";
         const string REVERSE_GEOCODING_QUERY = "https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?app_id={0}&app_code={1}&mode=retrieveAddresses&{2}";
