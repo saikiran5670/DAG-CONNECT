@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
-                foreach (var item in featureRequest.DataAttributeIds)
+                foreach (var item in featureRequest.DataAttributeIds.Distinct())
                 {
                     FeatureObj.DataAttribute.DataAttributeIDs.Add(item);
                 }
