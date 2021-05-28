@@ -8,6 +8,15 @@
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
       </div>
   </div>
+  <div *ngIf='errorMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+      style='padding:10px; color:#fff; background: red;'>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ displayMessage }}
+      </div>
+      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+      </div>
+  </div>
   <div *ngIf='!createViewEditStatus'>
       <mat-card class='mat-elevation-z'>
         <div *ngIf='alertCategoryList.length > 0 && initData.length > 0'>
