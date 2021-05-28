@@ -85,5 +85,16 @@ namespace net.atos.daf.ct2.alert
                 throw;
             }
         }
+        public async Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId)
+        {
+            try
+            {
+                return await alertRepository.GetRecipientLabelList(organizationId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

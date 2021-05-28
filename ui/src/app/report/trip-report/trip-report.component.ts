@@ -314,10 +314,16 @@ export class TripReportComponent implements OnInit {
 
   startTimeChanged(selectedTime: any) {
     this.selectedStartTime = selectedTime;
+    this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
+    this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   getTodayDate(){
@@ -353,10 +359,6 @@ export class TripReportComponent implements OnInit {
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
-        //this.startDateValue = this.getTodayDate();
-        //this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getTodayDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -364,10 +366,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'yesterday': {
         this.selectionTab = 'yesterday';
-        // this.startDateValue = this.getYesterdaysDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getYesterdaysDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -375,10 +373,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
-        // this.startDateValue = this.getLastWeekDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getLastWeekDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -386,10 +380,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
-        // this.startDateValue = this.getLastMonthDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getLastMonthDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
@@ -397,10 +387,6 @@ export class TripReportComponent implements OnInit {
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
-        // this.startDateValue = this.getLast3MonthDate();
-        // this.endDateValue = this.getTodayDate();
-        // this.tripForm.get('startDate').setValue(this.getLast3MonthDate());
-        // this.tripForm.get('endDate').setValue(this.getTodayDate());
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
