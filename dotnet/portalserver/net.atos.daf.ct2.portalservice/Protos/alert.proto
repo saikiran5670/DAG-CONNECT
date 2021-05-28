@@ -14,6 +14,8 @@ service AlertService {
   rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
   rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
   rpc IsLandmarkActiveInAlert (LandmarkIdRequest) returns (LandmarkIdExistResponse);
+  rpc GetNotificationTemplate(AccountIdRequest) returns (NotificationTemplateResponse);
+  rpc GetRecipientLabelList(OrgIdRequest) returns (NotificationRecipientResponse);
 }
 
 enum ResponseCode{
@@ -80,29 +82,30 @@ message DuplicateAlert
 }
 message AlertRequest
 {
-	int32 Id=1;
-	int32 OrganizationId=2;
-	string Name=3;
-	string Category=4;
-	string Type=5;
-	string ValidityPeriodType=6;
-	int64 ValidityStartDate=7;
-	int64 ValidityEndDate=8;
-	int32 VehicleGroupId=9;
-	string State=10;
-	int64 CreatedAt=11;
-	int32 CreatedBy=12;
-	int64 ModifiedAt=13;
-	int32 ModifiedBy=14;
-	string VehicleName=15;
-	string VehicleGroupName=16;
-	string ApplyOn=17;
-	repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=18;
-	repeated NotificationRequest Notifications=19;
-	repeated AlertLandmarkRefRequest AlertLandmarkRefs=20;
-	bool Exists=21;	
+    int32 Id=1;
+    int32 OrganizationId=2;
+    string Name=3;
+    string Category=4;
+    string Type=5;
+    string ValidityPeriodType=6;
+    int64 ValidityStartDate=7;
+    int64 ValidityEndDate=8;
+    int32 VehicleGroupId=9;
+    string State=10;
+    int64 CreatedAt=11;
+    int32 CreatedBy=12;
+    int64 ModifiedAt=13;
+    int32 ModifiedBy=14;
+    string VehicleName=15;
+    string VehicleGroupName=16;
+    string Vin=17;
+    string RegNo=18;
+    string ApplyOn=19;   
+    repeated AlertUrgencyLevelRefRequest AlertUrgencyLevelRefs=20;
+    repeated NotificationRequest Notifications=21;
+    repeated AlertLandmarkRefRequest AlertLandmarkRefs=22;
+    bool Exists=23;   
 }
-
 message AlertFilterRefRequest
 {
 	int32 Id=1;
@@ -227,4 +230,30 @@ message LandmarkIdExistResponse{
     ResponseCode Code=1;
     string Message = 2;
 	bool IsLandmarkActive =3;
+}
+message NotificationTemplate
+{
+	int32 Id=1;
+	string AlertCategoryType=2;
+	string AlertType=3;
+	string Text=4;
+	string Subject=5;
+	int64 CreatedAt=6;
+	int64 ModifiedAt=7;
+}
+message NotificationTemplateResponse
+{
+	repeated NotificationTemplate NotificationTemplatelist=1;
+	ResponseCode Code=2;
+    string Message = 3;
+}
+message OrgIdRequest {
+  int32 OrganizationId = 1;
+}
+
+message NotificationRecipientResponse
+{
+	repeated NotificationRecipientRequest NotificationRecipient=1;
+	ResponseCode Code=2;
+    string Message = 3;
 }

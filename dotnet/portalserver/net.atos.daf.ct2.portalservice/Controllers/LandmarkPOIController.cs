@@ -297,12 +297,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("DownLoadPOIForExcel method in POI API called.");
-                OrganizationId = GetContextOrgId();
                 if (OrganizationId <= 0)
                 {
                     return StatusCode(400, "OrganizationId data is required.");
                 }
                 net.atos.daf.ct2.poiservice.DownloadPOIRequest objPOIEntityRequest = new net.atos.daf.ct2.poiservice.DownloadPOIRequest();
+                OrganizationId = GetContextOrgId();
                 objPOIEntityRequest.OrganizationId = OrganizationId;
                 var data = await _poiServiceClient.DownloadPOIForExcelAsync(objPOIEntityRequest);
                 if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
@@ -336,7 +336,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("GetPOIs method in POI API called.");
-                poiFilter.OrganizationId = GetContextOrgId();
+                if (poiFilter.OrganizationId != 0)
+                {
+                    poiFilter.OrganizationId = GetContextOrgId();
+                }
                 POIRequest poiRequest = new POIRequest();
                 poiRequest.Id = poiFilter.Id;
                 poiRequest.OrganizationId = poiFilter.OrganizationId;
@@ -378,10 +381,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                foreach (var item in request)
-                {
-                    item.OrganizationId = GetContextOrgId();
-                }
                 // Validation 
                 if (request.Count <= 0)
                 {

@@ -296,5 +296,75 @@ namespace net.atos.daf.ct2.alertservice.Services
 
         #endregion
 
+        #region Alert Notification Template
+        public override async Task<NotificationTemplateResponse> GetNotificationTemplate(AccountIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                IEnumerable<net.atos.daf.ct2.alert.entity.NotificationTemplate> notificationTemplateList = await _alertManager.GetAlertNotificationTemplate();
+
+                NotificationTemplateResponse response = new NotificationTemplateResponse();
+                foreach (var item in notificationTemplateList)
+                {
+                    response.NotificationTemplatelist.Add(new NotificationTemplate 
+                            { 
+                                Id=item.Id,
+                                AlertCategoryType=item.AlertCategoryType,
+                                AlertType=item.AlertType,
+                                Text=item.Text,
+                                Subject=item.Subject,
+                                CreatedAt=item.CreatedAt,
+                                ModifiedAt=item.ModifiedAt
+                            });
+                }
+                response.Message = "Alert notification template data is retrieved";
+                response.Code = ResponseCode.Success;
+                _logger.Info("GetNotificationTemplate method in alert service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new NotificationTemplateResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get Notification Template fail : " + ex.Message
+                });
+            }
+        }
+        #endregion
+
+        #region Get Recipient Label
+
+        public override async Task<NotificationRecipientResponse> GetRecipientLabelList(OrgIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                IEnumerable<NotificationRecipient> NotificationRecipientResponseList = await _alertManager.GetRecipientLabelList(request.OrganizationId);
+                NotificationRecipientResponse response = new NotificationRecipientResponse();
+                foreach (var item in NotificationRecipientResponseList)
+                {
+                    response.NotificationRecipient.Add(_mapper.MapNotificationRecipientEntity(item));
+                }
+                response.Message = "Notification Recipient data retrieved";
+                response.Code = ResponseCode.Success;
+                _logger.Info("Get notification recipient method in alert service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new NotificationRecipientResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get notification recipient list fail : " + ex.Message
+                });
+            }
+        }
+
+        #endregion
+
     }
 }
+

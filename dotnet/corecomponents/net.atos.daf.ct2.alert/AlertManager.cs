@@ -74,5 +74,27 @@ namespace net.atos.daf.ct2.alert
         {
             return await alertRepository.IsLandmarkActiveInAlert(landmarkId);
         }
+        public async Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate()
+        {
+            try
+            {
+                return await alertRepository.GetAlertNotificationTemplate();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId)
+        {
+            try
+            {
+                return await alertRepository.GetRecipientLabelList(organizationId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

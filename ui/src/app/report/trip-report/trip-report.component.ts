@@ -5,8 +5,11 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../services/translation.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { ReportMapService } from './report-map.service';
+import { filter } from 'rxjs/operators';
 
 declare var H: any;
 
@@ -17,16 +20,16 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
-  selectionTab: any = 'today';
+  selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
-  selectedStartTime: any = '12:00 AM';
-  selectedEndTime: any = '12:00 AM'; 
+  selectedStartTime: any = '00:00';
+  selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
-  displayedColumns = ['All', 'startDate', 'endDate', 'distance', 'idleDuration', 'avgSpeed', 'avgWeight', 'startPosition', 'endPosition', 'fuelConsumption', 'drivingTime', 'alerts', 'events'];
+  displayedColumns = ['All', 'startTimeStamp', 'endTimeStamp', 'distance', 'idleDuration', 'averageSpeed', 'averageWeight', 'startPosition', 'endPosition', 'fuelConsumed100Km', 'drivingTime', 'alert', 'events'];
   translationData: any;
-  hereMap: any;
-  platform: any;
-  ui: any;
+  // hereMap: any;
+  // platform: any;
+  // ui: any;
   @ViewChild("map")
   public mapElement: ElementRef;
   showMap: boolean = false;
@@ -45,11 +48,18 @@ export class TripReportComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
   showLoadingIndicator: boolean = false;
+  startDateValue: any;
+  endDateValue: any;
+  last3MonthDate: any;
+  todayDate: any;
+  wholeTripData: any = [];
+  tableInfoObj: any = {};
+  tripTraceArray: any = [];
 
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) {
-    this.platform = new H.service.Platform({
-      "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    });
+  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
+    // this.platform = new H.service.Platform({
+    //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
+    // });
     this.defaultTranslation();
   }
 
@@ -64,10 +74,12 @@ export class TripReportComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
     this.tripForm = this._formBuilder.group({
-      vehicleGroup: ['', []],
-      vehicle: ['', []],
+      vehicleGroup: ['', [Validators.required]],
+      vehicle: ['', [Validators.required]],
       startDate: ['', []],
-      endDate: ['', []]
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
     });
     let translationObj = {
       id: 0,
@@ -80,193 +92,127 @@ export class TripReportComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.loadTripData();
+      this.setDefaultStartEndTime();
+      this.setDefaultTodayDate();
+      this.loadWholeTripData();
     });
   }
 
-  loadTripData(){
+  setDefaultStartEndTime(){
+    this.selectedStartTime = "00:00";
+    this.selectedEndTime = "23:59";
+  }
+
+  setDefaultTodayDate(){
+    this.selectionTab = 'today';
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
+  }
+
+  loadWholeTripData(){
     this.showLoadingIndicator = true;
     this.reportService.getVINFromTrip(this.accountId, this.accountOrganizationId).subscribe((tripData: any) => {
-     // console.log("tripData:: ", tripData)
+     this.hideloader();
+      this.wholeTripData = tripData;
+      this.filterDateData();
     });
-
-    this.tripData = [{
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 123.9, 
-      idleDuration: '00:18', 
-      avgSpeed: 32.5, 
-      avgWeight: 7.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 18.9, 
-      idleDuration: '00:02', 
-      avgSpeed: 5.2, 
-      avgWeight: 3.0,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    },
-    {
-      startDate: '01/01/2021 00:00:00', 
-      endDate: '01/01/2021 23:59:59', 
-      distance: 128.9, 
-      idleDuration: '00:12', 
-      avgSpeed: 54.5, 
-      avgWeight: 6.45,
-      startPosition: 'DAF Nederland S',
-      endPosition: 'DAF Nederland E',
-      fuelConsumption: 123.5,
-      drivingTime: '00:23',
-      alerts: 20,
-      events: 30
-    }];
-    this.updateDataSource(this.tripData);
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
-    //console.log("process translationData:: ", this.translationData)
+    ////console.log("process translationData:: ", this.translationData)
   }
 
   public ngAfterViewInit() {
     // setTimeout(() => {
-    // this.initMap();
+     //this.reportMapService.initMap(this.mapElement);
     // }, 0);
   }
 
-  initMap(){
-    let defaultLayers = this.platform.createDefaultLayers();
-    this.hereMap = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
-      center: { lat: 51.43175839453286, lng: 5.519981221425336 },
-      zoom: 4,
-      pixelRatio: window.devicePixelRatio || 1
-    });
-    window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+  onSearch(){
+    let _startTime = this.startDateValue.getTime();
+    let _endTime = this.endDateValue.getTime();
+    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(_vinData.length > 0){
+      this.showLoadingIndicator = true;
+      this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
+        this.hideloader();
+        this.tripData = _tripData.tripData;
+        this.setTableInfo();
+        this.updateDataSource(this.tripData);
+      }, (error)=>{
+        //console.log(error);
+        this.hideloader();
+        this.tripData = [];
+        this.tableInfoObj = {};
+        this.updateDataSource(this.tripData);
+      });
+    }
   }
 
-  onSearch(){
+  setTableInfo(){
+    let vehName: any = '';
+    let vehGrpName: any = '';
+    let vin: any = '';
+    let plateNo: any = '';
+    this.vehicleGroupListData.forEach(element => {
+      if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
+        vehName = element.vehicleName;
+        vin = element.vin;
+        plateNo = element.registrationNo;
+      }
+      if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
+        if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
+          vehGrpName = element.vehicleGroupName;
+        }
+      }
+    });
 
+    if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
+      vehGrpName = this.translationData.lblAll || 'All';
+    }
+    this.tableInfoObj = {
+      fromDate: this.formStartDate(this.startDateValue),
+      endDate: this.formStartDate(this.endDateValue),
+      vehGroupName: vehGrpName,
+      vehicleName: vehName,
+      vin: vin,
+      regNo: plateNo
+    }
+  }
+
+  formStartDate(date: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _date = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()} ${h}:${m}:${s}`;
+    return _date;
   }
 
   onReset(){
+    this.setDefaultStartEndTime();
+    this.setDefaultTodayDate();
+    this.tripData = [];
+    this.updateDataSource(this.tripData);
+    this.filterDateData();
+    this.resetTripFormControlValue();
+    this.tableInfoObj = {};
+  }
 
+  resetTripFormControlValue(){
+    this.tripForm.get('vehicle').setValue('');
+    this.tripForm.get('vehicleGroup').setValue('');
   }
 
   onVehicleGroupChange(event: any){
-
+    this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+    if(parseInt(event.value) == 0){ //-- all group
+      this.vehicleListData = this.vehicleGroupListData;
+    }else{
+      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+    }
   }
 
   onVehicleChange(event: any){
@@ -281,16 +227,21 @@ export class TripReportComponent implements OnInit {
 
   updateDataSource(tableData: any) {
     this.initData = tableData;
+    this.showMap = false;
+    this.selectedTrip.clear();
     if(this.initData.length > 0){
-      this.showMapPanel = true;
-      setTimeout(() => {
-        this.initMap();
-      }, 0);
+      if(!this.showMapPanel){ //- map panel not shown already
+        this.showMapPanel = true;
+        setTimeout(() => {
+          this.reportMapService.initMap(this.mapElement);
+        }, 0);
+      }else{
+        this.reportMapService.clearRoutesFromMap();
+      }
     }
     else{
       this.showMapPanel = false;
     }
-    this.hideloader(); //-- hide loader
     this.dataSource = new MatTableDataSource(tableData);
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
@@ -307,13 +258,19 @@ export class TripReportComponent implements OnInit {
   }
 
   masterToggleForTrip() {
+    this.tripTraceArray = [];
     if(this.isAllSelectedForTrip()){
       this.selectedTrip.clear();
+      this.reportMapService.clearRoutesFromMap();
+      this.showMap = false;
     }
     else{
-      this.dataSource.data.forEach((row) =>{
+      this.dataSource.data.forEach((row) => {
         this.selectedTrip.select(row);
+        this.tripTraceArray.push(row);
       });
+      this.showMap = true;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
@@ -338,10 +295,15 @@ export class TripReportComponent implements OnInit {
   }
 
   tripCheckboxClicked(event: any, row: any) {
-    if(event.checked){ 
-      
-    }else{
-
+    this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
+    if(event.checked){ //-- add new marker
+      this.tripTraceArray.push(row);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+    }
+    else{ //-- remove existing marker
+      let arr = this.tripTraceArray.filter(item => item.id != row.id);
+      this.tripTraceArray = arr;
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
     }
   }
 
@@ -352,35 +314,132 @@ export class TripReportComponent implements OnInit {
 
   startTimeChanged(selectedTime: any) {
     this.selectedStartTime = selectedTime;
+    this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue();
+    this.filterDateData();
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
+    this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue();
+    this.filterDateData();
+  }
+
+  getTodayDate(){
+    let todayDate = new Date(); //-- UTC
+    return todayDate;
+  }
+
+  getYesterdaysDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-1);
+    return date;
+  }
+
+  getLastWeekDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-7);
+    return date;
+  }
+
+  getLastMonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-1);
+    return date;
+  }
+
+  getLast3MonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-3);
+    return date;
   }
 
   selectionTimeRange(selection: any){
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'yesterday': {
         this.selectionTab = 'yesterday';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
         break;
       }
     }
+    this.resetTripFormControlValue();
+    this.filterDateData();
+  }
+
+  changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
+    ////console.log("start:: ", event.value)
+    this.startDateValue = event.value;
+    this.resetTripFormControlValue();
+    this.filterDateData();
+  }
+
+  changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
+    ////console.log("end: ", event.value)
+    this.endDateValue = event.value;
+    this.resetTripFormControlValue();
+    this.filterDateData();
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+    date.setHours(timeObj.split(":")[0]);
+    date.setMinutes(timeObj.split(":")[1]);
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  filterDateData(){
+    let distinctVIN: any = [];
+    let finalVINDataList: any = [];
+    let currentStartTime = this.startDateValue.getTime();
+    let currentEndTime = this.endDateValue.getTime();
+    //console.log(currentStartTime + "<->" + currentEndTime);
+    let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
+    if(filterVIN.length > 0){
+      distinctVIN = filterVIN.filter((value, index, self) => self.indexOf(value) === index);
+      ////console.log("distinctVIN:: ", distinctVIN);
+      if(distinctVIN.length > 0){
+        distinctVIN.forEach(element => {
+          let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
+          if(_item.length > 0){
+            finalVINDataList.push(_item[0])
+          }
+        });
+        ////console.log("finalVINDataList:: ", finalVINDataList); 
+      }
+    }
+    this.vehicleGroupListData = finalVINDataList;
+    this.vehicleListData = finalVINDataList;
   }
 
 }

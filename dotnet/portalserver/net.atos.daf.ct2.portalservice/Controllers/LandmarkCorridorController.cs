@@ -98,17 +98,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                
                 if (request.OrganizationId == 0)
                 {
-                    //bool hasRights = await HasAdminPrivilege();
-                    //if (!hasRights)
                      return StatusCode(400, "Organization_Id Required .");
                 }
                 if (request.ViaAddressDetails.Count >5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
+                request.OrganizationId = GetContextOrgId();
                 var MapRequest = _corridorMapper.MapCorridor(request);
                 var data = await _corridorServiceClient.AddRouteCorridorAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -150,7 +149,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                
                 if (request.OrganizationId == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -161,6 +160,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "ExistingTrips required");
                 }
+                request.OrganizationId = GetContextOrgId();
                 var MapRequest = _corridorMapper.MapExistingTripCorridorRequest(request);
                 var data = await _corridorServiceClient.AddExistingTripCorridorAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -202,7 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
+                
                 if (request.OrganizationId == 0 && request.Id ==0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -213,6 +213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "ExistingTrips required");
                 }
+                request.OrganizationId = GetContextOrgId();
                 var MapRequest = _corridorMapper.MapExistingTripCorridorRequest(request);
                 var data = await _corridorServiceClient.UpdateExistingTripCorridorAsync(MapRequest);
                 if (data != null && data.Code == Responsecode.Success)
@@ -315,16 +316,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                request.OrganizationId = GetContextOrgId();
                 if (request.OrganizationId == 0)
                 {
                     return StatusCode(400, "Organization Id is required.");
                 }
+                
                 if (request.ViaAddressDetails.Count > 5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
-
+                request.OrganizationId = GetContextOrgId();
                 UpdateRouteCorridorRequest objUpdateRouteCorridorRequest = new UpdateRouteCorridorRequest();
                 objUpdateRouteCorridorRequest.Request = _corridorMapper.MapCorridor(request);
                 var data = await _corridorServiceClient.UpdateRouteCorridorAsync(objUpdateRouteCorridorRequest);

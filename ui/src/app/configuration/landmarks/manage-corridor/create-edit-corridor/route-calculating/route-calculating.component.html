@@ -87,7 +87,7 @@
             <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
         </div>
         <div *ngIf="actionType != 'view'">
-            <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()"></ngx-slider>
+            <ngx-slider [(value)]="corridorWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
         <!-- <mat-label>{{min}}</mat-label>
             <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
@@ -149,7 +149,7 @@
         </mat-expansion-panel-header>
 
         <div fxLayout="row" fxLayoutGap="20px" class="full-width margin-bottom-sm">
-            <mat-checkbox class="example-margin" [checked]="transportDataChecked" (change)="transportDataCheckedFn($event.checked)" [disabled]="actionType==='view'">Transaport Data</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="transportDataChecked" (change)="transportDataCheckedFn($event.checked)" [disabled]="actionType==='view'">Transport Data</mat-checkbox>
             <mat-checkbox class="example-margin" [checked]="trafficFlowChecked" (change)="trafficFlowCheckedFn($event.checked)"  [disabled]="actionType==='view'">Traffic Flow</mat-checkbox>
         </div>
         <div class='fixDiv'></div>
@@ -425,7 +425,7 @@
     </button>
 </span>
 <span *ngIf="actionType !== 'view'">
-    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!corridorFormGroup.valid || !strPresentStart || !strPresentEnd"><!--&& !strPresentStart && !strPresentEnd [disabled]="!corridorFormGroup.valid"-->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)"><!--&& !strPresentStart && !strPresentEnd [disabled]="!corridorFormGroup.valid"-->
         <span>Create</span>
     </button>
 </span>

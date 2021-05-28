@@ -10,15 +10,15 @@
         </div>
         <div class="areaWidth" fxLayout="row" fxLayoutAlign="left">
                 <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox [checked] ="isCriticalLevelSelected" (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical
+                    <mat-checkbox [checked] ="isCriticalLevelSelected" [disabled] ="!isCriticalLevelSelected" (change)="onChangeCriticalLevel($event)" formControlName="criticalLevel">Critical
                     </mat-checkbox>
                 </div>
                 <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox [checked] = "isWarningLevelSelected" (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning
+                    <mat-checkbox [checked] = "isWarningLevelSelected" [disabled] ="!isWarningLevelSelected" (change)="onChangeWarningLevel($event)" formControlName="warningLevel">Warning
                     </mat-checkbox>
                 </div>
                 <div class="areaWidth areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-                    <mat-checkbox [checked] = "isAdvisoryLevelSelected" (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory
+                    <mat-checkbox [checked] = "isAdvisoryLevelSelected" [disabled] ="!isAdvisoryLevelSelected" (change)="onChangeAdvisoryLevel($event)" formControlName="advisoryLevel">Advisory
                     </mat-checkbox>
                 </div>
         </div>
@@ -63,21 +63,24 @@
             </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems()'>{{ actionType ==
+            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(notificationForm.value)'>{{ actionType ==
                 'create'
                 ? (translationData.lblAdd || 'Add') :
                 (translationData.lblAdd || 'Add') }}</button>
         </div>
     </div>
-<div  formArrayName="FormArrayItems">
+<!-- <div  formArrayName="FormArrayItems">
     <div  *ngFor="let item of notificationForm.controls['FormArrayItems']['controls']; let i = index" >
-    <div  [formGroupName]="i">
+    <div  [formGroupName]="i"> -->
+<div formArrayName="FormEmailArray">
+    <div *ngFor="let item of notificationForm.controls['FormEmailArray']['controls']; let i = index">
+        <div [formGroupName]="i">
     <!-- For email -->
-    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 1 && addEmailFlag" style="border: 1px solid #000">
+    <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'E' && addEmailFlag) || emailCount > 0" style="border: 1px solid #000">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 02' }}</span>
-            <mat-icon style="color: red;">deleteicon</mat-icon>
+            <mat-icon style="color: red;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
         </mat-panel-title>
         <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -94,10 +97,10 @@
                         <mat-hint>{{translationData.lblTypeMultipleEmailsWithCommaSeparated || 'Type multiple emails
                             with comma (;)
                             separated' }}</mat-hint>
-                            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('emailAddress').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('emailAddress').touched">
+                            <mat-error *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('emailAddress').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][0].get('emailAddress').touched">
                                 {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                                   </mat-error>
-                            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('emailAddress').hasError('email')">
+                            <mat-error *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('emailAddress').hasError('email')">
                                 {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email address' }}
                             </mat-error>
                     </div>
@@ -112,7 +115,7 @@
                                 matInput formControlName="mailSubject" maxlength="120">
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailSubjectDescription || 'Mail Subject Description'}}</mat-hint>
-                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('mailSubject').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('mailSubject').touched">
+                        <mat-error *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('mailSubject').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][0].get('mailSubject').touched">
                             {{ translationData.lblPleaseenterMailSubject || 'Please enter Mail Subject' }}
                               </mat-error>
                     </div>
@@ -131,11 +134,17 @@
                                 formControlName="mailDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblMailTextDescription || 'Mail Text Description' }}</mat-hint>
-                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('mailDescription').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('mailDescription').touched">
+                        <mat-error *ngIf="notificationForm.controls['FormEmailArray']['controls'][0].get('mailDescription').hasError('required') && notificationForm.controls['FormEmailArray']['controls'][0].get('mailDescription').touched">
                             {{ translationData.lblPleaseentermailDescription || 'Please enter mail Description' }}
                               </mat-error>
                     </div>
                 </div>
+                <!-- <div style="display:none">
+                    <mat-form-field style="display:none" appearance="outline" class="full-width">
+                        <input placeholder="{{ translationData.lblEnterRecipientLabel || 'Enter Recipient Label' }}" matInput
+                            formControlName="emailRecipientLabel" maxlength="50">
+                    </mat-form-field>
+                </div> -->
             </div>
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: grey" class="areaWidth">
                 <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
@@ -157,14 +166,19 @@
             </div>
         </div>
     </mat-card>
+        </div>
+    </div>
+</div>
 
-
+    <div formArrayName="FormWebArray">
+        <div *ngFor="let item of notificationForm.controls['FormWebArray']['controls']; let i = index">
+            <div [formGroupName]="i">
     <!-- For webservice -->
-    <mat-card class='mat-elevation-z' *ngIf="contactModeType == 0 && addWsFlag " style="border: 1px solid #000;">
+    <mat-card class='mat-elevation-z' *ngIf="(contactModeType == 'W' && addWsFlag) || wsCount > 0" style="border: 1px solid #000;">
         <mat-panel-title>
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;padding-right: 80%;'>{{
                 translationData.lblRecipientLabel02 || 'Recipient Label 01' }}</span>
-            <mat-icon style="color: red;">deleteicon</mat-icon>
+            <mat-icon style="color: red;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
         </mat-panel-title>
         <div fxLayout="row" class="full-width filter-direction" fxLayoutAlign="space-between">
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"  style="padding-right: 15px;">
@@ -179,23 +193,23 @@
                                 formControlName="webURL" >
                         </mat-form-field>
                         <mat-hint>{{translationData.lblEnterWebServiceURL || 'Enter web service URL'}}</mat-hint>
-                            <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('webURL').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('webURL').touched">
+                            <mat-error *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('webURL').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('webURL').touched">
                                 {{ translationData.lblPleaseenterWebServiceURL || 'Please enter Web Service URL' }}
                                   </mat-error>
                     </div>
                     <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="right">
                         <div class="margin-bottom-sm">
                         <mat-radio-group (change)="onRadioButtonChange($event)" formControlName="authentication">
-                        <mat-radio-button style='margin-right: 20px;' [checked]="true"  value="0">{{
+                        <mat-radio-button style='margin-right: 20px;' [checked]="true" value="N">{{
                             translationData.lblNoAuthentication || 'No Authentication' }}
                         </mat-radio-button>
-                        <mat-radio-button  style='margin-right: 20px;' value="1">{{
+                        <mat-radio-button  style='margin-right: 20px;'  value="A">{{
                             translationData.lblLoginPasswordAuthentication || 'Login/Password Authentication' }}
                         </mat-radio-button>     
                     </mat-radio-group>          </div>    
                     </div>
                 </div>
-                <div fxLayout="row" *ngIf="radioButtonVal != '1'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                <div fxLayout="row" *ngIf="item['controls']['authentication'].value == 'N'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
                     fxLayoutGap="10px">
                     <div class="full-width  " fxLayout="column" fxLayoutAlign="left">
                         <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblWSDescription || 'WS Description' }} <span
@@ -208,12 +222,12 @@
                                 formControlName="wsDescription"></textarea>
                         </mat-form-field>
                         <mat-hint>{{translationData.lblWSDescription || 'WS Description' }}</mat-hint>
-                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('wsDescription').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('wsDescription').touched">
+                        <mat-error *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('wsDescription').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('wsDescription').touched">
                             {{ translationData.lblPleaseenterwsDescription || 'Please enter ws Description' }}
                               </mat-error>
                     </div>
                 </div>
-                    <div fxLayout="row" *ngIf="radioButtonVal == '1'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                    <div fxLayout="row" *ngIf="item['controls']['authentication'].value == 'A'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
                         fxLayoutGap="10px">
                         <div class="full-width" fxLayout="column" fxLayoutAlign="left">
                             <mat-label style='display: flex; place-content: space-between;'>{{ translationData.lblWSDescription || 'WS Description' }}
@@ -231,10 +245,10 @@
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblloginId || 'Login ID' }}" matInput formControlName="loginId">
                         </mat-form-field>
-                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('loginId').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('loginId').touched">
+                        <mat-error *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('loginId').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('loginId').touched">
                             {{ translationData.lblPleaseenteremailAddress || 'Please enter email address' }}
                               </mat-error>
-                        <mat-error *ngIf="notificationForm.get('loginId').hasError('email')">
+                        <mat-error *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('loginId').hasError('email')">
                             {{ translationData.lblPleaseentervalidemailAddress || 'Please enter valid email address' }}
                         </mat-error>
                         <mat-label>{{ translationData.lblPassword || 'Password' }} <span class='mandatoryColor'>*</span>
@@ -242,7 +256,7 @@
                         <mat-form-field appearance="outline" class="full-width">
                             <input placeholder="{{ translationData.lblPassword || 'Password' }}" matInput formControlName="password">
                         </mat-form-field>
-                        <mat-error *ngIf="notificationForm.controls['FormArrayItems']['controls'][0].get('password').hasError('required') && notificationForm.controls['FormArrayItems']['controls'][0].get('password').touched">
+                        <mat-error *ngIf="notificationForm.controls['FormWebArray']['controls'][0].get('password').hasError('required') && notificationForm.controls['FormWebArray']['controls'][0].get('password').touched">
                             {{ translationData.lblPleaseEnterPassword || 'Please enter password' }}
                         </mat-error>
                     </div>
@@ -260,7 +274,7 @@
                 <!-- <mat-radio-button checked style='margin-right: 20px;' [value]="'A'">{{
                     translationData.lblAlways || 'Always' }}
                 </mat-radio-button> -->
-                <mat-radio-group formControlName="notifyPeriod" style='margin-right: 20px;'>
+                <mat-radio-group formControlName="notifyPeriodweb" style='margin-right: 20px;'>
                     <mat-radio-button style='margin-right: 20px;' value="A">
                         {{ translationData.lblAlways || 'Always' }}
                     </mat-radio-button>
@@ -289,7 +303,8 @@
             </mat-card>
         </div>
     </div>
+    </div></div></div>
+<!-- </div>
 </div>
-</div>
-</div>
+</div> -->
 </form>

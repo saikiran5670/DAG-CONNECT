@@ -8,7 +8,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { ActiveInactiveDailogComponent } from '../../shared/active-inactive-dailog/active-inactive-dailog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { OrganizationService } from 'src/app/services/organization.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute,  } from '@angular/router';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -43,6 +43,7 @@ export class OrganisationRelationshipComponent implements OnInit {
   vehicleList: any = [];
   organizationList: any = [];
   startDateList: any = [];
+  viewRelationshipName: any; 
   allTypes: any = [
     {
       name: 'Active'
@@ -52,8 +53,11 @@ export class OrganisationRelationshipComponent implements OnInit {
     }
   ];
 
-  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router) { 
-    this.defaultTranslation();
+  constructor(private translationService: TranslationService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private organizationService: OrganizationService, private router: Router, private route: ActivatedRoute) { 
+ this.defaultTranslation();
+    this.route.queryParams.subscribe(params => {
+      this.viewRelationshipName = params["name"]; 
+   });
   }
   ngOnInit(): void {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -86,6 +90,11 @@ export class OrganisationRelationshipComponent implements OnInit {
           this.hideloader();
             if(data)
             {
+              if(this.viewRelationshipName!=undefined)
+               {     
+                  this.successMsgBlink(this.getEditSuccessMsg('Update', this.viewRelationshipName));
+                  this.router.navigate(['/admin/organisationrelationshipmanagement']);                 
+                }
                 this.relationshipList = newdata["relationShipData"];
                 this.organizationList = newdata["organizationData"];
                 this.vehicleList =  newdata["vehicleGroup"];
@@ -114,7 +123,14 @@ export class OrganisationRelationshipComponent implements OnInit {
           ); 
     
   }
-
+  getEditSuccessMsg(editText: any, name: any){
+    if(editText == 'Update'){
+      if(this.translationData.lblRelationshipdetailssuccessfullyupdated)
+        return this.translationData.lblRelationshipdetailssuccessfullyupdated.replace('$', this.viewRelationshipName);
+      else
+        return ("Relationship '$' details successfully updated").replace('$', this.viewRelationshipName);
+    } 
+  }
   setDate(date : any){​​​​​​​​
     if (date === 0) {​​​​​​​​
         return '-';
@@ -277,6 +293,8 @@ export class OrganisationRelationshipComponent implements OnInit {
 
   }
 
+ 
+
   hideloader() {
     // Setting display of spinner
       this.showLoadingIndicator=false;
@@ -325,22 +343,31 @@ export class OrganisationRelationshipComponent implements OnInit {
   }
 
   deleteOrgRelationship(){
-    let selectedOptions = this.selectedOrgRelations.selected.map(item=>item.id);
+    let relList: any = '';
+    let relId = 
+    { 
+      id: this.selectedOrgRelations.selected.map(item=>item.id)
+    }
     const options = {
       title: this.translationData.lblDelete || 'Delete',
       message: this.translationData.lblAreyousureyouwanttodeleterelationship || "Do you want to end  '$' relationship?",
       cancelText: this.translationData.lblNo || 'No',
       confirmText: this.translationData.lblYes || 'Yes'
     };
-    let name = this.selectedOrgRelations.selected[0].relationshipName;
-    this.dialogService.DeleteModelOpen(options, name);
+    //let name = this.selectedOrgRelations.selected[0].relationshipName;
+    let name = this.selectedOrgRelations.selected.forEach(item => {
+      relList += item.relationshipName + ', ';
+    });
+    if(relList != ''){
+      relList = relList.slice(0, -2);
+    }
+    this.dialogService.DeleteModelOpen(options, relList);
     this.dialogService.confirmedDel().subscribe((res) => {
     if (res) {
        {
-        this.organizationService
-        .deleteOrgRelationship(selectedOptions) //need to change
+        this.organizationService.deleteOrgRelationship(relId) //need to change
         .subscribe((d) => {
-          this.successMsgBlink(this.getDeletMsg(name));
+          this.successMsgBlink(this.getDeletMsg(relList));
           this.loadInitData();
         });
         }

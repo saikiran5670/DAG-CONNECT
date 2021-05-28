@@ -72,7 +72,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
   vehicleByVehGroupList: any= [];
   alert_category_selected: string= '';
   alert_type_selected: string= '';
-  vehicle_group_selected: number= 26;
+  vehicle_group_selected: number;
+  alertCategoryName: string= '';
   alertTypeName: string= '';
   isCriticalLevelSelected: boolean= false;
   isWarningLevelSelected: boolean= false;
@@ -156,6 +157,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultValue();
     }
+    else if(this.actionType == 'view'){
+      this.alert_category_selected = this.selectedRowData.category;
+      this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
+      this.onChangeAlertType(this.selectedRowData.type);
+    }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
     }
@@ -231,6 +237,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   onChangeAlertType(value){
     this.unitTypes= [];
     this.alert_type_selected= value;
+    this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
@@ -249,7 +256,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
       }
     }
     else if(this.alert_category_selected == 'R'){ // Repair and maintenance
-      this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
       if(this.alert_type_selected === 'O'){ // Status Change to Stop Now
         this.alertForm.get('alertLevel').setValue('C');
       }
@@ -260,7 +266,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     else if((this.alert_category_selected == 'L' && (this.alert_type_selected == 'Y' || this.alert_type_selected == 'H' || this.alert_type_selected == 'D' || this.alert_type_selected == 'U' || this.alert_type_selected == 'G')) ||
             (this.alert_category_selected == 'F' && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T' || this.alert_type_selected == 'I' || this.alert_type_selected == 'A' || this.alert_type_selected == 'F'))){
 
-      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
         this.selectedRowData.alertUrgencyLevelRefs.forEach(element => {
           if(element.urgencyLevelType == 'C'){
             this.isCriticalLevelSelected= true;
@@ -322,7 +328,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDistance ? this.translationData.lblDistance : "Distance";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles
           this.unitTypeEnum= "K"
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -335,7 +341,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblHours ? this.translationData.lblHours : "Hours";
           this.unitTypeEnum= "H";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -348,7 +354,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblMileage ? this.translationData.lblMileage : "Mileage";
           this.unitForThreshold= this.translationData.lblKilometer ? this.translationData.lblKilometer : "Kilometer"; //km/miles 
           this.unitTypeEnum= "K";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -379,7 +385,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
           this.labelForThreshold= this.translationData.lblDuration ? this.translationData.lblDuration : "Duration";
           this.unitForThreshold= this.translationData.lblSeconds ? this.translationData.lblSeconds : "Seconds";
           this.unitTypeEnum= "S";
-          if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+          if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
             this.alertForm.get('unitType').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);                  
             this.onChangeUnitType(this.selectedRowData.alertUrgencyLevelRefs[0].unitType);      
           }
@@ -746,8 +752,8 @@ PoiCheckboxClicked(event: any, row: any) {
   getBreadcum() {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
-    ${this.translationData.lblLandmarks ? this.translationData.lblLandmarks : "Landmarks"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditGroupDetails ? this.translationData.lblEditGroupDetails : 'Edit Group Details') : (this.translationData.lblViewGroupDetails ? this.translationData.lblViewGroupDetails : 'View Group Details')}`;
+    ${this.translationData.lblLandmarks ? this.translationData.lblAlerts : "Alerts"} / 
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditAlertDetails ? this.translationData.lblEditAlertDetails : 'Edit Alert Details') : (this.translationData.lblViewAlertDetails ? this.translationData.lblViewAlertDetails : 'View Alert Details')}`;
   }
 
   loadPOIData() {
@@ -823,7 +829,7 @@ PoiCheckboxClicked(event: any, row: any) {
       this.geofenceGridData = geofencelist;
      this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
       this.updateGeofenceDataSource(this.geofenceGridData);
-      if(this.actionType == 'view' || this.actionType == 'edit')
+      if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
         this.loadGeofenceSelectedData(this.geofenceGridData);
     });
   }
@@ -884,6 +890,9 @@ PoiCheckboxClicked(event: any, row: any) {
       if(data){
         this.groupGridData = data["groups"];
         this.updateGroupDatasource(this.groupGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+          this.loadGroupSelectedData(this.groupGridData);
+        }
       }
     }, (error) => {
       //console.log(error)
@@ -894,23 +903,23 @@ PoiCheckboxClicked(event: any, row: any) {
     let selectedGroupList: any = [];
     if(this.actionType == 'view'){
       tableData.forEach((row: any) => {
-        let search = this.selectedRowData.landmarks.filter(item => item.landmarkid == row.geofenceId && (item.type == "C" || item.type == "O"));
+        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
         if (search.length > 0) {
           selectedGroupList.push(row);
         }
       });
       tableData = selectedGroupList;
-      this.displayedColumnsGeofence= ['name', 'poiCount', 'geofenceCount'];
+      this.displayedColumnsGroup= ['name', 'poiCount', 'geofenceCount'];
       this.updateGroupDatasource(tableData);
     }
-    else if(this.actionType == 'edit'){
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.selectGroupTableRows();
     }
   }
 
   selectGroupTableRows(){
     this.groupDataSource.data.forEach((row: any) => {
-      let search = this.selectedRowData.landmarks.filter(item => item.groupId == row.id);
+      let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
       if (search.length > 0) {
         this.selectedGroup.select(row);
       }
@@ -1195,8 +1204,8 @@ PoiCheckboxClicked(event: any, row: any) {
 
   onCreateUpdate(){
     if(this.panelOpenState){
-      let tempObj= this.notificationComponent.getNotificationDetails();
-      console.log(tempObj);
+      this.notifications= this.notificationComponent.getNotificationDetails();
+      console.log(this.notifications);
     }
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
@@ -1250,21 +1259,22 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
           }
           else if(this.actionType == 'edit'){
             this.selectedPOI.selected.forEach(element => {
+              let poiLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id); 
               let tempObj= {
                 "landmarkType": "P",
                 "refId": element.id,
                 "distance": 100,
-                "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "unitType": "N",
+                "id": poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
-                "state": element.state
+                "state": element.state == 'Active' ? 'A' : 'I'
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1276,22 +1286,23 @@ PoiCheckboxClicked(event: any, row: any) {
               let tempObj= {
                 "landmarkType": element.type,
                 "refId": element.id,
-                "distance": element.distance,
-                "unitType": ""
+                "distance": 0,
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
           }
           else if(this.actionType == 'edit'){
             this.selectedGeofence.selected.forEach(element => {
+              let geofenceLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id); 
               let tempObj= {
                 "landmarkType": element.type,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "unitType": "N",
+                "id": geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0,	
                 "alertId": this.selectedRowData.id,
-                "state": element.state
+                "state": element.state == 'Active' ? 'A' : 'I'
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1301,24 +1312,25 @@ PoiCheckboxClicked(event: any, row: any) {
           if(this.actionType == 'create' || this.actionType == 'duplicate'){
             this.selectedGroup.selected.forEach(element => {
               let tempObj= {
-                "landmarkType": element.type,
+                "landmarkType": "G",
                 "refId": element.id,
-                "distance": element.distance,
-                "unitType": ""
+                "distance": 0,
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
           }
           else if(this.actionType == 'edit'){
             this.selectedGroup.selected.forEach(element => {
+              let groupLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
               let tempObj= {
-                "landmarkType": element.type,
+                "landmarkType": "G",
                 "refId": element.id,
-                "distance": element.distance,
-                "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "distance": 0,
+                "unitType": "N",
+                "id": groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
-                "state": element.state
+                "state": 'A'
               }
               alertLandmarkRefs.push(tempObj);
             });
@@ -1333,19 +1345,20 @@ PoiCheckboxClicked(event: any, row: any) {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": ""
+                "unitType": "N"
               }
               alertLandmarkRefs.push(tempObj);
             });
           }
           else if(this.actionType == 'edit'){
             this.selectedCorridor.selected.forEach(element => {
+              let corridorLandmarkRefArr = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == element.id); 
               let tempObj= {
                 "landmarkType": element.corridorType,
                 "refId": element.id,
                 "distance": element.distance,
-                "unitType": "",
-                "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
+                "unitType": "N",
+                "id": corridorLandmarkRefArr.length > 0 ? corridorLandmarkRefArr[0].id : 0,
                 "alertId": this.selectedRowData.id,
                 "state": element.state
               }

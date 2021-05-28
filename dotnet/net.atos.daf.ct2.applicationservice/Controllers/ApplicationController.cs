@@ -16,13 +16,14 @@ namespace net.atos.daf.ct2.applicationservice.Controllers
         public IActionResult Index()
         {
             return StatusCode(401, "Unauthorized");
+            //return StatusCode(200, "Root Sucess");
         }
 
         [HttpGet]
         [Route("~/health-check")]
         public IActionResult CheckHealth()
         {
-            return StatusCode(200, "Sucess");
+            return StatusCode(200, "Health Sucess");
         }
     }
 }

@@ -1,8 +1,10 @@
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
+import { element } from 'protractor';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
 @Component({
@@ -14,7 +16,11 @@ export class CreateNotificationsAlertComponent implements OnInit {
   @Input() translationData: any = [];
   notificationForm: FormGroup;
   FormArrayItems : FormArray;
+  FormEmailArray : FormArray;
+  FormWebArray : FormArray;
   ArrayList : any =[];
+  emailIndex : any = 0;
+  wsIndex : any = 0;
   @Input() alert_category_selected: any;
   @Input() alertTypeName: string;
   @Input() isCriticalLevelSelected :any;
@@ -25,20 +31,20 @@ export class CreateNotificationsAlertComponent implements OnInit {
   @Input() actionType: any;
   localStLanguage: any;
   organizationId: number;
-  // addFlag: boolean = false;
   addEmailFlag: boolean = false;
   addWsFlag : boolean = false;
   contactModeType: any;
-  radioButtonVal: any;
-  notificationPayload: any;
+  radioButtonVal: any = 'N';
+  notificationPayload: any = [];
+  notifications : any = [];
   openAdvancedFilter: boolean= false;
  contactModes : any = [
   {
-    id : 0,
+    id : 'W',
     value: 'Web Service'
   },
   {
-    id : 1,
+    id : "E",
     value: 'Email'
   }
 ];
@@ -55,7 +61,8 @@ mailDescription: any;
 notifyPeriod: any;
 emailCount : number = 0;
 wsCount : number = 0;
-
+emailLabel : any;
+wsLabel: any;
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -67,7 +74,9 @@ wsCount : number = 0;
       criticalLevel: [''],
       warningLevel: [''],
       advisoryLevel: [''],
-      FormArrayItems : this._formBuilder.array([this.initItems()]),
+      // FormArrayItems : this._formBuilder.array([this.initItems()]),
+      FormEmailArray : this._formBuilder.array([this.initEmailItems()]),
+      FormWebArray : this._formBuilder.array([this.initWebItems()]),
     },
     {
       validator: [
@@ -79,8 +88,6 @@ wsCount : number = 0;
 
     initItems(): FormGroup{
       return this._formBuilder.group({
-        // recipientLabel: ['',[Validators.required]],
-        // contactMode: ['', [Validators.required]],
         emailAddress: ['', [Validators.required, Validators.email]],
         mailSubject: ['', [Validators.required]],
         mailDescription: ['', [Validators.required]],
@@ -90,37 +97,88 @@ wsCount : number = 0;
         password: ['', [Validators.required]],
         webURL:['', [Validators.required]],
         wsTextDescription:[''],
-        // criticalLevel: [''],
-        // warningLevel: [''],
-        // advisoryLevel: [''],
         notifyPeriod: ['A']
         });
     }
 
-    addMultipleItems() :void{
-      console.log(this.FormArrayItems);
-      // this.addFlag = true;
-      this.contactModeType = this.notificationForm.get("contactMode").value;
-      if(this.contactModeType == 1)
-      {
-        this.addEmailFlag = true;
-        // this.emailCount = this.emailCount + 1;
-      }
-      else if(this.contactModeType == 0)
-      {
-        this.addWsFlag = true;
-        // this.wsCount = this.wsCount + 1;
-        console.log("emailcount=" +this.emailCount);
-      }
-      if(!this.FormArrayItems)
-      {
-      this.FormArrayItems = this.notificationForm.get("FormArrayItems") as FormArray;
-      }
-      else{
-        this.FormArrayItems.push(this.initItems());
-      }
-      console.log(this.FormArrayItems.controls);
+    initEmailItems(): FormGroup{
+      return this._formBuilder.group({
+        emailAddress: ['', [Validators.required, Validators.email]],
+        mailSubject: ['', [Validators.required]],
+        mailDescription: ['', [Validators.required]],
+        notifyPeriod: ['A'],
+        emailRecipientLabel: [''],
+        emailContactModes: ['']
+      });
+
     }
+
+    initWebItems(): FormGroup{
+      return this._formBuilder.group({
+        wsDescription: ['', [Validators.required]],
+        authentication:['N', [Validators.required]],
+        loginId: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required]],
+        webURL:['', [Validators.required]],
+        wsTextDescription:[''],
+        notifyPeriodweb: ['A'],        
+        webRecipientLabel: [''],
+        webContactModes: [''],
+      });
+
+    }
+
+
+    addMultipleItems(data) :void{
+
+      this.contactModeType = this.notificationForm.get("contactMode").value;
+      //this is for email
+      if (this.contactModeType == 'E') {
+        this.addEmailFlag = true;
+        this.emailCount = this.emailCount + 1;
+        if (!this.FormEmailArray) {
+          this.FormEmailArray = this.notificationForm.get("FormEmailArray") as FormArray;
+          this.emailLabel = this.notificationForm.get("recipientLabel").value;
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+        }
+        else {
+          this.emailIndex = this.emailIndex+1;
+          this.FormEmailArray.push(this.initEmailItems());
+          this.emailLabel = this.notificationForm.get("recipientLabel").value;
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+        }
+      }
+      //this is for web service
+      else if (this.contactModeType == 'W') {
+        this.addWsFlag = true;
+        this.wsCount = this.wsCount + 1;
+        if (!this.FormWebArray) {
+          this.FormWebArray = this.notificationForm.get("FormWebArray") as FormArray;
+          this.wsLabel = this.notificationForm.get("recipientLabel").value;
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+        }
+        else {
+          this.wsIndex = this.wsIndex+1;
+          this.FormWebArray.push(this.initWebItems());
+          this.wsLabel = this.notificationForm.get("recipientLabel").value;
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+        }
+     }
+     }
+
+     deleteWebNotificationRow(index :number){
+      this.FormWebArray.removeAt(index);
+      console.log("deleted");
+     }
+
+     deleteEmailNotificationRow(index :number){
+      this.FormEmailArray.removeAt(index);
+      console.log("deleted");
+     }
 
   setDefaultValueForws(){
     this.webURL = "";
@@ -136,54 +194,10 @@ wsCount : number = 0;
     this.mailDescription = "";
   }
   
-  // onNotificationAdd(){
-  //   this.addFlag = true;
-  // }
 
-  onChangeContactMode(event :any){
-   this.contactModeType = event.value;
-  //  this.addFlag = false;
-   //for Web service
-  //  if(this.contactModeType == 0){
-  //   this.recipientLabel = this.notificationForm.controls.recipientLabel.value;
-  //   this.contactMode = this.notificationForm.controls.contactMode.value
-  //   this.webURL = this.notificationForm.controls.webURL.value;
-  //   this.wsDescription = this.notificationForm.controls.wsDescription.value;
-  //   this.authentication = this.notificationForm.controls.authentication.value;
-  //   this.loginId = this.notificationForm.controls.loginId.value;
-  //   this.password = this.notificationForm.controls.password.value;
-  //   this.setDefaultValueForemail()
-  //  }
-  //  // for Email
-  //  if(this.contactModeType == 1){
-  //  this.recipientLabel = this.notificationForm.controls.recipientLabel.value;
-  //  this.contactMode = this.notificationForm.controls.contactMode.value
-  //   this.emailAddress = this.notificationForm.controls.emailAddress.value;
-  //   this.mailSubject = this.notificationForm.controls.mailSubject.value;
-  //   this.mailDescription = this.notificationForm.controls.mailDescription.value;
-  //   this.setDefaultValueForws();
-  //  }
-  //  this.notificationPayload = {
-  //    recipientLabel: this.recipientLabel,
-  //        accountGroupId: this.organizationId,
-  //        notificationModeType: this.contactMode,
-  //        phoneNo: "",
-  //        sms: "",
-  //        emailId: this.emailAddress,
-  //        emailSub: this.mailSubject,
-  //        emailText: this.mailDescription,
-  //        wsUrl: this.webURL,
-  //        wsType: this.authentication,
-  //        wsText: this.wsDescription,
-  //        wsLogin: this.loginId,
-  //        wsPassword: this.password
-  //  }
-  //  console.log(this.notificationPayload);
-  }
 
   onRadioButtonChange(event: any){
     this.radioButtonVal = event.value;
-
   }
 
   onClickAdvancedFilter(){
@@ -203,10 +217,78 @@ wsCount : number = 0;
   }
 
   getNotificationDetails() : any{
-    let tempObj= {
-      name: "ABCD"
+    // let tempObj= {
+    //   name: "ABCD"
+    // }
+
+
+     let WsData;
+    let EmailData;
+   if(this.FormWebArray && this.FormWebArray.length > 0){
+   this.FormWebArray.controls.forEach((element, index) => {
+     WsData = element['controls'];
+  let webPayload = {
+  recipientLabel: WsData.webRecipientLabel.value,
+  accountGroupId: this.organizationId,
+  notificationModeType: WsData.webContactModes.value,
+  phoneNo: "",
+  sms: "",
+  emailId: "",
+  emailSub: "",
+  emailText: "",
+  wsUrl: WsData.webURL.value,
+  wsType: WsData.authentication.value,
+  wsText: WsData.wsDescription.value,
+  wsLogin: WsData.loginId.value,
+  wsPassword: WsData.password.value
+}
+this.notificationPayload.push(webPayload);
+
+   });
+
+}
+
+  if(this.FormEmailArray && this.FormEmailArray.length > 0)
+  {
+  this.FormEmailArray.controls.forEach((item,index)=>{
+    EmailData = item['controls'];
+    let emailPayload = {
+          recipientLabel: EmailData.emailRecipientLabel.value,
+          accountGroupId: this.organizationId,
+          notificationModeType: EmailData.emailContactModes.value,
+          phoneNo: "",
+          sms: "",
+          emailId: EmailData.emailAddress.value,
+          emailSub: EmailData.mailSubject.value,
+          emailText: EmailData.mailDescription.value,
+          wsUrl: "",
+          wsType: "",
+          wsText: "",
+          wsLogin: "",
+          wsPassword: ""
     }
-    return tempObj;
+    this.notificationPayload.push(emailPayload);
+  });
+
+}
+    
+
+this.notifications = [
+  {
+    "alertUrgencyLevelType": "C",
+    "frequencyType": "O",
+    "frequencyThreshholdValue": 0,
+    "validityType": "A",
+    "createdBy": 0,
+    "notificationRecipients": this.notificationPayload,
+    "notificationLimits": [],
+    "notificationAvailabilityPeriods": []
   }
+  ]
+
+  return this.notifications;
+  }
+
+ 
 
 }

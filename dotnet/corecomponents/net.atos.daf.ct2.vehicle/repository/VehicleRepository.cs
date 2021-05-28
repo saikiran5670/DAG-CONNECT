@@ -1035,7 +1035,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 //on  grp.id=vgrpref.group_id
                 //where vgrpref.ref_id=@accountid)";
 
-                var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin,
+                var QueryStatement = @"select grp.id as VehicleGroupId,grp.name as VehicleGroupName,veh.id as VehicleId,veh.name as VehicleName,veh.vin as Vin,veh.license_plate_number as RegNo,
                                     (CASE WHEN sub.vehicle_id >0 AND sub.state='A' THEN true ELSE false END )as SubcriptionStatus
 									from master.vehicle veh
                                     left join master.groupref vgrpref
@@ -1158,7 +1158,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

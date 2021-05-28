@@ -102,7 +102,8 @@ export class AlertsComponent implements OnInit {
       this.alertTypeList= filterData.filter(item => item.type == 'T');
       this.alertCriticalityList= filterData.filter(item => item.type == 'U');
       this.vehicleList= data["vehicleGroup"].filter(item => item.vehicleName != '');
-    
+      this.vehicleList = this.removeDuplicates(this.vehicleList, "vehicleName");
+
       this.alertStatusList=[{
        id: 1,
        value:"A",
@@ -119,6 +120,17 @@ export class AlertsComponent implements OnInit {
     })
   }
 
+  removeDuplicates(originalArray, prop) {
+    var newArray = [];
+    var lookupObject  = {}; 
+    for(var i in originalArray) {
+       lookupObject[originalArray[i][prop]] = originalArray[i];
+    } 
+    for(i in lookupObject) {
+        newArray.push(lookupObject[i]);
+    }
+     return newArray;
+  }
   onClickNewAlert(){
     //this.titleText = this.translationData.lblAddNewGroup || "Add New Alert";
     this.actionType = 'create';
@@ -127,7 +139,7 @@ export class AlertsComponent implements OnInit {
   onClose(){
     this.grpTitleVisible = false;
   }
-
+ 
   onBackToPage(objData){
     this.createViewEditStatus = objData.actionFlag;
     if(objData.successMsg && objData.successMsg != ''){
@@ -340,8 +352,10 @@ export class AlertsComponent implements OnInit {
       return ("Alert '$' was successfully deleted").replace('$', alertName);
   }
 
-  onViewAlert(element: any, type: any) {
-   
+  onViewAlert(row: any, action: any) {
+    this.createViewEditStatus= true;
+    this.actionType = action;
+    this.rowsData = this.originalAlertData.filter(element => element.id == row.id)[0];
   }
 
   onEditDuplicateAlert(row: any, action : string) {

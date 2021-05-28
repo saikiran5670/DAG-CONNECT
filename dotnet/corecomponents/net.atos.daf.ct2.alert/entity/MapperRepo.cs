@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.alert.entity
                                 notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
                             }
                         }
-                        if (alertItem.notlim_id > 0 && alertItem.notava_notification_id == alertItem.noti_id)
+                        if (alertItem.notlim_id > 0 && alertItem.notlim_notification_id == alertItem.noti_id)
                         {
                             if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.notlim_id), out notificationLimit))
                             {
@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.alert.entity
                                 notification.NotificationLimits.Add(notificationLimit);
                             }
                         }
-                        if (alertItem.notrec_id > 0 && alertItem.notava_notification_id == alertItem.noti_id)
+                        if (alertItem.notrec_id > 0 && alertItem.notrec_notification_id == alertItem.noti_id)
                         {
                             if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.notrec_id), out notificationRecipient))
                             {
@@ -126,6 +126,8 @@ namespace net.atos.daf.ct2.alert.entity
             alert.ModifiedAt = request.alefil_modified_at;
             alert.ModifiedBy = request.ale_modified_by;
             alert.ApplyOn = request.ale_applyon;
+            alert.Vin = request.vin;
+            alert.RegNo = request.regno;
             alert.VehicleName = request.vehiclename;
             alert.VehicleGroupName = request.vehiclegroupname;
             alert.AlertUrgencyLevelRefs = new List<AlertUrgencyLevelRef>();

@@ -68,10 +68,10 @@ namespace net.atos.daf.ct2.visibility.repository
 							,grp.organization_id 
 							from master.accessrelationship ass
 							inner join master.group grp 
-							on ass.account_group_id=grp.id and grp.object_type='A' and (grp.ref_id = @account_id or grp.ref_id is null) 
-							inner join master.groupref vgrpref
-							on  grp.id=vgrpref.group_id and	vgrpref.ref_id = @account_id
-							where grp.organization_id=@organization_id							 
+							on ass.account_group_id=grp.id and grp.object_type='A' and (((@account_id > 0 and grp.ref_id = @account_id) or (@account_id = 0 and grp.ref_id is not null)) or grp.ref_id is null) 
+							left join master.groupref vgrpref
+							on  grp.id=vgrpref.group_id and	(( @account_id > 0 and vgrpref.ref_id = @account_id) or (@account_id =0 and 1=1) )
+							where ((@organization_id > 0 and grp.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))							 
 							)
 
 							--select * from cte_account_visibility_for_vehicle
@@ -93,9 +93,9 @@ namespace net.atos.daf.ct2.visibility.repository
 							from cte_account_visibility_for_vehicle cte
 							inner join master.group grp 
 							on cte.vehiclegroupid=grp.id and grp.object_type='V' --and grp.group_type='G'
-							inner join master.groupref vgrpref
+							left join master.groupref vgrpref
 							on  grp.id=vgrpref.group_id
-							inner join master.vehicle veh
+							left join master.vehicle veh
 							on vgrpref.ref_id=veh.id
 							where grp.organization_id=cte.organization_id 
 							)
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.visibility.repository
 								and du1.function_enum='A'
 								--Left join cte_account_visibility_for_vehicle_dynamic_unique du2
 								--on orm.target_org_id=du2.Organization_Id and ors.code<>'Owner' and du2.function_enum='A'
-								where veh.organization_id=@organization_id
+								where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 								and ors.state='A'
 								and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 								else COALESCE(end_date,0) =0 end  
@@ -226,7 +226,7 @@ namespace net.atos.daf.ct2.visibility.repository
 								on ors.id=orm.relationship_id
 								Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 								on ((orm.owner_org_id=du1.Organization_Id and ors.code='Owner') or (veh.organization_id=du1.Organization_Id)) and du1.function_enum='O'
-								where veh.organization_id=@organization_id 
+								where ((@organization_id > 0 and veh.organization_id=@organization_id ) or ( @organization_id = 0 and 1=1))
 								and ors.state='A'
 								and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 								else COALESCE(end_date,0) =0 end  
@@ -256,7 +256,7 @@ namespace net.atos.daf.ct2.visibility.repository
 								on ors.id=orm.relationship_id
 								Inner join cte_account_visibility_for_vehicle_dynamic_unique du2
 								on orm.target_org_id=du2.Organization_Id and du2.function_enum='V'
-								where veh.organization_id=@organization_id 
+								where ((@organization_id > 0 and veh.organization_id=@organization_id  ) or ( @organization_id = 0 and 1=1))
 								and ors.state='A'
 								and case when COALESCE(end_date,0) !=0 then to_timestamp(COALESCE(end_date)/1000)::date>=now()::date 
 								else COALESCE(end_date,0) =0 end  
@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.visibility.repository
 								from master.vehicle veh
 								Inner join cte_account_visibility_for_vehicle_dynamic_unique du1
 								on veh.organization_id=du1.organization_id and du1.function_enum='M'
-								where veh.organization_id=@organization_id
+								where ((@organization_id > 0 and veh.organization_id=@organization_id) or ( @organization_id = 0 and 1=1))
 							)
 							--select * from cte_account_vehicle_DynamicOEM
 							,
@@ -313,9 +313,9 @@ namespace net.atos.daf.ct2.visibility.repository
 									,case when VehicleGroupName is null or group_type = 'S' then '' else VehicleGroupName end as VehicleGroupName 
 									,VehicleId
 									,case when VehicleName is null  then '' else VehicleName end as VehicleName
-									,vin as Vin
+									,case when Vin is null  then '' else Vin end as Vin
 									,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
-						 from cte_account_vehicle_CompleteList where organization_id=@organization_id order by 1;";
+						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) order by 1;";
 				#endregion
 				return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
 			}

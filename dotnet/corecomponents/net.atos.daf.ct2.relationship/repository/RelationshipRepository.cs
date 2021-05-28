@@ -335,7 +335,7 @@ namespace net.atos.daf.ct2.relationship.repository
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
         }
 

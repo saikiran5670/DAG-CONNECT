@@ -24,5 +24,6 @@ namespace net.atos.daf.ct2.alert.entity
         public string State { get; set; }
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
+        public bool Exists { get; set; }
     }
 }

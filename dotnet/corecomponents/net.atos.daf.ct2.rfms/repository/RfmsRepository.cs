@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 
@@ -138,7 +138,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
 

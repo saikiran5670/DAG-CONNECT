@@ -100,6 +100,8 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alert.ModifiedBy = request.ModifiedBy;
             alert.VehicleName =string.IsNullOrEmpty(request.VehicleName)?string.Empty: request.VehicleName;
             alert.VehicleGroupName = string.IsNullOrEmpty(request.VehicleGroupName) ? string.Empty: request.VehicleGroupName;
+            alert.Vin= string.IsNullOrEmpty(request.Vin) ? string.Empty : request.Vin;
+            alert.RegNo = string.IsNullOrEmpty(request.RegNo) ? string.Empty : request.RegNo;
             alert.ApplyOn= string.IsNullOrEmpty(request.ApplyOn) ? string.Empty : request.ApplyOn;
             if (request.AlertUrgencyLevelRefs.Count > 0)
             {

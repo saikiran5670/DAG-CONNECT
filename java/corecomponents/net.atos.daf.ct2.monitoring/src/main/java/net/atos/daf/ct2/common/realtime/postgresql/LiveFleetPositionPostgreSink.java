@@ -17,6 +17,7 @@ import net.atos.daf.ct2.pojo.KafkaRecord;
 import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.CurrentTrip;
+import net.atos.daf.postgre.bo.LiveFleetPojo;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.Co2MasterDao;
 import net.atos.daf.postgre.dao.LiveFleetPosition;
@@ -45,25 +46,36 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 	LiveFleetPosition positionDAO;
 	LivefleetCurrentTripStatisticsDao currentTripDAO;
 	Co2MasterDao cmDAO;
+	Co2Master cmData;
 
-	
+	LiveFleetPojo currentPosition ;// later we have to implement it inside invoke
 
 	private List<Monitor> queue;
 	private List<Monitor> synchronizedCopy;
 
+	Long Fuel_consumption = 0L;
+
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
-		
-		
+
 		queue = new ArrayList<Monitor>();
 		synchronizedCopy = new ArrayList<Monitor>();
 
 		Monitor row = monitor.getValue();
+		
+		currentPosition = new LiveFleetPojo();
+
+		//currentPosition = tripCalculation(row,currentPosition );
+		
+		System.out.println("After trip calcultion");
+		// CALL A METOD FOR CALCULATIONS
 
 		try {
+			System.out.println("in new code change invoke");
 			queue.add(row);
-			Co2Master cmData = cmDAO.read(); //CO2 coefficient data read from master table 
+			cmData = cmDAO.read(row.getVid()); // CO2 coefficient data read from master table
+						
 			if (queue.size() >= 1) {
-				
+
 				System.out.println("inside syncronized");
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Monitor>(queue);
@@ -77,12 +89,15 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 						System.out.println("tripID -- >  " + tripID);
 						System.out.println("DafConstants.FUEL_CONSUMPTION_INDICATOR --> "
 								+ DafConstants.FUEL_CONSUMPTION_INDICATOR);
-						CurrentTrip currentTripData = currentTripDAO.read(tripID, DafConstants.FUEL_CONSUMPTION_INDICATOR);
-						//Co2Master cmData = cmDAO.read();
+						CurrentTrip currentTripData = currentTripDAO.read(tripID,
+								DafConstants.FUEL_CONSUMPTION_INDICATOR);
+						// Co2Master cmData = cmDAO.read();
 
-						Long Fuel_consumption = currentTripData.getFuel_consumption();
-						positionDAO.insert(monitorData, Fuel_consumption, cmData);
-						//positionDAO.insert(monitorData, 100l, cmData);
+						Fuel_consumption = currentTripData.getFuel_consumption();
+						currentPosition = tripCalculation(row,currentPosition );
+						// positionDAO.insert(monitorData, Fuel_consumption, cmData);
+						positionDAO.insert(currentPosition, Fuel_consumption, cmData);
+						// positionDAO.insert(monitorData, 100l, cmData);
 						// jPAPostgreDao.saveTripDetails(synchronizedCopy);
 						System.out.println("monitor save done");
 						// System.out.println("anshu1");
@@ -105,8 +120,9 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 		positionDAO = new LiveFleetPosition();
 		currentTripDAO = new LivefleetCurrentTripStatisticsDao();
 		cmDAO = new Co2MasterDao();
-	
+
 		try {
+			System.out.println("IN OPEN");
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
@@ -133,24 +149,91 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	}
 
-	/*
-	 * private String createValidUrlToConnectPostgreSql(String serverNm, int
-	 * port, String databaseNm, String userNm, String password) throws Exception
-	 * {
-	 * 
-	 * String encodedPassword = encodeValue(password); String url = serverNm +
-	 * ":" + port + "/" + databaseNm + "?" + "user=" + userNm + "&" +
-	 * "password=" + encodedPassword + DafConstants.POSTGRE_SQL_SSL_MODE;
-	 * 
-	 * log.info("Valid Url = " + url);
-	 * 
-	 * return url; }
-	 * 
-	 * private static String encodeValue(String value) { try { return
-	 * URLEncoder.encode(value, StandardCharsets.UTF_8.toString()); } catch
-	 * (UnsupportedEncodingException ex) { throw new
-	 * RuntimeException(ex.getCause()); } }
-	 */
+	public LiveFleetPojo tripCalculation(Monitor row, LiveFleetPojo currentPosition) {
+		
+		System.out.println("In a new function tripCalculation");
+
+		int varVEvtid = 0;
+		if (row.getVEvtID() != null) {
+			varVEvtid = row.getVEvtID();
+		}
+
+		double varGPSLongi = 0;
+		if (row.getGpsLongitude() != null) {
+			varGPSLongi = row.getGpsLongitude();
+		}
+		currentPosition.setTripId(row.getDocument().getTripID());
+		currentPosition.setVid(row.getVid());
+		currentPosition.setVin(row.getVin());
+		currentPosition.setMessageTimestamp((double) row.getReceivedTimestamp());
+		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
+		currentPosition.setCreated_at_kafka(row.getReceivedTimestamp());
+		currentPosition.setCreated_at_dm(row.getReceivedTimestamp());
+
+		if (varGPSLongi == 255.0) {
+			currentPosition.setGpsAltitude(255.0); // gpsAltitude
+			currentPosition.setGpsHeading(255.0); // gpsHeading
+			currentPosition.setGpsLatitude(255.0); // gpsLatitude
+			currentPosition.setGpsLongitude(255.0); // gpsLongitude
+		} else {
+			if (row.getGpsAltitude() != null) {
+				currentPosition.setGpsAltitude(row.getGpsAltitude().doubleValue());
+			} else {
+				currentPosition.setGpsAltitude(0.0);
+			}
+			if (row.getGpsHeading() != null) {
+				currentPosition.setGpsHeading(row.getGpsHeading().doubleValue());
+			} else {
+				currentPosition.setGpsHeading(0.0);
+			}
+			if (row.getGpsLatitude() != null) {
+				currentPosition.setGpsLatitude(row.getGpsLatitude().doubleValue());
+			} else {
+				currentPosition.setGpsLatitude(0.0);
+			}
+			if (row.getGpsLongitude() != null) {
+				currentPosition.setGpsLongitude(row.getGpsLongitude().doubleValue());
+			} else {
+				currentPosition.setGpsLongitude(0.0);
+			}
+		}
+		
+		System.out.println("varGPSLongi -- " +varGPSLongi);
+		
+		 
+		 if (Fuel_consumption != null) {
+			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
+			currentPosition.setCo2Emission(co2emission); // co2emission
+			currentPosition.setFuelConsumption(Fuel_consumption.doubleValue());// fuel_consumption
+		} else {
+			currentPosition.setCo2Emission(0.0); // co2 emission
+			currentPosition.setFuelConsumption(0.0); // fuel_consumption
+		}
+		
+		
+		if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32 || varVEvtid == 42
+				|| varVEvtid == 43 || varVEvtid == 44 || varVEvtid == 45 || varVEvtid == 46) {
+			currentPosition.setLastOdometerValue(row.getDocument().getVTachographSpeed());// TotalTachoMileage
+		} else {
+			currentPosition.setLastOdometerValue(0);
+		}
+
+		if (varVEvtid == 42 || varVEvtid == 43) {
+			currentPosition.setDistUntilNextService(row.getDocument().getVDistanceUntilService());// distance_until_next_service
+		} else {
+			currentPosition.setDistUntilNextService(0);
+		}
+		 
+		/*
+		 * currentPosition.setCo2Emission(0.0); // co2 emission
+		 * currentPosition.setFuelConsumption(0.0); // fuel_consumption
+		 */
+		
+		
+		System.out.println("Before return of trip calcultion");
+		return currentPosition ;
+
+	}
 
 	@Override
 	public void close() throws Exception {

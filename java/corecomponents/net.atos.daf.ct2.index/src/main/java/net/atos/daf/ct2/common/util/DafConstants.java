@@ -89,5 +89,6 @@ public class DafConstants {
 	
 	
 	public static final int CURRENT_TRIP_INDICATOR = 1;		
+	public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";	
 
 }
