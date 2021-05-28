@@ -86,22 +86,12 @@ wsLabel: any;
       ]
     });
     console.log(this.selectedRowData);
+    if(this.actionType == 'edit' || this.actionType == 'duplicate')
+    {
+      this.setDefaultValues();
+    }
   }
 
-    initItems(): FormGroup{
-      return this._formBuilder.group({
-        emailAddress: ['', [Validators.required, Validators.email]],
-        mailSubject: ['', [Validators.required]],
-        mailDescription: ['', [Validators.required]],
-        wsDescription: ['', [Validators.required]],
-        authentication:['', [Validators.required]],
-        loginId: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required]],
-        webURL:['', [Validators.required]],
-        wsTextDescription:[''],
-        notifyPeriod: ['A']
-        });
-    }
 
     initEmailItems(): FormGroup{
       return this._formBuilder.group({
@@ -131,8 +121,15 @@ wsLabel: any;
     }
 
 
-    addMultipleItems(data) :void{
+    setDefaultValues(){
+      
+this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
+  this.addMultipleItems(false,element);
+});
+    }
 
+    addMultipleItems(isButtonClicked: boolean, data? :any) :void{
+if(isButtonClicked){
       this.contactModeType = this.notificationForm.get("contactMode").value;
       //this is for email
       if (this.contactModeType == 'E') {
@@ -170,6 +167,61 @@ wsLabel: any;
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
         }
      }
+    }
+    //for edit or duuplicate functionality
+    else{
+      this.contactModeType = data.notificationModeType;
+      //this is for email
+      if (this.contactModeType == 'E') {
+        this.addEmailFlag = true;
+        this.emailCount = this.emailCount + 1;
+        if (!this.FormEmailArray) {
+          this.FormEmailArray = this.notificationForm.get("FormEmailArray") as FormArray;
+          this.FormEmailArray.at(this.emailIndex).get("emailAddress").setValue(data.emailId);
+          this.FormEmailArray.at(this.emailIndex).get("mailDescription").setValue(data.emailText);
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(data.recipientLabel);
+          this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
+        }
+        else {
+          this.emailIndex = this.emailIndex+1;
+          this.FormEmailArray.push(this.initEmailItems());
+          this.FormEmailArray.at(this.emailIndex).get("emailAddress").setValue(data.emailId);
+          this.FormEmailArray.at(this.emailIndex).get("mailDescription").setValue(data.emailText);
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(data.recipientLabel);
+          this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
+        }
+      }
+      //this is for web service
+      else if (this.contactModeType == 'W') {
+        this.addWsFlag = true;
+        this.wsCount = this.wsCount + 1;
+        if (!this.FormWebArray) {
+          this.FormWebArray = this.notificationForm.get("FormWebArray") as FormArray;
+          this.FormWebArray.at(this.wsIndex).get("webURL").setValue(data.wsUrl);
+          this.FormWebArray.at(this.wsIndex).get("wsDescription").setValue(data.wsText);
+          this.FormWebArray.at(this.wsIndex).get("authentication").setValue(data.wsType);
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel);     
+          if(data.wsType == 'A'){
+          this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
+          this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
+          this.FormWebArray.at(this.wsIndex).get("wsTextDescription").setValue(data.wsText);
+          }
+        }
+        else {
+          this.wsIndex = this.wsIndex+1;
+          this.FormWebArray.push(this.initWebItems());
+          this.FormWebArray.at(this.wsIndex).get("webURL").setValue(data.wsUrl);
+          this.FormWebArray.at(this.wsIndex).get("wsDescription").setValue(data.wsText);
+          this.FormWebArray.at(this.wsIndex).get("authentication").setValue(data.wsType);
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel);
+          if(data.wsType == 'A'){
+          this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
+          this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
+          this.FormWebArray.at(this.wsIndex).get("wsTextDescription").setValue(data.wsText);
+          }
+        }
+     }
+    }
      }
 
      deleteWebNotificationRow(index :number){

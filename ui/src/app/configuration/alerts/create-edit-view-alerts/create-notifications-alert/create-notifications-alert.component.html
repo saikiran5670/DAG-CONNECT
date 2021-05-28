@@ -63,7 +63,7 @@
             </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(notificationForm.value)'>{{ actionType ==
+            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(true)'>{{ actionType ==
                 'create'
                 ? (translationData.lblAdd || 'Add') :
                 (translationData.lblAdd || 'Add') }}</button>
