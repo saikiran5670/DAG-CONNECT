@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.relationship.test
             relationship.Name = "Test Data";
             relationship.Description = "Unit testing";
             relationship.FeaturesetId = 1;
-            relationship.IsActive = true;
+            relationship.State = "A";
             var result = _relationshipManager.CreateRelationship(relationship).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.relationship.test
             relationship.Name = "Test Data";
             relationship.Description = "Unit testing";
             relationship.FeaturesetId = 1;
-            relationship.IsActive = true;
+            relationship.State = "A";
             var result = _relationshipManager.UpdateRelationship(relationship).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }

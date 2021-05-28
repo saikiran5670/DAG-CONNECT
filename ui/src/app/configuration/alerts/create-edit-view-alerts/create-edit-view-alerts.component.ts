@@ -156,11 +156,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultValue();
+      this.panelOpenState= true;
     }
     else if(this.actionType == 'view'){
       this.alert_category_selected = this.selectedRowData.category;
       this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
       this.onChangeAlertType(this.selectedRowData.type);
+      this.panelOpenState= true;
     }
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.breadcumMsg = this.getBreadcum();
@@ -1205,7 +1207,7 @@ PoiCheckboxClicked(event: any, row: any) {
   onCreateUpdate(){
     if(this.panelOpenState){
       this.notifications= this.notificationComponent.getNotificationDetails();
-      console.log(this.notifications);
+      //console.log(this.notifications);
     }
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
@@ -1689,6 +1691,9 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onAddNotification(){
+    if(this.actionType == 'edit' && this.panelOpenState){
+    //  this.notificationComponent.deleteNotification();
+    }
     this.panelOpenState = !this.panelOpenState;    
   }
 }
