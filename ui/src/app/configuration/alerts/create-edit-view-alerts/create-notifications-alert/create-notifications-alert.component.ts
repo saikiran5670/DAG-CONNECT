@@ -67,6 +67,7 @@ wsLabel: any;
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    console.log("action type=" +this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.notificationForm = this._formBuilder.group({

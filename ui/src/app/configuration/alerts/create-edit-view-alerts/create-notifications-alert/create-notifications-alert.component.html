@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+    <div fxLayout="row" *ngIf="actionType != 'view'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
         fxLayoutGap="10px">
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }} <span
@@ -317,3 +317,76 @@
 </div>
 </div> -->
 </form>
+
+
+<div fxLayout="row" *ngIf="actionType == 'view'" fxLayoutAlign="space-between"
+    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <!-- for web service -->
+    <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+        <div *ngFor="let item of selectedRowData[0].notificationRecipients">
+            <div *ngIf="item.notificationModeType == 'W'">
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode Type' }}</mat-label>
+                        <span style='font-weight: 500!important;'>Web Service</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebServiceURL || 'Web Service URL' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsUrl }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebDescription || 'Web Service Description' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsText }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblAuthentication || 'Authentication' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsType == 'N'? 'No Authentication' : 'Authentication' }}</span>
+                    </div>
+                    <div *ngIf="item.wsType == 'A'" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblLoginId || 'Login Id' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.wsLogin }}</span>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="item.notificationModeType == 'E'">
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.recipientLabel }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotificationModeType || 'Notification Mode Type' }}</mat-label>
+                        <span style='font-weight: 500!important;'>Email</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailId || 'EmailId' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.emailId }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailSubject || 'Email Subject' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.emailSub }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div  class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailText || 'Email Text' }}</mat-label>
+                    </div>
+                </div>
+            </div>
+            <div style='padding: 20px; position: relative;'>
+                <mat-divider></mat-divider>
+            </div>
+        </div>
+    </div>
+
+</div>
