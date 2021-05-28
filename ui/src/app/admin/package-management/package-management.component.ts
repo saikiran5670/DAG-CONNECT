@@ -135,6 +135,12 @@ export class PackageManagementComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+    this.dataSource.filterPredicate = function(data, filter: any){
+      return data.code.toLowerCase().includes(filter) ||
+             data.name.toLowerCase().includes(filter) ||
+             data.type.toLowerCase().includes(filter) ||
+             data.state.toLowerCase().includes(filter)
+    }
   }
 
   getNewTagData(data: any){
