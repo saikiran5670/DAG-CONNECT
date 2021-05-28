@@ -170,6 +170,11 @@ wsLabel: any;
      }
      }
 
+     deleteNotificationRow(index :number){
+      this.FormWebArray.removeAt(index);
+      console.log("deleted");
+     }
+
   setDefaultValueForws(){
     this.webURL = "";
     this.wsDescription = "";
