@@ -11,9 +11,9 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { ReportMapService } from './report-map.service';
 import { filter } from 'rxjs/operators';
 import { MatTableExporterDirective } from 'mat-table-exporter';
-// import * as jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-var jsPDF = require('jspdf');
+//var jsPDF = require('jspdf');
 
 declare var H: any;
 
@@ -321,23 +321,39 @@ export class TripReportComponent implements OnInit {
     var doc = new jsPDF();
 
     doc.setFontSize(18);
-    doc.text('My Team Detail', 11, 8);
+    doc.text('Trip Details', 11, 8);
     doc.setFontSize(11);
     doc.setTextColor(100);
 
+    let pdfColumns = [['Start TimeStamp', 'End TimeStamp', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
+  let prepare = []
+    this.initData.forEach(e=>{
+      var tempObj =[];
+      tempObj.push(e.startTimeStamp);
+      tempObj.push(e.endTimeStamp);
+      tempObj.push( e.distance);
+      tempObj.push( e.idleDuration);
+      tempObj.push( e.averageSpeed);
+      tempObj.push(e.averageWeight);
+      tempObj.push(e.startPosition);
+      tempObj.push(e.endPosition);
+      tempObj.push(e.fuelConsumed100Km);
+      tempObj.push(e.drivingTime);
+      tempObj.push(e.alert);
+      tempObj.push(e.events);
+
+
+      prepare.push(tempObj);
+    });
     (doc as any).autoTable({
-      head: this.displayedColumns,
-      body: this.initData,
-      theme: 'plain',
+      head: pdfColumns,
+      body: prepare,
+      theme: 'striped',
       didDrawCell: data => {
         console.log(data.column.index)
       }
     })
-
-    // below line for Open PDF document in new tab
-    doc.output('dataurlnewwindow')
-
     // below line for Download PDF document  
     doc.save('tripReport.pdf');
   }

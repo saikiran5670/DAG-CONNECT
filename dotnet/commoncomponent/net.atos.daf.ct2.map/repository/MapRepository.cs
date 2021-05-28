@@ -3,6 +3,7 @@ using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.map.entity;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.map.repository
@@ -18,43 +19,90 @@ namespace net.atos.daf.ct2.map.repository
         }
 
 
-        //public async Task<string> GetLookupAddress(LookupAddress lookupAddress)
-        //{
-        //    try
-        //    {
-        //        var queryStatement = @"select id,latitude
-        //                           ,longitude
-        //                           ,address                                   
-        //                           from master.vehicle 
-        //                           where 1=1";
-        //        var parameter = new DynamicParameters();
+        public async Task<List<LookupAddress>> GetLookupAddress(List<LookupAddress> lookupAddresses)
+        {
+            try
+            {
+                var addresses = new List<LookupAddress>();
+                foreach (var lookupAddress in lookupAddresses)
+                {
+                    var queryStatement = @"select id,latitude
+                                   ,longitude
+                                   ,address                                   
+                                   from master.vehicle 
+                                   where 1=1";
+
+                    var parameter = new DynamicParameters();
+                    if (lookupAddress.Latitude > 0)
+                    {
+                        parameter.Add("@latitude", lookupAddress.Latitude);
+                    }
+                    if (lookupAddress.Longitude > 0)
+                    {
+                        parameter.Add("@longitude", lookupAddress.Longitude);
+                    }
+
+                    if (lookupAddress.Id > 0)
+                    {
+                        parameter.Add("@id", lookupAddress.Id);
+                    }
+
+                    var result = await _dataMartDataAccess.QueryAsync<LookupAddress>(queryStatement, parameter);
+                    addresses.Add(result as LookupAddress);
+                }
+                return addresses;
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
 
-        //        if (lookupAddress.Latitude > 0)
-        //        {
-        //            parameter.Add("@latitude", lookupAddress.Latitude);
-        //            queryStatement = queryStatement + " and id LIKE @id";
-
-        //        }
-        //        if (lookupAddress.Longitude > 0)
-        //        {
-        //            parameter.Add("@vin", lookupAddress.Longitude);
-        //            queryStatement = queryStatement + " and vin LIKE @id";
-
-        //        }
-        //      //  var rfmsVehicles = new RfmsVehicles();
-        //        dynamic result = await _dataMartDataAccess.QueryAsync<dynamic>(queryStatement, parameter);
-        //       // return rfmsVehicles;
-
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
+        }      
+        public async Task<bool> AddLookupAddress(List<LookupAddress> lookupAddresses)
+        {
+            try
+            {
+                var addresses = new List<LookupAddress>();
+                foreach (var lookupAddress in lookupAddresses)
+                {
+                    
+                    var query = @"update  master.vehicle  set address=@address where  longitude =@longitude and latitude=@latitude  RETURNING id";
+                   
 
 
-        //}
+                    var parameter = new DynamicParameters();
+                    if (lookupAddress.Latitude > 0)
+                    {
+                        parameter.Add("@latitude", lookupAddress.Latitude);
+                    }
+                    if (lookupAddress.Longitude > 0)
+                    {
+                        parameter.Add("@longitude", lookupAddress.Longitude);
+                    }
+
+                    if (lookupAddress.Id > 0)
+                    {
+                        parameter.Add("@id", lookupAddress.Id);
+                    }
+
+                    var result = await _dataMartDataAccess.QueryAsync<int>(query, parameter);
+                     
+                }
+                return true; // have to change this  per logic
+            }
+
+            catch (Exception ex)
+            {
+
+                log.Error(ex.ToString());
+                return false;
+            }
+
+
+        }
+
 
 
 
