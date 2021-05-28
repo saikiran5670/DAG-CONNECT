@@ -21,6 +21,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 export class AlertsComponent implements OnInit {
   displayedColumns: string[] = ['highUrgencyLevel','name','category','type','thresholdValue','vehicleGroupName','state','action'];
   grpTitleVisible : boolean = false;
+  errorMsgVisible: boolean = false;
   displayMessage: any;
   createViewEditStatus: boolean = false;
   showLoadingIndicator: any = false;
@@ -340,16 +341,28 @@ export class AlertsComponent implements OnInit {
       this.alertService.deleteAlert(item.id).subscribe((res) => {
           this.successMsgBlink(this.getDeletMsg(name));
           this.loadAlertsData();
+        }, error => {
+          if(error.status == 409){
+            this.errorMsgBlink(this.getDeletMsg(name, true));
+          }
         });
     }
    });
   }
     
-  getDeletMsg(alertName: any){
-    if(this.translationData.lblAlertDelete)
-      return this.translationData.lblAlertDelete.replace('$', alertName);
-    else
-      return ("Alert '$' was successfully deleted").replace('$', alertName);
+  getDeletMsg(alertName: any, isError? :boolean){
+    if(!isError){
+      if(this.translationData.lblAlertDelete)
+        return this.translationData.lblAlertDelete.replace('$', alertName);
+      else
+        return ("Alert '$' was successfully deleted").replace('$', alertName);
+    }
+    else{
+      if(this.translationData.lblAlertDeleteError)
+        return this.translationData.lblAlertDeleteError.replace('$', alertName);
+      else
+        return ("Alert '$' cannot be deleted as notification is associated with this").replace('$', alertName);
+    }
   }
 
   onViewAlert(row: any, action: any) {
@@ -376,6 +389,14 @@ export class AlertsComponent implements OnInit {
     this.displayMessage = msg;
     setTimeout(() => {  
       this.grpTitleVisible = false;
+    }, 5000);
+  }
+
+  errorMsgBlink(errorMsg: any){
+    this.errorMsgVisible = true;
+    this.displayMessage = errorMsg;
+    setTimeout(() => {  
+      this.errorMsgVisible = false;
     }, 5000);
   }
 

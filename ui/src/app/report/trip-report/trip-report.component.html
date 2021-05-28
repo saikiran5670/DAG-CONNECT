@@ -190,7 +190,7 @@
           </div>
         </div>
         <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
-            matSort>
+            matSort #exporter="matTableExporter">
             <ng-container matColumnDef="All">
               <mat-header-cell *matHeaderCellDef class="max-width-10-per">
                 <mat-checkbox (change)='$event ? masterToggleForTrip() : null'

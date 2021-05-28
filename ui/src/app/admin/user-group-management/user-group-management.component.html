@@ -91,6 +91,6 @@
     </div>
     <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
   </mat-card>
-  <app-create-edit-user-group *ngIf='createViewEditStatus' [actionType]='actionType' [translationData]="translationData"
+  <app-create-edit-user-group *ngIf='createViewEditStatus' [actionType]='actionType' [translationData]="translationData" [userGroupData]='initData'
     [selectedRowData]="selectedRowData" (backToPage)='onBackToPage($event)'></app-create-edit-user-group>
 </div>

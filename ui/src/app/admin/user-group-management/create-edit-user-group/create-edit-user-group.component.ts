@@ -24,12 +24,14 @@ export class CreateEditUserGroupComponent implements OnInit {
   @Input() translationData: any;
   @Input() selectedRowData: any;
   @Input() actionType: any;
+  @Input() userGroupData:any;
   userCreatedMsg: any = '';
   duplicateEmailMsg: boolean = false;
   breadcumMsg: any = '';
   userGroupForm: FormGroup;
   groupTypeList: any = [];
   showUserList: boolean = true;
+  isUserGroupExist: boolean = false;
 
   constructor(private _formBuilder: FormBuilder, private accountService: AccountService) { }
 
@@ -213,7 +215,7 @@ export class CreateEditUserGroupComponent implements OnInit {
           }
         });
     }
-    else{ // update
+    else{ // update    
       let updateAccGrpObj = {
         id: this.selectedRowData.id,
         name: this.userGroupForm.controls.userGroupName.value,
@@ -223,6 +225,14 @@ export class CreateEditUserGroupComponent implements OnInit {
         groupType: this.userGroupForm.controls.groupType.value,
         accounts: this.showUserList ? accountList : []
       }
+      const updateAccGrpNameInput = updateAccGrpObj.name.trim().toLowerCase();
+      let existingUserGroupName = this.userGroupData.filter(response => (response.accountGroupName).toLowerCase() == updateAccGrpNameInput);
+      if (existingUserGroupName.length > 0) {
+        this.isUserGroupExist = true;       
+        this.duplicateEmailMsg = true;
+      }
+      else{
+      this.isUserGroupExist = false;
       this.accountService.updateAccountGroup(updateAccGrpObj).subscribe((d) => {
         let accountGrpObj: any = {
           accountId: 0,
@@ -243,6 +253,7 @@ export class CreateEditUserGroupComponent implements OnInit {
           this.duplicateEmailMsg = true;
         }
       });
+     }
     }
   }
 
