@@ -63,7 +63,7 @@
             </mat-error>
         </div>
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(notificationForm.value)'>{{ actionType ==
+            <button class='no-margin' mat-raised-button color="primary" (click)='addMultipleItems(true)'>{{ actionType ==
                 'create'
                 ? (translationData.lblAdd || 'Add') :
                 (translationData.lblAdd || 'Add') }}</button>
@@ -379,7 +379,8 @@
                 </div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
                     <div  class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-                        <mat-label>{{ translationData.lblEmailText || 'Email Text' }}</mat-label>
+                        <mat-label>{{ translationData.lblEmailText || 'Email Description' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.emailText }}</span>
                     </div>
                 </div>
             </div>

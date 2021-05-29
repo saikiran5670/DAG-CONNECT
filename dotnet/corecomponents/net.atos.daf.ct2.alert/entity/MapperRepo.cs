@@ -48,16 +48,15 @@ namespace net.atos.daf.ct2.alert.entity
                     if (!alertUrgencyLevelRefLookup.TryGetValue(Convert.ToInt32(alertItem.aleurg_id), out alertUrgencyLevelRef))
                     {
                         alertUrgencyLevelRefLookup.Add(Convert.ToInt32(alertItem.aleurg_id), alertUrgencyLevelRef = ToAlertUrgencyLevelRefModel(alertItem));
-
-                        if (alertItem.alefil_id > 0 && alertItem.aleurg_id == alertItem.alefil_alert_urgency_level_id)
-                        {
-                            if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.alefil_id), out alertFilterRef))
-                            {
-                                alertFilterRefLookup.Add(Convert.ToInt32(alertItem.alefil_id), alertFilterRef = ToAlertFilterRefModel(alertItem));
-                                alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
-                            }
-                        }
                         alert.AlertUrgencyLevelRefs.Add(alertUrgencyLevelRef);
+                    }
+                    if (alertItem.alefil_id > 0 && alertItem.aleurg_id == alertItem.alefil_alert_urgency_level_id)
+                    {
+                        if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.alefil_id), out alertFilterRef))
+                        {
+                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.alefil_id), alertFilterRef = ToAlertFilterRefModel(alertItem));
+                            alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
+                        }
                     }
                 }
                 if (alertItem.alelan_id > 0 && alertItem.ale_id == alertItem.alelan_alert_id)
@@ -73,31 +72,31 @@ namespace net.atos.daf.ct2.alert.entity
                     if (!notificationLookup.TryGetValue(Convert.ToInt32(alertItem.noti_id), out notification))
                     {
                         notificationLookup.Add(Convert.ToInt32(alertItem.noti_id), notification = ToNotificationModel(alertItem));
-                        if (alertItem.notava_id > 0 && alertItem.notava_notification_id == alertItem.noti_id)
-                        {
-                            if (!notificationAvailabilityPeriodLookup.TryGetValue(Convert.ToInt32(alertItem.notava_id), out notificationAvailabilityPeriod))
-                            {
-                                notificationAvailabilityPeriodLookup.Add(Convert.ToInt32(alertItem.notava_id), notificationAvailabilityPeriod = ToNotificationAvailabilityPeriodModel(alertItem));
-                                notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
-                            }
-                        }
-                        if (alertItem.notlim_id > 0 && alertItem.notlim_notification_id == alertItem.noti_id)
-                        {
-                            if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.notlim_id), out notificationLimit))
-                            {
-                                notificationLimitkRefLookup.Add(Convert.ToInt32(alertItem.notlim_id), notificationLimit = ToNotificationLimitModel(alertItem));
-                                notification.NotificationLimits.Add(notificationLimit);
-                            }
-                        }
-                        if (alertItem.notrec_id > 0 && alertItem.notrec_notification_id == alertItem.noti_id)
-                        {
-                            if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.notrec_id), out notificationRecipient))
-                            {
-                                notificationRecipientRefLookup.Add(Convert.ToInt32(alertItem.notrec_id), notificationRecipient = ToNotificationRecipientModel(alertItem));
-                                notification.NotificationRecipients.Add(notificationRecipient);
-                            }
-                        }
                         alert.Notifications.Add(notification);
+                    }
+                    //if (alertItem.notava_id > 0 && alertItem.notava_notification_id == alertItem.noti_id)
+                    //{
+                    //    if (!notificationAvailabilityPeriodLookup.TryGetValue(Convert.ToInt32(alertItem.notava_id), out notificationAvailabilityPeriod))
+                    //    {
+                    //        notificationAvailabilityPeriodLookup.Add(Convert.ToInt32(alertItem.notava_id), notificationAvailabilityPeriod = ToNotificationAvailabilityPeriodModel(alertItem));
+                    //        notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
+                    //    }
+                    //}
+                    if (alertItem.notlim_id > 0 && alertItem.notlim_notification_id == alertItem.noti_id)
+                    {
+                        if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.notlim_id), out notificationLimit))
+                        {
+                            notificationLimitkRefLookup.Add(Convert.ToInt32(alertItem.notlim_id), notificationLimit = ToNotificationLimitModel(alertItem));
+                            notification.NotificationLimits.Add(notificationLimit);
+                        }
+                    }
+                    if (alertItem.notrec_id > 0 && alertItem.notrec_notification_id == alertItem.noti_id)
+                    {
+                        if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.notrec_id), out notificationRecipient))
+                        {
+                            notificationRecipientRefLookup.Add(Convert.ToInt32(alertItem.notrec_id), notificationRecipient = ToNotificationRecipientModel(alertItem));
+                            notification.NotificationRecipients.Add(notificationRecipient);
+                        }
                     }
                 }
             }
