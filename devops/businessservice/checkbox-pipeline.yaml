@@ -12,7 +12,7 @@ parameters:
   type: boolean
   default: false
   
-pool: $(PRIVATEAGENT)
+pool: Azure Pipelines
 
 steps:
 - task: CmdLine@2
