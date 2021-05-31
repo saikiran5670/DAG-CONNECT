@@ -130,58 +130,6 @@ export class TripReportComponent implements OnInit {
     });
   }
 
-  // dummyData(){
-  //   [ 
-  //     {
-  //       "id": 214681,
-  //       "tripId": "3",
-  //       "vin": "V12003",
-  //       "startTimeStamp": 0,
-  //       "endTimeStamp": 0,
-  //       "distance": 0,
-  //       "idleDuration": 0,
-  //       "averageSpeed": 0,
-  //       "averageWeight": 0,
-  //       "odometer": 0,
-  //       "startPosition": "NA",
-  //       "endPosition": "NA",
-  //       "fuelConsumed": 0,
-  //       "drivingTime": 0,
-  //       "alert": 0,
-  //       "events": 0,
-  //       "fuelConsumed100Km": 0,
-  //       "liveFleetPosition": [],
-  //       "startPositionLattitude": 0,
-  //       "startPositionLongitude": 0,
-  //       "endPositionLattitude": 0,
-  //       "endPositionLongitude": 0
-  //     },
-  //     {
-  //       "id": 214681,
-  //       "tripId": "3",
-  //       "vin": "V12003",
-  //       "startTimeStamp": 0,
-  //       "endTimeStamp": 0,
-  //       "distance": 0,
-  //       "idleDuration": 0,
-  //       "averageSpeed": 0,
-  //       "averageWeight": 0,
-  //       "odometer": 0,
-  //       "startPosition": "NA",
-  //       "endPosition": "NA",
-  //       "fuelConsumed": 0,
-  //       "drivingTime": 0,
-  //       "alert": 0,
-  //       "events": 0,
-  //       "fuelConsumed100Km": 0,
-  //       "liveFleetPosition": [],
-  //       "startPositionLattitude": 0,
-  //       "startPositionLongitude": 0,
-  //       "endPositionLattitude": 0,
-  //       "endPositionLongitude": 0
-  //     }
-  //   ]
-  // }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -258,8 +206,10 @@ export class TripReportComponent implements OnInit {
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
+    this.vehicleGroupListData = this.vehicleGroupListData;
+    this.vehicleListData = this.vehicleGroupListData;
     this.updateDataSource(this.tripData);
-    this.filterDateData();
+    //this.filterDateData();
     this.resetTripFormControlValue();
     this.tableInfoObj = {};
   }
@@ -417,14 +367,14 @@ export class TripReportComponent implements OnInit {
     this.selectedStartTime = selectedTime;
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
     this.resetTripFormControlValue();
-    this.filterDateData();
+    //this.filterDateData();
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
     this.resetTripFormControlValue();
-    this.filterDateData();
+    //this.filterDateData();
   }
 
   getTodayDate(){
@@ -495,21 +445,21 @@ export class TripReportComponent implements OnInit {
       }
     }
     this.resetTripFormControlValue();
-    this.filterDateData();
+    //this.filterDateData();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
     ////console.log("start:: ", event.value)
     this.startDateValue = event.value;
     this.resetTripFormControlValue();
-    this.filterDateData();
+    //this.filterDateData();
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
     ////console.log("end: ", event.value)
     this.endDateValue = event.value;
     this.resetTripFormControlValue();
-    this.filterDateData();
+    //this.filterDateData();
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
@@ -522,8 +472,10 @@ export class TripReportComponent implements OnInit {
   filterDateData(){
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
-    let currentStartTime = this.startDateValue.getTime();
-    let currentEndTime = this.endDateValue.getTime();
+    let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+    let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    let currentStartTime = _last3m.getTime();
+    let currentEndTime = _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
