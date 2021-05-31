@@ -26,7 +26,6 @@
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
-                  <mat-option value="0">--All--</mat-option>
                   <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
                   </mat-option>
