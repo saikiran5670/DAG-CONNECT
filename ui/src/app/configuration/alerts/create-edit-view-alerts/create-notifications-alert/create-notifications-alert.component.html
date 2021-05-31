@@ -87,7 +87,7 @@
                 translationData.lblRecipientLabel02 || 'Recipient Label' }} <span style="margin-left: 5px;">{{item['controls']['emailRecipientLabel'].value}}</span></span>
                </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                <mat-icon style="color: red;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
+                <mat-icon style="color: red;cursor: pointer;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
                 </div>
             </div>
         </mat-panel-title>
@@ -188,7 +188,7 @@
                 translationData.lblRecipientLabel02 || 'Recipient Label' }} <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span></span>
                </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                <mat-icon style="color: red;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
+                <mat-icon style="color: red;cursor: pointer;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
                 </div>
             </div>
             </mat-panel-title>
