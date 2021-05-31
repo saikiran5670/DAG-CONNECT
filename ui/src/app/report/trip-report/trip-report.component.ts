@@ -150,7 +150,7 @@ export class TripReportComponent implements OnInit {
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
-        this.tripData = _tripData.tripData;
+        this.tripData = this.getConvertTableDateTime(_tripData.tripData);
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error)=>{
@@ -161,6 +161,24 @@ export class TripReportComponent implements OnInit {
         this.updateDataSource(this.tripData);
       });
     }
+  }
+
+  getConvertTableDateTime(data: any){
+    data.forEach(element => {
+      if(element.startTimeStamp != 0){
+        element.convertedStartTime = this.formStartDate(new Date(element.startTimeStamp));
+      }
+      else{
+        element.convertedStartTime = 0;
+      }
+
+      if(element.endTimeStamp != 0){
+        element.convertedEndTime = this.formStartDate(new Date(element.endTimeStamp));
+      }else{
+        element.convertedEndTime = 0;
+      }
+    });
+    return data;
   }
 
   setTableInfo(){

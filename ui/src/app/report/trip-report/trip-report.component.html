@@ -210,12 +210,12 @@
             <ng-container matColumnDef="startTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.startTimeStamp != '' ? row.startTimeStamp : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedStartTime != '' ? row.convertedStartTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="endTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.endTimeStamp != '' ? row.endTimeStamp : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedEndTime != '' ? row.convertedEndTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="distance">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{ translationData.lblkm || 'km' }})</span>
