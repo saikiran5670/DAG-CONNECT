@@ -1,8 +1,6 @@
-﻿using net.atos.daf.ct2.alert.entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.alert.entity;
 
 namespace net.atos.daf.ct2.alert
 {

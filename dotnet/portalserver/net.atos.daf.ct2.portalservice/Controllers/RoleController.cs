@@ -1,26 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Sockets;
+using System.Reflection;
 using System.Threading.Tasks;
-using Google.Protobuf;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 //using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 //using net.atos.daf.ct2.portalservice.Entity.Feature;
 using net.atos.daf.ct2.portalservice.Entity.Role;
 using net.atos.daf.ct2.roleservice;
-using RoleBusinessService = net.atos.daf.ct2.roleservice;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json;
-using log4net;
-using System.Reflection;
-using Microsoft.AspNetCore.Http;
+using RoleBusinessService = net.atos.daf.ct2.roleservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -119,7 +114,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> Update(Roleupdaterequest roleMaster)
         {
 
-            if ((string.IsNullOrEmpty(roleMaster.RoleName)) || (roleMaster.RoleId == 0))
+            if (string.IsNullOrEmpty(roleMaster.RoleName) || roleMaster.RoleId == 0)
             {
                 return StatusCode(400, "Role name and Role Id required Roleid required");
             }

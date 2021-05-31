@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.organizationservice;
 
@@ -34,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
             catch (Exception)
             {
-                    level = -1;
+                level = -1;
             }
             return level;
         }

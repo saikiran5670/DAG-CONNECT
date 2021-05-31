@@ -1,25 +1,25 @@
 using System;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.organization.entity;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.organization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.entity;
 
 namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
     [Route("customer-data")]
     [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
-    public class customerdataController : ControllerBase
+    public class CustomerDataController : ControllerBase
     {
-        private readonly ILogger<customerdataController> logger;
+        private readonly ILogger<CustomerDataController> logger;
         private readonly IOrganizationManager organizationtmanager;
         public IConfiguration Configuration { get; }
-        public customerdataController(ILogger<customerdataController> _logger, IOrganizationManager _organizationmanager, IConfiguration configuration)
+        public CustomerDataController(ILogger<CustomerDataController> _logger, IOrganizationManager _organizationmanager, IConfiguration configuration)
         {
             logger = _logger;
             organizationtmanager = _organizationmanager;
@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 
         [HttpPost]
         [Route("update")]
-        public async Task<IActionResult> update(Customer customer)
+        public async Task<IActionResult> Update(Customer customer)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 
         [HttpPost]
         [Route("keyhandover")]
-        public async Task<IActionResult> keyhandover(KeyHandOver keyHandOver)
+        public async Task<IActionResult> KeyHandover(KeyHandOver keyHandOver)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 {
                     return StatusCode(400, string.Empty);
                 }
-               
+
                 string dateformat = "yyyy-MM-ddTHH:mm:ss";
                 DateTime parsedRefDateTime;
                 if (DateTime.TryParseExact(keyHandOver.KeyHandOverEvent.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))

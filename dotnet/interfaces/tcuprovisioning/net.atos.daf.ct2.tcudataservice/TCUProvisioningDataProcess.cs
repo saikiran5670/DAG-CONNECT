@@ -7,19 +7,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using log4net;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.tcucore;
+using Newtonsoft.Json;
 
 
 namespace net.atos.daf.ct2.tcudataservice
 {
     public class TCUProvisioningDataProcess : ITcuProvisioningDataReceive, ITcuProvisioningDataPost
-    {   
+    {
         private string brokerList;
         private string connStr;
         private string consumergroup;
@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.tcudataservice
 
         public TCUProvisioningDataProcess(ILog _log, IConfiguration _config)
         {
-            this.log = _log;       
+            this.log = _log;
             this.config = _config;
             brokerList = config.GetSection("EH_FQDN").Value;
             connStr = config.GetSection("EH_CONNECTION_STRING").Value;
@@ -78,8 +78,8 @@ namespace net.atos.daf.ct2.tcudataservice
                     try
                     {
                         log.Info("Consuming Messages");
-                        var msg = consumer.Consume();                   
-                        TCUDataReceive tcuDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(msg.Message.Value);                  
+                        var msg = consumer.Consume();
+                        TCUDataReceive tcuDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(msg.Message.Value);
 
                         await PostTcuProvisioningMesssageToDAF(CreateTCUDataInDAFFormat(tcuDataReceive));
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using net.atos.daf.ct2.email.entity;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.translation.entity;
@@ -27,7 +26,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetAllLanguageCode();
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -40,7 +39,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetKeyTranslationByLanguageCode(langaguecode, key);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -53,7 +52,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetLangagugeTranslationByKey(key);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -67,7 +66,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetTranslationsByMenu(MenuId, ((char)type).ToString(), langaguecode);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -80,7 +79,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetTranslationsForDropDowns(Dropdownname, langagugecode);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -90,7 +89,7 @@ namespace net.atos.daf.ct2.translation
         {
             try
             {
-                
+
                 TranslationDataStatus TdataStatus = new TranslationDataStatus();
                 TdataStatus.AddCount = 0;
                 TdataStatus.UpdateCount = 0;
@@ -112,24 +111,24 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.InsertTranslationFileDetails(translationupload);
                 return TdataStatus;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
 
-        public async Task<translationStatus> InsertTranslationFileData(Translations translationupload,List<Translations> TranslationsList)
+        public async Task<translationStatus> InsertTranslationFileData(Translations translationupload, List<Translations> TranslationsList)
         {
             try
             {
-                
+
                 var result = await Translationrepository.InsertTranslationFileData(translationupload, TranslationsList);
                 //Translationupload v = new Translationupload();
                 return result;
                 //return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -142,7 +141,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetFileUploadDetails(FileID);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -150,12 +149,12 @@ namespace net.atos.daf.ct2.translation
 
         public async Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList)
         {
-             try
+            try
             {
                 var result = await Translationrepository.ImportDTCWarningData(dtcwarningList);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -168,7 +167,7 @@ namespace net.atos.daf.ct2.translation
                 var result = await Translationrepository.GetDTCWarningData(LanguageCode);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

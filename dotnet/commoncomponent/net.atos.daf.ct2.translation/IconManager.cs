@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using net.atos.daf.ct2.translation.entity;
 using net.atos.daf.ct2.translation.repository;
 
 namespace net.atos.daf.ct2.translation
 {
-    public class IconManager:IIconManager
+    public class IconManager : IIconManager
     {
-        private readonly IIconRepository Iconrepository; 
-        
+        private readonly IIconRepository Iconrepository;
+
         public IconManager(IIconRepository _repository)
         {
             Iconrepository = _repository;
@@ -22,19 +21,19 @@ namespace net.atos.daf.ct2.translation
                 bool result = await Iconrepository.UpdateIcons(iconlist);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
         public async Task<List<Icon>> GetIcons(int icon_id)
         {
-             try
+            try
             {
                 List<Icon> icon_list = await Iconrepository.GetIcons(icon_id);
                 return icon_list;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

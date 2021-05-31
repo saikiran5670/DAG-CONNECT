@@ -1,25 +1,21 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using AccountComponent = net.atos.daf.ct2.account;
-using Preference = net.atos.daf.ct2.accountpreference;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
-using Group = net.atos.daf.ct2.group;
-using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.Enum;
-using Google.Protobuf;
-using net.atos.daf.ct2.account.entity;
-using Google.Protobuf.Collections;
-using net.atos.daf.ct2.accountservice.Entity;
-using net.atos.daf.ct2.utilities;
-using Newtonsoft.Json;
-using log4net;
-using net.atos.daf.ct2.identity.entity;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using Google.Protobuf;
+using Google.Protobuf.Collections;
+using Grpc.Core;
+using log4net;
+using net.atos.daf.ct2.account.entity;
+using net.atos.daf.ct2.accountservice.Entity;
+using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.vehicle;
+using Newtonsoft.Json;
+using AccountComponent = net.atos.daf.ct2.account;
+using Group = net.atos.daf.ct2.group;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using Preference = net.atos.daf.ct2.accountpreference;
 using vehicleEntity = net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.accountservice
@@ -782,8 +778,8 @@ namespace net.atos.daf.ct2.accountservice
         {
             try
             {
-                var result = await accountmanager.GetMenuFeatures(new MenuFeatureRquest() 
-                { 
+                var result = await accountmanager.GetMenuFeatures(new MenuFeatureRquest()
+                {
                     AccountId = request.AccountId,
                     ContextOrgId = request.ContextOrgId,
                     LanguageCode = request.LanguageCode,
@@ -1289,7 +1285,7 @@ namespace net.atos.daf.ct2.accountservice
                         accountList = await accountmanager.GetAccount(filter, false);
                         vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
                     }
-                    List<AccountVehicleEntity> Objvehiclelist = vehicleList.Select(a => new AccountVehicleEntity { id = a.id, name = a.name, is_group = a.is_group, count = a.count,RegistrationNo=a.RegistrationNo,VIN=a.VIN }).ToList();
+                    List<AccountVehicleEntity> Objvehiclelist = vehicleList.Select(a => new AccountVehicleEntity { id = a.id, name = a.name, is_group = a.is_group, count = a.count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
                     accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(Objvehiclelist));
                     accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
                     _logger.Info("Get AccessRelationshipAccount." + request.OrganizationId.ToString());

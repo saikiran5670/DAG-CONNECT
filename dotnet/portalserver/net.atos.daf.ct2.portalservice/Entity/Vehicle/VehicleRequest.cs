@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
 {
@@ -35,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
 
     public class VehicleResponse
     {
-       
+
         public int ID { get; set; }
         public int? Organization_Id { get; set; }
         public string Name { get; set; }

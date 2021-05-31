@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Google.Protobuf;
 using net.atos.daf.ct2.translationservice;
 
@@ -25,14 +21,14 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
                 }
             }
             response.Languagecode = request.Languagecode;
-           
+
             return response;
         }
         public TranslationUploadRequest MapFileDetailRequest(FileUploadRequest request)
         {
             TranslationUploadRequest response = new TranslationUploadRequest();
             if (request == null) return response;
-            if (request != null && request.file !=null)
+            if (request != null && request.file != null)
             {
                 foreach (var item in request.file)
                 {
@@ -49,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return response;
 
         }
-        public TranslationsRequest MapGetTranslations (TranslationRequest request)
+        public TranslationsRequest MapGetTranslations(TranslationRequest request)
         {
             TranslationsRequest response = new TranslationsRequest();
             if (request == null) return response;
@@ -66,7 +62,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return response;
         }
 
-             public WarningDataRequest ToImportDTCWarning(DTCWarningImportRequest request)
+        public WarningDataRequest ToImportDTCWarning(DTCWarningImportRequest request)
         {
 
             var dtcRequests = new WarningDataRequest();
@@ -78,16 +74,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
                     Code = x.code,
                     Type = x.type,
                     VehType = x.veh_type != null ? x.veh_type : string.Empty,
-                        WarningClass = x.warning_class,
-                        Number = x.number,
-                        Description = x.description,
-                        Advice = x.advice,
-                        ExpiresAt= x.expires_at,
-                        IconId = x.icon_id,
-                        CreatedBy = x.created_by
-                    };
+                    WarningClass = x.warning_class,
+                    Number = x.number,
+                    Description = x.description,
+                    Advice = x.advice,
+                    ExpiresAt = x.expires_at,
+                    IconId = x.icon_id,
+                    CreatedBy = x.created_by
+                };
                 dtcRequests.DtcData.Add(dtcRequest);
-                
+
             }
             return dtcRequests;
 
@@ -104,16 +100,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             return acceptedTermConditionRequest;
         }
 
-           public IconUpdateRequest ToImportDTCWarningIcon(DTCWarningIconUpdateRequest request)
+        public IconUpdateRequest ToImportDTCWarningIcon(DTCWarningIconUpdateRequest request)
         {
 
             var dtcRequests = new IconUpdateRequest();
-            
+
             foreach (var x in request.dtcWarningUpdateIcon)
             {
                 if (x.Name != null || x.Name != "" || x.Icon != null)
                 {
-                    
+
                     var dtcRequest = new dtcIconUpdate()
                     {
                         Name = x.Name,

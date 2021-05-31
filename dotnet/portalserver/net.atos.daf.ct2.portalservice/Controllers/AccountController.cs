@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
+using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Account;
 using net.atos.daf.ct2.utilities;
 using Newtonsoft.Json;
-using log4net;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
-using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -64,8 +61,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var accountPreferenceResponse = new AccountBusinessService.AccountPreferenceResponse();
                 var preferenceRequest = new AccountBusinessService.AccountPreferenceFilter();
                 // Validation 
-                if ((string.IsNullOrEmpty(request.EmailId)) || (string.IsNullOrEmpty(request.FirstName))
-                || (string.IsNullOrEmpty(request.LastName)) || (request.OrganizationId <= 0) || (string.IsNullOrEmpty(request.Type)))
+                if (string.IsNullOrEmpty(request.EmailId) || string.IsNullOrEmpty(request.FirstName)
+                || string.IsNullOrEmpty(request.LastName) || request.OrganizationId <= 0 || string.IsNullOrEmpty(request.Type))
                 {
                     return StatusCode(400, PortalConstants.AccountValidation.CreateRequired);
                 }
@@ -167,8 +164,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 bool isSameEmail = false;
 
                 // Validation 
-                if ((request.Id <= 0) || (string.IsNullOrEmpty(request.EmailId))
-                    || (string.IsNullOrEmpty(request.FirstName)) || (string.IsNullOrEmpty(request.LastName)))
+                if (request.Id <= 0 || string.IsNullOrEmpty(request.EmailId)
+                    || string.IsNullOrEmpty(request.FirstName) || string.IsNullOrEmpty(request.LastName))
                 {
                     return StatusCode(400, "The AccountId, EmailId address, first name, last name is required.");
                 }
@@ -250,12 +247,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("delete")]
         public async Task<IActionResult> Delete(string EmailId, int AccountId, int OrganizationId)
         {
-            var response = new AccountBusinessService.AccountResponse();
             AccountBusinessService.AccountRequest accountRequest = new AccountBusinessService.AccountRequest();
             try
             {
                 // Validation                 
-                if ((string.IsNullOrEmpty(EmailId)) || (Convert.ToInt32(AccountId) <= 0) || (Convert.ToInt32(OrganizationId) <= 0))
+                if (string.IsNullOrEmpty(EmailId) || (Convert.ToInt32(AccountId) <= 0) || (Convert.ToInt32(OrganizationId) <= 0))
                 {
                     return StatusCode(400, "The Email address, account id and organization id is required.");
                 }
@@ -263,7 +259,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 accountRequest.Id = AccountId;
                 accountRequest.EmailId = EmailId;
                 accountRequest.OrganizationId = AssignOrgContextByAccountId(AccountId);
-                response = await _accountClient.DeleteAsync(accountRequest);
+                var response = await _accountClient.DeleteAsync(accountRequest);
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
@@ -305,7 +301,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                             "ChangePassword  method in Account controller", _userDetails.accountId, _userDetails.accountId, JsonConvert.SerializeObject(request),
+                                             "ChangePassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(request),
                                               Request);//accountid requred here
                     return Ok("Password has been changed.");
 
@@ -323,7 +319,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                             "ChangePassword  method in Account controller", _userDetails.accountId, _userDetails.accountId, JsonConvert.SerializeObject(request),
+                                             "ChangePassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(request),
                                               Request);//accountid requred here
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -337,7 +333,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 if (string.IsNullOrEmpty(request.Email) && string.IsNullOrEmpty(request.Name)
-                    && (request.Id <= 0) && (request.OrganizationId <= 0) && (string.IsNullOrEmpty(request.AccountIds))
+                    && (request.Id <= 0) && (request.OrganizationId <= 0) && string.IsNullOrEmpty(request.AccountIds)
                     && (request.AccountGroupId <= 0)
                     )
                 {
@@ -475,7 +471,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                           "ResetPasswordInitiate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                           "ResetPasswordInitiate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                            JsonConvert.SerializeObject(request), Request);
                     return Ok(response.Message);
                 }
@@ -488,7 +484,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                          "ResetPasswordInitiate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          "ResetPasswordInitiate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                           JsonConvert.SerializeObject(request), Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while initiating reset password process.");
@@ -515,7 +511,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                        "GetResetPasswordTokenStatus method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        "GetResetPasswordTokenStatus method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                         JsonConvert.SerializeObject(request), Request);
                     return Ok(response.Message);
                 }
@@ -526,7 +522,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                        "GetResetPasswordTokenStatus  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        "GetResetPasswordTokenStatus  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                         JsonConvert.SerializeObject(request), Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while fetching reset password token status.");
@@ -554,7 +550,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                        "ResetPassword  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        "ResetPassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                         JsonConvert.SerializeObject(request), Request);
                     return Ok("Reset password process is successfully completed.");
                 }
@@ -569,7 +565,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                        "ResetPassword  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        "ResetPassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                         JsonConvert.SerializeObject(request), Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while reseting account password");
@@ -596,7 +592,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                        "ResetPasswordInvalidate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        "ResetPasswordInvalidate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                         JsonConvert.SerializeObject(request), Request);
                     return Ok(response.Message);
                 }
@@ -609,7 +605,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                        "ResetPasswordInvalidate  method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                        "ResetPasswordInvalidate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                         JsonConvert.SerializeObject(request), Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while invalidating reset password invalidate process.");
@@ -660,7 +656,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 // Validation                 
                 if ((accountBlobRequest.BlobId <= 0 || accountBlobRequest.AccountId <= 0)
-                    && (accountBlobRequest.Image == null) && (string.IsNullOrEmpty(accountBlobRequest.ImageType)))
+                    && (accountBlobRequest.Image == null) && string.IsNullOrEmpty(accountBlobRequest.ImageType))
                 {
                     return StatusCode(400, "The BlobId or AccountId and Image is required.");
                 }
@@ -1308,7 +1304,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if ((string.IsNullOrEmpty(request.Name)) || (request.OrganizationId <= 0) || (string.IsNullOrEmpty(request.GroupType)))
+                if (string.IsNullOrEmpty(request.Name) || request.OrganizationId <= 0 || string.IsNullOrEmpty(request.GroupType))
                 {
                     return StatusCode(400, "The Account group name, organization id and group type is required");
                 }
@@ -1358,7 +1354,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if ((request.Id <= 0) || (string.IsNullOrEmpty(request.Name)))
+                if ((request.Id <= 0) || string.IsNullOrEmpty(request.Name))
                 {
                     return StatusCode(400, "The AccountGroup name and id is required");
                 }
@@ -1652,7 +1648,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+#pragma warning disable IDE0048 // Add parentheses for clarity
                 if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
+#pragma warning restore IDE0048 // Add parentheses for clarity
                 {
                     return StatusCode(400, "The Organization id and account id is required");
                 }
@@ -1694,7 +1692,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+#pragma warning disable IDE0048 // Add parentheses for clarity
                 if (request == null && request.OrganizationId <= 0 || request.AccountId <= 0)
+#pragma warning restore IDE0048 // Add parentheses for clarity
                 {
                     return StatusCode(400, "The Organization id and account id is required");
                 }
@@ -1732,9 +1732,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 AccountBusinessService.TokenSSORequest ssoRequest = new AccountBusinessService.TokenSSORequest();
-                ssoRequest.AccountID = _userDetails.accountId;
-                ssoRequest.RoleID = _userDetails.roleId;
-                ssoRequest.OrganizationID = _userDetails.contextOrgId > 0 ? _userDetails.contextOrgId : _userDetails.orgId;
+                ssoRequest.AccountID = _userDetails.AccountId;
+                ssoRequest.RoleID = _userDetails.RoleId;
+                ssoRequest.OrganizationID = _userDetails.ContextOrgId > 0 ? _userDetails.ContextOrgId : _userDetails.OrgId;
                 if (ssoRequest.AccountID <= 0 || ssoRequest.RoleID <= 0 || ssoRequest.OrganizationID <= 0)
                 {
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "MISSING_PARAMETER", nameof(HeaderObj));
@@ -1759,7 +1759,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                          "GenerateSSOToken method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          "GenerateSSOToken method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                           null, Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal server error");
@@ -1785,7 +1785,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (request.AccountId == _userDetails.accountId)
+                if (request.AccountId == _userDetails.AccountId)
                 {
                     HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
                     HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
@@ -1799,7 +1799,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                          "SetAccountInfo method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          "SetAccountInfo method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                           null, Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error occurred while saving account information.");
@@ -1812,10 +1812,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int s_accountId = _userDetails.accountId;
-                int s_roleId = _userDetails.roleId;
-                int s_orgId = _userDetails.orgId;
-                int s_contextOrgId = _userDetails.contextOrgId;
+                int s_accountId = _userDetails.AccountId;
+                int s_roleId = _userDetails.RoleId;
+                int s_orgId = _userDetails.OrgId;
+                int s_contextOrgId = _userDetails.ContextOrgId;
 
                 if (request.AccountId != s_accountId)
                     return BadRequest("Account Id mismatched");
@@ -1854,7 +1854,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                          "SwitchOrgContext method in Account controller", _userDetails.accountId, _userDetails.accountId,
+                                          "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                                           null, Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error occurred while fetching menu items and features for the context.");

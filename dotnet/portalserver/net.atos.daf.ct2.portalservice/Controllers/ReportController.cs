@@ -1,17 +1,17 @@
-﻿using log4net;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.reportservice;
 using net.atos.daf.ct2.portalservice.Common;
-using System.Reflection;
-using System.Threading.Tasks;
+using net.atos.daf.ct2.portalservice.Entity.Report;
+using net.atos.daf.ct2.reportservice;
+using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
 using Report = net.atos.daf.ct2.portalservice.Entity.Report;
-using net.atos.daf.ct2.portalservice.Entity.Report;
-using System;
-using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                _logger.Error(null,ex);
+                _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     case Responsecode.Success:
                         await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
-                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,"Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                  Request);
                         return Ok(response);
                     case Responsecode.Failed:
@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         public async Task<IActionResult> GetVinsFromTripStatisticsAndVehicleDetails(int accountId, int organizationId)
         {
             try
-            {                
+            {
                 if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
                 if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
                 var response = await _reportServiceClient

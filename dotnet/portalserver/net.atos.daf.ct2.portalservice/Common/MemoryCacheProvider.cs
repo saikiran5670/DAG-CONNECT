@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
-    public class MemoryCacheProvider: IMemoryCacheProvider
+    public class MemoryCacheProvider : IMemoryCacheProvider
     {
         private const int CacheSeconds = 100; // 10 Seconds
         private readonly IMemoryCache _cache;

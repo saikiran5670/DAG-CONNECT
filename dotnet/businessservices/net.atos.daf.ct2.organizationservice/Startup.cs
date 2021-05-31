@@ -1,33 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.organization.repository;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.accountpreference;
-using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.group;
-using net.atos.daf.ct2.vehicle.repository;
-using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.Http;
-using AccountComponent = net.atos.daf.ct2.account;
-using Identity = net.atos.daf.ct2.identity;
-using AccountPreference = net.atos.daf.ct2.accountpreference;
-using net.atos.daf.ct2.relationship.repository;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.repository;
 using net.atos.daf.ct2.relationship;
+using net.atos.daf.ct2.relationship.repository;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
+using AccountComponent = net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 //using Swashbuckle.AspNetCore.Swagger;
 //using Microsoft.OpenApi.Models;
 
@@ -65,11 +59,11 @@ namespace net.atos.daf.ct2.organizationservice
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
 
-            services.AddTransient<IAuditTraillib,AuditTraillib>(); 
-            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<ISubscriptionManager, SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
-            services.AddTransient<IOrganizationManager,OrganizationManager>();
+            services.AddTransient<IOrganizationManager, OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
             services.AddTransient<IRelationshipRepository, RelationshipRepository>();
             services.AddTransient<IRelationshipManager, RelationshipManager>();
@@ -119,8 +113,6 @@ namespace net.atos.daf.ct2.organizationservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
-                                                  .RequireCors("AllowAll");
                 endpoints.MapGrpcService<OrganizationManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 

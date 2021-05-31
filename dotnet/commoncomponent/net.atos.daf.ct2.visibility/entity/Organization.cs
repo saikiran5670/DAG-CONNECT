@@ -22,5 +22,5 @@ namespace net.atos.daf.ct2.visibility.entity
         public bool Optoutstatus { get; set; }
         public DateTime OptOutStatusChangeDdate { get; set; }
 
-}
+    }
 }

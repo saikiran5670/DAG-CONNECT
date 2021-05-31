@@ -1,4 +1,8 @@
-﻿using log4net;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,11 +12,6 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Alert;
 using net.atos.daf.ct2.vehicleservice;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
@@ -30,10 +29,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Entity.Alert.Mapper _mapper;
         private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
-        public AlertController(AlertService.AlertServiceClient alertServiceClient, 
-                               AuditHelper auditHelper, 
-                               Common.AccountPrivilegeChecker privilegeChecker, 
-                               VehicleService.VehicleServiceClient vehicleClient, 
+        public AlertController(AlertService.AlertServiceClient alertServiceClient,
+                               AuditHelper auditHelper,
+                               Common.AccountPrivilegeChecker privilegeChecker,
+                               VehicleService.VehicleServiceClient vehicleClient,
                                IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _alertServiceClient = alertServiceClient;
@@ -159,7 +158,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (accountId == 0 || orgnizationid==0) return BadRequest("Account id or Orgnization id cannot be null.");
+                if (accountId == 0 || orgnizationid == 0) return BadRequest("Account id or Orgnization id cannot be null.");
                 net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
                 var alertcategory = await _alertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
                 VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId() });
@@ -229,7 +228,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             return StatusCode(400, "Alert type should be same while duplicating the alert");
                         }
                     }
-                    else if(duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
+                    else if (duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
                     {
                         return StatusCode((int)duplicateAlertResponse.Code, duplicateAlertResponse.Message);
                     }
@@ -277,13 +276,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-        
+
         #endregion
 
         #region Update Alert
         [HttpPut]
         [Route("update")]
-        public async Task<IActionResult> UpdateAlert([FromBody]PortalAlertEntity.AlertEdit request)
+        public async Task<IActionResult> UpdateAlert([FromBody] PortalAlertEntity.AlertEdit request)
         {
             try
             {
@@ -359,11 +358,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if ( orgnizationid == 0) return BadRequest("Orgnization id cannot be null.");
+                if (orgnizationid == 0) return BadRequest("Orgnization id cannot be null.");
                 orgnizationid = GetContextOrgId();
                 AlertListResponse response = await _alertServiceClient.GetAlertListAsync(new AlertListRequest { AccountId = accountId, OrganizationId = orgnizationid });
 
-                if (response.AlertRequest != null && response.AlertRequest.Count>0)
+                if (response.AlertRequest != null && response.AlertRequest.Count > 0)
                 {
                     response.Code = ResponseCode.Success;
                     return Ok(response.AlertRequest);

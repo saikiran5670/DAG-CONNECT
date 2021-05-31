@@ -1,5 +1,3 @@
-using System;
-
 namespace net.atos.daf.ct2.visibility.entity
 {
     public class Feature : DateTimeStamp
@@ -11,7 +9,7 @@ namespace net.atos.daf.ct2.visibility.entity
         public string ParentFeatureName { get; set; }
         public bool IsMenu { get; set; }
         public int SeqNum { get; set; }
-        public bool IsRoleFeatureEnabled { get; set;}
+        public bool IsRoleFeatureEnabled { get; set; }
         public int FeatureSetID { get; set; }
     }
 }

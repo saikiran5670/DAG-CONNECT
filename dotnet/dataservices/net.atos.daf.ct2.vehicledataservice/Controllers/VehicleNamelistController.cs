@@ -1,19 +1,19 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicledataservice.Entity;
-using System.Net;
-using Microsoft.AspNetCore.Authorization;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
-using net.atos.daf.ct2.audit;
-using System.Linq;
-using net.atos.daf.ct2.vehicle.response;
 using net.atos.daf.ct2.account;
-using System.Security.Claims;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.response;
+using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using net.atos.daf.ct2.vehicledataservice.Entity;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {

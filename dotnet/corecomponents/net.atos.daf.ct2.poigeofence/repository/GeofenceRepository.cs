@@ -1,13 +1,12 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofence.ENUM;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
@@ -396,7 +395,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -435,7 +434,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -453,7 +452,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 foreach (var item in geofences.Where(w => w.Type == "O" || w.Type == "o"))
                     geofenceList.Add(await CreatePolygonGeofence(item, true));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -510,7 +509,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 return geofenceRequest;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -551,7 +550,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

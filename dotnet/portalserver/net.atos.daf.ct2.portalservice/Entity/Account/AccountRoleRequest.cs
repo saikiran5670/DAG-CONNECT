@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Account
@@ -12,6 +11,6 @@ namespace net.atos.daf.ct2.portalservice.Account
     public class AccountRoleResponse
     {
         public int Id { get; set; }
-        public string Name { get; set; }        
+        public string Name { get; set; }
     }
 }

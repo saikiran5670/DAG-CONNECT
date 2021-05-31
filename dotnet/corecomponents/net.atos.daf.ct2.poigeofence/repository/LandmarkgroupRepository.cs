@@ -1,11 +1,10 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
@@ -48,9 +47,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 landmarkgroup.id = id;
                 return landmarkgroup;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -63,16 +61,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@landmark_group_id", landmarkgroupref.landmark_group_id);
                 parameter.Add("@type", (char)landmarkgroupref.type);
                 parameter.Add("@ref_id", landmarkgroupref.ref_id);
-                            
+
 
                 string query = @"insert into master.landmarkgroupref(landmark_group_id, type, ref_id)
 	                              VALUES (@landmark_group_id, @type, @ref_id) RETURNING id";
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -83,9 +80,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", landmarkgroup.id);
-               
+
                 parameter.Add("@name", landmarkgroup.name);
-                parameter.Add("@description", landmarkgroup.description); 
+                parameter.Add("@description", landmarkgroup.description);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameter.Add("@modified_by", landmarkgroup.modified_by);
 
@@ -99,14 +96,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     landmarkgroupRef.landmark_group_id = id;
                     landmarkgroupRef.ref_id = item.Id;
                     landmarkgroupRef.type = (LandmarkType)Enum.Parse(typeof(LandmarkType), item.Type.ToString());
-                    var refid=  await AddgroupReference(landmarkgroupRef);
+                    var refid = await AddgroupReference(landmarkgroupRef);
                 }
                 landmarkgroup.id = id;
                 return landmarkgroup;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -116,23 +112,22 @@ namespace net.atos.daf.ct2.poigeofence.repository
             try
             {
                 var parameter = new DynamicParameters();
-                    parameter.Add("@landmark_group_id", landmark_group_id);
+                parameter.Add("@landmark_group_id", landmark_group_id);
 
                 string query = @"DELETE FROM master.landmarkgroupref
 	                            WHERE landmark_group_id=@landmark_group_id;";
-                var id =  dataAccess.ExecuteScalar<int>(query, parameter);
-                                
-                
+                var id = dataAccess.ExecuteScalar<int>(query, parameter);
+
+
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
 
-        public async Task<int> DeleteGroup(int groupid,int modifiedby)
+        public async Task<int> DeleteGroup(int groupid, int modifiedby)
         {
             try
             {
@@ -149,14 +144,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
 
-        public async Task<IEnumerable<LandmarkGroup>> GetlandmarkGroup(int organizationid,int groupid)
+        public async Task<IEnumerable<LandmarkGroup>> GetlandmarkGroup(int organizationid, int groupid)
         {
             try
             {
@@ -175,8 +169,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                     FROM master.landmarkgroup lg                   
                                     LEFT JOIN MASTER.landmarkgroupref lgr on lgr.landmark_group_id = lg.id 
                                     LEFT JOIN MASTER.landmark lm on lm.id = lgr.ref_id
-                                    WHERE 1=1 and lg.state in ('A','I') and lm.state in ('A','I') ";    
-                                    
+                                    WHERE 1=1 and lg.state in ('A','I') and lm.state in ('A','I') ";
+
 
                 if (organizationid > 0)
                 {
@@ -190,14 +184,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
 
                 query = query + " group by lg.name,lgr.landmark_group_id,lg.organization_id,lg.description,lg.created_at,lg.modified_at,lg.id; ";
-                IEnumerable <LandmarkGroup>  groups= await dataAccess.QueryAsync<LandmarkGroup>(query, parameter);
+                IEnumerable<LandmarkGroup> groups = await dataAccess.QueryAsync<LandmarkGroup>(query, parameter);
 
 
                 return groups;
             }
-            catch (Exception Ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -209,7 +202,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 List<LandmarkgroupRef> landmarkgroupRefs = new List<LandmarkgroupRef>();
                 var parameter = new DynamicParameters();
                 parameter.Add("@groupid", groupid);
-              
+
                 string query = @"SELECT l.id, 
                             i.icon,
                             i.id as iconid,                            
@@ -225,7 +218,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 							LEFT JOIN master.icon i on c.icon_id = i.id
                             WHERE 1=1 and l.state in ('A','I') and l.id = any (select ref_id from master.landmarkgroupref where landmark_group_id= @groupid)";
 
-                
+
                 dynamic groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
                 foreach (var item in groups)
                 {
@@ -234,9 +227,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 return landmarkgroupRefs;
             }
-            catch (Exception Ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -263,30 +255,30 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 List<Geofence> groupList = new List<Geofence>();
                 var query = @"select id from master.landmarkgroup where 1=1 ";
-               
-                    if (Convert.ToInt32(landmarkgroup.id) > 0)
-                    {
-                        parameter.Add("@id", landmarkgroup.id);
-                        query = query + " and id!=@id";
-                    }
-                    // name
-                    if (!string.IsNullOrEmpty(landmarkgroup.name))
-                    {
-                        parameter.Add("@name", landmarkgroup.name);
-                        query = query + " and name=@name";
-                    }
-                    // organization id filter
-                    if (landmarkgroup.organization_id > 0)
-                    {
-                        parameter.Add("@organization_id", landmarkgroup.organization_id);
-                        query = query + " and organization_id=@organization_id ";
-                    }
-                
+
+                if (Convert.ToInt32(landmarkgroup.id) > 0)
+                {
+                    parameter.Add("@id", landmarkgroup.id);
+                    query = query + " and id!=@id";
+                }
+                // name
+                if (!string.IsNullOrEmpty(landmarkgroup.name))
+                {
+                    parameter.Add("@name", landmarkgroup.name);
+                    query = query + " and name=@name";
+                }
+                // organization id filter
+                if (landmarkgroup.organization_id > 0)
+                {
+                    parameter.Add("@organization_id", landmarkgroup.organization_id);
+                    query = query + " and organization_id=@organization_id ";
+                }
+
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-               
+
                 return groupid;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

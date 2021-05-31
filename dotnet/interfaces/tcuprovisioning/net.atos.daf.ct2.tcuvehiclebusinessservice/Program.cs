@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
-            
+
             ProvisionVehicle provisionVehicle = new ProvisionVehicle(log, config);
             await provisionVehicle.ReadTcuProvisioningData();
         }

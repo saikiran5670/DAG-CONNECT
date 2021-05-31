@@ -1,11 +1,7 @@
-﻿using log4net;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.account.entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading.Tasks;
+using log4net;
+using net.atos.daf.ct2.account.entity;
 using AccountComponent = net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.vehicledataservice.Common
@@ -14,7 +10,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
     {
         AccountComponent.IAccountIdentityManager accountIdentityManager;
         private readonly ILog _logger;
-        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager) 
+        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager)
         {
             accountIdentityManager = _accountIdentityManager;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

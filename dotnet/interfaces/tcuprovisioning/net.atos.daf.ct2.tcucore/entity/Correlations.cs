@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.tcucore
 {
@@ -15,14 +13,16 @@ namespace net.atos.daf.ct2.tcucore
             this.vehicleId = _vehicleId;
         }
 
-        public string DeviceId { 
-            get => deviceId; 
-            set => deviceId = value; 
+        public string DeviceId
+        {
+            get => deviceId;
+            set => deviceId = value;
         }
 
-        public string VehicleId { 
-            get => vehicleId; 
-            set => vehicleId = value; 
+        public string VehicleId
+        {
+            get => vehicleId;
+            set => vehicleId = value;
         }
     }
 }

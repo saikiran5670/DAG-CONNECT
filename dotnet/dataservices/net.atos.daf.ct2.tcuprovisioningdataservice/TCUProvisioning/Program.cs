@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
@@ -17,7 +16,7 @@ namespace TCUProvisioning
 
         static async Task Main(string[] args)
         {
-            
+
 
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
@@ -29,7 +28,7 @@ namespace TCUProvisioning
             IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
             IAuditTraillib audit = new AuditTraillib(auditrepo);
 
-            TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log,audit,config);
+            TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log, audit, config);
             await provisionVehicle.readTCUProvisioningDataAsync();
 
         }

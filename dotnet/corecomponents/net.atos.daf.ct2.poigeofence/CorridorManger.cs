@@ -1,7 +1,7 @@
-﻿using net.atos.daf.ct2.poigeofence.entity;
-using net.atos.daf.ct2.poigeofence.repository;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 
 namespace net.atos.daf.ct2.poigeofence
 {
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.poigeofence
                     objCorridorLookUp.EditView.ViaAddressDetails = await _corridorRepository.GetCorridorViaStopById(objCorridorLookUp.EditView.Id);
                     if ((LandmarkType)objCorridorLookUp.EditView.CorridorType.ToCharArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
-                    objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
+                        objCorridorLookUp.EditView.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(objCorridorRequest.CorridorId);
                         foreach (var trips in objCorridorLookUp.EditView.CorridoreTrips)
                         {
                             trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, objCorridorLookUp.EditView.Id);
@@ -120,7 +120,7 @@ namespace net.atos.daf.ct2.poigeofence
                         item.CorridoreTrips = _corridorRepository.GetExistingtripListByCorridorId(item.Id);
                         foreach (var trips in item.CorridoreTrips)
                         {
-                            trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId,item.Id);
+                            trips.NodePoints = _corridorRepository.GetTripNodes(trips.TripId, item.Id);
                         }
                     }
                 }
@@ -137,13 +137,13 @@ namespace net.atos.daf.ct2.poigeofence
                                                                        Convert.ToChar(existingTripCorridor.CorridorType));
             if (isExist)
             {
-                _existingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);               
+                _existingTripCorridor = await _corridorRepository.UpdateExistingTripCorridor(existingTripCorridor);
             }
             else
                 _existingTripCorridor.Id = -1;
             return _existingTripCorridor;
 
-           
+
         }
 
         public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor objRouteCorridor)
@@ -161,7 +161,7 @@ namespace net.atos.daf.ct2.poigeofence
                 else
                     objRouteCorridorResponse.Id = -1;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

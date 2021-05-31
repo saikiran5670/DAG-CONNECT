@@ -8,12 +8,6 @@ using net.atos.daf.ct2.alert;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.alertservice.Services;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicle.repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace net.atos.daf.ct2.alertservice
@@ -71,7 +65,7 @@ namespace net.atos.daf.ct2.alertservice
             app.UseCors();
 
             app.UseEndpoints(endpoints =>
-            {                
+            {
                 endpoints.MapGrpcService<AlertManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 

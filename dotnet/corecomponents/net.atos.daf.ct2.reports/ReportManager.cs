@@ -1,9 +1,7 @@
-﻿using net.atos.daf.ct2.reports.entity;
-using net.atos.daf.ct2.reports.repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.repository;
 
 namespace net.atos.daf.ct2.reports
 {

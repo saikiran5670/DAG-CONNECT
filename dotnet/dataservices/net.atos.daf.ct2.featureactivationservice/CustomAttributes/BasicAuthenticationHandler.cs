@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.featureactivationservice.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
 {
@@ -52,7 +49,7 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
             try
             {
                 string token = Convert.ToString(headerValue);
-                token = token.Replace(AuthorizationHeaderType,"");
+                token = token.Replace(AuthorizationHeaderType, "");
                 email = await _authenticationService.ValidateTokenGuid(token);
             }
             catch (Exception)

@@ -1,9 +1,7 @@
-﻿using Google.Protobuf;
-using net.atos.daf.ct2.poiservice;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using net.atos.daf.ct2.poiservice;
 
 namespace net.atos.daf.ct2.portalservice.Entity.POI
 {
@@ -34,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
             poi.Id = poiResponseData.Id;
             poi.OrganizationId = poiResponseData.OrganizationId != null ? poiResponseData.OrganizationId.Value : 0;
             poi.CategoryId = poiResponseData.CategoryId;
-            poi.SubCategoryId = poiResponseData.SubCategoryId != null ? poiResponseData.SubCategoryId.Value : 0; 
+            poi.SubCategoryId = poiResponseData.SubCategoryId != null ? poiResponseData.SubCategoryId.Value : 0;
             poi.Name = poiResponseData.Name;
             poi.SubCategoryName = poiResponseData.SubCategoryName;
             poi.CategoryName = poiResponseData.CategoryName;
@@ -67,11 +65,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
                 City = x.City,
                 Country = x.Country,
                 Zipcode = x.Zipcode,
-              //  Type = x.Type,
+                //  Type = x.Type,
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
-               // Distance = x.Distance,
-              //  TripId = x.TripId,
+                // Distance = x.Distance,
+                //  TripId = x.TripId,
                 State = x.State,
                 CreatedBy = x.CreatedBy
             }).ToList());
@@ -104,7 +102,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
                 case "E":
                     landmarktype = LandmarkType.ExistingTripCorridor;
                     break;
-               
+
 
             }
             return landmarktype;

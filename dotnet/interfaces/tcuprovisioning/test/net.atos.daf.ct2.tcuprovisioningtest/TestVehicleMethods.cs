@@ -1,17 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.tcucore;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.tcuprovisioningtest
 {
@@ -21,7 +18,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
         private string psqlconnstring;
         private string datamartpsqlconnstring;
         IDataAccess dataacess = null;
-        IDataMartDataAccess datamartDataacess = null;    
+        IDataMartDataAccess datamartDataacess = null;
         IConfiguration config = null;
         IAuditTraillib auditlog = null;
         IAuditLogRepository auditrepo = null;
@@ -88,7 +85,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
 
                 return receivedVehicle;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -96,18 +93,18 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
         }
 
         private async Task<Vehicle> UpdateVehicle(Vehicle receivedVehicle, VehicleManager vehicleManager)
-        {         
+        {
 
             Vehicle veh = null;
             try
-            {          
+            {
                 veh = await vehicleManager.Update(receivedVehicle);
-               
+
             }
             catch (Exception ex)
             {
                 var messageError = ex.Message;
-                 throw;
+                throw;
             }
             return veh;
         }

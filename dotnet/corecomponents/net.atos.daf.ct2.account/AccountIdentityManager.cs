@@ -1,20 +1,20 @@
 using System;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using IdentityComponent = net.atos.daf.ct2.identity;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
-using net.atos.daf.ct2.utilities;
-using System.Net;
-using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
-using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.email.Enum;
-using System.Linq;
+using net.atos.daf.ct2.identity.entity;
+using net.atos.daf.ct2.utilities;
+using Newtonsoft.Json;
+using IdentityComponent = net.atos.daf.ct2.identity;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.account
 {

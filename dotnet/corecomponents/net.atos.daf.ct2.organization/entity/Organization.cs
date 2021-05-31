@@ -1,5 +1,4 @@
 using System;
-using  net.atos.daf.ct2.accountpreference;
 
 namespace net.atos.daf.ct2.organization.entity
 {
@@ -9,19 +8,19 @@ namespace net.atos.daf.ct2.organization.entity
         public string OrganizationId { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
-        public string AddressType { get; set; }   
-        public string AddressStreet { get; set; }   
-        public string AddressStreetNumber { get; set; }  
-         public string PostalCode { get; set; }   
-        public string City { get; set; }  
-        public string CountryCode { get; set; }         
-         public long OptOutStatusChangedDate  { get; set; } 
-         public bool IsActive  { get; set; }  
-         public   DateTime ? reference_date  { get; set; }        
-         public string Referenced { get; set; }   
+        public string AddressType { get; set; }
+        public string AddressStreet { get; set; }
+        public string AddressStreetNumber { get; set; }
+        public string PostalCode { get; set; }
+        public string City { get; set; }
+        public string CountryCode { get; set; }
+        public long OptOutStatusChangedDate { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime? reference_date { get; set; }
+        public string Referenced { get; set; }
         public int preference_id { get; set; }
         public string vehicle_default_opt_in { get; set; }
-        public string driver_default_opt_in { get; set; } 
+        public string driver_default_opt_in { get; set; }
 
     }
 }

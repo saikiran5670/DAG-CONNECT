@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.data;
-using Dapper;
-using net.atos.daf.ct2.rfms.responce;
-using net.atos.daf.ct2.rfms.entity;
 using System;
+using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.rfms.entity;
+using net.atos.daf.ct2.rfms.responce;
 using net.atos.daf.ct2.rfms.response;
 
 namespace net.atos.daf.ct2.rfms.repository
@@ -60,7 +58,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -118,7 +116,7 @@ namespace net.atos.daf.ct2.rfms.repository
                 }
 
                 //filter latest only*****
-                
+
 
 
                 // filter trigger 
@@ -136,7 +134,7 @@ namespace net.atos.daf.ct2.rfms.repository
 
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Translation
 {
@@ -30,8 +27,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         [JsonIgnore]
         public string code { get; set; }
         public byte[] description { get; set; }
-       
-          
+
+
     }
     /// <summary>
     /// List of data from front end

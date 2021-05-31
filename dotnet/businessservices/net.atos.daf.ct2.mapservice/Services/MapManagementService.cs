@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.mapservice
         public MapManagementService(ILogger<MapManagementService> logger)
         {
             _logger = logger;
-        }       
+        }
     }
 }

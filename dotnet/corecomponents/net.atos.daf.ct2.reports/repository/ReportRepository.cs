@@ -1,12 +1,11 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -14,7 +13,7 @@ namespace net.atos.daf.ct2.reports.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog _log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ReportRepository(IDataAccess dataAccess
@@ -22,7 +21,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
-        }   
+        }
 
         #region Select User Preferences
         public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
@@ -128,8 +127,8 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 catch (Exception ex)
                 {
-                    log.Info($"CreateUserPreference method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(objUserPreferenceRequest)}");
-                    log.Error(ex.ToString());
+                    _log.Info($"CreateUserPreference method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(objUserPreferenceRequest)}");
+                    _log.Error(ex.ToString());
                     transactionScope.Rollback();
                     rowsEffected = 0;
                 }
@@ -233,7 +232,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 return lstTripEntityResponce;
             }
-            catch (System.Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -296,7 +295,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 return lstLiveFleetPosition;
             }
-            catch (System.Exception ex)
+            catch (Exception)
             {
                 throw;
             }

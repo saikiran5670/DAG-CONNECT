@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using net.atos.daf.ct2.account;
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.singlesignonservice.CustomAttributes
 {
@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.singlesignonservice.CustomAttributes
             string emailAddress = string.Empty;
             var emailClaim = context.User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
 
-            if (emailClaim !=null && !string.IsNullOrEmpty(emailClaim.Value))
+            if (emailClaim != null && !string.IsNullOrEmpty(emailClaim.Value))
             {
                 emailAddress = emailClaim.Value;
             }

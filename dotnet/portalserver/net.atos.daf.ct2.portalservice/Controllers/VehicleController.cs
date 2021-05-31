@@ -1,19 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
-using net.atos.daf.ct2.portalservice.Entity.Vehicle;
-using System.Text;
-using net.atos.daf.ct2.portalservice.Common;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using log4net;
-using Newtonsoft.Json;
 using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Vehicle;
+using Newtonsoft.Json;
+using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
@@ -29,12 +26,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly AuditHelper _auditHelper;
-        
+
         public VehicleController(VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleClient = vehicleClient;
-            _mapper = new Mapper();  
+            _mapper = new Mapper();
             _auditHelper = auditHelper;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
@@ -106,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.Info("Update method in vehicle API called.");               
+                _logger.Info("Update method in vehicle API called.");
 
                 // Validation 
                 if (request.ID <= 0)
@@ -218,7 +215,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Create Group method in vehicle API called.");
-               
+
 
                 if (string.IsNullOrEmpty(group.Name) || group.Name == "string")
                 {
@@ -281,7 +278,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Update Group method in vehicle API called.");
-               
+
                 if (group.Id == 0)
                 {
                     return StatusCode(401, "invalid Vehicle Group Id: The Vehicle group id is Empty.");
@@ -431,8 +428,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
                 VehicleBusinessService.VehicleGroupIdRequest VehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
-                VehicleGroupIdRequest.GroupId = GroupId;                
-               
+                VehicleGroupIdRequest.GroupId = GroupId;
+
                 VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(VehicleGroupIdRequest);
 
 
@@ -468,7 +465,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
-               
+
                 if (Convert.ToInt32(OrganizationId) <= 0)
                 {
                     return StatusCode(401, "invalid organization ID: The organization Id is Empty.");
@@ -513,7 +510,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
-               
+
                 if (Convert.ToInt32(OrganizationId) <= 0)
                 {
                     return StatusCode(401, "invalid organization ID: The organization Id is Empty.");
@@ -563,7 +560,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
-                
+
                 if (AccountGroupId == 0)
                 {
                     return StatusCode(401, "invalid Account Group Id: The Account group id is Empty.");
@@ -853,7 +850,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 //Assign context orgId
-                dynamicVehicleGroupRequest.OrganizationId = GetContextOrgId();                
+                dynamicVehicleGroupRequest.OrganizationId = GetContextOrgId();
 
                 if (dynamicVehicleGroupRequest.GroupType != null ? EnumValidator.ValidateGroupType(Convert.ToChar(dynamicVehicleGroupRequest.GroupType)) : false)
                 {

@@ -1,9 +1,8 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.group;
-using Microsoft.Extensions.Configuration; 
-using net.atos.daf.ct2.audit;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.group.test
 {
@@ -12,7 +11,7 @@ namespace net.atos.daf.ct2.group.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
-        readonly IGroupRepository _groupRepository;        
+        readonly IGroupRepository _groupRepository;
         private readonly IAuditTraillib _auditlog;
         public GroupRepositoryTest()
         {
@@ -29,7 +28,7 @@ namespace net.atos.daf.ct2.group.test
         [TestMethod]
         public void CreateGroup()
         {
-            Group group = new Group();     
+            Group group = new Group();
             group.ObjectType = ObjectType.VehicleGroup;
             group.GroupType = GroupType.Group;
             group.Argument = "Truck";
@@ -54,7 +53,7 @@ namespace net.atos.daf.ct2.group.test
             group.Name = "V1";
             group.Description = "Vehicle Group";
             var groupResult = _groupRepository.Create(group).Result;
-            if(groupResult.Id > 0)
+            if (groupResult.Id > 0)
             {
                 // Add vehicles in it
                 groupResult.GroupRef = new List<GroupRef>();
@@ -64,14 +63,14 @@ namespace net.atos.daf.ct2.group.test
                 groupResult.GroupRef.Add(new GroupRef() { Ref_Id = 104 });
                 groupResult.GroupRef.Add(new GroupRef() { Ref_Id = 105 });
             }
-            var result = _groupRepository.AddRef(groupResult).Result;
+            var result = _groupRepository.AddRefToGroups(groupResult.GroupRef).Result;
             Assert.IsTrue(result);
         }
 
         [TestMethod]
         public void UpdateGroup()
         {
-            Group group = new Group();            
+            Group group = new Group();
             group.Id = 2;
             group.ObjectType = ObjectType.AccountGroup;
             group.GroupType = GroupType.Single;
@@ -88,9 +87,8 @@ namespace net.atos.daf.ct2.group.test
         [TestMethod]
         public void DeleteGroup()
         {
-           
-            var result = _groupRepository.Delete(3).Result;
-            Assert.IsTrue(result == true);
+            var result = _groupRepository.Delete(3, ObjectType.AccountGroup).Result;
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
@@ -126,7 +124,7 @@ namespace net.atos.daf.ct2.group.test
         [TestMethod]
         public void Get()
         {
-            Group group = new Group();         
+            Group group = new Group();
 
             // filter by organization
             GroupFilter filter = new GroupFilter();
@@ -155,7 +153,7 @@ namespace net.atos.daf.ct2.group.test
 
             // filter by functional enum
             filter = new GroupFilter();
-            filter.FunctionEnum = FunctionEnum.All;            
+            filter.FunctionEnum = FunctionEnum.All;
             filter.ObjectType = ObjectType.None;
             filter.GroupType = GroupType.None;
             result = _groupRepository.Get(filter).Result;
@@ -167,17 +165,17 @@ namespace net.atos.daf.ct2.group.test
         public void AddGroupRef()
         {
             Group group = new Group();
-            
-            group.Id = 2;            
+
+            group.Id = 2;
             // Add vehicles in it
             group.GroupRef = new List<GroupRef>();
             group.GroupRef.Add(new GroupRef() { Ref_Id = 100 });
             group.GroupRef.Add(new GroupRef() { Ref_Id = 200 });
             group.GroupRef.Add(new GroupRef() { Ref_Id = 300 });
             group.GroupRef.Add(new GroupRef() { Ref_Id = 400 });
-            group.GroupRef.Add(new GroupRef() { Ref_Id = 500 });           
+            group.GroupRef.Add(new GroupRef() { Ref_Id = 500 });
 
-            var result = _groupRepository.AddRef(group).Result;
+            var result = _groupRepository.AddRefToGroups(group.GroupRef).Result;
             Assert.IsTrue(result == true);
         }
     }

@@ -1,16 +1,13 @@
-﻿using Grpc.Core;
-using log4net;
-using net.atos.daf.ct2.alert;
-using net.atos.daf.ct2.alert.ENUM;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.alertservice.Entity;
+using Grpc.Core;
+using log4net;
+using net.atos.daf.ct2.alert;
 using net.atos.daf.ct2.alert.entity;
+using net.atos.daf.ct2.alert.ENUM;
+using net.atos.daf.ct2.alertservice.Entity;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -306,16 +303,16 @@ namespace net.atos.daf.ct2.alertservice.Services
                 NotificationTemplateResponse response = new NotificationTemplateResponse();
                 foreach (var item in notificationTemplateList)
                 {
-                    response.NotificationTemplatelist.Add(new NotificationTemplate 
-                            { 
-                                Id=item.Id,
-                                AlertCategoryType=item.AlertCategoryType,
-                                AlertType=item.AlertType,
-                                Text=item.Text,
-                                Subject=item.Subject,
-                                CreatedAt=item.CreatedAt,
-                                ModifiedAt=item.ModifiedAt
-                            });
+                    response.NotificationTemplatelist.Add(new NotificationTemplate
+                    {
+                        Id = item.Id,
+                        AlertCategoryType = item.AlertCategoryType,
+                        AlertType = item.AlertType,
+                        Text = item.Text,
+                        Subject = item.Subject,
+                        CreatedAt = item.CreatedAt,
+                        ModifiedAt = item.ModifiedAt
+                    });
                 }
                 response.Message = "Alert notification template data is retrieved";
                 response.Code = ResponseCode.Success;

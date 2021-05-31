@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         public string Code { get; set; }
         [Required]
         public int FeatureSetID { get; set; }
-        [Required]      
+        [Required]
         public List<int> FeatureIds { get; set; }
         [Required]
         [StringLength(50)]

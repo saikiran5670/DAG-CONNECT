@@ -1,13 +1,13 @@
-﻿using Grpc.Core;
-using log4net;
-using net.atos.daf.ct2.corridorservice;
-using net.atos.daf.ct2.poigeofence;
-using net.atos.daf.ct2.poigeofenceservice.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
+using log4net;
+using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.poigeofence;
+using net.atos.daf.ct2.poigeofenceservice.entity;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             _corridorMapper = new CorridorMapper();
 
         }
-      
+
         public override async Task<CorridorResponseList> GetCorridorList(CorridorRequest request, ServerCallContext context)
         {
             try
@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objCorridorEditViewResponse.CreatedBy = item.CreatedBy;
                     objCorridorEditViewResponse.ModifiedAt = item.ModifiedAt;
                     objCorridorEditViewResponse.ModifiedBy = item.ModifiedBy;
-                    
+
 
                     if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                             existingTrip.EndLatitude = trip.EndLatitude;
                             existingTrip.EndLongitude = trip.EndLongitude;
                             existingTrip.EndPosition = trip.EndPosition;
-                           
+
                             foreach (var node in trip.NodePoints)
                             {
                                 TripNodes nodes = new TripNodes();
@@ -174,7 +174,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         objCorridorGridViewResponse.ModifiedBy = item.ModifiedBy;
                         if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor && item.CorridoreTrips != null)
                         {
-                            
+
                             foreach (var trip in item.CorridoreTrips)
                             {
                                 ExistingTrip existingTrip = new ExistingTrip();
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                                 existingTrip.EndLatitude = trip.EndLatitude;
                                 existingTrip.EndLongitude = trip.EndLongitude;
                                 existingTrip.EndPosition = trip.EndPosition;
-                                
+
                                 foreach (var node in trip.NodePoints)
                                 {
                                     TripNodes nodes = new TripNodes();
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
         public override async Task<UpdateRouteCorridorResponse> UpdateRouteCorridor(UpdateRouteCorridorRequest objRequest, ServerCallContext context)
         {
-            
+
             try
             {
                 _logger.Info("UpdateRouteCorridor method in CorridorManagement service called.");
@@ -490,7 +490,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.EndAddress = objRequest.Request.EndAddress;
                 obj.EndLatitude = objRequest.Request.EndLatitude;
                 obj.EndLongitude = objRequest.Request.EndLongitude;
-               
+
                 obj.Width = objRequest.Request.Width;
                 obj.Distance = objRequest.Request.Distance;
                 obj.Trailer = Convert.ToChar(objRequest.Request.Trailer);

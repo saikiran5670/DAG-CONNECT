@@ -1,23 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using AccountComponent = net.atos.daf.ct2.account;
-using AccountEntity = net.atos.daf.ct2.account.entity;
-using IdentityComponent = net.atos.daf.ct2.identity;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
-using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.authenticationservicerest.Entity;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using AccountComponent = net.atos.daf.ct2.account;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.authenticationservicerest.Controllers
 {
     [ApiController]
     // [Route("[controller]")]
-    public class AuthenticationController: ControllerBase
+    public class AuthenticationController : ControllerBase
     {
         private readonly ILogger logger;
         AccountComponent.IAccountIdentityManager accountIdentityManager;
@@ -26,7 +19,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         {
             accountIdentityManager = _accountIdentityManager;
             accountManager = _accountManager;
-            logger =_logger;
+            logger = _logger;
         }
         [HttpPost]
         [Route("auth")]
@@ -47,11 +40,11 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     {
                         return StatusCode(400, string.Empty);
                     }
-                    
+
                     var arrUsernamePassword = identity.Split(':');
                     if (string.IsNullOrEmpty(arrUsernamePassword[0].Trim()))
                     {
-                        return StatusCode(401,string.Empty);
+                        return StatusCode(401, string.Empty);
                     }
                     else if (string.IsNullOrEmpty(arrUsernamePassword[1]))
                     {
@@ -64,7 +57,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         user.Password = arrUsernamePassword[1];
 
                         IdentityEntity.AccountToken response = await accountIdentityManager.GenerateTokenGUID(user);
-                        if (response != null && response.statusCode==System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
+                        if (response != null && response.statusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
                             //Check for feature access
                             var isExists = await accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.MainPolicy);
@@ -79,19 +72,19 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         }
                         else
                         {
-                            return StatusCode(401,string.Empty);
+                            return StatusCode(401, string.Empty);
                         }
                     }
                 }
                 else
                 {
-                    return StatusCode(401,string.Empty);
+                    return StatusCode(401, string.Empty);
                 }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500,string.Empty);
+                return StatusCode(500, string.Empty);
             }
         }
 
@@ -120,7 +113,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
         //    }           
         //    return Ok(valid); 
         //}
-        
+
         [HttpPost]
         [Route("signout")]
         public async Task<IActionResult> signout([FromBody] string token)
@@ -139,7 +132,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     {
                         return StatusCode(200);
                     }
-                    else 
+                    else
                     {
                         return StatusCode(401);
                     }

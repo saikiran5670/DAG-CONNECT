@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.tcucore
 {
@@ -25,29 +23,34 @@ namespace net.atos.daf.ct2.tcucore
             this.referenceDate = _referenceDate;
         }
 
-        public string Vin { 
-            get => vin; 
+        public string Vin
+        {
+            get => vin;
             set => vin = value;
         }
 
-        public string DeviceIdentifier { 
-            get => deviceIdentifier; 
-            set => deviceIdentifier = value; 
+        public string DeviceIdentifier
+        {
+            get => deviceIdentifier;
+            set => deviceIdentifier = value;
         }
 
-        public string DeviceSerialNumber { 
-            get => deviceSerialNumber; 
-            set => deviceSerialNumber = value; 
+        public string DeviceSerialNumber
+        {
+            get => deviceSerialNumber;
+            set => deviceSerialNumber = value;
         }
 
-        public Correlations Correlations { 
-            get => correlations; 
-            set => correlations = value; 
+        public Correlations Correlations
+        {
+            get => correlations;
+            set => correlations = value;
         }
 
-        public DateTime ReferenceDate { 
-            get => referenceDate; 
-            set => referenceDate = value; 
+        public DateTime ReferenceDate
+        {
+            get => referenceDate;
+            set => referenceDate = value;
         }
     }
 }

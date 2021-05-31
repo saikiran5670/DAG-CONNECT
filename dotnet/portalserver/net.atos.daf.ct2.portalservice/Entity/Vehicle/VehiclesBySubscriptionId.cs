@@ -1,6 +1,6 @@
 ﻿namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
 {
-   public class VehiclesBySubscriptionId
+    public class VehiclesBySubscriptionId
     {
         public string orderId { get; set; }
         public string name { get; set; }

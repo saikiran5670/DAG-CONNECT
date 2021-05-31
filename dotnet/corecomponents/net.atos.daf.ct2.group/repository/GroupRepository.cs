@@ -1,10 +1,10 @@
 using System;
-using System.Transactions;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Dapper;
 using System.Threading.Tasks;
+using System.Transactions;
+using Dapper;
 using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.group
@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.group
                 // group type single
                 if (group.GroupType == GroupType.Single)
                 {
-                    group = await CheckSingleGroup(group); 
+                    group = await CheckSingleGroup(group);
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace net.atos.daf.ct2.group
 
                 group.Id = groupid;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.group
                                      RETURNING id;";
                 var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.group
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -233,13 +233,13 @@ namespace net.atos.daf.ct2.group
 
                 return groupList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-       
+
 
         public async Task<bool> AddRefToGroups(List<GroupRef> groupRef)
         {
@@ -265,7 +265,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -300,7 +300,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -353,7 +353,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return groupRequest;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -397,7 +397,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return groupRequest;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -493,7 +493,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return groupList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -508,7 +508,7 @@ namespace net.atos.daf.ct2.group
                 var groupref = await dataAccess.QueryAsync<GroupRef>(query, parameter);
                 return groupref.ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -523,7 +523,7 @@ namespace net.atos.daf.ct2.group
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -541,7 +541,7 @@ namespace net.atos.daf.ct2.group
                 count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -556,7 +556,7 @@ namespace net.atos.daf.ct2.group
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -572,7 +572,7 @@ namespace net.atos.daf.ct2.group
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -665,19 +665,19 @@ namespace net.atos.daf.ct2.group
                         //if (groupFilter.GroupRefCount)
                         //{
 
-                            // group ref filter 
-                            //if (groupFilter.GroupRefCount)
-                            //{
-                                group.GroupRefCount = GetRefCount(group.Id).Result;
-                            //}
+                        // group ref filter 
+                        //if (groupFilter.GroupRefCount)
+                        //{
+                        group.GroupRefCount = GetRefCount(group.Id).Result;
+                        //}
                         //}
                     }
-                    if (group.GroupType == GroupType.Dynamic && group.FunctionEnum==FunctionEnum.All)
+                    if (group.GroupType == GroupType.Dynamic && group.FunctionEnum == FunctionEnum.All)
                     {
                         group.GroupRefCount = GetDynamicAllRefCount(group.OrganizationId).Result;
-                        
+
                     }
-                    else if (group.GroupType == GroupType.Dynamic && group.FunctionEnum==FunctionEnum.OwnedVehicles)
+                    else if (group.GroupType == GroupType.Dynamic && group.FunctionEnum == FunctionEnum.OwnedVehicles)
                     {
                         group.GroupRefCount = GetDynamicOwnedRefCount(group.OrganizationId).Result;
                     }
@@ -691,7 +691,7 @@ namespace net.atos.daf.ct2.group
 
                 return groupList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -717,7 +717,7 @@ namespace net.atos.daf.ct2.group
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -742,7 +742,7 @@ namespace net.atos.daf.ct2.group
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -767,7 +767,7 @@ namespace net.atos.daf.ct2.group
                 var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

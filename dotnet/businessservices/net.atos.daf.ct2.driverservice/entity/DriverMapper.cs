@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.driverservice;
 
 namespace net.atos.daf.ct2.driverservice.entity
 {
@@ -24,7 +21,7 @@ namespace net.atos.daf.ct2.driverservice.entity
             {
                 driver.LastName = request.LastName;
             }
-            driver.Status = request.Status;           
+            driver.Status = request.Status;
             driver.OptIn = request.opt_in;
             driver.DriverIdExt = request.Driver_id_ext;
             if (!(string.IsNullOrEmpty(request.created_at.ToString())))
@@ -87,7 +84,7 @@ namespace net.atos.daf.ct2.driverservice.entity
         public DriverReturns ToDriverImportResponse(driver.entity.DriverImportResponse request)
         {
             DriverReturns driver = new DriverReturns();
-            if(!string.IsNullOrEmpty(request.DriverID))
+            if (!string.IsNullOrEmpty(request.DriverID))
                 driver.DriverID = request.DriverID;
             if (!string.IsNullOrEmpty(request.Email))
                 driver.Email = request.Email;

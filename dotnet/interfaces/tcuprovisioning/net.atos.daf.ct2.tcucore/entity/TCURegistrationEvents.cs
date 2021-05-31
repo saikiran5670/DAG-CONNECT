@@ -11,10 +11,10 @@ namespace net.atos.daf.ct2.tcucore
             this.tCURegistrationEvent = _tcuRegistrationEvent;
         }
 
-        public List<TCURegistrationEvent> TCURegistrationEvent 
-        { 
-            get => tCURegistrationEvent; 
-            set => tCURegistrationEvent = value; 
+        public List<TCURegistrationEvent> TCURegistrationEvent
+        {
+            get => tCURegistrationEvent;
+            set => tCURegistrationEvent = value;
         }
     }
 }

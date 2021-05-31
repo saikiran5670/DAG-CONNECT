@@ -3,7 +3,7 @@
     public static class AccessPolicies
     {
         public const string MainAccessPolicy = "api.sso";
-        
+
     }
-   
+
 }

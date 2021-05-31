@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.repository;
@@ -21,12 +18,12 @@ namespace net.atos.daf.ct2.rfms
             auditlog = _auditlog;
         }
 
-         public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
+        public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
         {
             return await rfmsRepository.GetVehicles(rfmsVehicleRequest);
         }
 
-         public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+        public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
 
             return await rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);

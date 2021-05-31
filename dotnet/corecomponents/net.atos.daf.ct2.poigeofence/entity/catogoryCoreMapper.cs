@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
     public class catogoryCoreMapper
     {
 
-        public Category Map (dynamic record)
+        public Category Map(dynamic record)
         {
             Category category = new Category();
             category.Id = record.id;
-            category.Organization_Id = record.organization_id>0 ? record.organization_id : 0;
+            category.Organization_Id = record.organization_id > 0 ? record.organization_id : 0;
             category.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
-           // category.Icon_Id = record.Icon_Id > 0 ? record.Icon_Id : 0;
+            // category.Icon_Id = record.Icon_Id > 0 ? record.Icon_Id : 0;
             category.Type = !string.IsNullOrEmpty(record.type) ? record.Type : string.Empty;
             category.Parent_Id = record.parent_id > 0 ? record.parent_id : 0;
-            category.State = !string.IsNullOrEmpty(record.state) ? Convert.ToString( MapCharToCategoryState(record.state)) : string.Empty;
+            category.State = !string.IsNullOrEmpty(record.state) ? Convert.ToString(MapCharToCategoryState(record.state)) : string.Empty;
             category.Created_At = record.created_at > 0 ? record.created_at : 0;
             category.Created_By = record.created_by > 0 ? record.created_by : 0;
             category.Modified_At = record.modified_at > 0 ? record.modified_at : 0;

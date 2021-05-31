@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace net.atos.daf.ct2.portalservice.Entity.Alert
+﻿namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
     public static class AlertConstants
     {
@@ -17,5 +12,5 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public const string DUPLICATE_ALERT_SUCCESS_MSG = "Duplicate Alert Type fetched successfull. for Id:- {0}.";
         public const string DUPLICATE_ALERT_FAILURE_MSG = "Duplicate Alert Type fetch got failed. for Id:- {0}. Error: {1}";
         public const string ALERT_FAILURE_MSG = "Either alert id is not available or not exist in vaild state.";
-    }    
+    }
 }

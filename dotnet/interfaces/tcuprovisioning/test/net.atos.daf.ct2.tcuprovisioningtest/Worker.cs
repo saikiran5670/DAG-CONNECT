@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using net.atos.daf.ct2.tcucore;
@@ -17,11 +16,11 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
             ProducerConfig producerConfig = kafkaConfig.GetProducerConfig(brokerList, connStr, cacertlocation);
 
             try
-            {              
+            {
                 using (var producer = new ProducerBuilder<Null, string>(producerConfig).Build())
                 {
-                  
-                    await producer.ProduceAsync(topic, new Message<Null, string> { Value = jsonData });               
+
+                    await producer.ProduceAsync(topic, new Message<Null, string> { Value = jsonData });
                     producer.Flush();
                     result = true;
                 }

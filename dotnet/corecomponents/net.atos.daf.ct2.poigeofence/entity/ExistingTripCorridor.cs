@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace net.atos.daf.ct2.poigeofence.entity
@@ -8,7 +7,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class Nodepoint
     {
         public int Id { get; set; }
-       
+
         public int LandmarkId { get; set; }
         [Column("trip_id")]
         public string TripId { get; set; }
@@ -36,7 +35,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int LandmarkId { get; set; }
 
         [Column("trip_id")]
-        public string TripId { get; set; } 
+        public string TripId { get; set; }
         [Column("start_date")]
         public double StartDate { get; set; }
         [Column("end_date")]
@@ -55,10 +54,10 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int Distance { get; set; }
 
         public List<Nodepoint> NodePoints { get; set; }
-    } 
+    }
     public class ExistingTripCorridor
     {
-          
+
 
         public int Id { get; set; }
         public int? OrganizationId { get; set; }
@@ -77,7 +76,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double StartLatitude { get; set; }
         public double StartLongitude { get; set; }
         public double Distance { get; set; }
-        public string State { get; set; }   
+        public string State { get; set; }
         public List<ExistingTrip> ExistingTrips { get; set; }
     }
 }

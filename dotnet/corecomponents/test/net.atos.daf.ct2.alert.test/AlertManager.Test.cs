@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.alert.entity;
 using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.data;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.alert.test
 {
@@ -257,7 +255,7 @@ namespace net.atos.daf.ct2.alert.test
                 Notifications = new List<Notification>(),
                 AlertLandmarkRefs = new List<AlertLandmarkRef>(),
             };
-            var result = _ialertManager.GetAlertList(alert.CreatedBy,alert.OrganizationId).Result;
+            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId).Result;
             Assert.IsNotNull(result);
         }
 

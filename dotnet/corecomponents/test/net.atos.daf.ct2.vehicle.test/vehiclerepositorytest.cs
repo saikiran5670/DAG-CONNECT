@@ -1,15 +1,14 @@
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using net.atos.daf.ct2.data;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using System.Linq;
-using net.atos.daf.ct2.group;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.audit;
 
 namespace net.atos.daf.ct2.vehicle.test
 {
@@ -31,7 +30,7 @@ namespace net.atos.daf.ct2.vehicle.test
             _dataAccess = new PgSQLDataAccess(connectionString);
             _datamartDataacess = new PgSQLDataMartDataAccess(datamartconnectionString);
             _vehicleRepository = new VehicleRepository(_dataAccess, _datamartDataacess);
-            _groupRepository=new GroupRepository(_dataAccess);
+            _groupRepository = new GroupRepository(_dataAccess);
             _vehiclemanager = new VehicleManager(_vehicleRepository, _auditlog);
 
         }
@@ -154,7 +153,7 @@ namespace net.atos.daf.ct2.vehicle.test
             Objvehicle.Reference_Date = Convert.ToDateTime("2019-02-02T12:34:56");
             var resultUpdateTCUvehicle = _vehicleRepository.Update(Objvehicle).Result;
             Assert.IsNotNull(resultUpdateTCUvehicle);
-            Assert.IsTrue(resultUpdateTCUvehicle.VIN !=null);
+            Assert.IsTrue(resultUpdateTCUvehicle.VIN != null);
 
         }
 
@@ -178,7 +177,7 @@ namespace net.atos.daf.ct2.vehicle.test
         [TestMethod]
         public async Task UnT_vehicle_VehicleManager_GetVehicleBySubscriptionSet()
         {
-            string subscriptionId = "2a1cf534-8ed2-439e-a99c-847b775ae937";
+            int subscriptionId = 1;
             var results = await _vehicleRepository.GetVehicleBySubscriptionId(subscriptionId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
@@ -190,7 +189,8 @@ namespace net.atos.daf.ct2.vehicle.test
         public async Task UnT_vehicle_VehicleManager_GetVehicleGroupbyAccountIdTest()
         {
             int accountId = 125;
-            var results = await _vehiclemanager.GetVehicleGroupbyAccountId(accountId);
+            int orgId = 1;
+            var results = await _vehiclemanager.GetVehicleGroupbyAccountId(accountId, orgId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
         }
@@ -204,22 +204,22 @@ namespace net.atos.daf.ct2.vehicle.test
             long lsince = 1619419546008;
             string sTimezone = "UTC";
             string targetdateformat = "MM/DD/YYYY";
-            string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(lsince, sTimezone, targetdateformat);            
-            string since = converteddatetime;            
+            string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(lsince, sTimezone, targetdateformat);
+            string since = converteddatetime;
             bool isnumeric = true;
             string contenttype = "text/csv";
-            var results = await _vehiclemanager.GetVehicleMileage(since, isnumeric, contenttype);
+            var results = await _vehiclemanager.GetVehicleMileage(since, isnumeric, contenttype, 1, 1);
             if (contenttype == "text/csv")
             {
                 Assert.IsNotNull(results.VehiclesCSV);
                 Assert.IsTrue(results.VehiclesCSV != null);
             }
-            else 
+            else
             {
                 Assert.IsNotNull(results.Vehicles);
                 Assert.IsTrue(results.Vehicles != null);
             }
-           
+
         }
         #endregion
 

@@ -1,27 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
-using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.OpenApi.Models;
 
 
 namespace net.atos.daf.ct2.translationservicerest
 {
     public class Startup
     {
-        
+
         private readonly string swaggerBasePath = "translation";
         public Startup(IConfiguration configuration)
         {
@@ -35,23 +27,23 @@ namespace net.atos.daf.ct2.translationservicerest
         {
             services.AddControllers();
 
-             var connectionString = Configuration.GetConnectionString("ConnectionString");
-             
+            var connectionString = Configuration.GetConnectionString("ConnectionString");
+
             IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
             // Identity configuration
             services.AddSingleton(dataAccess);
-            
-            services.AddTransient<ITranslationManager, TranslationManager>();
-             services.AddTransient<ITranslationRepository, TranslationRepository>();
 
-            services.AddCors(c =>  
-            {  
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
-            });
-             services.AddSwaggerGen(c =>
+            services.AddTransient<ITranslationManager, TranslationManager>();
+            services.AddTransient<ITranslationRepository, TranslationRepository>();
+
+            services.AddCors(c =>
             {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Translation Service", Version = "v1" });
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
+            services.AddSwaggerGen(c =>
+           {
+               c.SwaggerDoc("v1", new OpenApiInfo { Title = "Translation Service", Version = "v1" });
+           });
 
         }
 
@@ -65,14 +57,14 @@ namespace net.atos.daf.ct2.translationservicerest
 
             app.UseSwagger();
             app.UseHttpsRedirection();
-    
+
             app.UseRouting();
-             app.UseCors(builder => 
-            {
-                builder.WithOrigins("*");
-                builder.AllowAnyMethod();
-                builder.AllowAnyHeader();
-            });  
+            app.UseCors(builder =>
+           {
+               builder.WithOrigins("*");
+               builder.AllowAnyMethod();
+               builder.AllowAnyHeader();
+           });
 
             app.UseAuthorization();
 
@@ -81,10 +73,10 @@ namespace net.atos.daf.ct2.translationservicerest
                 endpoints.MapControllers();
             });
 
-             app.UseSwagger(c =>
-            {
-                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
-            });
+            app.UseSwagger(c =>
+           {
+               c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+           });
 
             app.UseSwaggerUI(c =>
             {

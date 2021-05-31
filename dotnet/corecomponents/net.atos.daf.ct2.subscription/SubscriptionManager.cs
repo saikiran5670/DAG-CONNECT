@@ -1,9 +1,9 @@
-﻿using net.atos.daf.ct2.subscription.entity;
-using System;
-using net.atos.daf.ct2.subscription.repository;
-using System.Threading.Tasks;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
+using net.atos.daf.ct2.subscription.entity;
+using net.atos.daf.ct2.subscription.repository;
 
 namespace net.atos.daf.ct2.subscription
 {
@@ -34,6 +34,6 @@ namespace net.atos.daf.ct2.subscription
         {
             return await subscriptionRepository.Get(objSubscriptionDetailsRequest);
         }
-        
+
     }
 }

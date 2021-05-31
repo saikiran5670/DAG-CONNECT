@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
 {
@@ -33,7 +30,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
                  )
                 ||
                 (comparisonValue.ToUpper() == "F" &&
-                (currentValue.ToUpper() == "A" || currentValue.ToUpper() == "F"  ||currentValue.ToUpper() == "I" || 
+                (currentValue.ToUpper() == "A" || currentValue.ToUpper() == "F" || currentValue.ToUpper() == "I" ||
                 currentValue.ToUpper() == "L" || currentValue.ToUpper() == "P" || currentValue.ToUpper() == "T"))
                 ||
                 (comparisonValue.ToUpper() == "R" &&

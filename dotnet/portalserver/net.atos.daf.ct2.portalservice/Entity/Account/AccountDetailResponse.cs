@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 namespace net.atos.daf.ct2.portalservice.Account
 {
@@ -16,12 +15,11 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int BlobId { get; set; }
         public long CreatedAt { get; set; }
         public List<KeyValue> Roles { get; set; }
-        public List<KeyValue> AccountGroups { get; set; }      
+        public List<KeyValue> AccountGroups { get; set; }
     }
     public class KeyValue
     {
         public int Id { get; set; }
-        public string Name { get; set; }       
+        public string Name { get; set; }
     }
 }
- 

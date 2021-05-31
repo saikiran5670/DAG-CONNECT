@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reports.repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.reports.test
 {
@@ -36,8 +34,8 @@ namespace net.atos.daf.ct2.reports.test
         [TestMethod]
         [Timeout(TestTimeout.Infinite)]
         public async Task GetUserPreferences_Success()
-        {            
-            var result = await _reportManager.GetUserPreferenceReportDataColumn(1, 144,1);
+        {
+            var result = await _reportManager.GetUserPreferenceReportDataColumn(1, 144, 1);
             Assert.IsTrue(result.Count() > 0);
         }
 
@@ -47,7 +45,7 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetUserPreferences_Failure()
         {
-            var result = await _reportManager.GetUserPreferenceReportDataColumn(100000, 144,1);
+            var result = await _reportManager.GetUserPreferenceReportDataColumn(100000, 144, 1);
             Assert.IsTrue(result.Count() == 0);
         }
 
@@ -77,7 +75,7 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetVinsFromTripStatistics_Success()
         {
-            
+
             var result = await _reportManager
                                     .GetVinsFromTripStatistics(new List<string> {
                                                                "V12001",

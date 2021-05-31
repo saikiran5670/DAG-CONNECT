@@ -28,12 +28,12 @@ namespace net.atos.daf.ct2.data
         /// <param name="connection"></param>
         public PgSQLDataAccess(IDbConnection dbconnection)
         {
-             connection=dbconnection;
+            connection = dbconnection;
         }
 
         public PgSQLDataAccess(string connectionString)
         {
-             connection = new NpgsqlConnection(connectionString);
+            connection = new NpgsqlConnection(connectionString);
         }
 
         #region Sync Methods

@@ -1,26 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Dapper;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization.entity;
-using net.atos.daf.ct2.audit.Enum;
-using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehiclerepository;
-using net.atos.daf.ct2.subscription;
-using net.atos.daf.ct2.group;
-using net.atos.daf.ct2.account;
-using net.atos.daf.ct2.account.entity;
-using AccountComponent = net.atos.daf.ct2.account;
-using SubscriptionComponent = net.atos.daf.ct2.subscription;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using SubscriptionComponent = net.atos.daf.ct2.subscription;
 
 namespace net.atos.daf.ct2.organization.repository
 {
@@ -774,7 +765,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management
 
-                    keyHandOver.OEMRelationship = OrganizationId.ToString();  
+                    keyHandOver.OEMRelationship = OrganizationId.ToString();
                     await OwnerRelationship(keyHandOver, isVINExist);
 
                     return keyHandOver;
@@ -891,49 +882,49 @@ namespace net.atos.daf.ct2.organization.repository
                     return OwnerRelationshipId;
                 }
 
-                else if (isRelationshipExist > 1 && (relationshipMapping.isFirstRelation)) // relationship exist          
+                else if (isRelationshipExist > 1 && relationshipMapping.isFirstRelation) // relationship exist          
                 {
                     // Check organization relationship with vehicle
                     //int orgRelExist = await IsOrganizationRelationshipExist(relationshipMapping);
                     //if (orgRelExist < 0)
                     //{
-                        // update previuse relationship end date and insert new relationship              
-                        var Updateparameter = new DynamicParameters();
-                        Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                        // Updateparameter.Add("@relationship_id", isRelationshipExist);
-                        Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                        var queryUpdate = @"update master.orgrelationshipmapping 
+                    // update previuse relationship end date and insert new relationship              
+                    var Updateparameter = new DynamicParameters();
+                    Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                    // Updateparameter.Add("@relationship_id", isRelationshipExist);
+                    Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+                    var queryUpdate = @"update master.orgrelationshipmapping 
                     set end_date=@end_date where relationship_id=@relationship_id and vehicle_id=@vehicle_id";
-                        await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
+                    await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
 
-                        // Insert new relationship              
-                        var Inputparameter = new DynamicParameters();
-                        Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                        Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                        if (relationshipMapping.vehicle_group_id == 0)
-                        {
-                            Inputparameter.Add("@vehicle_group_id", null);
-                        }
-                        else
-                        {
-                            Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
-                        }
+                    // Insert new relationship              
+                    var Inputparameter = new DynamicParameters();
+                    Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                    Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
+                    if (relationshipMapping.vehicle_group_id == 0)
+                    {
+                        Inputparameter.Add("@vehicle_group_id", null);
+                    }
+                    else
+                    {
+                        Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                    }
 
-                        Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);
-                        Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id);
-                        Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);
-                        Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        Inputparameter.Add("@end_date", null);
-                        Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
-                        Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);
+                    Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id);
+                    Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);
+                    Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Inputparameter.Add("@end_date", null);
+                    Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
+                    Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
-                        var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
+                    var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
                     target_org_id,start_date,end_date,allow_chain,created_at)
                     values(@relationship_id,@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
-                        OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
-                        return OwnerRelationshipId;
-                    }
+                    OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
+                    return OwnerRelationshipId;
+                }
                 //}
             }
             catch (Exception ex)
@@ -1099,7 +1090,7 @@ namespace net.atos.daf.ct2.organization.repository
             }
         }
 
-     public async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        public async Task<int> GetLevelByRoleId(int orgId, int roleId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@id", roleId);

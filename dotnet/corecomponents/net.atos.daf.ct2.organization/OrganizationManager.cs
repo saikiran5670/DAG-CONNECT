@@ -1,16 +1,16 @@
-using net.atos.daf.ct2.audit;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organization.repository;
-using System.Collections.Generic;
 
 
 namespace net.atos.daf.ct2.organization
 {
-    public class OrganizationManager:IOrganizationManager
-    { 
+    public class OrganizationManager : IOrganizationManager
+    {
         IOrganizationRepository organizationRepository;
-          IAuditTraillib auditlog;
+        IAuditTraillib auditlog;
 
         public OrganizationManager(IOrganizationRepository _organizationRepository, IAuditTraillib _auditlog)
         {
@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.organization
         {
             return await organizationRepository.Create(organization);
         }
-         public async Task<Organization> Update(Organization organization)
+        public async Task<Organization> Update(Organization organization)
         {
             return await organizationRepository.Update(organization);
         }
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.organization
             return await organizationRepository.GetPreference(organizationId);
         }
 
-       public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
+        public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
         {
             return await organizationRepository.UpdateCustomer(customer);
         }
@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.organization
         // {
         //     return await organizationRepository.CreateVehicleParty(customers);
         // }
-       public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
+        public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
         {
             return await organizationRepository.CreateOwnerRelationship(relationshipMapping);
         }

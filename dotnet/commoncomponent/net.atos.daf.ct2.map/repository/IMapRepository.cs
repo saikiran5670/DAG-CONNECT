@@ -1,6 +1,6 @@
-﻿using net.atos.daf.ct2.map.entity;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.map.entity;
 
 namespace net.atos.daf.ct2.map.repository
 {

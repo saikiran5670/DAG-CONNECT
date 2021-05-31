@@ -1,29 +1,29 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehicledataservice.Entity;
-using net.atos.daf.ct2.organization.entity;
-using net.atos.daf.ct2.organization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
 using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using net.atos.daf.ct2.vehicledataservice.Entity;
 
 namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle-data")]
     [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
-    public class vehicledataservicecontroller : ControllerBase
+    public class VehicleDataserviceController : ControllerBase
     {
-        private readonly ILogger<vehicledataservicecontroller> logger;
+        private readonly ILogger<VehicleDataserviceController> logger;
         private readonly IVehicleManager vehicleManager;
         private readonly IOrganizationManager organizationManager;
         public IConfiguration Configuration { get; }
-        public vehicledataservicecontroller(IVehicleManager _vehicleManager, ILogger<vehicledataservicecontroller> _logger, IOrganizationManager _organizationManager, IConfiguration configuration)
+        public VehicleDataserviceController(IVehicleManager _vehicleManager, ILogger<VehicleDataserviceController> _logger, IOrganizationManager _organizationManager, IConfiguration configuration)
         {
             organizationManager = _organizationManager;
             vehicleManager = _vehicleManager;
@@ -99,7 +99,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                             if (vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks.Tank != null)
                             {
                                 foreach (var tank in vehicleData.VehicleUpdatedEvent.Vehicle.VehicleNamedStructure.Chassis.FuelTanks.Tank)
-                                {                                  
+                                {
                                     vehicleProperties.VehicleFuelTankProperties.Add(new VehicleFuelTankProperties()
                                     {
                                         Chassis_Tank_Nr = tank?.nr?.Trim(),
@@ -173,7 +173,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                                 vehicleRearAxelInfo.Springs = rearAxel.Springs?.Trim();
                                 vehicleRearAxelInfo.Size = rearAxel.AxleSpecificWheels?.Tire?.Size?.Trim();
                                 vehicleRearAxelInfo.Is_Wheel_Tire_Size_Replaced = true;
-                                
+
                                 vehicleProperties.VehicleAxelInformation.Add(vehicleRearAxelInfo);
                             }
                         }

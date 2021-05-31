@@ -1,5 +1,4 @@
 ﻿using net.atos.daf.ct2.report.repository;
-using System;
 
 namespace net.atos.daf.ct2.report
 {

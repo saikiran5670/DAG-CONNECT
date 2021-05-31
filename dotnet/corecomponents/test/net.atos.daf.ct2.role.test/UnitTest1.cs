@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.role.test
         [TestMethod]
         public void TestMethod1()
         {
-            
+
         }
     }
 }

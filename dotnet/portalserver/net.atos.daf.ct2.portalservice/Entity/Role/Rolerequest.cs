@@ -1,17 +1,16 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Role
 {
     public class Rolerequest
     {
-        public int OrganizationId   { get; set; }
-        
+        public int OrganizationId { get; set; }
+
         public int RoleId { get; set; }
         [Required]
         public string RoleName { get; set; }
 
-        public string  Description { get; set; }
+        public string Description { get; set; }
         [Required(ErrorMessage = "Feature Id's are required")]
         public int[] FeatureIds { get; set; }
         public int Createdby { get; set; }
@@ -23,10 +22,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Role
 
     public class Roleupdaterequest
     {
-        public int OrganizationId   { get; set; }
+        public int OrganizationId { get; set; }
         public int RoleId { get; set; }
         public string RoleName { get; set; }
-        public string  Description { get; set; }
+        public string Description { get; set; }
         public int[] FeatureIds { get; set; }
         public int Createdby { get; set; }
         public int Updatedby { get; set; }
@@ -34,10 +33,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Role
 
     public class Rolersponce
     {
-        public int OrganizationId   { get; set; }
+        public int OrganizationId { get; set; }
         public int RoleId { get; set; }
         public string RoleName { get; set; }
-        public string  Description { get; set; }
+        public string Description { get; set; }
         public int[] FeatureIds { get; set; }
         public int RoleCount { get; set; }
         public int Createdby { get; set; }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -8,9 +7,7 @@ using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofences;
-using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.poigeofenceservice.entity;
-using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.poigeofenservice
 {
@@ -128,7 +125,7 @@ namespace net.atos.daf.ct2.poigeofenservice
 
 
                 var result = await _categoryManager.DeleteCategory(request.Id);
-                if (result.ID >=0)
+                if (result.ID >= 0)
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
@@ -145,7 +142,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     response.Message = "You can not delete the category it contain POI or Geofence  ";
                     response.Code = Responsecode.Failed;
                 }
-                else 
+                else
                 {
                     response.Message = "Category Not found";
                     response.Code = Responsecode.NotFound;
@@ -257,7 +254,7 @@ namespace net.atos.daf.ct2.poigeofenservice
             objj = _deleteCategoryMapper.ToTranslationDeleteEntity(request);
             var result = await _categoryManager.BulkDeleteCategory(objj);
 
-            if (result.CategoryId >0)
+            if (result.CategoryId > 0)
             {
                 response.Code = Responsecode.Success;
                 response.Message = " Category deleted Sucessfully";

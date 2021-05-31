@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Google.Protobuf;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using FeatureBusinessService = net.atos.daf.ct2.featureservice;
+﻿using FeatureBusinessService = net.atos.daf.ct2.featureservice;
 
 
 namespace net.atos.daf.ct2.portalservice.Entity.Feature

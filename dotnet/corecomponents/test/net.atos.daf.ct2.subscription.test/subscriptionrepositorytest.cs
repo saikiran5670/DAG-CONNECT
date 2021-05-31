@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.subscription.entity;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.utilities;
-using System;
-using net.atos.daf.ct2.subscription.entity;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.subscription.test
 {
@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.subscription.test
         public async Task UnT_subscribe_SubscriptionManager_CreatebyOrgIdSubscriptionSet()
         {
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            int orgId = 24;int packageId = 75;
+            int orgId = 24; int packageId = 75;
             var results = await _SubscriptionManager.Create(orgId, packageId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);

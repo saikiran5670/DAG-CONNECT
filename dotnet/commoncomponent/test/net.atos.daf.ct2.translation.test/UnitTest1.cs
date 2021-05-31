@@ -1,11 +1,8 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.translation.repository; 
-using net.atos.daf.ct2.translation.entity;
-using Microsoft.Extensions.Configuration;
 using System.Linq;
-using net.atos.daf.ct2.translation.Enum;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.translation.repository;
 namespace net.atos.daf.ct2.translation.test
 {
     [TestClass]
@@ -14,31 +11,31 @@ namespace net.atos.daf.ct2.translation.test
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
         private readonly ITranslationRepository _ITranslationRepository;
-       
-       public TransaltionTest()
+
+        public TransaltionTest()
         {
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _ITranslationRepository = new TranslationRepository(_dataAccess);
             //  _logs = new AuditTraillib(_ITranslationRepository);
-            
+
             // _IAuditLogRepository = new AuditLogRepository(_dataAccess);
         }
         [TestMethod]
         public void TestMethod1()
         {
-                var result = _ITranslationRepository.GetAllLanguageCode().Result;
-                Assert.IsTrue(result.Count() > 0);
+            var result = _ITranslationRepository.GetAllLanguageCode().Result;
+            Assert.IsTrue(result.Count() > 0);
         }
 
         [TestMethod]
         public void GetTranslationsByMenu()
         {
-                var result = _ITranslationRepository.GetTranslationsByMenu(24,"L","EN-GB");
-              
+            var result = _ITranslationRepository.GetTranslationsByMenu(24, "L", "EN-GB");
+
             Assert.IsTrue(result != null);
         }
-        
+
         //[TestMethod]
         //public void GetLangagugeTranslationByKey()
         //{
@@ -46,7 +43,7 @@ namespace net.atos.daf.ct2.translation.test
         //        Assert.IsTrue(result.Count() > 0);
         //}
 
-        
-        
+
+
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.tcucore
 {
-     public class TCU
+    public class TCU
     {
         private String id;
         private String brand;
@@ -21,19 +19,22 @@ namespace net.atos.daf.ct2.tcucore
             this.version = _version;
         }
 
-        public string ID { 
-            get => id; 
-            set => id = value; 
+        public string ID
+        {
+            get => id;
+            set => id = value;
         }
 
-        public string Brand { 
-            get => brand; 
-            set => brand = value; 
+        public string Brand
+        {
+            get => brand;
+            set => brand = value;
         }
 
-        public string Version { 
-            get => version; 
-            set => version = value; 
+        public string Version
+        {
+            get => version;
+            set => version = value;
         }
     }
 }

@@ -1,12 +1,11 @@
-﻿using net.atos.daf.ct2.termsandconditions.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.utilities;
-using Dapper;
 using System.Data;
+using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.termsandconditions.entity;
+using net.atos.daf.ct2.utilities;
 using static net.atos.daf.ct2.utilities.CommonEnums;
 
 namespace net.atos.daf.ct2.termsandconditions.repository
@@ -58,7 +57,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 
                 return accountTermsCondition;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -132,7 +131,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                 }
                 return Objtermcondn;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -437,7 +436,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                 }
                 return objTermsAndConditionResponseList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -530,7 +529,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             catch (Exception)
             {
                 throw;
-            }            
+            }
         }
 
         #region Private methods

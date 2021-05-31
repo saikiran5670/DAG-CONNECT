@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.alert.entity
 {
@@ -142,11 +141,11 @@ namespace net.atos.daf.ct2.alert.entity
             alertUrgencyLevelRef.UrgencyLevelType = request.aleurg_urgency_level_type;
             alertUrgencyLevelRef.ThresholdValue = request.aleurg_threshold_value;
             alertUrgencyLevelRef.UnitType = request.aleurg_unit_type;
-            if(request.aleurg_day_type!=null)
-            { 
+            if (request.aleurg_day_type != null)
+            {
                 for (int i = 0; i < request.aleurg_day_type.Length; i++)
                 {
-                    alertUrgencyLevelRef.DayType[i]= request.aleurg_day_type.Get(i);
+                    alertUrgencyLevelRef.DayType[i] = request.aleurg_day_type.Get(i);
                 }
             }
             alertUrgencyLevelRef.PeriodType = request.aleurg_period_type;

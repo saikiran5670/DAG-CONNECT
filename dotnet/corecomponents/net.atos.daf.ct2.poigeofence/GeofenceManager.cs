@@ -1,13 +1,11 @@
-﻿using net.atos.daf.ct2.poigeofence.entity;
-using net.atos.daf.ct2.poigeofence.repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 
 namespace net.atos.daf.ct2.poigeofence
 {
-    public class GeofenceManager: IGeofenceManager
+    public class GeofenceManager : IGeofenceManager
     {
         private readonly IGeofenceRepository geofenceRepository;
 

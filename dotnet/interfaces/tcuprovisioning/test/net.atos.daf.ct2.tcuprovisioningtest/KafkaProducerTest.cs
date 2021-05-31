@@ -1,7 +1,6 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
 namespace net.atos.daf.ct2.tcuprovisioningtest
@@ -33,8 +32,8 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
 
             //+ Act
             Console.WriteLine("Initializing Producer");
-            var output = Worker.Producer(brokerList, connectionString, topic, caCertLocation, jsonData);      
-            output.Wait(); 
+            var output = Worker.Producer(brokerList, connectionString, topic, caCertLocation, jsonData);
+            output.Wait();
             var result = output.Result;
 
             Console.WriteLine("Message Produced");

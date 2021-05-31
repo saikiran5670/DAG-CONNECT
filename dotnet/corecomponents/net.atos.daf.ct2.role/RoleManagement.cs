@@ -1,30 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-// using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.role.entity;
-using net.atos.daf.ct2.role;
-using net.atos.daf.ct2.role.repository;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.features.repository;
+// using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.role.entity;
+using net.atos.daf.ct2.role.repository;
 
 namespace net.atos.daf.ct2.role
 {
-    public class RoleManagement: IRoleManagement
+    public class RoleManagement : IRoleManagement
     {
         IRoleRepository roleRepository;
-        
+
         IFeatureRepository featureRepository;
         IFeatureManager FeatureManager;
-        
+
         // IAuditLog auditlog;
-        public RoleManagement(IRoleRepository _roleRepository,IFeatureManager _FeatureManager,IFeatureRepository _featureRepository)
+        public RoleManagement(IRoleRepository _roleRepository, IFeatureManager _FeatureManager, IFeatureRepository _featureRepository)
         {
             roleRepository = _roleRepository;
-            featureRepository=_featureRepository;
-            FeatureManager=_FeatureManager;
-            
+            featureRepository = _featureRepository;
+            FeatureManager = _FeatureManager;
+
             // auditlog=_auditlog;
         }
         public async Task<int> CreateRole(RoleMaster roleMaster)
@@ -32,21 +31,21 @@ namespace net.atos.daf.ct2.role
             try
             {
 
-                   roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
-                   int RoleId = 0;
-                   int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
-                  //to get minimum features level
-                  int minlevel = await FeatureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
-                    roleMaster.Level = minlevel;
-                   if (featuresetid > 0 )
-                   {
-                        roleMaster.Feature_set_id = featuresetid;
-                         RoleId= await roleRepository.CreateRole(roleMaster);
-                   }             
-                              
+                roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
+                int RoleId = 0;
+                int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
+                //to get minimum features level
+                int minlevel = await FeatureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
+                roleMaster.Level = minlevel;
+                if (featuresetid > 0)
+                {
+                    roleMaster.Feature_set_id = featuresetid;
+                    RoleId = await roleRepository.CreateRole(roleMaster);
+                }
+
                 return RoleId;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -57,12 +56,12 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                
-                int RoleId= await roleRepository.DeleteRole(roleid, Accountid);
+
+                int RoleId = await roleRepository.DeleteRole(roleid, Accountid);
                 // auditlog.AddLogs(userId,userId,1,"Delete Role", RoleId > 0,"Role Management", "Role Deleted With Role Id " + RoleId.ToString());
                 return RoleId;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -79,20 +78,20 @@ namespace net.atos.daf.ct2.role
             {
                 //var Roles = roleRepository.GetRoles(rolefilter);
                 var role = await roleRepository.GetRoles(rolefilter);
-                foreach(var item in role)
+                foreach (var item in role)
                 {
                     var features = await FeatureManager.GetFeatureIdsForFeatureSet(item.Feature_set_id ?? 0, rolefilter.LangaugeCode);
-                    item.FeatureSet   = new FeatureSet();
+                    item.FeatureSet = new FeatureSet();
                     item.FeatureSet.Features = new List<Feature>();
-                    foreach(var t in features)
+                    foreach (var t in features)
                     {
-                            item.FeatureSet.Features.Add(new Feature{ Id = t.Id});
+                        item.FeatureSet.Features.Add(new Feature { Id = t.Id });
                     }
-                    
+
                 }
                 return role;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -102,30 +101,30 @@ namespace net.atos.daf.ct2.role
         {
             try
             {
-                   roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
-                   int RoleId = 0;
-                   int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
+                roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
+                int RoleId = 0;
+                int featuresetid = await FeatureManager.AddFeatureSet(roleMaster.FeatureSet);
                 //to get minimum features level
                 int minlevel = await FeatureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
                 roleMaster.Level = minlevel;
-                if (featuresetid > 0 )
-                   {
-                       roleMaster.Feature_set_id = featuresetid;
-                        RoleId= await roleRepository.UpdateRole(roleMaster);
-               // auditlog.AddLogs(roleMaster.Updatedby,roleMaster.modifiedby,1,"Update Role", RoleId > 0,"Role Management", "Role Updated With Role Id " + RoleId.ToString());
-                   }
-               
+                if (featuresetid > 0)
+                {
+                    roleMaster.Feature_set_id = featuresetid;
+                    RoleId = await roleRepository.UpdateRole(roleMaster);
+                    // auditlog.AddLogs(roleMaster.Updatedby,roleMaster.modifiedby,1,"Update Role", RoleId > 0,"Role Management", "Role Updated With Role Id " + RoleId.ToString());
+                }
+
                 return RoleId;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-        public int  CheckRoleNameExist(string roleName,int Organization_Id,int roleid)
+        public int CheckRoleNameExist(string roleName, int Organization_Id, int roleid)
         {
-            return  roleRepository.CheckRoleNameExist( roleName, Organization_Id,roleid);
+            return roleRepository.CheckRoleNameExist(roleName, Organization_Id, roleid);
         }
     }
 }

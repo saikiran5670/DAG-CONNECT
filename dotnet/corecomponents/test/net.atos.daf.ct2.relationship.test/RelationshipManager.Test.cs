@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.relationship.test
         private readonly IAuditLogRepository _auditLogRepository;
         public RelationshipManagerTest()
         {
-            _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();     
+            _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
             _auditLogRepository = new AuditLogRepository(_dataAccess);
@@ -76,8 +76,8 @@ namespace net.atos.daf.ct2.relationship.test
         [TestMethod]
         public void GetRelationshipLevelCode_Test()
         {
-           
-            var result = _relationshipManager.GetRelationshipLevelCode().Result;
+
+            var result = _relationshipManager.GetRelationshipLevelCode();
             Assert.IsTrue(result != null);
         }
 

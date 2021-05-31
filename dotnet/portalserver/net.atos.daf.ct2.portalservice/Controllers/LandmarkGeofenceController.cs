@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.portalservice.Common;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.portalservice.Entity.POI;
-using System;
-using net.atos.daf.ct2.portalservice.Entity.Geofence;
-using net.atos.daf.ct2.geofenceservice;
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using log4net;
 using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Alert=net.atos.daf.ct2.alertservice;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Geofence;
+using Newtonsoft.Json;
+using Alert = net.atos.daf.ct2.alertservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -29,9 +28,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string FK_Constraint = "violates foreign key constraint";
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        private readonly HeaderObj _userDetails;
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
-        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper,Common.AccountPrivilegeChecker privilegeChecker
+        public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker
             , IHttpContextAccessor _httpContextAccessor, Alert.AlertService.AlertServiceClient alertServiceClient, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _GeofenceServiceClient = GeofenceServiceClient;
@@ -39,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _mapper = new Entity.Geofence.Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _privilegeChecker = privilegeChecker;
-             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             _alertServiceClient = alertServiceClient;
 
         }
@@ -52,7 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                 _logger.Info("CreatePolygonGeofence method in Geofence API called.");
+                _logger.Info("CreatePolygonGeofence method in Geofence API called.");
                 if (request.OrganizationId == 0)
                 {
                     bool hasRights = await HasAdminPrivilege();
@@ -102,7 +100,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
-                 _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(FK_Constraint))
                 {
@@ -147,7 +145,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     geofenceRequest.GeofenceRequest.Add(_mapper.ToCircularGeofenceRequest(item));
                 }
-                
+
                 geofenceservice.CircularGeofenceResponse geofenceResponse = await _GeofenceServiceClient.CreateCircularGeofenceAsync(geofenceRequest);
                 ///var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
 
@@ -279,21 +277,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetGeofenceByGeofenceID  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
                  Request);
-                if (request.OrganizationId>0)
+                if (request.OrganizationId > 0)
                 {
                     idRequest.OrganizationId = request.OrganizationId;
-                }                
+                }
                 idRequest.GeofenceId = request.GeofenceId;
 
                 var result = await _GeofenceServiceClient.GetGeofenceByGeofenceIDAsync(idRequest);
-                if (result.Id>0)
+                if (result.Id > 0)
                 {
                     return Ok(result);
                 }
                 else
                 {
-                    return StatusCode(404,"No record found ");
-                }                          
+                    return StatusCode(404, "No record found ");
+                }
             }
             catch (Exception ex)
             {
@@ -311,15 +309,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);               
-            }           
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
         }
 
         [HttpGet]
         [Route("getallgeofence")]
         public async Task<IActionResult> GetAllGeofence([FromQuery] net.atos.daf.ct2.portalservice.Entity.Geofence.GeofenceEntity request)
         {
-            GeofenceEntityResponceList response = new GeofenceEntityResponceList();            
+            GeofenceEntityResponceList response = new GeofenceEntityResponceList();
             try
             {
                 if (request.OrganizationId != 0)
@@ -327,17 +325,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     request.OrganizationId = GetContextOrgId();
                 }
                 GeofenceEntityRequest objGeofenceRequest = new GeofenceEntityRequest();
-                    objGeofenceRequest.OrganizationId = request.OrganizationId;
-                    objGeofenceRequest.CategoryId = request.CategoryId;
-                    objGeofenceRequest.SubCategoryId = request.SubCategoryId;
+                objGeofenceRequest.OrganizationId = request.OrganizationId;
+                objGeofenceRequest.CategoryId = request.CategoryId;
+                objGeofenceRequest.SubCategoryId = request.SubCategoryId;
 
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
-                    "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "GetAllGeofence  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                     Request);
+                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
+                "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                "GetAllGeofence  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
+                 Request);
 
-                    var result = await _GeofenceServiceClient.GetAllGeofenceAsync(objGeofenceRequest);
-                    return Ok(result);               
+                var result = await _GeofenceServiceClient.GetAllGeofenceAsync(objGeofenceRequest);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -356,16 +354,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
-          
+
         }
-        
+
         [HttpPut]
         [Route("updatepolygongeofence")]
         public async Task<IActionResult> UpdatePolygonGeofence(GeofenceUpdateEntity request)
         {
             try
             {
-                
+
                 _logger.Info("UpdatePolygonGeofence method in geofence API called.");
 
                 // Validate Admin Privilege
@@ -439,11 +437,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                foreach(var item in requests)
+                foreach (var item in requests)
                 {
-                     item.OrganizationId = GetContextOrgId();
+                    item.OrganizationId = GetContextOrgId();
                 }
-                
+
                 if (requests?.Count() == 0)
                 {
                     return StatusCode(400, "Bulk import geofence payload is having no items.");
@@ -481,7 +479,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                 _logger.Info("UpdateCircularGeofence method in Geofence API called.");
+                _logger.Info("UpdateCircularGeofence method in Geofence API called.");
 
                 // Validate Admin Privilege
                 if (request.OrganizationId == 0)
@@ -564,9 +562,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 geofenceRequest.OrganizationId = request.OrganizationId;
                 geofenceRequest.CategoryId = request.CategoryId;
                 geofenceRequest.SubCategoryId = request.SubCategoryId;
-                
+
                 var result = await _GeofenceServiceClient.GetAllGeofencesAsync(geofenceRequest);
-                
+
                 if (result != null && result.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Geofence Component",
@@ -602,7 +600,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             bool Result = false;
             try
             {
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else

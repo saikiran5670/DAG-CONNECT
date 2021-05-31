@@ -1,20 +1,18 @@
-﻿using Confluent.Kafka;
-using log4net;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using TCUReceive;
-using TCUSend;
-using System.Net.Http.Headers;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
+using Confluent.Kafka;
+using log4net;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
-using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using TCUReceive;
+using TCUSend;
 
 namespace TCUProvisioning
 {
@@ -27,12 +25,12 @@ namespace TCUProvisioning
         private string topic;
         private string cacertlocation;
         private string dafurl;
-        private  IAuditTraillib _auditlog;
-        private  IConfiguration config = null;
+        private IAuditTraillib _auditlog;
+        private IConfiguration config = null;
 
         private string access_url;
-        private string grant_type ;
-        private string client_id ;
+        private string grant_type;
+        private string client_id;
         private string client_secret;
 
         public TCUProvisioningDataProcess(ILog log, IAuditTraillib auditlog, IConfiguration config)
@@ -51,14 +49,14 @@ namespace TCUProvisioning
             client_id = config.GetSection("CLIENT_ID").Value;
             client_secret = config.GetSection("CLIENT_SECRET").Value;
         }
-              
+
 
         public async Task readTCUProvisioningDataAsync()
         {
             ConsumerConfig config = getConsumer();
 
             using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
-            {             
+            {
                 log.Info("Subscribing Topic");
                 consumer.Subscribe(topic);
 
@@ -88,10 +86,10 @@ namespace TCUProvisioning
                     {
                         log.Error($"Error: {e.Message}");
                         consumer.Close();
-                       // Environment.Exit(1);
+                        // Environment.Exit(1);
 
                     }
-                    
+
                 }
             }
         }
@@ -131,20 +129,20 @@ namespace TCUProvisioning
             return config;
         }
 
-        private  async Task<HttpClient> GetHttpClient()
+        private async Task<HttpClient> GetHttpClient()
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var token = await GetElibilityToken(client);
-            client.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("Bearer", token.AccessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
             return client;
 
         }
 
         private async Task<Token> GetElibilityToken(HttpClient client)
-        {   
+        {
             var form = new Dictionary<string, string>
                 {
                     {"grant_type", grant_type},
@@ -170,23 +168,24 @@ namespace TCUProvisioning
                 HttpResponseMessage response = new HttpResponseMessage();
                 response.StatusCode = HttpStatusCode.BadRequest;
 
-                while (!(response.StatusCode == HttpStatusCode.OK) && i<5)
+                while (!(response.StatusCode == HttpStatusCode.OK) && i < 5)
                 {
                     log.Info("Calling DAF rest API for sending data");
                     response = await client.PostAsync(dafurl, data);
 
-                    log.Info("DAF Api respone is " +response.StatusCode);
+                    log.Info("DAF Api respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
-                    
+
                     i++;
                 }
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                     log.Info(result );
+                    log.Info(result);
                     await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data Service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
                 }
-                else {
+                else
+                {
 
                     log.Error(result);
                     await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
@@ -197,10 +196,10 @@ namespace TCUProvisioning
             {
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component", 0, 0, JsonConvert.SerializeObject(TCUDataSend));
                 log.Error(ex.Message);
-                
+
             }
-        }         
-        
+        }
+
     }
 
     internal class Token

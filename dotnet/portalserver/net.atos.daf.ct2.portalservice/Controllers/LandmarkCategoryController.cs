@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.portalservice.Common;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.portalservice.Entity.POI;
-using System;
-using net.atos.daf.ct2.poigeofences;
-using log4net;
+﻿using System;
 using System.Reflection;
-using Newtonsoft.Json;
-using net.atos.daf.ct2.portalservice.Entity.Category;
-using System.Linq;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.organizationservice;
+using net.atos.daf.ct2.poigeofences;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Category;
+using net.atos.daf.ct2.portalservice.Entity.POI;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -26,11 +25,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly CategoryMapper _categoryMapper;
         private ILog _logger;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-       
-        
+
+
         public LandmarkCategoryController(CategoryService.CategoryServiceClient categoryServiceClient,
             AuditHelper auditHelper, OrganizationService.OrganizationServiceClient organizationClient, Common.AccountPrivilegeChecker privilegeChecker
-            , IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base (_httpContextAccessor, sessionHelper)
+            , IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _categoryServiceClient = categoryServiceClient;
             _auditHelper = auditHelper;
@@ -62,7 +61,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid Category Name: The Category or Icon Name is Empty.");
                 }
-                
+
                 if (string.IsNullOrEmpty(request.IconName) || request.icon.Length <= 0)
                 {
                     return StatusCode(401, "Icon Details is required ");
@@ -355,7 +354,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             bool Result = false;
             try
             {
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else

@@ -1,9 +1,8 @@
-﻿using net.atos.daf.ct2.poigeofence.entity;
-using net.atos.daf.ct2.poigeofence.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 
 namespace net.atos.daf.ct2.poigeofence
 {
@@ -27,13 +26,13 @@ namespace net.atos.daf.ct2.poigeofence
 
         public async Task<int> DeleteGroup(int groupid, int modifiedby)
         {
-            return await _landmarkgroupRepository.DeleteGroup(groupid,modifiedby);
+            return await _landmarkgroupRepository.DeleteGroup(groupid, modifiedby);
         }
         // Task<IEnumerable<LandmarkgroupRef>> GetlandmarkGroupref(int groupid)
         public async Task<IEnumerable<LandmarkGroup>> GetlandmarkGroup(int organizationid, int groupid)
         {
-            var groups = await _landmarkgroupRepository.GetlandmarkGroup(organizationid,groupid);
-            if (groupid >0)
+            var groups = await _landmarkgroupRepository.GetlandmarkGroup(organizationid, groupid);
+            if (groupid > 0)
             {
                 foreach (var group in groups)
                 {
@@ -42,21 +41,21 @@ namespace net.atos.daf.ct2.poigeofence
                     //group.GeofenceList = new List<Geofence>();
                     foreach (var item in groupref)
                     {
-                       
-                            POI obj = new POI();
-                            obj.Id = item.landmarkid;
-                            obj.Name = item.landmarkname;
-                            obj.CategoryName = item.categoryname;
-                            obj.SubCategoryName = item.subcategoryname;
-                            obj.Address = item.address;
-                            obj.icon = item.icon;
-                            obj.Type = Convert.ToString((char)item.type);
-                            group.PoiList.Add(obj);
-                                             
+
+                        POI obj = new POI();
+                        obj.Id = item.landmarkid;
+                        obj.Name = item.landmarkname;
+                        obj.CategoryName = item.categoryname;
+                        obj.SubCategoryName = item.subcategoryname;
+                        obj.Address = item.address;
+                        obj.icon = item.icon;
+                        obj.Type = Convert.ToString((char)item.type);
+                        group.PoiList.Add(obj);
+
                     }
                 }
-                
-                
+
+
             }
 
             return groups;

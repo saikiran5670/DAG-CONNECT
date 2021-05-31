@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AccountComponent = net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.singlesignonservice.Common
@@ -12,7 +9,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Common
     {
         AccountComponent.IAccountIdentityManager accountIdentityManager;
         private readonly ILogger<BasicAuthenticationService> logger;
-        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager, ILogger<BasicAuthenticationService> _logger) 
+        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager, ILogger<BasicAuthenticationService> _logger)
         {
             accountIdentityManager = _accountIdentityManager;
             logger = _logger;

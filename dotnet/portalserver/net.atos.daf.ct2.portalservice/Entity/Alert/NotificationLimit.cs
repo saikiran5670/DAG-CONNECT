@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
@@ -19,7 +16,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long CreatedAt { get; set; }
         //public long ModifiedAt { get; set; }
     }
-    public class NotificationLimitEdit: NotificationLimit
+    public class NotificationLimitEdit : NotificationLimit
     {
         public int Id { get; set; }
         public int NotificationId { get; set; }

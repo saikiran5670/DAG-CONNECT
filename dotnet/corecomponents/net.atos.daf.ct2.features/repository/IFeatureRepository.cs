@@ -6,18 +6,18 @@ using net.atos.daf.ct2.features.entity;
 namespace net.atos.daf.ct2.features.repository
 {
     public interface IFeatureRepository
-    {        
+    {
         #region Feature Set
 
         Task<int> AddFeatureSet(FeatureSet featureSet);
         Task<int> GetMinimumLevel(List<Feature> features);
         Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet);
-       // Task<int> DeleteFeatureSet(int FeatureSetId, int Userid);
+        // Task<int> DeleteFeatureSet(int FeatureSetId, int Userid);
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state);
         Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
         Task<int> CheckFeatureSetExist(string FeatureSetName);
         Task<IEnumerable<FeatureSet>> GetFeatureSetFeature(int FeatureSetId);
-        Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int feature_set_id, string Langaugecode);
+        Task<IEnumerable<Feature>> GetFeatureIdsForFeatureSet(int feature_set_id, string Langaugecode);
         Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);
         Task<bool> DeleteFeatureSet(int FeatureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-
 namespace net.atos.daf.ct2.singlesignonservice.Entity
 {
     public class SsoResponse
