@@ -339,6 +339,8 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 response.StartPositionlattitude = entity.StartPositionlattitude;
                 response.StartPositionLongitude = entity.StartPositionLongitude;
                 response.StartTimeStamp = entity.StartTimeStamp;
+                response.EndTimeStamp = entity.EndTimeStamp;
+
                 if (entity.VIN != null)
                 {
                     response.VIN = entity.VIN;
