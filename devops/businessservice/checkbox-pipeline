@@ -1,0 +1,89 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+parameters:
+- name: ENV
+  displayName: ENV
+  type: string
+  default: DEV0
+  values:
+  - DEV0
+  - DEV01
+  - DEV02
+  - TEST01
+  - TEST02
+  - ACC03
+  - ACC01
+  - ACC02
+
+pool: $(PRIVATEAGENT)
+
+variables:
+- ${{ if eq(parameters.ENV, 'DEV0') }}:
+  - group: DEV0-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV01') }}:
+  - group: DEV01-Build-Variables
+- ${{ if eq(parameters.ENV, 'DEV02') }}:
+  - group: DEV02-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST01') }}:
+  - group: TEST01-Build-Variables
+- ${{ if eq(parameters.ENV, 'TEST02') }}:
+  - group: TEST02-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC03') }}:
+  - group: ACC03-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC01') }}:
+  - group: ACC01-Build-Variables
+- ${{ if eq(parameters.ENV, 'ACC02') }}:
+  - group: ACC02-Build-Variables
+  
+steps:
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.alertservice/appsettings.Production.json'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      cat dotnet/businessservices/net.atos.daf.ct2.alertservice/appsettings.Production.json
+
+- task: replacetokens@3
+  inputs:
+    targetFiles: 'dotnet/businessservices/net.atos.daf.ct2.alertservice/log4net.config'
+    encoding: 'auto'
+    writeBOM: true
+    actionOnMissing: 'warn'
+    keepToken: false
+    tokenPrefix: '#{'
+    tokenSuffix: '}#'
+    useLegacyPattern: false
+    enableTelemetry: true
+
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    azureSubscription:  $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    dockerFile: dotnet/AlertService_Dockerfile
+    imageName: alertservice-grpc
+
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    azureSubscription: $(Subscription)
+    azureContainerRegistry: $(ContainerRegistry)
+    action: 'Push an image'
+    imageName: alertservice-grpc
+
