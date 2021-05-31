@@ -36,6 +36,8 @@ using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.reportservice;
+using Microsoft.AspNetCore.DataProtection;
+using System.IO;
 
 namespace net.atos.daf.ct2.portalservice
 {
@@ -105,6 +107,10 @@ namespace net.atos.daf.ct2.portalservice
                 };
             });
             services.AddDistributedMemoryCache();
+
+            services.AddDataProtection()
+                .SetApplicationName(swaggerBasePath)
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/tmp/keys"));
 
             services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
