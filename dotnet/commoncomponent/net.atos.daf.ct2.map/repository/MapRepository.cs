@@ -26,10 +26,9 @@ namespace net.atos.daf.ct2.map.repository
                 var addresses = new List<LookupAddress>();
                 foreach (var lookupAddress in lookupAddresses)
                 {
-                    var queryStatement = @"select id,latitude
-                                   ,longitude
-                                   ,address                                   
-                                   from master.vehicle 
+                  
+                    var queryStatement = @"select   id, longitude, latitude, address, created_at, modified_at                                 
+                                   from master.geolocationaddress 
                                    where 1=1";
 
                     var parameter = new DynamicParameters();
@@ -41,7 +40,6 @@ namespace net.atos.daf.ct2.map.repository
                     {
                         parameter.Add("@longitude", lookupAddress.Longitude);
                     }
-
                     if (lookupAddress.Id > 0)
                     {
                         parameter.Add("@id", lookupAddress.Id);
@@ -68,7 +66,7 @@ namespace net.atos.daf.ct2.map.repository
                 foreach (var lookupAddress in lookupAddresses)
                 {
                     
-                    var query = @"update  master.vehicle  set address=@address where  longitude =@longitude and latitude=@latitude  RETURNING id";
+                    var query = @"update  master.geolocationaddress  set address=@address where  longitude =@longitude and latitude=@latitude  RETURNING id";
                    
 
 
