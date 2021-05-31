@@ -14,6 +14,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 })
 export class CreateNotificationsAlertComponent implements OnInit {
   @Input() translationData: any = [];
+  @Input() selectedRowData: any;
   notificationForm: FormGroup;
   FormArrayItems : FormArray;
   FormEmailArray : FormArray;
@@ -31,11 +32,12 @@ export class CreateNotificationsAlertComponent implements OnInit {
   @Input() actionType: any;
   localStLanguage: any;
   organizationId: number;
+  accountId: number;
   addEmailFlag: boolean = false;
   addWsFlag : boolean = false;
   contactModeType: any;
   radioButtonVal: any = 'N';
-  notificationPayload: any = [];
+  notificationReceipients: any = [];
   notifications : any = [];
   openAdvancedFilter: boolean= false;
  contactModes : any = [
@@ -66,8 +68,10 @@ wsLabel: any;
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    console.log("action type=" +this.actionType);
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    this.accountId= parseInt(localStorage.getItem("accountId"));
     this.notificationForm = this._formBuilder.group({
       recipientLabel: ['', [ Validators.required ]],
       contactMode: ['', [Validators.required]],
@@ -83,54 +87,53 @@ wsLabel: any;
         CustomValidators.specialCharValidationForName('recipientLabel'),
       ]
     });
-    
+    console.log(this.selectedRowData);
+    if(this.actionType == 'edit' || this.actionType == 'duplicate')
+    {
+      this.setDefaultValues();
     }
+  }
 
-    initItems(): FormGroup{
-      return this._formBuilder.group({
-        emailAddress: ['', [Validators.required, Validators.email]],
-        mailSubject: ['', [Validators.required]],
-        mailDescription: ['', [Validators.required]],
-        wsDescription: ['', [Validators.required]],
-        authentication:['', [Validators.required]],
-        loginId: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required]],
-        webURL:['', [Validators.required]],
-        wsTextDescription:[''],
-        notifyPeriod: ['A']
-        });
-    }
 
     initEmailItems(): FormGroup{
       return this._formBuilder.group({
         emailAddress: ['', [Validators.required, Validators.email]],
-        mailSubject: ['', [Validators.required]],
-        mailDescription: ['', [Validators.required]],
+        mailSubject: ['This is default subject for ' +this.alertTypeName, [Validators.required]],
+        mailDescription: ['This is default text for ' +this.alertTypeName, [Validators.required]],
         notifyPeriod: ['A'],
         emailRecipientLabel: [''],
-        emailContactModes: ['']
+        emailContactModes: [''],
+        receipientId: []
       });
 
     }
 
     initWebItems(): FormGroup{
       return this._formBuilder.group({
-        wsDescription: ['', [Validators.required]],
+        wsDescription: ['This is default text for ' +this.alertTypeName, [Validators.required]],
         authentication:['N', [Validators.required]],
         loginId: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required]],
         webURL:['', [Validators.required]],
-        wsTextDescription:[''],
+        wsTextDescription:['This is default text for ' +this.alertTypeName],
         notifyPeriodweb: ['A'],        
         webRecipientLabel: [''],
         webContactModes: [''],
+        receipientId: []
       });
 
     }
 
 
-    addMultipleItems(data) :void{
+    setDefaultValues(){
+      
+this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
+  this.addMultipleItems(false,element);
+});
+    }
 
+    addMultipleItems(isButtonClicked: boolean, data? :any) :void{
+if(isButtonClicked){
       this.contactModeType = this.notificationForm.get("contactMode").value;
       //this is for email
       if (this.contactModeType == 'E') {
@@ -168,16 +171,83 @@ wsLabel: any;
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
         }
      }
+    }
+    //for edit or duplicate functionality
+    else{
+      this.contactModeType = data.notificationModeType;
+      //this is for email
+      if (this.contactModeType == 'E') {
+        this.addEmailFlag = true;
+        this.emailCount = this.emailCount + 1;
+        if (!this.FormEmailArray) {
+          this.FormEmailArray = this.notificationForm.get("FormEmailArray") as FormArray;
+          this.FormEmailArray.at(this.emailIndex).get("emailAddress").setValue(data.emailId);
+          this.FormEmailArray.at(this.emailIndex).get("mailDescription").setValue(data.emailText);
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(data.recipientLabel);
+          this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
+          this.FormEmailArray.at(this.emailIndex).get("receipientId").setValue(data.id);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(data.notificationModeType);
+        }
+        else {
+          this.emailIndex = this.emailIndex+1;
+          this.FormEmailArray.push(this.initEmailItems());
+          this.FormEmailArray.at(this.emailIndex).get("emailAddress").setValue(data.emailId);
+          this.FormEmailArray.at(this.emailIndex).get("mailDescription").setValue(data.emailText);
+          this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(data.recipientLabel);
+          this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
+          this.FormEmailArray.at(this.emailIndex).get("receipientId").setValue(data.id);
+          this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(data.notificationModeType);
+        }
+      }
+      //this is for web service
+      else if (this.contactModeType == 'W') {
+        this.addWsFlag = true;
+        this.wsCount = this.wsCount + 1;
+        if (!this.FormWebArray) {
+          this.FormWebArray = this.notificationForm.get("FormWebArray") as FormArray;
+          this.FormWebArray.at(this.wsIndex).get("webURL").setValue(data.wsUrl);
+          this.FormWebArray.at(this.wsIndex).get("wsDescription").setValue(data.wsText);
+          this.FormWebArray.at(this.wsIndex).get("authentication").setValue(data.wsType);
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel); 
+          this.FormWebArray.at(this.wsIndex).get("receipientId").setValue(data.id);    
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(data.notificationModeType);
+          if(data.wsType == 'A'){
+          this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
+          this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
+          this.FormWebArray.at(this.wsIndex).get("wsTextDescription").setValue(data.wsText);
+          }
+        }
+        else {
+          this.wsIndex = this.wsIndex+1;
+          this.FormWebArray.push(this.initWebItems());
+          this.FormWebArray.at(this.wsIndex).get("webURL").setValue(data.wsUrl);
+          this.FormWebArray.at(this.wsIndex).get("wsDescription").setValue(data.wsText);
+          this.FormWebArray.at(this.wsIndex).get("authentication").setValue(data.wsType);
+          this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel);
+          this.FormWebArray.at(this.wsIndex).get("receipientId").setValue(data.id);   
+          this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(data.notificationModeType); 
+          if(data.wsType == 'A'){
+          this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
+          this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
+          this.FormWebArray.at(this.wsIndex).get("wsTextDescription").setValue(data.wsText);
+          }
+        }
+     }
+    }
      }
 
      deleteWebNotificationRow(index :number){
       this.FormWebArray.removeAt(index);
       console.log("deleted");
+      this.wsIndex = this.wsIndex - 1;
+      this.wsCount = this.wsCount - 1;
      }
 
      deleteEmailNotificationRow(index :number){
       this.FormEmailArray.removeAt(index);
       console.log("deleted");
+      this.emailIndex = this.emailIndex - 1;
+      this.emailCount = this.emailCount - 1;
      }
 
   setDefaultValueForws(){
@@ -217,42 +287,68 @@ wsLabel: any;
   }
 
   getNotificationDetails() : any{
-    // let tempObj= {
-    //   name: "ABCD"
-    // }
+   this.notificationReceipients= [];
 
-
-     let WsData;
+  let WsData;
     let EmailData;
-   if(this.FormWebArray && this.FormWebArray.length > 0){
-   this.FormWebArray.controls.forEach((element, index) => {
-     WsData = element['controls'];
-  let webPayload = {
-  recipientLabel: WsData.webRecipientLabel.value,
-  accountGroupId: this.organizationId,
-  notificationModeType: WsData.webContactModes.value,
-  phoneNo: "",
-  sms: "",
-  emailId: "",
-  emailSub: "",
-  emailText: "",
-  wsUrl: WsData.webURL.value,
-  wsType: WsData.authentication.value,
-  wsText: WsData.wsDescription.value,
-  wsLogin: WsData.loginId.value,
-  wsPassword: WsData.password.value
-}
-this.notificationPayload.push(webPayload);
+    let webPayload= {};
+
+  if(this.FormWebArray && this.FormWebArray.length > 0){
+    if(this.actionType == 'create' || this.actionType == 'duplicate'){
+        this.FormWebArray.controls.forEach((element, index) => {
+          WsData = element['controls'];
+        webPayload = {
+        recipientLabel: WsData.webRecipientLabel.value,
+        accountGroupId: this.organizationId,
+        notificationModeType: WsData.webContactModes.value,
+        phoneNo: "",
+        sms: "",
+        emailId: "",
+        emailSub: "",
+        emailText: "",
+        wsUrl: WsData.webURL.value,
+        wsType: WsData.authentication.value,
+        wsText: WsData.wsDescription.value,
+        wsLogin: WsData.loginId.value,
+        wsPassword: WsData.password.value
+      }
+      this.notificationReceipients.push(webPayload);
 
    });
+  }
+  else if(this.actionType == 'edit'){
+    this.FormWebArray.controls.forEach((element, index) => {
+      WsData = element['controls'];
+    webPayload = {
+    recipientLabel: WsData.webRecipientLabel.value,
+    accountGroupId: this.organizationId,
+    notificationModeType: WsData.webContactModes.value,
+    phoneNo: "",
+    sms: "",
+    emailId: "",
+    emailSub: "",
+    emailText: "",
+    wsUrl: WsData.webURL.value,
+    wsType: WsData.authentication.value,
+    wsText: WsData.wsDescription.value,
+    wsLogin: WsData.loginId.value,
+    wsPassword: WsData.password.value,
+    id: WsData.receipientId.value ? WsData.receipientId.value : 0,
+    notificationId: this.selectedRowData.notifications[0].id
+  }
+  this.notificationReceipients.push(webPayload);
+});
+  }
 
 }
 
-  if(this.FormEmailArray && this.FormEmailArray.length > 0)
-  {
+  if(this.FormEmailArray && this.FormEmailArray.length > 0){
+  let emailPayload= {};
+  
+    if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.FormEmailArray.controls.forEach((item,index)=>{
     EmailData = item['controls'];
-    let emailPayload = {
+    emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
           notificationModeType: EmailData.emailContactModes.value,
@@ -267,28 +363,68 @@ this.notificationPayload.push(webPayload);
           wsLogin: "",
           wsPassword: ""
     }
-    this.notificationPayload.push(emailPayload);
+    this.notificationReceipients.push(emailPayload);
   });
-
 }
-    
+else if(this.actionType == 'edit'){
+  this.FormEmailArray.controls.forEach((item,index)=>{
+    EmailData = item['controls'];
+     emailPayload = {
+          recipientLabel: EmailData.emailRecipientLabel.value,
+          accountGroupId: this.organizationId,
+          notificationModeType: EmailData.emailContactModes.value,
+          phoneNo: "",
+          sms: "",
+          emailId: EmailData.emailAddress.value,
+          emailSub: EmailData.mailSubject.value,
+          emailText: EmailData.mailDescription.value,
+          wsUrl: "",
+          wsType: "",
+          wsText: "",
+          wsLogin: "",
+          wsPassword: "",
+          id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
+          notificationId: this.selectedRowData.notifications[0].id
+    }
+    this.notificationReceipients.push(emailPayload);
+  });
+}
 
-this.notifications = [
-  {
-    "alertUrgencyLevelType": "C",
-    "frequencyType": "O",
-    "frequencyThreshholdValue": 0,
-    "validityType": "A",
-    "createdBy": 0,
-    "notificationRecipients": this.notificationPayload,
-    "notificationLimits": [],
-    "notificationAvailabilityPeriods": []
-  }
+
+}   
+if(this.actionType == 'create' || this.actionType == 'duplicate'){
+  this.notifications = [
+    {
+      "alertUrgencyLevelType": "C",
+      "frequencyType": "O",
+      "frequencyThreshholdValue": 0,
+      "validityType": "A",
+      "createdBy": this.accountId,
+      "notificationRecipients": this.notificationReceipients,
+      "notificationLimits": [],
+      "notificationAvailabilityPeriods": []
+    }
   ]
+}
+else if(this.actionType == 'edit'){
+  this.notifications = [
+    {
+      "alertUrgencyLevelType": "C",
+      "frequencyType": "O",
+      "frequencyThreshholdValue": 0,
+      "validityType": "A",
+      "createdBy": this.selectedRowData.createdBy,
+      "id": this.selectedRowData.notifications[0].id,
+      "alertId": this.selectedRowData.id,
+      "modifiedBy": this.accountId,
+      "notificationRecipients": this.notificationReceipients,
+      "notificationLimits": [],
+      "notificationAvailabilityPeriods": []
+    }
+  ]
+}
 
   return this.notifications;
-  }
-
- 
+}
 
 }

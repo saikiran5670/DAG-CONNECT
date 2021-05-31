@@ -100,4 +100,16 @@ export class ReportsPreferencesComponent implements OnInit {
     }, 100);
   }
 
+  onCancel(){
+    this.editFlag = false;
+  }
+
+  onReset(){
+
+  }
+
+  onConfirm(){
+    this.editFlag = false;
+  }
+
 }

@@ -190,7 +190,7 @@
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
                 </mat-panel-title>
                 <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint4</p>
+                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
                 </div>   
             </mat-card>
         </div>
@@ -667,18 +667,20 @@
 </form>
   <!-- Notification details -->
   <mat-card class='mat-elevation-z'>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px" (opened)="panelOpenState == true" (closed)="panelOpenState == false" hideToggle="true">
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="panelOpenState" hideToggle="true">
       <mat-expansion-panel-header class="full-width"  #panelH (click)="panelH._toggle()">
         <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
                 translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
-              <button *ngIf="actionType != 'view' " style="margin-left: 50%;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ (actionType == 'create' || actionType == 'duplicate') ? (!panelOpenState ? translationData.lblAddNotification || 'Add
-                Notification' : translationData.lblSkipNotification || 'Skip Notification') :
-                 (!panelOpenState ? translationData.lblAddNotification || 'Add Notification' : translationData.lblDeleteNotification || 'Delete Notification') }}</button>   
+              <button *ngIf="actionType == 'create' || actionType == 'duplicate' || (actionType == 'edit' && !panelOpenState) " style="margin-left: 50%;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ (!panelOpenState ? translationData.lblAddNotification || 'Add
+                Notification' : translationData.lblSkipNotification || 'Skip Notification')  }}</button>   
+                <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblSkipNotification || 'Skip Notification'  }}</button>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <app-create-notifications-alert *ngIf= "(alert_category_selected !== '') && (alert_type_selected !== '')"
+      <!-- <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblDeleteNotification || 'Delete Notification'  }}</button>    -->
+      <app-create-notifications-alert *ngIf= "(alert_category_selected !== '') && (alert_type_selected !== '') && panelOpenState"
       [translationData]='translationData'
+      [selectedRowData]='selectedRowData'
       [actionType]='actionType'
       [alert_category_selected] ='alert_category_selected'
       [alertTypeName] = 'alertTypeName'
@@ -688,7 +690,6 @@
       [isWarningLevelSelected] = 'isWarningLevelSelected'
       [isAdvisoryLevelSelected] = 'isAdvisoryLevelSelected'>
     </app-create-notifications-alert>
-      
     </mat-expansion-panel>
   </mat-card>
 

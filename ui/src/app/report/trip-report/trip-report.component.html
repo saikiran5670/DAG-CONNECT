@@ -6,7 +6,7 @@
           <mat-panel-title>
             <span>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
-              <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span>
+              <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
@@ -190,7 +190,7 @@
           </div>
         </div>
         <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
-            matSort>
+            matSort #exporter="matTableExporter">
             <ng-container matColumnDef="All">
               <mat-header-cell *matHeaderCellDef class="max-width-10-per">
                 <mat-checkbox (change)='$event ? masterToggleForTrip() : null'
