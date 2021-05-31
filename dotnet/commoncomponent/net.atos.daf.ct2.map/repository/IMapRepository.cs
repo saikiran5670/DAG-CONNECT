@@ -7,6 +7,6 @@ namespace net.atos.daf.ct2.map.repository
     public interface IMapRepository
     {
         Task<List<LookupAddress>> GetLookupAddress(List<LookupAddress> lookupAddresses);
-        Task<bool> AddLookupAddress(List<LookupAddress> lookupAddresses);
+        Task<List<LookupAddress>> AddLookupAddress(List<LookupAddress> lookupAddresses);
     }
 }
