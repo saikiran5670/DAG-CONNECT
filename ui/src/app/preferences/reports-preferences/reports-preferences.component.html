@@ -5,7 +5,7 @@
             <span>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportComponent || 'Trip Report Component' }}</span>
                 <span style='margin-left: 10px; vertical-align: middle;'>
-                    <mat-icon (click)="editTripReportPreferences()" style="cursor: pointer; font-size: 20px;">edit</mat-icon>
+                    <mat-icon *ngIf='!editFlag' (click)="editTripReportPreferences()" style="cursor: pointer; font-size: 20px;">edit</mat-icon>
                 </span>
             </span>
         </mat-panel-title>
@@ -14,12 +14,11 @@
         <mat-table [dataSource]="dataSource" class="table-items">
           <ng-container matColumnDef="All">
             <mat-header-cell *matHeaderCellDef class="max-width-10-per">
-              <mat-checkbox (change)='$event ? masterToggleForColumns() : null'
+              <mat-checkbox *ngIf='editFlag' (change)='$event ? masterToggleForColumns() : null'
                 [checked]='selectionForColumns.hasValue() && isAllSelectedForColumns()'
                 [indeterminate]='selectionForColumns.hasValue() && !isAllSelectedForColumns()'
-                [aria-label]='checkboxLabelForColumns()' [disabled] = '!editFlag'>
+                [aria-label]='checkboxLabelForColumns()'>
               </mat-checkbox>
-              <!-- <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span> -->
             </mat-header-cell>
             <mat-cell *matCellDef="let row" class="max-width-10-per">
               <mat-checkbox (click)='$event.stopPropagation()'
@@ -38,15 +37,12 @@
          
            
         <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
-     <div fxLayout="row" class='areaWidth'fxLayoutAlign="end">
-      <!-- <div fxLayout="column" fxLayoutAlign="end"> -->
-       
-            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="editFlag">{{
+     <div fxLayout="row" class='areaWidth'fxLayoutAlign="end" *ngIf="editFlag">
+            <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
                 translationData.lblCancel || 'Cancel' }}</button>
-            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" *ngIf="editFlag">{{ translationData.lblReset || 'Reset' }}</button>
-            <button class='no-margin'*ngIf="editFlag" mat-raised-button color="primary"
+            <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{ translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'
                 >{{ (translationData.lblConfirm || 'Confirm') }}</button>
-        <!-- </div> -->
     </div>
   </div>
     </mat-expansion-panel>
