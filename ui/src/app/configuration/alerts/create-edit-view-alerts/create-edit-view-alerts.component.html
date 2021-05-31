@@ -674,7 +674,7 @@
                 translationData.lblNotificationDetailsOptional || 'Notification details (Optional)' }}</span>
               <button *ngIf="actionType == 'create' || actionType == 'duplicate' || (actionType == 'edit' && !panelOpenState) " style="margin-left: 50%;" mat-raised-button color="primary" (click)="onAddNotification();panelH._toggle()">{{ (!panelOpenState ? translationData.lblAddNotification || 'Add
                 Notification' : translationData.lblSkipNotification || 'Skip Notification')  }}</button>   
-                <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblDeleteNotification || 'Delete Notification'  }}</button>
+                <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblSkipNotification || 'Skip Notification'  }}</button>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <!-- <button *ngIf="actionType == 'edit' &&  panelOpenState" style="margin-left: 50%;" mat-raised-button color="primary" (click)="onDeleteNotification()">{{ translationData.lblDeleteNotification || 'Delete Notification'  }}</button>    -->
