@@ -6,7 +6,7 @@
           <mat-panel-title>
             <span>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
-              <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span>
+              <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
             </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
@@ -26,7 +26,6 @@
               <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
               <mat-form-field appearance="outline">
                 <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
-                  <mat-option value="0">--All--</mat-option>
                   <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
                       {{ rer.vehicleGroupName }}
                   </mat-option>
@@ -210,12 +209,12 @@
             <ng-container matColumnDef="startTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartDate || 'Start Date' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.startTimeStamp != '' ? row.startTimeStamp : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedStartTime != '' ? row.convertedStartTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="endTimeStamp">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndDate || 'End Date' }}
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.endTimeStamp != '' ? row.endTimeStamp : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedEndTime != '' ? row.convertedEndTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="distance">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{ translationData.lblkm || 'km' }})</span>

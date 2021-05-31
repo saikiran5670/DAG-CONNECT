@@ -87,7 +87,7 @@
                 translationData.lblRecipientLabel02 || 'Recipient Label' }} <span style="margin-left: 5px;">{{item['controls']['emailRecipientLabel'].value}}</span></span>
                </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                <mat-icon style="color: red;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
+                <mat-icon style="color: red;cursor: pointer;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
                 </div>
             </div>
         </mat-panel-title>
@@ -188,7 +188,7 @@
                 translationData.lblRecipientLabel02 || 'Recipient Label' }} <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span></span>
                </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
-                <mat-icon style="color: red;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
+                <mat-icon style="color: red;cursor: pointer;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
                 </div>
             </div>
             </mat-panel-title>
@@ -292,7 +292,7 @@
             </div>
         </div>
     </mat-card>
-    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <div *ngIf = "actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
         </div>
@@ -300,14 +300,14 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
-    <div *ngIf="openAdvancedFilter" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <div *ngIf="openAdvancedFilter && actionType != 'view'" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
                 <mat-panel-title>
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
                 </mat-panel-title>
                 <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint4</p>
+                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
                 </div>   
             </mat-card>
         </div>

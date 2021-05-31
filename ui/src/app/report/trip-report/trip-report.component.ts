@@ -130,58 +130,6 @@ export class TripReportComponent implements OnInit {
     });
   }
 
-  // dummyData(){
-  //   [ 
-  //     {
-  //       "id": 214681,
-  //       "tripId": "3",
-  //       "vin": "V12003",
-  //       "startTimeStamp": 0,
-  //       "endTimeStamp": 0,
-  //       "distance": 0,
-  //       "idleDuration": 0,
-  //       "averageSpeed": 0,
-  //       "averageWeight": 0,
-  //       "odometer": 0,
-  //       "startPosition": "NA",
-  //       "endPosition": "NA",
-  //       "fuelConsumed": 0,
-  //       "drivingTime": 0,
-  //       "alert": 0,
-  //       "events": 0,
-  //       "fuelConsumed100Km": 0,
-  //       "liveFleetPosition": [],
-  //       "startPositionLattitude": 0,
-  //       "startPositionLongitude": 0,
-  //       "endPositionLattitude": 0,
-  //       "endPositionLongitude": 0
-  //     },
-  //     {
-  //       "id": 214681,
-  //       "tripId": "3",
-  //       "vin": "V12003",
-  //       "startTimeStamp": 0,
-  //       "endTimeStamp": 0,
-  //       "distance": 0,
-  //       "idleDuration": 0,
-  //       "averageSpeed": 0,
-  //       "averageWeight": 0,
-  //       "odometer": 0,
-  //       "startPosition": "NA",
-  //       "endPosition": "NA",
-  //       "fuelConsumed": 0,
-  //       "drivingTime": 0,
-  //       "alert": 0,
-  //       "events": 0,
-  //       "fuelConsumed100Km": 0,
-  //       "liveFleetPosition": [],
-  //       "startPositionLattitude": 0,
-  //       "startPositionLongitude": 0,
-  //       "endPositionLattitude": 0,
-  //       "endPositionLongitude": 0
-  //     }
-  //   ]
-  // }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -202,7 +150,7 @@ export class TripReportComponent implements OnInit {
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
-        this.tripData = _tripData.tripData;
+        this.tripData = this.getConvertTableDateTime(_tripData.tripData);
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error)=>{
@@ -213,6 +161,24 @@ export class TripReportComponent implements OnInit {
         this.updateDataSource(this.tripData);
       });
     }
+  }
+
+  getConvertTableDateTime(data: any){
+    data.forEach(element => {
+      if(element.startTimeStamp != 0){
+        element.convertedStartTime = this.formStartDate(new Date(element.startTimeStamp));
+      }
+      else{
+        element.convertedStartTime = 0;
+      }
+
+      if(element.endTimeStamp != 0){
+        element.convertedEndTime = this.formStartDate(new Date(element.endTimeStamp));
+      }else{
+        element.convertedEndTime = 0;
+      }
+    });
+    return data;
   }
 
   setTableInfo(){
@@ -258,21 +224,22 @@ export class TripReportComponent implements OnInit {
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
+    this.vehicleGroupListData = this.vehicleGroupListData;
+    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.updateDataSource(this.tripData);
-    this.filterDateData();
     this.resetTripFormControlValue();
     this.tableInfoObj = {};
   }
 
   resetTripFormControlValue(){
     this.tripForm.get('vehicle').setValue('');
-    this.tripForm.get('vehicleGroup').setValue('');
+    this.tripForm.get('vehicleGroup').setValue(0);
   }
 
   onVehicleGroupChange(event: any){
     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
-      this.vehicleListData = this.vehicleGroupListData;
+      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     }else{
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
     }
@@ -313,7 +280,7 @@ export class TripReportComponent implements OnInit {
   }
 
   exportAsExcelFile(){
-    this.matTableExporter.exportTable('xlsx', {fileName:'Package_Data', sheet: 'sheet_name'});
+    this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Report', sheet: 'sheet_name'});
   }
 
   exportAsPDFFile(){
@@ -325,13 +292,13 @@ export class TripReportComponent implements OnInit {
     doc.setFontSize(11);
     doc.setTextColor(100);
 
-    let pdfColumns = [['Start TimeStamp', 'End TimeStamp', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
 
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
-      tempObj.push(e.startTimeStamp);
-      tempObj.push(e.endTimeStamp);
+      tempObj.push(e.convertedStartTime);
+      tempObj.push(e.convertedEndTime);
       tempObj.push( e.distance);
       tempObj.push( e.idleDuration);
       tempObj.push( e.averageSpeed);
@@ -342,7 +309,6 @@ export class TripReportComponent implements OnInit {
       tempObj.push(e.drivingTime);
       tempObj.push(e.alert);
       tempObj.push(e.events);
-
 
       prepare.push(tempObj);
     });
@@ -416,15 +382,11 @@ export class TripReportComponent implements OnInit {
   startTimeChanged(selectedTime: any) {
     this.selectedStartTime = selectedTime;
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
-    this.resetTripFormControlValue();
-    this.filterDateData();
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
-    this.resetTripFormControlValue();
-    this.filterDateData();
   }
 
   getTodayDate(){
@@ -469,47 +431,39 @@ export class TripReportComponent implements OnInit {
         this.selectionTab = 'yesterday';
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
-        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'lastweek': {
         this.selectionTab = 'lastweek';
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
-        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'lastmonth': {
         this.selectionTab = 'lastmonth';
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
-        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
         break;
       }
       case 'last3month': {
         this.selectionTab = 'last3month';
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
         break;
       }
     }
-    this.resetTripFormControlValue();
-    this.filterDateData();
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
-    ////console.log("start:: ", event.value)
     this.startDateValue = event.value;
-    this.resetTripFormControlValue();
-    this.filterDateData();
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
-    ////console.log("end: ", event.value)
     this.endDateValue = event.value;
-    this.resetTripFormControlValue();
-    this.filterDateData();
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
@@ -522,8 +476,10 @@ export class TripReportComponent implements OnInit {
   filterDateData(){
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
-    let currentStartTime = this.startDateValue.getTime();
-    let currentEndTime = this.endDateValue.getTime();
+    let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+    let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    let currentStartTime = _last3m.getTime();
+    let currentEndTime = _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
@@ -542,7 +498,11 @@ export class TripReportComponent implements OnInit {
       }
     }
     this.vehicleGroupListData = finalVINDataList;
-    this.vehicleListData = finalVINDataList;
+    if(this.vehicleGroupListData.length > 0){
+      this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      this.resetTripFormControlValue();
+    }
+    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
   }
 
 }
