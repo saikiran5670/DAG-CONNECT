@@ -12,7 +12,7 @@ parameters:
   type: boolean
   default: false
   
-pool: Azure Pipelines
+pool: dafct-dta-privateagent
 
 steps:
 - task: CmdLine@2
