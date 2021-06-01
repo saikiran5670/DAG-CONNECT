@@ -1,14 +1,13 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.alert.entity;
 using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.alert.repository
 {
@@ -129,7 +128,7 @@ namespace net.atos.daf.ct2.alert.repository
 
                 transactionScope.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transactionScope.Rollback();
                 throw;
@@ -163,7 +162,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryLandmarkref, parameterlandmarkref);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -202,7 +201,7 @@ namespace net.atos.daf.ct2.alert.repository
                 int id = await dataAccess.ExecuteScalarAsync<int>(queryUrgencylevel, parameterurgencylevelref);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -253,7 +252,7 @@ namespace net.atos.daf.ct2.alert.repository
                 int id = await dataAccess.ExecuteScalarAsync<int>(queryAlertfilter, parameteralertfilterref);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -285,7 +284,7 @@ namespace net.atos.daf.ct2.alert.repository
                 int id = await dataAccess.ExecuteScalarAsync<int>(queryNotification, parameternotification);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -313,7 +312,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryAvailabilityperiod, parameteravailabilityperiod);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -341,7 +340,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryLimit, parameterlimit);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -378,7 +377,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(queryRecipient, parameterrecipient);
                 return id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -499,7 +498,7 @@ namespace net.atos.daf.ct2.alert.repository
                 }
                 transactionScope.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transactionScope.Rollback();
                 throw;
@@ -526,7 +525,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var query = $"update master.Alert set state = @state where id=@id and state=@checkstate RETURNING id";
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -542,7 +541,7 @@ namespace net.atos.daf.ct2.alert.repository
                 var query = $"update master.Alert set state = @state where id=@id  RETURNING id";
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -564,7 +563,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return await dataAccess.ExecuteScalarAsync<bool>(query, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -590,7 +589,7 @@ namespace net.atos.daf.ct2.alert.repository
 
                 return enumtranslationlist;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -746,7 +745,7 @@ namespace net.atos.daf.ct2.alert.repository
                 return repositoryMapper.GetAlertList(alertResult);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -766,7 +765,7 @@ namespace net.atos.daf.ct2.alert.repository
 
                 return dataAccess.QueryFirstOrDefaultAsync<DuplicateAlertType>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -825,7 +824,7 @@ namespace net.atos.daf.ct2.alert.repository
                 }
                 return alert;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -910,7 +909,7 @@ namespace net.atos.daf.ct2.alert.repository
                 else
                     return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -938,7 +937,7 @@ namespace net.atos.daf.ct2.alert.repository
 
                 return notificationTemplatelist;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -980,7 +979,7 @@ namespace net.atos.daf.ct2.alert.repository
                 IEnumerable<NotificationRecipient> notificationRecipientResult = await dataAccess.QueryAsync<NotificationRecipient>(queryRecipientLabel, parameter);
                 return notificationRecipientResult;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

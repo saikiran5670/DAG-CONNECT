@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Account
@@ -34,10 +33,10 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         public int AccountGroupId { get; set; }
         public int AccountId { get; set; }
-        
+
     }
     public class AccountGroupAccount
     {
-        public List<GroupRef> Accounts { get; set; }        
+        public List<GroupRef> Accounts { get; set; }
     }
 }

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.termsandconditions;
+using net.atos.daf.ct2.termsandconditions.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translationservice;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.termsandconditions.repository;
-using net.atos.daf.ct2.termsandconditions;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -59,13 +54,11 @@ namespace net.atos.daf.ct2.translationservice
             {
                 app.UseDeveloperExceptionPage();
             }
-             app.UseRouting();
+            app.UseRouting();
             app.UseGrpcWeb();
             app.UseCors();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
-                                                  .RequireCors("AllowAll");
                 endpoints.MapGrpcService<TranslationManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
                 endpoints.MapGet("/", async context =>

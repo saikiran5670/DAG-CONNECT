@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Google.Protobuf;
 using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.poigeofence;
@@ -271,7 +270,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 Latitude = x.Latitude,
                 Longitude = x.Longitude,
                 Distance = x.Distance,
-               // TripId = x.TripId,
+                // TripId = x.TripId,
                 State = x.State,
                 CreatedBy = x.CreatedBy
             }).ToList());
@@ -319,7 +318,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                                         Latitude = x.Latitude,
                                         Longitude = x.Longitude,
                                         Distance = x.Distance,
-                                      //  TripId = x.TripId,
+                                        //  TripId = x.TripId,
                                         State = x.State,
                                         CreatedBy = x.CreatedBy
                                     }).ToList());
@@ -388,7 +387,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

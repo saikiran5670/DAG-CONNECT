@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using static net.atos.daf.ct2.utilities.CommonEnums;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {

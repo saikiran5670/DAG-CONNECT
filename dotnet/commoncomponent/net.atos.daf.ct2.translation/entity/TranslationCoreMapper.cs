@@ -1,7 +1,5 @@
-﻿using net.atos.daf.ct2.translation.Enum;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using net.atos.daf.ct2.translation.Enum;
 
 namespace net.atos.daf.ct2.translation.entity
 {
@@ -9,8 +7,8 @@ namespace net.atos.daf.ct2.translation.entity
     {
         public DTCwarning MapWarningDetails(dynamic record)
         {
-            string AdviceText = !string.IsNullOrEmpty(record.advice.Replace("\\n", Environment.NewLine)) ? record.advice : string.Empty; 
-            
+            string AdviceText = !string.IsNullOrEmpty(record.advice.Replace("\\n", Environment.NewLine)) ? record.advice : string.Empty;
+
 
             DTCwarning Entity = new DTCwarning();
             Entity.id = record.id;
@@ -19,8 +17,8 @@ namespace net.atos.daf.ct2.translation.entity
             Entity.veh_type = !string.IsNullOrEmpty(record.veh_type) ? record.veh_type : string.Empty;
             Entity.warning_class = record.warningclass;
             Entity.number = record.number;
-            Entity.description =  !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
-            Entity.advice = AdviceText; 
+            Entity.description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
+            Entity.advice = AdviceText;
             Entity.expires_at = record.expires_at;
             Entity.icon_id = record.icon_id;
             Entity.created_at = record.created_at;
@@ -39,7 +37,7 @@ namespace net.atos.daf.ct2.translation.entity
                 case "M":
                     statetype = WarningType.DM;
                     break;
-               
+
             }
             return statetype;
 
@@ -126,9 +124,9 @@ namespace net.atos.daf.ct2.translation.entity
                 case "TR":
                     Code = "Tr-tr";
                     break;
-                //default:
-                //    Code = "";
-                //    break;
+                    //default:
+                    //    Code = "";
+                    //    break;
 
             }
             return Code;

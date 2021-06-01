@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.auditservice;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using log4net;
+﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.auditservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -18,9 +14,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuditController : ControllerBase
     {
-       // private readonly ILogger<AuditController> _logger;
+        // private readonly ILogger<AuditController> _logger;
 
-       private ILog _logger;
+        private ILog _logger;
         private readonly AuditService.AuditServiceClient _auditService;
 
         //Constructor

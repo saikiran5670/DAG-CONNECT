@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.account
+﻿namespace net.atos.daf.ct2.account
 {
     public enum ImageType
     {
@@ -13,6 +9,6 @@ namespace net.atos.daf.ct2.account
         WEBP = 'W',
         PSD = 'S',
         RAW = 'R',
-        BMP ='B'
+        BMP = 'B'
     }
 }

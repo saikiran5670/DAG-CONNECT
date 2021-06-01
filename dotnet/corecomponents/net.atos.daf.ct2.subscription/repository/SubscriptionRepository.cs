@@ -1,14 +1,14 @@
 ﻿
 using System;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.subscription.entity;
 using net.atos.daf.ct2.utilities;
-using System.Net;
 
 namespace net.atos.daf.ct2.subscription.repository
 {
@@ -193,7 +193,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         {
                             var values = objSubscription.VINs.ToArray().Except(vehicleIds.Keys.ToArray()).ToArray();
                             return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("VIN_NOT_FOUND", values));
-                        }                            
+                        }
 
                         ArrayList objvinList = new ArrayList(); int count = 0;
                         foreach (var vin in objSubscription.VINs)
@@ -305,7 +305,7 @@ namespace net.atos.daf.ct2.subscription.repository
                         //if package type is organization and has vins in the payload return bad request
                         if (objUnSubscription.VINs != null && objUnSubscription.VINs.Count > 0)
                             return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.BadRequest, new SubscriptionResponse("INCORRECT_ORDER_PACKAGE_TYPE", objUnSubscription.OrderID));
-                        
+
                         var parameter = new DynamicParameters();
                         parameter.Add("@id", subscriptionDetails.First().id);
                         parameter.Add("@subscription_end_date", objUnSubscription.EndDateTime);
@@ -334,7 +334,7 @@ namespace net.atos.daf.ct2.subscription.repository
                             var subscriptionIds = result.Item2;
 
                             //VINs not found in subscription table
-                            if(nonExistVins.Count > 0)
+                            if (nonExistVins.Count > 0)
                                 return new Tuple<HttpStatusCode, SubscriptionResponse>(HttpStatusCode.NotFound, new SubscriptionResponse("VIN_NOT_FOUND", nonExistVins.ToArray()));
 
                             //Check if order is fully unsubscribed
@@ -517,7 +517,7 @@ namespace net.atos.daf.ct2.subscription.repository
                     (@"SELECT id FROM master.vehicle where vin=@vin and organization_id=@orgId", parameters);
                 if (vehicleId > 0)
                 {
-                    if(!vehicleIds.ContainsKey(item)) 
+                    if (!vehicleIds.ContainsKey(item))
                         vehicleIds.Add(item, vehicleId);
                 }
             }
@@ -544,7 +544,7 @@ namespace net.atos.daf.ct2.subscription.repository
                 if (vinExist == null)
                     nonExistVins.Add(item);
 
-                if (vinExist!= null && vinExist.id > 0 && vinExist.state.ToUpper() == "A")
+                if (vinExist != null && vinExist.id > 0 && vinExist.state.ToUpper() == "A")
                 {
                     if (!subscriptionIds.ContainsKey(item))
                         subscriptionIds.Add(item, vinExist.id);

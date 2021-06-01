@@ -1,7 +1,6 @@
-using System;
-using net.atos.daf.ct2.vehicle.entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehiclerepository
 {
@@ -20,14 +19,14 @@ namespace net.atos.daf.ct2.vehiclerepository
         //   Task<IEnumerable<ServiceSubscribers>> GetServiceSubscribersByOrgID(int orgid);
         // //  Task<IEnumerable<User>> GetUsersDetailsByGroupID(int orgid,int usergroupid);
 
-            Task<Vehicle> Create(Vehicle vehicle);
-            Task<Vehicle> Update(Vehicle Vehicle);
-            Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter);   
-            Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut);
-            Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
-            Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota);
-            Task<char> GetOrganisationStatusofVehicle(int org_id);
-            // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
-            // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
+        Task<Vehicle> Create(Vehicle vehicle);
+        Task<Vehicle> Update(Vehicle Vehicle);
+        Task<IEnumerable<Vehicle>> Get(VehicleFilter vehiclefilter);
+        Task<VehicleOptInOptOut> UpdateStatus(VehicleOptInOptOut vehicleOptInOptOut);
+        Task<VehicleProperty> UpdateProperty(VehicleProperty vehicleproperty);
+        Task<char> GetCalculatedVehicleStatus(char opt_in, bool is_ota);
+        Task<char> GetOrganisationStatusofVehicle(int org_id);
+        // Task<int> Update(string vin,string tcuId,string tcuactivation,string referenceDateTime);
+        // Task<int> Create(int orgID, string vin,string tcuId,string tcuactivation,string referenceDateTime);
     }
 }

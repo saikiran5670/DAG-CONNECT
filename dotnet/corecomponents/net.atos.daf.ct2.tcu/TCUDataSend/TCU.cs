@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TCUSend
 {
-     public class TCU
+    public class TCU
     {
         private String id;
         private String brand;

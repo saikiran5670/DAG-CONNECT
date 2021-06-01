@@ -1,16 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
 using Dapper;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace net.atos.daf.ct2.account
 {
@@ -64,7 +63,7 @@ namespace net.atos.daf.ct2.account
                     var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -88,7 +87,7 @@ namespace net.atos.daf.ct2.account
                                 where id = @id RETURNING id";
                 account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -140,7 +139,7 @@ namespace net.atos.daf.ct2.account
                 return true;
             }
 
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -205,7 +204,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return account;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -286,7 +285,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return accounts;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -304,7 +303,7 @@ namespace net.atos.daf.ct2.account
 
                 return MapAccount(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -322,7 +321,7 @@ namespace net.atos.daf.ct2.account
 
                 return MapAccount(result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -341,7 +340,7 @@ namespace net.atos.daf.ct2.account
                 count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -369,7 +368,7 @@ namespace net.atos.daf.ct2.account
                 account.Id = AccountOrgId;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -395,7 +394,7 @@ namespace net.atos.daf.ct2.account
 
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -412,7 +411,7 @@ namespace net.atos.daf.ct2.account
                 string query = "UPDATE master.passwordpolicy SET is_reminder_sent = @is_reminder_sent where account_id = @account_id RETURNING id";
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -443,7 +442,7 @@ namespace net.atos.daf.ct2.account
 
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -463,7 +462,7 @@ namespace net.atos.daf.ct2.account
                 var record = await dataAccess.ExecuteScalarAsync<long?>(query, parameter);
                 return record;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -481,7 +480,7 @@ namespace net.atos.daf.ct2.account
 
                 return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -531,7 +530,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return await GetCodeByPreferenceId(accountPreferenceId.Value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -553,7 +552,7 @@ namespace net.atos.daf.ct2.account
 
                 return languageCode;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -569,7 +568,7 @@ namespace net.atos.daf.ct2.account
                 var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
                 return await dataAccess.QueryAsync<Account>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -607,7 +606,7 @@ namespace net.atos.daf.ct2.account
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -635,7 +634,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return accountBlob;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -671,7 +670,7 @@ namespace net.atos.daf.ct2.account
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 entity.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -705,7 +704,7 @@ namespace net.atos.daf.ct2.account
                 // }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -722,7 +721,7 @@ namespace net.atos.daf.ct2.account
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
                 throw;
@@ -771,7 +770,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return entity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -926,7 +925,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -982,7 +981,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1039,7 +1038,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1067,7 +1066,7 @@ namespace net.atos.daf.ct2.account
                 var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1116,7 +1115,7 @@ namespace net.atos.daf.ct2.account
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1139,7 +1138,7 @@ namespace net.atos.daf.ct2.account
                     result = true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1172,7 +1171,7 @@ namespace net.atos.daf.ct2.account
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1199,7 +1198,7 @@ namespace net.atos.daf.ct2.account
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1226,10 +1225,9 @@ namespace net.atos.daf.ct2.account
                 )";
                 return await dataAccess.ExecuteScalarAsync<bool>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ExceptionDispatchInfo.Capture(ex).Throw();
-                return false;
+                throw;
             }
         }
         // End Add Account to Role
@@ -1253,7 +1251,7 @@ namespace net.atos.daf.ct2.account
                     keyValueList = result.ToList();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1274,7 +1272,7 @@ namespace net.atos.daf.ct2.account
                     AccountOrgRoleList = result.ToList();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1303,7 +1301,7 @@ namespace net.atos.daf.ct2.account
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 resetPasswordToken.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1324,7 +1322,7 @@ namespace net.atos.daf.ct2.account
 
                 return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1344,7 +1342,7 @@ namespace net.atos.daf.ct2.account
                 var record = await dataAccess.QueryFirstOrDefaultAsync(query, parameter);
                 return (record != null ? MapToken(record) : null);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1364,7 +1362,7 @@ namespace net.atos.daf.ct2.account
                 var record = await dataAccess.QueryFirstOrDefaultAsync(query, parameter);
                 return (record != null ? MapToken(record) : null);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1413,7 +1411,7 @@ namespace net.atos.daf.ct2.account
                 var record = await dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
                 return record;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1605,7 +1603,7 @@ namespace net.atos.daf.ct2.account
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

@@ -1,11 +1,9 @@
-using System;
-
 namespace net.atos.daf.ct2.organizationservice.entity
 {
     public class AccountPreferenceRequest
     {
         public int Id { get; set; }
-        public int OrgId { get; set; }        
+        public int OrgId { get; set; }
         public int LanguageId { get; set; }
         public int TimezoneId { get; set; }
         public int CurrencyId { get; set; }
@@ -15,6 +13,6 @@ namespace net.atos.daf.ct2.organizationservice.entity
         public int TimeFormatId { get; set; }
         public int LandingPageDisplayId { get; set; }
         public string DriverId { get; set; }
-        
+
     }
 }

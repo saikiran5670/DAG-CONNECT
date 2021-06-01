@@ -1,18 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using DriverBusinessService = net.atos.daf.ct2.driverservice;
-using net.atos.daf.ct2.portalservice.Entity.Driver;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using net.atos.daf.ct2.portalservice.Common;
-using Newtonsoft.Json;
-using log4net;
 using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Driver;
+using Newtonsoft.Json;
+using DriverBusinessService = net.atos.daf.ct2.driverservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {

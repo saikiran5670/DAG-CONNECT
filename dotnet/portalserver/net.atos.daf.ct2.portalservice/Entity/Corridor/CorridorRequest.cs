@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 {
@@ -46,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public Attribute attribute { get; set; }
         public Exclusion exclusion { get; set; }
         public VehicleSize vehicleSize { get; set; }
-        
+
     }
 
     public class ViaStopDetails
@@ -60,7 +57,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class VehicleSize
     {
-       // [RegularExpression(@"\d{1,3}cm")]
+        // [RegularExpression(@"\d{1,3}cm")]
         public double VehicleSizeHeight { get; set; }
         public double VehicleSizeWidth { get; set; }
         public double VehicleSizeLength { get; set; }
@@ -70,7 +67,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class Exclusion
     {
-        [StringLength(1,MinimumLength =1)]
+        [StringLength(1, MinimumLength = 1)]
         public string TollRoad { get; set; }
         [StringLength(1, MinimumLength = 1)]
         public string Mortorway { get; set; }

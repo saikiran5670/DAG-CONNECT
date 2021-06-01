@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.portalservice.Common;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.portalservice.Entity.POI;
-using System;
-using net.atos.daf.ct2.poiservice;
-using Newtonsoft.Json;
-using log4net;
-using System.Reflection;
+﻿using System;
 using System.Collections.Generic;
-using net.atos.daf.ct2.organizationservice;
+using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.poiservice;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.POI;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -23,11 +22,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Entity.POI.Mapper _mapper;        
+        private readonly Entity.POI.Mapper _mapper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        
-        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, 
+
+        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
             Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -90,7 +89,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     request.OrganizationId = GetContextOrgId();
                 }
                 var poiRequest = new POIRequest();
-                request.State= "Active";
+                request.State = "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.CreatePOIAsync(poiRequest);
 
@@ -136,7 +135,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
+
                 if (request.OrganizationId <= 0)
                 {
                     bool hasRights = await HasAdminPrivilege();
@@ -158,7 +157,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     return StatusCode(400, "The POI Id is required.");
                 }
 
-                var poiRequest = new POIRequest();                
+                var poiRequest = new POIRequest();
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.UpdatePOIAsync(poiRequest);
 
@@ -246,7 +245,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (ids.Count==0)
+                if (ids.Count == 0)
                 {
                     return StatusCode(400, "The POI id is required.");
                 }
@@ -267,7 +266,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                     Request);
-                    poiResponse.Message = "POI's has been deleted";                   
+                    poiResponse.Message = "POI's has been deleted";
                     return Ok(poiResponse);
                 }
                 else
@@ -354,7 +353,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         List<net.atos.daf.ct2.portalservice.Entity.POI.POIResponse> list = new List<net.atos.daf.ct2.portalservice.Entity.POI.POIResponse>();
                         foreach (var item in data.POIList)
                         {
-                            list.Add(_mapper.ToPOIEntity(item));    
+                            list.Add(_mapper.ToPOIEntity(item));
                         }
                         return Ok(list);
                     }
@@ -386,10 +385,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "poi data is required.");
                 }
-                var poiUploadRequest =_mapper.ToUploadRequest(request);
-              
+                var poiUploadRequest = _mapper.ToUploadRequest(request);
+
                 var poiUploadResponse = await _poiServiceClient.UploadPOIExcelAsync(poiUploadRequest);
-               
+
 
                 if (poiUploadResponse != null && poiUploadResponse.Code == Responsecode.Failed)
                 {
@@ -423,7 +422,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
-                }               
+                }
                 if (ex.Message.Contains(SocketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
@@ -437,7 +436,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             bool Result = false;
             try
             {
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else
@@ -460,11 +459,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 TripRequest objTripRequest = new TripRequest();
                 objTripRequest.VIN = request.VIN;
                 objTripRequest.StartDateTime = request.StartDateTime;
-                objTripRequest.EndDateTime = request.EndDateTime;                
+                objTripRequest.EndDateTime = request.EndDateTime;
                 var data = await _poiServiceClient.GetAllTripDetailsAsync(objTripRequest);
-                if (data != null )
+                if (data != null)
                 {
-                  return Ok(data);                   
+                    return Ok(data);
                 }
                 else
                 {

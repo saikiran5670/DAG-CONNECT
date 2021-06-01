@@ -1,13 +1,12 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.package.entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.package
 {
-    public interface IPackageManager{
+    public interface IPackageManager
+    {
 
         Task<Package> Create(Package package);
         Task<Package> Update(Package package);

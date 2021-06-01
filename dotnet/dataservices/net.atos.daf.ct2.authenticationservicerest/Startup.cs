@@ -1,27 +1,20 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
-using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
-using AccountPreference = net.atos.daf.ct2.accountpreference;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using net.atos.daf.ct2.account;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
 
 namespace net.atos.daf.ct2.authenticationservicerest
 {
@@ -38,9 +31,11 @@ namespace net.atos.daf.ct2.authenticationservicerest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-            .ConfigureApiBehaviorOptions(options => {
-                options.InvalidModelStateResponseFactory = actionContext => {
+            services.AddMvc()
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
                     return CustomErrorResponse(actionContext);
                 };
             });
@@ -50,43 +45,43 @@ namespace net.atos.daf.ct2.authenticationservicerest
             {
                 return new PgSQLDataAccess(connectionString);
             });
-            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
-            
-            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
-            services.AddTransient<IAuditTraillib,AuditTraillib>();
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
+
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
 
             services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
 
-            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
             services.AddTransient<IAccountManager, AccountManager>();
             services.AddTransient<IAccountRepository, AccountRepository>();
-            services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
-            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
-            
-            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
-            
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
+
+            services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+
             //services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
             //services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
-            
+
             // services.AddTransient<IGroupManager, GroupManager>();
             // services.AddTransient<IGroupRepository, GroupRepository>();
-            
-            services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
-            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
+
+            services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
 
-            services.AddCors(c =>  
-            {  
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
             });
 
             services.AddSwaggerGen(c =>
             {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication  Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication  Service", Version = "v1" });
             });
         }
 
@@ -119,12 +114,12 @@ namespace net.atos.daf.ct2.authenticationservicerest
             });
             app.UseHttpsRedirection();
 
-            app.UseCors(builder => 
+            app.UseCors(builder =>
             {
                 builder.WithOrigins("*");
                 builder.AllowAnyMethod();
                 builder.AllowAnyHeader();
-            });  
+            });
             app.UseRouting();
 
             app.UseAuthorization();
@@ -137,7 +132,7 @@ namespace net.atos.daf.ct2.authenticationservicerest
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-               c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Authentication Service");
             });
         }
         private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)

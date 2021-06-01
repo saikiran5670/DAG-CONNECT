@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.email.entity;
@@ -21,7 +20,7 @@ namespace net.atos.daf.ct2.translation
         Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList);
         Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode);
         Task<List<DTCwarning>> UpdateDTCWarningData(List<DTCwarning> dtcwarningList);
-       // Task<int> DeleteDTCWarningData(int id);
+        // Task<int> DeleteDTCWarningData(int id);
         Task<EmailTemplate> GetEmailTemplateTranslations(EmailEventType eventType, EmailContentType contentType, string languageCode);
     }
 }

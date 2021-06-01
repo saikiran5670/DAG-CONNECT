@@ -1,3 +1,6 @@
+using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -5,9 +8,6 @@ using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.singlesignonservice.CustomAttributes;
 using net.atos.daf.ct2.singlesignonservice.Entity;
-using System;
-using System.Net;
-using System.Threading.Tasks;
 using AccountComponent = net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.singlesignonservice.Controllers

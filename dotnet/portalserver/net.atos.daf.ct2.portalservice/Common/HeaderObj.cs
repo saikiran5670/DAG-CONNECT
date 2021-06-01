@@ -2,15 +2,9 @@
 {
     public class HeaderObj
     {
-        public int roleId { get; set; }
-        public int accountId { get; set; }
-        public int orgId { get; set; }
-        public int contextOrgId
-        {
-            get
-            {
-                return orgId;
-            }
-        }            
+        public int RoleId { get; set; }
+        public int AccountId { get; set; }
+        public int OrgId { get; set; }
+        public int ContextOrgId => OrgId;
     }
 }

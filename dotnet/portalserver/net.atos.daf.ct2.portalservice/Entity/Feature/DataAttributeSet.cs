@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace net.atos.daf.ct2.portalservice.Entity.Feature
 {
     public class DataAttributeSet

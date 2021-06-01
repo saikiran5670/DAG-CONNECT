@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofence.repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace net.atos.daf.ct2.poigeofence.test
 {

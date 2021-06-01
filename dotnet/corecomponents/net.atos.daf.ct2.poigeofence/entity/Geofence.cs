@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
@@ -34,7 +32,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public bool IsAdded { get; set; }
     }
     public class GeofenceDeleteEntity
-    {       
+    {
         public List<int> GeofenceId { get; set; }
         public int ModifiedBy { get; set; }
     }

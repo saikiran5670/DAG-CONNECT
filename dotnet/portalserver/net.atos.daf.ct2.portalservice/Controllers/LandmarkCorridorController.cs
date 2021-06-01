@@ -1,16 +1,15 @@
-﻿using log4net;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.corridorservice;
-using net.atos.daf.ct2.organizationservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Corridor;
 using Newtonsoft.Json;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -25,7 +24,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private readonly CorridorMapper _corridorMapper;
-        
+
         public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -98,12 +97,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
+
                 if (request.OrganizationId == 0)
                 {
-                     return StatusCode(400, "Organization_Id Required .");
+                    return StatusCode(400, "Organization_Id Required .");
                 }
-                if (request.ViaAddressDetails.Count >5)
+                if (request.ViaAddressDetails.Count > 5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");
                 }
@@ -149,14 +148,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
+
                 if (request.OrganizationId == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
                     //if (!hasRights)
                     return StatusCode(400, "Organization_Id Required .");
                 }
-                if (request.ExistingTrips.Count ==0 )
+                if (request.ExistingTrips.Count == 0)
                 {
                     return StatusCode(400, "ExistingTrips required");
                 }
@@ -202,8 +201,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                
-                if (request.OrganizationId == 0 && request.Id ==0)
+
+                if (request.OrganizationId == 0 && request.Id == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
                     //if (!hasRights)
@@ -254,7 +253,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             bool Result = false;
             try
             {
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
                 if (level == 10 || level == 20)
                     Result = true;
                 else
@@ -320,7 +319,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Organization Id is required.");
                 }
-                
+
                 if (request.ViaAddressDetails.Count > 5)
                 {
                     return StatusCode(400, "You cannot enter more than 5 via Routes.");

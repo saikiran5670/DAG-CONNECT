@@ -7,5 +7,5 @@
         public const string MainNamelistAccessPolicy = "api.vehicle-namelist";
 
     }
-   
+
 }

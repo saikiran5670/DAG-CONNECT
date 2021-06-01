@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.tcucore
 {
@@ -17,16 +15,22 @@ namespace net.atos.daf.ct2.tcucore
             this.referenceDate = _referenceDate;
         }
 
-        public string VIN { 
-            get => vin; 
-            set => vin = value; }
+        public string VIN
+        {
+            get => vin;
+            set => vin = value;
+        }
 
-        public TCU TCU { 
-            get => tcu; 
-            set => tcu = value; }
+        public TCU TCU
+        {
+            get => tcu;
+            set => tcu = value;
+        }
 
-        public DateTime ReferenceDate { 
-            get => referenceDate; 
-            set => referenceDate = value; }
+        public DateTime ReferenceDate
+        {
+            get => referenceDate;
+            set => referenceDate = value;
+        }
     }
 }

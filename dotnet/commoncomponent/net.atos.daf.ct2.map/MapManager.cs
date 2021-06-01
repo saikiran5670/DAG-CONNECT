@@ -1,10 +1,9 @@
-﻿using System;
-using net.atos.daf.ct2.map.entity;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.map.repository;
-using net.atos.daf.ct2.map.geocode;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using net.atos.daf.ct2.map.entity;
+using net.atos.daf.ct2.map.geocode;
+using net.atos.daf.ct2.map.repository;
 
 namespace net.atos.daf.ct2.map
 {
@@ -20,7 +19,7 @@ namespace net.atos.daf.ct2.map
         }
         public async Task<List<LookupAddress>> AddLookupAddress(List<LookupAddress> lookupAddresses)
         {
-            lookupAddresses.Select(x => x.Address = GetAddress(x.Latitude,x.Longitude)).ToList();
+            lookupAddresses.Select(x => x.Address = GetAddress(x.Latitude, x.Longitude)).ToList();
             return await _mapRepository.AddLookupAddress(lookupAddresses);
         }
 

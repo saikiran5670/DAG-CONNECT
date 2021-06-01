@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.data;
 using Dapper;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.utilities;
-using System.Transactions;
-using System.Configuration;
+using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehicle.repository
 {
@@ -178,7 +176,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 return vehicle;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -531,7 +529,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 return vehicle;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -929,7 +927,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 string result = await dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -976,7 +974,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 return vehicle;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1011,7 +1009,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 return vehicle;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1065,7 +1063,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 return vehiclegrouplist;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1156,7 +1154,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1396,7 +1394,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 return vehicleproperty;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -1890,7 +1888,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                                           !vehicleNamelist.Name.Equals(vehicledatamart.Name));
 
                     if ((string.IsNullOrEmpty(vehicleNamelist.RegistrationNo) && !string.IsNullOrEmpty(vehicledatamart.Registration_No)) ||
+#pragma warning disable IDE0048 // Add parentheses for clarity
                         string.IsNullOrEmpty(vehicleNamelist.Name) && !string.IsNullOrEmpty(vehicledatamart.Name))
+#pragma warning restore IDE0048 // Add parentheses for clarity
                         isNameOrRegUpdated = true;
 
                     QueryStatement = @"UPDATE master.vehicle
@@ -1918,7 +1918,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicledatamart.ID = vehicleID;
                 return vehicledatamart;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -2111,7 +2111,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<IEnumerable<VisibilityVehicle>> GetDynamicOwnedVehicleForVisibility(int OrganizationId)
         {
             try
-            { 
+            {
                 var QueryStatement = @"select distinct veh.id, veh.vin
 	                                    from master.vehicle veh
                                         Left join master.orgrelationshipmapping  orm

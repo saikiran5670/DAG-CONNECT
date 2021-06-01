@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.identitysession.entity;
-using net.atos.daf.ct2.data;
 using Dapper;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.identitysession.repository
@@ -55,7 +55,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return Id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 }
                 return accountsessionsList.AsEnumerable();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -159,7 +159,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return Id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 }
                 return accountsessionsList.AsEnumerable().FirstOrDefault();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

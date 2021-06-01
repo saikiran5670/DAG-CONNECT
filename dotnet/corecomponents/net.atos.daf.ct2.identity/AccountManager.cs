@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using net.atos.daf.ct2.identity.Common;
+using net.atos.daf.ct2.identity.entity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.identity.entity;
-using System.Net;
-using net.atos.daf.ct2.identity.Common;
-using System.Text.RegularExpressions;
 
 namespace net.atos.daf.ct2.identity
 {

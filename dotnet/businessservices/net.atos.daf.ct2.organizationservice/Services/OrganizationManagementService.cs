@@ -1,29 +1,25 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.organization.entity;
-using net.atos.daf.ct2.organization;
+using Grpc.Core;
+using log4net;
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
-using Preference = net.atos.daf.ct2.accountpreference;
-using net.atos.daf.ct2.vehicle;
-using AccountComponent = net.atos.daf.ct2.account;
-using Grpc.Core;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.entity;
 using net.atos.daf.ct2.organizationservice.entity;
-using System.Linq;
 using net.atos.daf.ct2.relationship;
 using net.atos.daf.ct2.relationship.entity;
+using net.atos.daf.ct2.vehicle;
 using static net.atos.daf.ct2.utilities.CommonEnums;
-using log4net;
-using System.Reflection;
+using Preference = net.atos.daf.ct2.accountpreference;
 
 namespace net.atos.daf.ct2.organizationservice
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
-
-
         private readonly IAuditTraillib _AuditTrail;
         private readonly IAuditTraillib auditlog;
 
@@ -237,7 +233,7 @@ namespace net.atos.daf.ct2.organizationservice
             try
             {
                 OrgRelationshipCreateResponse responce = new OrgRelationshipCreateResponse();
-                
+
                 var relationships = await _relationshipManager.GetOrgRelationships(request.OwnerOrId);
                 int Relationscount = 0;
                 if (request.Isconfirmed == false)
@@ -252,7 +248,7 @@ namespace net.atos.daf.ct2.organizationservice
                                 responce.Code = Responcecode.Conflict;
                             }
                         }
-                        request.Isconfirmed = Relationscount==0;
+                        request.Isconfirmed = Relationscount == 0;
                     }
                 }
 
@@ -290,7 +286,7 @@ namespace net.atos.daf.ct2.organizationservice
 
                     }
                 }
-                
+
                 return await Task.FromResult(responce);
 
             }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using log4net;
 using System.Reflection;
+using log4net;
+using Microsoft.AspNetCore.Http;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
@@ -23,21 +23,21 @@ namespace net.atos.daf.ct2.portalservice.Common
                 {
                     if (session.Keys.Any(x => x.Equals(SessionConstants.AccountKey)))
                     {
-                        headerObj.accountId = session.GetInt32(SessionConstants.AccountKey).Value;
+                        headerObj.AccountId = session.GetInt32(SessionConstants.AccountKey).Value;
                     }
                     if (session.Keys.Any(x => x.Equals(SessionConstants.RoleKey)))
                     {
-                        headerObj.roleId = session.GetInt32(SessionConstants.RoleKey).Value;
+                        headerObj.RoleId = session.GetInt32(SessionConstants.RoleKey).Value;
                     }
                     if (session.Keys.Any(x => x.Equals(SessionConstants.OrgKey)))
                     {
-                        headerObj.orgId = session.GetInt32(SessionConstants.OrgKey).Value;
+                        headerObj.OrgId = session.GetInt32(SessionConstants.OrgKey).Value;
                     }
                     //if (session.Keys.Any(x => x.Equals(SessionConstants.ContextOrgKey)))
                     //{
                     //    headerObj.contextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
                     //}
-                }                
+                }
             }
             catch (Exception ex)
             {

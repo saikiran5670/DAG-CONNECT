@@ -1,24 +1,19 @@
 using System;
-
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
-using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.termsandconditions;
+using net.atos.daf.ct2.termsandconditions.entity;
 using net.atos.daf.ct2.translation;
-using net.atos.daf.ct2.translation.Enum;
 //using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.translation.entity;
+using net.atos.daf.ct2.translation.Enum;
 using net.atos.daf.ct2.translationservice.Entity;
 using static net.atos.daf.ct2.translationservice.Entity.Mapper;
-using System.Collections;
-using net.atos.daf.ct2.termsandconditions.entity;
-using net.atos.daf.ct2.termsandconditions;
-using Google.Protobuf;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -31,7 +26,7 @@ namespace net.atos.daf.ct2.translationservice
         private readonly ITermsAndConditionsManager termsandconditionsmanager;
         private readonly IIconManager iconmanager;
 
-        public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager , IIconManager _iconmanager)
+        public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager, IIconManager _iconmanager)
         {
             _logger = logger;
             translationmanager = _TranslationManager;
@@ -565,7 +560,7 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in DTCData)
                 {
                     if (item.message == "violates foreign key constraint for Icon_ID")
-                    foreignkeymessage = item.message;
+                        foreignkeymessage = item.message;
                 }
 
                 if (foreignkeymessage == "violates foreign key constraint for Icon_ID")
@@ -856,21 +851,21 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("UpdateDTCTranslationIcon method ");
 
                 var icons = new List<Icon>();
-                
-                icons.AddRange(request.IconData.Select(x=> new Icon()
+
+                icons.AddRange(request.IconData.Select(x => new Icon()
                 {
-                     name=x.Name,                     
-                     icon=x.Icon.ToArray(),
-                     modified_at=x.ModifiedAt,
-                     modified_by=x.ModifiedBy
+                    name = x.Name,
+                    icon = x.Icon.ToArray(),
+                    modified_at = x.ModifiedAt,
+                    modified_by = x.ModifiedBy
 
                 }).ToList());
-               
-                 bool result = await iconmanager.UpdateIcons(icons);
+
+                bool result = await iconmanager.UpdateIcons(icons);
                 _logger.LogInformation("UpdateDTCTranslationIcon service called.");
 
                 IconUpdateResponse Response = new IconUpdateResponse();
-                if(result)
+                if (result)
                 {
                     Response.Code = Responcecode.Success;
                     Response.Message = "Update Icon in DTC translation.";
@@ -899,31 +894,31 @@ namespace net.atos.daf.ct2.translationservice
             {
                 _logger.LogInformation("GetDTCTranslationIcon method ");
 
-                var icons = new List<Icon>();              
-                
-                 IconGetResponse Response = new IconGetResponse();   
-                 icons = await iconmanager.GetIcons(request.Id);
-                 foreach(var itemicon in icons)
-                 {
+                var icons = new List<Icon>();
+
+                IconGetResponse Response = new IconGetResponse();
+                icons = await iconmanager.GetIcons(request.Id);
+                foreach (var itemicon in icons)
+                {
                     var icon = new dtcIcon();
                     icon.Id = itemicon.id;
-                    icon.Name =itemicon.name; 
+                    icon.Name = itemicon.name;
                     if (itemicon.icon != null)
                     {
                         icon.Icon = ByteString.CopyFrom(itemicon.icon);
                     }
                     icon.ModifiedAt = itemicon.modified_at == null ? 0 : (long)itemicon.modified_at;
-                    icon.ModifiedBy = itemicon.modified_by == null ? 0 :(int)itemicon.modified_by;
-                    icon.Type =itemicon.type.ToString();
-                    icon.WarningClass =itemicon.warning_class; 
-                    icon.WarningNumber =itemicon.warning_number;        
-                    icon.ColorName =itemicon.color_name.ToString();
-                    icon.State =itemicon.state.ToString();                        
+                    icon.ModifiedBy = itemicon.modified_by == null ? 0 : (int)itemicon.modified_by;
+                    icon.Type = itemicon.type.ToString();
+                    icon.WarningClass = itemicon.warning_class;
+                    icon.WarningNumber = itemicon.warning_number;
+                    icon.ColorName = itemicon.color_name.ToString();
+                    icon.State = itemicon.state.ToString();
                     Response.IconData.Add(icon);
-                 }
+                }
                 _logger.LogInformation("GetDTCTranslationIcon service called.");
-                
-                if(icons.Count()>0)
+
+                if (icons.Count() > 0)
                 {
                     Response.Code = Responcecode.Success;
                     Response.Message = "Get Icon in DTC translation.";
@@ -933,7 +928,7 @@ namespace net.atos.daf.ct2.translationservice
                     Response.Code = Responcecode.Failed;
                     Response.Message = "Resource Not Found ";
                 }
-                 return await Task.FromResult(Response);
+                return await Task.FromResult(Response);
             }
             catch (Exception ex)
             {
@@ -966,14 +961,14 @@ namespace net.atos.daf.ct2.translationservice
                     objTermsandConFileData.fileName = item.FileName;
                     objTermsandConFileData.version_no = item.Versionno;
                     objTermsandConFileData.code = item.Code;
-                    objTermsandConFileData.description = item.Description.ToByteArray() ;
-                   
+                    objTermsandConFileData.description = item.Description.ToByteArray();
+
                     objTermsandConFileDataList._data.Add(objTermsandConFileData);
                 }
 
                 var data = await termsandconditionsmanager.UploadTermsAndCondition(objTermsandConFileDataList);
                 _logger.LogInformation("UploadTermsAndCondition service called ");
-                
+
                 if (data == null)
                 {
                     return objUploadTermandConditionResponseList;
@@ -1002,7 +997,7 @@ namespace net.atos.daf.ct2.translationservice
                 });
             }
         }
-        
+
 
         public override async Task<TermCondDetailsReponse> GetLatestTermCondition(UserAcceptedTermConditionRequest request, ServerCallContext context)
         {

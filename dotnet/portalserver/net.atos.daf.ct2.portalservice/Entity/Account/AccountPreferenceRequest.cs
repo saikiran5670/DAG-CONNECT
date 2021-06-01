@@ -1,11 +1,9 @@
-using System;
-
 namespace net.atos.daf.ct2.portalservice.Account
 {
     public class AccountPreferenceRequest
     {
         public int Id { get; set; }
-        public int RefId { get; set; }        
+        public int RefId { get; set; }
         public int LanguageId { get; set; }
         public int TimezoneId { get; set; }
         public int CurrencyId { get; set; }
@@ -19,7 +17,7 @@ namespace net.atos.daf.ct2.portalservice.Account
     }
     public class AccountPreferenceResponse
     {
-        public int Id { get; set; }        
+        public int Id { get; set; }
         public int LanguageId { get; set; }
         public int TimezoneId { get; set; }
         public int CurrencyId { get; set; }

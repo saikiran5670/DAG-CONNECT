@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.identitysession.repository;
 
@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.identitysession
             {
                 return await sessionRepository.InsertSession(accountSession);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.identitysession
             {
                 return await sessionRepository.UpdateSession(accountSession);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.identitysession
             {
                 return await sessionRepository.DeleteSession(SessionId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.identitysession
             {
                 return await sessionRepository.GetAccountSession(AccountId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.identitysession
             {
                 return await sessionRepository.DeleteSessionByAccountId(SessionId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -74,7 +74,7 @@ namespace net.atos.daf.ct2.identitysession
             {
                 return await sessionRepository.GetAccountSessionById(SessionId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

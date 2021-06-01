@@ -1,14 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.utilities;
+using net.atos.daf.ct2.vehicle.entity;
+using net.atos.daf.ct2.vehicle.repository;
 using net.atos.daf.ct2.vehicle.response;
-using System.Diagnostics.CodeAnalysis;
 
 namespace net.atos.daf.ct2.vehicle
 {
@@ -34,7 +33,7 @@ namespace net.atos.daf.ct2.vehicle
                 // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await vehicleRepository.Create(vehicle);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -47,7 +46,7 @@ namespace net.atos.daf.ct2.vehicle
                 //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await vehicleRepository.Update(vehicle);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -60,7 +59,7 @@ namespace net.atos.daf.ct2.vehicle
                 // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update property method in vehicle manager",1,2,null);
                 return await vehicleRepository.UpdateProperty(vehicleproperty);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -72,7 +71,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.UpdateStatus(vehicleOptInOptOut);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -84,7 +83,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.Get(vehiclefilter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -96,7 +95,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetOrganizationVehicleGroupdetails(OrganizationId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -107,7 +106,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetVehicleGroup(organizationId, vehicleId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -119,7 +118,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.SetOTAStatus(Is_Ota, Modified_By, Vehicle_Id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -131,7 +130,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.Terminate(Is_Terminate, Modified_By, Vehicle_Id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -143,7 +142,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.SetOptInStatus(Is_OptIn, Modified_By, Vehicle_Id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -155,7 +154,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetVehicle(Vehicle_Id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -167,7 +166,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.UpdateOrgVehicleDetails(vehicle);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -179,7 +178,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.IsVINExists(VIN);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -192,7 +191,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetDynamicVisibleVehicle(OrganizationId, VehicleGroupId, RelationShipId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -204,7 +203,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetDynamicOwnedVehicle(OrganizationId, VehicleGroupId, RelationShipId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -216,7 +215,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetDynamicAllVehicle(OrganizationId, VehicleGroupId, RelationShipId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -228,7 +227,7 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetRelationshipVehicles(vehiclefilter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -237,11 +236,10 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid,orgnizationid);
+                return await vehicleRepository.GetVehicleGroupbyAccountId(accountid, orgnizationid);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -251,9 +249,8 @@ namespace net.atos.daf.ct2.vehicle
             {
                 return await vehicleRepository.GetORGRelationshipVehicleGroupVehicles(organizationId, is_vehicle);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -278,13 +275,13 @@ namespace net.atos.daf.ct2.vehicle
 
                 IEnumerable<dtoVehicleMileage> vehicleMileageList = await vehicleRepository.GetVehicleMileage(startDate, endDate, string.IsNullOrEmpty(since));
 
-                if(vehicleMileageList.Count() > 0)
+                if (vehicleMileageList.Count() > 0)
                 {
                     //Fetch visibility vehicles for the account
                     var vehicles = await GetVisibilityVehicles(accountId, orgid);
 
                     vehicleMileageList = vehicleMileageList.Where(mil => vehicles.Any(veh => veh.VIN == mil.vin)).AsEnumerable();
-                }                
+                }
 
                 VehicleMileage vehicleMileage = new VehicleMileage();
                 vehicleMileage.Vehicles = new List<entity.Vehicles>();
@@ -355,13 +352,13 @@ namespace net.atos.daf.ct2.vehicle
 
                 IEnumerable<dtoVehicleNamelist> vehicleNameList = await vehicleRepository.GetVehicleNamelist(startDate, endDate, string.IsNullOrEmpty(since));
 
-                if(vehicleNameList.Count() > 0)
+                if (vehicleNameList.Count() > 0)
                 {
                     //Fetch visibility vehicles for the account
                     var vehicles = await GetVisibilityVehicles(accountId, orgId);
 
                     vehicleNameList = vehicleNameList.Where(nl => vehicles.Any(veh => veh.VIN == nl.vin)).AsEnumerable();
-                }                
+                }
 
                 VehicleNamelistResponse vehicleNamelistResponse = new VehicleNamelistResponse();
                 vehicleNamelistResponse.Vehicles = new List<response.Vehicles>();

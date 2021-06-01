@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 {
@@ -58,13 +55,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public double StartLatitude { get; set; }
         [Required]
         public double StartLongitude { get; set; }
-        
+
         public string StartPosition { get; set; }
         [Required]
         public double EndLatitude { get; set; }
         [Required]
         public double EndLongitude { get; set; }
-        
+
         public string EndPosition { get; set; }
         [Required]
         public int Distance { get; set; }
@@ -78,7 +75,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public int Id { get; set; }
         [Required]
         public int? OrganizationId { get; set; }
-        
+
         public string CorridorType { get; set; }
         [Required]
         public string CorridorLabel { get; set; }
@@ -89,7 +86,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public string Description { get; set; }
-        
+
         public string Address { get; set; }
         public string City { get; set; }
         public string Country { get; set; }

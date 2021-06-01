@@ -1,9 +1,6 @@
-﻿using net.atos.daf.ct2.audit;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using  net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.audit;
 
 namespace net.atos.daf.ct2.group
 {
@@ -26,14 +23,14 @@ namespace net.atos.daf.ct2.group
         {
             return await gropRepository.Update(group);
         }
-        public async Task<bool> Delete(long groupid,ObjectType objectType)
+        public async Task<bool> Delete(long groupid, ObjectType objectType)
         {
-            return await gropRepository.Delete(groupid,objectType);
+            return await gropRepository.Delete(groupid, objectType);
         }
         public async Task<IEnumerable<Group>> Get(GroupFilter groupFilter)
         {
-           // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.GET,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
-           // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
+            // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.GET,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
+            // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
             //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
             return await gropRepository.Get(groupFilter);
         }
@@ -52,8 +49,8 @@ namespace net.atos.daf.ct2.group
         public async Task<bool> RemoveRef(int groupid)
         {
             return await gropRepository.RemoveRef(groupid);
-        } 
-        public async  Task<bool> RemoveRefByRefId(int refId)
+        }
+        public async Task<bool> RemoveRefByRefId(int refId)
         {
             return await gropRepository.RemoveRefByRefId(refId);
         }

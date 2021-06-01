@@ -42,7 +42,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 obj.created_by = request.CreatedBy;
                 obj.PoiList = new List<POI>();
                 foreach (var item in request.PoiIds)
-                {                    
+                {
                     POI pOI = new POI();
                     pOI.Id = item.Poiid;
                     pOI.Type = item.Type;
@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         response.Code = Responcecodes.Failed;
                     }
                 }
-                
+
 
             }
             catch (Exception ex)
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         response.Code = Responcecodes.Failed;
                     }
                 }
-                
+
 
             }
             catch (Exception ex)
@@ -143,10 +143,10 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Info("Delete Group.");
                 LandmarkGroup obj = new LandmarkGroup();
-                var result = await _landmarkGroupManager.DeleteGroup(request.Id,request.Modifiedby);
+                var result = await _landmarkGroupManager.DeleteGroup(request.Id, request.Modifiedby);
                 if (result > 0)
                 {
-                    response.Message = "Deleted successfully : " + result.ToString(); 
+                    response.Message = "Deleted successfully : " + result.ToString();
                     response.Code = Responcecodes.Success;
                 }
                 else
@@ -175,7 +175,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.GetlandmarkGroup(request.OrganizationsId, request.GroupId);
                 if (result != null)
                 {
-                    
+
                     foreach (var item in result)
                     {
                         Group obj = new Group();
@@ -185,7 +185,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         obj.Name = item.name;
                         obj.Description = item.description == null ? "" : item.description;
                         obj.CreatedAt = item.created_at;
-                        obj.ModifiedAt = item.modified_at;                        
+                        obj.ModifiedAt = item.modified_at;
                         obj.PoiCount = item.poiCount;
                         obj.GeofenceCount = item.geofenceCount;
                         if (request.GroupId > 0)

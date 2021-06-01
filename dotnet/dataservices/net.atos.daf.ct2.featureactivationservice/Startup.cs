@@ -1,33 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
 using Microsoft.OpenApi.Models;
-using static Dapper.SqlMapper;
-using net.atos.daf.ct2.subscription.repository;
-using net.atos.daf.ct2.subscription;
-using AccountComponent = net.atos.daf.ct2.account;
-using Identity = net.atos.daf.ct2.identity;
 //using AccountPreference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authorization;
-using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.featureactivationservice.Common;
+using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
+using net.atos.daf.ct2.subscription;
+using net.atos.daf.ct2.subscription.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
+using AccountComponent = net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.featureactivationservice
 {

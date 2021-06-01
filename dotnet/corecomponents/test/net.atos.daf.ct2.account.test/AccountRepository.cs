@@ -1,12 +1,6 @@
-using System;
-using System.Drawing;
-using System.IO;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.account;
-using Microsoft.Extensions.Configuration; 
-using net.atos.daf.ct2.audit;
-using System.Collections.Generic;
 
 
 namespace net.atos.daf.ct2.account.test
@@ -17,16 +11,16 @@ namespace net.atos.daf.ct2.account.test
         private readonly IDataAccess dataAccess;
         private readonly IConfiguration config;
         readonly IAccountRepository repository;
-        
+
 
         public AccountRepositoryTest()
         {
-            
+
             config = new ConfigurationBuilder()
              .AddJsonFile("appsettings.Test.json")
             .Build();
             //Get connection string
-            var connectionString = config.GetConnectionString("DevAzure");            
+            var connectionString = config.GetConnectionString("DevAzure");
             dataAccess = new PgSQLDataAccess(connectionString);
             repository = new AccountRepository(dataAccess);
         }
@@ -39,7 +33,7 @@ namespace net.atos.daf.ct2.account.test
             accountBlob.AccountId = 243;
             accountBlob.Id = 0;
             accountBlob.Type = ImageType.JPEG;
-            string imageFilePath = @"C:\DAF\Repo\atos.daf.ct2.0\dotnet\corecomponents\test\net.atos.daf.ct2.account.test\mockdata\image\Profile1.JPG";            
+            string imageFilePath = @"C:\DAF\Repo\atos.daf.ct2.0\dotnet\corecomponents\test\net.atos.daf.ct2.account.test\mockdata\image\Profile1.JPG";
             byte[] imgdata = System.IO.File.ReadAllBytes(imageFilePath);
             accountBlob.Image = imgdata;
             var result = repository.CreateBlob(accountBlob).Result;
@@ -48,9 +42,9 @@ namespace net.atos.daf.ct2.account.test
         [TestMethod]
         public void GetBlob()
         {
-            account.entity.AccountBlob accountBlob = new account.entity.AccountBlob();            
+            account.entity.AccountBlob accountBlob = new account.entity.AccountBlob();
             accountBlob.Id = 7;
-            accountBlob.Type = ImageType.JPEG;            
+            accountBlob.Type = ImageType.JPEG;
             var result = repository.GetBlob(accountBlob.Id).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }

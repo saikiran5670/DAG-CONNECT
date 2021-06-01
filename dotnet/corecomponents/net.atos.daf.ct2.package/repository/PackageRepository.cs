@@ -1,14 +1,13 @@
-﻿using Dapper;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.features;
-using net.atos.daf.ct2.features.entity;
-using net.atos.daf.ct2.package.entity;
-using net.atos.daf.ct2.utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.package.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.package.repository
 {
@@ -41,7 +40,7 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@type", Convert.ToChar(package.Type));
                     parameter.Add("@description", package.Description);
                     parameter.Add("@state", Convert.ToChar(package.State));
-                   // parameter.Add("@status", Convert.ToChar(package.Status));
+                    // parameter.Add("@status", Convert.ToChar(package.Status));
                     parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
                     string query = @"insert into master.package(packagecode,feature_set_id,name,type,description,created_at,state) " +
@@ -56,7 +55,7 @@ namespace net.atos.daf.ct2.package.repository
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -78,7 +77,7 @@ namespace net.atos.daf.ct2.package.repository
                     parameter.Add("@type", Convert.ToChar(package.Type));
                     parameter.Add("@description", package.Description);
                     parameter.Add("@state", Convert.ToChar(package.State));
-                  //  parameter.Add("@status", Convert.ToChar(package.Status));
+                    //  parameter.Add("@status", Convert.ToChar(package.Status));
                     //   parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     string query = @"update master.package set packagecode=@packagecode, 
                                                            feature_set_id=@feature_set_id,
@@ -94,7 +93,7 @@ namespace net.atos.daf.ct2.package.repository
                     package.Id = -1;//to check either code exists or not
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -127,7 +126,7 @@ namespace net.atos.daf.ct2.package.repository
                             parameter.Add("@type", package.Type.Length > 1 ? _packageCoreMapper.MapPackageType(package.Type) : Convert.ToChar(package.Type));
                             parameter.Add("@description", package.Description);
                             parameter.Add("@state", Convert.ToChar(package.State));
-                           // parameter.Add("@status", Convert.ToChar(package.Status));
+                            // parameter.Add("@status", Convert.ToChar(package.Status));
                             parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                             query = @"insert into master.package(packagecode,feature_set_id,name,type,description,created_at,state) " +
                                     "values(@packagecode,@feature_set_id,@name,@type,@description,@created_at,@state) RETURNING id";
@@ -142,7 +141,7 @@ namespace net.atos.daf.ct2.package.repository
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -237,7 +236,7 @@ namespace net.atos.daf.ct2.package.repository
                 }
                 return packages;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -276,7 +275,7 @@ namespace net.atos.daf.ct2.package.repository
                 package.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

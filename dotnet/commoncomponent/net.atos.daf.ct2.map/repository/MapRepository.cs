@@ -1,23 +1,22 @@
 ﻿
-using Dapper;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.map.entity;
-using net.atos.daf.ct2.map.geocode;
-using net.atos.daf.ct2.utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.map.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.map.repository
 {
     public class MapRepository : IMapRepository
     {
-        private readonly IDataMartDataAccess _dataMartDataAccess;     
+        private readonly IDataMartDataAccess _dataMartDataAccess;
         private static readonly log4net.ILog log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public MapRepository(IDataMartDataAccess dataMartDataAccess)
         {
-            _dataMartDataAccess = dataMartDataAccess;          
+            _dataMartDataAccess = dataMartDataAccess;
         }
 
 
@@ -28,7 +27,7 @@ namespace net.atos.daf.ct2.map.repository
                 var addresses = new List<LookupAddress>();
                 foreach (var lookupAddress in lookupAddresses)
                 {
-                  
+
                     var queryStatement = @"select   id, longitude, latitude, address, created_at, modified_at                                 
                                    from master.geolocationaddress 
                                    where 1=1";
@@ -78,12 +77,12 @@ namespace net.atos.daf.ct2.map.repository
                 var addresses = new List<LookupAddress>();
                 foreach (var lookupAddress in lookupAddresses)
                 {
-                    
+
                     var query = @"Insert INTO master.geolocationaddress(
 	                                                            longitude, latitude, address, created_at) 
 	                                                            VALUES (@longitude, @latitude, @address,@created_at) RETURNING id";
 
- 
+
                     var parameter = new DynamicParameters();
                     parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     if (lookupAddress.Latitude > 0)
@@ -94,16 +93,16 @@ namespace net.atos.daf.ct2.map.repository
                     {
                         parameter.Add("@longitude", lookupAddress.Longitude);
                     }
-                    if (lookupAddress.Address !=string.Empty)
+                    if (lookupAddress.Address != string.Empty)
                     {
                         parameter.Add("@address", lookupAddress.Address);
-                    }                   
+                    }
 
                     var result = await _dataMartDataAccess.ExecuteScalarAsync<int>(query, parameter);
                     lookupAddress.Id = result;
                     geolocationaddresses.Add(lookupAddress);
-                   
-                     
+
+
                 }
                 return geolocationaddresses; // have to change this  per logic
             }

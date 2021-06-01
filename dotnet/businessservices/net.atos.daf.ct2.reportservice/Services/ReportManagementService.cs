@@ -1,16 +1,16 @@
-﻿using Grpc.Core;
-using log4net;
-using net.atos.daf.ct2.reports.ENUM;
-using net.atos.daf.ct2.reports;
-using ReportComponent = net.atos.daf.ct2.reports;
-using net.atos.daf.ct2.reportservice.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Grpc.Core;
+using log4net;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.ENUM;
+using net.atos.daf.ct2.reportservice.entity;
 using net.atos.daf.ct2.visibility;
+using Newtonsoft.Json;
+using ReportComponent = net.atos.daf.ct2.reports;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 if (!userPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
                 {
                     var roleBasedUserPrefernces = await _reportManager.GetRoleBasedDataColumn(request.ReportId, request.AccountId, request.OrganizationId);
-                    
+
                     if (!roleBasedUserPrefernces.Any(a => a.State == ((char)ReportPreferenceState.Active).ToString()))
                     {
                         foreach (var item in roleBasedUserPrefernces)
@@ -136,7 +136,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.Message = string.Format(ReportConstants.GET_VIN_VISIBILITY_FAILURE_MSG, request.AccountId, request.OrganizationId);
                     response.Code = Responsecode.Failed;
                     return response;
-                }                
+                }
 
                 var vinList = await _reportManager
                                         .GetVinsFromTripStatistics(vehicleDeatilsWithAccountVisibility
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     var res = JsonConvert.SerializeObject(result);
                     response.TripData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res));
                     response.Code = Responsecode.Success;
-                    response.Message= Responsecode.Success.ToString();
+                    response.Message = Responsecode.Success.ToString();
                 }
                 else
                 {

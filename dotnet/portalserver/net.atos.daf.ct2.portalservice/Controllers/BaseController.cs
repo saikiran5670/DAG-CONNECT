@@ -4,7 +4,7 @@ using net.atos.daf.ct2.portalservice.Common;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
-    public class BaseController: ControllerBase
+    public class BaseController : ControllerBase
     {
         protected readonly SessionHelper _sessionHelper;
         protected HeaderObj _userDetails;
@@ -18,27 +18,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         protected int AssignOrgContextByAccountId(int requestedAccountId)
         {
             //Check if org context to be applied
-            if (requestedAccountId == _userDetails.accountId)
-                return _userDetails.orgId;
-            return _userDetails.contextOrgId;
+            if (requestedAccountId == _userDetails.AccountId)
+                return _userDetails.OrgId;
+            return _userDetails.ContextOrgId;
         }
 
         protected int AssignOrgContextByRoleId(int requestedRoleId)
         {
             //Check if org context to be applied
-            if (requestedRoleId == _userDetails.roleId)
-                return _userDetails.orgId;
-            return _userDetails.contextOrgId;
+            if (requestedRoleId == _userDetails.RoleId)
+                return _userDetails.OrgId;
+            return _userDetails.ContextOrgId;
         }
 
         protected int GetContextOrgId()
         {
-            return _userDetails.contextOrgId;
+            return _userDetails.ContextOrgId;
         }
 
         protected int GetUserSelectedOrgId()
         {
-            return _userDetails.orgId;
+            return _userDetails.OrgId;
         }
     }
 }

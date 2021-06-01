@@ -7,7 +7,6 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
-using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.poigeofenceservice.entity;
 
 
@@ -267,12 +266,12 @@ namespace net.atos.daf.ct2.geofenceservice
                     geofence.Add(_mapper.ToGeofenceEntity(item));
 
                 var geofenceList = await _geofenceManager.BulkImportGeofence(geofence);
-                
+
                 var failCount = geofenceList.Where(w => (w.IsFailed || w.Nodes.Where(w => w.IsFailed).Count() > 0)).Count();
                 var updateCount = geofenceList.Where(w => w.IsAdded == false && w.IsFailed == false && w.Nodes.Where(w => w.IsFailed).Count() == 0).Count();
                 var addedCount = geofenceList.Where(w => w.IsAdded && w.IsFailed == false && w.Nodes.Where(w => w.IsFailed).Count() == 0).Count();
 
-                
+
                 response.Code = Responsecode.Success;
                 response.FailureCount = failCount;
                 response.AddedCount = addedCount;
@@ -283,14 +282,14 @@ namespace net.atos.daf.ct2.geofenceservice
             }
             catch (Exception ex)
             {
-                _logger.Error(null, ex);                
+                _logger.Error(null, ex);
                 response.Code = Responsecode.Failed;
                 response.FailureCount = 0;
                 response.AddedCount = 0;
                 response.UpdatedCount = 0;
                 foreach (var item in requests.GeofenceRequest)
                     item.Message = ex.Message;
-                response.FailureResult.AddRange(requests.GeofenceRequest);                
+                response.FailureResult.AddRange(requests.GeofenceRequest);
             }
             return response;
         }
@@ -343,7 +342,7 @@ namespace net.atos.daf.ct2.geofenceservice
             try
             {
                 net.atos.daf.ct2.poigeofence.entity.Geofence geofence = new poigeofence.entity.Geofence();
-                geofence.OrganizationId = request.OrganizationId !=null ? request.OrganizationId.Value : 0;
+                geofence.OrganizationId = request.OrganizationId != null ? request.OrganizationId.Value : 0;
                 geofence.CategoryId = request.CategoryId;
                 geofence.SubCategoryId = request.SubCategoryId;
                 geofence.Id = request.Id;

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Dapper;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.data;
-using System.Transactions;
 using System.Text;
+using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.accountpreference
 {
@@ -20,8 +19,8 @@ namespace net.atos.daf.ct2.accountpreference
             try
             {
                 var parameter = new DynamicParameters();
-                int PreferenceId=0;
-                int Id=0;
+                int PreferenceId = 0;
+                int Id = 0;
                 string queryCheck = string.Empty;
                 parameter.Add("@ref_id", preference.RefId);
                 parameter.Add("@type", (char)preference.PreferenceType);
@@ -51,7 +50,7 @@ namespace net.atos.daf.ct2.accountpreference
                     Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                     if (Id <= 0)
                     {
-                        preference.RefIdNotValid = true;                        
+                        preference.RefIdNotValid = true;
                         return preference;
                     }
                 }
@@ -71,7 +70,7 @@ namespace net.atos.daf.ct2.accountpreference
                     Id = await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                     if (Id <= 0)
                     {
-                        preference.RefIdNotValid = true;                        
+                        preference.RefIdNotValid = true;
                         return preference;
                     }
                 }
@@ -86,18 +85,18 @@ namespace net.atos.daf.ct2.accountpreference
                 // Update preference id for account or organization
                 if (preference.PreferenceType == PreferenceType.Account)
                 {
-                    queryCheck = "update master.account set preference_id=@preference_id where id=@ref_id";                    
-                    
+                    queryCheck = "update master.account set preference_id=@preference_id where id=@ref_id";
+
                 }
                 else if (preference.PreferenceType == PreferenceType.Organization)
                 {
                     queryCheck = "update master.organization set preference_id=@preference_id where id=@ref_id";
-                }                
+                }
                 parameter.Add("@preference_id", preferenceId);
                 await dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                 preference.Id = preferenceId;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -107,8 +106,8 @@ namespace net.atos.daf.ct2.accountpreference
         {
             try
             {
-                var parameter = new DynamicParameters();                
-                parameter.Add("@id", preference.Id);                
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", preference.Id);
                 parameter.Add("@language_id", preference.LanguageId);
                 parameter.Add("@timezone_id", preference.TimezoneId);
                 parameter.Add("@currency_id", preference.CurrencyId);
@@ -116,7 +115,7 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@vehicle_display_id", preference.VehicleDisplayId);
                 parameter.Add("@date_format_id", preference.DateFormatTypeId);
                 parameter.Add("@time_format_id", preference.TimeFormatId);
-                parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);                
+                parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
 
                 var query = @"update master.accountpreference set language_id=@language_id,
                             timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
@@ -125,14 +124,14 @@ namespace net.atos.daf.ct2.accountpreference
 	                        WHERE id=@id RETURNING id;";
                 var Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
             return preference;
 
         }
-        public async Task<bool> Delete(int preferenceID,PreferenceType preferenceType)
+        public async Task<bool> Delete(int preferenceID, PreferenceType preferenceType)
         {
             try
             {
@@ -143,26 +142,26 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@id", preferenceID);
                 checkPreferenceQuery = @"select id from master.accountpreference where id=@id and state='A'";
                 id = await dataAccess.ExecuteScalarAsync<int>(checkPreferenceQuery, parameter);
-                if (id == 0) return false;                
+                if (id == 0) return false;
                 //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 //{
-                    query.Append("update master.accountpreference set state='D' where id=@id");
-                    //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
-                    // Update preference id for account or organization
-                    if (preferenceType == PreferenceType.Account)
-                    {
-                        query.Append (" ; " + "update master.account set preference_id=null where preference_id=@id;");
-                    }
-                    else if (preferenceType == PreferenceType.Organization)
-                    {
-                        query.Append(" ; " + "update master.organization set preference_id=null where preference_id=@id;");
-                    }
-                    await dataAccess.ExecuteScalarAsync<int>(query.ToString(), parameter);
-                    //transactionScope.Complete();
+                query.Append("update master.accountpreference set state='D' where id=@id");
+                //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
+                // Update preference id for account or organization
+                if (preferenceType == PreferenceType.Account)
+                {
+                    query.Append(" ; " + "update master.account set preference_id=null where preference_id=@id;");
+                }
+                else if (preferenceType == PreferenceType.Organization)
+                {
+                    query.Append(" ; " + "update master.organization set preference_id=null where preference_id=@id;");
+                }
+                await dataAccess.ExecuteScalarAsync<int>(query.ToString(), parameter);
+                //transactionScope.Complete();
                 //}
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -183,18 +182,18 @@ namespace net.atos.daf.ct2.accountpreference
                 //         parameter.Add("@id", filter.Id);
                 //         query = query + " and id= @id";
                 //     }
-                    // // account or organization id filter
-                    // if (filter.Ref_Id > 0)
-                    // {
-                    //     parameter.Add("@Ref_id", filter.Ref_Id);
-                    //     query = query + " and Ref_Id= @Ref_Id";
-                    // }
-                    // type filter                    
-                    // if (((char)filter.PreferenceType) != ((char)PreferenceType.None))
-                    // {
-                    //     parameter.Add("@type", (char)filter.PreferenceType);
-                    //     query = query + " and type= @type";
-                    // }
+                // // account or organization id filter
+                // if (filter.Ref_Id > 0)
+                // {
+                //     parameter.Add("@Ref_id", filter.Ref_Id);
+                //     query = query + " and Ref_Id= @Ref_Id";
+                // }
+                // type filter                    
+                // if (((char)filter.PreferenceType) != ((char)PreferenceType.None))
+                // {
+                //     parameter.Add("@type", (char)filter.PreferenceType);
+                //     query = query + " and type= @type";
+                // }
                 //     query = query + @" order by 1 desc limit 1";
                 // }
                 dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
@@ -205,7 +204,7 @@ namespace net.atos.daf.ct2.accountpreference
                 }
                 return entity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

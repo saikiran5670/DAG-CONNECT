@@ -1,8 +1,6 @@
-using System.Net.Http;
-
 namespace net.atos.daf.ct2.identity.entity
 {
-   public class AccountAssertion
+    public class AccountAssertion
     {
         public long Id { get; set; }
         public string Key { get; set; }

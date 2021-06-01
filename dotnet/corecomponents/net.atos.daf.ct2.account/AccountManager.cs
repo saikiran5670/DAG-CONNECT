@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.account.ENUM;
@@ -10,11 +15,6 @@ using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Identity = net.atos.daf.ct2.identity;
 using IdentityEntity = net.atos.daf.ct2.identity.entity;
 using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
@@ -514,7 +514,7 @@ namespace net.atos.daf.ct2.account
             foreach (var account in await repository.GetAccountOfPasswordExpiry(noOfDays))
             {
                 try
-                {                    
+                {
                     var isSuccuss = TriggerSendEmailRequest(account, EmailEventType.PasswordExpiryNotification).Result;
 
                     emailSendList.Add(new EmailList { AccountId = account.Id, Email = account.EmailId, IsSend = isSuccuss });

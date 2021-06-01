@@ -1,14 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using net.atos.daf.ct2.data;
-using Microsoft.Extensions.Configuration; 
-using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.repository;
-using net.atos.daf.ct2.accountpreference;
-using System.Collections.Generic;
 
 namespace atos.net.daf.ct2.accountpreference.test
 {
-     [TestClass]
+    [TestClass]
     public class AccountPreference_Test
     {
         // private readonly IDataAccess _dataAccess;

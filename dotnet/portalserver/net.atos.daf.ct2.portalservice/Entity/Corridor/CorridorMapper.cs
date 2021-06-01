@@ -1,8 +1,5 @@
-﻿using net.atos.daf.ct2.corridorservice;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
+using net.atos.daf.ct2.corridorservice;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 {
@@ -117,7 +114,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
                     TripId = CheckNull(trip.TripId)
                 };
 
-                foreach (var node in trip.NodePoints) {
+                foreach (var node in trip.NodePoints)
+                {
                     var tripNode = new TripNodes()
                     {
                         Latitude = node.Latitude,

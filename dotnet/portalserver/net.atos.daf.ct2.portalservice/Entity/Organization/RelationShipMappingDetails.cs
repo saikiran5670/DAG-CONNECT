@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
@@ -15,7 +12,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
     public class VehileGroupData
     {
         public int VehiclegroupID { get; set; }
-        public string  GroupName { get; set; }
+        public string GroupName { get; set; }
     }
 
     public class RelationshipData

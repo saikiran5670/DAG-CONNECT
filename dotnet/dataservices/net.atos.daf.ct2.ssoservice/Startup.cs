@@ -1,40 +1,30 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.repository;
+using net.atos.daf.ct2.singlesignonservice.Common;
+using net.atos.daf.ct2.singlesignonservice.CustomAttributes;
+using net.atos.daf.ct2.subscription.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.organization.repository;
-using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.audit.repository;
-using net.atos.daf.ct2.audit;
 using AccountComponent = net.atos.daf.ct2.account;
 using Identity = net.atos.daf.ct2.identity;
-using AccountPreference = net.atos.daf.ct2.accountpreference;
-using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.OpenApi.Models;
-using net.atos.daf.ct2.group;
-using Subscription = net.atos.daf.ct2.subscription;
-using net.atos.daf.ct2.subscription.repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using net.atos.daf.ct2.singlesignonservice.CustomAttributes;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.singlesignonservice.Common;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
+using Subscription = net.atos.daf.ct2.subscription;
 
 namespace net.atos.daf.ct2.singlesignonservice
 {
@@ -53,7 +43,7 @@ namespace net.atos.daf.ct2.singlesignonservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc()
             .ConfigureApiBehaviorOptions(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>

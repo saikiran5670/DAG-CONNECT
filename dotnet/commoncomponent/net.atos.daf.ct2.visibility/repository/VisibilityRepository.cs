@@ -2,66 +2,65 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.visibility.entity;
-using net.atos.daf.ct2.data;
-using Dapper;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.visibility.entity;
 //using NpgsqlTypes;
 
 namespace net.atos.daf.ct2.visibility.repository
 {
-	public class VisibilityRepository : IVisibilityRepository
-	{
-		private readonly IDataAccess _dataAccess;
-		private static readonly log4net.ILog _log =
-		  log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    public class VisibilityRepository : IVisibilityRepository
+    {
+        private readonly IDataAccess _dataAccess;
+        private static readonly log4net.ILog _log =
+          log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-		public VisibilityRepository(IDataAccess dataAccess)
-		{
-			this._dataAccess = dataAccess;
-		}
-		public IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid)
-		{
-			var featureSet = new List<FeatureSet>();
-			var func = "dafconnectmaster.getuserrolefeatures";
-			var result = _dataAccess.Query<Feature>(
-							sql: func,
-							param: new { useridinput = userid, orgidinput = orgid },
-							commandType: CommandType.StoredProcedure,
-							commandTimeout: 900) as List<Feature>;
+        public VisibilityRepository(IDataAccess dataAccess)
+        {
+            this._dataAccess = dataAccess;
+        }
+        public IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid)
+        {
+            var featureSet = new List<FeatureSet>();
+            var func = "dafconnectmaster.getuserrolefeatures";
+            var result = _dataAccess.Query<Feature>(
+                            sql: func,
+                            param: new { useridinput = userid, orgidinput = orgid },
+                            commandType: CommandType.StoredProcedure,
+                            commandTimeout: 900) as List<Feature>;
 
-			var parentFeature = result.Where(fe => fe.ParentFeatureId == 0).ToList();
-			foreach (var feature in parentFeature)
-			{
-				if (feature != null)
-				{
-					var _featureSet = new FeatureSet();
-					_featureSet.FeatureSetID = feature.RoleFeatureId;
-					_featureSet.FeatureSetName = feature.FeatureDescription;
-					// get child features
-					var childFeatures = result.Where(fe => fe.ParentFeatureId == _featureSet.FeatureSetID).ToList();
-					if (childFeatures != null)
-					{
-						_featureSet.Features = new List<Feature>();
-						_featureSet.Features.AddRange(childFeatures);
-					}
-					featureSet.Add(_featureSet);
-				}
-			}
-			return featureSet;
-		}
+            var parentFeature = result.Where(fe => fe.ParentFeatureId == 0).ToList();
+            foreach (var feature in parentFeature)
+            {
+                if (feature != null)
+                {
+                    var _featureSet = new FeatureSet();
+                    _featureSet.FeatureSetID = feature.RoleFeatureId;
+                    _featureSet.FeatureSetName = feature.FeatureDescription;
+                    // get child features
+                    var childFeatures = result.Where(fe => fe.ParentFeatureId == _featureSet.FeatureSetID).ToList();
+                    if (childFeatures != null)
+                    {
+                        _featureSet.Features = new List<Feature>();
+                        _featureSet.Features.AddRange(childFeatures);
+                    }
+                    featureSet.Add(_featureSet);
+                }
+            }
+            return featureSet;
+        }
 
-		public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
-																							   int OrganizationId)
-		{
-			try
-			{
-				var parameter = new DynamicParameters();
-				parameter.Add("@account_id", accountId);
-				parameter.Add("@organization_id", OrganizationId);
-				#region Query Select Vehicle By Account Visibility
-				var query = @"WITH cte_account_visibility_for_vehicle
+        public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
+                                                                                               int OrganizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_id", OrganizationId);
+                #region Query Select Vehicle By Account Visibility
+                var query = @"WITH cte_account_visibility_for_vehicle
 							AS (
 							select distinct ass.vehicle_group_id as vehiclegroupid,ass.access_type,
 							case when vgrpref.ref_id is null then  @account_id else vgrpref.ref_id end ref_id
@@ -316,13 +315,13 @@ namespace net.atos.daf.ct2.visibility.repository
 									,case when Vin is null  then '' else Vin end as Vin
 									,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
 						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) order by 1;";
-				#endregion
-				return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-	}
+                #endregion
+                return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+    }
 }

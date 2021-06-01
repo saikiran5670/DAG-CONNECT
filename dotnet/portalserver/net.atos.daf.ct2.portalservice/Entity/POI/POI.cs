@@ -1,9 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.POI
 {
@@ -26,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public double Latitude { get; set; }
         [Required]
         public double Longitude { get; set; }
-        public string State{ get; set; }
+        public string State { get; set; }
         //public double Distance { get; set; }
         //public int TripId { get; set; }
         public int CreatedBy { get; set; }

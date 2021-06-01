@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.translation.entity;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Google.Protobuf;
-using Newtonsoft.Json;
 using net.atos.daf.ct2.termsandconditions.entity;
+using net.atos.daf.ct2.translation.entity;
 
 namespace net.atos.daf.ct2.translationservice.Entity
 {
@@ -42,7 +38,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 }
 
             }
-            if (request.File !=null)
+            if (request.File != null)
             {
                 Encoding u8 = Encoding.UTF8;
                 BinaryFormatter bf = new BinaryFormatter();
@@ -55,14 +51,14 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 //bf.Serialize(ms, request.File);
                 //obj.file = request.File.SelectMany(s =>
                 // System.Text.Encoding.UTF8.GetBytes(s + Environment.NewLine)).ToArray();
-                
-             
+
+
             }
 
             obj.added_count = request.AddedCount;
             obj.updated_count = request.UpdatedCount;
-             
-            
+
+
             return obj;
         }
         public int ToTranslationEntity(FileUploadDetailsRequest request)
@@ -82,11 +78,11 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 obj.Description = translationupload.description;
             obj.FileSize = translationupload.file_size;
             obj.FailureCount = translationupload.failure_count;
-           // obj.CreatedBy = translationupload.created_by;
-            if(translationupload.file !=null)
+            // obj.CreatedBy = translationupload.created_by;
+            if (translationupload.file != null)
             {
-               // obj.File = translationupload.file;
-               //ByteString bytestring;
+                // obj.File = translationupload.file;
+                //ByteString bytestring;
                 using (var str = new MemoryStream(translationupload.file))
                 {
                     //obj.File = ByteString.FromStream(str);

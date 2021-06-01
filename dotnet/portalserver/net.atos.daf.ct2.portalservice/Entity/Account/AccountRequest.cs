@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Account
@@ -64,7 +63,7 @@ namespace net.atos.daf.ct2.portalservice.Account
 
     public class AccountOrganizationRequest
     {
- 
+
         public int AccountId { get; set; }
         public int OrganizationId { get; set; }
     }
@@ -73,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Account
     {
         public AccountResponse Account { get; set; }
         public AccountPreferenceResponse Preference { get; set; }
-        
+
     }
     public class ResetPasswordInitiateRequest
     {

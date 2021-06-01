@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.driver;
-using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit.repository;
-using Microsoft.AspNetCore.Http;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.driver;
 
 namespace net.atos.daf.ct2.driverservice
 {
@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.driverservice
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-       
+
         public IConfiguration Configuration { get; }
         public Startup(IConfiguration configuration)
         {
@@ -23,14 +23,14 @@ namespace net.atos.daf.ct2.driverservice
         }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();   
+            services.AddGrpc();
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
                 {
-                builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-                 }));
+                    builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+                }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
@@ -44,9 +44,9 @@ namespace net.atos.daf.ct2.driverservice
             {
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
-            services.AddTransient<IAuditTraillib,AuditTraillib>(); 
-            services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
-            services.AddTransient<IDriverManager,DriverManager>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IDriverManager, DriverManager>();
             services.AddTransient<IDriverRepository, DriverRepository>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
@@ -57,15 +57,13 @@ namespace net.atos.daf.ct2.driverservice
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }           
+            }
             app.UseRouting();
             app.UseGrpcWeb();
             app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
-                                                  .RequireCors("AllowAll");
                 endpoints.MapGrpcService<DriverManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
@@ -73,7 +71,7 @@ namespace net.atos.daf.ct2.driverservice
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
                 });
-            });             
+            });
         }
     }
 }

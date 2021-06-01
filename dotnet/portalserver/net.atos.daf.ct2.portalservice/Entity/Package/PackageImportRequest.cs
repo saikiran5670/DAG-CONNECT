@@ -4,7 +4,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
 {
     public class ImportPackage
     {
-       
+
         public int Id { get; set; }
         [Required]
         [StringLength(20)]

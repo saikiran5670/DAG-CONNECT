@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace net.atos.daf.ct2.portalservice.Common
+﻿namespace net.atos.daf.ct2.portalservice.Common
 {
     public static class PortalConstants
     {
@@ -33,7 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         public static class PackageValidation
         {
-            public const string CreateRequired = "The packageId , package code and featureset id  are required.";           
+            public const string CreateRequired = "The packageId , package code and featureset id  are required.";
             public const string InvalidPackageType = "The pakage type is not valid. It should be of single character";
             public const string ErrorMessage = "There is an error creating package.";
             public const string PackageStatusRequired = "The packageId and status are required.";
@@ -43,8 +38,8 @@ namespace net.atos.daf.ct2.portalservice.Common
         }
         public static class OrgRelationshipValidation
         {
-           
-             public const string ErrorMessage = "There is an error creating Org Relationship.";
+
+            public const string ErrorMessage = "There is an error creating Org Relationship.";
         }
 
         public static class VehicleValidation

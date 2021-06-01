@@ -1,18 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.roleservice;
-using net.atos.daf.ct2.role.repository;
-using net.atos.daf.ct2.role.entity;
-using net.atos.daf.ct2.role;
-using net.atos.daf.ct2.features;
-using Newtonsoft.Json;
 using log4net;
+using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
-using System.Reflection;
+using net.atos.daf.ct2.role;
+using net.atos.daf.ct2.role.entity;
 
 namespace net.atos.daf.ct2.roleservice
 {
@@ -131,12 +127,12 @@ namespace net.atos.daf.ct2.roleservice
                 foreach (var item in Assignedrole)
                 {
                     responce.Role.Add(new AssignedRole
-                    { 
-                        FirstName=item.firstname,
-                        LastName =item.lastname,
-                        Salutation=item.salutation,
-                        AccountId=item.accountid,
-                        Roleid=item.roleid
+                    {
+                        FirstName = item.firstname,
+                        LastName = item.lastname,
+                        Salutation = item.salutation,
+                        AccountId = item.accountid,
+                        Roleid = item.roleid
                     });
                 }
                 int role = 0;
@@ -153,9 +149,9 @@ namespace net.atos.daf.ct2.roleservice
                 {
                     responce.Message = "Role_in_use";
                     responce.Code = Responcecode.Assigned;
-                   return await Task.FromResult(responce);
+                    return await Task.FromResult(responce);
                 }
-                
+
             }
             catch (Exception ex)
             {

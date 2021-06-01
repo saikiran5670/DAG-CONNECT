@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.vehiclerepository;
-using net.atos.daf.ct2.vehicleservice.Services;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
-using net.atos.daf.ct2.account;
-using Identity = net.atos.daf.ct2.identity;
-using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.vehicleservice.Services;
+using Identity = net.atos.daf.ct2.identity;
 
 namespace net.atos.daf.ct2.vehicleservice
 {
@@ -35,13 +30,13 @@ namespace net.atos.daf.ct2.vehicleservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-               services.AddCors(o => o.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-    }));
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+ {
+     builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+ }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
             var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
@@ -54,11 +49,11 @@ namespace net.atos.daf.ct2.vehicleservice
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
 
-            services.AddTransient<IVehicleManager,VehicleManager>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
-            services.AddTransient<IAuditLogRepository,AuditLogRepository>();
-            services.AddTransient<IAuditTraillib,AuditTraillib>();
-            services.AddTransient<IGroupManager,GroupManager>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IAccountManager, AccountManager>();
@@ -82,7 +77,6 @@ namespace net.atos.daf.ct2.vehicleservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb().RequireCors("AllowAll");
                 endpoints.MapGrpcService<VehicleManagementService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>

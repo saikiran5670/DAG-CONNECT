@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using net.atos.daf.ct2.account;
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
 {

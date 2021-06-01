@@ -10,15 +10,15 @@ namespace net.atos.daf.ct2.features
         Task<int> AddFeatureSet(FeatureSet featureSet);
         Task<int> GetMinimumLevel(List<Feature> features);
         Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state);
-         Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
-        Task<IEnumerable<Feature> > GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode);
+        Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
+        Task<IEnumerable<Feature>> GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode);
         Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);
         Task<bool> DeleteFeatureSet(int FeatureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);
         Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet);
         Task<DataAttributeSet> UpdatedataattributeSet(DataAttributeSet dataAttributeSet);
         Task<bool> DeleteDataAttribute(int dataAttributeSetID);
-        Task <List<DataAttributeSet>> GetDataAttributeSetDetails(int dataAttributeSetID);
+        Task<List<DataAttributeSet>> GetDataAttributeSetDetails(int dataAttributeSetID);
         Task<int> UpdateFeatureSetMapping(int UpdateFeatureSetID, int ID);
         Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet);
         //Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID);
@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.features
         Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode);
         Task<int> DeleteFeature(int FeatureId);
 
-        int CheckFeatureNameExist(string FeatureName,int FeatureId);
+        int CheckFeatureNameExist(string FeatureName, int FeatureId);
         Task<int> ChangeFeatureState(int FeatureID, Char State);
     }
 }

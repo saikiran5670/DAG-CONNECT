@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.features.repository;
-using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.features.entity;
+using net.atos.daf.ct2.features.repository;
 using net.atos.daf.ct2.utilities;
-using System.Threading.Tasks;
-using System.Linq;
 
 
 
@@ -25,7 +23,7 @@ namespace net.atos.daf.ct2.feature.test
         public featurerepositorytest()
         {
             // string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-            
+
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
 
             //Get connection string
@@ -44,7 +42,7 @@ namespace net.atos.daf.ct2.feature.test
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
             FeatureSet feature = new FeatureSet();
-            feature.Name = "FeatureSet_"+ iSessionStartedAt;
+            feature.Name = "FeatureSet_" + iSessionStartedAt;
             feature.description = null;
             feature.State = 'A';
             feature.created_at = iSessionStartedAt;
@@ -59,7 +57,7 @@ namespace net.atos.daf.ct2.feature.test
             objfeature1.Id = 2;
             features.entity.Feature objfeature2 = new features.entity.Feature();
             objfeature2.Id = 3;
-            
+
             feature.Features.Add(objfeature);
             feature.Features.Add(objfeature1);
             feature.Features.Add(objfeature2);
@@ -88,7 +86,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.modified_by = 1;
 
             dataAttributeSet.DataAttributes = new List<features.entity.DataAttribute>();
-            
+
             features.entity.DataAttribute objattribute = new features.entity.DataAttribute();
             objattribute.ID = 3;
             features.entity.DataAttribute objattribute1 = new features.entity.DataAttribute();
@@ -134,7 +132,7 @@ namespace net.atos.daf.ct2.feature.test
 
             dataAttributeSet.DataAttributes.Add(objattribute);
             dataAttributeSet.DataAttributes.Add(objattribute1);
-           // dataAttributeSet.DataAttributes.Add(objattribute2);
+            // dataAttributeSet.DataAttributes.Add(objattribute2);
 
             var result = await _FeatureManager.UpdatedataattributeSet(dataAttributeSet);
             Assert.IsNotNull(result);
@@ -171,7 +169,7 @@ namespace net.atos.daf.ct2.feature.test
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
-       
+
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Update Feature set ")]
         [TestMethod]

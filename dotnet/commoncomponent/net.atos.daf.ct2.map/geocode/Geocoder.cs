@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.map.geocode
         private string appId;
         private string appCode;
         public int? MaxResults { get; set; }
-        public IWebProxy Proxy { get; set; }      
+        public IWebProxy Proxy { get; set; }
         public void InitializeMapGeocoder(string appId, string appCode)
         {
             if (string.IsNullOrWhiteSpace(appId))

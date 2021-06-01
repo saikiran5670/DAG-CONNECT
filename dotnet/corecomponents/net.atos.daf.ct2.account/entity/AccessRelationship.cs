@@ -10,8 +10,8 @@ namespace net.atos.daf.ct2.account.entity
         public AccessRelationType AccessRelationType { get; set; }
         public int AccountGroupId { get; set; }
         public int VehicleGroupId { get; set; }
-        public DateTime ? StartDate { get; set; }
-        public DateTime ? EndDate{ get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public List<int> VehicleGroupIds { get; set; }
         public bool Exists { get; set; }
 
@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.account.entity
     public class AccountVehicleEntity
     {
         public int id { get; set; }
-        public string name { get; set; }        
+        public string name { get; set; }
         public int count { get; set; }
         public bool is_group { get; set; }
         public string VIN { get; set; }

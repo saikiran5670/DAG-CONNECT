@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.role.entity;
-using net.atos.daf.ct2.data;
-using Dapper;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.role.entity;
 using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.role.repository
@@ -111,9 +108,8 @@ namespace net.atos.daf.ct2.role.repository
                 // }
                 return resultDeletedRole;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
 
@@ -131,16 +127,15 @@ namespace net.atos.daf.ct2.role.repository
                                             on ar.account_id= a.id
                                             where role_id=@roleid";
                 var accounts = await dataAccess.QueryAsync<AssignedRoles>(RoleQueryStatement, parameter);
-                
-                return accounts;
-                
-            }
-            catch (Exception ex)
-            {
 
+                return accounts;
+
+            }
+            catch (Exception)
+            {
                 throw;
             }
-            
+
         }
 
         public async Task<IEnumerable<RoleMaster>> GetRoles(RoleFilter roleFilter)

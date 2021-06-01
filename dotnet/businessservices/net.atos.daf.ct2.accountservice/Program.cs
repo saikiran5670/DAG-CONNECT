@@ -23,6 +23,6 @@ namespace net.atos.daf.ct2.accountservice
                             builder.SetMinimumLevel(LogLevel.Trace);
                             builder.AddLog4Net("log4net.config");
                         });
-                
+
     }
 }

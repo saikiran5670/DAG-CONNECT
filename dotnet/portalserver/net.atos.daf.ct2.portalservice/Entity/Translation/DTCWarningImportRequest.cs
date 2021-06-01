@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Translation
@@ -15,7 +12,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         [Required]
         [StringLength(1)]
         public string type { get; set; }
-        [StringLength(1) ]
+        [StringLength(1)]
         public string veh_type { get; set; }
         [Required]
         public int warning_class { get; set; }

@@ -1,12 +1,12 @@
-using net.atos.daf.ct2.audit;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.driver.entity;
 //using net.atos.daf.ct2.driver.repository;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.driver.entity;
 
 namespace net.atos.daf.ct2.driver
 {
-    public class DriverManager:IDriverManager
+    public class DriverManager : IDriverManager
     {
         IDriverRepository driverRepository;
         IAuditTraillib auditlog;
@@ -16,26 +16,26 @@ namespace net.atos.daf.ct2.driver
             driverRepository = _driverRepository;
             auditlog = _auditlog;
         }
-        public async Task<List<DriverImportResponse>> ImportDrivers(List <Driver> driver,int orgid)
+        public async Task<List<DriverImportResponse>> ImportDrivers(List<Driver> driver, int orgid)
         {
-            return await driverRepository.ImportDrivers(driver,orgid);
+            return await driverRepository.ImportDrivers(driver, orgid);
         }
         public async Task<IEnumerable<DriverResponse>> GetDriver(int OrganizationId, int DriverID)
         {
-            return await driverRepository.GetDriver(OrganizationId,DriverID);
+            return await driverRepository.GetDriver(OrganizationId, DriverID);
         }
-        
-         public async Task<Driver> UpdateDriver(Driver driver)
-          {
-              return await driverRepository.UpdateDriver(driver);
-          }
-         public async Task<bool> DeleteDriver(int OrganizationId, int DriverId)
-         {
-              return await driverRepository.DeleteDriver(OrganizationId,DriverId);
-         }
-         public async Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus)
-         {
-              return await driverRepository.UpdateOptinOptout(organizationId,optoutStatus);
-         }        
+
+        public async Task<Driver> UpdateDriver(Driver driver)
+        {
+            return await driverRepository.UpdateDriver(driver);
+        }
+        public async Task<bool> DeleteDriver(int OrganizationId, int DriverId)
+        {
+            return await driverRepository.DeleteDriver(OrganizationId, DriverId);
+        }
+        public async Task<bool> UpdateOptinOptout(int organizationId, string optoutStatus)
+        {
+            return await driverRepository.UpdateOptinOptout(organizationId, optoutStatus);
+        }
     }
 }

@@ -1,12 +1,11 @@
-﻿using Dapper;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.poigeofence.entity;
-using net.atos.daf.ct2.poigeofence.ENUM;
-using net.atos.daf.ct2.utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
@@ -66,7 +65,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var data = await dataAccess.QueryAsync<POI>(query, parameter);
                 return objPOIEntityResponceList = data.ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -74,7 +73,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         public async Task<List<POI>> GetAllPOI(POI poiFilter)
         {
             try
-            {              
+            {
                 var parameter = new DynamicParameters();
                 List<POI> pois = new List<POI>();
                 string query = string.Empty;
@@ -200,7 +199,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 return pois;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -242,7 +241,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@latitude", poi.Latitude);
                 parameter.Add("@longitude", poi.Longitude);
                 parameter.Add("@distance", poi.Distance);
-              //  parameter.Add("@trip_id", poi.TripId);
+                //  parameter.Add("@trip_id", poi.TripId);
                 parameter.Add("@state", 'A');
                 parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 parameter.Add("@created_by", poi.CreatedBy);
@@ -253,7 +252,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 poi.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -367,7 +366,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     poi.Id = 0;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -387,7 +386,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     result = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -409,7 +408,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     result = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -422,7 +421,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             uploadPOIExcel.PoiUploadedList = new List<POI>();
             try
             {
-               
+
                 foreach (var poi in uploadPOIExcel.PoiExcelList)
                 {
                     string queryduplicate = string.Empty;
@@ -461,7 +460,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@latitude", poi.Latitude);
                         parameter.Add("@longitude", poi.Longitude);
                         parameter.Add("@distance", poi.Distance);
-                      //  parameter.Add("@trip_id", poi.TripId);
+                        //  parameter.Add("@trip_id", poi.TripId);
                         parameter.Add("@state", 'A');
                         parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                         parameter.Add("@created_by", poi.CreatedBy);
@@ -475,7 +474,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -487,7 +486,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             POI poi = new POI();
             poi.Id = record.id;
-            poi.icon = record.icon !=null ?record.icon: new Byte[] { };
+            poi.icon = record.icon != null ? record.icon : new Byte[] { };
             poi.OrganizationId = record.organizationid != null ? record.organizationid : 0;
             poi.CategoryId = record.categoryid != null ? record.categoryid : 0;
             poi.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
@@ -502,7 +501,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Latitude = Convert.ToDouble(record.latitude);
             poi.Longitude = Convert.ToDouble(record.longitude);
             poi.Distance = Convert.ToDouble(record.distance);
-          //  poi.TripId = record.tripid != null ? record.tripid : 0;
+            //  poi.TripId = record.tripid != null ? record.tripid : 0;
             poi.CreatedAt = record.createdat != null ? record.createdat : 0;
             poi.State = MapCharToLandmarkState(record.state);
             poi.CreatedBy = record.createdby != null ? record.createdby : 0;
@@ -625,19 +624,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 left join master.driver D on TS.driver1_id=D.driver_id
                 left join master.vehicle V on TS.vin=V.vin
                 where TS.vin=@vin and (TS.start_time_stamp>=@StartDateTime and TS.end_time_stamp<=@EndDateTime)";
-                 
-                var parameter = new DynamicParameters();               
+
+                var parameter = new DynamicParameters();
                 parameter.Add("@StartDateTime", tripEntityRequest.StartDateTime);
                 parameter.Add("@EndDateTime", tripEntityRequest.EndDateTime);
                 parameter.Add("@vin", tripEntityRequest.VIN);
-                
+
                 var data = await dataMartdataAccess.QueryAsync<TripEntityResponce>(query, parameter);
                 foreach (var item in data)
-                {                    
+                {
                     var parameterPosition = new DynamicParameters();
                     parameterPosition.Add("@vin", item.VIN);
                     parameterPosition.Add("@trip_id", item.TripId);
-                    string queryPosition= @"select id, 
+                    string queryPosition = @"select id, 
                               vin,
                               gps_altitude, 
                               gps_heading,
@@ -647,8 +646,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                               where vin=@vin and trip_id = @trip_id order by id desc";
                     var PositionData = await dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
                     List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
-                   
-                    if (PositionData.Count()>0)
+
+                    if (PositionData.Count() > 0)
                     {
                         foreach (var positionData in PositionData)
                         {
@@ -658,16 +657,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
                             objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
                             objLiveFleetPosition.Id = positionData.Id;
-                            lstLiveFleetPosition.Add(objLiveFleetPosition);                            
+                            lstLiveFleetPosition.Add(objLiveFleetPosition);
                         }
                         item.LiveFleetPosition = lstLiveFleetPosition;
                     }
                 }
-                lstTripEntityResponce = data.ToList();                
+                lstTripEntityResponce = data.ToList();
                 return lstTripEntityResponce;
             }
-            catch (System.Exception ex)
-            {               
+            catch (Exception)
+            {
                 throw;
             }
         }

@@ -1,8 +1,4 @@
-﻿using net.atos.daf.ct2.subscription.entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.featureactivationservice.Entity
 {

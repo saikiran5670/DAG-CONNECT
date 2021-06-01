@@ -1,15 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.group;
-using Microsoft.Extensions.Configuration; 
-using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.repository;
-using System.Collections.Generic;
 
 
 namespace net.atos.daf.ct2.group.test
 {
-     [TestClass]
+    [TestClass]
     public class GroupManagerTest
     {
         // private readonly IDataAccess _dataAccess;

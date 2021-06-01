@@ -1,5 +1,3 @@
-using System;
-
 namespace net.atos.daf.ct2.vehicle.entity
 {
     public class VehicleFilter
@@ -13,9 +11,9 @@ namespace net.atos.daf.ct2.vehicle.entity
         public string VehicleIdList { get; set; }
         public string VIN { get; set; }
         public VehicleStatusType Status { get; set; }
-        
-        
-        
-               
+
+
+
+
     }
 }

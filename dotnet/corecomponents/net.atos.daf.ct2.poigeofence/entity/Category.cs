@@ -1,14 +1,11 @@
-﻿using net.atos.daf.ct2.poigeofence.ENUM;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
     public class Category
     {
         public int Id { get; set; }
-        public int ? Organization_Id { get; set; }
+        public int? Organization_Id { get; set; }
         public string Name { get; set; }
         public string IconName { get; set; }
         public string Type { get; set; }
@@ -23,7 +20,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
 
 
     }
-    
+
 
     public class CategoryID
     {

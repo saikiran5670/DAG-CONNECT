@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public string Description { get; set; }
     }
 
-   public  class CorridorRequest
+    public class CorridorRequest
     {
         public int OrganizationId { get; set; }
 

@@ -1,5 +1,3 @@
-using System;
-
 namespace net.atos.daf.ct2.driver.entity
 {
     public class DriverTemplate
@@ -7,7 +5,7 @@ namespace net.atos.daf.ct2.driver.entity
         public int DriverTemplateId { get; set; }
         public string Name { get; set; }
         public string TemplatePath { get; set; }
-        
-        
+
+
     }
 }

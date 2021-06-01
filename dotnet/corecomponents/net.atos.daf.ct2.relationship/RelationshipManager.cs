@@ -1,19 +1,19 @@
-﻿using net.atos.daf.ct2.relationship.entity;
-using net.atos.daf.ct2.relationship.repository;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.relationship.entity;
+using net.atos.daf.ct2.relationship.repository;
 
 namespace net.atos.daf.ct2.relationship
 {
     public class RelationshipManager : IRelationshipManager
     {
 
-       private readonly IRelationshipRepository _relationshipRepository;
-        
-        public RelationshipManager(IRelationshipRepository relationshipRepository )
+        private readonly IRelationshipRepository _relationshipRepository;
+
+        public RelationshipManager(IRelationshipRepository relationshipRepository)
         {
             _relationshipRepository = relationshipRepository;
-            
+
         }
 
 
@@ -36,9 +36,9 @@ namespace net.atos.daf.ct2.relationship
         {
             return await _relationshipRepository.GetRelationship(orgRelationship);
         }
-        public async Task<RelationshipLevelCode> GetRelationshipLevelCode()
+        public RelationshipLevelCode GetRelationshipLevelCode()
         {
-            return await _relationshipRepository.GetRelationshipLevelCode();
+            return _relationshipRepository.GetRelationshipLevelCode();
         }
 
         public async Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping)

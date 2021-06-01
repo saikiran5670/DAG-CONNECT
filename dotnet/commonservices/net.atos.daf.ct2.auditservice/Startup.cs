@@ -1,36 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit.repository; 
-using net.atos.daf.ct2.audit.entity;
-using net.atos.daf.ct2.auditservice;
+using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.auditservice.Services;
+using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.auditservice
 {
     public class Startup
     {
 
-             public IConfiguration Configuration { get; }
-            public Startup(IConfiguration configuration)
-            {
-                Configuration = configuration;
-            }
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            
+
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -43,7 +37,7 @@ namespace net.atos.daf.ct2.auditservice
             {
                 return new PgSQLDataAccess(connectionString);
             });
-            services.AddTransient<IAuditTraillib,AuditTraillib>();
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
         }
 
@@ -61,8 +55,7 @@ namespace net.atos.daf.ct2.auditservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb().RequireCors("AllowAll");;
-                endpoints.MapGrpcService<AudittrailService>().EnableGrpcWeb().RequireCors("AllowAll");;
+                endpoints.MapGrpcService<AudittrailService>().EnableGrpcWeb().RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
                 {

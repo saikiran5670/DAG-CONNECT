@@ -2,23 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
-using System.Configuration;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.utilities;
-using Dapper;
-using static Dapper.SqlMapper;
-using Npgsql;
-using NpgsqlTypes;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.translation.entity;
-using static net.atos.daf.ct2.translation.Enum.translationenum;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 using System.Transactions;
+using Dapper;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.email.entity;
 using net.atos.daf.ct2.email.Enum;
-using net.atos.daf.ct2.translation.Enum;
+using net.atos.daf.ct2.translation.entity;
+using net.atos.daf.ct2.utilities;
+using static net.atos.daf.ct2.translation.Enum.translationenum;
 
 namespace net.atos.daf.ct2.translation.repository
 {
@@ -315,7 +308,7 @@ namespace net.atos.daf.ct2.translation.repository
                 }
                 return translations;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -341,7 +334,7 @@ namespace net.atos.daf.ct2.translation.repository
                 // var result = dataAccess.ExecuteScalar<List<Translations>>(QueryStatement, parameter);
                 return translations;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -399,7 +392,7 @@ namespace net.atos.daf.ct2.translation.repository
 
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -443,7 +436,7 @@ namespace net.atos.daf.ct2.translation.repository
                             var translationId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                             return translationStatus.Updated;
                         }
-                       
+
                     }
                     else
                     {
@@ -465,14 +458,9 @@ namespace net.atos.daf.ct2.translation.repository
                 {
                     return translationStatus.Failed;
                 }
-
-
-
-
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -521,7 +509,7 @@ namespace net.atos.daf.ct2.translation.repository
 
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -542,7 +530,7 @@ namespace net.atos.daf.ct2.translation.repository
                     where type=@contentType and event_name=@eventName";
 
                 EmailTemplate template = await dataAccess.QueryFirstAsync<EmailTemplate>(emailTemplateQuery, parameter);
-             
+
                 parameter = new DynamicParameters();
                 parameter.Add("@languageCode", languageCode);
                 parameter.Add("@templateId", template.TemplateId);
@@ -565,15 +553,15 @@ namespace net.atos.daf.ct2.translation.repository
 	                    left JOIN translation.translation tl1  ON etl.key=tl1.name and tl1.code=@languageCode
 	                    left JOIN translation.translation tl2  ON etl.key=tl2.name and tl2.code='EN-GB'
 	                    WHERE etl.email_template_id=@templateId";
-                }                                        
+                }
                 IEnumerable<EmailTemplateTranslationLabel> labels = await dataAccess.QueryAsync<EmailTemplateTranslationLabel>(emailTemplateLabelQuery, parameter);
                 template.TemplateLabels = labels;
                 return template;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
-            }            
+            }
         }
 
         private Translationupload MapfileDetails(dynamic record)
@@ -612,7 +600,7 @@ namespace net.atos.daf.ct2.translation.repository
                     foreach (DTCwarning item in dtcwarningList)
                     {
                         // If warning data is already exist then update specific record 
-                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
+                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number, item.code);
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
 
                         if (iconID == 0)
@@ -637,7 +625,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", LanguageCode);
-                            parameter.Add("@type", item.type );
+                            parameter.Add("@type", item.type);
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);
@@ -660,7 +648,7 @@ namespace net.atos.daf.ct2.translation.repository
                         {
                             //Update
 
-                            
+
                             var UpdateWarningDataQueryStatement = @"UPDATE master.dtcwarning
                                                               SET code=@code, 
                                                                   type=@type, 
@@ -677,7 +665,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", LanguageCode);
-                            parameter.Add("@type", item.type );
+                            parameter.Add("@type", item.type);
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);
@@ -702,7 +690,7 @@ namespace net.atos.daf.ct2.translation.repository
                 }
                 return dtcwarningLists;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -721,7 +709,7 @@ namespace net.atos.daf.ct2.translation.repository
                 int iconID = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
                 return iconID;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -758,13 +746,13 @@ namespace net.atos.daf.ct2.translation.repository
 
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
 
         }
-       
+
 
         public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string excelLanguageCode)
         {
@@ -790,12 +778,12 @@ namespace net.atos.daf.ct2.translation.repository
                 var dtcwarningLists = new List<DTCwarning>();
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    
+
 
                     foreach (DTCwarning item in dtcwarningList)
                     {
                         // If warning data is already exist then update specific record 
-                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number,item.code);
+                        int WarningId = CheckDtcWarningClassExist(item.warning_class, item.number, item.code);
                         // Get Icon id from Icon table
                         var iconID = GetIcocIDFromIcon(item.warning_class, item.number);
                         var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.code);
@@ -820,7 +808,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                             var parameter = new DynamicParameters();
                             parameter.Add("@code", LanguageCode);
-                            parameter.Add("@type", item.type );
+                            parameter.Add("@type", item.type);
                             parameter.Add("@veh_type", item.veh_type);
                             parameter.Add("@class", item.warning_class);
                             parameter.Add("@number", item.number);
@@ -840,47 +828,47 @@ namespace net.atos.daf.ct2.translation.repository
 
                         }
                     }
-                    
+
                     transactionScope.Complete();
                 }
                 return dtcwarningLists;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-       
+
 
         public async Task<int> DeleteDTCWarningData(int id)
         {
             try
             {
                 var dtcwarningLists = new List<DTCwarning>();
-                int DeleteDTCID=0;
+                int DeleteDTCID = 0;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                        if (id != 0)
-                        {
-                            // Delete
+                    if (id != 0)
+                    {
+                        // Delete
 
-                            var UpdateWarningDataQueryStatement = @"DELETE FROM master.dtcwarning
+                        var UpdateWarningDataQueryStatement = @"DELETE FROM master.dtcwarning
                                                                    WHERE id = @id ";
 
-                            var parameter = new DynamicParameters();
-                            parameter.Add("@id", id);
+                        var parameter = new DynamicParameters();
+                        parameter.Add("@id", id);
 
-                            DeleteDTCID = await dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
+                        DeleteDTCID = await dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
 
-                        }
-                    
+                    }
+
 
                     transactionScope.Complete();
                 }
                 return DeleteDTCID;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

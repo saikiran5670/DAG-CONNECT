@@ -74,11 +74,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
             {
                 _logger.Info("GetAllPOI method in POIManagement service called.");
                 POIResponseList objPOIResponseList = new POIResponseList();
-                POI poi= new POI();
+                POI poi = new POI();
                 //obj.OrganizationId = request.OrganizationId;
                 //obj.State = "NONE";// if none then Active & inactive poi will be fetch
                 //obj.Type = "POI";
-                poi=_mapper.ToPOIEntity(request);
+                poi = _mapper.ToPOIEntity(request);
                 var result = await _poiManager.GetAllPOI(poi);
                 foreach (var item in result)
                 {
@@ -114,11 +114,11 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         Code = Responsecode.Success,
                     });
                 }
-                else if (poi.Id == - 1)
+                else if (poi.Id == -1)
                 {
                     return await Task.FromResult(new POIResponse
                     {
-                        Message = "Duplicate POI name "+ poi.Name ,
+                        Message = "Duplicate POI name " + poi.Name,
                         Code = Responsecode.Conflict
                     });
                 }
@@ -152,7 +152,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 request.Type = "POI";
                 poi = _mapper.ToPOIEntity(request);
                 poi = await _poiManager.UpdatePOI(poi);
-                if (poi.Id>0)
+                if (poi.Id > 0)
                 {
                     response.POIData = _mapper.ToPOIResponseData(poi);
                     response.Message = "POI updated for id:- " + poi.Id;
@@ -189,7 +189,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             try
             {
                 _logger.Info("Delete POI.");
-                
+
                 bool result = await _poiManager.DeletePOI(request.Id);
                 if (result)
                 {
@@ -279,12 +279,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
         public override async Task<POIUploadResponse> UploadPOIExcel(POIUploadRequest request, ServerCallContext context)
         {
-             
+
             try
             {
                 var response = new POIUploadResponse();
                 var poiList = new List<POI>();
-                var uploadPoiData =_mapper.ToUploadPOIRequest(request);
+                var uploadPoiData = _mapper.ToUploadPOIRequest(request);
                 var packageUploaded = await _poiManager.UploadPOI(uploadPoiData);
                 response = _mapper.ToPOIUploadResponseData(packageUploaded);
                 response.POIExcelList.Add(request.POIList);
@@ -312,7 +312,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 _logger.Info("Get GetAllTripDetails.");
                 TripResponce response = new TripResponce();
                 TripEntityRequest objTripEntityRequest = new TripEntityRequest();
-                objTripEntityRequest.VIN = request.VIN;              
+                objTripEntityRequest.VIN = request.VIN;
                 objTripEntityRequest.StartDateTime = request.StartDateTime;
                 objTripEntityRequest.EndDateTime = request.EndDateTime;
 
@@ -332,9 +332,9 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 return await Task.FromResult(new TripResponce
                 {
                     Code = Responsecode.Failed,
-                    Message = "GetAllTripDetails get faile due to - " + ex.Message                    
+                    Message = "GetAllTripDetails get faile due to - " + ex.Message
                 });
-            }           
+            }
         }
     }
 }
