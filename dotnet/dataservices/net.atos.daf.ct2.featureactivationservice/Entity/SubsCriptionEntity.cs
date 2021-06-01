@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Entity
     public class ActiveSubscription
     {
         public string OrganizationId { get; set; }//M
-        public string packageId { get; set; }//M
+        public string PackageId { get; set; }//M
         public List<string> VINs { get; set; }
         public string StartDateTime { get; set; }
 

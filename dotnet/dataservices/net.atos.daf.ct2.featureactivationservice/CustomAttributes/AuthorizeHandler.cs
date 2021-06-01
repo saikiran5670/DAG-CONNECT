@@ -10,10 +10,10 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
     public class AuthorizeHandler :
           AuthorizationHandler<AuthorizeRequirement>
     {
-        private readonly IAccountManager accountManager;
-        public AuthorizeHandler(IAccountManager _accountManager)
+        private readonly IAccountManager _accountManager;
+        public AuthorizeHandler(IAccountManager accountManager)
         {
-            accountManager = _accountManager;
+            this._accountManager = accountManager;
         }
 
         protected override async Task HandleRequirementAsync(
@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
 
             try
             {
-                var isExists = await accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
+                var isExists = await _accountManager.CheckForFeatureAccessByEmailId(emailAddress, requirement.FeatureName);
                 if (isExists)
                     context.Succeed(requirement);
                 else

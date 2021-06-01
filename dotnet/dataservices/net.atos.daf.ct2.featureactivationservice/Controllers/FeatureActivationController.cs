@@ -18,19 +18,16 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
     [ApiController]
     [Route("subscription")]
-    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class FeatureActivationController : ControllerBase
     {
-        private readonly ILogger<FeatureActivationController> logger;
-        private readonly ISubscriptionManager subscriptionManager;
-        private readonly AccountComponent.IAccountIdentityManager accountIdentityManager;
-        private readonly IAuditTraillib AuditTrail;
-        public FeatureActivationController(ILogger<FeatureActivationController> _logger, IAuditTraillib _AuditTrail, ISubscriptionManager _subscriptionManager, AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        private readonly ILogger<FeatureActivationController> _logger;
+        private readonly ISubscriptionManager _subscriptionManager;
+
+        public FeatureActivationController(ILogger<FeatureActivationController> logger,  ISubscriptionManager subscriptionManager)
         {
-            logger = _logger;
-            AuditTrail = _AuditTrail;
-            subscriptionManager = _subscriptionManager;
-            accountIdentityManager = _accountIdentityManager;
+            this._logger = logger;
+            this._subscriptionManager = subscriptionManager;
         }
 
         [HttpPost]
@@ -43,12 +40,12 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.OrganizationId))
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.SubscribeEvent.OrganizationId));
-                    else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.packageId))
-                        return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.SubscribeEvent.packageId));
+                    else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.PackageId))
+                        return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.SubscribeEvent.PackageId));
 
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
                     Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
-                    Objsubs.packageId = objsubscriptionActivation.SubscribeEvent.packageId;
+                    Objsubs.packageId = objsubscriptionActivation.SubscribeEvent.PackageId;
                     Objsubs.VINs = new List<string>();
 
                     if (objsubscriptionActivation.SubscribeEvent.VINs != null && objsubscriptionActivation.SubscribeEvent.VINs.Count > 0)
@@ -70,11 +67,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     }
                     catch (Exception)
                     {
-                        logger.LogInformation($"Not valid date in subscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
+                        _logger.LogInformation($"Not valid date in subscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.StartDateTime);
                     }
 
-                    var order = await subscriptionManager.Subscribe(Objsubs);
+                    var order = await _subscriptionManager.Subscribe(Objsubs);
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
                         if (order.Item2.Value is string[])
@@ -85,7 +82,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
 
-                    logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.orderId}");
+                    _logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.orderId}");
                     return Ok(order.Item2.Response);
                 }
                 else
@@ -124,11 +121,11 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     }
                     catch (Exception)
                     {
-                        logger.LogInformation($"Not valid date in unsubscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
+                        _logger.LogInformation($"Not valid date in unsubscription event - {Newtonsoft.Json.JsonConvert.SerializeObject(objsubscriptionActivation.SubscribeEvent)}");
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.EndDateTime);
                     }
 
-                    var order = await subscriptionManager.Unsubscribe(Objunsubs);
+                    var order = await _subscriptionManager.Unsubscribe(Objunsubs);
 
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
@@ -140,7 +137,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
 
-                    logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
+                    _logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
                     return Ok(order.Item2.Response);
                 }
                 else
@@ -150,7 +147,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
             }
         }
