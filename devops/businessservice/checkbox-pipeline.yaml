@@ -11,6 +11,10 @@ parameters:
   displayName: Account Service
   type: boolean
   default: false
+- name: reportService
+  displayName: Report Service
+  type: boolean
+  default: false
   
 pool: dafct-dta-privateagent
 
@@ -19,6 +23,6 @@ steps:
   inputs:
     script: |
       echo ${{ parameters.accountService}}
-
+  condition: eq({{ parameters.accountService}}, true)
 
 
