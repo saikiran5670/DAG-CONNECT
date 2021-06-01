@@ -34,6 +34,27 @@ namespace net.atos.daf.ct2.alert.repository
                 {
                     return alert;
                 }
+
+                // duplicate recipients label
+                if (alert.Notifications.Count() > 0)
+                {
+                    int cntDupliReclabel = 0;
+                    foreach (var notification in alert.Notifications)
+                    {
+                        foreach (var notificationRecipient in notification.NotificationRecipients)
+                        {
+                            if (RecipientLabelExists(notificationRecipient, alert.OrganizationId).Result.Exists)
+                            {
+                                cntDupliReclabel = +1;
+                            }
+                        }
+                    }
+                    if (cntDupliReclabel > 0)
+                    {
+                        return alert;
+                    }
+                }
+
                 var parameterAlert = new DynamicParameters();
                 parameterAlert.Add("@organization_id", alert.OrganizationId);
                 parameterAlert.Add("@name", alert.Name);
@@ -379,6 +400,26 @@ namespace net.atos.daf.ct2.alert.repository
                 if (alert.Exists)
                 {
                     return alert;
+                }
+
+                // duplicate recipients label
+                if (alert.Notifications.Count() > 0)
+                {
+                    int cntDupliReclabel = 0;
+                    foreach (var notification in alert.Notifications)
+                    {
+                        foreach (var notificationRecipient in notification.NotificationRecipients)
+                        {
+                            if (RecipientLabelExists(notificationRecipient, alert.OrganizationId).Result.Exists)
+                            {
+                                cntDupliReclabel = +1;
+                            }
+                        }
+                    }
+                    if (cntDupliReclabel > 0)
+                    {
+                        return alert;
+                    }
                 }
 
                 var QueryStatement = @" UPDATE master.alert
@@ -790,12 +831,19 @@ namespace net.atos.daf.ct2.alert.repository
             }
         }
 
-        private async Task<NotificationRecipient> RecipientLabelExists(NotificationRecipient notificationRecipient)
+        private async Task<NotificationRecipient> RecipientLabelExists(NotificationRecipient notificationRecipient, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"select id from master.notificationrecipient where 1=1 ";
+                var query = @"select notirec.id from master.notificationrecipient notirec 
+                                        inner join master.notification noti 
+                                        on notirec.notification_id= noti.id
+                                        inner join master.alert alert
+                                        on alert.id=noti.alert_id
+                                        where noti.state=@state
+                                        and alert.state=@state
+                                        and notirec.state=@state";
                 parameter.Add("@state", Convert.ToChar(AlertState.Active));
                 if (notificationRecipient != null)
                 {
@@ -804,20 +852,20 @@ namespace net.atos.daf.ct2.alert.repository
                     if (Convert.ToInt32(notificationRecipient.Id) > 0)
                     {
                         parameter.Add("@id", notificationRecipient.Id);
-                        query = query + " and id!=@id";
+                        query = query + " and notirec.id!=@id";
                     }
                     // name
                     if (!string.IsNullOrEmpty(notificationRecipient.RecipientLabel))
                     {
                         parameter.Add("@recipient_label", notificationRecipient.RecipientLabel);
-                        query = query + " and recipient_label=@recipient_label";
+                        query = query + " and notirec.recipient_label=@recipient_label";
                     }
-                    //// organization id filter
-                    //if (notificationRecipient.OrganizationId > 0)
-                    //{
-                    //    parameter.Add("@organization_id", alert.OrganizationId);
-                    //    query = query + " and organization_id=@organization_id ";
-                    //}
+                    // organization id filter
+                    if (organizationId > 0)
+                    {
+                        parameter.Add("@organization_id", organizationId);
+                        query = query + " and alert.organization_id=@organization_id ";
+                    }
                 }
                 var notificationRecipientId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (notificationRecipientId > 0)

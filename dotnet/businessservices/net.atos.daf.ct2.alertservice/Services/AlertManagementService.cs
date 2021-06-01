@@ -149,12 +149,21 @@ namespace net.atos.daf.ct2.alertservice.Services
                 Alert alert = new Alert();
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.UpdateAlert(alert);
-                // check for exists
+                // check for alert name exists
                 response.AlertRequest.Exists = false;
                 if (alert.Exists)
                 {
                     response.AlertRequest.Exists = true;
                     response.Message = "Duplicate alert name";
+                    response.Code = ResponseCode.Conflict;
+                    return response;
+                }
+                // check for notification recipient label exists
+                var duplicateNotificationRecipients = alert.Notifications.SelectMany(a => a.NotificationRecipients).Where(y => y.Exists == true).ToList();
+                if (duplicateNotificationRecipients.Count() > 0)
+                {
+                    response.AlertRequest.Exists = true;
+                    response.Message = "Duplicate notification recipient label";
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }
@@ -190,10 +199,20 @@ namespace net.atos.daf.ct2.alertservice.Services
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.CreateAlert(alert);
                 response.AlertRequest.Exists = false;
+                // check for alert name exists
                 if (alert.Exists)
                 {
                     response.AlertRequest.Exists = true;
                     response.Message = "Duplicate alert name";
+                    response.Code = ResponseCode.Conflict;
+                    return response;
+                }
+                // check for notification recipient label exists
+                var duplicateNotificationRecipients = alert.Notifications.SelectMany(a => a.NotificationRecipients).Where(y => y.Exists == true).ToList();
+                if (duplicateNotificationRecipients.Count() > 0)
+                {
+                    response.AlertRequest.Exists = true;
+                    response.Message = "Duplicate notification recipient label";
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }

@@ -201,6 +201,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //check duplicate recipient label in UI list
+                var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
+                if (result.Count() > 0)
+                {
+                    return StatusCode(409, "Duplicate notification recipient label added in list.");
+                }
+
                 var alertRequest = new AlertRequest();
                 alertRequest = _mapper.ToAlertRequest(request);
                 if (request.ApplyOn.ToLower() == "s")
@@ -287,9 +294,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
+                //check duplicate recipient label in UI list
                 var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
-
                 if (result.Count() > 0)
                 {
                     return StatusCode(409, "Duplicate notification recipient label added in list.");
