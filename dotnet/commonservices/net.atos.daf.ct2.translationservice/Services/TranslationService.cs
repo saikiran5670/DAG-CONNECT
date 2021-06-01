@@ -738,9 +738,9 @@ namespace net.atos.daf.ct2.translationservice
             {
                 _logger.LogInformation("GetAllVersionNo method ");
                 net.atos.daf.ct2.termsandconditions.entity.VersionByID objVersionByID = new VersionByID();
-                objVersionByID.orgId = request.OrgId;
-                objVersionByID.accountId = request.AccountId;
-                objVersionByID.levelCode = request.LevelCode;
+                objVersionByID.OrgId = request.OrgId;
+                objVersionByID.AccountId = request.AccountId;
+                objVersionByID.LevelCode = request.LevelCode;
                 var result = await termsandconditionsmanager.GetAllVersionNo(objVersionByID);
                 _logger.LogInformation("GetAllVersionNo service called.");
                 VersionNoResponse response = new VersionNoResponse();
@@ -777,7 +777,7 @@ namespace net.atos.daf.ct2.translationservice
                     var tramcond = new TermConditionReponse();
                     tramcond.Id = item.Id;
                     tramcond.Code = item.Code;
-                    tramcond.Versionno = item.version_no;
+                    tramcond.Versionno = item.Version_no;
                     if (item.Description != null)
                     {
                         tramcond.Description = ByteString.CopyFrom(item.Description);
@@ -814,7 +814,7 @@ namespace net.atos.daf.ct2.translationservice
                     var tramcond = new TermConditionReponse();
                     tramcond.Id = item.Id;
                     tramcond.Code = item.Code;
-                    tramcond.Versionno = item.version_no;
+                    tramcond.Versionno = item.Version_no;
                     if (item.Description != null)
                     {
                         tramcond.Description = ByteString.CopyFrom(item.Description);
@@ -947,10 +947,10 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("UploadTermsAndCondition method ");
                 UploadTermandConditionResponseList objUploadTermandConditionResponseList = new UploadTermandConditionResponseList();
                 net.atos.daf.ct2.termsandconditions.entity.TermsandConFileDataList objTermsandConFileDataList = new ct2.termsandconditions.entity.TermsandConFileDataList();
-                objTermsandConFileDataList._data = new List<TermsandConFileData>();
-                objTermsandConFileDataList.start_date = request.StartDate;
-                objTermsandConFileDataList.end_date = request.EndDate;
-                objTermsandConFileDataList.created_by = request.CreatedBy;
+                objTermsandConFileDataList.Data = new List<TermsandConFileData>();
+                objTermsandConFileDataList.Start_date = request.StartDate;
+                objTermsandConFileDataList.End_date = request.EndDate;
+                objTermsandConFileDataList.Created_by = request.CreatedBy;
                 if (request == null)
                 {
                     return objUploadTermandConditionResponseList;
@@ -958,12 +958,12 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in request.Data)
                 {
                     net.atos.daf.ct2.termsandconditions.entity.TermsandConFileData objTermsandConFileData = new ct2.termsandconditions.entity.TermsandConFileData();
-                    objTermsandConFileData.fileName = item.FileName;
-                    objTermsandConFileData.version_no = item.Versionno;
-                    objTermsandConFileData.code = item.Code;
-                    objTermsandConFileData.description = item.Description.ToByteArray();
+                    objTermsandConFileData.FileName = item.FileName;
+                    objTermsandConFileData.Version_no = item.Versionno;
+                    objTermsandConFileData.Code = item.Code;
+                    objTermsandConFileData.Description = item.Description.ToByteArray();
 
-                    objTermsandConFileDataList._data.Add(objTermsandConFileData);
+                    objTermsandConFileDataList.Data.Add(objTermsandConFileData);
                 }
 
                 var data = await termsandconditionsmanager.UploadTermsAndCondition(objTermsandConFileDataList);
@@ -975,12 +975,12 @@ namespace net.atos.daf.ct2.translationservice
                 }
                 _logger.LogInformation("UploadTermsAndCondition service called.");
                 //objUploadTermandConditionResponseList.Uploadedfilesaction = new Google.Protobuf.Collections.RepeatedField<UploadTermandConditionResponse>();
-                foreach (var items in data.termsAndConditionDetails)
+                foreach (var items in data.TermsAndConditionDetails)
                 {
                     var objUploadTermandConditionResponse = new UploadTermandConditionResponse();
-                    objUploadTermandConditionResponse.FileName = items.fileName;
-                    objUploadTermandConditionResponse.Id = items.id;
-                    objUploadTermandConditionResponse.Action = items.action;
+                    objUploadTermandConditionResponse.FileName = items.FileName;
+                    objUploadTermandConditionResponse.Id = items.Id;
+                    objUploadTermandConditionResponse.Action = items.Action;
                     objUploadTermandConditionResponseList.Uploadedfilesaction.Add(objUploadTermandConditionResponse);
                 }
                 objUploadTermandConditionResponseList.Code = Responcecode.Success;
@@ -1012,7 +1012,7 @@ namespace net.atos.daf.ct2.translationservice
                     TermConditionReponse tramcond = new TermConditionReponse();
                     tramcond.Id = result.Id;
                     tramcond.Code = result.Code == null ? "" : result.Code;
-                    tramcond.Versionno = result.version_no == null ? "" : result.version_no;
+                    tramcond.Versionno = result.Version_no == null ? "" : result.Version_no;
                     if (result.Description != null)
                     {
                         tramcond.Description = ByteString.CopyFrom(result.Description);

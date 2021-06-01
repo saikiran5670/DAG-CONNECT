@@ -2,10 +2,10 @@
 {
     public class AccountVehicleEntity
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public int count { get; set; }
-        public bool is_group { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Count { get; set; }
+        public bool Is_group { get; set; }
         public string VIN { get; set; }
         public string RegistrationNo { get; set; }
     }

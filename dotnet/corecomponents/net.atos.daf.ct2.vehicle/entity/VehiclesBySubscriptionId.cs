@@ -2,10 +2,10 @@
 {
     public class VehiclesBySubscriptionId
     {
-        public string orderId { get; set; }
-        public string name { get; set; }
-        public string vin { get; set; }
-        public string license_plate_number { get; set; }
-        public int id { get; set; }
+        public string OrderId { get; set; }
+        public string Name { get; set; }
+        public string Vin { get; set; }
+        public string License_plate_number { get; set; }
+        public int Id { get; set; }
     }
 }

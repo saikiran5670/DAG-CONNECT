@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
             accountTermsCondition.Account_Id = request.AccountId;
             accountTermsCondition.Organization_Id = request.OrganizationId;
             accountTermsCondition.Terms_And_Condition_Id = request.TermsAndConditionId;
-            accountTermsCondition.version_no = request.VersionNo;
+            accountTermsCondition.Version_no = request.VersionNo;
             accountTermsCondition.Accepted_Date = DateTime.Now;
             return accountTermsCondition;
         }
@@ -149,7 +149,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
             TermConditionReponse response = new TermConditionReponse();
             response.Id = termsAndConditions.Id;
             response.Code = termsAndConditions.Code;
-            response.Versionno = termsAndConditions.version_no;
+            response.Versionno = termsAndConditions.Version_no;
             if (termsAndConditions.Description != null)
             {
                 response.Description = ByteString.CopyFrom(termsAndConditions.Description);
@@ -169,7 +169,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
             accountTermsConditionrequest.AccountId = response.Account_Id;
             accountTermsConditionrequest.OrganizationId = response.Organization_Id;
             accountTermsConditionrequest.TermsAndConditionId = response.Terms_And_Condition_Id;
-            accountTermsConditionrequest.VersionNo = response.version_no;
+            accountTermsConditionrequest.VersionNo = response.Version_no;
             return accountTermsConditionrequest;
         }
 

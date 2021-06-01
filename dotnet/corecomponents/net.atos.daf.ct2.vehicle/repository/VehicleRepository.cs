@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.vehicle.repository
     public class VehicleRepository : IVehicleRepository
     {
 
-        private readonly IDataAccess dataAccess;
-        private readonly IDataMartDataAccess DataMartdataAccess;
-        private static readonly log4net.ILog log =
+        private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
+        private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         //public VehicleRepository(IEnumerable<IDataAccess> _dataAccess)
@@ -26,10 +26,10 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         //}
 
-        public VehicleRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
+        public VehicleRepository(IDataAccess dataAccess, IDataMartDataAccess DataMartdataAccess)
         {
-            DataMartdataAccess = _DataMartdataAccess;
-            dataAccess = _dataAccess;
+            _dataMartdataAccess = DataMartdataAccess;
+            this._dataAccess = dataAccess;
 
         }
 
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
         {
-            log.Info("GetVehicleBySubscriptionId Vehicle method called in repository");
+            _log.Info("GetVehicleBySubscriptionId Vehicle method called in repository");
             try
             {
                 List<VehiclesBySubscriptionId> objVehiclesBySubscriptionId = new List<VehiclesBySubscriptionId>();
@@ -47,13 +47,13 @@ namespace net.atos.daf.ct2.vehicle.repository
                               from master.Subscription sub 
                               join master.vehicle veh on sub.vehicle_id = veh.id
                               where subscription_id = @subscription_id";
-                var data = await dataAccess.QueryAsync<VehiclesBySubscriptionId>(query, parameter);
+                var data = await _dataAccess.QueryAsync<VehiclesBySubscriptionId>(query, parameter);
                 return objVehiclesBySubscriptionId = data.Cast<VehiclesBySubscriptionId>().ToList();
             }
             catch (Exception ex)
             {
-                log.Info("GetVehicleBySubscriptionId Vehicle method in repository failed.");
-                log.Error(ex.ToString());
+                _log.Info("GetVehicleBySubscriptionId Vehicle method in repository failed.");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@fuel_type", vehicle.Fuel);
                 parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
-                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 vehicle.ID = vehicleID;
 
 
@@ -251,7 +251,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -275,12 +275,12 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicle.Termination_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.termination_date, "Africa/Mbabane", "yyyy-MM-ddTHH:mm:ss"));
             vehicle.ModelId = record.model_id;
             vehicle.Vid = record.vid;
-            vehicle.Type = (VehicleType)(Convert.ToChar(record.type == null ? 'N' : record.type));
+            vehicle.Type = (VehicleType)(Convert.ToChar(record.type ?? 'N'));
             vehicle.Tcu_Id = record.tcu_id;
             vehicle.Tcu_Serial_Number = record.tcu_serial_number;
             vehicle.Tcu_Brand = record.tcu_brand;
             vehicle.Tcu_Version = record.tcu_version;
-            vehicle.Is_Tcu_Register = record.is_tcu_register == null ? false : record.is_tcu_register;
+            vehicle.Is_Tcu_Register = record.is_tcu_register ?? false;
             if (record.reference_date != null)
                 vehicle.Reference_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.reference_date, "Asia/Dubai", "yyyy-MM-ddTHH:mm:ss"));
             vehicle.Oem_id = record.oem_id;
@@ -333,10 +333,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 // parameter.Add("@status_changed_date", vehicle.Status_Changed_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Status_Changed_Date.ToString()) : 0);
                 // parameter.Add("@termination_date", vehicle.Termination_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Termination_Date.ToString()) : 0);
-                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
                 VehicleDataMart vehicleDataMart = new VehicleDataMart();
-                vehicleDataMart.VIN = await dataAccess.QuerySingleAsync<string>("SELECT vin FROM master.vehicle where id=@id", new { id = vehicle.ID });
+                vehicleDataMart.VIN = await _dataAccess.QuerySingleAsync<string>("SELECT vin FROM master.vehicle where id=@id", new { id = vehicle.ID });
                 vehicleDataMart.Registration_No = vehicle.License_Plate_Number;
                 vehicleDataMart.Name = vehicle.Name;
                 vehicleDataMart.Vid = "";
@@ -372,7 +372,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
                 parameter.Add("@vin", vehicle.VIN);
                 parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                string VIN = await dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
+                string VIN = await _dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
 
 
                 VehicleDataMart vehicleDataMart = new VehicleDataMart();
@@ -427,7 +427,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             {
                 parameter.Add("@termination_date", null);
             }
-            int vehiclepropertyId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehiclepropertyId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             if (vehiclepropertyId > 0)
             {
                 var InsertQueryStatement = @"INSERT INTO master.vehicleoptinoptout
@@ -451,7 +451,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 OptInOptOutparameter.Add("@status_changed_date", vehicleOptInOptOut.Date != null ? UTCHandling.GetUTCFromDateTime(vehicleOptInOptOut.Date.ToString()) : 0);
                 OptInOptOutparameter.Add("@type", (char)vehicleOptInOptOut.Type);
 
-                int Id = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
+                int Id = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, OptInOptOutparameter);
             }
             return vehicleOptInOptOut;
         }
@@ -480,7 +480,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             var parameter = new DynamicParameters();
 
             parameter.Add("@organization_id", OrganizationId);
-            IEnumerable<VehicleGroupRequest> OrgVehicleGroupDetails = await dataAccess.QueryAsync<VehicleGroupRequest>(QueryStatement, parameter);
+            IEnumerable<VehicleGroupRequest> OrgVehicleGroupDetails = await _dataAccess.QueryAsync<VehicleGroupRequest>(QueryStatement, parameter);
             return OrgVehicleGroupDetails;
         }
 
@@ -521,7 +521,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter.Add("@id", Vehicle_Id);
                     QueryStatement = QueryStatement + " id=@id";
                 }
-                dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
                 Vehicle vehicle = new Vehicle();
                 foreach (dynamic record in result)
                 {
@@ -540,7 +540,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             vehicle.ID = await IsVINExists(vehicle.VIN);
             await VehicleOptInOptOutHistory(vehicle.ID);
-            char VehOptIn = await dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
+            char VehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = vehicle.Organization_Id });
             vehicle.Status = (VehicleCalculatedStatus)await GetCalculatedVehicleStatus(VehOptIn, false);
 
             var QueryStatement = @" UPDATE master.vehicle
@@ -566,14 +566,14 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             parameter.Add("@reference_date", vehicle.Reference_Date != null ? UTCHandling.GetUTCFromDateTime(vehicle.Reference_Date.ToString()) : 0);
             parameter.Add("@is_ota", vehicle.Is_Ota);
-            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
             return vehicle;
         }
 
         public async Task<int> IsVINExists(string VIN)
         {
-            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = VIN });
+            int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = VIN });
             return VehicleId;
         }
 
@@ -635,7 +635,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -698,7 +698,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -765,7 +765,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             }
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -806,7 +806,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                             WHERE veh.oem_organisation_id=grp.organization_id";
 
             List<Vehicle> vehicles = new List<Vehicle>();
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicles.Add(Map(record));
@@ -890,7 +890,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             List<Vehicle> vehicles = new List<Vehicle>();
             Vehicle vehicle = new Vehicle();
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             foreach (dynamic record in result)
             {
                 vehicle = Map(record);
@@ -924,7 +924,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter.Add("@organization_id", organizationId);
                     QueryStatement = QueryStatement + " and veh.organization_id = @organization_id";
                 }
-                string result = await dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
+                string result = await _dataAccess.ExecuteScalarAsync<string>(QueryStatement, parameter);
                 return result;
             }
             catch (Exception)
@@ -966,7 +966,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         query = query + " and organization_id=@organization_id ";
                     }
                 }
-                var vehicleid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var vehicleid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (vehicleid > 0)
                 {
                     vehicle.VehicleNameExists = true;
@@ -1001,7 +1001,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
 
                 }
-                var vehicleid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var vehicleid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (vehicleid > 0)
                 {
                     vehicle.VehicleLicensePlateNumberExists = true;
@@ -1059,7 +1059,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@orgnizationid", orgnizationid);
 
 
-                IEnumerable<VehicleGroupList> vehiclegrouplist = await dataAccess.QueryAsync<VehicleGroupList>(QueryStatement, parameter);
+                IEnumerable<VehicleGroupList> vehiclegrouplist = await _dataAccess.QueryAsync<VehicleGroupList>(QueryStatement, parameter);
 
                 return vehiclegrouplist;
             }
@@ -1136,7 +1136,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                 ) vehicleGroup";
                 }
                 parameter.Add("@organization_id", organizationId);
-                IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
+                IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
                 response = accessRelationship.ToList();
                 VehicleFilter vehiclefilter = new VehicleFilter();
                 vehiclefilter.OrganizationId = organizationId;
@@ -1144,10 +1144,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                 foreach (var item in vehicles.ToList())
                 {
                     AccountVehicleEntity accountVehicleEntity = new AccountVehicleEntity();
-                    accountVehicleEntity.id = item.ID;
-                    accountVehicleEntity.name = item.Name;
-                    accountVehicleEntity.count = 0;
-                    accountVehicleEntity.is_group = false;
+                    accountVehicleEntity.Id = item.ID;
+                    accountVehicleEntity.Name = item.Name;
+                    accountVehicleEntity.Count = 0;
+                    accountVehicleEntity.Is_group = false;
                     accountVehicleEntity.VIN = item.VIN;
                     accountVehicleEntity.RegistrationNo = item.License_Plate_Number;
                     response.Add(accountVehicleEntity);
@@ -1171,9 +1171,9 @@ namespace net.atos.daf.ct2.vehicle.repository
                 Vehicle objVeh = new Vehicle();
                 var InsertQueryStatement = string.Empty;
                 var UpdateQueryStatement = string.Empty;
-                int VehiclePropertiesId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
-                int vehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
-                int OrgId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
+                int VehiclePropertiesId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT vehicle_property_id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
+                int vehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicleproperty.VIN });
+                int OrgId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
 
                 vehicleproperty.ID = VehiclePropertiesId;
                 objVeh.Organization_Id = OrgId;
@@ -1346,14 +1346,14 @@ namespace net.atos.daf.ct2.vehicle.repository
                 if (VehiclePropertiesId > 0 && vehicleId > 0)
                 {
                     await CheckUnknownOEM(objVeh.VIN);
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type = objVeh.Fuel, vin = objVeh.VIN, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
-                    vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
-                    objVeh.ID = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
+                    await _dataAccess.ExecuteAsync("UPDATE master.vehicle SET model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE vin = @vin", new { model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type = objVeh.Fuel, vin = objVeh.VIN, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+                    vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
+                    objVeh.ID = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vehicle_property_id=@id), 0)", new { id = vehicleproperty.ID });
                     vehicleproperty.VehicleId = objVeh.ID;
                 }
                 else if (vehicleId == 0)
                 {
-                    vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
+                    vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
                     objVeh.VehiclePropertiesId = vehicleproperty.ID;
                     objVeh = await Create(objVeh);
                     vehicleproperty.VehicleId = objVeh.ID;
@@ -1362,8 +1362,8 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     objVeh.ID = vehicleId;
                     vehicleproperty.VehicleId = vehicleId;
-                    vehicleproperty.ID = await dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
-                    await dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type = objVeh.Fuel, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
+                    vehicleproperty.ID = await _dataAccess.ExecuteScalarAsync<int>(InsertQueryStatement, parameter);
+                    await _dataAccess.ExecuteAsync("UPDATE master.vehicle SET vehicle_property_id = @vehicle_property_id, model_id = @model_id , license_plate_number = @license_plate_number, fuel_type=@fuel_type , modified_at=@modified_at WHERE id = @id", new { vehicle_property_id = vehicleproperty.ID, id = objVeh.ID, model_id = objVeh.ModelId, license_plate_number = objVeh.License_Plate_Number, fuel_type = objVeh.Fuel, modified_at = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) });
 
                 }
 
@@ -1402,7 +1402,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<bool> CreateVehicleAxelInformation(List<VehicleAxelInformation> vehicleaxelinfo, int vehicleId)
         {
             bool is_result = false;
-            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehicleaxleproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
 
             if (VehicleId > 0)
             {
@@ -1443,7 +1443,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@ratio", axelInfo.Ratio);
                 parameter.Add("@is_wheel_tire_size_replaced", axelInfo.Is_Wheel_Tire_Size_Replaced);
                 parameter.Add("@size", axelInfo.Size);
-                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 is_result = true;
             }
 
@@ -1458,7 +1458,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                     RETURNING vehicle_id";
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleId);
-            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
             return vehicleID;
         }
@@ -1466,7 +1466,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<bool> CreateVehicleFuelTank(List<VehicleFuelTankProperties> vehiclefuelTank, int vehicleId)
         {
             bool is_result = false;
-            int VehicleId = await dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
+            int VehicleId = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(vehicle_id) FROM master.vehiclefueltankproperties where vehicle_id=@vehicle_id), 0)", new { vehicle_id = vehicleId });
 
             if (VehicleId > 0)
             {
@@ -1491,7 +1491,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@chasis_fuel_tank_number", fuelTank.Chassis_Tank_Nr);
                 parameter.Add("@chasis_fuel_tank_volume", fuelTank.Chassis_Tank_Volume);
 
-                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 is_result = true;
             }
 
@@ -1505,7 +1505,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                     RETURNING vehicle_id";
             var parameter = new DynamicParameters();
             parameter.Add("@vehicle_id", vehicleId);
-            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
             return vehicleID;
         }
@@ -1513,7 +1513,6 @@ namespace net.atos.daf.ct2.vehicle.repository
         private async Task<dynamic> GetOEM_Id(string vin)
         {
             string vin_prefix = vin.Substring(0, 3);
-            dynamic result = null;
             var QueryStatement = @"SELECT id, oem_organisation_id
 	                             FROM master.oem
                                  where vin_prefix=@vin_prefix";
@@ -1521,7 +1520,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             var parameter = new DynamicParameters();
             parameter.Add("@vin_prefix", vin_prefix);
 
-            result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
             if (((System.Collections.Generic.List<object>)result).Count == 0)
             {
@@ -1530,7 +1529,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                  where name=@name";
                 vin_prefix = "Unknown";
                 parameter.Add("@name", vin_prefix);
-                result = await dataAccess.QueryAsync<dynamic>(UnkQueryStatement, parameter);
+                result = await _dataAccess.QueryAsync<dynamic>(UnkQueryStatement, parameter);
             }
 
 
@@ -1539,7 +1538,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         public async Task<char> GetOrganisationStatusofVehicle(int org_id)
         {
 
-            char optin = await dataAccess.QuerySingleAsync<char>("SELECT vehicle_default_opt_in FROM master.organization where id=@id", new { id = org_id });
+            char optin = await _dataAccess.QuerySingleAsync<char>("SELECT vehicle_default_opt_in FROM master.organization where id=@id", new { id = org_id });
 
             return optin;
         }
@@ -1598,7 +1597,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 QueryStatement = QueryStatement + " and veh.organization_id = @organization_id";
             }
 
-            IEnumerable<VehicleGroup> result = await dataAccess.QueryAsync<VehicleGroup>(QueryStatement, parameter);
+            IEnumerable<VehicleGroup> result = await _dataAccess.QueryAsync<VehicleGroup>(QueryStatement, parameter);
             return result;
         }
 
@@ -1613,7 +1612,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                     and LOWER(oem.name)=LOWER('Unknown')";
             var parameter = new DynamicParameters();
             parameter.Add("@vin", VIN);
-            result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
             if (((System.Collections.Generic.List<object>)result).Count > 0)
             {
@@ -1633,7 +1632,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                         oemparameter.Add("@oem_id", oiedetail[0].id);
                         oemparameter.Add("@oem_organisation_id", oiedetail[0].oem_organisation_id);
                         oemparameter.Add("@vin", VIN);
-                        VehVIN = await dataAccess.ExecuteScalarAsync<string>(OemQueryStatement, oemparameter);
+                        VehVIN = await _dataAccess.ExecuteScalarAsync<string>(OemQueryStatement, oemparameter);
                     }
                 }
             }
@@ -1661,16 +1660,16 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@id", Vehicle_Id);
                 parameter.Add("@is_ota", Is_Ota);
                 parameter.Add("@modified_by", Modified_By);
-                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 if (vehicleID > 0)
                 {
 
-                    char VehOptIn = await dataAccess.QuerySingleAsync<char>("select coalesce((select opt_in FROM master.vehicle where id=@id), 'H')", new { id = Vehicle_Id });
+                    char VehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select opt_in FROM master.vehicle where id=@id), 'H')", new { id = Vehicle_Id });
 
                     if (VehOptIn == 'H')
                     {
-                        int VehOrgId = await dataAccess.QuerySingleAsync<int>("select organization_id FROM master.vehicle where id=@id", new { id = Vehicle_Id });
-                        VehOptIn = await dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = VehOrgId });
+                        int VehOrgId = await _dataAccess.QuerySingleAsync<int>("select organization_id FROM master.vehicle where id=@id", new { id = Vehicle_Id });
+                        VehOptIn = await _dataAccess.QuerySingleAsync<char>("select coalesce((select vehicle_default_opt_in FROM master.organization where id=@id), 'U')", new { id = VehOrgId });
 
                     }
 
@@ -1709,7 +1708,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
             var parameter = new DynamicParameters();
             parameter.Add("@id", VehicleId);
-            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             if (vehicleID > 0)
             {
                 return true;
@@ -1740,7 +1739,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 parameter.Add("@status", (char)VehicleCalculatedStatus.Terminate);
                 parameter.Add("@modified_by", Modified_By);
                 parameter.Add("@termination_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
             }
             return true;
@@ -1764,10 +1763,10 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@opt_in", Is_OptIn);
             parameter.Add("@modified_by", Modified_By);
             parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             if (vehicleID > 0)
             {
-                bool Is_Ota = await dataAccess.QuerySingleAsync<bool>("select coalesce((SELECT is_ota FROM master.vehicle where id=@id), false)", new { id = Vehicle_Id });
+                bool Is_Ota = await _dataAccess.QuerySingleAsync<bool>("select coalesce((SELECT is_ota FROM master.vehicle where id=@id), false)", new { id = Vehicle_Id });
 
                 char calStatus = await GetCalculatedVehicleStatus(Is_OptIn, Is_Ota);
 
@@ -1795,7 +1794,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             parameter.Add("@id", vehicle_Id);
             parameter.Add("@status", Status);
             parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            int vehicleID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             if (vehicleID > 0)
             {
 
@@ -1815,7 +1814,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         {
             try
             {
-                int VehicleDataMartID = await DataMartdataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicledatamart.VIN });
+                int VehicleDataMartID = await _dataMartdataAccess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.vehicle where vin=@vin), 0)", new { vin = vehicledatamart.VIN });
                 var QueryStatement = "";
                 bool isNameOrRegUpdated = false;
                 var parameter = new DynamicParameters();
@@ -1858,7 +1857,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     //check for old values for vehicle namelist modified_at update
                     parameter.Add("@id", VehicleDataMartID);
-                    var vehicleNamelist = await DataMartdataAccess.QueryFirstAsync<VehicleNamelist>
+                    var vehicleNamelist = await _dataMartdataAccess.QueryFirstAsync<VehicleNamelist>
                         ("Select name as Name, registration_no as RegistrationNo from master.vehicle where id=@id", parameter);
 
                     if (!string.IsNullOrEmpty(vehicleNamelist.RegistrationNo))
@@ -1879,7 +1878,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                 {
                     //check for old values for vehicle namelist modified_at update
                     parameter.Add("@id", VehicleDataMartID);
-                    var vehicleNamelist = await DataMartdataAccess.QueryFirstAsync<VehicleNamelist>
+                    var vehicleNamelist = await _dataMartdataAccess.QueryFirstAsync<VehicleNamelist>
                         ("Select name as Name, registration_no as RegistrationNo from master.vehicle where id=@id", parameter);
 
                     if (!string.IsNullOrEmpty(vehicleNamelist.RegistrationNo) &&
@@ -1906,10 +1905,10 @@ namespace net.atos.daf.ct2.vehicle.repository
                                          WHERE id = @id RETURNING id;";
                 }
 
-                int vehicleID = await DataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int vehicleID = await _dataMartdataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
                 if (isNameOrRegUpdated)
-                    await DataMartdataAccess.ExecuteScalarAsync<int>(
+                    await _dataMartdataAccess.ExecuteScalarAsync<int>(
                                      @"UPDATE master.vehicle
                                      SET                                  
                                      modified_at=@created_modified_at
@@ -1927,7 +1926,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Mileage Data
-        public async Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter)
+        public async Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter)
         {
             try
             {
@@ -1950,7 +1949,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     QueryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
-                IEnumerable<dtoVehicleMileage> mileageData = await DataMartdataAccess.QueryAsync<dtoVehicleMileage>(QueryStatement, parameter);
+                IEnumerable<DtoVehicleMileage> mileageData = await _dataMartdataAccess.QueryAsync<DtoVehicleMileage>(QueryStatement, parameter);
 
                 return mileageData;
             }
@@ -1991,7 +1990,7 @@ namespace net.atos.daf.ct2.vehicle.repository
         #endregion
 
         #region Vehicle Namelist Data
-        public async Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter)
+        public async Task<IEnumerable<DtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter)
         {
             try
             {
@@ -2010,7 +2009,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     QueryStatement += " where modified_at >= @start_at AND modified_at <= @end_at";
                 }
 
-                IEnumerable<dtoVehicleNamelist> namelistData = await DataMartdataAccess.QueryAsync<dtoVehicleNamelist>(QueryStatement, parameter);
+                IEnumerable<DtoVehicleNamelist> namelistData = await _dataMartdataAccess.QueryAsync<DtoVehicleNamelist>(QueryStatement, parameter);
 
                 return namelistData;
             }
@@ -2036,7 +2035,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     parameter.Add("@id", Vehicle_Id);
                     QueryStatement += " id=@id";
                 }
-                return await dataAccess.QueryFirstAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryFirstAsync<VisibilityVehicle>(QueryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2069,7 +2068,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 }
 
-                return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2100,7 +2099,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                     QueryStatement += " and orm.target_org_id=@organization_id AND ors.code<>'Owner'";
                 }
 
-                return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2133,7 +2132,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 
                 }
 
-                return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2152,7 +2151,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                        INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                        WHERE veh.oem_organisation_id=grp.organization_id";
 
-                return await dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(QueryStatement, parameter);
             }
             catch (Exception)
             {
@@ -2179,7 +2178,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 	                      WHERE acc.id=@account_id AND grp.organization_id=@organization_id
                       )";
 
-                return await dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
+                return await _dataAccess.QueryAsync<VehicleGroupDetails>(query, parameter);
             }
             catch (Exception)
             {
@@ -2200,7 +2199,7 @@ namespace net.atos.daf.ct2.vehicle.repository
                                    INNER JOIN master.group grp ON grp.object_type='V' AND grp.id=@vehicleGroupId
                                    INNER JOIN master.groupref gref ON gref.group_id=grp.id AND veh.id=gref.ref_id";
 
-                return await dataAccess.QueryAsync<VisibilityVehicle>(query, parameter);
+                return await _dataAccess.QueryAsync<VisibilityVehicle>(query, parameter);
             }
             catch (Exception)
             {
