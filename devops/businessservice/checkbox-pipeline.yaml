@@ -26,7 +26,13 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      echo 'Running Account Servic'
+      echo 'Running Account Service'
   condition: or(eq('${{ parameters.accountService }}', True), eq('${{ parameters.all }}', True))
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo 'Running Report Service'
+  condition: or(eq('${{ parameters.reportService }}', True), eq('${{ parameters.all }}', True))
 
 
