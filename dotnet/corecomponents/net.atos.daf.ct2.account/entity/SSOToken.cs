@@ -4,10 +4,10 @@ namespace net.atos.daf.ct2.account.entity
 {
     public class SSOToken
     {
-        public string token { get; set; }
-        public string tokenType { get; set; }
-        public HttpStatusCode statusCode { get; set; }
-        public string message { get; set; }
+        public string Token { get; set; }
+        public string TokenType { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string Message { get; set; }
     }
     public class TokenSSORequest
     {
