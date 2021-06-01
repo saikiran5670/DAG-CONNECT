@@ -23,6 +23,6 @@ steps:
   inputs:
     script: |
       echo ${{ parameters.accountService}}
-  condition: eq('{{ parameters.accountService }}', True)
+  condition: eq('${{ parameters.accountService }}', True)
 
 
