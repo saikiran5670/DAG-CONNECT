@@ -147,7 +147,7 @@ namespace net.atos.daf.ct2.accountservice
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
         {
             AccountPreference request = new AccountPreference();
-            request.Id = entity.Id.HasValue ? entity.Id.Value : 0;
+            request.Id = entity.Id ?? 0;
             request.RefId = entity.RefId;
             request.LanguageId = entity.LanguageId;
             request.TimezoneId = entity.TimezoneId;
