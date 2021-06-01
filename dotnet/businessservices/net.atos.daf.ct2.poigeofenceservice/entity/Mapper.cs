@@ -15,25 +15,25 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         public net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce ToGeofenceList(net.atos.daf.ct2.poigeofence.entity.GeofenceEntityResponce request)
         {
             net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce objResponse = new net.atos.daf.ct2.geofenceservice.GeofenceEntityResponce();
-            if (request.category != null)
+            if (request.Category != null)
             {
-                objResponse.CategoryName = request.category;
+                objResponse.CategoryName = request.Category;
             }
-            if (request.subCategory != null)
+            if (request.SubCategory != null)
             {
-                objResponse.SubCategoryName = request.subCategory;
+                objResponse.SubCategoryName = request.SubCategory;
             }
-            if (request.geofenceName != null)
+            if (request.GeofenceName != null)
             {
-                objResponse.GeofenceName = request.geofenceName;
+                objResponse.GeofenceName = request.GeofenceName;
             }
-            if (request.type != null)
+            if (request.Type != null)
             {
-                objResponse.Type = request.type;
+                objResponse.Type = request.Type;
             }
-            objResponse.GeofenceId = request.geofenceID;
-            objResponse.CategoryId = request.categoryID;
-            objResponse.SubCategoryId = request.subcategoryId;
+            objResponse.GeofenceId = request.GeofenceID;
+            objResponse.CategoryId = request.CategoryID;
+            objResponse.SubCategoryId = request.SubcategoryId;
             return objResponse;
         }
 
@@ -134,13 +134,13 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             poi.State = poiEntity.State;
             poi.CreatedBy = poiEntity.CreatedBy;
             poi.CreatedAt = poiEntity.CreatedAt;
-            poi.Icon = poiEntity.icon != null ? ByteString.CopyFrom(poiEntity.icon) : ByteString.Empty;
+            poi.Icon = poiEntity.Icon != null ? ByteString.CopyFrom(poiEntity.Icon) : ByteString.Empty;
             return poi;
         }
 
         string CheckNull(string param)
         {
-            return param == null ? string.Empty : param;
+            return param ?? string.Empty;
         }
         public net.atos.daf.ct2.geofenceservice.GeofenceRequest ToGeofenceRequest(Geofence geofenceRequest)
         {

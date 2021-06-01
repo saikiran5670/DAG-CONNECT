@@ -109,9 +109,9 @@ namespace net.atos.daf.ct2.geofenceservice
             {
                 _logger.Info("Get Geofence .");
                 net.atos.daf.ct2.poigeofence.entity.GeofenceEntityRequest objGeofenceRequest = new poigeofence.entity.GeofenceEntityRequest();
-                objGeofenceRequest.organization_id = request.OrganizationId;
-                objGeofenceRequest.category_id = request.CategoryId;
-                objGeofenceRequest.sub_category_id = request.SubCategoryId;
+                objGeofenceRequest.Organization_id = request.OrganizationId;
+                objGeofenceRequest.Category_id = request.CategoryId;
+                objGeofenceRequest.Sub_category_id = request.SubCategoryId;
                 var result = await _geofenceManager.GetAllGeofence(objGeofenceRequest);
                 if (result != null)
                 {

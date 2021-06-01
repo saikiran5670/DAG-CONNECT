@@ -43,13 +43,13 @@ namespace net.atos.daf.ct2.poigeofence
                     {
 
                         POI obj = new POI();
-                        obj.Id = item.landmarkid;
-                        obj.Name = item.landmarkname;
-                        obj.CategoryName = item.categoryname;
-                        obj.SubCategoryName = item.subcategoryname;
-                        obj.Address = item.address;
-                        obj.icon = item.icon;
-                        obj.Type = Convert.ToString((char)item.type);
+                        obj.Id = item.Landmarkid;
+                        obj.Name = item.Landmarkname;
+                        obj.CategoryName = item.Categoryname;
+                        obj.SubCategoryName = item.Subcategoryname;
+                        obj.Address = item.Address;
+                        obj.Icon = item.Icon;
+                        obj.Type = Convert.ToString((char)item.Type);
                         group.PoiList.Add(obj);
 
                     }
