@@ -8,16 +8,16 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountTokenManager : IAccountTokenManager
     {
-        IAccountTokenRepository tokenRepository;
-        public AccountTokenManager(IAccountTokenRepository _tokenRepository)
+        IAccountTokenRepository _tokenRepository;
+        public AccountTokenManager(IAccountTokenRepository tokenRepository)
         {
-            tokenRepository = _tokenRepository;
+            this._tokenRepository = tokenRepository;
         }
         public async Task<int> InsertToken(AccountToken accountToken)
         {
             try
             {
-                return await tokenRepository.InsertToken(accountToken);
+                return await _tokenRepository.InsertToken(accountToken);
             }
             catch (Exception)
             {
@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.DeleteToken(token_Id);
+                return await _tokenRepository.DeleteToken(token_Id);
             }
             catch (Exception)
             {
@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.DeleteTokenbySessionId(sessionID);
+                return await _tokenRepository.DeleteTokenbySessionId(sessionID);
             }
             catch (Exception)
             {
@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.GetTokenDetails(AccountID);
+                return await _tokenRepository.GetTokenDetails(AccountID);
             }
             catch (Exception)
             {
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.GetTokenDetails(TokenId);
+                return await _tokenRepository.GetTokenDetails(TokenId);
             }
             catch (Exception)
             {
@@ -73,7 +73,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.ValidateToken(TokenId);
+                return await _tokenRepository.ValidateToken(TokenId);
             }
             catch (Exception)
             {
@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.DeleteTokenByTokenId(tokenID);
+                return await _tokenRepository.DeleteTokenByTokenId(tokenID);
             }
             catch (Exception)
             {
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.GetTokenCount(AccountID);
+                return await _tokenRepository.GetTokenCount(AccountID);
             }
             catch (Exception)
             {
@@ -106,7 +106,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await tokenRepository.DeleteTokenbySessionId(sessionID);
+                return await _tokenRepository.DeleteTokenbySessionId(sessionID);
             }
             catch (Exception)
             {

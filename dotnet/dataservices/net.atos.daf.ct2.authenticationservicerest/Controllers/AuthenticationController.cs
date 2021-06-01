@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         user.Password = arrUsernamePassword[1];
 
                         IdentityEntity.AccountToken response = await accountIdentityManager.GenerateTokenGUID(user);
-                        if (response != null && response.statusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
+                        if (response != null && response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
                             //Check for feature access
                             var isExists = await accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.MainPolicy);

@@ -8,16 +8,16 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountSessionManager : IAccountSessionManager
     {
-        IAccountSessionRepository sessionRepository;
-        public AccountSessionManager(IAccountSessionRepository _sessionRepository)
+        IAccountSessionRepository _sessionRepository;
+        public AccountSessionManager(IAccountSessionRepository sessionRepository)
         {
-            sessionRepository = _sessionRepository;
+            this._sessionRepository = sessionRepository;
         }
         public async Task<int> InsertSession(AccountSession accountSession)
         {
             try
             {
-                return await sessionRepository.InsertSession(accountSession);
+                return await _sessionRepository.InsertSession(accountSession);
             }
             catch (Exception)
             {
@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await sessionRepository.UpdateSession(accountSession);
+                return await _sessionRepository.UpdateSession(accountSession);
             }
             catch (Exception)
             {
@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await sessionRepository.DeleteSession(SessionId);
+                return await _sessionRepository.DeleteSession(SessionId);
             }
             catch (Exception)
             {
@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await sessionRepository.GetAccountSession(AccountId);
+                return await _sessionRepository.GetAccountSession(AccountId);
             }
             catch (Exception)
             {
@@ -61,7 +61,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await sessionRepository.DeleteSessionByAccountId(SessionId);
+                return await _sessionRepository.DeleteSessionByAccountId(SessionId);
             }
             catch (Exception)
             {
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await sessionRepository.GetAccountSessionById(SessionId);
+                return await _sessionRepository.GetAccountSessionById(SessionId);
             }
             catch (Exception)
             {
