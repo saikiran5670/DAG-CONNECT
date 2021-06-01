@@ -2,7 +2,7 @@
 {
     public static class AccessPolicies
     {
-        public const string MainAccessPolicy = "api.sso";
+        public const string MAIN_ACCESS_POLICY = "api.sso";
 
     }
 

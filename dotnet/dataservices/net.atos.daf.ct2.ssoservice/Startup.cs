@@ -30,8 +30,7 @@ namespace net.atos.daf.ct2.singlesignonservice
 {
     public class Startup
     {
-
-        private readonly string swaggerBasePath = "SSO";
+        private readonly string _swaggerBasePath = "SSO";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -99,7 +98,7 @@ namespace net.atos.daf.ct2.singlesignonservice
             //    options.Filters.Add(new ProducesAttribute("application/json"));
             //});
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {
                 options.ApplicationName = "DAFCT2.0";
@@ -108,9 +107,9 @@ namespace net.atos.daf.ct2.singlesignonservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MainAccessPolicy,
+                    AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
@@ -146,13 +145,13 @@ namespace net.atos.daf.ct2.singlesignonservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
 
         }
