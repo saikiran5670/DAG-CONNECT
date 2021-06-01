@@ -15,10 +15,10 @@ namespace net.atos.daf.ct2.account
 {
     public class AccountRepository : IAccountRepository
     {
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
         public AccountRepository(IDataAccess _dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = _dataAccess;
         }
 
         #region Account
@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.account
                 string query = @"insert into master.account(email,salutation,first_name,last_name,type,driver_id,state,preference_id,blob_id,created_at) " +
                               "values(@email,@salutation,@first_name,@last_name,@type,@driver_id,'A',null,null,@created_at) RETURNING id";
 
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = id;
                 if (account.Organization_Id > 0)
                 {
@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@organization_Id", account.Organization_Id);
                     query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,@state) RETURNING id";
-                    var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    var AccountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
             }
             catch (Exception)
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.account
                 string query = @"update master.account set salutation = @salutation,
                                 first_name = @first_name,last_name = @last_name ,driver_id=@driver_id, type = @type
                                 where id = @id RETURNING id";
-                account.Id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                account.Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception)
             {
@@ -112,29 +112,29 @@ namespace net.atos.daf.ct2.account
                          using master.group g,master.accountorg ao 
                          where gr.ref_id = @id and ao.organization_id = @organization_id 
                          and g.id=gr.group_id and ao.state='A'";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // Delete account role
                     query = @"delete from master.accountrole where account_id = @id and organization_id = @organization_id;";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // disable account with organization
                     query = @"update master.accountorg set state='D' where account_id = @id and organization_id = @organization_id";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     transactionScope.Complete();
                 }
                 // check if account associated with multiple organization
                 query = @"select count(1) from master.accountorg where state='A' and account_id = @id";
-                result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (result <= 0)
                 {
                     // disable preference
                     query = @"update master.accountpreference set state='D' from master.account where master.accountpreference.id=master.account.preference_id and master.account.id=@id;";
                     //query += @"delete from master.accountblob ab using master.account a where a.id = @id and a.blob_id = ab.id and a.state = 'A';";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     // disable account 
                     query = @"update master.account set state='D' where id = @id;";
-                    result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 return true;
             }
@@ -154,10 +154,9 @@ namespace net.atos.daf.ct2.account
         {
             var parameter = new DynamicParameters();
             Account account = null;
-            string query = string.Empty;
             try
             {
-                query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
+                string query = @"select a.id,a.email,a.salutation,a.first_name,a.last_name,a.driver_id,a.type as accounttype,ag.organization_id as 
                 Organization_Id,a.preference_id,a.blob_id,a.created_at from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
                 and ag.state='A' where 1=1 ";
 
@@ -173,12 +172,12 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@email", filter.Email.ToLower());
                     query = query + " and LOWER(a.email) = @email ";
                 }
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 foreach (dynamic record in result)
                 {
 
                     account = Map(record);
-                    account.isDuplicateInOrg = true;
+                    account.IsDuplicateInOrg = true;
                 }
                 // account is part of other organization
                 if (account == null)
@@ -194,12 +193,12 @@ namespace net.atos.daf.ct2.account
                         query = query + " and LOWER(a.email) = @email ";
                     }
                     query = query + "limit 1";
-                    result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                     foreach (dynamic record in result)
                     {
 
                         account = Map(record);
-                        account.isDuplicate = true;
+                        account.IsDuplicate = true;
                     }
                 }
                 return account;
@@ -275,7 +274,7 @@ namespace net.atos.daf.ct2.account
                         parameter.Add("@accountids", accountids);
                         query = query + " and a.id = ANY(@accountids)";
                     }
-                    dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                     foreach (dynamic record in result)
                     {
@@ -299,7 +298,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@email", emailId);
                 var query = @"select id, email, salutation, first_name, last_name from master.account where email = @email and state='A'";
 
-                dynamic result = await dataAccess.QuerySingleAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
                 return MapAccount(result);
             }
@@ -317,7 +316,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@accountId", accountId);
                 var query = @"select id, email, salutation, first_name, last_name from master.account where id = @accountId and state='A'";
 
-                dynamic result = await dataAccess.QuerySingleAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
                 return MapAccount(result);
             }
@@ -337,7 +336,7 @@ namespace net.atos.daf.ct2.account
                 query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
                 and ag.state='A' where ag.organization_id=@organization_id";
                 parameter.Add("@organization_id", organization_id);
-                count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
             catch (Exception)
@@ -364,7 +363,7 @@ namespace net.atos.daf.ct2.account
                 }
                 query = @"insert into master.accountorg(account_id,organization_id,start_date,end_date,state)  
                                    values(@account_id,@organization_Id,@start_date,@end_date,'A') RETURNING id";
-                var AccountOrgId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var AccountOrgId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 account.Id = AccountOrgId;
 
             }
@@ -392,7 +391,7 @@ namespace net.atos.daf.ct2.account
                         UPDATE SET modified_at = @modified_at,is_reminder_sent = false
                         RETURNING id";
 
-                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception)
             {
@@ -409,7 +408,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@is_reminder_sent", isReminderSent);
 
                 string query = "UPDATE master.passwordpolicy SET is_reminder_sent = @is_reminder_sent where account_id = @account_id RETURNING id";
-                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception)
             {
@@ -440,7 +439,7 @@ namespace net.atos.daf.ct2.account
                             is_blocked = @is_blocked, last_login=@last_login
                         RETURNING id";
 
-                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception)
             {
@@ -459,7 +458,7 @@ namespace net.atos.daf.ct2.account
                 string query =
                     @"SELECT modified_at from master.passwordpolicy where account_id = @account_id";
 
-                var record = await dataAccess.ExecuteScalarAsync<long?>(query, parameter);
+                var record = await _dataAccess.ExecuteScalarAsync<long?>(query, parameter);
                 return record;
             }
             catch (Exception)
@@ -478,7 +477,7 @@ namespace net.atos.daf.ct2.account
                 string query =
                     @"SELECT account_id as AccountId,failed_login_attempts as FailedLoginAttempts,locked_until as LockedUntil,account_lock_attempts as AccountLockAttempts,is_blocked as IsBlocked,last_login as LastLogin,is_reminder_sent as IsReminderSent from master.passwordpolicy where account_id = @account_id";
 
-                return await dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);
+                return await _dataAccess.QueryFirstOrDefaultAsync<PasswordPolicyAccount>(query, parameter);
             }
             catch (Exception)
             {
@@ -497,7 +496,7 @@ namespace net.atos.daf.ct2.account
                 string accountQuery =
                     @"SELECT preference_id from master.account where email = @emailId";
 
-                var accountPreferenceId = await dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
+                var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
 
                 if (!accountPreferenceId.HasValue)
                 {
@@ -510,7 +509,7 @@ namespace net.atos.daf.ct2.account
 
                         orgQuery = @"SELECT preference_id from master.organization WHERE id=@orgId";
 
-                        orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, orgParameter);
                     }
                     else
                     {
@@ -520,7 +519,7 @@ namespace net.atos.daf.ct2.account
                             INNER JOIN master.organization o ON ao.organization_id=o.id
                             where acc.email = @emailId";
 
-                        orgPreferenceId = await dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
+                        orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
                     }
 
                     if (!orgPreferenceId.HasValue)
@@ -548,7 +547,7 @@ namespace net.atos.daf.ct2.account
                     @"SELECT l.code from master.accountpreference ap
                     INNER JOIN translation.language l ON ap.id = @preferenceId AND ap.language_id=l.id";
 
-                var languageCode = await dataAccess.QueryFirstAsync<string>(query, parameter);
+                var languageCode = await _dataAccess.QueryFirstAsync<string>(query, parameter);
 
                 return languageCode;
             }
@@ -566,7 +565,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@noOfDays", noOfDays);
 
                 var query = @"Select acc.id as Id, acc.email as EmailId, acc.salutation as Salutation, acc.first_name as FirstName, last_name as LastName from master.account acc inner join master.passwordpolicy pp on acc.id = pp.account_id where pp.is_blocked = false and pp.is_reminder_sent = false and acc.State= 'A' and EXTRACT(day FROM(now() - TO_TIMESTAMP(modified_at / 1000))) >= @noOfDays";
-                return await dataAccess.QueryAsync<Account>(query, parameter);
+                return await _dataAccess.QueryAsync<Account>(query, parameter);
             }
             catch (Exception)
             {
@@ -591,18 +590,18 @@ namespace net.atos.daf.ct2.account
                 if (accountBlob.Id > 0)
                 {
                     query = @"update master.accountblob set image_type=@image_type,image=@image where id=@id RETURNING id";
-                    var blobId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    var blobId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 }
                 else // update profile picture
                 {
                     query = @"insert into master.accountblob(image_type,image) values(@image_type,@image) RETURNING id";
-                    var blobId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    var blobId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     accountBlob.Id = blobId;
                     if (blobId > 0)
                     {
                         parameter.Add("@blob_id", blobId);
                         query = "update master.account set blob_id=@blob_id where id=@account_id";
-                        await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     }
                 }
             }
@@ -623,7 +622,7 @@ namespace net.atos.daf.ct2.account
 
                 parameter.Add("@id", blobId);
                 query = @"select id,image_type,image from master.accountblob where id=@id";
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 if (Enumerable.Count(result) > 0)
                 {
                     accountBlob = new AccountBlob();
@@ -656,7 +655,7 @@ namespace net.atos.daf.ct2.account
 
                 //TODO:check for duplicate access relationship, if not required and is not the case from UI will remove this check.
                 query = @"select id from master.accessrelationship where access_type=@access_type and account_group_id=@account_group_id and vehicle_group_id=@vehicle_group_id";
-                var accessId = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var accessId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (accessId > 0)
                 {
                     entity.Exists = true;
@@ -667,7 +666,7 @@ namespace net.atos.daf.ct2.account
                 query = @"insert into master.accessrelationship(access_type,account_group_id,vehicle_group_id) " +
                               "values(@access_type,@account_group_id,@vehicle_group_id) RETURNING id";
 
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 entity.Id = id;
             }
             catch (Exception)
@@ -692,7 +691,7 @@ namespace net.atos.daf.ct2.account
                 {
                     query = @"update master.accessrelationship set access_type=@access_type
                                 ,vehicle_group_id=@vehicle_group_id where id=@id RETURNING id";
-                    id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     entity.Id = id;
                 }
                 // else
@@ -718,7 +717,7 @@ namespace net.atos.daf.ct2.account
                 parameter.Add("@id", accessId);
                 //parameter.Add("@vehicle_group_id", vehicleGroupId);
                 string query = @"delete from master.accessrelationship where id=@id";
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
             catch (Exception)
@@ -761,7 +760,7 @@ namespace net.atos.daf.ct2.account
                                     from master.accessRelationship where vehicle_group_id=@vehicle_group_id";
                         parameter.Add("@vehicle_group_id", filter.VehicleGroupId);
                     }
-                    dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                     //Account account;
                     foreach (dynamic record in result)
                     {
@@ -898,8 +897,8 @@ namespace net.atos.daf.ct2.account
                          order by a.id desc) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
-                    IEnumerable<AccountAccessRelationshipEntity> accessRelationship = await dataAccess.QueryAsync<AccountAccessRelationshipEntity>(query, parameter);
-                    var groups = from stu in accessRelationship group stu by stu.id into egroup orderby egroup.Key descending select egroup;
+                    IEnumerable<AccountAccessRelationshipEntity> accessRelationship = await _dataAccess.QueryAsync<AccountAccessRelationshipEntity>(query, parameter);
+                    var groups = from stu in accessRelationship group stu by stu.Id into egroup orderby egroup.Key descending select egroup;
                     //Account account;
                     int firstRecord = 0;
                     foreach (var group in groups)
@@ -976,7 +975,7 @@ namespace net.atos.daf.ct2.account
                                 ) vehicles";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
-                    IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
+                    IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
                     response = accessRelationship.ToList();
                 }
                 return response;
@@ -1033,7 +1032,7 @@ namespace net.atos.daf.ct2.account
                                         ) accounts";
                     }
                     parameter.Add("@organization_id", filter.OrganizationId);
-                    IEnumerable<AccountVehicleEntity> accessRelationship = await dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
+                    IEnumerable<AccountVehicleEntity> accessRelationship = await _dataAccess.QueryAsync<AccountVehicleEntity>(query, parameter);
                     response = accessRelationship.ToList();
                 }
                 return response;
@@ -1063,7 +1062,7 @@ namespace net.atos.daf.ct2.account
                     query = "delete from master.accessrelationship where account_group_id=@id";
                 }
                 parameter.Add("@id", groupId);
-                var result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var result = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
             catch (Exception)
@@ -1109,7 +1108,7 @@ namespace net.atos.daf.ct2.account
                         if (!string.IsNullOrEmpty(query) && execute)
                         {
                             query = query.TrimEnd(',');
-                            await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                            await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         }
                         result = true;
                     }
@@ -1134,7 +1133,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@account_id", accountRoles.AccountId);
                     parameter.Add("@organization_id", accountRoles.OrganizationId);
                     query = @"delete from master.accountrole where account_id = @account_id and organization_id=@organization_id";
-                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     result = true;
                 }
             }
@@ -1157,7 +1156,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@role_id", roleId);
                     query = @"select a.id from master.account a inner join master.accountrole ac on  a.id=ac.account_id inner join master.role r on r.id=ac.role_id where ac.role_id=@role_id";
                     accountIds = new List<int>();
-                    dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                     if (result is int)
                     {
                         accountIds.Add(result);
@@ -1191,7 +1190,7 @@ namespace net.atos.daf.ct2.account
                     query = @"select r.id,r.name from master.account a inner join master.accountrole ac on a.id = ac.account_id 
                                     inner join master.role r on r.id = ac.role_id where 
                                     ac.account_id = @account_id and ac.organization_id=@organization_id";
-                    dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                    dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                     foreach (dynamic record in result)
                     {
                         Roles.Add(new KeyValue() { Id = record.id, Name = record.name });
@@ -1223,7 +1222,7 @@ namespace net.atos.daf.ct2.account
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
                     INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.name = @feature
                 )";
-                return await dataAccess.ExecuteScalarAsync<bool>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
             }
             catch (Exception)
             {
@@ -1247,7 +1246,7 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@account_id", accountId);
                     query = @"select o.id, coalesce(o.name, '(' || o.org_id || ')') as name from master.organization o inner join master.accountorg ao on o.id=ao.organization_id and ao.state='A' where ao.account_id=@account_id";
-                    IEnumerable<KeyValue> result = await dataAccess.QueryAsync<KeyValue>(query, parameter);
+                    IEnumerable<KeyValue> result = await _dataAccess.QueryAsync<KeyValue>(query, parameter);
                     keyValueList = result.ToList();
                 }
             }
@@ -1268,7 +1267,7 @@ namespace net.atos.daf.ct2.account
                 {
                     parameter.Add("@account_id", accountId);
                     query = @"select r.id,r.name,r.id,ac.organization_id as Organization_Id from master.role r inner join master.accountrole ac on r.id=ac.role_id and r.state='A' where ac.account_id=@account_id";
-                    IEnumerable<AccountOrgRole> result = await dataAccess.QueryAsync<AccountOrgRole>(query, parameter);
+                    IEnumerable<AccountOrgRole> result = await _dataAccess.QueryAsync<AccountOrgRole>(query, parameter);
                     AccountOrgRoleList = result.ToList();
                 }
             }
@@ -1298,7 +1297,7 @@ namespace net.atos.daf.ct2.account
                 string query = @"insert into master.resetpasswordtoken(account_id,token_secret,status,expiry_at,created_at) " +
                               "values(@account_id,@token_secret,@status,@expiry_at,@created_at) RETURNING id";
 
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 resetPasswordToken.Id = id;
             }
             catch (Exception)
@@ -1320,7 +1319,7 @@ namespace net.atos.daf.ct2.account
                 string query = @"update master.resetpasswordtoken set status=@status
                                 where id=@id RETURNING id";
 
-                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception)
             {
@@ -1339,7 +1338,7 @@ namespace net.atos.daf.ct2.account
                 string query = @"select * from master.resetpasswordtoken
                                 where token_secret=@token_secret and status='Issued'";
 
-                var record = await dataAccess.QueryFirstOrDefaultAsync(query, parameter);
+                var record = await _dataAccess.QueryFirstOrDefaultAsync(query, parameter);
                 return (record != null ? MapToken(record) : null);
             }
             catch (Exception)
@@ -1359,7 +1358,7 @@ namespace net.atos.daf.ct2.account
                 string query = @"select * from master.ResetPasswordToken 
                                 where account_id=@account_id and status='Issued'";
 
-                var record = await dataAccess.QueryFirstOrDefaultAsync(query, parameter);
+                var record = await _dataAccess.QueryFirstOrDefaultAsync(query, parameter);
                 return (record != null ? MapToken(record) : null);
             }
             catch (Exception)
@@ -1408,7 +1407,7 @@ namespace net.atos.daf.ct2.account
                     LEFT JOIN translation.translation tl ON tl.name = mn.key AND tl.code = @code
                     ORDER BY MenuSortId, MenuSeqNo";
 
-                var record = await dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
+                var record = await _dataAccess.QueryAsync<MenuFeatureDto>(query, parameter);
                 return record;
             }
             catch (Exception)
@@ -1455,22 +1454,22 @@ namespace net.atos.daf.ct2.account
         {
             Account account = new Account();
             account.Id = record.id;
-            if ((object)record.email != null)
+            if (record.email is object)
                 account.EmailId = record.email;
-            if ((object)record.salutation != null)
+            if (record.salutation is object)
                 account.Salutation = record.salutation;
-            if ((object)record.first_name != null)
+            if (record.first_name is object)
                 account.FirstName = record.first_name;
-            if ((object)record.last_name != null)
+            if (record.last_name is object)
                 account.LastName = record.last_name;
             account.Organization_Id = record.organization_id;
             account.AccountType = (AccountType)Convert.ToChar(record.accounttype);
-            if ((object)record.preference_id != null)
+            if (record.preference_id is object)
                 account.PreferenceId = (int)record.preference_id;
-            if ((object)record.blob_id != null) account.BlobId = (int)record.blob_id;
-            if ((object)record.driver_id != null) account.DriverId = record.driver_id;
+            if (record.blob_id is object) account.BlobId = (int)record.blob_id;
+            if (record.driver_id is object) account.DriverId = record.driver_id;
             account.CreatedAt = null;
-            if ((object)record.created_at != null)
+            if ((record.created_at as object) != null)
             {
                 account.CreatedAt = record.created_at;
                 //account.CreatedAt = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss"));
@@ -1489,11 +1488,11 @@ namespace net.atos.daf.ct2.account
         private AccountVehicleAccessRelationship MapVehicleAccessRelationship(AccountAccessRelationshipEntity record)
         {
             AccountVehicleAccessRelationship entity = new AccountVehicleAccessRelationship();
-            entity.Id = record.id;
-            entity.Name = record.name ?? string.Empty;
-            entity.AccessType = (AccessRelationType)Convert.ToChar(record.access_type);
-            entity.Count = record.count;
-            entity.IsGroup = record.is_group;
+            entity.Id = record.Id;
+            entity.Name = record.Name ?? string.Empty;
+            entity.AccessType = (AccessRelationType)Convert.ToChar(record.Access_type);
+            entity.Count = record.Count;
+            entity.IsGroup = record.Is_group;
             entity.RelationshipData = new List<RelationshipData>();
             entity.RelationshipData.Add(MapAccessRelationshipData(record));
             return entity;
@@ -1513,9 +1512,9 @@ namespace net.atos.daf.ct2.account
         private RelationshipData MapAccessRelationshipData(AccountAccessRelationshipEntity record)
         {
             RelationshipData entity = new RelationshipData();
-            entity.Id = record.group_id;
-            entity.Name = record.group_name ?? string.Empty;
-            entity.IsGroup = record.is_ag_vg_group;
+            entity.Id = record.Group_id;
+            entity.Name = record.Group_name ?? string.Empty;
+            entity.IsGroup = record.Is_ag_vg_group;
             return entity;
         }
         //private RelationshipData MapAccessRelationshipData(AccountAccessRelationshipEntity record)
@@ -1598,7 +1597,7 @@ namespace net.atos.daf.ct2.account
                     parameter.Add("@accountID", account.AccountId);
                     parameter.Add("@roleID", account.RoleId);
                     parameter.Add("@organizationID", account.OrganizationId);
-                    IEnumerable<SSOTokenResponse> accountDetails = await dataAccess.QueryAsync<SSOTokenResponse>(query, parameter);
+                    IEnumerable<SSOTokenResponse> accountDetails = await _dataAccess.QueryAsync<SSOTokenResponse>(query, parameter);
                     response = accountDetails.ToList();
                 }
                 return response;

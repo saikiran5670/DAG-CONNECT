@@ -56,13 +56,13 @@ namespace net.atos.daf.ct2.accountservice
                 account.UserName = request.UserName.Trim();
                 account.Password = request.Password;
                 AccountComponent.entity.AccountIdentity accIdentity = accountIdentityManager.Login(account).Result;
-                if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.tokenIdentifier)))
+                if (accIdentity != null && (!string.IsNullOrEmpty(accIdentity.TokenIdentifier)))
                 {
                     _logger.Info("account is Authenticated");
-                    response.TokenIdentifier = accIdentity.tokenIdentifier;
-                    if (accIdentity.accountInfo != null)
+                    response.TokenIdentifier = accIdentity.TokenIdentifier;
+                    if (accIdentity.AccountInfo != null)
                     {
-                        response.AccountInfo = _mapper.ToAccount(accIdentity.accountInfo);
+                        response.AccountInfo = _mapper.ToAccount(accIdentity.AccountInfo);
                     }
                     if (accIdentity.AccountOrganization != null && accIdentity.AccountOrganization.Count > 0)
                     {
@@ -89,7 +89,7 @@ namespace net.atos.daf.ct2.accountservice
                     }
                     return Task.FromResult(response);
                 }
-                if (accIdentity != null && string.IsNullOrEmpty(accIdentity.tokenIdentifier))
+                if (accIdentity != null && string.IsNullOrEmpty(accIdentity.TokenIdentifier))
                 {
                     return Task.FromResult(new AccountIdentityResponse
                     {
@@ -159,18 +159,18 @@ namespace net.atos.daf.ct2.accountservice
                 account = await accountmanager.Create(account);
                 // response 
                 AccountData response = new AccountData();
-                if (account.isDuplicate || account.isDuplicateInOrg)
+                if (account.IsDuplicate || account.IsDuplicateInOrg)
                 {
                     response.Message = "The duplicate account.";
                     response.Code = Responcecode.Conflict;
                     response.Account = _mapper.ToAccount(account);
                 }
-                else if (account.isError)
+                else if (account.IsError)
                 {
                     response.Message = "There is an error creating account.";
                     response.Code = Responcecode.Failed;
                 }
-                else if (account.isErrorInEmail)
+                else if (account.IsErrorInEmail)
                 {
                     response.Message = "There is an error while sending account confirmation email to the account user.";
                     response.Code = Responcecode.Failed;
@@ -1285,7 +1285,7 @@ namespace net.atos.daf.ct2.accountservice
                         accountList = await accountmanager.GetAccount(filter, false);
                         vehicleList = await _vehicelManager.GetORGRelationshipVehicleGroupVehicles(request.OrganizationId, true);
                     }
-                    List<AccountVehicleEntity> Objvehiclelist = vehicleList.Select(a => new AccountVehicleEntity { id = a.id, name = a.name, is_group = a.is_group, count = a.count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
+                    List<AccountVehicleEntity> Objvehiclelist = vehicleList.Select(a => new AccountVehicleEntity { Id = a.id, Name = a.name, Is_group = a.is_group, Count = a.count, RegistrationNo = a.RegistrationNo, VIN = a.VIN }).ToList();
                     accountVehiclesResponse.VehiclesVehicleGroup.AddRange(_mapper.ToAccountVehicles(Objvehiclelist));
                     accountVehiclesResponse.AccountsAccountGroups.AddRange(_mapper.ToAccountVehicles(accountList));
                     _logger.Info("Get AccessRelationshipAccount." + request.OrganizationId.ToString());
@@ -1943,22 +1943,22 @@ namespace net.atos.daf.ct2.accountservice
 
                 SSOToken responseDetails = new SSOToken();
                 var response = await accountIdentityManager.GenerateSSOToken(ssoRequest);
-                if (response?.statusCode == System.Net.HttpStatusCode.OK)
+                if (response?.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    responseDetails.Token = response.token;
+                    responseDetails.Token = response.Token;
                     responseDetails.Code = Responcecode.Success;
-                    responseDetails.Message = response.message;
+                    responseDetails.Message = response.Message;
 
                 }
-                else if (response?.statusCode == System.Net.HttpStatusCode.NotFound)
+                else if (response?.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
                     responseDetails.Code = Responcecode.NotFound;
-                    responseDetails.Message = response.message;
+                    responseDetails.Message = response.Message;
                 }
                 else
                 {
                     responseDetails.Code = Responcecode.NotFound;
-                    responseDetails.Message = response.message;
+                    responseDetails.Message = response.Message;
                 }
                 return await Task.FromResult(responseDetails);
 

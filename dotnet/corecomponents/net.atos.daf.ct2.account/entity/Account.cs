@@ -17,12 +17,12 @@ namespace net.atos.daf.ct2.account.entity
         public AccountType AccountType { get; set; }
         public int? Organization_Id { get; set; }
         public string DriverId { get; set; }
-        public bool isDuplicateInOrg { get; set; }
+        public bool IsDuplicateInOrg { get; set; }
         public long? StartDate { get; set; }
         public long? EndDate { get; set; }
-        public bool isDuplicate { get; set; }
-        public bool isError { get; set; }
-        public bool isErrorInEmail { get; set; }
+        public bool IsDuplicate { get; set; }
+        public bool IsError { get; set; }
+        public bool IsErrorInEmail { get; set; }
         public int? PreferenceId { get; set; }
         public int? BlobId { get; set; }
         public long? CreatedAt { get; set; }
