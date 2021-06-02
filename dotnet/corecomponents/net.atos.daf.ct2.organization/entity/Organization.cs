@@ -16,11 +16,11 @@ namespace net.atos.daf.ct2.organization.entity
         public string CountryCode { get; set; }
         public long OptOutStatusChangedDate { get; set; }
         public bool IsActive { get; set; }
-        public DateTime? reference_date { get; set; }
+        public DateTime? ReferenceDate { get; set; }
         public string Referenced { get; set; }
-        public int preference_id { get; set; }
-        public string vehicle_default_opt_in { get; set; }
-        public string driver_default_opt_in { get; set; }
+        public int PreferenceId { get; set; }
+        public string VehicleDefaultOptIn { get; set; }
+        public string DriverDefaultOptIn { get; set; }
 
     }
 }

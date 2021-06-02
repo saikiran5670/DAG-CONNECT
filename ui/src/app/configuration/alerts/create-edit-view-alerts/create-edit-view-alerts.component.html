@@ -183,7 +183,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
-    <div *ngIf="openAdvancedFilter" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <!-- <div *ngIf="openAdvancedFilter" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
         <!-- <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
                 <mat-panel-title>
@@ -194,8 +194,17 @@
                 </div>   
             </mat-card>
         </div> -->
-        <app-alert-advanced-filter></app-alert-advanced-filter>
+        <div *ngIf="openAdvancedFilter" class="full-width">
+        <app-alert-advanced-filter 
+        [translationData]='translationData'
+        [alert_category_selected] = 'alert_category_selected'
+        [alert_type_selected] = 'alert_type_selected'
+        [selectedRowData] = 'selectedRowData'
+        [actionType] = 'actionType'
+        >
+      </app-alert-advanced-filter>
     </div>
+    <!-- </div> -->
 
     <!-- Vehicles table -->
     
@@ -373,7 +382,13 @@
              </div>
            </div>
           
-
+<div class="col-sm-4  areawidth" *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
+(alert_category_selected === 'L' && alert_type_selected === 'C')">
+  <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+    <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
+</span>
+  <ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
+</div>
         <!-- Map -->
         <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
                     (alert_category_selected === 'L' && alert_type_selected === 'C')" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px" > 
