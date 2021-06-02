@@ -187,6 +187,8 @@ export class RouteCalculatingComponent implements OnInit {
       this.strPresentEnd = true;
     }
     this.subscribeWidthValue();
+    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
     //this.configureAutoCompleteForLocationSearch();
   }
 
@@ -223,6 +225,8 @@ export class RouteCalculatingComponent implements OnInit {
               }
           })
       }
+      this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
+     
       this.corridorName = _selectedElementData.corridoreName;
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
@@ -243,17 +247,40 @@ export class RouteCalculatingComponent implements OnInit {
     let _data = this.additionalData;
     this.getAttributeData = _data["attribute"];
     this.getExclusionList = _data["exclusion"];
+    
     this.combustibleChecked = this.getAttributeData["isCombustible"];
+    this.combustibleChecked ? this.hazardousMaterial.push('combustible'):'';
     this.corrosiveChecked = this.getAttributeData["isCorrosive"];
+    this.corrosiveChecked ? this.hazardousMaterial.push('corrosive'):'';
+
     this.explosiveChecked = this.getAttributeData["isExplosive"];
+    this.explosiveChecked ? this.hazardousMaterial.push('explosive'):'';
+
     this.flammableChecked = this.getAttributeData["isFlammable"];
+    this.flammableChecked ? this.hazardousMaterial.push('flammable'):'';
+
     this.gasChecked = this.getAttributeData["isGas"];
+    this.gasChecked ? this.hazardousMaterial.push('gas'):'';
+
     this.organicChecked = this.getAttributeData["isOrganic"];
+    this.organicChecked ? this.hazardousMaterial.push('organic'):'';
+
     this.othersChecked = this.getAttributeData["isOther"];
+    this.othersChecked ? this.hazardousMaterial.push('other'):'';
+
     this.poisonChecked = this.getAttributeData["isPoision"];
+    this.poisonChecked ? this.hazardousMaterial.push('poison'):'';
+
     this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
+    this.poisonInhaleChecked ? this.hazardousMaterial.push('poisonousInhalation'):'';
+
     this.radioactiveChecked = this.getAttributeData["isRadioActive"];
+    this.radioactiveChecked ? this.hazardousMaterial.push('radioactive'):'';
+
     this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
+    this.waterHarmChecked ? this.hazardousMaterial.push('harmfulToWater'):'';
+
+    
     this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     this.transportDataChecked = _data["isTransportData"];
@@ -297,6 +324,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
     this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
+    this.calculateTruckRoute();
+
  }
 
   public ngAfterViewInit() {
@@ -375,7 +405,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.trafficFlowChecked = _checked;
   }
 
-  hazardousMaterial : string = '';
+  hazardousMaterial = [];
   attributeCheck(_checked, type) {
     switch (type) {
       case 'explosive':
@@ -402,20 +432,29 @@ export class RouteCalculatingComponent implements OnInit {
       case 'corrosive':
         this.corrosiveChecked = _checked;
         break;
-      case 'poisonInhale':
+      case 'poisonousInhalation':
         this.poisonInhaleChecked = _checked;
         break;
-      case 'waterHarm':
+      case 'harmfulToWater':
         this.waterHarmChecked = _checked;
         break;
-      case 'others':
+      case 'other':
         this.othersChecked = _checked;
         break;
       default:
         break;
     }
+    _checked ? this.hazardousMaterial.push(type) : this.removeAttributeType(type);
+   this.calculateTruckRoute();
+
   }
 
+  removeAttributeType(_type){
+      if(this.hazardousMaterial.indexOf(_type) != -1){
+        this.hazardousMaterial.splice(this.hazardousMaterial.indexOf(_type))
+      }
+      console.log(this.hazardousMaterial)
+  }
   trailerSelected(_event){
     this.selectedTrailerId = _event.value;
   }
@@ -485,12 +524,12 @@ export class RouteCalculatingComponent implements OnInit {
         "other": this.othersChecked
       },
       "exclusion": {
-        "tollRoad": this.tollRoadId,
-        "mortorway": this.motorWayId,
-        "boatFerries":this.boatFerriesId,
-        "railFerries": this.railFerriesId,
-        "tunnels": this.tunnelId,
-        "dirtRoad":this.dirtRoadId,
+        "tollRoad": this.tollRoadId ? this.tollRoadId : 'D',
+        "mortorway": this.motorWayId ? this.motorWayId : 'D',
+        "boatFerries":this.boatFerriesId ? this.boatFerriesId : 'D',
+        "railFerries": this.railFerriesId ?  this.railFerriesId : 'D',
+        "tunnels": this.tunnelId ? this.tunnelId : 'D',
+        "dirtRoad":this.dirtRoadId ? this.dirtRoadId : 'D',
       },
       "vehicleSize": {
         "vehicleSizeHeight":this.corridorFormGroup.controls.vehicleHeight.value ? this.corridorFormGroup.controls.vehicleHeight.value : 0,
@@ -540,6 +579,7 @@ export class RouteCalculatingComponent implements OnInit {
   resetValues(){
     if(this.actionType === 'create'){
         
+    this.selectedTrailerId = undefined;
     this.tollRoadId = undefined;
     this.motorWayId =undefined;
     this.railFerriesId = undefined;
@@ -566,8 +606,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
     this.corridorFormGroup.controls.limitedWeight.setValue("");
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
-    this.corridorFormGroup.controls.startaddress.setValue("");
-    this.corridorFormGroup.controls.endaddress.setValue("");
+    this.clearMap();
     }
     else{
       this.setAdditionalData();
@@ -575,8 +614,11 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   clearMap(){
-    this.mapGroup.removeAll();
-    this.hereMap.removeObject(this.mapGroup);
+    if(this.hereMap.getObjects()){
+      this.mapGroup.removeAll();
+
+      //this.hereMap.removeObject(this.mapGroup);
+    }
   }
 
   onStartFocus(){
@@ -816,7 +858,6 @@ export class RouteCalculatingComponent implements OnInit {
   routePoints:any;
   calculateTruckRoute(){
     let lineWidth = this.corridorWidthKm;
-    console.log(this.viaRoutePlottedPoints)
     let routeRequestParams = 
     'origin='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
     '&destination='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
@@ -853,6 +894,9 @@ export class RouteCalculatingComponent implements OnInit {
       routeRequestParams += '&truck[weightPerAxle]='+ this.corridorFormGroup.controls.weightPerAxle.value;
     }
 
+    if(this.hazardousMaterial.length > 0){
+      routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+    }
     this.routePoints= [];
     this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
         this.routePoints = data.routes[0];

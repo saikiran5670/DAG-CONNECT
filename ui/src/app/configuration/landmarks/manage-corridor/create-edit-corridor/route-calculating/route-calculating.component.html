@@ -132,10 +132,15 @@
             <span style='font-weight: 500!important;'>{{searchViaStr}}</span>
         </div>
     </div>
-    <div class="col-sm-4 areaWidth">
+    <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
         <button mat-flat-button color="primary" (click)="addViaRoute()" [disabled]='viaRouteCount'>
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute || 'Via Route'}}
         </button>
+    </div> 
+    <div *ngIf="actionType === 'view' && viaRoutePlottedPoints.length!=0" class="col-sm-4 areaWidth">
+        <ul>
+            <li class='viaList' *ngFor="let list of viaRoutePlottedPoints"> {{ list.corridorViaStopName}} </li>
+        </ul>
     </div> 
 </div>
 
@@ -186,9 +191,9 @@
                      </div>
                      <div fxLayout="row"  fxLayoutAlign="space-around center" class="container full-width margin-bottom-sm">
                         <mat-checkbox class="example-margin col-sm" [checked]="corrosiveChecked"  (change)="attributeCheck($event.checked,'corrosive')" [disabled]="actionType==='view'">Corrosive</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonInhale')" [disabled]="actionType==='view'">Poisonous Inhalation</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'waterHarm')" [disabled]="actionType==='view'">Water Harm</mat-checkbox>
-                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'others')" [disabled]="actionType==='view'">Others</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="poisonInhaleChecked"  (change)="attributeCheck($event.checked,'poisonousInhalation')" [disabled]="actionType==='view'">Poisonous Inhalation</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="waterHarmChecked"  (change)="attributeCheck($event.checked,'harmfulToWater')" [disabled]="actionType==='view'">Water Harm</mat-checkbox>
+                        <mat-checkbox class="example-margin col-sm" [checked]="othersChecked"  (change)="attributeCheck($event.checked,'other')" [disabled]="actionType==='view'">Others</mat-checkbox>
                      </div>
                 </mat-expansion-panel>
                 </mat-accordion>
