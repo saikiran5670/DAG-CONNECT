@@ -225,23 +225,31 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (request.IsDuplicate)
                 {
-                    alertservice.IdRequest idRequest = new IdRequest();
-                    idRequest.AlertId = request.Id;
-                    alertservice.DuplicateAlertResponse duplicateAlertResponse = await _alertServiceClient.DuplicateAlertTypeAsync(idRequest);
-                    if (duplicateAlertResponse != null && duplicateAlertResponse.Code == ResponseCode.Success)
+                    var isAuthWebService = request.Notifications.SelectMany(a => a.NotificationRecipients).Where(g => g.NotificationModeType.ToLower() == "w" && g.WsType.ToLower() == "a").ToList();
+                    if (isAuthWebService.Count() > 0)
                     {
-                        if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
-                        {
-                            return StatusCode(400, "Alert type should be same while duplicating the alert");
-                        }
-                    }
-                    else if (duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
-                    {
-                        return StatusCode((int)duplicateAlertResponse.Code, duplicateAlertResponse.Message);
+                        return StatusCode(400, "Duplicate alert can't be create for authentication type web service.");
                     }
                     else
                     {
-                        return StatusCode(500, "Internal Server Error.(01)");
+                        alertservice.IdRequest idRequest = new IdRequest();
+                        idRequest.AlertId = request.Id;
+                        alertservice.DuplicateAlertResponse duplicateAlertResponse = await _alertServiceClient.DuplicateAlertTypeAsync(idRequest);
+                        if (duplicateAlertResponse != null && duplicateAlertResponse.Code == ResponseCode.Success)
+                        {
+                            if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
+                            {
+                                return StatusCode(400, "Alert type should be same while duplicating the alert");
+                            }
+                        }
+                        else if (duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
+                        {
+                            return StatusCode((int)duplicateAlertResponse.Code, duplicateAlertResponse.Message);
+                        }
+                        else
+                        {
+                            return StatusCode(500, "Internal Server Error.(01)");
+                        }
                     }
                 }
 
