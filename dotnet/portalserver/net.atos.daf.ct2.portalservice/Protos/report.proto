@@ -10,6 +10,8 @@ rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataCol
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
 rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponce);
+rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponce);
+rpc GetDriverActivity (ActivityFilterRequest) returns (DriverActivityResponce);
 }
 
 enum Responsecode{
@@ -154,3 +156,30 @@ int32 AccountId = 3;
 int32 OrganizationId = 4;
 }
 //End Vehicle Visibility and Trip filtered records
+
+// Start Driver Time Managment Report
+message ActivityFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VINs = 3;
+    string DriverIds = 4;
+}
+
+message DriverActivityResponce {
+    repeated DriverActivity DriverActivities = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+message DriverActivity {
+    string DriverId = 1;
+    string DriverName = 2;
+    string VIN = 3;
+    int64 ActivityDate = 4;
+    int32 Code = 5; 
+    int64 RestTime = 6;
+    int64 AvailableTime = 7;
+    int64 WorkTime = 8;
+    int64 DriveTime = 9;
+    int64 ServiceTime = 10;
+}
+// End   Driver Time Managment Report
