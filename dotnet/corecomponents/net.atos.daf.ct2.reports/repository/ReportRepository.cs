@@ -358,7 +358,11 @@ namespace net.atos.daf.ct2.reports.repository
         #endregion
 
         #region Driver Time management Report
-
+        /// <summary>
+        /// Get drivers activities for single or multiple drivers associated with vins
+        /// </summary>
+        /// <param name="activityFilters">Pass vins associated drivers ids for specific datetime range.</param>
+        /// <returns>List of single or multiple drivers activity for each activity type with duration in saperate column. </returns>
         public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter activityFilters)
         {
             var parameterOfFilters = new DynamicParameters();

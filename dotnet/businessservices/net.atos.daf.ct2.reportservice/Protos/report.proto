@@ -10,8 +10,8 @@ rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataCol
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
 rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponce);
-rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponce);
-rpc GetDriverActivity (ActivityFilterRequest) returns (DriverActivityResponce);
+rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetDriverActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 }
 
 enum Responsecode{
@@ -165,7 +165,7 @@ message ActivityFilterRequest {
     string DriverIds = 4;
 }
 
-message DriverActivityResponce {
+message DriverActivityResponse {
     repeated DriverActivity DriverActivities = 1;   
     Responsecode code = 2;
     string message = 3;

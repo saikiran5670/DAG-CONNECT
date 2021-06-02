@@ -218,8 +218,8 @@ namespace net.atos.daf.ct2.reportservice.Services
         /// </summary>
         /// <param name="request"> Filters for driver activity with VIN and Driver ID </param>
         /// <param name="context">GRPC Context</param>
-        /// <returns>Driver activity by type column</returns>
-        public override async Task<DriverActivityResponce> GetDriversActivity(ActivityFilterRequest request, ServerCallContext context)
+        /// <returns>List of multiple drivers activity for each activity type with duration in saperate column. </returns>
+        public override async Task<DriverActivityResponse> GetDriversActivity(ActivityFilterRequest request, ServerCallContext context)
         {
             try
             {
@@ -230,7 +230,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 objActivityFilter.EndDateTime = request.EndDateTime;
 
                 var result = await _reportManager.GetDriversActivity(objActivityFilter);
-                DriverActivityResponce response = new DriverActivityResponce();
+                DriverActivityResponse response = new DriverActivityResponse();
                 if (result?.Count > 0)
                 {
                     string res = JsonConvert.SerializeObject(result);
@@ -248,7 +248,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new DriverActivityResponce
+                return await Task.FromResult(new DriverActivityResponse
                 {
                     Code = Responsecode.Failed,
                     Message = "GetDriversActivity get failed due to - " + ex.Message
@@ -261,8 +261,8 @@ namespace net.atos.daf.ct2.reportservice.Services
         /// </summary>
         /// <param name="request"> Filters for driver activity with VIN and Driver ID </param>
         /// <param name="context">GRPC Context</param>
-        /// <returns>Driver activity by type column</returns>
-        public override async Task<DriverActivityResponce> GetDriverActivity(ActivityFilterRequest request, ServerCallContext context)
+        /// <returns>List of driver's activity for each activity type with duration in saperate column. </returns>
+        public override async Task<DriverActivityResponse> GetDriverActivity(ActivityFilterRequest request, ServerCallContext context)
         {
             try
             {
@@ -273,7 +273,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 objActivityFilter.EndDateTime = request.EndDateTime;
 
                 var result = await _reportManager.GetDriverActivity(objActivityFilter);
-                DriverActivityResponce response = new DriverActivityResponce();
+                DriverActivityResponse response = new DriverActivityResponse();
                 if (result?.Count > 0)
                 {
                     string res = JsonConvert.SerializeObject(result);
@@ -291,7 +291,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                return await Task.FromResult(new DriverActivityResponce
+                return await Task.FromResult(new DriverActivityResponse
                 {
                     Code = Responsecode.Failed,
                     Message = "GetDriverActivity get failed due to - " + ex.Message
