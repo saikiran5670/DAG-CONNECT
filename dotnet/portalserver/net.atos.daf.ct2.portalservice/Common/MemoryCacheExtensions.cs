@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             this._cache = _cache;
         }
 
-        public async Task<T> getCacheAsync<T>(string key) where T : class
+        public async Task<T> GetCacheAsync<T>(string key) where T : class
         {
             try
             {
@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public async Task setCacheAsync<T>(T values, string key)
+        public async Task SetCacheAsync<T>(T values, string key)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public async Task removeCacheAsync(string key)
+        public async Task RemoveCacheAsync(string key)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public T getCache<T>(string key) where T : class
+        public T GetCache<T>(string key) where T : class
         {
             try
             {
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public void setCache<T>(T values, string key)
+        public void SetCache<T>(T values, string key)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public void removeCache(string key)
+        public void RemoveCache(string key)
         {
             try
             {

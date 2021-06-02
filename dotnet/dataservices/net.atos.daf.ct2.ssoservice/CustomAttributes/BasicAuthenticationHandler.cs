@@ -12,8 +12,8 @@ namespace net.atos.daf.ct2.singlesignonservice.CustomAttributes
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
-        private const string AuthorizationHeaderName = "Authorization";
-        private const string AuthorizationHeaderType = "Bearer";
+        private const string AUTHORIZATION_HEADER_NAME = "Authorization";
+        private const string AUTHORIZATION_HEADER_TYPE = "Bearer";
         private readonly IBasicAuthenticationService _authenticationService;
 
         public BasicAuthenticationHandler(
@@ -29,27 +29,27 @@ namespace net.atos.daf.ct2.singlesignonservice.CustomAttributes
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.ContainsKey(AuthorizationHeaderName))
+            if (!Request.Headers.ContainsKey(AUTHORIZATION_HEADER_NAME))
             {
                 //Authorization header not in request
                 return AuthenticateResult.NoResult();
             }
 
-            if (!AuthenticationHeaderValue.TryParse(Request.Headers[AuthorizationHeaderName], out AuthenticationHeaderValue headerValue))
+            if (!AuthenticationHeaderValue.TryParse(Request.Headers[AUTHORIZATION_HEADER_NAME], out AuthenticationHeaderValue headerValue))
             {
                 //Invalid Authorization header
                 return AuthenticateResult.NoResult();
             }
-            if (!AuthorizationHeaderType.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
+            if (!AUTHORIZATION_HEADER_TYPE.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
             {
                 //Not a bearer authentication header type
                 return AuthenticateResult.NoResult();
             }
-            string email = string.Empty;
+            string email;
             try
             {
                 string token = Convert.ToString(headerValue);
-                token = token.Replace(AuthorizationHeaderType, "");
+                token = token.Replace(AUTHORIZATION_HEADER_TYPE, "");
                 email = await _authenticationService.ValidateTokenGuid(token);
             }
             catch (Exception)

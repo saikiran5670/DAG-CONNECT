@@ -6,58 +6,58 @@ namespace net.atos.daf.ct2.group
 {
     public class GroupManager : IGroupManager
     {
-        IGroupRepository gropRepository;
-        IAuditTraillib auditlog;
+        IGroupRepository _gropRepository;
+        IAuditTraillib _auditlog;
 
-        public GroupManager(IGroupRepository _gropRepository, IAuditTraillib _auditlog)
+        public GroupManager(IGroupRepository gropRepository, IAuditTraillib auditlog)
         {
-            gropRepository = _gropRepository;
-            auditlog = _auditlog;
+            this._gropRepository = gropRepository;
+            this._auditlog = auditlog;
         }
 
         public async Task<Group> Create(Group group)
         {
-            return await gropRepository.Create(group);
+            return await _gropRepository.Create(group);
         }
         public async Task<Group> Update(Group group)
         {
-            return await gropRepository.Update(group);
+            return await _gropRepository.Update(group);
         }
         public async Task<bool> Delete(long groupid, ObjectType objectType)
         {
-            return await gropRepository.Delete(groupid, objectType);
+            return await _gropRepository.Delete(groupid, objectType);
         }
         public async Task<IEnumerable<Group>> Get(GroupFilter groupFilter)
         {
             // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.GET,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
             // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
             //await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Group Component","Group Service",AuditTrailEnum.Event_type.Get,AuditTrailEnum.Event_status.SUCCESS,"Test",1,2,null);
-            return await gropRepository.Get(groupFilter);
+            return await _gropRepository.Get(groupFilter);
         }
         public async Task<bool> UpdateRef(Group group)
         {
-            return await gropRepository.UpdateRef(group);
+            return await _gropRepository.UpdateRef(group);
         }
         public async Task<List<GroupRef>> GetRef(int groupid)
         {
-            return await gropRepository.GetRef(groupid);
+            return await _gropRepository.GetRef(groupid);
         }
         public async Task<bool> AddRefToGroups(List<GroupRef> groupRef)
         {
-            return await gropRepository.AddRefToGroups(groupRef);
+            return await _gropRepository.AddRefToGroups(groupRef);
         }
         public async Task<bool> RemoveRef(int groupid)
         {
-            return await gropRepository.RemoveRef(groupid);
+            return await _gropRepository.RemoveRef(groupid);
         }
         public async Task<bool> RemoveRefByRefId(int refId)
         {
-            return await gropRepository.RemoveRefByRefId(refId);
+            return await _gropRepository.RemoveRefByRefId(refId);
         }
 
         public async Task<IEnumerable<Group>> GetVehicleGroupWithVehCount(GroupFilter groupFilter)
         {
-            return await gropRepository.GetVehicleGroupWithVehCount(groupFilter);
+            return await _gropRepository.GetVehicleGroupWithVehCount(groupFilter);
         }
 
     }

@@ -108,8 +108,8 @@ namespace net.atos.daf.ct2.role.test
             objfeature2.Id = 3;
             set.Name = "FeatureSet04";
             // set.Createdby = 12;
-            set.description = "FSet04";
-            set.is_custom_feature_set = true;
+            set.Description = "FSet04";
+            set.Is_custom_feature_set = true;
             set.Features.Add(objfeature);
             set.Features.Add(objfeature1);
             set.Features.Add(objfeature2);

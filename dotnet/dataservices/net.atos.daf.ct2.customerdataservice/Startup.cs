@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.customerdataservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "customer-data";
+        private readonly string _swaggerBasePath = "customer-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {
                 options.ApplicationName = "DAFCT2.0";
@@ -106,9 +106,9 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MainAccessPolicy,
+                    AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
@@ -143,13 +143,13 @@ namespace net.atos.daf.ct2.customerdataservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
         }
         private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)

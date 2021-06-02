@@ -50,11 +50,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 {
                     objVehiclesBySubscriptionDetailsResponse.Vehicles.Add(new VehiclesBySubscriptionDetails
                     {
-                        OrderId = item.orderId,
-                        Id = item.id,
-                        Name = item.name ?? string.Empty,
-                        Vin = item.vin,
-                        LicensePlateNumber = item.license_plate_number ?? string.Empty
+                        OrderId = item.OrderId,
+                        Id = item.Id,
+                        Name = item.Name ?? string.Empty,
+                        Vin = item.Vin,
+                        LicensePlateNumber = item.License_plate_number ?? string.Empty
                     });
                 }
                 return objVehiclesBySubscriptionDetailsResponse;
@@ -414,13 +414,13 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
 
                         ObjGroupRef.Id = item.ID;
-                        ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                        ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                        ObjGroupRef.Name = item.Name ?? "";
+                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
+                        ObjGroupRef.VIN = item.VIN ?? "";
                         //ObjGroupRef.Status = SetEnumVehicleStatusType(item.Status);
                         ObjGroupRef.Status = item.Status.ToString();
                         ObjGroupRef.IsVehicleGroup = false;
-                        ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                        ObjGroupRef.ModelId = item.ModelId ?? "";
                         ObjGroupRef.OrganizationId = item.Organization_Id;
                         if (item.CreatedAt != null)
                             ObjGroupRef.CreatedAt = Convert.ToInt64(item.CreatedAt);
@@ -482,9 +482,9 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                     {
                         VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                         ObjGroupRef.Id = item.ID;
-                        ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                        ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
+                        ObjGroupRef.Name = item.Name ?? "";
+                        ObjGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
+                        ObjGroupRef.VIN = item.VIN ?? "";
                         ObjGroupRef.ModelId = item.ModelId;
                         //ObjGroupRef.StatusDate = item.Status_Changed_Date.ToString();
                         //ObjGroupRef.TerminationDate = item.Termination_Date.ToString();
@@ -637,10 +637,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                                 {
                                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                                     ObjGroupRef.Id = item.ID;
-                                    ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                                    ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
-                                    ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                                    ObjGroupRef.Name = item.Name ?? "";
+                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
+                                    ObjGroupRef.VIN = item.VIN ?? "";
+                                    ObjGroupRef.ModelId = item.ModelId ?? "";
                                     ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
                                     response.GroupRefDetails.Add(ObjGroupRef);
                                 }
@@ -652,10 +652,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                                 {
                                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                                     ObjGroupRef.Id = item.ID;
-                                    ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                                    ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
-                                    ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                                    ObjGroupRef.Name = item.Name ?? "";
+                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
+                                    ObjGroupRef.VIN = item.VIN ?? "";
+                                    ObjGroupRef.ModelId = item.ModelId ?? "";
                                     ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
                                     response.GroupRefDetails.Add(ObjGroupRef);
                                 }
@@ -667,10 +667,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                                 {
                                     VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                                     ObjGroupRef.Id = item.ID;
-                                    ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                                    ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
-                                    ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                                    ObjGroupRef.Name = item.Name ?? "";
+                                    ObjGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
+                                    ObjGroupRef.VIN = item.VIN ?? "";
+                                    ObjGroupRef.ModelId = item.ModelId ?? "";
                                     ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
                                     response.GroupRefDetails.Add(ObjGroupRef);
                                 }
@@ -695,10 +695,10 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 
                             VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                             ObjGroupRef.Id = item.ID;
-                            ObjGroupRef.Name = item.Name == null ? "" : item.Name;
-                            ObjGroupRef.LicensePlateNumber = item.License_Plate_Number == null ? "" : item.License_Plate_Number;
-                            ObjGroupRef.VIN = item.VIN == null ? "" : item.VIN;
-                            ObjGroupRef.ModelId = item.ModelId == null ? "" : item.ModelId;
+                            ObjGroupRef.Name = item.Name ?? "";
+                            ObjGroupRef.LicensePlateNumber = item.License_Plate_Number ?? "";
+                            ObjGroupRef.VIN = item.VIN ?? "";
+                            ObjGroupRef.ModelId = item.ModelId ?? "";
                             ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
                             response.GroupRefDetails.Add(ObjGroupRef);
                         }

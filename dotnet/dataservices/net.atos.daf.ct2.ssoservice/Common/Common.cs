@@ -26,12 +26,8 @@ namespace net.atos.daf.ct2.singlesignonservice.Common
         {
 
             string dateformat = "yyyy-mm-dd";
-            DateTime parsedatetime;
-            bool validDate = (DateTime.TryParseExact(Convert.ToString(dateTime), dateformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedatetime));
-            if (validDate)
-                return true;
-            else
-                return false;
+            bool validDate = (DateTime.TryParseExact(Convert.ToString(dateTime), dateformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedatetime));
+            return validDate;
         }
 
     }

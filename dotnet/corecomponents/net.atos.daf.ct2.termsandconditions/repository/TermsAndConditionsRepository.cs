@@ -12,11 +12,11 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 {
     public class TermsAndConditionsRepository : ITermsAndConditionsRepository
     {
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
 
-        public TermsAndConditionsRepository(IDataAccess _dataAccess)
+        public TermsAndConditionsRepository(IDataAccess dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
         public async Task<AccountTermsCondition> AddUserAcceptedTermCondition(AccountTermsCondition accountTermsCondition)
         {
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                 parameter.Add("@accepted_date", UTCHandling.GetUTCFromDateTime(accountTermsCondition.Accepted_Date.ToString()));
                 parameter.Add("@id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
-                int accountTermsConditionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int accountTermsConditionID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 accountTermsCondition.Id = accountTermsConditionID;
 
                 if (accountTermsConditionID > 0)
@@ -50,9 +50,9 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 	                                             SET latest_accepted_tac_ver_no=@latest_accepted_tac_ver_no
 	                                             WHERE id=@id
                                                  RETURNING latest_accepted_tac_ver_no";
-                    parameter.Add("@latest_accepted_tac_ver_no", accountTermsCondition.version_no);
+                    parameter.Add("@latest_accepted_tac_ver_no", accountTermsCondition.Version_no);
                     parameter.Add("@id", accountTermsCondition.Account_Id);
-                    await dataAccess.ExecuteScalarAsync<string>(UpdateVerNoStatement, parameter);
+                    await _dataAccess.ExecuteScalarAsync<string>(UpdateVerNoStatement, parameter);
                 }
 
                 return accountTermsCondition;
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                     QueryStatement = QueryStatement + " and accterm.organization_id=@organization_id";
                 }
 
-                dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
                 TermsAndConditions termsAndConditions = new TermsAndConditions();
                 foreach (dynamic record in result)
                 {
@@ -139,7 +139,6 @@ namespace net.atos.daf.ct2.termsandconditions.repository
 
         public async Task<TermsAndConditions> GetLatestTermCondition(int AccountId, int OrganizationId)
         {
-            dynamic result = null;
             var QueryStatement = @"select id
                                     , version_no
                                     , code
@@ -163,7 +162,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             var parameter = new DynamicParameters();
             parameter.Add("@account_id", AccountId);
             parameter.Add("@organization_id", OrganizationId);
-            result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
             if (((System.Collections.Generic.List<object>)result).Count == 0)
             {
                 var DefaultQueryStatement = @"select id
@@ -176,7 +175,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                                     FROM master.termsandcondition 
                                     where state='A'                                  
                                     and lower(code)='en'";
-                result = await dataAccess.QueryAsync<dynamic>(DefaultQueryStatement, null);
+                result = await _dataAccess.QueryAsync<dynamic>(DefaultQueryStatement, null);
             }
 
             TermsAndConditions termsAndConditions = new TermsAndConditions();
@@ -192,7 +191,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             var parameter = new DynamicParameters();
             parameter.Add("@id", roleId);
             parameter.Add("@organization_id", orgId);
-            var data = await dataAccess.ExecuteScalarAsync
+            var data = await _dataAccess.ExecuteScalarAsync
                              (@"select level from master.Role where id=@id and organization_id=@organization_id",
                             parameter);
             int level = data != null ? Convert.ToInt32(data) : 0;
@@ -204,7 +203,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             var parameter = new DynamicParameters();
             string QueryStatement = string.Empty;
 
-            switch (objVersionByID.levelCode)
+            switch (objVersionByID.LevelCode)
             {
                 case 10:
                 case 20:
@@ -212,15 +211,15 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                     break;
                 case 30:
                 case 40:
-                    parameter.Add("@organization_id", objVersionByID.orgId);
-                    parameter.Add("@account_id", objVersionByID.accountId);
+                    parameter.Add("@organization_id", objVersionByID.OrgId);
+                    parameter.Add("@account_id", objVersionByID.AccountId);
                     QueryStatement = @"select tc.id,tc.version_no,tc.code from  master.termsandcondition tc
                            inner join master.accounttermsacondition atc on atc.terms_and_condition_id = tc.id
                            where atc.organization_id = @organization_id and atc.account_id = @account_id";
                     break;
             }
 
-            dynamic result = await dataAccess.QueryAsync<TermsAndConditions>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<TermsAndConditions>(QueryStatement, parameter);
             List<string> ObjVersionList = new List<string>();
             foreach (dynamic record in result)
             {
@@ -233,8 +232,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
         public async Task<List<TermsAndConditions>> GetTermConditionForVersionNo(string VersionNo, string LanguageCode)
         {
             List<TermsAndConditions> Objtermcondn = new List<TermsAndConditions>();
-            var QueryStatement = string.Empty;
-
+            string QueryStatement;
             if ((!string.IsNullOrEmpty(VersionNo)) && (!string.IsNullOrEmpty(LanguageCode)))
             {
                 QueryStatement = @"select id
@@ -270,7 +268,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
                 parameter.Add("@code", LanguageCode);
                 QueryStatement = QueryStatement + " and lower(code) = SUBSTRING (lower(@code), 1,2)";
             }
-            dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+            dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
             foreach (dynamic record in result)
             {
@@ -285,15 +283,15 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             try
             {
                 TermsAndConditionResponseList objTermsAndConditionResponseList = new TermsAndConditionResponseList();
-                if (objTermsandConFileDataList != null && objTermsandConFileDataList._data.Count > 0)
+                if (objTermsandConFileDataList != null && objTermsandConFileDataList.Data.Count > 0)
                 {
-                    objTermsAndConditionResponseList.termsAndConditionDetails = new List<TermsAndConditionResponse>();
-                    foreach (var item in objTermsandConFileDataList._data)
+                    objTermsAndConditionResponseList.TermsAndConditionDetails = new List<TermsAndConditionResponse>();
+                    foreach (var item in objTermsandConFileDataList.Data)
                     {
                         TermsAndConditionResponse objTermsAndConditionResponse = new TermsAndConditionResponse();
-                        var descriptionExists = await TermsAndConditionExits(item.version_no, item.code);
+                        var descriptionExists = await TermsAndConditionExits(item.Version_no, item.Code);
                         //To insert non existing record
-                        if (descriptionExists.code == null && descriptionExists.version_no == null)
+                        if (descriptionExists.Code == null && descriptionExists.Version_no == null)
                         {
                             var QueryStatement = @"INSERT INTO master.termsandcondition 
             (version_no,code,description,state,start_date,end_date,created_at,created_by)
@@ -301,30 +299,30 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
 
                             var parameter = new DynamicParameters();
 
-                            parameter.Add("@version_no", item.version_no);
-                            parameter.Add("@code", item.code);
-                            parameter.Add("@description", item.description);
+                            parameter.Add("@version_no", item.Version_no);
+                            parameter.Add("@code", item.Code);
+                            parameter.Add("@description", item.Description);
                             parameter.Add("@state", "A");
-                            parameter.Add("@start_date", objTermsandConFileDataList.start_date == 0 ? UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) : objTermsandConFileDataList.start_date);
-                            parameter.Add("@end_date", objTermsandConFileDataList.end_date);
+                            parameter.Add("@start_date", objTermsandConFileDataList.Start_date == 0 ? UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) : objTermsandConFileDataList.Start_date);
+                            parameter.Add("@end_date", objTermsandConFileDataList.End_date);
                             parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                            parameter.Add("@created_by", objTermsandConFileDataList.created_by);
+                            parameter.Add("@created_by", objTermsandConFileDataList.Created_by);
 
-                            int id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                            int id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                             if (id > 0)
                             {
-                                objTermsAndConditionResponse.id = id;
-                                objTermsAndConditionResponse.fileName = item.fileName;
-                                objTermsAndConditionResponse.action = "Inserted Sucessfully";
-                                objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
+                                objTermsAndConditionResponse.Id = id;
+                                objTermsAndConditionResponse.FileName = item.FileName;
+                                objTermsAndConditionResponse.Action = "Inserted Sucessfully";
+                                objTermsAndConditionResponseList.TermsAndConditionDetails.Add(objTermsAndConditionResponse);
                             }
                         }
-                        else if (descriptionExists.code != null && descriptionExists.version_no != null)
+                        else if (descriptionExists.Code != null && descriptionExists.Version_no != null)
                         {   //To update description when same version and code are passed
                             double dbVersion, feVersion;
-                            dbVersion = Convert.ToDouble(descriptionExists.version_no.Substring(1, descriptionExists.version_no.Length - 1));
-                            feVersion = Convert.ToDouble(item.version_no.Substring(1, item.version_no.Length - 1));
-                            if (feVersion < dbVersion && descriptionExists.code == item.code)
+                            dbVersion = Convert.ToDouble(descriptionExists.Version_no.Substring(1, descriptionExists.Version_no.Length - 1));
+                            feVersion = Convert.ToDouble(item.Version_no.Substring(1, item.Version_no.Length - 1));
+                            if (feVersion < dbVersion && descriptionExists.Code == item.Code)
                             {
 
                                 //var QueryStatement = @"UPDATE master.termsandcondition 
@@ -343,29 +341,29 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                 //int id = await dataAccess.ExecuteAsync(QueryStatement, parameter);
                                 //if (id > 0)
                                 //{
-                                objTermsAndConditionResponse.id = descriptionExists.id;
-                                objTermsAndConditionResponse.fileName = item.fileName;
-                                objTermsAndConditionResponse.action = $"No action, greater Version already exists for : {descriptionExists.version_no}_{descriptionExists.code}";
-                                objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
+                                objTermsAndConditionResponse.Id = descriptionExists.Id;
+                                objTermsAndConditionResponse.FileName = item.FileName;
+                                objTermsAndConditionResponse.Action = $"No action, greater Version already exists for : {descriptionExists.Version_no}_{descriptionExists.Code}";
+                                objTermsAndConditionResponseList.TermsAndConditionDetails.Add(objTermsAndConditionResponse);
 
                                 //}
                             }
-                            else if (feVersion == dbVersion && descriptionExists.code == item.code)
+                            else if (feVersion == dbVersion && descriptionExists.Code == item.Code)
                             {
                                 string QueryStatement = string.Empty;
                                 var parameter = new DynamicParameters();
-                                if (objTermsandConFileDataList.start_date == 0)
+                                if (objTermsandConFileDataList.Start_date == 0)
                                 {
                                     QueryStatement = @"UPDATE master.termsandcondition 
                                        SET description=@description,modified_at=@modified_at
                                        ,modified_by=@modified_by 
                                       WHERE version_no=@version_no and code=@code";
 
-                                    parameter.Add("@description", item.description);
+                                    parameter.Add("@description", item.Description);
                                     parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                                    parameter.Add("@modified_by", objTermsandConFileDataList.created_by);
-                                    parameter.Add("@version_no", item.version_no);
-                                    parameter.Add("@code", item.code);
+                                    parameter.Add("@modified_by", objTermsandConFileDataList.Created_by);
+                                    parameter.Add("@version_no", item.Version_no);
+                                    parameter.Add("@code", item.Code);
                                 }
                                 else
                                 {
@@ -374,27 +372,27 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                        ,modified_by=@modified_by,start_date=@start_date,end_date=@end_date
                                       WHERE version_no=@version_no and code=@code";
 
-                                    parameter.Add("@description", item.description);
+                                    parameter.Add("@description", item.Description);
                                     parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                                    parameter.Add("@modified_by", objTermsandConFileDataList.created_by);
-                                    parameter.Add("@version_no", item.version_no);
-                                    parameter.Add("@code", item.code);
-                                    parameter.Add("@start_date", objTermsandConFileDataList.start_date);
-                                    parameter.Add("@end_date", objTermsandConFileDataList.end_date);
+                                    parameter.Add("@modified_by", objTermsandConFileDataList.Created_by);
+                                    parameter.Add("@version_no", item.Version_no);
+                                    parameter.Add("@code", item.Code);
+                                    parameter.Add("@start_date", objTermsandConFileDataList.Start_date);
+                                    parameter.Add("@end_date", objTermsandConFileDataList.End_date);
                                 }
 
-                                int id = await dataAccess.ExecuteAsync(QueryStatement, parameter);
+                                int id = await _dataAccess.ExecuteAsync(QueryStatement, parameter);
                                 if (id > 0)
                                 {
-                                    objTermsAndConditionResponse.id = descriptionExists.id;
-                                    objTermsAndConditionResponse.fileName = item.fileName;
-                                    objTermsAndConditionResponse.action = "Updated existing Record.";
-                                    objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
+                                    objTermsAndConditionResponse.Id = descriptionExists.Id;
+                                    objTermsAndConditionResponse.FileName = item.FileName;
+                                    objTermsAndConditionResponse.Action = "Updated existing Record.";
+                                    objTermsAndConditionResponseList.TermsAndConditionDetails.Add(objTermsAndConditionResponse);
 
                                 }
                             }
                             //To update outdate version to state D and Insert new record
-                            else if (descriptionExists.version_no != item.version_no && descriptionExists.code == item.code)
+                            else if (descriptionExists.Version_no != item.Version_no && descriptionExists.Code == item.Code)
                             {
                                 var QueryStatement = @"UPDATE master.termsandcondition 
                              SET state=@state,end_date=@end_date,modified_by=@modified_by 
@@ -402,10 +400,10 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                                 var parameter = new DynamicParameters();
                                 parameter.Add("@state", "I");
                                 parameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                                parameter.Add("@modified_by", objTermsandConFileDataList.created_by);
-                                parameter.Add("@code", item.code);
+                                parameter.Add("@modified_by", objTermsandConFileDataList.Created_by);
+                                parameter.Add("@code", item.Code);
 
-                                int rowEffected = await dataAccess.ExecuteAsync(QueryStatement, parameter);
+                                int rowEffected = await _dataAccess.ExecuteAsync(QueryStatement, parameter);
                                 if (rowEffected > 0)
                                 {
                                     var Query = @"INSERT INTO master.termsandcondition 
@@ -413,21 +411,21 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                             VALUES (@version_no,@code,@description,@state,@start_date,@created_at,@created_by) RETURNING id";
 
                                     var param = new DynamicParameters();
-                                    param.Add("@version_no", item.version_no);
-                                    param.Add("@code", item.code);
-                                    param.Add("@description", item.description);
+                                    param.Add("@version_no", item.Version_no);
+                                    param.Add("@code", item.Code);
+                                    param.Add("@description", item.Description);
                                     param.Add("@state", "A");
-                                    param.Add("@start_date", objTermsandConFileDataList.start_date == 0 ? UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) : objTermsandConFileDataList.start_date);
+                                    param.Add("@start_date", objTermsandConFileDataList.Start_date == 0 ? UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()) : objTermsandConFileDataList.Start_date);
                                     param.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                                    param.Add("@created_by", objTermsandConFileDataList.created_by);
+                                    param.Add("@created_by", objTermsandConFileDataList.Created_by);
 
-                                    int id = await dataAccess.ExecuteScalarAsync<int>(Query, param);
+                                    int id = await _dataAccess.ExecuteScalarAsync<int>(Query, param);
                                     if (id > 0)
                                     {
-                                        objTermsAndConditionResponse.id = id;
-                                        objTermsAndConditionResponse.fileName = item.fileName;
-                                        objTermsAndConditionResponse.action = "Inserted Sucessfully and disabled previous version";
-                                        objTermsAndConditionResponseList.termsAndConditionDetails.Add(objTermsAndConditionResponse);
+                                        objTermsAndConditionResponse.Id = id;
+                                        objTermsAndConditionResponse.FileName = item.FileName;
+                                        objTermsAndConditionResponse.Action = "Inserted Sucessfully and disabled previous version";
+                                        objTermsAndConditionResponseList.TermsAndConditionDetails.Add(objTermsAndConditionResponse);
                                     }
                                 }
                             }
@@ -449,7 +447,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             parameter.Add("@version_no", version);
             parameter.Add("@code", code);
             parameter.Add("@state", "A");
-            var data = await dataAccess.QueryFirstOrDefaultAsync<VersionAndCodeExits>(QueryStatement, parameter);
+            var data = await _dataAccess.QueryFirstOrDefaultAsync<VersionAndCodeExits>(QueryStatement, parameter);
             if (data == null)
             {
                 VersionAndCodeExits objVersionAndCodeExits = new VersionAndCodeExits();
@@ -461,24 +459,24 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
         {
             var QueryStatement = @"update  master.termsandcondition set state=I where id=@id";
             InactivateTandCStatusResponceList objInactivateTandCStatusResponceList = new InactivateTandCStatusResponceList();
-            foreach (var item in objInactivateTandCRequestList._ids)
+            foreach (var item in objInactivateTandCRequestList.Ids)
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@id", item.id);
-                int rowsEffected = await dataAccess.ExecuteAsync(QueryStatement, parameter);
+                parameter.Add("@id", item.Id);
+                int rowsEffected = await _dataAccess.ExecuteAsync(QueryStatement, parameter);
                 InactivateTandCStatusResponce objInactivateTandCStatusResponce = new InactivateTandCStatusResponce();
                 if (rowsEffected == 0)
                 {
-                    objInactivateTandCStatusResponce.id = item.id;
-                    objInactivateTandCStatusResponce.action = "Inactivation Unsucessfull";
+                    objInactivateTandCStatusResponce.Id = item.Id;
+                    objInactivateTandCStatusResponce.Action = "Inactivation Unsucessfull";
                 }
                 else
                 {
-                    objInactivateTandCStatusResponce.id = item.id;
-                    objInactivateTandCStatusResponce.action = "Inactivation Sucessfull";
+                    objInactivateTandCStatusResponce.Id = item.Id;
+                    objInactivateTandCStatusResponce.Action = "Inactivation Sucessfull";
                 }
-                objInactivateTandCStatusResponceList._ids.Add(objInactivateTandCStatusResponce);
+                objInactivateTandCStatusResponceList.Ids.Add(objInactivateTandCStatusResponce);
             }
             return objInactivateTandCStatusResponceList;
         }
@@ -490,7 +488,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             parameterToGetPackageId.Add("@id", orgId);
             parameterToGetPackageId.Add("@state", "A");
             string query = @"select id from master.organization where id=@id and state = @state";
-            var data = await dataAccess.ExecuteScalarAsync<int>
+            var data = await _dataAccess.ExecuteScalarAsync<int>
                              (query, parameterToGetPackageId);
             return data;
         }
@@ -501,7 +499,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             parameterToGetPackageId.Add("@id", accountId);
             parameterToGetPackageId.Add("@state", "A");
             string query = @"select id from master.account where id=@id and state = @state";
-            var data = await dataAccess.ExecuteScalarAsync<int>
+            var data = await _dataAccess.ExecuteScalarAsync<int>
                              (query, parameterToGetPackageId);
             return data;
         }
@@ -522,7 +520,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
                 parameter.Add("@account_id", AccountId);
                 parameter.Add("@organization_id", OrganizationId);
                 parameter.Add("@state", Convert.ToChar(State.Active));
-                int result = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int result = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
                 return result > 0;
             }
@@ -538,7 +536,7 @@ VALUES (@version_no,@code,@description,@state,@start_date,@end_date,@created_at,
             TermsAndConditions termsAndConditions = new TermsAndConditions();
             termsAndConditions.Id = record.id;
             termsAndConditions.Code = record.code;
-            termsAndConditions.version_no = record.version_no;
+            termsAndConditions.Version_no = record.version_no;
             if (record.description != null)
             {
                 termsAndConditions.Description = record.description;

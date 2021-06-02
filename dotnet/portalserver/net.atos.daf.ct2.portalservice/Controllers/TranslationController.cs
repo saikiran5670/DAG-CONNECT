@@ -20,8 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class TranslationController : BaseController
     {
-        //private readonly ILogger<TranslationController> _logger;
-        private readonly AuditHelper _Audit;
+        private readonly AuditHelper _audit;
 
         private ILog _logger;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
@@ -33,8 +32,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _translationServiceClient = translationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
-            _Audit = auditHelper;
-            _userDetails = _Audit.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            _audit = auditHelper;
+            _userDetails = _audit.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
 
@@ -376,18 +375,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("InsertTranslationFileDetails Method post");
-                if (request.file_name == "" || request.file_name == null || request.file_size <= 0)
+                if (request.File_name == "" || request.File_name == null || request.File_size <= 0)
                 {
                     return StatusCode(400, "File name and valid file size is required.");
                 }
-                if (request.file.Count() <= 0)
+                if (request.File.Count() <= 0)
                 {
                     return StatusCode(400, "File translations data is required.");
                 }
                 // request.file[0].code
-                for (int i = 0; i < request.file.Count; i++)
+                for (int i = 0; i < request.File.Count; i++)
                 {
-                    if (request.file[i].code == null || request.file[i].code == "")
+                    if (request.File[i].Code == null || request.File[i].Code == "")
                     {
                         return StatusCode(400, "invalid langauge code in file.");
                     }
@@ -400,7 +399,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (ResponseList != null && ResponseList.Code == Responcecode.Success)
                 {
-                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                    await _audit.AddLogs(DateTime.Now, "Translation Component",
                        "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                        "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                         Request);
@@ -468,7 +467,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Validation
-                if (request.dtcWarningToImport.Count <= 0)
+                if (request.DtcWarningToImport.Count <= 0)
                 {
                     return StatusCode(400, "DTC Warning Data is required.");
                 }
@@ -483,7 +482,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
                 {
-                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                    await _audit.AddLogs(DateTime.Now, "Translation Component",
                           "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                           "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                            Request);
@@ -501,12 +500,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                await _audit.AddLogs(DateTime.Now, "Translation Component",
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                       "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                        Request);
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -563,7 +562,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Validation
-                if (request.dtcWarningToImport.Count <= 0)
+                if (request.DtcWarningToImport.Count <= 0)
                 {
                     return StatusCode(400, "DTC Warning Data is required.");
                 }
@@ -578,7 +577,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
                 {
-                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                    await _audit.AddLogs(DateTime.Now, "Translation Component",
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                       "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                        Request);
@@ -592,12 +591,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                await _audit.AddLogs(DateTime.Now, "Translation Component",
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                       Request);
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -642,7 +641,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (termsAndCondResponse != null && termsAndCondResponse.Code == Responcecode.Success)
                 {
-                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                    await _audit.AddLogs(DateTime.Now, "Translation Component",
                                         "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "AddUserAcceptedTermCondition  method in Translation controller", 0, termsAndCondResponse.AcceptedTermCondition != null ? termsAndCondResponse.AcceptedTermCondition.Id : 0,
                                         JsonConvert.SerializeObject(request),
@@ -657,13 +656,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                await _audit.AddLogs(DateTime.Now, "Translation Component",
                                         "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "AddUserAcceptedTermCondition  method in Translation controller", 0, 0,
                                         JsonConvert.SerializeObject(request),
                                          Request);
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -680,25 +679,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-                switch (objVersionByID.levelCode)
+                switch (objVersionByID.LevelCode)
                 {
                     case 0:
                         return StatusCode(400, "Level code is required.");
                     case 30:
                     case 40:
-                        if (objVersionByID.orgId <= 0)
+                        if (objVersionByID.OrgId <= 0)
                             return StatusCode(400, "Organization id is required.");
-                        if (objVersionByID.accountId <= 0)
+                        if (objVersionByID.AccountId <= 0)
                             return StatusCode(400, "Account id is required.");
                         break;
 
                 }
                 //Assign context orgId
-                objVersionByID.orgId = GetContextOrgId();
+                objVersionByID.OrgId = GetContextOrgId();
                 net.atos.daf.ct2.translationservice.VersionID objVersionID = new VersionID();
-                objVersionID.LevelCode = objVersionByID.levelCode;
-                objVersionID.OrgId = objVersionByID.orgId;
-                objVersionID.AccountId = objVersionByID.accountId;
+                objVersionID.LevelCode = objVersionByID.LevelCode;
+                objVersionID.OrgId = objVersionByID.OrgId;
+                objVersionID.AccountId = objVersionByID.AccountId;
                 var response = await _translationServiceClient.GetAllVersionNoAsync(objVersionID);
                 TermsAndConditions termsAndConditions = new TermsAndConditions();
                 //termsAndConditions=_mapper.
@@ -885,35 +884,35 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 long startdatetime = 0; long enddatetime = 0;
-                if (request.start_date != string.Empty)
+                if (request.Start_date != string.Empty)
                 {
-                    startdatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.start_date));
+                    startdatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.Start_date));
                 }
 
-                if (request.end_date != string.Empty)
+                if (request.End_date != string.Empty)
                 {//Assign only if enddate is passed
-                    enddatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.end_date));
+                    enddatetime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(request.End_date));
                 }
                 objUploadTermandConditionRequestList.StartDate = startdatetime;
                 objUploadTermandConditionRequestList.EndDate = enddatetime;
             }
             catch (Exception)
             {
-                _logger.Info($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(request.start_date)}");
+                _logger.Info($"Not valid date in subcription event - {Newtonsoft.Json.JsonConvert.SerializeObject(request.Start_date)}");
                 return StatusCode(400, string.Empty); ;
             }
-            objUploadTermandConditionRequestList.CreatedBy = request.created_by;
-            foreach (var item in request._data)
+            objUploadTermandConditionRequestList.CreatedBy = request.Created_by;
+            foreach (var item in request.Data)
             {
-                string[] aryFileNameContent = item.fileName.Split('_');
+                string[] aryFileNameContent = item.FileName.Split('_');
                 UploadTermandConditionRequest objUploadTermandConditionRequest = new UploadTermandConditionRequest();
                 if (aryFileNameContent != null && aryFileNameContent.Length > 1)
                 {
 
                     objUploadTermandConditionRequest.Code = aryFileNameContent[2].ToUpper();
                     objUploadTermandConditionRequest.Versionno = aryFileNameContent[1].ToUpper();
-                    objUploadTermandConditionRequest.FileName = item.fileName;
-                    objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.description);
+                    objUploadTermandConditionRequest.FileName = item.FileName;
+                    objUploadTermandConditionRequest.Description = ByteString.CopyFrom(item.Description);
                     objUploadTermandConditionRequestList.Data.Add(objUploadTermandConditionRequest);
                 }
                 else
@@ -931,7 +930,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             else if (data != null && data.Code == translationservice.Responcecode.Success)
             {
-                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                await _audit.AddLogs(DateTime.Now, "Translation Component",
                                         "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "UploadTermsAndCondition  method in Translation controller", 0, 0,
                                         JsonConvert.SerializeObject(request),
@@ -954,12 +953,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Validation
-                if (request.dtcWarningUpdateIcon.Count <= 0)
+                if (request.DtcWarningUpdateIcon.Count <= 0)
                 {
                     return StatusCode(400, "DTC Warning Icon Data is required.");
                 }
 
-                foreach (var item in request.dtcWarningUpdateIcon)
+                foreach (var item in request.DtcWarningUpdateIcon)
                 {
                     if (item.Icon.Length <= 0 || item.Name == null || item.Name == "")
                     {
@@ -977,7 +976,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (DTCResponse != null && DTCResponse.Code == Responcecode.Success)
                 {
-                    await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                    await _audit.AddLogs(DateTime.Now, "Translation Component",
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                       "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                        Request);
@@ -995,12 +994,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _Audit.AddLogs(DateTime.Now, DateTime.Now, "Translation Component",
+                await _audit.AddLogs(DateTime.Now, "Translation Component",
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
                       Request);
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }

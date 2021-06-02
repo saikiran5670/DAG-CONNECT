@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.account
                 }
 
                 IdentityEntity.AccountToken accToken = await PrepareSaveToken(user, account, roleId);
-                if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
+                if (accToken != null && accToken.StatusCode == HttpStatusCode.OK)
                 {
                    var _passwordPolicyAccount = await CaptureUserLastLogin(account);
 
@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.account
                     // }
                     #endregion
                 }//if check password max days expird
-                else if (accToken?.statusCode == HttpStatusCode.BadRequest && CheckIsPasswordExpired(accToken?.message))
+                else if (accToken?.StatusCode == HttpStatusCode.BadRequest && CheckIsPasswordExpired(accToken?.Message))
                 {
                     //Generate Reset token with 302 response code
                     var identityResult = await GetResetToken(user);
@@ -193,9 +193,9 @@ namespace net.atos.daf.ct2.account
                 if (idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
-                    IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(token.access_token);
+                    IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(token.Access_token);
 
-                    accIDPclaims.TokenExpiresIn = token.expires_in;
+                    accIDPclaims.TokenExpiresIn = token.Expires_in;
 
                     IdentityEntity.AccountToken accToken = _tokenManager.CreateToken(accIDPclaims);
                     accIdentity.AccountOrganization = _accountManager.GetAccountOrg(account.Id).Result;
@@ -222,8 +222,8 @@ namespace net.atos.daf.ct2.account
             }
             else
             {
-                accToken.statusCode = System.Net.HttpStatusCode.NotFound;
-                accToken.message = "Account is not present";
+                accToken.StatusCode = System.Net.HttpStatusCode.NotFound;
+                accToken.Message = "Account is not present";
             }
             return accToken;
         }
@@ -241,7 +241,7 @@ namespace net.atos.daf.ct2.account
                     break; //get only first role 
                 }
                 accToken = await PrepareSaveToken(user, account, roleId);
-                if (accToken != null && accToken.statusCode == HttpStatusCode.OK)
+                if (accToken != null && accToken.StatusCode == HttpStatusCode.OK)
                 {
                     IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(accToken.AccessToken);
                     //replacing jwt access token with guid based access token
@@ -250,8 +250,8 @@ namespace net.atos.daf.ct2.account
             }
             else
             {
-                accToken.statusCode = System.Net.HttpStatusCode.NotFound;
-                accToken.message = "Account is not present";
+                accToken.StatusCode = System.Net.HttpStatusCode.NotFound;
+                accToken.Message = "Account is not present";
             }
             return accToken;
         }
@@ -415,13 +415,13 @@ namespace net.atos.daf.ct2.account
             if (idpResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 IdentityEntity.IDPToken token = JsonConvert.DeserializeObject<IdentityEntity.IDPToken>(Convert.ToString(idpResponse.Result));
-                IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(token.access_token);
+                IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(token.Access_token);
                 var now = DateTime.Now;
                 long unixTimeSecondsIssueAt = new DateTimeOffset(now).ToUnixTimeSeconds();
                 long unixTimeSecondsExpiresAt = 0;
-                if (token.expires_in > 0)
+                if (token.Expires_in > 0)
                 {
-                    unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(token.expires_in)).ToUnixTimeSeconds();
+                    unixTimeSecondsExpiresAt = new DateTimeOffset(now.AddSeconds(token.Expires_in)).ToUnixTimeSeconds();
                 }
                 int session_Id = 0;
                 Guid sessionGuid = Guid.NewGuid();
@@ -467,7 +467,7 @@ namespace net.atos.daf.ct2.account
                     }
                     //set session guid to token for response value session_state
                     accIDPclaims.Sessionstate = sessionGuid.ToString();
-                    accIDPclaims.TokenExpiresIn = token.expires_in;
+                    accIDPclaims.TokenExpiresIn = token.Expires_in;
                     accIDPclaims.IssuedAt = unixTimeSecondsIssueAt;
                     accIDPclaims.ValidTo = unixTimeSecondsExpiresAt;
                     accIDPclaims.Email = account.EmailId;
@@ -483,7 +483,7 @@ namespace net.atos.daf.ct2.account
 
                         accTokenEntity.AccountId = account.Id;
                         accTokenEntity.CreatedAt = unixTimeSecondsIssueAt;
-                        accTokenEntity.ExpireIn = token.expires_in;
+                        accTokenEntity.ExpireIn = token.Expires_in;
                         accTokenEntity.IdpType = IdentitySessionComponent.ENUM.IDPType.Keycloak;
                         accTokenEntity.TokenType = IdentitySessionComponent.ENUM.TokenType.Bearer;
                         accTokenEntity.Scope = accToken.Scope;
@@ -500,25 +500,25 @@ namespace net.atos.daf.ct2.account
                         accSessionEntity.SessionExpiredAt += unixTimeSecondsExpiresAt;
                         var _session_Id = await _accountSessionManager.UpdateSession(accSessionEntity);
 
-                        accToken.statusCode = System.Net.HttpStatusCode.OK;
-                        accToken.message = "Token is created and saved to databse.";
+                        accToken.StatusCode = System.Net.HttpStatusCode.OK;
+                        accToken.Message = "Token is created and saved to databse.";
                     }
                     else
                     {
-                        accToken.statusCode = System.Net.HttpStatusCode.Unauthorized;
-                        accToken.message = "Custom token is not created";
+                        accToken.StatusCode = System.Net.HttpStatusCode.Unauthorized;
+                        accToken.Message = "Custom token is not created";
                     }
                 }
                 else
                 {
-                    accToken.statusCode = System.Net.HttpStatusCode.InternalServerError;
-                    accToken.message = "database session is not created";
+                    accToken.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                    accToken.Message = "database session is not created";
                 }
             }
             else
             {
-                accToken.statusCode = idpResponse.StatusCode;
-                accToken.message = Convert.ToString(idpResponse.Result);
+                accToken.StatusCode = idpResponse.StatusCode;
+                accToken.Message = Convert.ToString(idpResponse.Result);
             }
 
             return await Task.FromResult(accToken);

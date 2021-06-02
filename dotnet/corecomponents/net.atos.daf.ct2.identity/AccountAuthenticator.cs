@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.identity
 {
     public class AccountAuthenticator : IAccountAuthenticator
     {
-        private HttpClient client = new HttpClient();
+        private HttpClient _client = new HttpClient();
         private readonly IdentityJsonConfiguration _settings;
         public AccountAuthenticator(IOptions<IdentityJsonConfiguration> setting)
         {
@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.identity
                 var url = _settings.BaseUrl + _settings.AuthUrl;
                 url = url.Replace("{{realm}}", _settings.Realm);
 
-                var httpResponse = await client.PostAsync(url, querystring);
+                var httpResponse = await _client.PostAsync(url, querystring);
                 string result = httpResponse.Content.ReadAsStringAsync().Result;
                 response.StatusCode = httpResponse.StatusCode;
                 response.Result = result;
@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.identity
         /// </summary>
         /// <param name="user"> User model that will have username and password as an input</param>
         /// <returns>check server link and password</returns>
-        public string getURL(Identity user)
+        public string GetURL(Identity user)
         {
             try
             {

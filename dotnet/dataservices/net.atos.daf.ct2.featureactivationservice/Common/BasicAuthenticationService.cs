@@ -7,16 +7,16 @@ namespace net.atos.daf.ct2.featureactivationservice.Common
 {
     public class BasicAuthenticationService : IBasicAuthenticationService
     {
-        AccountComponent.IAccountIdentityManager accountIdentityManager;
-        private readonly ILogger<BasicAuthenticationService> logger;
-        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager, ILogger<BasicAuthenticationService> _logger)
+        private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
+        private readonly ILogger<BasicAuthenticationService> _logger;
+        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager accountIdentityManager, ILogger<BasicAuthenticationService> logger)
         {
-            accountIdentityManager = _accountIdentityManager;
-            logger = _logger;
+            this._accountIdentityManager = accountIdentityManager;
+            this._logger = logger;
         }
         public async Task<string> ValidateTokenGuid(string token)
         {
-            ValidTokenResponse response = await accountIdentityManager.ValidateTokenGuid(token);
+            ValidTokenResponse response = await _accountIdentityManager.ValidateTokenGuid(token);
             if (response != null && !string.IsNullOrEmpty(response.Email))
                 return response.Email;
             else

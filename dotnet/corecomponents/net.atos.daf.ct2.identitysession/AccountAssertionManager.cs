@@ -8,16 +8,16 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountAssertionManager : IAccountAssertionManager
     {
-        IAccountAssertionRepository accountassertionRepository;
-        public AccountAssertionManager(IAccountAssertionRepository _accountassertionRepository)
+        IAccountAssertionRepository _accountassertionRepository;
+        public AccountAssertionManager(IAccountAssertionRepository accountassertionRepository)
         {
-            accountassertionRepository = _accountassertionRepository;
+            this._accountassertionRepository = accountassertionRepository;
         }
         public async Task<int> InsertAssertion(AccountAssertion accountAssertion)
         {
             try
             {
-                return await accountassertionRepository.InsertAssertion(accountAssertion);
+                return await _accountassertionRepository.InsertAssertion(accountAssertion);
             }
             catch (Exception)
             {
@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await accountassertionRepository.UpdateAssertion(accountAssertion);
+                return await _accountassertionRepository.UpdateAssertion(accountAssertion);
             }
             catch (Exception)
             {
@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await accountassertionRepository.DeleteAssertion(accountId);
+                return await _accountassertionRepository.DeleteAssertion(accountId);
             }
             catch (Exception)
             {
@@ -52,7 +52,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await accountassertionRepository.DeleteAssertionbySessionId(sessionId);
+                return await _accountassertionRepository.DeleteAssertionbySessionId(sessionId);
             }
             catch (Exception)
             {
@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.identitysession
         {
             try
             {
-                return await accountassertionRepository.GetAssertion(accountId);
+                return await _accountassertionRepository.GetAssertion(accountId);
             }
             catch (Exception)
             {

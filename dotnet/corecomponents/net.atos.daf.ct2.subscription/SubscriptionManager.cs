@@ -9,30 +9,30 @@ namespace net.atos.daf.ct2.subscription
 {
     public class SubscriptionManager : ISubscriptionManager
     {
-        ISubscriptionRepository subscriptionRepository;
+        ISubscriptionRepository _subscriptionRepository;
 
-        public SubscriptionManager(ISubscriptionRepository _subscriptionRepository)
+        public SubscriptionManager(ISubscriptionRepository subscriptionRepository)
         {
-            subscriptionRepository = _subscriptionRepository;
+            _subscriptionRepository = subscriptionRepository;
         }
 
         public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Subscribe(SubscriptionActivation objSubscription)
         {
-            return await subscriptionRepository.Subscribe(objSubscription);
+            return await _subscriptionRepository.Subscribe(objSubscription);
         }
 
         public async Task<Tuple<HttpStatusCode, SubscriptionResponse>> Unsubscribe(UnSubscription objUnSubscription)
         {
-            return await subscriptionRepository.Unsubscribe(objUnSubscription);
+            return await _subscriptionRepository.Unsubscribe(objUnSubscription);
         }
 
         public async Task<SubscriptionResponse> Create(int orgId, int packageId)
         {
-            return await subscriptionRepository.Create(orgId, packageId);
+            return await _subscriptionRepository.Create(orgId, packageId);
         }
         public async Task<List<SubscriptionDetails>> Get(SubscriptionDetailsRequest objSubscriptionDetailsRequest)
         {
-            return await subscriptionRepository.Get(objSubscriptionDetailsRequest);
+            return await _subscriptionRepository.Get(objSubscriptionDetailsRequest);
         }
 
     }

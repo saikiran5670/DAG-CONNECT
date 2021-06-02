@@ -6,24 +6,24 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
     public class FileUploadRequest
     {
         [Required(ErrorMessage = "File name is required.")]
-        public string file_name { get; set; }
-        public string description { get; set; }
+        public string File_name { get; set; }
+        public string Description { get; set; }
         [Required]
-        public int file_size { get; set; }
-        public int failure_count { get; set; }
+        public int File_size { get; set; }
+        public int Failure_count { get; set; }
         //public int created_by { get; set; }   
         [Required]
-        public List<FileData> file { get; set; }
-        public int added_count { get; set; }
-        public int updated_count { get; set; }
+        public List<FileData> File { get; set; }
+        public int Added_count { get; set; }
+        public int Updated_count { get; set; }
 
     }
 
     public class FileData
     {
-        public string code { get; set; }
-        public string type { get; set; }
-        public string name { get; set; }
-        public string value { get; set; }
+        public string Code { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 }

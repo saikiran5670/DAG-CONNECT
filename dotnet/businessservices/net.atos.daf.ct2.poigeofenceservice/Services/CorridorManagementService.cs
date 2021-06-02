@@ -273,8 +273,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.Gas = request.IsGas;
                 obj.Flammable = request.IsFlammable;
                 obj.Combustible = request.IsCombustible;
-                obj.organic = request.Isorganic;
-                obj.poision = request.Ispoision;
+                obj.Organic = request.Isorganic;
+                obj.Poision = request.Ispoision;
                 obj.RadioActive = request.IsRadioActive;
                 obj.Corrosive = request.IsCorrosive;
                 obj.PoisonousInhalation = request.IsPoisonousInhalation;
@@ -502,8 +502,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.Gas = objRequest.Request.IsGas;
                 obj.Flammable = objRequest.Request.IsFlammable;
                 obj.Combustible = objRequest.Request.IsCombustible;
-                obj.organic = objRequest.Request.Isorganic;
-                obj.poision = objRequest.Request.Ispoision;
+                obj.Organic = objRequest.Request.Isorganic;
+                obj.Poision = objRequest.Request.Ispoision;
                 obj.RadioActive = objRequest.Request.IsRadioActive;
                 obj.Corrosive = objRequest.Request.IsCorrosive;
                 obj.PoisonousInhalation = objRequest.Request.IsPoisonousInhalation;

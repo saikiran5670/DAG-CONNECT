@@ -12,10 +12,10 @@ namespace net.atos.daf.ct2.identitysession.repository
 {
     public class AccountAssertionRepository : IAccountAssertionRepository
     {
-        private readonly IDataAccess dataAccess;
-        public AccountAssertionRepository(IDataAccess _dataAccess)
+        private readonly IDataAccess _dataAccess;
+        public AccountAssertionRepository(IDataAccess dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
         public async Task<int> InsertAssertion(AccountAssertion accountAssertion)//TODO Use bulk insertion
         {
@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 int InsertedAccountAssertionId = 0;
                 if (result_CheckDuplicate == 0)
                 {
-                    InsertedAccountAssertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                    InsertedAccountAssertionId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 }
                 else
                 {
@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.identitysession.repository
             parameter.Add("@value", Value);
             parameter.Add("@account_id", AccountId);
 
-            int result_CheckDuplicate = await dataAccess.ExecuteScalarAsync<int>(QueryStatement_select, parameter);
+            int result_CheckDuplicate = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement_select, parameter);
 
             return result_CheckDuplicate;
         }
@@ -110,7 +110,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@session_id", accountAssertion.Session_Id);
                 parameter.Add("@created_at", Convert.ToInt64(accountAssertion.CreatedAt));
 
-                int accountassertionId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int accountassertionId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
                 return accountassertionId;
             }
@@ -131,7 +131,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", accountId);
 
-                int account_Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int account_Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
                 return account_Id;
             }
@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@session_id", sessionId);
 
-                int session_Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int session_Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
 
                 return session_Id;
             }
@@ -181,7 +181,7 @@ namespace net.atos.daf.ct2.identitysession.repository
 
                 List<AccountAssertion> accountAssertions = new List<AccountAssertion>();
 
-                dynamic result = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 foreach (dynamic record in result)
                 {

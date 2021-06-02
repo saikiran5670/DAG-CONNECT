@@ -17,7 +17,7 @@ namespace net.atos.daf.ct2.poigeofenservice
         // private readonly Mapper _mapper;
         private readonly ICategoryManager _categoryManager;
         private readonly DeleteCategoryMapper _deleteCategoryMapper;
-        public CategoryManagementService(IPoiManager poiManager, ICategoryManager categoryManager)
+        public CategoryManagementService(ICategoryManager categoryManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             //  _mapper = new Mapper();
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.State = request.State;
                 obj.Description = request.Description;
                 obj.Created_By = request.CreatedBy;
-                obj.icon = request.Icon.ToByteArray();
+                obj.Icon = request.Icon.ToByteArray();
 
                 var result = await _categoryManager.AddCategory(obj);
                 if (result.Id == -1)
@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.Id = request.Id;
                 obj.Name = request.Name;
                 obj.IconName = request.IconName;
-                obj.icon = request.Icon.ToByteArray();
+                obj.Icon = request.Icon.ToByteArray();
                 obj.Description = request.Description;
                 obj.Modified_By = request.ModifiedBy;
                 obj.Organization_Id = request.OrganizationId;
@@ -212,8 +212,8 @@ namespace net.atos.daf.ct2.poigeofenservice
                     {
                         catdetails.Icon = ByteString.CopyFrom(item.Icon);
                     }
-                    catdetails.ParentCategoryName = item.ParentCategory == null ? "" : item.ParentCategory;
-                    catdetails.SubCategoryName = item.SubCategory == null ? "" : item.SubCategory;
+                    catdetails.ParentCategoryName = item.ParentCategory ?? "";
+                    catdetails.SubCategoryName = item.SubCategory ?? "";
                     catdetails.NoOfPOI = item.No_of_POI;
                     catdetails.NoOfGeofence = item.No_of_Geofence;
                     catdetails.Description = !string.IsNullOrEmpty(item.Description) ? item.Description : string.Empty;
@@ -248,11 +248,10 @@ namespace net.atos.daf.ct2.poigeofenservice
         {
             DeleteResponse response = new DeleteResponse();
             CategoryID obj = new CategoryID();
-            DeleteCategoryclass objj = new DeleteCategoryclass();
 
 
-            objj = _deleteCategoryMapper.ToTranslationDeleteEntity(request);
-            var result = await _categoryManager.BulkDeleteCategory(objj);
+            DeleteCategoryclass deleteCategoryclass = _deleteCategoryMapper.ToTranslationDeleteEntity(request);
+            var result = await _categoryManager.BulkDeleteCategory(deleteCategoryclass);
 
             if (result.CategoryId > 0)
             {

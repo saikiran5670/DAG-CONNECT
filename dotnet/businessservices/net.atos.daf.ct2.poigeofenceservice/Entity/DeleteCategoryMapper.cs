@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
         {
             DeleteCategoryclass obj = new DeleteCategoryclass();
             // obj.id = request.Id;
-            obj.category_SubCategory_s = new List<Category_SubCategory_ID_Class>();
+            obj.Category_SubCategory_s = new List<Category_SubCategory_ID_Class>();
 
 
             if (request.CatSubCatIDList != null)
@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                     trans.CategoryId = item.CategoryId;
                     trans.SubCategoryId = item.SubCategoryId;
 
-                    obj.category_SubCategory_s.Add(trans);
+                    obj.Category_SubCategory_s.Add(trans);
                 }
 
             }

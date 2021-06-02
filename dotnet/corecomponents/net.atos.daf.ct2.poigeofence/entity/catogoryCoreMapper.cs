@@ -2,7 +2,7 @@
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
-    public class catogoryCoreMapper
+    public class CatogoryCoreMapper
     {
 
         public Category Map(dynamic record)

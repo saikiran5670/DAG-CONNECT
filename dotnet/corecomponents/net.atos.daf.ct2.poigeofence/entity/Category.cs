@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int Created_By { get; set; }
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
-        public byte[] icon { get; set; }
+        public byte[] Icon { get; set; }
         public string Description { get; set; }
 
 
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
     public class DeleteCategoryclass
     {
         // public int[] Ids { get; set; }
-        public List<Category_SubCategory_ID_Class> category_SubCategory_s { get; set; }
+        public List<Category_SubCategory_ID_Class> Category_SubCategory_s { get; set; }
 
     }
 

@@ -14,8 +14,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
     {
         private readonly IDataAccess _dataAccess;
 
-        private readonly catogoryCoreMapper _catogoryCoreMapper;
-        private static readonly log4net.ILog log =
+        private readonly CatogoryCoreMapper _catogoryCoreMapper;
+        private static readonly log4net.ILog _log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             _dataAccess = dataAccess;
 
-            _catogoryCoreMapper = new catogoryCoreMapper();
+            _catogoryCoreMapper = new CatogoryCoreMapper();
 
         }
 
@@ -66,8 +66,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info("Add Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(category.Id));
-                log.Error(ex.ToString());
+                _log.Info("Add Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(category.Id));
+                _log.Error(ex.ToString());
                 // throw;
             }
             return category;
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<CategoryID> DeleteCategory(int categoryId)
         {
-            log.Info("Delete Category method called in repository");
+            _log.Info("Delete Category method called in repository");
             try
             {
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -122,8 +122,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
-                log.Error(ex.ToString());
+                _log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -392,7 +392,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 if (name_cnt > 0)
                 {
                     var parameter = new DynamicParameters();
-                    parameter.Add("@icon", category.icon);
+                    parameter.Add("@icon", category.Icon);
                     parameter.Add("@type", "L");
                     parameter.Add("@name", category.IconName);
                     parameter.Add("@state", "A");
@@ -404,7 +404,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                 {
                     var parameter = new DynamicParameters();
-                    parameter.Add("@icon", category.icon);
+                    parameter.Add("@icon", category.Icon);
                     parameter.Add("@type", "L");
                     parameter.Add("@name", category.IconName);
                     parameter.Add("@state", "A");
@@ -485,13 +485,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
             //1 | -               | check parent cat having any sub cat in query, if yes..then delete parent and all related sub-cat
             //1 | -               | check parent cat having any sub cat in query, if No...then simply delete parent category
             //1 | 1 | check sub cat from req.payload, if yes...delete particular sub cat from par cat.
-            log.Info("Delete Category method called in repository");
+            _log.Info("Delete Category method called in repository");
             try
             {
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     Category_SubCategory_ID_Class obj = new Category_SubCategory_ID_Class();
-                    foreach (var item in deleteCategoryclass.category_SubCategory_s)
+                    foreach (var item in deleteCategoryclass.Category_SubCategory_s)
                     {
                         var temp = new Category_SubCategory_ID_Class();
                         temp.CategoryId = item.CategoryId;
@@ -510,15 +510,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(deleteCategoryclass));
-                log.Error(ex.ToString());
+                _log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(deleteCategoryclass));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
         public async Task<Category_SubCategory_ID_Class> DeleteSubCategory(Category_SubCategory_ID_Class categoryobj)
         {
-            log.Info("Delete Category method called in repository");
+            _log.Info("Delete Category method called in repository");
             try
             {
                 //1 | -               | check parent cat having any sub cat in query, if yes..then delete parent and all related sub-cat
@@ -562,15 +562,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryobj.CategoryId));
-                log.Error(ex.ToString());
+                _log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(categoryobj.CategoryId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
         public async Task<CategoryID> DeleteSubCategoryBulk(int subcategoryId)
         {
-            log.Info("Delete Category method called in repository");
+            _log.Info("Delete Category method called in repository");
             try
             {
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -595,8 +595,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(subcategoryId));
-                log.Error(ex.ToString());
+                _log.Info("Delete Category method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(subcategoryId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }

@@ -19,19 +19,19 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle")]
-    [Authorize(Policy = AccessPolicies.MainNamelistAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY)]
     public class VehicleNamelistController : ControllerBase
     {
-        private readonly ILogger<VehicleNamelistController> logger;
-        private readonly IVehicleManager vehicleManager;
-        private readonly IAccountManager accountManager;
-        private readonly IAuditTraillib auditTrail;
-        public VehicleNamelistController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleNamelistController> _logger, IAuditTraillib _auditTrail)
+        private readonly ILogger<VehicleMileageController> _logger;
+        private readonly IVehicleManager _vehicleManager;
+        private readonly IAccountManager _accountManager;
+        private readonly IAuditTraillib _auditTrail;
+        public VehicleNamelistController(IVehicleManager vehicleManager, IAccountManager accountManager, ILogger<VehicleMileageController> logger, IAuditTraillib auditTrail)
         {
-            vehicleManager = _vehicleManager;
-            accountManager = _accountManager;
-            auditTrail = _auditTrail;
-            logger = _logger;
+            this._vehicleManager = vehicleManager;
+            this._accountManager = accountManager;
+            _auditTrail = auditTrail;
+            this._logger = logger;
         }
 
         [HttpGet]
@@ -41,18 +41,18 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             try
             {
                 long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-                await auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Vehicle namelist Service", "Vehicle namelist Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get namelist method vehicle namelist service", 1, 2, since, 0, 0);
+                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 0, "Vehicle namelist Service", "Vehicle namelist Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get namelist method vehicle namelist service", 1, 2, since, 0, 0);
 
                 var isValid = ValidateParameter(ref since, out bool isNumeric);
                 if (isValid)
                 {
                     var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
-                    var account = await accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+                    var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
 
-                    var orgs = await accountManager.GetAccountOrg(account.Id);
+                    var orgs = await _accountManager.GetAccountOrg(account.Id);
 
                     VehicleNamelistResponse vehiclenamelist = new VehicleNamelistResponse();
-                    vehiclenamelist = await vehicleManager.GetVehicleNamelist(since, isNumeric, account.Id, orgs.First().Id);
+                    vehiclenamelist = await _vehicleManager.GetVehicleNamelist(since, isNumeric, account.Id, orgs.First().Id);
 
                     vehiclenamelist.RequestTimestamp = currentdatetime;
                     return Ok(vehiclenamelist);
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing Vehicle Namelist data.");
+                _logger.LogError(ex, "Error occurred while processing Vehicle Namelist data.");
                 return StatusCode(500, string.Empty);
             }
         }
@@ -73,11 +73,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             if (isNumeric)
             {
                 string sTimezone = "UTC";
-                DateTime dDate;
                 try
                 {
                     string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
-                    if (!DateTime.TryParse(converteddatetime, out dDate))
+                    if (!DateTime.TryParse(converteddatetime, out DateTime dDate))
                         return false;
                     else
                         since = converteddatetime;
