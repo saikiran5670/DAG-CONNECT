@@ -1,10 +1,11 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CorridorService } from '../../../../../services/corridor.service';
+import { TranslationService } from '../../../../../../app/services/translation.service';
 // import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
@@ -17,7 +18,8 @@ import { ConfigService } from '@ngx-config/core';
 import { HereService } from 'src/app/services/here.service';
 import { Options } from '@angular-slider/ngx-slider';
 declare var H: any;
-
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 
 @Component({
   selector: 'app-existing-trips',
@@ -25,6 +27,7 @@ declare var H: any;
   styleUrls: ['./existing-trips.component.less']
 })
 export class ExistingTripsComponent implements OnInit {
+  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() translationData: any;
   @Input() exclusionList :  any;
   @Input() actionType: any; 
@@ -36,7 +39,7 @@ export class ExistingTripsComponent implements OnInit {
   endDate = new FormControl();
   startDate = new FormControl();
   startTime = new FormControl();
-  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  // @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() disabled: boolean;
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
@@ -46,7 +49,7 @@ export class ExistingTripsComponent implements OnInit {
   selectedEndDateStamp: any;
   startTimeUTC: any;
   endTimeUTC: any;
-  
+  selectionTab: any;
   timeValue: any;
   // range = new FormGroup({
   //   start: new FormControl(),
@@ -161,7 +164,23 @@ export class ExistingTripsComponent implements OnInit {
 
   createFlag : boolean = true;
 
-  constructor(private here: HereService,private _formBuilder: FormBuilder,private corridorService : CorridorService, private poiService: POIService,private completerService: CompleterService, private config: ConfigService) {
+
+  //Integrating Time date component
+  searchExpandPanel: boolean = true;
+  startDateValue: any;
+  endDateValue: any;
+  last3MonthDate: any;
+  todayDate: any;
+  startTimeDisplay: any = '00:00:00';
+  endTimeDisplay: any = '23:59:59';
+  prefTimeFormat: any = 12; //-- coming from pref setting
+  prefDateFormat: any = ''; //-- coming from pref setting
+
+
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private here: HereService,
+  private _formBuilder: FormBuilder, private translationService: TranslationService,
+  private corridorService : CorridorService, private poiService: POIService,
+  private completerService: CompleterService, private config: ConfigService) {
 
     this.map_key =  config.getSettings("hereMap").api_key;
     this.map_id =  config.getSettings("hereMap").app_id;
@@ -193,33 +212,29 @@ export class ExistingTripsComponent implements OnInit {
       startaddress : ['', [Validators.required]],
       viaroute1: [''],
       viaroute2: [''],
-      // trailer:["Regular"],
-      // tollRoad:['Regular'],
-      // motorWay:['Regular'],
-      // boatFerries:['Regular'],
-      // railFerries:['Regular'],
-      // tunnels:['Regular'],
-      // dirtRoad:['Regular'],
-      // vehicleHeight:[''],
-      // vehicleWidth: [''],
-      // vehicleLength : [''],
-      // limitedWeight: [''],
-      // weightPerAxle: [''],
-
-
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
-      startDate: ['', [Validators.required]],
-      startTime: ['', [Validators.required]],
-      endDate: ['', [Validators.required]],
-      endTime: ['', [Validators.required]],
+      startDate: ['', []],
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
-    },
-      {
-        validator: [
-          // CustomValidators.specialCharValidationForName('userGroupName'),
-          // CustomValidators.specialCharValidationForNameWithoutRequired('userGroupDescription')
-        ]
+    });
+      let translationObj = {
+        id: 0,
+        code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+        type: "Menu",
+        name: "",
+        value: "",
+        filter: "",
+        menuId: 6 //-- for ExistingTrips
+      }
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        // this.processTranslation(data);
+        this.setDefaultStartEndTime();
+        this.setPrefFormatDate();
+        this.setDefaultTodayDate();
+      
       });
     this.loadExistingTripData();
     this.setDefaultTodayDate();
@@ -229,27 +244,268 @@ export class ExistingTripsComponent implements OnInit {
     this.initMap();
   }
 
-  // setDefaultStartEndTime(){
-  //   this.selectedStartTime = "00:00";
-  //   this.selectedEndTime = "23:59";
+
+
+
+  setDefaultStartEndTime(){
+    this.selectedStartTime = "00:00";
+    this.selectedEndTime = "23:59";
+  }
+
+  // setDefaultTodayDate(){
+  //   this.selectionTab = 'today';
+  //   // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+  //   // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+  //   // this.last3MonthDate = this.getLast3MonthDate();
+  //   // this.todayDate = this.getTodayDate();
+  //   let todayDate = new Date(); //-- UTC
+  //   // return todayDate;
+  //   this.selectedStartDateStamp = todayDate;
+  //   this.selectedEndDateStamp = todayDate;
+  //   this.existingTripForm.controls.startDate.setValue(this.selectedStartDateStamp);
+  //   this.existingTripForm.controls.endDate.setValue(this.selectedEndDateStamp);
+  //   console.log("-----date without selection date---",this.selectedStartDateStamp)
+  //   console.log("------defaults start dates--",this.selectedStartDateStamp)
+  //   console.log("------defaults end dates--",this.selectedEndDateStamp)
+
   // }
 
-  setDefaultTodayDate(){
-    // this.selectionTab = 'today';
-    // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-    // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-    // this.last3MonthDate = this.getLast3MonthDate();
-    // this.todayDate = this.getTodayDate();
-    let todayDate = new Date(); //-- UTC
-    // return todayDate;
-    this.selectedStartDateStamp = todayDate;
-    this.selectedEndDateStamp = todayDate;
-    this.existingTripForm.controls.startDate.setValue(this.selectedStartDateStamp);
-    this.existingTripForm.controls.endDate.setValue(this.selectedEndDateStamp);
-    console.log("-----date without selection date---",this.selectedStartDateStamp)
-    console.log("------defaults start dates--",this.selectedStartDateStamp)
-    console.log("------defaults end dates--",this.selectedEndDateStamp)
 
+
+  // setStartEndDateTime(date: any, timeObj: any, type: any){
+  //   date.setHours(timeObj.split(":")[0]);
+  //   date.setMinutes(timeObj.split(":")[1]);
+  //   date.setSeconds(type == 'start' ? '00' : '59');
+  //   return date;
+  // }
+
+
+  // getLast3MonthDate(){
+  //   let date = new Date();
+  //   date.setMonth(date.getMonth()-3);
+  //   return date;
+  // }
+
+
+  setPrefFormatTime(){
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = '00:00:00';
+      this.endTimeDisplay = '23:59:59';
+    }else{
+      this.startTimeDisplay = '12:00 AM';
+      this.endTimeDisplay = '11:59 PM';
+    }
+  }
+
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      }
+    }
+  }
+
+  startTimeChanged(selectedTime: any) {
+    this.selectedStartTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = selectedTime + ':00';
+    }
+    else{
+      this.startTimeDisplay = selectedTime;
+    }
+    this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+  }
+
+  endTimeChanged(selectedTime: any) {
+    this.selectedEndTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.endTimeDisplay = selectedTime + ':59';
+    }
+    else{
+      this.endTimeDisplay = selectedTime;
+    }
+    this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+  }
+
+  getTodayDate(){
+    let todayDate = new Date(); //-- UTC
+    return todayDate;
+  }
+
+  getYesterdaysDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-1);
+    return date;
+  }
+
+  getLastWeekDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-7);
+    return date;
+  }
+
+  getLastMonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-1);
+    return date;
+  }
+
+  getLast3MonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-3);
+    return date;
+  }
+
+  selectionTimeRange(selection: any){
+    switch(selection){
+      case 'today': {
+        this.selectionTab = 'today';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'yesterday': {
+        this.selectionTab = 'yesterday';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'lastweek': {
+        this.selectionTab = 'lastweek';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'lastmonth': {
+        this.selectionTab = 'lastmonth';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'last3month': {
+        this.selectionTab = 'last3month';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+    }
+  }
+
+  changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    //this.startDateValue = event.value._d;
+    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+  }
+
+  changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    //this.endDateValue = event.value._d;
+    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+    date.setHours(timeObj.split(":")[0]);
+    date.setMinutes(timeObj.split(":")[1]);
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  
+  onSearch(){
+    
+    //       ----------This is only test data-----
+    //     VIN: 5A65654
+    // start date: 1616961846000
+    // end date: 1616963318000
+
+    //     VIN: NBVGF1254KLJ55
+    // start date: 1604327461000
+    // end date: 1604336647000
+
+    
+    let _startTime = this.startDateValue.getTime();
+    let _endTime = this.endDateValue.getTime();
+    // _startTime = 1604327461000;
+    // _endTime = 1604336647000;
+    // this.vinListSelectedValue= "NBVGF1254KLJ55";
+   
+      this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
+      console.log("--existingTripData----", existingTripDetails)
+      this.showLoadingIndicator = true;
+      this.initData = existingTripDetails.tripData;
+
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    });
+
+  }
+
+
+  onReset(){
+    this.setDefaultStartEndTime();
+    this.setDefaultTodayDate();
+    this.existingTripForm.get('vehicle').setValue('');
+    this.existingTripForm.get('vehicleGroup').setValue('');
+    this.vinListSelectedValue = '';
+    this.vinList = [];
+    // this.vehicleGroupListData = this.vehicleGroupIdsSet;
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    // this.updateDataSource(this.tripData);
+    // this.resetTripFormControlValue();
+    // this.tableInfoObj = {};
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  setDefaultTodayDate(){
+    this.selectionTab = 'today';
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
   }
   
   initMap(){
@@ -444,7 +700,6 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   hideloader() {
-    // Setting display of spinner
     this.showLoadingIndicator = false;
   }
   vehicleGroupSelection(vehicleGroupValue: any) {
@@ -1124,6 +1379,7 @@ export class ExistingTripsComponent implements OnInit {
 
     switch (getDateValue) {
       case "today" : 
+      this.selectionTab = 'today';
       // let a = moment().subtract(1, 'day');
       this.selectedStartDateStamp = testDate;
       
@@ -1134,18 +1390,22 @@ export class ExistingTripsComponent implements OnInit {
       break;
       
       case "yesterday" : 
+      this.selectionTab = 'yesterday';
       let b = moment().subtract(2, 'day');
       console.log("---from today--",b)
       return b;
       break;
       
       case "lastWeek" : ""
+      this.selectionTab = 'lastWeek';
       break;
 
       case "lastMonth" : ""
+      this.selectionTab = 'lastMonth';
       break;
 
       case "last3Months": ""
+      this.selectionTab = 'last3Months';
       break;
       
       default: 
@@ -1153,77 +1413,54 @@ export class ExistingTripsComponent implements OnInit {
    }
   }
 
-  onReset() {
+  // onReset() {
 
-  }
+  // }
 
-  onSearch() {
-    console.log("---Search calling---")
-    this.selectedStartDateStamp = moment(this.selectedStartDateStamp).format('DD/MM/YYYY');
-    this.selectedEndDateStamp = moment(this.selectedEndDateStamp).format('DD/MM/YYYY');
-    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-
-
-    console.log("---from search Dates---",this.selectedStartDateStamp, "End Date---",this.selectedEndDateStamp)
-    console.log("---from search Times---",this.selectedStartTime, "End Date---",this.selectedEndTime)
-    // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
-    //     VIN: 5A65654
-    // start date: 1616961846000
-    // end date: 1616963318000
-
-    //     VIN: NBVGF1254KLJ55
-    // start date: 1604327461000
-    // end date: 1604336647000
-
-    //----------This is only test data-----
-    // this.startTimeUTC = 1616961846000;
-    // this.endTimeUTC = 1616963318000;
-    // this.vinListSelectedValue= "5A65654";
-    this.covertedDateValue = [];
-    this.dataColValue = [];
-    this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
-      console.log("--existingTripData----", existingTripDetails)
-      this.showLoadingIndicator = true;
-      let tripData = existingTripDetails.tripData
-      this.initData = existingTripDetails.tripData;
-      
-      // tripData.forEach(dateValue => {
-      //   this.covertedDateValue.push(moment(dateValue.startTimeStamp).format("DD/MM/YYYY-h:mm:ss"));
-      //   // this.covertedDateValue.push(new Date(dateValue.startTimeStamp));
- 
-        
-      // });
-      // tripData.map((getAllDates) => {
-        // a.replace(/\s+/g, '')
-      //   this.covertedDateValue.push(new Date(getAllDates.startTimeStamp));
-      // });
-      console.log("===this.covertedDateValue====",this.covertedDateValue);
-      
-      
-      // this.dataColValue = this.covertedDateValue.join('-');
-      // this.dataColValue = this.dataColValue.replace(/\s+/g, '').split('-')
-      // console.log("-----all dataColValue---",this.dataColValue)
+  // onSearch() {
+  //   console.log("---Search calling---")
+  //   this.selectedStartDateStamp = moment(this.selectedStartDateStamp).format('DD/MM/YYYY');
+  //   this.selectedEndDateStamp = moment(this.selectedEndDateStamp).format('DD/MM/YYYY');
+  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
 
 
+  //   console.log("---from search Dates---",this.selectedStartDateStamp, "End Date---",this.selectedEndDateStamp)
+  //   console.log("---from search Times---",this.selectedStartTime, "End Date---",this.selectedEndTime)
+  //   // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
+  //   //     VIN: 5A65654
+  //   // start date: 1616961846000
+  //   // end date: 1616963318000
 
-      // this.covertedDateValue.forEach(value => {
-      //   let convertedVal = moment(value).format("DD/MM/YYYY h:mm:ss ");
-      //   this.dataColValue.push(convertedVal)
-      //   // console.log("---date values--",value.slice(4,24))
-      // });
+  //   //     VIN: NBVGF1254KLJ55
+  //   // start date: 1604327461000
+  //   // end date: 1604336647000
+
+  //   //----------This is only test data-----
+  //   // this.startTimeUTC = 1616961846000;
+  //   // this.endTimeUTC = 1616963318000;
+  //   // this.vinListSelectedValue= "5A65654";
+  //   this.covertedDateValue = [];
+  //   this.dataColValue = [];
+  //   this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
+  //     console.log("--existingTripData----", existingTripDetails)
+  //     this.showLoadingIndicator = true;
+  //     let tripData = existingTripDetails.tripData
+  //     this.initData = existingTripDetails.tripData;
+
+  //     console.log("===this.covertedDateValue====",this.covertedDateValue);
+   
   
-      this.hideloader();
-      this.updatedTableData(this.initData);
-    }, (error) => {
-      this.initData = [];
-      this.hideloader();
-      this.updatedTableData(this.initData);
-    });
-    //   }
-    // console.log("convertedDate in String---",this.covertedDateValue.toString())
+  //     this.hideloader();
+  //     this.updatedTableData(this.initData);
+  //   }, (error) => {
+  //     this.initData = [];
+  //     this.hideloader();
+  //     this.updatedTableData(this.initData);
+  //   });
+ 
 
-  }
+  // }
 
   
   setDate(date : any){
