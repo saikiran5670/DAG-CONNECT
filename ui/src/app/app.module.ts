@@ -35,6 +35,8 @@ import { CreateNotificationsAlertComponent } from './configuration/alerts/create
 import { ReportService } from './services/report.service';
 import { AlertAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/alert-advanced-filter/alert-advanced-filter.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from './configuration/alerts/create-edit-view-alerts/period-selection-filter/period-selection-filter.component';
+import { ReportSchedulerService } from './services/report.scheduler.service';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -43,7 +45,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
 
 @NgModule({
     declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent, 
-      AlertAdvancedFilterComponent],
+      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -85,7 +87,8 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     LandmarkCategoryService,
     GeofenceService,
     AlertService,
-    ReportService
+    ReportService,
+    ReportSchedulerService
   ],
   bootstrap: [AppComponent],
 })

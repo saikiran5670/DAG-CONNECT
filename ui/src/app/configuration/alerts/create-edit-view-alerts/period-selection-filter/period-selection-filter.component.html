@@ -1,0 +1,22 @@
+<!-- <div appearance="outline">
+    <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+      <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+        <mat-checkbox (change)="onChangeMondaySelection($event)">Monday</mat-checkbox>
+      </div> 
+      <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+        <mat-radio-group [disabled]="!isMondaySelected" formControlName="mondayPeriod">
+          <mat-radio-button style='margin-right: 20px;' value="full_day">
+              {{ translationData.lblFullDay || 'Full Day' }}
+          </mat-radio-button>
+          <mat-radio-button style='margin-right: 20px;' value="custom">
+              {{ translationData.lblCustomPeriod || 'Custom Period' }}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div> 
+    </div>
+    <div *ngIf="alertForm.controls['mondayPeriod'].value == 'custom'"   fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+      <mat-form-field appearance="outline" class="full-width">
+        <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput>
+      </mat-form-field>
+    </div>
+  </div> -->
