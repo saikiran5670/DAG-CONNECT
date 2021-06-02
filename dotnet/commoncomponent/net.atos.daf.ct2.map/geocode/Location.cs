@@ -11,14 +11,18 @@ namespace net.atos.daf.ct2.map.geocode
         [JsonProperty("lat")]
         public virtual double Latitude
         {
-            get { return latitude; }
+            get => latitude;
             set
             {
                 if (value < -90 || value > 90)
+                {
                     throw new ArgumentOutOfRangeException("Latitude", value, "Value must be between -90 and 90 inclusive.");
+                }
 
                 if (double.IsNaN(value))
+                {
                     throw new ArgumentException("Latitude must be a valid number.", "Latitude");
+                }
 
                 latitude = value;
             }
@@ -27,14 +31,18 @@ namespace net.atos.daf.ct2.map.geocode
         [JsonProperty("lng")]
         public virtual double Longitude
         {
-            get { return longitude; }
+            get => longitude;
             set
             {
                 if (value < -180 || value > 180)
+                {
                     throw new ArgumentOutOfRangeException("Longitude", value, "Value must be between -180 and 180 inclusive.");
+                }
 
                 if (double.IsNaN(value))
+                {
                     throw new ArgumentException("Longitude must be a valid number.", "Longitude");
+                }
 
                 longitude = value;
             }
@@ -50,15 +58,9 @@ namespace net.atos.daf.ct2.map.geocode
             Longitude = longitude;
         }
 
-        protected virtual double ToRadian(double val)
-        {
-            return (Math.PI / 180.0) * val;
-        }
+        protected virtual double ToRadian(double val) => (Math.PI / 180.0) * val;
 
-        public virtual Distance DistanceBetween(Location location)
-        {
-            return DistanceBetween(location, DistanceUnits.Miles);
-        }
+        public virtual Distance DistanceBetween(Location location) => DistanceBetween(location, DistanceUnits.Miles);
 
         public virtual Distance DistanceBetween(Location location, DistanceUnits units)
         {
@@ -78,27 +80,12 @@ namespace net.atos.daf.ct2.map.geocode
             return new Distance(distance, units);
         }
 
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Location);
-        }
+        public override bool Equals(object obj) => Equals(obj as Location);
 
-        public bool Equals(Location coor)
-        {
-            if (coor == null)
-                return false;
+        public bool Equals(Location coor) => coor != null && this.Latitude == coor.Latitude && this.Longitude == coor.Longitude;
 
-            return (this.Latitude == coor.Latitude && this.Longitude == coor.Longitude);
-        }
+        public override int GetHashCode() => Latitude.GetHashCode() ^ Latitude.GetHashCode();
 
-        public override int GetHashCode()
-        {
-            return Latitude.GetHashCode() ^ Latitude.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}, {1}", latitude, longitude);
-        }
+        public override string ToString() => string.Format("{0}, {1}", latitude, longitude);
     }
 }

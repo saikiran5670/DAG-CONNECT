@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using net.atos.daf.ct2.map.entity;
 using net.atos.daf.ct2.map.geocode;
 using net.atos.daf.ct2.map.repository;
@@ -17,28 +15,49 @@ namespace net.atos.daf.ct2.map
             _geocoder = new Geocoder();
 
         }
-        public async Task<List<LookupAddress>> AddLookupAddress(List<LookupAddress> lookupAddresses)
+
+        public void InitializeMapGeocoder(string appId, string appCode) => _geocoder.InitializeMapGeocoder(appId, appCode);
+
+
+        public async Task<LookupAddress> GetMapAddress(LookupAddress lookupAddress)
         {
-            lookupAddresses.Select(x => x.Address = GetAddress(x.Latitude, x.Longitude)).ToList();
-            return await _mapRepository.AddLookupAddress(lookupAddresses);
-        }
 
-        public async Task<List<LookupAddress>> GetLookupAddress(List<LookupAddress> lookupAddresses)
+            LookupAddress result = await _mapRepository.GetMapAddress(lookupAddress);
+            if (result == null)
+            {
+                lookupAddress = AddMapAddress(lookupAddress).Result;
+                return lookupAddress;
+
+            }
+
+            return result;
+
+        }
+        private async Task<LookupAddress> AddMapAddress(LookupAddress lookupAddress)
         {
-            return await _mapRepository.GetLookupAddress(lookupAddresses);
+            lookupAddress.Address = GetAddress(lookupAddress.Latitude, lookupAddress.Longitude);
+            return await _mapRepository.AddMapAddress(lookupAddress);
         }
-
-        public void InitializeMapGeocoder(string appId, string appCode)
-        {
-            _geocoder.InitializeMapGeocoder(appId, appCode);
-        }
-
-
 
         private string GetAddress(double lat, double lan)
         {
-            var address = _geocoder.ReverseGeocodeAsync(lat, lan).Result;
+            string address = _geocoder.ReverseGeocodeAsync(lat, lan).Result;
             return address;
         }
+
+
+        //public async Task<List<LookupAddress>> AddLookupAddress(List<LookupAddress> lookupAddresses)
+        //{
+        //    lookupAddresses.Select(x => x.Address = GetAddress(x.Latitude, x.Longitude)).ToList();
+        //    return await _mapRepository.AddLookupAddress(lookupAddresses);
+        //}
+
+
+        //public async Task<List<LookupAddress>> GetLookupAddress(List<LookupAddress> lookupAddresses)
+        //{
+        //    return await _mapRepository.GetLookupAddress(lookupAddresses);
+        //}
+
+
     }
 }
