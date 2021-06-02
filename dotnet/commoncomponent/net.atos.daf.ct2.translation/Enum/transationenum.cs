@@ -1,6 +1,6 @@
 namespace net.atos.daf.ct2.translation.Enum
 {
-    public class translationenum
+    public class Translationenum
     {
 
         public enum TranslationType

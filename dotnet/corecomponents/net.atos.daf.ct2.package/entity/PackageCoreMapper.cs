@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.package.entity
             package.Type = !string.IsNullOrEmpty(record.type) ? MapCharToPackageType(record.type) : string.Empty;
             package.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             package.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
-            package.FeatureSetID = record.feature_set_id != null ? record.feature_set_id : 0;
+            package.FeatureSetID = record.feature_set_id ?? 0;
             package.CreatedAt = record.created_at;
             return package;
         }

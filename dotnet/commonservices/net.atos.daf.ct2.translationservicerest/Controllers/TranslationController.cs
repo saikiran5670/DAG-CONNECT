@@ -39,7 +39,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
                 _logger.LogInformation("Get translation Menu  method get " + request.Code + " " + request.MenuId);
                 List<Translations> responce = new List<Translations>();
                 // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
-                var translations = await translationmanager.GetTranslationsByMenu(request.MenuId, (translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()), request.Code);
+                var translations = await translationmanager.GetTranslationsByMenu(request.MenuId, (Translationenum.MenuType)Enum.Parse(typeof(Translationenum.MenuType), request.Type.ToString()), request.Code);
 
 
                 return Ok(translations);
@@ -65,7 +65,7 @@ namespace net.atos.daf.ct2.translationservicerest.Controllers
 
                 List<Translations> responce = new List<Translations>();
                 // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
-                var translations = await translationmanager.GetTranslationsByMenu(0, translationenum.MenuType.Menu, LanguageCode);
+                var translations = await translationmanager.GetTranslationsByMenu(0, Translationenum.MenuType.Menu, LanguageCode);
 
 
                 return Ok(translations);
