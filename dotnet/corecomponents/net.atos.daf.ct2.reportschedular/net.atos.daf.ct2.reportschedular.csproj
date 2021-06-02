@@ -4,9 +4,4 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="entity\" />
-    <Folder Include="repository\" />
-  </ItemGroup>
-
 </Project>
