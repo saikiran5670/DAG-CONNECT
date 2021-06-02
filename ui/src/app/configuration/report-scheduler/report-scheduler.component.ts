@@ -33,29 +33,18 @@ export class ReportSchedulerComponent implements OnInit {
   initData: any = [];
   originalAlertData: any= [];
   rowsData: any;
-  //createStatus: boolean;
-  editFlag: boolean = false;
-  duplicateFlag: boolean = false;
   accountOrganizationId: any;
   accountId: any;
-  EmployeeDataService : any= [];  
-  packageCreatedMsg : any = '';
   titleVisible : boolean = false;
-  alertCategoryList: any= [];
-  alertTypeList: any= [];
-  vehicleGroupList: any= [];
-  vehicleList: any= [];
-  alertCriticalityList: any= [];
-  alertStatusList: any= [];
-
-  stringifiedData: any;  
-  parsedJson: any;  
-  filterValues = {};  
   dialogRef: MatDialogRef<ActiveInactiveDailogComponent>;
   dialogVeh: MatDialogRef<CommonTableComponent>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
+  reportTypeSelection: any= 0;
+  statusSelection: any= 0;
+  ReportTypeList: any= [];
+  StatusList: any= [];
 
   constructor(
     private translationService: TranslationService,
@@ -79,7 +68,10 @@ export class ReportSchedulerComponent implements OnInit {
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
         this.processTranslation(data);      
-      });  
+      }); 
+      
+      this.ReportTypeList= [{id : 1, name : "Fuel Report"}, {id : 2, name : "Distance Report"}, {id : 3, name : "Milage Report"}]
+      this.StatusList= [{id : "A", name : "Active"}, {id : "I", name : "Suspended"}]
     }
     
   
@@ -365,7 +357,67 @@ export class ReportSchedulerComponent implements OnInit {
       tableTitle: tableTitle
     }
     this.dialogVeh = this.dialog.open(CommonTableComponent, dialogConfig);
-  }   
+  }  
+  
+  onReportTypeChange(_event: any){
+    this.reportTypeSelection = parseInt(_event.value);
+    if(this.reportTypeSelection == 0 && this.statusSelection == 0){
+      this.updateDatasource(this.initData); //-- load all data
+    }
+    else if(this.reportTypeSelection == 0 && this.statusSelection != 0){
+      let filterData = this.initData.filter(item => item.state == this.statusSelection);
+      if(filterData){
+        this.updateDatasource(filterData);
+      }
+      else{
+        this.updateDatasource([]);
+      }
+    }
+    else{
+      let selectedReportType = this.reportTypeSelection;
+      let selectedStatus = this.statusSelection;
+      let reportSchedulerData = this.initData.filter(item => item.reportTypeId === selectedReportType);
+      if(selectedStatus != 0){
+        reportSchedulerData = reportSchedulerData.filter(item => item.state === selectedStatus);
+      }
+      this.updateDatasource(reportSchedulerData);
+    }
+  }
+
+  onStatusSelectionChange(_event: any){
+    this.statusSelection = _event.value == '0' ? parseInt(_event.value) : _event.value;
+    if(this.reportTypeSelection == 0 && this.statusSelection == 0){
+      this.updateDatasource(this.initData); //-- load all data
+    }
+    else if(this.statusSelection == 0 && this.reportTypeSelection != 0){
+      let filterData = this.initData.filter(item => item.reportTypeId === this.reportTypeSelection);
+      if(filterData){
+        this.updateDatasource(filterData);
+      }
+      else{
+        this.updateDatasource([]);
+      }
+    }
+    else if(this.statusSelection != 0 && this.reportTypeSelection == 0){
+      let filterData = this.initData.filter(item => item.state == this.statusSelection);
+      if(filterData){
+        this.updateDatasource(filterData);
+      }
+      else{
+        this.updateDatasource([]);
+      }
+    }
+    else{
+      let selectedReportType = this.reportTypeSelection;
+      let selectedStatus = this.statusSelection;
+      let reportSchedulerData = this.initData.filter(item => item.reportTypeId === selectedReportType);
+      if(selectedStatus != 0){
+        reportSchedulerData = reportSchedulerData.filter(item => item.state === selectedStatus);
+      }
+      this.updateDatasource(reportSchedulerData);
+    }
+  }
+
 
 
 }
