@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using net.atos.daf.ct2.email.entity;
 using net.atos.daf.ct2.email.Enum;
 using net.atos.daf.ct2.translation.entity;
-using static net.atos.daf.ct2.translation.Enum.translationenum;
+using static net.atos.daf.ct2.translation.Enum.Translationenum;
 
 namespace net.atos.daf.ct2.translation
 {

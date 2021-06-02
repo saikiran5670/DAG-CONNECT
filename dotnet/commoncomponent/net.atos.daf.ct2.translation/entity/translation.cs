@@ -11,8 +11,8 @@ namespace net.atos.daf.ct2.translation.entity
         public string Type { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
-        public long? created_at { get; set; }
-        public long? modified_at { get; set; }
+        public long? Created_at { get; set; }
+        public long? Modified_at { get; set; }
         public string Filter { get; set; }
         public int MenuId { get; set; }
 
@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.translation.entity
 
     }
 
-    public enum translationStatus
+    public enum TranslationStatus
     {
         Failed = 0,
         Updated = 1,
