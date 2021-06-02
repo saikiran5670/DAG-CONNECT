@@ -28,19 +28,19 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
         {
             TranslationUploadRequest response = new TranslationUploadRequest();
             if (request == null) return response;
-            if (request != null && request.file != null)
+            if (request != null && request.File != null)
             {
-                foreach (var item in request.file)
+                foreach (var item in request.File)
                 {
-                    response.File.Add(new TranslationData() { Code = item.code, Type = item.type, Name = item.name, Value = item.value });
+                    response.File.Add(new TranslationData() { Code = item.Code, Type = item.Type, Name = item.Name, Value = item.Value });
                 }
             }
-            response.FileName = request.file_name;
-            response.Description = request.description;
-            response.FileSize = request.file_size;
-            response.FailureCount = request.failure_count;
-            response.AddedCount = request.added_count;
-            response.UpdatedCount = request.updated_count;
+            response.FileName = request.File_name;
+            response.Description = request.Description;
+            response.FileSize = request.File_size;
+            response.FailureCount = request.Failure_count;
+            response.AddedCount = request.Added_count;
+            response.UpdatedCount = request.Updated_count;
 
             return response;
 
@@ -67,20 +67,20 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
 
             var dtcRequests = new WarningDataRequest();
             //id,code , type,veh_type,class,number,description,advice, expires_at,icon_id,created_by,
-            foreach (var x in request.dtcWarningToImport)
+            foreach (var x in request.DtcWarningToImport)
             {
                 var dtcRequest = new dtcwarning()
                 {
-                    Code = x.code,
-                    Type = x.type,
-                    VehType = x.veh_type != null ? x.veh_type : string.Empty,
-                    WarningClass = x.warning_class,
-                    Number = x.number,
-                    Description = x.description,
-                    Advice = x.advice,
-                    ExpiresAt = x.expires_at,
-                    IconId = x.icon_id,
-                    CreatedBy = x.created_by
+                    Code = x.Code,
+                    Type = x.Type,
+                    VehType = x.Veh_type ?? string.Empty,
+                    WarningClass = x.Warning_class,
+                    Number = x.Number,
+                    Description = x.Description,
+                    Advice = x.Advice,
+                    ExpiresAt = x.Expires_at,
+                    IconId = x.Icon_id,
+                    CreatedBy = x.Created_by
                 };
                 dtcRequests.DtcData.Add(dtcRequest);
 
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
             acceptedTermConditionRequest.Id = request.Id;
             acceptedTermConditionRequest.AccountId = request.Account_Id;
             acceptedTermConditionRequest.OrganizationId = request.Organization_Id;
-            acceptedTermConditionRequest.VersionNo = request.version_no;
+            acceptedTermConditionRequest.VersionNo = request.Version_no;
             acceptedTermConditionRequest.TermsAndConditionId = request.Terms_And_Condition_Id;
             return acceptedTermConditionRequest;
         }
@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
 
             var dtcRequests = new IconUpdateRequest();
 
-            foreach (var x in request.dtcWarningUpdateIcon)
+            foreach (var x in request.DtcWarningUpdateIcon)
             {
                 if (x.Name != null || x.Name != "" || x.Icon != null)
                 {
@@ -125,94 +125,91 @@ namespace net.atos.daf.ct2.portalservice.Entity.Translation
 
         public string MapDTCTLanguageCode(string LanguageCode)
         {
-            string Code = string.Empty;
+            string code;
 
             switch (LanguageCode)
             {
                 case "BG":
-                    Code = "bg-BG";
+                    code = "bg-BG";
                     break;
                 case "CS":
-                    Code = "cs-CZ";
+                    code = "cs-CZ";
                     break;
                 case "DA":
-                    Code = "da-DK";
+                    code = "da-DK";
                     break;
                 case "DE":
-                    Code = "de-DE";
+                    code = "de-DE";
                     break;
                 case "EL":
-                    Code = "EL";
+                    code = "EL";
                     break;
                 case "EN":
-                    Code = "EN-GB";
+                    code = "EN-GB";
                     break;
                 case "ES":
-                    Code = "es-ES";
+                    code = "es-ES";
                     break;
                 case "ET":
-                    Code = "et-EE";
+                    code = "et-EE";
                     break;
                 case "FI":
-                    Code = "fi-FI";
+                    code = "fi-FI";
                     break;
                 case "FR":
-                    Code = "fr-FR";
+                    code = "fr-FR";
                     break;
                 case "HR":
-                    Code = "hr-HR";
+                    code = "hr-HR";
                     break;
                 case "HU":
-                    Code = "hu-HU";
+                    code = "hu-HU";
                     break;
                 case "IT":
-                    Code = "it-IT";
+                    code = "it-IT";
                     break;
                 case "LT":
-                    Code = "lt-LT";
+                    code = "lt-LT";
                     break;
                 case "LV":
-                    Code = "lv-LV";
+                    code = "lv-LV";
                     break;
                 case "NL":
-                    Code = "nl-NL";
+                    code = "nl-NL";
                     break;
                 case "NO":
-                    Code = "nb-NO";
+                    code = "nb-NO";
                     break;
                 case "PL":
-                    Code = "pl-PL";
+                    code = "pl-PL";
                     break;
                 case "PT":
-                    Code = "pt-PT";
+                    code = "pt-PT";
                     break;
                 case "RO":
-                    Code = "ro-RO";
+                    code = "ro-RO";
                     break;
                 case "RU":
-                    Code = "RU";
+                    code = "RU";
                     break;
                 case "SK":
-                    Code = "sk-SK";
+                    code = "sk-SK";
                     break;
                 case "SL":
-                    Code = "sl-SI";
+                    code = "sl-SI";
                     break;
                 case "SV":
-                    Code = "sv-SE";
+                    code = "sv-SE";
                     break;
                 case "TR":
-                    Code = "Tr-tr";
+                    code = "Tr-tr";
                     break;
                 default:
-                    Code = "Unknown Language Code";
+                    code = "Unknown Language Code";
                     break;
 
             }
-            return Code;
-
+            return code;
         }
-
-
     }
 }

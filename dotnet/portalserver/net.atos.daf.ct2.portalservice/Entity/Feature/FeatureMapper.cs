@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Feature
             var featureset = new FeatureBusinessService.FetureSetRequest();
             featureset.FeatureSetID = request.FeatureSetID;
             featureset.Name = request.Name;
-            featureset.CreatedBy = request.created_by;
+            featureset.CreatedBy = request.Created_by;
             //featureset.Features = request.Features;
             return featureset;
         }
