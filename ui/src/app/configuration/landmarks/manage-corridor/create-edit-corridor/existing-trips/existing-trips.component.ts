@@ -43,6 +43,7 @@ export class ExistingTripsComponent implements OnInit {
   @Input() disabled: boolean;
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
+  @Input() vehicleGroupList: any;
   selectedStartTime: any = '12:00 AM'
   selectedEndTime: any = '11:59 PM'
   selectedStartDateStamp: any;
@@ -51,14 +52,7 @@ export class ExistingTripsComponent implements OnInit {
   endTimeUTC: any;
   selectionTab: any;
   timeValue: any;
-  // range = new FormGroup({
-  //   start: new FormControl(),
-  //   end: new FormControl()
-  // });
-  // translationData: any;
   OrgId: any = 0;
-  // @Output() backToPage = new EventEmitter<any>();
-  // displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
   selectedAccounts = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -84,17 +78,6 @@ export class ExistingTripsComponent implements OnInit {
   public locations: Array<any>;
   setEndAddress: any = "";
   setStartAddress: any = ""; 
-  // @Input() translationData: any;
-  // @Input() selectedRowData: any;
-  // @Input() actionType: any;
-  // userCreatedMsg: any = '';
-  // duplicateEmailMsg: boolean = false;
-  // breadcumMsg: any = '';
-  // existingTripForm: FormGroup;
-  // groupTypeList: any = [];
-  // showUserList: boolean = true;
-  // @Input() translationData: any;
-  @Input() vehicleGroupList: any;
   vinList: any = [];
   vinListSelectedValue: any = [];
   vehicleGroupIdsSet: any = [];
@@ -236,7 +219,7 @@ export class ExistingTripsComponent implements OnInit {
         this.setDefaultTodayDate();
       
       });
-    this.loadExistingTripData();
+    // this.loadExistingTripData();
     this.setDefaultTodayDate();
   }
 
@@ -244,48 +227,10 @@ export class ExistingTripsComponent implements OnInit {
     this.initMap();
   }
 
-
-
-
   setDefaultStartEndTime(){
     this.selectedStartTime = "00:00";
     this.selectedEndTime = "23:59";
   }
-
-  // setDefaultTodayDate(){
-  //   this.selectionTab = 'today';
-  //   // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-  //   // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-  //   // this.last3MonthDate = this.getLast3MonthDate();
-  //   // this.todayDate = this.getTodayDate();
-  //   let todayDate = new Date(); //-- UTC
-  //   // return todayDate;
-  //   this.selectedStartDateStamp = todayDate;
-  //   this.selectedEndDateStamp = todayDate;
-  //   this.existingTripForm.controls.startDate.setValue(this.selectedStartDateStamp);
-  //   this.existingTripForm.controls.endDate.setValue(this.selectedEndDateStamp);
-  //   console.log("-----date without selection date---",this.selectedStartDateStamp)
-  //   console.log("------defaults start dates--",this.selectedStartDateStamp)
-  //   console.log("------defaults end dates--",this.selectedEndDateStamp)
-
-  // }
-
-
-
-  // setStartEndDateTime(date: any, timeObj: any, type: any){
-  //   date.setHours(timeObj.split(":")[0]);
-  //   date.setMinutes(timeObj.split(":")[1]);
-  //   date.setSeconds(type == 'start' ? '00' : '59');
-  //   return date;
-  // }
-
-
-  // getLast3MonthDate(){
-  //   let date = new Date();
-  //   date.setMonth(date.getMonth()-3);
-  //   return date;
-  // }
-
 
   setPrefFormatTime(){
     if(this.prefTimeFormat == 24){
@@ -414,12 +359,13 @@ export class ExistingTripsComponent implements OnInit {
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     //this.startDateValue = event.value._d;
-    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    // console.log("------",event.value, this.selectedStartTime)
+    this.startDateValue = this.setStartEndDateTime(event.value, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
-    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    this.endDateValue = this.setStartEndDateTime(event.value, this.selectedEndTime, 'end');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
@@ -471,34 +417,7 @@ export class ExistingTripsComponent implements OnInit {
     this.existingTripForm.get('vehicleGroup').setValue('');
     this.vinListSelectedValue = '';
     this.vinList = [];
-    // this.vehicleGroupListData = this.vehicleGroupIdsSet;
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    // this.updateDataSource(this.tripData);
-    // this.resetTripFormControlValue();
-    // this.tableInfoObj = {};
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   setDefaultTodayDate(){
     this.selectionTab = 'today';
@@ -580,17 +499,6 @@ export class ExistingTripsComponent implements OnInit {
     let _data = this.additionalData;
     this.getAttributeData = _data["attribute"];
     this.getExclusionList = _data["exclusion"];
-    // this.combustibleChecked = this.getAttributeData["isCombustible"];
-    // this.corrosiveChecked = this.getAttributeData["isCorrosive"];
-    // this.explosiveChecked = this.getAttributeData["isExplosive"];
-    // this.flammableChecked = this.getAttributeData["isFlammable"];
-    // this.gasChecked = this.getAttributeData["isGas"];
-    // this.organicChecked = this.getAttributeData["isOrganic"];
-    // this.othersChecked = this.getAttributeData["isOther"];
-    // this.poisonChecked = this.getAttributeData["isPoision"];
-    // this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
-    // this.radioactiveChecked = this.getAttributeData["isRadioActive"];
-    // this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
     this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     this.transportDataChecked = _data["isTransportData"];
@@ -607,32 +515,12 @@ export class ExistingTripsComponent implements OnInit {
     this.existingTripForm.controls.vehicleLength.setValue(this.getVehicleSize.vehicleLength);
     this.existingTripForm.controls.limitedWeight.setValue(this.getVehicleSize.vehicleLimitedWeight);
     this.existingTripForm.controls.weightPerAxle.setValue(this.getVehicleSize.vehicleWeightPerAxle);
-    // this.tollRoadId = this.getExclusionList["tollRoadType"];
-    // this.boatFerriesId = this.getExclusionList["boatFerriesType"];
-    // this.dirtRoadId = this.getExclusionList["dirtRoadType"];
-    // this.motorWayId = this.getExclusionList["mortorway"];
-    // this.tunnelId = this.getExclusionList["tunnelsType"];
-    // this.railFerriesId = this.getExclusionList["railFerriesType"];
 
     this.initiateDropDownValues();
 
   }
 
   initiateDropDownValues(){
-    // this.existingTripForm.controls.trailer.setValue(this.selectedTrailerId);
-    // this.trailerValue = this.selectedTrailerId;
-    // this.existingTripForm.controls.tollRoad.setValue(this.tollRoadId);
-    // this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
-    // this.existingTripForm.controls.motorWay.setValue(this.motorWayId);
-    // this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
-    // this.existingTripForm.controls.boatFerries.setValue(this.boatFerriesId);
-    // this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
-    // this.existingTripForm.controls.railFerries.setValue(this.railFerriesId);
-    // this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
-    // this.existingTripForm.controls.tunnels.setValue(this.tunnelId);
-    // this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
-    // this.existingTripForm.controls.dirtRoad.setValue(this.dirtRoadId);
-    // this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
     this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
  }
 
@@ -668,18 +556,9 @@ export class ExistingTripsComponent implements OnInit {
     return viaMarker;
   }
 
-  loadExistingTripData() {
-    // this.showLoadingIndicator = true;
-    // this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
-    //   this.initData = data;
-    //   this.hideloader();
-    //   this.updatedTableData(this.initData);
-    // }, (error) => {
-    //   this.initData = [];
-    //   this.hideloader();
-    //   this.updatedTableData(this.initData);
-    // });
-  }
+  // loadExistingTripData() {
+
+  // }
   
   suggestionData :  any;
   dataService : any;
@@ -801,9 +680,6 @@ export class ExistingTripsComponent implements OnInit {
       this.checkRoutePlot();
 
     }
-    
-
-    
   }
 
   calculateAB(){
@@ -847,20 +723,9 @@ export class ExistingTripsComponent implements OnInit {
 
   addRouteShapeToMap(result){
     var group = new H.map.Group();
-    // if(this.routeOutlineMarker){
-    //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-    //   this.routeOutlineMarker = null;
-    // }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
-      // Create a polyline to display the route:
-      // let routeLine = new H.map.Polyline(linestring, {
-      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
-      // });
-      // this.hereMap.addObject(routeLine);
-      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
-     // if (this.corridorWidthKm > 0) {
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
             lineWidth: this.corridorWidthKm,
@@ -882,21 +747,7 @@ export class ExistingTripsComponent implements OnInit {
         this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
         this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
-      // }
-      // else{
-      //   this.routeOutlineMarker = null;
-      //   this.routeCorridorMarker = null;
-
-      // }
-
     });
-  
-    // // Add the polyline to the map
-    // this.map.addObject(group);
-    // // And zoom to its bounding rectangle
-    // this.map.getViewModel().setLookAtData({
-    //   bounds: group.getBoundingBox()
-    // });
   }
 
 
@@ -939,77 +790,11 @@ export class ExistingTripsComponent implements OnInit {
    this.trafficFlowChecked = _checked;
  }
 
- attributeCheck(_checked, type) {
-  //  switch (type) {
-  //    case 'explosive':
-  //      this.explosiveChecked = _checked;
-  //      break;
-  //    case 'gas':
-  //      this.gasChecked = _checked;
-  //      break;
-  //    case 'flammable':
-  //      this.flammableChecked = _checked;
-  //      break;
-  //    case 'combustible':
-  //      this.combustibleChecked = _checked;
-  //      break;
-  //    case 'organic':
-  //      this.organicChecked = _checked;
-  //      break;
-  //    case 'poison':
-  //      this.poisonChecked = _checked;
-  //      break;
-  //    case 'radioactive':
-  //      this.radioactiveChecked = _checked;
-  //      break;
-  //    case 'corrosive':
-  //      this.corrosiveChecked = _checked;
-  //      break;
-  //    case 'poisonInhale':
-  //      this.poisonInhaleChecked = _checked;
-  //      break;
-  //    case 'waterHarm':
-  //      this.waterHarmChecked = _checked;
-  //      break;
-  //    case 'others':
-  //      this.othersChecked = _checked;
-  //      break;
-  //    default:
-  //      break;
-  //  }
- }
 
  trailerSelected(_event){
    this.selectedTrailerId = _event.value;
  }
 
- exclusionSelected(_event,type){
-  //  console.log(this.exclusionList);
-  //  console.log(_event)
-  //  switch (type) {
-  //    case 'tollRoad':
-  //        this.tollRoadId = _event.value;
-  //      break;
-  //      case 'motorWay':
-  //        this.motorWayId = _event.value;
-  //      break;
-       
-  //      case 'boatFerries':
-  //        this.boatFerriesId = _event.value;
-  //      break;
-  //      case 'railFerries':
-  //        this.railFerriesId = _event.value;
-  //      break;
-  //      case 'tunnel':
-  //        this.tunnelId = _event.value;
-  //      break;
-  //      case 'dirtRoad':
-  //        this.dirtRoadId = _event.value;
-  //      break;
-  //    default:
-  //      break;
-  //  }
- }
 
  createCorridorClicked(){
   
@@ -1035,25 +820,8 @@ export class ExistingTripsComponent implements OnInit {
      "modified_By": this.organizationId,
      "attribute": {
        "trailer": this.selectedTrailerId,
-      //  "explosive": this.explosiveChecked,
-      //  "gas": this.gasChecked,
-      //  "flammable": this.flammableChecked,
-      //  "combustible": this.combustibleChecked,
-      //  "organic": this.organicChecked,
-      //  "poision": this.poisonChecked,
-      //  "radioActive": this.radioactiveChecked,
-      //  "corrosive": this.corrosiveChecked,
-      //  "poisonousInhalation": this.poisonInhaleChecked,
-      //  "waterHarm": this.waterHarmChecked,
-      //  "other": this.othersChecked
      },
      "exclusion": {
-      //  "tollRoad": this.tollRoadId,
-      //  "mortorway": this.motorWayId,
-      //  "boatFerries":this.boatFerriesId,
-      //  "railFerries": this.railFerriesId,
-      //  "tunnels": this.tunnelId,
-      //  "dirtRoad":this.dirtRoadId,
      },
      "vehicleSize": {
        "vehicleSizeHeight":this.existingTripForm.controls.vehicleHeight.value ? this.existingTripForm.controls.vehicleHeight.value : 0,
@@ -1087,9 +855,6 @@ export class ExistingTripsComponent implements OnInit {
 
  getSuggestion(_event){
    let startValue = _event.target.value;
-   
-  
-   console.log(_event)
  }
 
  backToCorridorList(){
@@ -1102,24 +867,6 @@ export class ExistingTripsComponent implements OnInit {
 
  resetValues(){
    if(this.actionType === 'create'){
-       
-  //  this.tollRoadId = 'D';
-  //  this.motorWayId ='D';
-  //  this.railFerriesId = 'D';
-  //  this.tunnelId ='D';
-  //  this.dirtRoadId = 'D';
-  //  this.boatFerriesId = 'D';
-  //  this.explosiveChecked = false;
-  //  this.gasChecked = false;
-  //  this.flammableChecked  = false;
-  //  this.combustibleChecked  = false;
-  //  this.organicChecked  = false;
-  //  this.poisonChecked  = false;
-  //  this.radioactiveChecked  = false;
-  //  this.corrosiveChecked  = false;
-  //  this.poisonInhaleChecked  = false;
-  //  this.waterHarmChecked  = false;
-  //  this.othersChecked  = false;
    this.transportDataChecked = false;
    this.trafficFlowChecked = false;
    this.corridorWidth = 100;
@@ -1315,47 +1062,35 @@ export class ExistingTripsComponent implements OnInit {
       return data;
     }
   }
-  timeChanged(selectedTime: any) {
-    this.selectedStartTime = selectedTime;
-    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  }
-  endtimeChanged(endTime: any) {
-    this.selectedEndTime = endTime;
-    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-  }
+  // timeChanged(selectedTime: any) {
+  //   this.selectedStartTime = selectedTime;
+  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  // }
+  // endtimeChanged(endTime: any) {
+  //   this.selectedEndTime = endTime;
+  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+  // }
 
-  selectedStartDate(startDate: any) {
-    console.log("---startDate--",startDate.target.value)
-    this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
-    // console.log("---selectedStartDate---",this.selectedStartDateStamp)
-    // let dateTime = moment(this.selectedStartDateStamp + ' ' + this.selectedStartTime, 'DD/MM/YYYY HH:mm');
-    // console.log(dateTime.format('DD-MM-YYYY HH:mm'))
-    // this.startTimeUTC = moment.utc(dateTime).valueOf();
-    // console.log("--startTimeUTC----UTC format",this.startTimeUTC)
-    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  }
-  concateStartDateTimeInUTC(selectedDate: any, selectedTime: any) {
-    let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
-    // console.log("actual date and time value----",dateTime.format('DD-MM-YYYY HH:mm'))
-    this.startTimeUTC = moment.utc(dateTime).valueOf();
-    console.log("--startTimeUTC----UTC format", this.startTimeUTC)
-  }
-  selectedEndDate(endDate: any) {
-    this.selectedEndDateStamp = moment(endDate.target.value).format('DD/MM/YYYY');
-    // console.log("---selectedEndDate---",this.selectedEndDateStamp)
-    // let dateTime = moment(this.selectedEndDateStamp + ' ' + this.selectedEndTime, 'DD/MM/YYYY HH:mm');
-    // console.log(dateTime.format('DD-MM-YYYY HH:mm'))
-    // this.endTimeUTC = moment.utc(dateTime).valueOf();
-    // console.log("--endTimeUTC----UTC format",this.endTimeUTC)
-    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-  }
-  concateEndDateTimeInUTC(selectedDate: any, selectedTime: any) {
-    let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
-    let concateDateAndTime = dateTime.format('DD-MM-YYYY HH:mm');
-    // console.log("actual date and time value----",dateTime.format('DD-MM-YYYY HH:mm'))
-    this.endTimeUTC = moment.utc(dateTime).valueOf();
-    console.log("--endTimeUTC----UTC format", this.endTimeUTC)
-  }
+  // selectedStartDate(startDate: any) {
+  //   console.log("---startDate--",startDate.target.value)
+  //   this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
+  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  // }
+  // concateStartDateTimeInUTC(selectedDate: any, selectedTime: any) {
+  //   let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
+  //   this.startTimeUTC = moment.utc(dateTime).valueOf();
+  //   console.log("--startTimeUTC----UTC format", this.startTimeUTC)
+  // }
+  // selectedEndDate(endDate: any) {
+  //   this.selectedEndDateStamp = moment(endDate.target.value).format('DD/MM/YYYY');
+  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+  // }
+  // concateEndDateTimeInUTC(selectedDate: any, selectedTime: any) {
+  //   let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
+  //   let concateDateAndTime = dateTime.format('DD-MM-YYYY HH:mm');
+  //   this.endTimeUTC = moment.utc(dateTime).valueOf();
+  //   console.log("--endTimeUTC----UTC format", this.endTimeUTC)
+  // }
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue.value;
     console.log("------vins selection--",this.vinListSelectedValue)
@@ -1372,97 +1107,6 @@ export class ExistingTripsComponent implements OnInit {
     }, 100);
   }
 
-  dateSelection(getDateValue:any) {
-    console.log("---start date value--",this.existingTripForm.controls.startDate.value)
-    let testDate= moment().format('DD/MM/YYYY HH:mm');
-    // console.log("---getValue--",testDate);
-
-    switch (getDateValue) {
-      case "today" : 
-      this.selectionTab = 'today';
-      // let a = moment().subtract(1, 'day');
-      this.selectedStartDateStamp = testDate;
-      
-      // let testValue = this.existingTripForm.get('startDate').setValue(testDate);
-      // let a = moment(startDate.target.value).format('DD/MM/YYYY');
-      // console.log("---from today--",testDate,"convertedValue--",testValue)
-      // return a;
-      break;
-      
-      case "yesterday" : 
-      this.selectionTab = 'yesterday';
-      let b = moment().subtract(2, 'day');
-      console.log("---from today--",b)
-      return b;
-      break;
-      
-      case "lastWeek" : ""
-      this.selectionTab = 'lastWeek';
-      break;
-
-      case "lastMonth" : ""
-      this.selectionTab = 'lastMonth';
-      break;
-
-      case "last3Months": ""
-      this.selectionTab = 'last3Months';
-      break;
-      
-      default: 
-      return "hey default";
-   }
-  }
-
-  // onReset() {
-
-  // }
-
-  // onSearch() {
-  //   console.log("---Search calling---")
-  //   this.selectedStartDateStamp = moment(this.selectedStartDateStamp).format('DD/MM/YYYY');
-  //   this.selectedEndDateStamp = moment(this.selectedEndDateStamp).format('DD/MM/YYYY');
-  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-
-
-  //   console.log("---from search Dates---",this.selectedStartDateStamp, "End Date---",this.selectedEndDateStamp)
-  //   console.log("---from search Times---",this.selectedStartTime, "End Date---",this.selectedEndTime)
-  //   // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
-  //   //     VIN: 5A65654
-  //   // start date: 1616961846000
-  //   // end date: 1616963318000
-
-  //   //     VIN: NBVGF1254KLJ55
-  //   // start date: 1604327461000
-  //   // end date: 1604336647000
-
-  //   //----------This is only test data-----
-  //   // this.startTimeUTC = 1616961846000;
-  //   // this.endTimeUTC = 1616963318000;
-  //   // this.vinListSelectedValue= "5A65654";
-  //   this.covertedDateValue = [];
-  //   this.dataColValue = [];
-  //   this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
-  //     console.log("--existingTripData----", existingTripDetails)
-  //     this.showLoadingIndicator = true;
-  //     let tripData = existingTripDetails.tripData
-  //     this.initData = existingTripDetails.tripData;
-
-  //     console.log("===this.covertedDateValue====",this.covertedDateValue);
-   
-  
-  //     this.hideloader();
-  //     this.updatedTableData(this.initData);
-  //   }, (error) => {
-  //     this.initData = [];
-  //     this.hideloader();
-  //     this.updatedTableData(this.initData);
-  //   });
- 
-
-  // }
-
-  
   setDate(date : any){
     if (date === 0) {
       return "-";
