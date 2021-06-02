@@ -183,7 +183,7 @@
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
-    <div *ngIf="openAdvancedFilter" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <!-- <div *ngIf="openAdvancedFilter" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
         <!-- <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
                 <mat-panel-title>
@@ -194,8 +194,17 @@
                 </div>   
             </mat-card>
         </div> -->
-        <app-alert-advanced-filter></app-alert-advanced-filter>
+        <div *ngIf="openAdvancedFilter" class="full-width">
+        <app-alert-advanced-filter 
+        [translationData]='translationData'
+        [alert_category_selected] = 'alert_category_selected'
+        [alert_type_selected] = 'alert_type_selected'
+        [selectedRowData] = 'selectedRowData'
+        [actionType] = 'actionType'
+        >
+      </app-alert-advanced-filter>
     </div>
+    <!-- </div> -->
 
     <!-- Vehicles table -->
     

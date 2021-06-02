@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
 
                     SubscriptionActivation Objsubs = new SubscriptionActivation();
                     Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
-                    Objsubs.packageId = objsubscriptionActivation.SubscribeEvent.PackageId;
+                    Objsubs.PackageId = objsubscriptionActivation.SubscribeEvent.PackageId;
                     Objsubs.VINs = new List<string>();
 
                     if (objsubscriptionActivation.SubscribeEvent.VINs != null && objsubscriptionActivation.SubscribeEvent.VINs.Count > 0)
@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
 
-                    _logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.orderId}");
+                    _logger.LogInformation($"Subscription data has been Inserted, order ID - {order.Item2.Response.OrderId}");
                     return Ok(order.Item2.Response);
                 }
                 else

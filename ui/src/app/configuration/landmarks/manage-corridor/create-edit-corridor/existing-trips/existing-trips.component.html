@@ -278,22 +278,27 @@
         <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.distance }}</mat-cell>
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfd</mat-cell> -->
       </ng-container>
-      <ng-container matColumnDef="date">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
-        <mat-cell *matCellDef="let row"></mat-cell>
+      <!-- <div *ngIf="covertedDateValue.length > 0" > -->
+      <ng-container  matColumnDef="date">
+        <mat-header-cell *matHeaderCellDef  mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
+        <mat-cell  *matCellDef="let row">
+          <!-- <div *ngFor="let dateValue of covertedDateValue;let i = index">{{dateValue[i]}}</div> -->
+          {{ setDate(row.startTimeStamp) }}
+        </mat-cell>
         <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
       </ng-container>
+    <!-- </div> -->
       <ng-container matColumnDef="startPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'StartPoint' }}
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startAddress }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell>
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setStartAddress}}</mat-cell> -->
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfds</mat-cell> -->
       </ng-container>
       <ng-container matColumnDef="endPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'EndPoint' }}
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endAddress }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell>
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setEndAddress}}</mat-cell> -->
         <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfdsfd</mat-cell> -->
       </ng-container>

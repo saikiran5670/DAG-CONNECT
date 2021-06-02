@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.package.test
             {
                 string json = r.ReadToEnd();
                 var packages = Newtonsoft.Json.JsonConvert.DeserializeObject<PackageMaster>(json);
-                var result = _packageManager.Import(packages.packages);
+                var result = _packageManager.Import(packages.Packages);
             }
 
         }

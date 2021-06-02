@@ -40,7 +40,7 @@ namespace net.atos.daf.ct2.subscription.test
             SubscriptionActivation objSubscription = new SubscriptionActivation();
             objSubscription.OrganizationId = "manoj";
             //objSubscription.packageId = "PKG007";//for type O
-            objSubscription.packageId = "string12";//for type V
+            objSubscription.PackageId = "string12";//for type V
             objSubscription.VINs = new List<string>();
             objSubscription.VINs.Add("Vehicle_143_1");
             objSubscription.VINs.Add("Vehicle_143_2");
