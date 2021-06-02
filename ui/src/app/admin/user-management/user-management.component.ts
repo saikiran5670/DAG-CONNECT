@@ -12,6 +12,7 @@ import { RoleService } from '../../services/role.service';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-management',
@@ -51,6 +52,8 @@ export class UserManagementComponent implements OnInit {
   privilegeAccess: boolean = true; //-- false
   orgPreference: any = {};
   actionBtn:any; 
+  userDetailsType: any = '';
+  UserSessionVal: any=[];
 
   constructor(
     private dialogService: ConfirmDialogService,
@@ -58,9 +61,14 @@ export class UserManagementComponent implements OnInit {
     private dialog: MatDialog,
     private accountService: AccountService,
     private roleService: RoleService,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.defaultTranslation();
+    this.route.queryParams.subscribe(params => {
+      this.userDetailsType = params['UserDetails']; 
+   });
   }
 
   defaultTranslation(){
@@ -159,10 +167,18 @@ export class UserManagementComponent implements OnInit {
       filter: "",
       menuId: 25 //-- for account mgnt
     }
+    if(this.userDetailsType != undefined){       
+      console.log(localStorage.getItem('selectedRowItems'));
+      let sessionVal = JSON.parse(localStorage.getItem('selectedRowItems'));
+      this.editViewUser(sessionVal, this.userDetailsType)      
+    }
+    else{
+      this.router.navigate([]);        
+    }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
+      this.processTranslation(data); 
       this.loadUsersData();
-      this.getUserSettingsDropdownValues();
+      this.getUserSettingsDropdownValues(); 
     });
   }
 
@@ -245,9 +261,11 @@ export class UserManagementComponent implements OnInit {
       vehicleGroupId: 0,
       roleId: 0,
       name: ""
-   }
-
-  this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {
+   }      
+  this.UserSessionVal=element; 
+  localStorage.removeItem('selectedRowItems');
+  localStorage.setItem('selectedRowItems', JSON.stringify(this.UserSessionVal));  
+  this.roleService.getUserRoles(roleObj).subscribe(allRoleData => {     
     this.roleData = allRoleData;
     this.accountService.getAccountGroupDetails(accountGrpObj).subscribe(allAccountGroupData => {
       this.userGrpData = allAccountGroupData;
@@ -282,14 +300,14 @@ export class UserManagementComponent implements OnInit {
             this.goForword(type);
           });
         }
-    }, (error)=> {});
+    }, (error)=> {});   
    }, (error)=> {});
   }
 
   goForword(type: any){
     this.editFlag = (type == 'edit') ? true : false;
     this.viewFlag = (type == 'view') ? true : false;
-    this.isCreateFlag = false;
+    this.isCreateFlag = false;   
   }
 
   loadUsersData(){

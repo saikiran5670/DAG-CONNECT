@@ -10,6 +10,7 @@ import { CustomValidators } from '../../../shared/custom.validators';
 import { AccountService } from '../../../services/account.service';
 import { UserDetailTableComponent } from '.././new-user-step/user-detail-table/user-detail-table.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router, NavigationExtras  } from '@angular/router';
 
 @Component({
   selector: 'app-edit-view-user',
@@ -77,7 +78,7 @@ export class EditViewUserComponent implements OnInit {
   createPrefFlag = false;
   orgDefaultFlag: any;
 
-  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer) { }
+  constructor(private _formBuilder: FormBuilder, private dialog: MatDialog, private accountService: AccountService, private domSanitizer: DomSanitizer, private router: Router) { }
 
   ngOnInit() {
     this.generalSettingForm = this._formBuilder.group({
@@ -124,6 +125,14 @@ export class EditViewUserComponent implements OnInit {
     this.loadRoleTable();
     this.loadAccountGroupTable();
     this.breadcumMsg = this.getBreadcum(this.fromEdit);
+    if( this.breadcumMsg!=''){
+      let navigationExtras: NavigationExtras = {
+        queryParams:  {         
+         "UserDetails": this.fromEdit   
+        }
+      };    
+      this.router.navigate([], navigationExtras);     
+    }
   }
 
   setDefaultOrgVal(flag: any){
@@ -253,6 +262,8 @@ export class EditViewUserComponent implements OnInit {
       }
       this.userCreate.emit(emitObj);
     }
+    this.router.navigate([]);
+    sessionStorage.clear();
   }
 
   editGeneralSettings(){
