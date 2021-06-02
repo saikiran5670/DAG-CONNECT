@@ -120,7 +120,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
+                            await _auditHelper.AddLogs(DateTime.Now, "Authentication Component",
                                     "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                     "RemoveRoles  method in Authentication controller", 0, response.AccountInfo.Id, JsonConvert.SerializeObject(identityRequest),
                                      Request);
@@ -163,7 +163,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Error(null, ex);
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Authentication Component",
                 "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
                  Request);

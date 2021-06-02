@@ -23,36 +23,36 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             obj.EndLongitude = request.EndLongitude;
             obj.Width = request.Width;
             obj.Distance = request.Distance;
-            obj.Trailer = request.attribute.IsTrailer;
+            obj.Trailer = request.Attribute.IsTrailer;
             obj.IsTransportData = request.TransportData;
             obj.IsTrafficFlow = request.TrafficFlow;
 
-            obj.IsExplosive = request.attribute.IsExplosive;
-            obj.IsGas = request.attribute.IsGas;
-            obj.IsFlammable = request.attribute.IsFlammable;
-            obj.IsCombustible = request.attribute.IsCombustible;
-            obj.Isorganic = request.attribute.Isorganic;
-            obj.Ispoision = request.attribute.Ispoision;
-            obj.IsRadioActive = request.attribute.IsRadioActive;
-            obj.IsCorrosive = request.attribute.IsCorrosive;
-            obj.IsPoisonousInhalation = request.attribute.IsPoisonousInhalation;
+            obj.IsExplosive = request.Attribute.IsExplosive;
+            obj.IsGas = request.Attribute.IsGas;
+            obj.IsFlammable = request.Attribute.IsFlammable;
+            obj.IsCombustible = request.Attribute.IsCombustible;
+            obj.Isorganic = request.Attribute.Isorganic;
+            obj.Ispoision = request.Attribute.Ispoision;
+            obj.IsRadioActive = request.Attribute.IsRadioActive;
+            obj.IsCorrosive = request.Attribute.IsCorrosive;
+            obj.IsPoisonousInhalation = request.Attribute.IsPoisonousInhalation;
 
 
-            obj.IsWaterHarm = request.attribute.IsWaterHarm;
-            obj.IsOther = request.attribute.IsOther;
-            obj.TollRoad = Convert.ToString(request.exclusion.TollRoad);
-            obj.Mortorway = Convert.ToString(request.exclusion.Mortorway);
-            obj.BoatFerries = Convert.ToString(request.exclusion.BoatFerries);
-            obj.RailFerries = Convert.ToString(request.exclusion.RailFerries);
-            obj.Tunnels = Convert.ToString(request.exclusion.Tunnels);
-            obj.DirtRoad = Convert.ToString(request.exclusion.DirtRoad);
+            obj.IsWaterHarm = request.Attribute.IsWaterHarm;
+            obj.IsOther = request.Attribute.IsOther;
+            obj.TollRoad = Convert.ToString(request.Exclusion.TollRoad);
+            obj.Mortorway = Convert.ToString(request.Exclusion.Mortorway);
+            obj.BoatFerries = Convert.ToString(request.Exclusion.BoatFerries);
+            obj.RailFerries = Convert.ToString(request.Exclusion.RailFerries);
+            obj.Tunnels = Convert.ToString(request.Exclusion.Tunnels);
+            obj.DirtRoad = Convert.ToString(request.Exclusion.DirtRoad);
 
 
-            obj.VehicleSizeHeight = request.vehicleSize.VehicleSizeHeight;
-            obj.VehicleSizeWidth = request.vehicleSize.VehicleSizeWidth;
-            obj.VehicleSizeLength = request.vehicleSize.VehicleSizeLength;
-            obj.VehicleSizeLimitedWeight = request.vehicleSize.VehicleSizeLimitedWeight;
-            obj.VehicleSizeWeightPerAxle = request.vehicleSize.VehicleSizeWeightPerAxle;
+            obj.VehicleSizeHeight = request.VehicleSize.VehicleSizeHeight;
+            obj.VehicleSizeWidth = request.VehicleSize.VehicleSizeWidth;
+            obj.VehicleSizeLength = request.VehicleSize.VehicleSizeLength;
+            obj.VehicleSizeLimitedWeight = request.VehicleSize.VehicleSizeLimitedWeight;
+            obj.VehicleSizeWeightPerAxle = request.VehicleSize.VehicleSizeWeightPerAxle;
 
             obj.ModifiedBy = request.Modified_By;
 
@@ -82,7 +82,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
             {
                 Id = request.Id,
                 OrganizationId = request.OrganizationId != null ? request.OrganizationId.Value : 0,
-                CorridorType = request.CorridorType != null ? request.CorridorType : "E",
+                CorridorType = request.CorridorType ?? "E",
                 CorridorLabel = CheckNull(request.CorridorLabel),
                 Address = CheckNull(request.Address),
                 StartLatitude = request.StartLatitude,

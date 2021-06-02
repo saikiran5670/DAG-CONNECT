@@ -72,19 +72,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
                     if (packageResponse != null
-                       && packageResponse.Message == PortalConstants.PackageValidation.ErrorMessage)
+                       && packageResponse.Message == PortalConstants.PackageValidation.ERROR_MESSAGE)
                     {
-                        return StatusCode(500, PortalConstants.PackageValidation.ErrorMessage);
+                        return StatusCode(500, PortalConstants.PackageValidation.ERROR_MESSAGE);
                     }
                     // The package type should be single character
                     if (request.Type.Length > 1)
                     {
-                        return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageType);
+                        return StatusCode(400, PortalConstants.PackageValidation.INVALID_PACKAGE_TYPE);
                     }
 
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
-                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                        await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                           "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                           "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
 
@@ -107,15 +107,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                              Request);
 
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
-                    return StatusCode(400, PortalConstants.ExceptionKeyWord.FK_Constraint);
+                    return StatusCode(400, PortalConstants.ExceptionKeyWord.FK_CONSTRAINT);
                 }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
 
@@ -137,12 +137,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation 
                 if (request.Id <= 0 || string.IsNullOrEmpty(request.Code) || request.FeatureSetID <= 0)
                 {
-                    return StatusCode(400, PortalConstants.PackageValidation.CreateRequired);
+                    return StatusCode(400, PortalConstants.PackageValidation.CREATE_REQUIRED);
                 }
                 // The package type should be single character
                 if (request.Type.Length > 1)
                 {
-                    return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageType);
+                    return StatusCode(400, PortalConstants.PackageValidation.INVALID_PACKAGE_TYPE);
                 }
                 if (request.FeatureSetID > 0)
                 {
@@ -172,7 +172,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     }
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                     {
-                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                        await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                            "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Update method in Package controller", request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
                                             Request);
@@ -197,13 +197,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
 
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "Update method in Package controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                                               Request);
 
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -228,9 +228,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var request = new GetPackageRequest()
                 {
                     Id = filterRequest.Id,
-                    State = filterRequest.State == null ? string.Empty : filterRequest.State,
-                    Code = filterRequest.Code == null ? string.Empty : filterRequest.Code,
-                    Type = filterRequest.Type == null ? string.Empty : filterRequest.Type,
+                    State = filterRequest.State ?? string.Empty,
+                    Code = filterRequest.Code ?? string.Empty,
+                    Type = filterRequest.Type ?? string.Empty,
                     FeatureSetID = filterRequest.FeatureSetId
                 };
                 var response = await _packageClient.GetAsync(request);
@@ -283,7 +283,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 response.PackageDeleteRequest = packageRequest;
                 if (response != null && response.Code == Responsecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                            "Package service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Delete method in Package controller", packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
                                             Request);
@@ -296,7 +296,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "Delete method in Package controller", packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
                                              Request);
@@ -316,11 +316,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 //Validation
-                if (request.packagesToImport.Count <= 0)
+                if (request.PackagesToImport.Count <= 0)
                 {
                     return StatusCode(400, "Package data is required.");
                 }
-                bool hasFeature = request.packagesToImport.Any(x => x.Features.Count == 0);
+                bool hasFeature = request.PackagesToImport.Any(x => x.Features.Count == 0);
                 if (!hasFeature)
                 {
                     var packageRequest = _packageMapper.ToImportPackage(request);
@@ -334,7 +334,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     else if (packageResponse != null && packageResponse.Code == Responsecode.Success &&
                              packageResponse.PackageList != null && packageResponse.PackageList.Count > 0)
                     {
-                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                        await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                               Request);
@@ -359,13 +359,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                               Request);
 
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -384,12 +384,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // Validation 
                 if (request.PackageId <= 0 || string.IsNullOrEmpty(request.State))
                 {
-                    return StatusCode(400, PortalConstants.PackageValidation.PackageStatusRequired);
+                    return StatusCode(400, PortalConstants.PackageValidation.PACKAGE_STATUS_REQUIRED);
                 }
                 // The package status should be single character
                 if (request.State.Length > 1)
                 {
-                    return StatusCode(400, PortalConstants.PackageValidation.InvalidPackageStatus);
+                    return StatusCode(400, PortalConstants.PackageValidation.INVALID_PACKAGE_STATUS);
                 }
 
 
@@ -403,7 +403,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (packageResponse != null && packageResponse.Code == Responsecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                               Request);
@@ -417,7 +417,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Package Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
                                              Request);

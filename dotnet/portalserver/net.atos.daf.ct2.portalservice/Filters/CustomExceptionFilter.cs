@@ -9,10 +9,9 @@ namespace net.atos.daf.ct2.portalservice.Filters
     {
         public void OnException(ExceptionContext context)
         {
-            HttpStatusCode status = HttpStatusCode.InternalServerError;
-            String message = String.Empty;
-
             var exceptionType = context.Exception.GetType();
+            string message;
+            HttpStatusCode status;
             if (exceptionType == typeof(UnauthorizedAccessException))
             {
                 message = "Unauthorized Access";

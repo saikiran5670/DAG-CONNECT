@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public List<AccountDetailsResponse> ToAccountDetailsResponse(AccountBusinessService.AccountDetailsResponse request)
         {
             List<AccountDetailsResponse> response = new List<AccountDetailsResponse>();
-            AccountDetailsResponse accountDetails = new AccountDetailsResponse();
+            AccountDetailsResponse accountDetails;
             if (request == null) return response;
             foreach (var accountDetail in request.AccountDetails)
             {

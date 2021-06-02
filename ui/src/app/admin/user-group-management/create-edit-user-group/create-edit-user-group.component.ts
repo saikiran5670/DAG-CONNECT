@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../shared/custom.validators';
+import { Router, NavigationExtras  } from '@angular/router';
 
 @Component({
   selector: 'app-create-edit-user-group',
@@ -33,7 +34,7 @@ export class CreateEditUserGroupComponent implements OnInit {
   showUserList: boolean = true;
   isUserGroupExist: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder, private accountService: AccountService) { }
+  constructor(private _formBuilder: FormBuilder, private accountService: AccountService, private router: Router) { }
 
   ngOnInit() {
     this.OrgId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -65,6 +66,14 @@ export class CreateEditUserGroupComponent implements OnInit {
     if(this.actionType == 'view' || this.actionType == 'edit'){
       this.showHideUserList();
       this.breadcumMsg = this.getBreadcum();
+    }
+    if( this.breadcumMsg!=''){
+      let navigationExtras: NavigationExtras = {
+        queryParams:  {         
+         "UserDetails": this.actionType   
+        }
+      };    
+      this.router.navigate([], navigationExtras);     
     }
     this.loadUsersData();
   }
