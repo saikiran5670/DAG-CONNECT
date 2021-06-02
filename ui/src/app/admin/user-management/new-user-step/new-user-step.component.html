@@ -81,7 +81,7 @@
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <mat-label>{{ translationData.lblFirstName || 'First Name' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline" class="full-width">
-                    <input maxlength="30" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
+                    <input maxlength="120" placeholder="{{ translationData.lblFirstName || 'First Name' }}" matInput formControlName="firstName" required>
                   </mat-form-field>
                   <mat-error *ngIf="firstFormGroup.get('firstName').hasError('required')">
                     {{ translationData.lblPleaseenterFirstName || 'Please enter First Name' }}
