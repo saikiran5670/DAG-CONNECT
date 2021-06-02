@@ -1,1 +1,107 @@
-<p>alert-advanced-filter works!</p>
+<form [formGroup]="alertAdvancedFilterForm">
+ <!-- distance option -->
+<mat-card class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <mat-checkbox (change)="onChangeDistance($event)" [checked]="isDistanceSelected">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    translationData.lblDistance || 'Distance' }}<span class='mandatoryColor'>*</span></span>
+                </mat-checkbox>
+                </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngIf="isDistanceSelected" fxLayout="row" class="full-width filter-direction">
+            <div fxLayout="column" class="areaWidth"> 
+<mat-label>{{ translationData.lblDistanceLimit || 'Distance Limit' }}<span class='mandatoryColor'>*</span>
+<mat-form-field appearance="outline">
+    <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="distance">
+</mat-form-field>
+<button>m</button>
+</mat-label>
+</div>
+<div fxLayout="column" class="areaWidth"> 
+<p style="color: darkgray;padding-top:4px;margin: 2px;line-height : 4px; padding-left:4px">{{translationData.lblEnterathresholdwhenalertshouldbe || 'Enter a threshold when alert should be'}}</p>
+<p  style="color: darkgray; padding-top:4px; padding-left:4px">{{translationData.triggeredforthiscriteria || 'triggered for this criteria'}}</p>
+</div>
+</div>
+    </mat-expansion-panel>
+</mat-card>
+
+<!-- No of occurences option -->
+<mat-card class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <mat-checkbox (change)="onChangeOccurence($event)" [checked]="isOccurenceSelected">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    translationData.lblNumberofoccurences || 'Number of occurences' }}<span class='mandatoryColor'>*</span></span>
+                </mat-checkbox>
+                </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngIf="isOccurenceSelected" fxLayout="row" class="full-width filter-direction">
+            <div fxLayout="column" class="areaWidth"> 
+<mat-label>{{ translationData.lblOccurences || 'Occurences' }}<span class='mandatoryColor'>*</span>
+<mat-form-field appearance="outline">
+    <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="occurences">
+</mat-form-field>
+</mat-label>
+</div>
+<div fxLayout="column" class="areaWidth"> 
+<p style="color: darkgray;padding-top:4px;margin: 2px;line-height : 4px; padding-left:4px">{{translationData.lblEnterathresholdwhenalertshouldbe || 'Enter a threshold when alert should be'}}</p>
+<p  style="color: darkgray; padding-top:4px; padding-left:4px">{{translationData.triggeredforthiscriteria || 'triggered for this criteria'}}</p>
+</div>
+</div>
+    </mat-expansion-panel>
+</mat-card>
+
+<!-- Duration option -->
+<mat-card class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <mat-checkbox (change)="onChangeDuration($event)" [checked]="isDurationSelected">
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    translationData.lblDuration || 'Duration' }}<span class='mandatoryColor'>*</span></span>
+                </mat-checkbox>
+                </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngIf="isDurationSelected" fxLayout="row" class="full-width filter-direction">
+            <div fxLayout="column" class="areaWidth"> 
+<mat-label>{{ translationData.lblDurationLimit || 'Duration Limit' }}<span class='mandatoryColor'>*</span>
+<mat-form-field appearance="outline">
+    <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="duration">
+</mat-form-field>
+<button>s</button>
+</mat-label>
+</div>
+<div fxLayout="column" class="areaWidth"> 
+<p style="color: darkgray;padding-top:4px;margin: 2px;line-height : 4px; padding-left:4px">{{translationData.lblEnterathresholdwhenalertshouldbe || 'Enter a threshold when alert should be'}}</p>
+<p  style="color: darkgray; padding-top:4px; padding-left:4px">{{translationData.triggeredforthiscriteria || 'triggered for this criteria'}}</p>
+</div>
+</div>
+    </mat-expansion-panel>
+</mat-card>
+
+<!-- POI condition option -->
+<mat-card class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                    translationData.lblPOICondition || 'POI Condition' }}<span class='mandatoryColor'>*</span></span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-radio-group (change)='onRadioButtonChange($event)' formControlName="poiSite">
+            <mat-radio-button style='margin-right: 20px;'[checked]="true" value="0">
+                {{ translationData.lblEnteringSite || 'Entering Site' }}
+            </mat-radio-button>
+            <mat-radio-button style='margin-right: 20px;' value="1">
+                {{ translationData.lblExitingSite || 'Exiting Site' }}
+            </mat-radio-button>
+        </mat-radio-group>
+        
+        <!-- entering site -->
+
+    </mat-expansion-panel>
+</mat-card>
+</form>

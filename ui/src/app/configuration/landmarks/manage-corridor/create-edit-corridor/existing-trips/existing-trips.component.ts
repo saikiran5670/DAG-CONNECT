@@ -46,7 +46,8 @@ export class ExistingTripsComponent implements OnInit {
   selectedEndDateStamp: any;
   startTimeUTC: any;
   endTimeUTC: any;
-  timeValue: any = 0;
+  
+  timeValue: any;
   // range = new FormGroup({
   //   start: new FormControl(),
   //   end: new FormControl()
@@ -61,9 +62,11 @@ export class ExistingTripsComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns = ['All', 'DriverName', 'distance', 'date', 'startPoint', 'endPoint'];
   existingTripData: any = [];
+  dataColValue: any = [];
   createEditStatus = false;
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
+  covertedDateValue: any = [];
   // actionType: string;
   titleVisible: boolean = false;
   titleFailVisible: boolean = false;
@@ -243,7 +246,9 @@ export class ExistingTripsComponent implements OnInit {
     this.selectedEndDateStamp = todayDate;
     this.existingTripForm.controls.startDate.setValue(this.selectedStartDateStamp);
     this.existingTripForm.controls.endDate.setValue(this.selectedEndDateStamp);
-    console.log("------defaults dates--",this.selectedStartDateStamp)
+    console.log("-----date without selection date---",this.selectedStartDateStamp)
+    console.log("------defaults start dates--",this.selectedStartDateStamp)
+    console.log("------defaults end dates--",this.selectedEndDateStamp)
 
   }
   
@@ -1065,6 +1070,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   selectedStartDate(startDate: any) {
+    console.log("---startDate--",startDate.target.value)
     this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
     // console.log("---selectedStartDate---",this.selectedStartDateStamp)
     // let dateTime = moment(this.selectedStartDateStamp + ' ' + this.selectedStartTime, 'DD/MM/YYYY HH:mm');
@@ -1153,6 +1159,14 @@ export class ExistingTripsComponent implements OnInit {
 
   onSearch() {
     console.log("---Search calling---")
+    this.selectedStartDateStamp = moment(this.selectedStartDateStamp).format('DD/MM/YYYY');
+    this.selectedEndDateStamp = moment(this.selectedEndDateStamp).format('DD/MM/YYYY');
+    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+
+
+    console.log("---from search Dates---",this.selectedStartDateStamp, "End Date---",this.selectedEndDateStamp)
+    console.log("---from search Times---",this.selectedStartTime, "End Date---",this.selectedEndTime)
     // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
     //     VIN: 5A65654
     // start date: 1616961846000
@@ -1166,12 +1180,39 @@ export class ExistingTripsComponent implements OnInit {
     // this.startTimeUTC = 1616961846000;
     // this.endTimeUTC = 1616963318000;
     // this.vinListSelectedValue= "5A65654";
-
+    this.covertedDateValue = [];
+    this.dataColValue = [];
     this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       console.log("--existingTripData----", existingTripDetails)
       this.showLoadingIndicator = true;
+      let tripData = existingTripDetails.tripData
       this.initData = existingTripDetails.tripData;
-      console.log("--initData----", this.initData.length)
+      
+      // tripData.forEach(dateValue => {
+      //   this.covertedDateValue.push(moment(dateValue.startTimeStamp).format("DD/MM/YYYY-h:mm:ss"));
+      //   // this.covertedDateValue.push(new Date(dateValue.startTimeStamp));
+ 
+        
+      // });
+      // tripData.map((getAllDates) => {
+        // a.replace(/\s+/g, '')
+      //   this.covertedDateValue.push(new Date(getAllDates.startTimeStamp));
+      // });
+      console.log("===this.covertedDateValue====",this.covertedDateValue);
+      
+      
+      // this.dataColValue = this.covertedDateValue.join('-');
+      // this.dataColValue = this.dataColValue.replace(/\s+/g, '').split('-')
+      // console.log("-----all dataColValue---",this.dataColValue)
+
+
+
+      // this.covertedDateValue.forEach(value => {
+      //   let convertedVal = moment(value).format("DD/MM/YYYY h:mm:ss ");
+      //   this.dataColValue.push(convertedVal)
+      //   // console.log("---date values--",value.slice(4,24))
+      // });
+  
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
@@ -1180,8 +1221,17 @@ export class ExistingTripsComponent implements OnInit {
       this.updatedTableData(this.initData);
     });
     //   }
+    // console.log("convertedDate in String---",this.covertedDateValue.toString())
 
   }
 
-
+  
+  setDate(date : any){
+    if (date === 0) {
+      return "-";
+    } else {
+     var dateValue=  moment(date).format("DD/MM/YYYY-h:mm:ss")
+     return dateValue;
+    }
+}
 }

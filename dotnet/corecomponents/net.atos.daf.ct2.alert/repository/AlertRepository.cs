@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameterAlert.Add("@validity_end_date", null);
                 }
                 parameterAlert.Add("@vehicle_group_id", alert.VehicleGroupId);
-                parameterAlert.Add("@state", 'A');
+                parameterAlert.Add("@state", alert.State);
                 parameterAlert.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterAlert.Add("@created_by", alert.CreatedBy);
 

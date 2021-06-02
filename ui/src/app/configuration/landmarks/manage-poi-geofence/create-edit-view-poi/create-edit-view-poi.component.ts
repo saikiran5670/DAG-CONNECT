@@ -45,9 +45,10 @@ export class CreateEditViewPoiComponent implements OnInit {
   zip: any;
   city: any;
   country: any;
+  types = ['Regular', 'Global'];
   userCreatedMsg: any = '';
   hereMapService: any;
-  organizationId: number;
+  organizationId: any;
   latitude: any;
   longitude: any;
   localStLanguage: any;
@@ -83,6 +84,7 @@ export class CreateEditViewPoiComponent implements OnInit {
     this.poiFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc, Validators.min(1), Validators.max(100)]],
       category: ['', [Validators.required]],
+      type: ['', []],
       subcategory: [''],
       address: [''],
       zip: [''],
@@ -400,6 +402,7 @@ this.map.setZoom(14);
   setDefaultValue() {
     this.poiFormGroup.get("name").setValue(this.selectedElementData.name);
     this.poiFormGroup.get("address").setValue(this.selectedElementData.address);
+    this.poiFormGroup.get('type').setValue((this.selectedElementData.organizationId == 0) ? this.types[1] : this.types[0]);
     this.poiFormGroup.get("city").setValue(this.selectedElementData.city);
     this.poiFormGroup.get("zip").setValue(this.selectedElementData.zipcode);
     this.poiFormGroup.get("lattitude").setValue(this.selectedElementData.latitude);
@@ -500,6 +503,15 @@ this.map.setZoom(14);
 
     }
 
+  }
+
+  onTypeChange(typeValue: any) {
+    console.log("---type selected", typeValue)
+    if(typeValue == "Global"){
+      this.organizationId = "";
+    }else if(typeValue == "Regular"){
+      this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
+    }
   }
 
   onReset(){
