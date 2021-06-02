@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 //var jsPDF = require('jspdf');
 
 declare var H: any;
@@ -24,7 +25,6 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
-  
   selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectedStartTime: any = '00:00';
@@ -61,11 +61,12 @@ export class TripReportComponent implements OnInit {
   wholeTripData: any = [];
   tableInfoObj: any = {};
   tripTraceArray: any = [];
-
-  constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
-    // this.platform = new H.service.Platform({
-    //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    // });
+  startTimeDisplay: any = '00:00:00';
+  endTimeDisplay: any = '23:59:59';
+  prefTimeFormat: any = 12; //-- coming from pref setting
+  prefDateFormat: any = ''; //-- coming from pref setting
+  
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
     this.defaultTranslation();
   }
 
@@ -99,12 +100,48 @@ export class TripReportComponent implements OnInit {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.setDefaultStartEndTime();
+      this.setPrefFormatDate();
       this.setDefaultTodayDate();
       this.loadWholeTripData();
     });
   }
 
+  setPrefFormatTime(){
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = '00:00:00';
+      this.endTimeDisplay = '23:59:59';
+    }else{
+      this.startTimeDisplay = '12:00 AM';
+      this.endTimeDisplay = '11:59 PM';
+    }
+  }
+
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      }
+    }
+  }
+
   setDefaultStartEndTime(){
+    this.setPrefFormatTime();
     this.selectedStartTime = "00:00";
     this.selectedEndTime = "23:59";
   }
@@ -216,7 +253,31 @@ export class TripReportComponent implements OnInit {
     let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
-    let _date = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()} ${h}:${m}:${s}`;
+    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let _date: any;
+    switch(this.prefDateFormat){
+      case 'dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${h}:${m}:${s}`;
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${h}:${m}:${s}`;
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        _date = `${_d}-${-m}-${_y} ${h}:${m}:${s}`;
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${h}:${m}:${s}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${h}:${m}:${s}`;
+      }
+    }
     return _date;
   }
 
@@ -381,11 +442,23 @@ export class TripReportComponent implements OnInit {
 
   startTimeChanged(selectedTime: any) {
     this.selectedStartTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = selectedTime + ':00';
+    }
+    else{
+      this.startTimeDisplay = selectedTime;
+    }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.endTimeDisplay = selectedTime + ':59';
+    }
+    else{
+      this.endTimeDisplay = selectedTime;
+    }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
   }
 
@@ -458,12 +531,14 @@ export class TripReportComponent implements OnInit {
     }
   }
 
-  changeStartDateEvent(event: MatDatepickerInputEvent<Date>){
-    this.startDateValue = event.value;
+  changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    //this.startDateValue = event.value._d;
+    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
   }
 
-  changeEndDateEvent(event: MatDatepickerInputEvent<Date>){
-    this.endDateValue = event.value;
+  changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    //this.endDateValue = event.value._d;
+    this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){

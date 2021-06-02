@@ -311,7 +311,7 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblHeight|| 'Height' }}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
-                                    <input type="number" maxlength="50"
+                                    <input type="number" maxlength="50" (focusout)="vehicleSizeFocusOut()" 
                                         matInput formControlName="vehicleHeight">
                                 </mat-form-field>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleHeight').hasError('noNegativeValueAllowed')">
@@ -329,7 +329,7 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblWidth|| 'Width' }}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
-                                    <input type="number" maxlength="50" 
+                                    <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="vehicleWidth">
                                 </mat-form-field>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleWidth').hasError('noNegativeValueAllowed')">
@@ -347,7 +347,7 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblLength|| 'Length' }}:</span></mat-label>
                                 <mat-form-field  *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
-                                    <input type="number" maxlength="50" 
+                                    <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="vehicleLength">
                                 </mat-form-field>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleLength').hasError('noNegativeValueAllowed')">
@@ -367,7 +367,7 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblLimitedWeight|| 'Limited Weight' }}:</span></mat-label>
                                 <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
-                                    <input type="number" maxlength="50" 
+                                    <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="limitedWeight">
                                 </mat-form-field>
                                 <mat-error *ngIf="corridorFormGroup.get('limitedWeight').hasError('noNegativeValueAllowed')">
@@ -385,7 +385,7 @@
                             <div>
                                 <mat-label><span>{{ translationData.lblWeightPerAxle|| 'Weight Per Axle' }}:</span></mat-label>
                                 <mat-form-field *ngIf="actionType !== 'view'" appearance="outline" class='full-width'>
-                                    <input type="number" maxlength="50" 
+                                    <input type="number" maxlength="50"  (focusout)="vehicleSizeFocusOut()"
                                         matInput formControlName="weightPerAxle">
                                 </mat-form-field>
                                 <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('noNegativeValueAllowed')">
