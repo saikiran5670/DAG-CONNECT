@@ -24,7 +24,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
-        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Entity.Alert.Mapper _mapper;
         private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
@@ -50,10 +49,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (alertId == 0) return BadRequest("Alert id cannot be zero.");
+                if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
                 var response = await _alertServiceClient.ActivateAlertAsync(new IdRequest { AlertId = alertId });
                 if (response == null)
-                    return StatusCode(500, "Internal Server Error.(01)");
+                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,1));
                 if (response.Code == ResponseCode.Success)
                     return Ok(String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, alertId));
                 if (response.Code == ResponseCode.Failed)
@@ -64,14 +63,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
-                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"ActivateAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "ActivateAlert", ex.Message), 1, 2, Convert.ToString(alertId),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(_socketException))
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, "Internal Server Error.(02)");
+                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -83,10 +82,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (alertId == 0) return BadRequest("Alert id cannot be zero.");
+                if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
                 var response = await _alertServiceClient.SuspendAlertAsync(new IdRequest { AlertId = alertId });
                 if (response == null)
-                    return StatusCode(500, "Internal Server Error.(01)");
+                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
                     return Ok(String.Format(AlertConstants.SUSPEND_ALERT_SUCCESS_MSG, alertId));
                 if (response.Code == ResponseCode.Failed)
@@ -97,15 +96,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
-                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"SuspendAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "SuspendAlert", ex.Message), 1, 2, Convert.ToString(alertId),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(_socketException))
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, "Internal Server Error.(02)");
+                    return StatusCode(500, string.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG,2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -117,10 +116,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (alertId == 0) return BadRequest("Alert id cannot be zero.");
+                if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
                 var response = await _alertServiceClient.DeleteAlertAsync(new IdRequest { AlertId = alertId });
                 if (response == null)
-                    return StatusCode(500, "Internal Server Error.(01)");
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,1));
                 if (response.Code == ResponseCode.Success)
                     return Ok(String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, alertId));
                 if (response.Code == ResponseCode.Conflict)
@@ -133,15 +132,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"DeleteAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
+                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG,"DeleteAlert",ex.Message), 1, 2, Convert.ToString(alertId),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(_socketException))
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, "Internal Server Error.(02)");
+                    return StatusCode(500,string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -156,7 +155,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (accountId == 0 || orgnizationid == 0) return BadRequest("Account id or Orgnization id cannot be null.");
+                if (accountId == 0 || orgnizationid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
                 net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
                 var alertcategory = await _alertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
                 VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId() });
@@ -174,16 +173,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(404, "Alert Category are not found.");
+                    return StatusCode(404, AlertConstants.ALERT_CATEGORY_NOT_FOUND_MSG);
                 }
-
 
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
-                 "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"Get alert category method Failed", 1, 2, Convert.ToString(accountId),
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlertCategory", ex.Message), 1, 2, Convert.ToString(accountId),
                   Request);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -202,7 +200,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
                 if (result.Count() > 0)
                 {
-                    return StatusCode(409, "Duplicate notification recipient label added in list.");
+                    return StatusCode(409, AlertConstants.ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG);
                 }
 
                 var alertRequest = new AlertRequest();
@@ -210,13 +208,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.ApplyOn.ToLower() == "s")
                 {
                     var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                    VehicleGroupRequest.Name = string.Format("VehicleGroup_{0}_{1}", request.OrganizationId.ToString(), request.Id.ToString());
+                    VehicleGroupRequest.Name = string.Format(AlertConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                     if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
                     VehicleGroupRequest.GroupType = "S";
                     VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
                     VehicleGroupRequest.FunctionEnum = "N";
                     VehicleGroupRequest.OrganizationId = GetContextOrgId();
-                    VehicleGroupRequest.Description = "Single vehicle group for alert:-  " + alertRequest.Name + "  org:- " + alertRequest.OrganizationId;
+                    VehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME,alertRequest.Name ,alertRequest.OrganizationId);
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
@@ -282,7 +280,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Create  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(_socketException))
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -353,7 +351,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                  "Update  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(_socketException))
+                if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
