@@ -24,7 +24,6 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
-  
   selectionTab: any;
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectedStartTime: any = '00:00';
@@ -61,11 +60,11 @@ export class TripReportComponent implements OnInit {
   wholeTripData: any = [];
   tableInfoObj: any = {};
   tripTraceArray: any = [];
-
+  startTimeDisplay: any = '00:00:00';
+  endTimeDisplay: any = '23:59:59';
+  prefTimeFormat: any = 24; // 12
+  
   constructor(private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
-    // this.platform = new H.service.Platform({
-    //   "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
-    // });
     this.defaultTranslation();
   }
 
@@ -104,7 +103,18 @@ export class TripReportComponent implements OnInit {
     });
   }
 
+  setPrefFormatTime(){
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = '00:00:00';
+      this.endTimeDisplay = '23:59:59';
+    }else{
+      this.startTimeDisplay = '12:00 AM';
+      this.endTimeDisplay = '11:59 PM';
+    }
+  }
+
   setDefaultStartEndTime(){
+    this.setPrefFormatTime();
     this.selectedStartTime = "00:00";
     this.selectedEndTime = "23:59";
   }
@@ -381,11 +391,23 @@ export class TripReportComponent implements OnInit {
 
   startTimeChanged(selectedTime: any) {
     this.selectedStartTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = selectedTime + ':00';
+    }
+    else{
+      this.startTimeDisplay = selectedTime;
+    }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
   }
 
   endTimeChanged(selectedTime: any) {
     this.selectedEndTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.endTimeDisplay = selectedTime + ':00';
+    }
+    else{
+      this.endTimeDisplay = selectedTime;
+    }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
   }
 
