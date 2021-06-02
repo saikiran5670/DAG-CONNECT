@@ -19,11 +19,11 @@ namespace net.atos.daf.ct2.translationservice.Entity
             // obj.id = request.Id;
 
 
-            obj.translations = new List<Translations>();
-            obj.file_name = request.FileName;
-            obj.description = request.Description;
-            obj.file_size = request.FileSize;
-            obj.failure_count = request.FailureCount;
+            obj.Translationss = new List<Translations>();
+            obj.FileName = request.FileName;
+            obj.Description = request.Description;
+            obj.FileSize = request.FileSize;
+            obj.FailureCount = request.FailureCount;
             // obj.created_by = request.CreatedBy;
             if (request.File != null)
             {
@@ -34,7 +34,7 @@ namespace net.atos.daf.ct2.translationservice.Entity
                     trans.Type = item.Type;
                     trans.Name = item.Name;
                     trans.Value = item.Value;
-                    obj.translations.Add(trans);
+                    obj.Translationss.Add(trans);
                 }
 
             }
@@ -45,8 +45,8 @@ namespace net.atos.daf.ct2.translationservice.Entity
                 //MemoryStream ms = new MemoryStream();
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    bf.Serialize(ms, obj.translations);
-                    obj.file = ms.ToArray();
+                    bf.Serialize(ms, obj.Translationss);
+                    obj.File = ms.ToArray();
                 }
                 //bf.Serialize(ms, request.File);
                 //obj.file = request.File.SelectMany(s =>
@@ -55,8 +55,8 @@ namespace net.atos.daf.ct2.translationservice.Entity
 
             }
 
-            obj.added_count = request.AddedCount;
-            obj.updated_count = request.UpdatedCount;
+            obj.AddedCount = request.AddedCount;
+            obj.UpdatedCount = request.UpdatedCount;
 
 
             return obj;
@@ -64,29 +64,29 @@ namespace net.atos.daf.ct2.translationservice.Entity
         public int ToTranslationEntity(FileUploadDetailsRequest request)
         {
             Translationupload obj = new Translationupload();
-            obj.id = request.FileID;
-            return obj.id;
+            obj.Id = request.FileID;
+            return obj.Id;
         }
 
         public TranslationUpload ToTranslationUploadDetailEntity(Translationupload translationupload)
         {
             TranslationUpload obj = new TranslationUpload();
-            obj.Id = translationupload.id;
-            if (!string.IsNullOrEmpty(translationupload.file_name))
-                obj.FileName = translationupload.file_name;
-            if (!string.IsNullOrEmpty(translationupload.description))
-                obj.Description = translationupload.description;
-            obj.FileSize = translationupload.file_size;
-            obj.FailureCount = translationupload.failure_count;
+            obj.Id = translationupload.Id;
+            if (!string.IsNullOrEmpty(translationupload.FileName))
+                obj.FileName = translationupload.FileName;
+            if (!string.IsNullOrEmpty(translationupload.Description))
+                obj.Description = translationupload.Description;
+            obj.FileSize = translationupload.FileSize;
+            obj.FailureCount = translationupload.FailureCount;
             // obj.CreatedBy = translationupload.created_by;
-            if (translationupload.file != null)
+            if (translationupload.File != null)
             {
                 // obj.File = translationupload.file;
                 //ByteString bytestring;
-                using (var str = new MemoryStream(translationupload.file))
+                using (var str = new MemoryStream(translationupload.File))
                 {
                     //obj.File = ByteString.FromStream(str);
-                    var Translations = parse(translationupload.file);
+                    var Translations = Parse(translationupload.File);
                     TranslationData objdata = new TranslationData();
                     foreach (var item in Translations)
                     {
@@ -100,12 +100,12 @@ namespace net.atos.daf.ct2.translationservice.Entity
 
             }
 
-            obj.AddedCount = translationupload.added_count;
-            obj.CreatedAt = translationupload.created_at;
-            obj.UpdatedCount = translationupload.updated_count;
+            obj.AddedCount = translationupload.AddedCount;
+            obj.CreatedAt = translationupload.CreatedAt;
+            obj.UpdatedCount = translationupload.UpdatedCount;
             return obj;
         }
-        public static dynamic parse(byte[] json)
+        public static dynamic Parse(byte[] json)
         {
             //var reader = new StreamReader(new MemoryStream(json), Encoding.Default);
 
@@ -121,14 +121,14 @@ namespace net.atos.daf.ct2.translationservice.Entity
 
         public class Preferences
         {
-            public List<Translations> language { get; set; }
-            public List<Translations> unit { get; set; }
-            public List<Translations> timezone { get; set; }
-            public List<Translations> currency { get; set; }
-            public List<Translations> landingpagedisplay { get; set; }
-            public List<Translations> dateformat { get; set; }
-            public List<Translations> timeformat { get; set; }
-            public List<Translations> vehicledisplay { get; set; }
+            public List<Translations> Language { get; set; }
+            public List<Translations> Unit { get; set; }
+            public List<Translations> Timezone { get; set; }
+            public List<Translations> Currency { get; set; }
+            public List<Translations> LandingPageDisplay { get; set; }
+            public List<Translations> DateFormat { get; set; }
+            public List<Translations> TimeFormat { get; set; }
+            public List<Translations> VehicleDisplay { get; set; }
 
         }
 
@@ -157,8 +157,8 @@ namespace net.atos.daf.ct2.translationservice.Entity
             response.StartDate = termsAndConditions.StartDate.ToString();
             response.EndDate = termsAndConditions.EndDate.ToString();
             response.AcceptedDate = termsAndConditions.Accepted_Date.ToString();
-            response.FirstName = termsAndConditions.FirstName == null ? "" : termsAndConditions.FirstName;
-            response.Lastname = termsAndConditions.Lastname == null ? "" : termsAndConditions.Lastname;
+            response.FirstName = termsAndConditions.FirstName ?? "";
+            response.Lastname = termsAndConditions.Lastname ?? "";
             return response;
         }
 

@@ -16,14 +16,14 @@ namespace net.atos.daf.ct2.packageservice
         //private readonly ILogger<PackageManagementService> _logger;
 
         private ILog _logger;
-        private readonly IAuditTraillib _AuditTrail;
+        private readonly IAuditTraillib _auditTraillib;
         private readonly IPackageManager _packageManager;
         public PackageManagementService(
                                         IAuditTraillib AuditTrail,
                                         IPackageManager packageManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _AuditTrail = AuditTrail;
+            _auditTraillib = AuditTrail;
             _packageManager = packageManager;
         }
 

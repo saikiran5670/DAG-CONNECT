@@ -83,6 +83,10 @@ getRoutes(params : any): Observable<any> {
     return this.httpClient.get<any>(routeURL+params);
   } 
 
+  getTruckRoutes(params:any): Observable<any>{
+    let routeURL =   'https://router.hereapi.com/v8/routes?';
+    return this.httpClient.get<any>(routeURL+(params));
+  }
   public calculateRoutePoints(parameters:any) {
     return new Promise((resolve, reject) => {
         this.router.calculateRoute(parameters,

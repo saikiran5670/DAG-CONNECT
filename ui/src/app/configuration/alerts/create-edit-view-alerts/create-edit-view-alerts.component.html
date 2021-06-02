@@ -196,7 +196,12 @@
         </div> -->
         <div *ngIf="openAdvancedFilter" class="full-width">
         <app-alert-advanced-filter 
-        [translationData]='translationData'>
+        [translationData]='translationData'
+        [alert_category_selected] = 'alert_category_selected'
+        [alert_type_selected] = 'alert_type_selected'
+        [selectedRowData] = 'selectedRowData'
+        [actionType] = 'actionType'
+        >
       </app-alert-advanced-filter>
     </div>
     <!-- </div> -->
