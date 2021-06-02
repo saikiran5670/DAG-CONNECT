@@ -33,14 +33,16 @@ import { AlertsFilterComponent } from './configuration/alerts/alerts-filter/aler
 import { AlertService } from './services/alert.service';
 import { CreateNotificationsAlertComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/create-notifications-alert.component';
 import { ReportService } from './services/report.service';
+import { AlertAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/alert-advanced-filter/alert-advanced-filter.component';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
-    declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent],
+    declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent, 
+      AlertAdvancedFilterComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
