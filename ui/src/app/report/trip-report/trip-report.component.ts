@@ -65,6 +65,7 @@ export class TripReportComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
+  accountPrefObj: any;
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
     this.defaultTranslation();
@@ -80,6 +81,7 @@ export class TripReportComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.tripForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -99,10 +101,14 @@ export class TripReportComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.setDefaultStartEndTime();
-      this.setPrefFormatDate();
-      this.setDefaultTodayDate();
-      this.loadWholeTripData();
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
+        this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].value;
+        this.setDefaultStartEndTime();
+        this.setPrefFormatDate();
+        this.setDefaultTodayDate();
+        this.loadWholeTripData();
+      });
     });
   }
 
