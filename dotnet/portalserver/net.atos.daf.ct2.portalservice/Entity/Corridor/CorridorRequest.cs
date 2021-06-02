@@ -40,9 +40,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
         public int Created_By { get; set; }
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
-        public Attribute attribute { get; set; }
-        public Exclusion exclusion { get; set; }
-        public VehicleSize vehicleSize { get; set; }
+        public Attribute Attribute { get; set; }
+        public Exclusion Exclusion { get; set; }
+        public VehicleSize VehicleSize { get; set; }
 
     }
 

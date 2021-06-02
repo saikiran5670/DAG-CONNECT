@@ -18,27 +18,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("report")]
-    public class ReportController : ControllerBase
+    public class ReportController : BaseController
     {
         private ILog _logger;
         private readonly ReportServiceClient _reportServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        private readonly HeaderObj _userDetails;
-        private readonly Report.Mapper _mapper;
+        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly Mapper _mapper;
 
-        public ReportController(ReportServiceClient reportServiceClient,
-                               AuditHelper auditHelper,
-                               Common.AccountPrivilegeChecker privilegeChecker,
-                               IHttpContextAccessor httpContextAccessor)
+        public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
-            _mapper = new Report.Mapper();
+            _mapper = new Mapper();
         }
 
         #region Select User Preferences
@@ -64,12 +59,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                 // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -134,7 +129,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 switch (response.Code)
                 {
                     case Responsecode.Success:
-                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                        await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                  Request);
                         return Ok(response);
@@ -148,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"createuserpreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                   Request);
@@ -184,13 +179,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                 // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 // $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
