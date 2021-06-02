@@ -120,6 +120,13 @@ export class RelationshipManagementComponent implements OnInit {
       obj.levelVal = obj.level === 10? 'PlatformAdmin': obj.level=== 20 ? 'GlobalAdmin': obj.level=== 30 ? 'OrgAdmin' :obj.level=== 40? 'Account' : '';
     })
     this.dataSource = new MatTableDataSource(this.initData);
+    this.dataSource.filterPredicate = function(data, filter: any){
+      return data.name.toLowerCase().includes(filter) ||
+             (data.featureIds.length).toString().includes(filter) ||
+             data.levelVal.toLowerCase().includes(filter) ||
+             data.code.toLowerCase().includes(filter) ||
+             data.description.toLowerCase().includes(filter)
+    }
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
