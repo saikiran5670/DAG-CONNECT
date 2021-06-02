@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.vehicledataservice.Entity
 {
-
     public class VehicleID
     {
         [Required]
@@ -29,7 +28,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string vehicleRange { get; set; }
+        public string VehicleRange { get; set; }
     }
 
     public class Model
@@ -64,10 +63,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string RearOverhang { get; set; }
     }
+
     public class Tank
     {
         [StringLength(50, MinimumLength = 0)]
-        public string nr { get; set; }
+        public string Nr { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Volume { get; set; }
     }
@@ -92,6 +92,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string Fuel { get; set; }
     }
+
     public class Transmission
     {
         public GearBox GearBox { get; set; }
@@ -104,7 +105,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
     }
-
 
     public class Tire
     {
@@ -120,7 +120,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class FrontAxle
     {
         [StringLength(50, MinimumLength = 0)]
-        public string position { get; set; }
+        public string Position { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
         [StringLength(50, MinimumLength = 0)]
@@ -131,7 +131,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class RearAxle
     {
         [StringLength(50, MinimumLength = 0)]
-        public string position { get; set; }
+        public string Position { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Load { get; set; }
         [StringLength(50, MinimumLength = 0)]
@@ -157,8 +157,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public RearAxle[] RearAxle { get; set; }
     }
 
-
-
     public class Cabin
     {
         [StringLength(50, MinimumLength = 0)]
@@ -176,7 +174,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class ElectronicControlUnit
     {
         [StringLength(50, MinimumLength = 0)]
-        public string type { get; set; }
+        public string Type { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Name { get; set; }
     }
@@ -195,12 +193,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     {
         public Weight Weight { get; set; }
     }
+
     public class Weight
     {
         [StringLength(50, MinimumLength = 0)]
-        public string type { get; set; }
+        public string Type { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string value { get; set; }
+        public string Value { get; set; }
     }
 
     public class VehicleDimensions
@@ -212,7 +211,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class VehicleDelivery
     {
         public string DeliveryDate { get; set; }
-
     }
 
     public class Vehicle
@@ -234,6 +232,4 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [Required]
         public VehicleUpdatedEvent VehicleUpdatedEvent { get; set; }
     }
-
-
 }

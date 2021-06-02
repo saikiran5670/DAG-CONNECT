@@ -32,8 +32,7 @@ namespace net.atos.daf.ct2.vehicledataservice
 {
     public class Startup
     {
-
-        private readonly string swaggerBasePath = "vehicle-data";
+        private readonly string _swaggerBasePath = "vehicle-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -103,7 +102,7 @@ namespace net.atos.daf.ct2.vehicledataservice
             //    options.Filters.Add(new ProducesAttribute("application/json"));
             //});
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {
                 options.ApplicationName = "DAFCT2.0";
@@ -112,17 +111,17 @@ namespace net.atos.daf.ct2.vehicledataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MainAccessPolicy,
+                    AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
                 options.AddPolicy(
-                    AccessPolicies.MainMileageAccessPolicy,
+                    AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainMileageAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY)));
                 options.AddPolicy(
-                   AccessPolicies.MainNamelistAccessPolicy,
+                   AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY,
                    policy => policy.RequireAuthenticatedUser()
-                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainNamelistAccessPolicy)));
+                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
@@ -158,13 +157,13 @@ namespace net.atos.daf.ct2.vehicledataservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
 
         }

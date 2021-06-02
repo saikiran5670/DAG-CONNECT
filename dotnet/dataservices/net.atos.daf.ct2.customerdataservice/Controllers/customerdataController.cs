@@ -13,17 +13,17 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
 {
     [ApiController]
     [Route("customer-data")]
-    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
     public class CustomerDataController : ControllerBase
     {
-        private readonly ILogger<CustomerDataController> logger;
-        private readonly IOrganizationManager organizationtmanager;
-        public IConfiguration Configuration { get; }
-        public CustomerDataController(ILogger<CustomerDataController> _logger, IOrganizationManager _organizationmanager, IConfiguration configuration)
+        private readonly ILogger<CustomerDataController> _logger;
+        private readonly IOrganizationManager _organizationManager;
+        private readonly IConfiguration _configuration;
+        public CustomerDataController(ILogger<CustomerDataController> logger, IOrganizationManager organizationmanager, IConfiguration configuration)
         {
-            logger = _logger;
-            organizationtmanager = _organizationmanager;
-            Configuration = configuration;
+            this._logger = logger;
+            _organizationManager = organizationmanager;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -33,8 +33,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
             try
             {
                 string dateformat = "yyyy-MM-ddTHH:mm:ss";
-                DateTime parsedRefDateTime;
-                if (DateTime.TryParseExact(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))
+                if (DateTime.TryParseExact(customer.CompanyUpdatedEvent.Company.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime parsedRefDateTime))
                 {
                     if (parsedRefDateTime.ToUniversalTime() > DateTime.Now.ToUniversalTime())
                     {
@@ -48,8 +47,8 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 {
                     CustomerID = customer.CompanyUpdatedEvent.Company.ID.Trim(),
                     ReferenceDateTime = parsedRefDateTime,
-                    OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value,
-                    CompanyType = customer.CompanyUpdatedEvent.Company.type?.Trim(),
+                    OrgCreationPackage = _configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value,
+                    CompanyType = customer.CompanyUpdatedEvent.Company.Type?.Trim(),
                     CustomerName = customer.CompanyUpdatedEvent.Company.Name?.Trim(),
                     AddressType = customer.CompanyUpdatedEvent.Company.Address?.Type?.Trim(),
                     Street = customer.CompanyUpdatedEvent.Company.Address?.Street?.Trim(),
@@ -59,13 +58,13 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     CountryCode = customer.CompanyUpdatedEvent.Company.Address?.CountryCode?.Trim()
                 };
 
-                await organizationtmanager.UpdateCustomer(customerRequest);
-                logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
+                await _organizationManager.UpdateCustomer(customerRequest);
+                _logger.LogInformation("Customer data has been updated, company ID -" + customerRequest.CustomerID);
                 return Ok();
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
             }
         }
@@ -82,8 +81,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                 }
 
                 string dateformat = "yyyy-MM-ddTHH:mm:ss";
-                DateTime parsedRefDateTime;
-                if (DateTime.TryParseExact(keyHandOver.KeyHandOverEvent.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedRefDateTime))
+                if (DateTime.TryParseExact(keyHandOver.KeyHandOverEvent.ReferenceDateTime.Trim(), dateformat, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime parsedRefDateTime))
                 {
                     if (parsedRefDateTime.ToUniversalTime() > DateTime.Now.ToUniversalTime())
                     {
@@ -101,10 +99,10 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     CustomerID = keyHandOver.KeyHandOverEvent.EndCustomer.ID.Trim(),
 
                     // Configuarable values                                       
-                    OwnerRelationship = Configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value,
-                    OEMRelationship = Configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value,
-                    OrgCreationPackage = Configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value,
-                    DAFPACCAR = Configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value,
+                    OwnerRelationship = _configuration.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value,
+                    OEMRelationship = _configuration.GetSection("DefaultSettings").GetSection("OEMRelationship").Value,
+                    OrgCreationPackage = _configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value,
+                    DAFPACCAR = _configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value,
 
                     ReferenceDateTime = parsedRefDateTime,
                     CustomerName = keyHandOver.KeyHandOverEvent.EndCustomer.Name?.Trim(),
@@ -117,12 +115,12 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     CountryCode = keyHandOver.KeyHandOverEvent.EndCustomer.Address?.CountryCode?.Trim()
                 };
 
-                await organizationtmanager.KeyHandOverEvent(objHandOver);
+                await _organizationManager.KeyHandOverEvent(objHandOver);
                 return Ok();
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, string.Empty);
             }
         }

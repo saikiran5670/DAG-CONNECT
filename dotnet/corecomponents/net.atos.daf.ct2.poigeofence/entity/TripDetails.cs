@@ -47,7 +47,7 @@
         public decimal FuelConsumptionCcNonActive { get; set; }
         public int IdlingConsumption { get; set; }
         public decimal DpaScore { get; set; }
-        public decimal enduranceBrake { get; set; }
+        public decimal EnduranceBrake { get; set; }
         public decimal Coasting { get; set; }
         public decimal EcoRolling { get; set; }
         public string Driver1Id { get; set; }

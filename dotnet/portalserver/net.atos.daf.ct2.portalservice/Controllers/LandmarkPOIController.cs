@@ -22,9 +22,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly POIService.POIServiceClient _poiServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Entity.POI.Mapper _mapper;
-        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly Mapper _mapper;
+        private readonly AccountPrivilegeChecker _privilegeChecker;
+        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
             Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
@@ -32,23 +32,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
             _auditHelper = auditHelper;
-            _mapper = new Entity.POI.Mapper();
+            _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpGet]
         [Route("getallglobalpoi")]
-        public async Task<IActionResult> getallglobalpoi([FromQuery] net.atos.daf.ct2.portalservice.Entity.POI.POIEntityRequest request)
+        public async Task<IActionResult> GetAllGlobalPoi([FromQuery] Entity.POI.POIEntityRequest request)
         {
             try
             {
                 _logger.Info("GetAllGlobalPOI method in POI API called.");
-                net.atos.daf.ct2.poiservice.POIEntityRequest objPOIEntityRequest = new net.atos.daf.ct2.poiservice.POIEntityRequest();
+                poiservice.POIEntityRequest objPOIEntityRequest = new poiservice.POIEntityRequest();
                 objPOIEntityRequest.CategoryId = request.CategoryId;//non mandatory field
                 objPOIEntityRequest.SubCategoryId = request.SubCategoryId;////non mandatory field
                 var data = await _poiServiceClient.GetAllGobalPOIAsync(objPOIEntityRequest);
-                if (data != null && data.Code == net.atos.daf.ct2.poiservice.Responsecode.Success)
+                if (data != null && data.Code == Responsecode.Success)
                 {
                     if (data.POIList != null && data.POIList.Count > 0)
                     {
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                     Request);
@@ -117,12 +117,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                     Request);
@@ -181,12 +181,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -213,7 +213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //        }
         //        else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
         //        {
-        //            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+        //            await _auditHelper.AddLogs(DateTime.Now, "POI Component",
         //            "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
         //            "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
         //            Request);
@@ -227,7 +227,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         //    }
         //    catch (Exception ex)
         //    {
-        //        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+        //        await _auditHelper.AddLogs(DateTime.Now, "POI Component",
         //         "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
         //         "Delete method in POI controller", Id, Id, JsonConvert.SerializeObject(Id),
         //          Request);
@@ -262,7 +262,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (poiResponse != null && poiResponse.Code == Responsecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                     Request);
@@ -277,12 +277,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -400,7 +400,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (poiUploadResponse != null && poiUploadResponse.Code == Responsecode.Success)
                 {
-                    //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    //await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     //"POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     //"Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                     //Request);
@@ -414,39 +414,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                //await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                 // "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 // "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                 //  Request);
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_Constraint))
+                if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
-        }
-        [NonAction]
-        public async Task<bool> HasAdminPrivilege()
-        {
-            bool Result = false;
-            try
-            {
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
-                if (level == 10 || level == 20)
-                    Result = true;
-                else
-                    Result = false;
-            }
-            catch (Exception)
-            {
-                Result = false;
-            }
-            return Result;
         }
 
         [HttpGet]

@@ -21,20 +21,30 @@ namespace net.atos.daf.ct2.driverservice.entity
             {
                 driver.LastName = request.LastName;
             }
-            driver.Status = request.Status;
-            driver.OptIn = request.opt_in;
-            driver.DriverIdExt = request.Driver_id_ext;
-            if (!(string.IsNullOrEmpty(request.created_at.ToString())))
+            if (!(string.IsNullOrEmpty(request.Status)))
             {
-                driver.CreatedAt = Convert.ToString(request.created_at);
+                driver.Status = request.Status;
             }
-            if (!(string.IsNullOrEmpty(request.modified_at.ToString())))
+            if (!(string.IsNullOrEmpty(request.OptIn)))
             {
-                driver.ModifiedAt = Convert.ToString(request.modified_at);
+                driver.OptIn = request.OptIn;
             }
-            if (!(string.IsNullOrEmpty(request.modified_by)))
+            if (!(string.IsNullOrEmpty(request.Driver_id_ext)))
             {
-                driver.ModifiedBy = Convert.ToString(request.modified_by);
+                driver.DriverIdExt = request.Driver_id_ext;
+            }
+            
+            if (!(string.IsNullOrEmpty(request.CreatedAt.ToString())))
+            {
+                driver.CreatedAt = Convert.ToString(request.CreatedAt);
+            }
+            if (!(string.IsNullOrEmpty(request.ModifiedAt.ToString())))
+            {
+                driver.ModifiedAt = Convert.ToString(request.ModifiedAt);
+            }
+            if (!(string.IsNullOrEmpty(request.ModifiedBy)))
+            {
+                driver.ModifiedBy = Convert.ToString(request.ModifiedBy);
             }
             return driver;
         }
@@ -44,13 +54,13 @@ namespace net.atos.daf.ct2.driverservice.entity
             driver.entity.Driver driver = new driver.entity.Driver();
             driver.Id = request.Id;
             driver.Organization_id = request.OrganizationId;
-            driver.email = request.Email;
-            driver.first_name = request.FirstName;
-            driver.last_name = request.LastName;
+            driver.Email = request.Email;
+            driver.FirstName = request.FirstName;
+            driver.LastName = request.LastName;
             driver.Status = request.Status;
-            driver.opt_in = request.OptIn;
+            driver.OptIn = request.OptIn;
             driver.Driver_id_ext = request.DriverIdExt;
-            driver.modified_by = request.ModifiedBy;
+            driver.ModifiedBy = request.ModifiedBy;
             driver.Status = request.Status;
             // driver.IsActive= request.IsActive;          
             return driver;
@@ -61,12 +71,12 @@ namespace net.atos.daf.ct2.driverservice.entity
             net.atos.daf.ct2.driverservice.DriverUpdateRequest driver = new DriverUpdateRequest();
             driver.Id = request.Id;
             driver.OrganizationId = request.Organization_id;
-            driver.Email = request.email;
-            driver.FirstName = request.first_name;
-            driver.LastName = request.last_name;
+            driver.Email = request.Email;
+            driver.FirstName = request.FirstName;
+            driver.LastName = request.LastName;
             driver.Status = request.Status;
-            driver.OptIn = request.opt_in;
-            driver.ModifiedBy = request.modified_by;
+            driver.OptIn = request.OptIn;
+            driver.ModifiedBy = request.ModifiedBy;
             driver.Status = request.Status;
             // driver.IsActive= request.IsActive;          
             return driver;
@@ -75,9 +85,9 @@ namespace net.atos.daf.ct2.driverservice.entity
         {
             driver.entity.Driver driver = new driver.entity.Driver();
             driver.Driver_id_ext = request.DriverIdExt;
-            driver.email = request.Email;
-            driver.first_name = request.FirstName;
-            driver.last_name = request.LastName;
+            driver.Email = request.Email;
+            driver.FirstName = request.FirstName;
+            driver.LastName = request.LastName;
             return driver;
         }
 

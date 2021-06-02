@@ -2,8 +2,8 @@
 {
     public class DataAttributeSetAttribute
     {
-        public int data_attribute_set_id { get; set; }
+        public int Data_attribute_set_id { get; set; }
 
-        public int data_attribute_id { get; set; }
+        public int Data_attribute_id { get; set; }
     }
 }

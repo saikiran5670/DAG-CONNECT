@@ -147,7 +147,7 @@ namespace net.atos.daf.ct2.accountservice
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
         {
             AccountPreference request = new AccountPreference();
-            request.Id = entity.Id.HasValue ? entity.Id.Value : 0;
+            request.Id = entity.Id ?? 0;
             request.RefId = entity.RefId;
             request.LanguageId = entity.LanguageId;
             request.TimezoneId = entity.TimezoneId;
@@ -194,11 +194,11 @@ namespace net.atos.daf.ct2.accountservice
             foreach (var record in entity)
             {
                 AccountVehicles accountVehicle = new AccountVehicles();
-                accountVehicle.Id = record.id;
-                if (!string.IsNullOrEmpty(record.name)) accountVehicle.Name = record.name;
+                accountVehicle.Id = record.Id;
+                if (!string.IsNullOrEmpty(record.Name)) accountVehicle.Name = record.Name;
                 else accountVehicle.Name = string.Empty;
-                accountVehicle.IsGroup = record.is_group;
-                accountVehicle.Count = record.count;
+                accountVehicle.IsGroup = record.Is_group;
+                accountVehicle.Count = record.Count;
                 if (!string.IsNullOrEmpty(record.VIN)) accountVehicle.VIN = record.VIN;
                 else accountVehicle.VIN = string.Empty;
                 if (!string.IsNullOrEmpty(record.RegistrationNo)) accountVehicle.RegistrationNo = record.RegistrationNo;

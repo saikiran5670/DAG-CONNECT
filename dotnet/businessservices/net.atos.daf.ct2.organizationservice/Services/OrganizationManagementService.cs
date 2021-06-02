@@ -20,31 +20,31 @@ namespace net.atos.daf.ct2.organizationservice
 {
     public class OrganizationManagementService : OrganizationService.OrganizationServiceBase
     {
-        private readonly IAuditTraillib _AuditTrail;
-        private readonly IAuditTraillib auditlog;
+        private readonly IAuditTraillib _auditTrail;
+        private readonly IAuditTraillib _auditlog;
 
         private ILog _logger;
-        private readonly IOrganizationManager organizationtmanager;
-        private readonly IPreferenceManager preferencemanager;
-        private readonly IVehicleManager vehicleManager;
+        private readonly IOrganizationManager _organizationtmanager;
+        private readonly IPreferenceManager _preferencemanager;
+        private readonly IVehicleManager _vehicleManager;
         private readonly EntityMapper _mapper;
         private readonly IRelationshipManager _relationshipManager;
 
 
         public OrganizationManagementService(
-                                             IAuditTraillib AuditTrail,
-                                             IOrganizationManager _organizationmanager,
-                                             IPreferenceManager _preferencemanager,
-                                             IVehicleManager _vehicleManager,
-                                             IAuditTraillib _auditlog,
+                                             IAuditTraillib auditTrail,
+                                             IOrganizationManager organizationmanager,
+                                             IPreferenceManager preferencemanager,
+                                             IVehicleManager vehicleManager,
+                                             IAuditTraillib auditlog,
                                              IRelationshipManager relationshipManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _AuditTrail = AuditTrail;
-            organizationtmanager = _organizationmanager;
-            preferencemanager = _preferencemanager;
-            vehicleManager = _vehicleManager;
-            auditlog = _auditlog;
+            _auditTrail = auditTrail;
+            _organizationtmanager = organizationmanager;
+            _preferencemanager = preferencemanager;
+            _vehicleManager = vehicleManager;
+            _auditlog = auditlog;
             _mapper = new EntityMapper();
             _relationshipManager = relationshipManager;
         }
@@ -56,9 +56,9 @@ namespace net.atos.daf.ct2.organizationservice
                 OrganizationprimaryFieldsListResponse objOrganizationprimaryFieldsListResponse = new OrganizationprimaryFieldsListResponse();
 
                 net.atos.daf.ct2.organization.entity.OrganizationByID objOrganizationEntity = new organization.entity.OrganizationByID();
-                objOrganizationEntity.id = request.Id;
-                objOrganizationEntity.roleId = request.RoleId;
-                var data = await organizationtmanager.Get(objOrganizationEntity);
+                objOrganizationEntity.Id = request.Id;
+                objOrganizationEntity.RoleId = request.RoleId;
+                var data = await _organizationtmanager.Get(objOrganizationEntity);
                 if (data == null)
                 {
                     return null;
@@ -66,8 +66,8 @@ namespace net.atos.daf.ct2.organizationservice
                 foreach (var item in data)
                 {
                     OrganizationprimaryFieldsResponse objOrganizationprimaryFieldsResponse = new OrganizationprimaryFieldsResponse();
-                    objOrganizationprimaryFieldsResponse.Id = item.id;
-                    objOrganizationprimaryFieldsResponse.Name = item.name;
+                    objOrganizationprimaryFieldsResponse.Id = item.Id;
+                    objOrganizationprimaryFieldsResponse.Name = item.Name;
                     objOrganizationprimaryFieldsListResponse.OrganizationList.Add(objOrganizationprimaryFieldsResponse);
                 }
                 return objOrganizationprimaryFieldsListResponse;
@@ -95,7 +95,7 @@ namespace net.atos.daf.ct2.organizationservice
                 relationship.State = request.State;
 
                 relationship = await _relationshipManager.CreateRelationship(relationship);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, relationship.Id.ToString());
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Create", 1, 2, relationship.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 request.Id = relationship.Id;
@@ -130,7 +130,7 @@ namespace net.atos.daf.ct2.organizationservice
                 relationship.State = request.State;
 
                 relationship = await _relationshipManager.UpdateRelationship(relationship);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, relationship.Id.ToString());
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Relationship Component", "Organization Relationship Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Updated", 1, 2, relationship.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Relatioship Updated Successfully";
                 request.Id = relationship.Id;
@@ -212,7 +212,7 @@ namespace net.atos.daf.ct2.organizationservice
                     response.Message = "Relationship cannot be deleted as it is mapped with organiztion.";
 
                 }
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Relationship Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Delete", 1, 2, request.Id.ToString());
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Service", "Relationship Service", AuditTrailEnum.Event_type.DELETE, AuditTrailEnum.Event_status.SUCCESS, "Relationship Delete", 1, 2, request.Id.ToString());
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -418,9 +418,9 @@ namespace net.atos.daf.ct2.organizationservice
                 organization.AddressStreetNumber = request.StreetNumber;
                 organization.City = request.City;
                 organization.CountryCode = request.CountryCode;
-                organization.reference_date = Convert.ToDateTime(request.ReferenceDate);
-                organization = await organizationtmanager.Create(organization);
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Create", 1, 2, organization.Id.ToString());
+                organization.ReferenceDate = Convert.ToDateTime(request.ReferenceDate);
+                organization = await _organizationtmanager.Create(organization);
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Create", 1, 2, organization.Id.ToString());
                 response.Code = Responcecode.Success;
                 response.Message = "Created";
                 request.Id = organization.Id;
@@ -446,9 +446,9 @@ namespace net.atos.daf.ct2.organizationservice
                 Organization organization = new Organization();
                 OrganizationUpdateData response = new OrganizationUpdateData();
                 organization.Id = request.Id;
-                organization.vehicle_default_opt_in = request.VehicleDefaultOptIn;
-                organization.driver_default_opt_in = request.DriverDefaultOptIn;
-                var OrgId = await organizationtmanager.Update(organization);
+                organization.VehicleDefaultOptIn = request.VehicleDefaultOptIn;
+                organization.DriverDefaultOptIn = request.DriverDefaultOptIn;
+                var OrgId = await _organizationtmanager.Update(organization);
 
                 if (OrgId.Id == 0)
                 {
@@ -460,7 +460,7 @@ namespace net.atos.daf.ct2.organizationservice
                 }
                 else
                 {
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Updated", 1, 2, organization.Id.ToString());
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Organization Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Organization Updated", 1, 2, organization.Id.ToString());
                     response.Code = Responcecode.Success;
                     response.Message = "Organization updated";
                     request.Id = organization.Id;
@@ -483,10 +483,10 @@ namespace net.atos.daf.ct2.organizationservice
         public override async Task<OrganizationGetData> Get(IdRequest request, ServerCallContext context)
         {
 
-            net.atos.daf.ct2.organization.entity.OrganizationResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationResponse();
+            net.atos.daf.ct2.organization.entity.OrganizationResponse organization; //= new net.atos.daf.ct2.organization.entity.OrganizationResponse();
             OrganizationGetData response = new OrganizationGetData();
             _logger.Info("Get Organization .");
-            organization = await organizationtmanager.Get(request.Id);
+            organization = await _organizationtmanager.Get(request.Id);
             response.Message = "Get";
             if (organization.Id > 0)
             {
@@ -503,11 +503,11 @@ namespace net.atos.daf.ct2.organizationservice
 
         public override async Task<OrgDetailResponse> GetOrganizationDetails(IdRequest request, ServerCallContext context)
         {
-            net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse organization = new net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse();
+            net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse organization;//= new net.atos.daf.ct2.organization.entity.OrganizationDetailsResponse();
             OrgDetailResponse response = new OrgDetailResponse();
             _logger.Info("Get Organization Details .");
-            organization = await organizationtmanager.GetOrganizationDetails(request.Id);
-            if (organization.id > 0)
+            organization = await _organizationtmanager.GetOrganizationDetails(request.Id);
+            if (organization.Id > 0)
             {
                 response = _mapper.ToOrganizationDetailsResponse(organization);
             }
@@ -518,24 +518,24 @@ namespace net.atos.daf.ct2.organizationservice
             var organization = new OrganizationResponse();
             var response = new GetAllOrgResponse();
             _logger.Info("Get Organization .");
-            organization.OrganizationList = await organizationtmanager.GetAll(request.Id);
+            organization.OrganizationList = await _organizationtmanager.GetAll(request.Id);
             response.OrganizationList.AddRange(organization.OrganizationList
                                     .Select(x => new OrgGetResponse()
                                     {
                                         Id = x.Id,
-                                        Type = x.type,
-                                        Name = x.name,
-                                        AddressStreet = x.street,
-                                        AddressType = x.address_type,
-                                        AddressStreetNumber = x.street_number,
-                                        PostalCode = x.postal_code,
-                                        City = x.city,
-                                        CountryCode = x.country_code,
-                                        OrganizationId = x.org_id,
-                                        Referenced = x.reference_date,
-                                        VehicleOptIn = x.vehicle_default_opt_in,
-                                        DriverOptIn = x.driver_default_opt_in,
-                                        IsActive = x.state == (char)State.Active ? true : false
+                                        Type = x.Type,
+                                        Name = x.Name,
+                                        AddressStreet = x.Street,
+                                        AddressType = x.AddressType,
+                                        AddressStreetNumber = x.StreetNumber,
+                                        PostalCode = x.PostalCode,
+                                        City = x.City,
+                                        CountryCode = x.CountryCode,
+                                        OrganizationId = x.OrgId,
+                                        Referenced = x.ReferenceDate,
+                                        VehicleOptIn = x.VehicleDefaultOptIn,
+                                        DriverOptIn = x.DriverDefaultOptIn,
+                                        IsActive = x.State == (char)State.Active ? true : false
                                     }).ToList());
 
 
@@ -558,8 +558,8 @@ namespace net.atos.daf.ct2.organizationservice
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference = _mapper.ToOrganizationPreference(request);
                 preference.Exists = false;
-                preference = await preferencemanager.Create(preference);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.Id)).Result;
+                preference = await _preferencemanager.Create(preference);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Create Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create Preference", 1, 2, Convert.ToString(preference.Id)).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -586,8 +586,8 @@ namespace net.atos.daf.ct2.organizationservice
                 Preference.AccountPreference preference = new Preference.AccountPreference();
                 preference = _mapper.ToOrganizationPreference(request);
                 preference.Exists = false;
-                preference = await preferencemanager.Update(preference);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Update Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Preference", 1, 2, Convert.ToString(preference.Id)).Result;
+                preference = await _preferencemanager.Update(preference);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Organization Component", "Update Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Update Preference", 1, 2, Convert.ToString(preference.Id)).Result;
                 if (preference.Id.HasValue) request.Id = preference.Id.Value;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
@@ -611,8 +611,8 @@ namespace net.atos.daf.ct2.organizationservice
         {
             try
             {
-                var result = await preferencemanager.Delete(request.Id, Preference.PreferenceType.Account);
-                var auditResult = auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Oeganization Component", "Delete Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.Id)).Result;
+                var result = await _preferencemanager.Delete(request.Id, Preference.PreferenceType.Account);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Oeganization Component", "Delete Service", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Delete Preference", 1, 2, Convert.ToString(request.Id)).Result;
                 // response 
                 AccountPreferenceResponse response = new AccountPreferenceResponse();
                 if (result)
@@ -647,7 +647,7 @@ namespace net.atos.daf.ct2.organizationservice
                 preferenceFilter.Id = request.Id;
                 preferenceFilter.PreferenceType = Preference.PreferenceType.Organization;
                 _logger.Info("Get account preference.");
-                var result = await organizationtmanager.GetPreference(preferenceFilter.Id);
+                var result = await _organizationtmanager.GetPreference(preferenceFilter.Id);
                 // response 
                 OrganizationPreferenceResponse response = new OrganizationPreferenceResponse();
                 response.Code = Responcecode.Success;
@@ -671,7 +671,7 @@ namespace net.atos.daf.ct2.organizationservice
             net.atos.daf.ct2.organization.entity.Organization organization = new net.atos.daf.ct2.organization.entity.Organization();
             ListOfOrganization response = new ListOfOrganization();
             _logger.Info("GetAllOrganizations .");
-            var result = await organizationtmanager.GetAllOrganizations(request.Id);
+            var result = await _organizationtmanager.GetAllOrganizations(request.Id);
             if (result.Count() > 0)
             {
                 foreach (net.atos.daf.ct2.organization.entity.Organization entity in result)
@@ -693,7 +693,7 @@ namespace net.atos.daf.ct2.organizationservice
         {
             _logger.Info("GetLevelByRoleId method Called.");
             LevelResponse objLevelResponse = new LevelResponse();
-            int level = await organizationtmanager.GetLevelByRoleId(request.OrgId, request.RoleId);
+            int level = await _organizationtmanager.GetLevelByRoleId(request.OrgId, request.RoleId);
             if (level > 0)
             {
                 objLevelResponse.Level = level;

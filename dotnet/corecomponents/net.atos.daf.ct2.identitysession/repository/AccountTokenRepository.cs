@@ -14,10 +14,10 @@ namespace net.atos.daf.ct2.identitysession.repository
 {
     public class AccountTokenRepository : IAccountTokenRepository
     {
-        private readonly IDataAccess dataAccess;
-        public AccountTokenRepository(IDataAccess _dataAccess)
+        private readonly IDataAccess _dataAccess;
+        public AccountTokenRepository(IDataAccess dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
         public async Task<int> InsertToken(AccountToken accountToken)
         {
@@ -68,7 +68,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@role_id", accountToken.RoleId);
                 parameter.Add("@organization_id", accountToken.OrganizationId);
 
-                int tokenId = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int tokenId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return tokenId;
             }
             catch (Exception)
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         RETURNING account_id";
             var parameter = new DynamicParameters();
             parameter.Add("@token_id", tokenID);
-            int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            int Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             return Id;
         }
 
@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         RETURNING session_id";
                 var parameter = new DynamicParameters();
                 parameter.Add("@session_id", sessionId);
-                int session_Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int session_Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return session_Id;
             }
             catch (Exception)
@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         RETURNING account_id";
                 var parameter = new DynamicParameters();
                 parameter.Add("@account_id", sessionId);
-                int account_Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int account_Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return account_Id;
             }
             catch (Exception)
@@ -167,7 +167,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@AccountID", AccountID);
-                dynamic accounttoken = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic accounttoken = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 List<AccountToken> accountTokenList = new List<AccountToken>();
 
@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@token_id", Guid.Parse(TokenId));
-                dynamic accounttoken = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic accounttoken = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 List<AccountToken> accountTokenList = new List<AccountToken>();
 
@@ -236,7 +236,7 @@ namespace net.atos.daf.ct2.identitysession.repository
 
                 parameter.Add("@token_id", Guid.Parse(TokenId));
                 parameter.Add("@expire_in", currentUTCFormate);
-                int accounttoken = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int accounttoken = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 bool isValideToken = accounttoken > 0;
 
                 return isValideToken;
@@ -256,7 +256,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         where account_id=@AccountID";
                 var parameter = new DynamicParameters();
                 parameter.Add("@AccountID", AccountID);
-                return await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
             }
             catch (Exception)
             {

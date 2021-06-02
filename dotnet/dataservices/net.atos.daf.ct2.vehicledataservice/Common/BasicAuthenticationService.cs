@@ -8,18 +8,18 @@ namespace net.atos.daf.ct2.vehicledataservice.Common
 {
     public class BasicAuthenticationService : IBasicAuthenticationService
     {
-        AccountComponent.IAccountIdentityManager accountIdentityManager;
+        private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
         private readonly ILog _logger;
-        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager)
+        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager accountIdentityManager)
         {
-            accountIdentityManager = _accountIdentityManager;
+            this._accountIdentityManager = accountIdentityManager;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public async Task<string> ValidateTokenGuid(string token)
         {
             _logger.Info($"[VehicleDataService] Token received with request: {token}");
-            ValidTokenResponse response = await accountIdentityManager.ValidateTokenGuid(token);
+            ValidTokenResponse response = await _accountIdentityManager.ValidateTokenGuid(token);
             _logger.Info($"[VehicleDataService] Is received token valid: {response.Valid}");
             if (response != null && !string.IsNullOrEmpty(response.Email))
                 return response.Email;

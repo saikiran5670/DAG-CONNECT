@@ -9,47 +9,47 @@ namespace net.atos.daf.ct2.organization
 {
     public class OrganizationManager : IOrganizationManager
     {
-        IOrganizationRepository organizationRepository;
-        IAuditTraillib auditlog;
+        IOrganizationRepository _organizationRepository;
+        IAuditTraillib _auditlog;
 
-        public OrganizationManager(IOrganizationRepository _organizationRepository, IAuditTraillib _auditlog)
+        public OrganizationManager(IOrganizationRepository organizationRepository, IAuditTraillib auditlog)
         {
-            organizationRepository = _organizationRepository;
-            auditlog = _auditlog;
+            _organizationRepository = organizationRepository;
+            _auditlog = auditlog;
         }
 
         public async Task<Organization> Create(Organization organization)
         {
-            return await organizationRepository.Create(organization);
+            return await _organizationRepository.Create(organization);
         }
         public async Task<Organization> Update(Organization organization)
         {
-            return await organizationRepository.Update(organization);
+            return await _organizationRepository.Update(organization);
         }
         public async Task<bool> Delete(int organizationId)
         {
-            return await organizationRepository.Delete(organizationId);
+            return await _organizationRepository.Delete(organizationId);
         }
         public async Task<OrganizationResponse> Get(int organizationId)
         {
-            return await organizationRepository.Get(organizationId);
+            return await _organizationRepository.Get(organizationId);
         }
         public async Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId)
         {
-            return await organizationRepository.GetOrganizationDetails(organizationId);
+            return await _organizationRepository.GetOrganizationDetails(organizationId);
         }
         public async Task<PreferenceResponse> GetPreference(int organizationId)
         {
-            return await organizationRepository.GetPreference(organizationId);
+            return await _organizationRepository.GetPreference(organizationId);
         }
 
         public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
         {
-            return await organizationRepository.UpdateCustomer(customer);
+            return await _organizationRepository.UpdateCustomer(customer);
         }
         public async Task<HandOver> KeyHandOverEvent(HandOver keyHandOver)
         {
-            return await organizationRepository.KeyHandOverEvent(keyHandOver);
+            return await _organizationRepository.KeyHandOverEvent(keyHandOver);
         }
 
         // public async Task<int> CreateVehicleParty(List<Customer> customers)
@@ -58,30 +58,30 @@ namespace net.atos.daf.ct2.organization
         // }
         public async Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping)
         {
-            return await organizationRepository.CreateOwnerRelationship(relationshipMapping);
+            return await _organizationRepository.CreateOwnerRelationship(relationshipMapping);
         }
 
         public async Task<List<OrganizationResponse>> GetAll(int organizationId)
         {
-            return await organizationRepository.GetAll(organizationId);
+            return await _organizationRepository.GetAll(organizationId);
         }
 
         public async Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID)
         {
-            return await organizationRepository.Get(objOrganizationByID);
+            return await _organizationRepository.Get(objOrganizationByID);
         }
         public async Task<int> IsOwnerRelationshipExist(int VehicleID)
         {
-            return await organizationRepository.IsOwnerRelationshipExist(VehicleID);
+            return await _organizationRepository.IsOwnerRelationshipExist(VehicleID);
         }
         public async Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID)
         {
-            return await organizationRepository.GetAllOrganizations(OrganizationID);
+            return await _organizationRepository.GetAllOrganizations(OrganizationID);
         }
 
         public async Task<int> GetLevelByRoleId(int orgId, int roleId)
         {
-            return await organizationRepository.GetLevelByRoleId(orgId, roleId);
+            return await _organizationRepository.GetLevelByRoleId(orgId, roleId);
         }
     }
 }

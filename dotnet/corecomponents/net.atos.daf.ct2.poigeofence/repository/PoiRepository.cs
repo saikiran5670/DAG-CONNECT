@@ -11,16 +11,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
 {
     public class PoiRepository : IPoiRepository
     {
-        private readonly IDataAccess dataAccess;
-        private readonly IDataMartDataAccess dataMartdataAccess;
+        private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartdataAccess;
         public PoiRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
         {
-            dataAccess = _dataAccess;
-            dataMartdataAccess = _DataMartdataAccess;
+            this._dataAccess = _dataAccess;
+            _dataMartdataAccess = _DataMartdataAccess;
         }
         public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
-            List<POI> objPOIEntityResponceList = new List<POI>();
+            
             try
             {
                 string query = string.Empty;
@@ -62,7 +62,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     query = $"{query} and l.sub_category_id=@sub_category_id";
                 }
 
-                var data = await dataAccess.QueryAsync<POI>(query, parameter);
+                var data = await _dataAccess.QueryAsync<POI>(query, parameter);
+                List<POI> objPOIEntityResponceList;
                 return objPOIEntityResponceList = data.ToList();
             }
             catch (Exception)
@@ -190,7 +191,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@created_at", poiFilter.CreatedAt);
                     query = query + " and l.created_at= @created_at ";
                 }
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
 
                 foreach (dynamic record in result)
                 {
@@ -220,7 +221,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
 
-                int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+                int poiexist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
                 if (poiexist > 0)
                 {
@@ -249,7 +250,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance,  state, created_at, created_by)
 	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance,  @state, @created_at, @created_by) RETURNING id";
 
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 poi.Id = id;
             }
             catch (Exception)
@@ -274,7 +275,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 else
                     queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I') and type = 'P' and name=@name and id <> @id;";
 
-                int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+                int poiexist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
                 if (poiexist > 0)
                 {
@@ -360,7 +361,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 //parameter.Add("@organization_id", poi.OrganizationId);
                 parameter.Add("@organization_id", poi.OrganizationId != 0 ? poi.OrganizationId : null);
 
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (id > 0)
                     poi.Id = id;
                 else
@@ -374,13 +375,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
         public async Task<bool> DeletePOI(int poiId)
         {
-            bool result = false;
+            bool result;
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", poiId);
                 var query = @"update master.landmark set state='D' where id=@id and type = 'P' RETURNING id";
-                int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
                 else
@@ -396,13 +397,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<bool> DeletePOI(List<int> poiIds)
         {
-            bool result = false;
+            bool result;
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@ids", poiIds);
                 var query = @"update master.landmark set state='D' where  id =any(@ids) and type = 'P' RETURNING id";
-                int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (isdelete > 0)
                     result = true;
                 else
@@ -436,7 +437,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     else
                         queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = 'P' and name=@name;";
 
-                    int poiexist = await dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
+                    int poiexist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
                     if (poiexist > 0)
                     {
@@ -468,7 +469,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, state, created_at, created_by)
 	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @state, @created_at, @created_by) RETURNING id";
 
-                        var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         poi.Id = id;
                         uploadPOIExcel.PoiUploadedList.Add(poi);
                     }
@@ -486,11 +487,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             POI poi = new POI();
             poi.Id = record.id;
-            poi.icon = record.icon != null ? record.icon : new Byte[] { };
-            poi.OrganizationId = record.organizationid != null ? record.organizationid : 0;
-            poi.CategoryId = record.categoryid != null ? record.categoryid : 0;
+            poi.Icon = record.icon ?? (new Byte[] { });
+            poi.OrganizationId = record.organizationid ?? 0;
+            poi.CategoryId = record.categoryid ?? 0;
             poi.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
-            poi.SubCategoryId = record.subcategoryid != null ? record.subcategoryid : 0;
+            poi.SubCategoryId = record.subcategoryid ?? 0;
             poi.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
             poi.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             poi.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
@@ -502,11 +503,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
             poi.Longitude = Convert.ToDouble(record.longitude);
             poi.Distance = Convert.ToDouble(record.distance);
             //  poi.TripId = record.tripid != null ? record.tripid : 0;
-            poi.CreatedAt = record.createdat != null ? record.createdat : 0;
+            poi.CreatedAt = record.createdat ?? 0;
             poi.State = MapCharToLandmarkState(record.state);
-            poi.CreatedBy = record.createdby != null ? record.createdby : 0;
-            poi.ModifiedAt = record.modifiedat != null ? record.modifiedat : 0;
-            poi.ModifiedBy = record.modifiedby != null ? record.modifiedby : 0;
+            poi.CreatedBy = record.createdby ?? 0;
+            poi.ModifiedAt = record.modifiedat ?? 0;
+            poi.ModifiedBy = record.modifiedby ?? 0;
             return poi;
         }
         public string MapCharToLandmarkState(string state)
@@ -630,7 +631,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@EndDateTime", tripEntityRequest.EndDateTime);
                 parameter.Add("@vin", tripEntityRequest.VIN);
 
-                var data = await dataMartdataAccess.QueryAsync<TripEntityResponce>(query, parameter);
+                var data = await _dataMartdataAccess.QueryAsync<TripEntityResponce>(query, parameter);
                 foreach (var item in data)
                 {
                     var parameterPosition = new DynamicParameters();
@@ -644,7 +645,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                               gps_longitude
                               from livefleet.livefleet_position_statistics
                               where vin=@vin and trip_id = @trip_id order by id desc";
-                    var PositionData = await dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
+                    var PositionData = await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);
                     List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
 
                     if (PositionData.Count() > 0)

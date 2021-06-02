@@ -12,12 +12,11 @@ namespace TCUProvisioning
 {
     class Program
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It is kept for future modification")]
         static async Task Main(string[] args)
         {
-
-
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
@@ -28,8 +27,8 @@ namespace TCUProvisioning
             IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
             IAuditTraillib audit = new AuditTraillib(auditrepo);
 
-            TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(log, audit, config);
-            await provisionVehicle.readTCUProvisioningDataAsync();
+            TCUProvisioningDataProcess provisionVehicle = new TCUProvisioningDataProcess(_log, audit, config);
+            await provisionVehicle.ReadTCUProvisioningDataAsync();
 
         }
     }

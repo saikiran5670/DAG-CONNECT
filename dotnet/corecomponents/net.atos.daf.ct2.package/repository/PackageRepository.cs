@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.package.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IFeatureManager _featureManager;
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog _log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly PackageCoreMapper _packageCoreMapper;
 
@@ -244,7 +244,7 @@ namespace net.atos.daf.ct2.package.repository
 
         public async Task<bool> Delete(int packageId)
         {
-            log.Info("Delete Package method called in repository");
+            _log.Info("Delete Package method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
@@ -255,8 +255,8 @@ namespace net.atos.daf.ct2.package.repository
             }
             catch (Exception ex)
             {
-                log.Info("Delete Package method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(packageId));
-                log.Error(ex.ToString());
+                _log.Info("Delete Package method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(packageId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }

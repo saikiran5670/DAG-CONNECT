@@ -7,8 +7,16 @@ trigger:
 - none
 
 parameters:
+- name: all
+  displayName: All
+  type: boolean
+  default: false
 - name: accountService
   displayName: Account Service
+  type: boolean
+  default: false
+- name: reportService
+  displayName: Report Service
   type: boolean
   default: false
   
@@ -18,7 +26,13 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      echo ${{ parameters.accountService}}
+      echo 'Running Account Service Pipeline'
+  condition: or(eq('${{ parameters.accountService }}', True), eq('${{ parameters.all }}', True))
 
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo 'Running Report Service Pipeline'
+  condition: or(eq('${{ parameters.reportService }}', True), eq('${{ parameters.all }}', True))
 
 

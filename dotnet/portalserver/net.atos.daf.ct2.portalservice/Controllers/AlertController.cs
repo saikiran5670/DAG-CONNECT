@@ -24,8 +24,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Entity.Alert.Mapper _mapper;
         private readonly VehicleService.VehicleServiceClient _vehicleClient;
 
@@ -33,12 +32,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                AuditHelper auditHelper,
                                Common.AccountPrivilegeChecker privilegeChecker,
                                VehicleService.VehicleServiceClient vehicleClient,
-                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _alertServiceClient = alertServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
             _vehicleClient = vehicleClient;
             _mapper = new Entity.Alert.Mapper();
@@ -66,12 +64,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"ActivateAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -99,13 +97,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"SuspendAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -135,13 +133,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"DeleteAlert method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(alertId),
                   Request);
                 //_logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -183,7 +181,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"Get alert category method Failed", 1, 2, Convert.ToString(accountId),
                   Request);
@@ -200,6 +198,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                //check duplicate recipient label in UI list
+                var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
+                if (result.Count() > 0)
+                {
+                    return StatusCode(409, "Duplicate notification recipient label added in list.");
+                }
+
                 var alertRequest = new AlertRequest();
                 alertRequest = _mapper.ToAlertRequest(request);
                 if (request.ApplyOn.ToLower() == "s")
@@ -218,23 +223,31 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (request.IsDuplicate)
                 {
-                    alertservice.IdRequest idRequest = new IdRequest();
-                    idRequest.AlertId = request.Id;
-                    alertservice.DuplicateAlertResponse duplicateAlertResponse = await _alertServiceClient.DuplicateAlertTypeAsync(idRequest);
-                    if (duplicateAlertResponse != null && duplicateAlertResponse.Code == ResponseCode.Success)
+                    var isAuthWebService = request.Notifications.SelectMany(a => a.NotificationRecipients).Where(g => g.NotificationModeType.ToLower() == "w" && g.WsType.ToLower() == "a").ToList();
+                    if (isAuthWebService.Count() > 0)
                     {
-                        if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
-                        {
-                            return StatusCode(400, "Alert type should be same while duplicating the alert");
-                        }
-                    }
-                    else if (duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
-                    {
-                        return StatusCode((int)duplicateAlertResponse.Code, duplicateAlertResponse.Message);
+                        return StatusCode(400, "Duplicate alert can't be create for authentication type web service.");
                     }
                     else
                     {
-                        return StatusCode(500, "Internal Server Error.(01)");
+                        alertservice.IdRequest idRequest = new IdRequest();
+                        idRequest.AlertId = request.Id;
+                        alertservice.DuplicateAlertResponse duplicateAlertResponse = await _alertServiceClient.DuplicateAlertTypeAsync(idRequest);
+                        if (duplicateAlertResponse != null && duplicateAlertResponse.Code == ResponseCode.Success)
+                        {
+                            if (duplicateAlertResponse.DuplicateAlert != null && duplicateAlertResponse.DuplicateAlert.Type.ToLower() != request.Type.ToLower())
+                            {
+                                return StatusCode(400, "Alert type should be same while duplicating the alert");
+                            }
+                        }
+                        else if (duplicateAlertResponse.Code == ResponseCode.Failed || duplicateAlertResponse.Code == ResponseCode.InternalServerError)
+                        {
+                            return StatusCode((int)duplicateAlertResponse.Code, duplicateAlertResponse.Message);
+                        }
+                        else
+                        {
+                            return StatusCode(500, "Internal Server Error.(01)");
+                        }
                     }
                 }
 
@@ -250,7 +263,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (alertResponse != null && alertResponse.Code == ResponseCode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Alert Component",
                     "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in Alert controller", alertRequest.Id, alertRequest.Id, JsonConvert.SerializeObject(request),
                     Request);
@@ -264,12 +277,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Component",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -286,9 +299,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-
+                //check duplicate recipient label in UI list
                 var result = request.Notifications.SelectMany(a => a.NotificationRecipients).GroupBy(y => y.RecipientLabel).Where(g => g.Count() > 1).ToList();
-
                 if (result.Count() > 0)
                 {
                     return StatusCode(409, "Duplicate notification recipient label added in list.");
@@ -322,7 +334,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (alertResponse != null && alertResponse.Code == ResponseCode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Alert Component",
                     "Alert service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Update method in Alert controller", alertRequest.Id, alertRequest.Id, JsonConvert.SerializeObject(request),
                     Request);
@@ -336,12 +348,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Component",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update  method in Alert controller", 0, 0, JsonConvert.SerializeObject(request),
                   Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -374,7 +386,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"Get alerts method Failed", 1, 2, Convert.ToString(accountId),
                   Request);
@@ -408,7 +420,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Alert Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Alert Controller",
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"Get recipient label method Failed", 1, 2, Convert.ToString(orgnizationId),
                   Request);

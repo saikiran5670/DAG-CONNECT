@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
         public static AuthenticationBuilder AddBasic<TAuthService>(this AuthenticationBuilder builder)
         where TAuthService : class, IBasicAuthenticationService
         {
-            return AddBasic<TAuthService>(builder, BasicAuthenticationDefaults.AuthenticationScheme, _ => { });
+            return AddBasic<TAuthService>(builder, BasicAuthenticationDefaults.AUTHENTICATION_SCHEME, _ => { });
         }
 
         public static AuthenticationBuilder AddBasic<TAuthService>(this AuthenticationBuilder builder, string authenticationScheme)
@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.featureactivationservice.CustomAttributes
         public static AuthenticationBuilder AddBasic<TAuthService>(this AuthenticationBuilder builder, Action<BasicAuthenticationOptions> configureOptions)
             where TAuthService : class, IBasicAuthenticationService
         {
-            return AddBasic<TAuthService>(builder, BasicAuthenticationDefaults.AuthenticationScheme, configureOptions);
+            return AddBasic<TAuthService>(builder, BasicAuthenticationDefaults.AUTHENTICATION_SCHEME, configureOptions);
         }
 
         public static AuthenticationBuilder AddBasic<TAuthService>(this AuthenticationBuilder builder, string authenticationScheme, Action<BasicAuthenticationOptions> configureOptions)

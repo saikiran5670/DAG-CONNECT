@@ -43,12 +43,12 @@ namespace net.atos.daf.ct2.feature.test
             long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
             FeatureSet feature = new FeatureSet();
             feature.Name = "FeatureSet_" + iSessionStartedAt;
-            feature.description = null;
+            feature.Description = null;
             feature.State = 'A';
-            feature.created_at = iSessionStartedAt;
-            feature.created_by = 1;
-            feature.modified_at = iSessionExpireddAt;
-            feature.modified_by = 1;
+            feature.Created_at = iSessionStartedAt;
+            feature.Created_by = 1;
+            feature.Modified_at = iSessionExpireddAt;
+            feature.Modified_by = 1;
 
             feature.Features = new List<features.entity.Feature>();
             features.entity.Feature objfeature = new features.entity.Feature();
@@ -80,10 +80,10 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
             //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
-            dataAttributeSet.created_at = iSessionStartedAt;
-            dataAttributeSet.created_by = 1;
-            dataAttributeSet.modified_at = iSessionExpireddAt;
-            dataAttributeSet.modified_by = 1;
+            dataAttributeSet.Created_at = iSessionStartedAt;
+            dataAttributeSet.Created_by = 1;
+            dataAttributeSet.Modified_at = iSessionExpireddAt;
+            dataAttributeSet.Modified_by = 1;
 
             dataAttributeSet.DataAttributes = new List<features.entity.DataAttribute>();
 
@@ -116,10 +116,10 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
             //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
-            dataAttributeSet.created_at = iSessionStartedAt;
-            dataAttributeSet.created_by = 1;
-            dataAttributeSet.modified_at = iSessionExpireddAt;
-            dataAttributeSet.modified_by = 1;
+            dataAttributeSet.Created_at = iSessionStartedAt;
+            dataAttributeSet.Created_by = 1;
+            dataAttributeSet.Modified_at = iSessionExpireddAt;
+            dataAttributeSet.Modified_by = 1;
 
             dataAttributeSet.DataAttributes = new List<features.entity.DataAttribute>();
 
@@ -180,12 +180,12 @@ namespace net.atos.daf.ct2.feature.test
             FeatureSet featureSet = new FeatureSet();
             featureSet.FeatureSetID = 131;
             featureSet.Name = "FeatureSet_" + iSessionStartedAt;
-            featureSet.description = "Test_Description";
+            featureSet.Description = "Test_Description";
             featureSet.State = 'A';
-            featureSet.created_at = iSessionStartedAt;
-            featureSet.created_by = 1;
-            featureSet.modified_at = iSessionExpireddAt;
-            featureSet.modified_by = 1;
+            featureSet.Created_at = iSessionStartedAt;
+            featureSet.Created_by = 1;
+            featureSet.Modified_at = iSessionExpireddAt;
+            featureSet.Modified_by = 1;
 
             featureSet.Features = new List<features.entity.Feature>();
 

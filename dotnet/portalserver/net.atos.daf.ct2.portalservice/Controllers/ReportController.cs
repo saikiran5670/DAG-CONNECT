@@ -18,27 +18,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("report")]
-    public class ReportController : ControllerBase
+    public class ReportController : BaseController
     {
         private ILog _logger;
         private readonly ReportServiceClient _reportServiceClient;
         private readonly AuditHelper _auditHelper;
-        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-        private readonly HeaderObj _userDetails;
-        private readonly Report.Mapper _mapper;
+        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly Mapper _mapper;
 
-        public ReportController(ReportServiceClient reportServiceClient,
-                               AuditHelper auditHelper,
-                               Common.AccountPrivilegeChecker privilegeChecker,
-                               IHttpContextAccessor httpContextAccessor)
+        public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
-            _mapper = new Report.Mapper();
+            _mapper = new Mapper();
         }
 
         #region Select User Preferences
@@ -64,12 +59,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                 // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -106,14 +101,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(
-                //    DateTime.Now, DateTime.Now, this.GetType().Name,
-                //    MethodBase.GetCurrentMethod().DeclaringType.Namespace, 
-                //    Entity.Audit.AuditTrailEnum.Event_type.GET, 
-                //    Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                //    MethodBase.GetCurrentMethod().Name, 0, 0, 
-                //    JsonConvert.SerializeObject(request), Request
-                // );
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -134,7 +121,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 switch (response.Code)
                 {
                     case Responsecode.Success:
-                        await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                        await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                  Request);
                         return Ok(response);
@@ -148,7 +135,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"createuserpreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                   Request);
@@ -184,13 +171,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Report Controller",
+                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                 // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 // $"GetVinsFromTripStatisticsAndVehicleDetails method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
                 //  Request);
                 // check for fk violation
                 _logger.Error(null, ex);
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -199,5 +186,68 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+        #region - Driver Time Management Report Table Details
+        [HttpGet]
+        [Route("getdriverstimedetails")]
+        public async Task<IActionResult> GetDriversActivity([FromQuery] ActivityFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG);
+                if (string.IsNullOrEmpty(request.VINs)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
+                if (string.IsNullOrEmpty(request.DriverIds)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
+                var data = await _reportServiceClient.GetDriversActivityAsync(request);
+                if (data?.DriverActivities?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("getsingledrivertimedetails")]
+        public async Task<IActionResult> GetDriverActivity([FromQuery] ActivityFilterRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG);
+                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG);
+                if (string.IsNullOrEmpty(request.VINs)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
+                if (string.IsNullOrEmpty(request.DriverIds)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
+                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_DATEMISMATCH_MSG);
+
+                _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
+                var data = await _reportServiceClient.GetDriversActivityAsync(request);
+                if (data?.DriverActivities?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }

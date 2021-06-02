@@ -207,14 +207,14 @@ namespace TCUProvisioning
                     int DAFPACCAR = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
                     relationship = new RelationshipMapping();
-                    relationship.relationship_id = OwnerRelationship;
-                    relationship.vehicle_id = vehId;
-                    relationship.vehicle_group_id = 0;
-                    relationship.owner_org_id = DAFPACCAR;
-                    relationship.created_org_id = DAFPACCAR;
-                    relationship.target_org_id = DAFPACCAR;
-                    relationship.isFirstRelation = true;
-                    relationship.allow_chain = true;
+                    relationship.RelationshipId = OwnerRelationship;
+                    relationship.VehicleId = vehId;
+                    relationship.VehicleGroupId= 0;
+                    relationship.OwnerOrgId= DAFPACCAR;
+                    relationship.CreatedOrgId = DAFPACCAR;
+                    relationship.TargetOrgId = DAFPACCAR;
+                    relationship.IsFirstRelation = true;
+                    relationship.AllowChain = true;
 
                     await org.CreateOwnerRelationship(relationship);
                     await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create org relationship in TCU Vehicle Component", 0, vehId, JsonConvert.SerializeObject(relationship));

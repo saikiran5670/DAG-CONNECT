@@ -22,19 +22,19 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
 {
     [ApiController]
     [Route("vehicle")]
-    [Authorize(Policy = AccessPolicies.MainMileageAccessPolicy)]
+    [Authorize(Policy = AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY)]
     public class VehicleMileageController : ControllerBase
     {
-        private readonly ILogger<VehicleMileageController> logger;
-        private readonly IVehicleManager vehicleManager;
-        private readonly IAccountManager accountManager;
-        private readonly IAuditTraillib auditTrail;
-        public VehicleMileageController(IVehicleManager _vehicleManager, IAccountManager _accountManager, ILogger<VehicleMileageController> _logger, IAuditTraillib _AuditTrail)
+        private readonly ILogger<VehicleMileageController> _logger;
+        private readonly IVehicleManager _vehicleManager;
+        private readonly IAccountManager _accountManager;
+        private readonly IAuditTraillib _auditTrail;
+        public VehicleMileageController(IVehicleManager vehicleManager, IAccountManager accountManager, ILogger<VehicleMileageController> logger, IAuditTraillib auditTrail)
         {
-            vehicleManager = _vehicleManager;
-            accountManager = _accountManager;
-            auditTrail = _AuditTrail;
-            logger = _logger;
+            this._vehicleManager = vehicleManager;
+            this._accountManager = accountManager;
+            _auditTrail = auditTrail;
+            this._logger = logger;
         }
 
         [HttpGet]
@@ -46,14 +46,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                 var selectedType = string.Empty;
                 long currentdatetime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
 
-                StringValues acceptHeader;
-                this.Request.Headers.TryGetValue("Accept", out acceptHeader);
+                this.Request.Headers.TryGetValue("Accept", out StringValues acceptHeader);
 
                 if (!this.Request.Headers.ContainsKey("Accept") ||
                     (this.Request.Headers.ContainsKey("Accept") && acceptHeader.Count() == 0))
                     return GenerateErrorResponse(HttpStatusCode.BadRequest, "Accept");
 
-                await auditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
+                await _auditTrail.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle mileage Service", "Vehicle mileage Service", AuditTrailEnum.Event_type.GET, AuditTrailEnum.Event_status.PARTIAL, "Get mileage method vehicle mileage service", 1, 2, this.Request.ContentType, 0, 0);
 
                 if (acceptHeader.Any(x => x.Trim().Equals(VehicleMileageResponseTypeConstants.CSV, StringComparison.CurrentCultureIgnoreCase)))
                     selectedType = VehicleMileageResponseTypeConstants.CSV;
@@ -66,12 +65,12 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     if (isValid)
                     {
                         var accountEmailId = User.Claims.Where(x => x.Type.Equals("email") || x.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
-                        var account = await accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
+                        var account = await _accountManager.GetAccountByEmailId(accountEmailId.Value.ToLower());
 
-                        var orgs = await accountManager.GetAccountOrg(account.Id);
+                        var orgs = await _accountManager.GetAccountOrg(account.Id);
 
                         VehicleMileage vehicleMileage = new VehicleMileage();
-                        vehicleMileage = await vehicleManager.GetVehicleMileage(since, isNumeric, selectedType, account.Id, orgs.First().Id);
+                        vehicleMileage = await _vehicleManager.GetVehicleMileage(since, isNumeric, selectedType, account.Id, orgs.First().Id);
 
                         if (selectedType.Equals(VehicleMileageResponseTypeConstants.CSV))
                         {
@@ -104,7 +103,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing Vehicle Mileage data.");
+                _logger.LogError(ex, "Error occurred while processing Vehicle Mileage data.");
                 return StatusCode(500, string.Empty);
             }
         }
@@ -115,11 +114,10 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
             if (isNumeric)
             {
                 string sTimezone = "UTC";
-                DateTime dDate;
                 try
                 {
                     string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(since), sTimezone, null);
-                    if (!DateTime.TryParse(converteddatetime, out dDate))
+                    if (!DateTime.TryParse(converteddatetime, out DateTime dDate))
                         return false;
                     else
                         since = converteddatetime;

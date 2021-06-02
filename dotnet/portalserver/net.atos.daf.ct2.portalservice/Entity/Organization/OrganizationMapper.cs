@@ -10,23 +10,23 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
         {
             var orgRequest = new OrganizationBusinessService.OrgCreateRequest();
             orgRequest.Id = request.Id;
-            orgRequest.OrgId = request.org_id;
-            orgRequest.Type = request.type;
-            orgRequest.Name = request.name;
-            orgRequest.AddressType = request.address_type;
-            orgRequest.Street = request.street;
-            orgRequest.StreetNumber = request.street_number;
-            orgRequest.City = request.city;
-            orgRequest.CountryCode = request.country_code;
-            orgRequest.ReferenceDate = request.reference_date.ToString();
+            orgRequest.OrgId = request.Org_id;
+            orgRequest.Type = request.Type;
+            orgRequest.Name = request.Name;
+            orgRequest.AddressType = request.Address_type;
+            orgRequest.Street = request.Street;
+            orgRequest.StreetNumber = request.Street_number;
+            orgRequest.City = request.City;
+            orgRequest.CountryCode = request.Country_code;
+            orgRequest.ReferenceDate = request.Reference_date.ToString();
             return orgRequest;
         }
         public OrganizationBusinessService.OrgUpdateRequest ToOragnizationUpdateRequest(OrganizationRequest request)
         {
             var orgRequest = new OrganizationBusinessService.OrgUpdateRequest();
             orgRequest.Id = request.Id;
-            orgRequest.VehicleDefaultOptIn = request.vehicle_default_opt_in;
-            orgRequest.DriverDefaultOptIn = request.driver_default_opt_in;
+            orgRequest.VehicleDefaultOptIn = request.Vehicle_default_opt_in;
+            orgRequest.DriverDefaultOptIn = request.Driver_default_opt_in;
 
             return orgRequest;
         }

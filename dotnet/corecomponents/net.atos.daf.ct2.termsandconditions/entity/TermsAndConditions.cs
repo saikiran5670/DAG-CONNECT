@@ -6,14 +6,14 @@ namespace net.atos.daf.ct2.termsandconditions.entity
     public class TermsAndConditions
     {
         public int Id { get; set; }
-        public string version_no { get; set; }
+        public string Version_no { get; set; }
         public string Code { get; set; }
         public byte[] Description { get; set; }
         public char State { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime Created_At { get; set; }
-        public int created_by { get; set; }
+        public int Created_by { get; set; }
         public DateTime Modified_at { get; set; }
         public int Modified_by { get; set; }
         public DateTime Accepted_Date { get; set; }
@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.termsandconditions.entity
         public int Account_Id { get; set; }
         public int Terms_And_Condition_Id { get; set; }
         public DateTime Accepted_Date { get; set; }
-        public string version_no { get; set; }
+        public string Version_no { get; set; }
     }
 
     /// <summary>
@@ -36,29 +36,29 @@ namespace net.atos.daf.ct2.termsandconditions.entity
     /// </summary>
     public class TermsandConFileData
     {
-        public string fileName { get; set; }
-        public string version_no { get; set; }
-        public string code { get; set; }
-        public byte[] description { get; set; }
+        public string FileName { get; set; }
+        public string Version_no { get; set; }
+        public string Code { get; set; }
+        public byte[] Description { get; set; }
     }
     /// <summary>
     /// List of data from front end
     /// </summary>
     public class TermsandConFileDataList
     {
-        public long start_date { get; set; }
-        public long end_date { get; set; }
-        public int created_by { get; set; }
-        public List<TermsandConFileData> _data { get; set; }
+        public long Start_date { get; set; }
+        public long End_date { get; set; }
+        public int Created_by { get; set; }
+        public List<TermsandConFileData> Data { get; set; }
     }
     /// <summary>
     /// Data returned from DB is saved here
     /// </summary>
     public class VersionAndCodeExits
     {
-        public int id { get; set; }
-        public string version_no { get; set; }
-        public string code { get; set; }
+        public int Id { get; set; }
+        public string Version_no { get; set; }
+        public string Code { get; set; }
     }
 
     /// <summary>
@@ -66,42 +66,42 @@ namespace net.atos.daf.ct2.termsandconditions.entity
     /// </summary>
     public class TermsAndConditionResponseList
     {
-        public List<TermsAndConditionResponse> termsAndConditionDetails { get; set; }
+        public List<TermsAndConditionResponse> TermsAndConditionDetails { get; set; }
     }
     public class TermsAndConditionResponse
     {
-        public int id { get; set; }
-        public string fileName { get; set; }
-        public string action { get; set; }
+        public int Id { get; set; }
+        public string FileName { get; set; }
+        public string Action { get; set; }
     }
 
     public class InactivateTandCRequestList
     {
-        public int orgId { get; set; }
-        public int accountId { get; set; }
-        public List<InactivateTandCRequest> _ids { get; set; }
+        public int OrgId { get; set; }
+        public int AccountId { get; set; }
+        public List<InactivateTandCRequest> Ids { get; set; }
     }
 
     public class InactivateTandCRequest
     {
-        public int id { get; set; }
+        public int Id { get; set; }
     }
 
     public class InactivateTandCStatusResponceList
     {
-        public List<InactivateTandCStatusResponce> _ids { get; set; }
+        public List<InactivateTandCStatusResponce> Ids { get; set; }
     }
 
     public class InactivateTandCStatusResponce
     {
-        public int id { get; set; }
-        public string action { get; set; }
+        public int Id { get; set; }
+        public string Action { get; set; }
     }
 
     public class VersionByID
     {
-        public int orgId { get; set; }
-        public int levelCode { get; set; }
-        public int accountId { get; set; }
+        public int OrgId { get; set; }
+        public int LevelCode { get; set; }
+        public int AccountId { get; set; }
     }
 }

@@ -31,8 +31,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public bool Gas { get; set; }
         public bool Flammable { get; set; }
         public bool Combustible { get; set; }
-        public bool organic { get; set; }
-        public bool poision { get; set; }
+        public bool Organic { get; set; }
+        public bool Poision { get; set; }
         public bool RadioActive { get; set; }
         public bool Corrosive { get; set; }
         public bool PoisonousInhalation { get; set; }

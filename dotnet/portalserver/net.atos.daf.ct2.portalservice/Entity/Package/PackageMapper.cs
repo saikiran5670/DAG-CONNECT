@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         {
 
             var packageRequest = new ImportPackageRequest();
-            foreach (var x in request.packagesToImport)
+            foreach (var x in request.PackagesToImport)
             {
                 var featureSetID = _featureSetMapper.RetrieveFeatureSetIdByName(x.Features).Result;
                 if (featureSetID > 0)

@@ -253,15 +253,15 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 {
                     POIData objPOIData = new POIData();
                     objPOIData.Id = item.Id;
-                    objPOIData.Name = item.Name == null ? string.Empty : item.Name;
+                    objPOIData.Name = item.Name ?? string.Empty;
                     objPOIData.Latitude = item.Latitude;
                     objPOIData.Longitude = item.Longitude;
-                    objPOIData.CategoryName = item.CategoryName == null ? string.Empty : item.CategoryName;
-                    objPOIData.SubCategoryName = item.SubCategoryName == null ? string.Empty : item.SubCategoryName;
-                    objPOIData.Address = item.Address == null ? string.Empty : item.Address;
-                    objPOIData.Zipcode = item.Zipcode == null ? string.Empty : item.Zipcode;
-                    objPOIData.City = item.City == null ? string.Empty : item.City;
-                    objPOIData.Country = item.Country == null ? string.Empty : item.Country;
+                    objPOIData.CategoryName = item.CategoryName ?? string.Empty;
+                    objPOIData.SubCategoryName = item.SubCategoryName ?? string.Empty;
+                    objPOIData.Address = item.Address ?? string.Empty;
+                    objPOIData.Zipcode = item.Zipcode ?? string.Empty;
+                    objPOIData.City = item.City ?? string.Empty;
+                    objPOIData.Country = item.Country ?? string.Empty;
                     objPOIResponseList.POIList.Add(objPOIData);
                 }
                 objPOIResponseList.Message = "POI data for Excel retrieved";

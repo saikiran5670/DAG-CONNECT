@@ -13,34 +13,27 @@ using AccountComponent = net.atos.daf.ct2.account;
 namespace net.atos.daf.ct2.singlesignonservice.Controllers
 {
     [ApiController]
-    [Authorize(Policy = AccessPolicies.MainAccessPolicy)]
-    public class singlesignonservicecontroller : ControllerBase
+    [Authorize(Policy = AccessPolicies.MAIN_ACCESS_POLICY)]
+    public class SingleSignOnServiceController : ControllerBase
     {
-        private readonly ILogger<singlesignonservicecontroller> logger;
-        AccountComponent.IAccountIdentityManager accountIdentityManager;
-        public IConfiguration Configuration { get; }
-        public singlesignonservicecontroller(
-            AccountComponent.IAccountIdentityManager _accountIdentityManager,
-            ILogger<singlesignonservicecontroller> _logger,
-            IConfiguration configuration
-            )
+        private readonly ILogger<SingleSignOnServiceController> _logger;
+        private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
+        public SingleSignOnServiceController(AccountComponent.IAccountIdentityManager accountIdentityManager, ILogger<SingleSignOnServiceController> logger)
         {
-
-            accountIdentityManager = _accountIdentityManager;
-            Configuration = configuration;
-            logger = _logger;
+            this._accountIdentityManager = accountIdentityManager;
+            this._logger = logger;
         }
 
         [HttpGet]
         [Route("sso")]
-        public async Task<IActionResult> validateSSOToken(string token)
+        public async Task<IActionResult> ValidateSSOToken(string token)
         {
             try
             {
                 UserDetails _details = new UserDetails();
                 if (!string.IsNullOrEmpty(token))
                 {
-                    SSOResponse result = await accountIdentityManager.ValidateSSOToken(token);
+                    SSOResponse result = await _accountIdentityManager.ValidateSSOToken(token);
                     if (result != null)
                     {
                         if (result.Details != null)
@@ -74,7 +67,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return GenerateErrorResponse(HttpStatusCode.NotFound, "INVALID_TOKEN", nameof(token));
             }
         }

@@ -5,20 +5,20 @@ namespace net.atos.daf.ct2.organization.entity
     public class OrganizationResponse
     {
         public int Id { get; set; }
-        public string org_id { get; set; }
-        public string type { get; set; }
-        public string name { get; set; }
-        public string address_type { get; set; }
-        public string street { get; set; }
-        public string street_number { get; set; }
-        public string postal_code { get; set; }
-        public string city { get; set; }
-        public string country_code { get; set; }
-        public string reference_date { get; set; }
-        public char state { get; set; }
-        public int preference_id { get; set; }
-        public string vehicle_default_opt_in { get; set; }
-        public string driver_default_opt_in { get; set; }
+        public string OrgId { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public string AddressType { get; set; }
+        public string Street { get; set; }
+        public string StreetNumber { get; set; }
+        public string PostalCode { get; set; }
+        public string City { get; set; }
+        public string CountryCode { get; set; }
+        public string ReferenceDate { get; set; }
+        public char State { get; set; }
+        public int PreferenceId { get; set; }
+        public string VehicleDefaultOptIn { get; set; }
+        public string DriverDefaultOptIn { get; set; }
         public List<OrganizationResponse> OrganizationList { get; set; }
 
     }
