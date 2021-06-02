@@ -183,6 +183,8 @@ export class TripReportComponent implements OnInit {
   loadUserPOI(){
     this.poiService.getPois(this.accountOrganizationId).subscribe((poiData: any) => {
       this.userPOIList = poiData; 
+    }, (error) => {
+      this.userPOIList = [];
     });
   }
 
