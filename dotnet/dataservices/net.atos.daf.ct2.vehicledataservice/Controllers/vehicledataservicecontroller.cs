@@ -224,14 +224,14 @@ namespace net.atos.daf.ct2.vehicledataservice.Controllers
                     int DAFPACCAR = Convert.ToInt32(_configuration.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
                     RelationshipMapping relationshipMapping = new RelationshipMapping();
-                    relationshipMapping.relationship_id = OwnerRelationship;
-                    relationshipMapping.vehicle_id = vehicleProperties.VehicleId;
-                    relationshipMapping.vehicle_group_id = 0;
-                    relationshipMapping.owner_org_id = DAFPACCAR;
-                    relationshipMapping.created_org_id = DAFPACCAR;
-                    relationshipMapping.target_org_id = DAFPACCAR;
-                    relationshipMapping.isFirstRelation = true;
-                    relationshipMapping.allow_chain = true;
+                    relationshipMapping.RelationshipId = OwnerRelationship;
+                    relationshipMapping.VehicleId = vehicleProperties.VehicleId;
+                    relationshipMapping.VehicleGroupId = 0;
+                    relationshipMapping.OwnerOrgId = DAFPACCAR;
+                    relationshipMapping.CreatedOrgId = DAFPACCAR;
+                    relationshipMapping.TargetOrgId = DAFPACCAR;
+                    relationshipMapping.IsFirstRelation = true;
+                    relationshipMapping.AllowChain = true;
                     await _organizationManager.CreateOwnerRelationship(relationshipMapping);
                 }
 
