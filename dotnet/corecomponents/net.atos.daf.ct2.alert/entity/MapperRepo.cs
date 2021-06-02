@@ -21,13 +21,27 @@ namespace net.atos.daf.ct2.alert.entity
             Dictionary<int, NotificationLimit> notificationLimitkRefLookup = new Dictionary<int, NotificationLimit>();
             Dictionary<int, NotificationAvailabilityPeriod> notificationAvailabilityPeriodLookup = new Dictionary<int, NotificationAvailabilityPeriod>();
 
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             Alert alert = new Alert();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             Notification notification = new Notification();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             AlertUrgencyLevelRef alertUrgencyLevelRef = new AlertUrgencyLevelRef();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             AlertFilterRef alertFilterRef = new AlertFilterRef();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             AlertLandmarkRef alertLandmarkRef = new AlertLandmarkRef();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             NotificationRecipient notificationRecipient = new NotificationRecipient();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             NotificationLimit notificationLimit = new NotificationLimit();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod();
 
             foreach (var alertItem in alertResult)

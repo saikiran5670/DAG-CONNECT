@@ -258,14 +258,14 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
 
                     relationship = new RelationshipMapping
                     {
-                        relationship_id = OwnerRelationship,
-                        vehicle_id = vehicleId,
-                        vehicle_group_id = 0,
-                        owner_org_id = DAFPACCAR,
-                        created_org_id = DAFPACCAR,
-                        target_org_id = DAFPACCAR,
-                        isFirstRelation = true,
-                        allow_chain = true
+                        RelationshipId = OwnerRelationship,
+                        VehicleId = vehicleId,
+                        VehicleGroupId = 0,
+                        OwnerOrgId = DAFPACCAR,
+                        CreatedOrgId = DAFPACCAR,
+                        TargetOrgId = DAFPACCAR,
+                        IsFirstRelation = true,
+                        AllowChain = true
                     };
 
                     await org.CreateOwnerRelationship(relationship);

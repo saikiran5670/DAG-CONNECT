@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.customerdataservice.Controllers
                     CustomerID = customer.CompanyUpdatedEvent.Company.ID.Trim(),
                     ReferenceDateTime = parsedRefDateTime,
                     OrgCreationPackage = _configuration.GetSection("DefaultSettings").GetSection("OrgCreationPackage").Value,
-                    CompanyType = customer.CompanyUpdatedEvent.Company.type?.Trim(),
+                    CompanyType = customer.CompanyUpdatedEvent.Company.Type?.Trim(),
                     CustomerName = customer.CompanyUpdatedEvent.Company.Name?.Trim(),
                     AddressType = customer.CompanyUpdatedEvent.Company.Address?.Type?.Trim(),
                     Street = customer.CompanyUpdatedEvent.Company.Address?.Street?.Trim(),

@@ -469,6 +469,18 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  setUserSelection(sessionObject : any){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/setuserselection`,sessionObject, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(

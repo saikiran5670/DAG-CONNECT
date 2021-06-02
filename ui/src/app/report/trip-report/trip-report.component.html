@@ -116,6 +116,83 @@
           </span>
         </mat-panel-title>
       </mat-expansion-panel-header>
+      <div>
+        <a (click)='onAdvanceFilterOpen()' class='advanceFilterAnchor'>
+          <span style='text-decoration: underline;'>{{ translationData.lblAdvancedMapFilter || 'Advanced Map Filter' }}</span>
+          <mat-icon>
+            {{ advanceFilterOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+          </mat-icon>
+        </a>  
+        <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+                translationData.lblDisplayViews || 'Display View(s)'}}</div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <mat-checkbox>{{ translationData.lblAlerts || 'Alerts' }}</mat-checkbox>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <mat-checkbox>{{ translationData.lblEvents || 'Events' }}</mat-checkbox>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <mat-radio-group (change)='onDisplayChange($event)' class='radioAlign'>
+                  <mat-radio-button class='margin-bottom-5' value="C" [checked]="true">{{ translationData.lblClassic || 'Classic' }}</mat-radio-button>
+                  <mat-radio-button class='margin-bottom-5' value="F">{{ translationData.lblFuelConsumption || 'Fuel Consumption' }}</mat-radio-button>
+                  <mat-radio-button value="CO">{{ translationData.lblCo2emission || 'Co2 emission' }}</mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+                translationData.lblUserPOIs || 'User POI(s)'}}</div>
+              <div class='scrollArea' *ngIf='userPOIList.length > 0'>
+                <div *ngFor="let userPOI of userPOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <mat-checkbox (click)='$event.stopPropagation()'
+                  (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.name }}</mat-checkbox>
+                </div>
+              </div>
+              <div *ngIf='userPOIList.length == 0'>{{ translationData.lblNoUserPOIFound || 'No User POI Found!' }}</div>
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+                translationData.lblHerePOIs || 'Here POI(s)'}}</div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <mat-checkbox>{{ translationData.lblHotel || 'Hotel' }}</mat-checkbox>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <mat-checkbox>{{ translationData.lblParking || 'Parking' }}</mat-checkbox>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <mat-checkbox>{{ translationData.lblPetrolStation || 'Petrol Station' }}</mat-checkbox>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <mat-checkbox>{{ translationData.lblRailwayStation || 'Railway Station' }}</mat-checkbox>
+                </div>
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+              translationData.lblMapMode || 'Map Mode'}}</div>
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <mat-radio-group (change)='onMapModeChange($event)' class='radioAlign'>
+                  <mat-radio-button class='margin-bottom-5' value="map" [checked]="true">{{ translationData.lblMapView || 'Map View' }}</mat-radio-button>
+                  <mat-radio-button class='margin-bottom-5' value="satelite">{{ translationData.lblSatelite || 'Satelite' }}</mat-radio-button>
+                  <mat-radio-button value="terrain">{{ translationData.lblTerrain || 'Terrain' }}</mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
+                translationData.lblTripRepresentation || 'Trip Representation'}}</div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <mat-radio-group (change)='onMapRepresentationChange($event)' class='radioAlign'>
+                    <mat-radio-button class='margin-bottom-5' value="snail" [checked]="true">{{ translationData.lblSnailTrack || 'Snail Track' }}</mat-radio-button>
+                    <mat-radio-button value="dotted">{{ translationData.lblDottedTrack || 'Dotted Track' }}</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px"></div>
     </mat-expansion-panel>
   </mat-card>

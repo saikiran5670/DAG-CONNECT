@@ -14,20 +14,20 @@ namespace net.atos.daf.ct2.driverservice
 {
     public class DriverManagementService : DriverService.DriverServiceBase
     {
-        private readonly IAuditTraillib _AuditTrail;
-        private readonly IAuditTraillib auditlog;
-        private readonly IDriverManager driverManager;
+        private readonly IAuditTraillib _auditTrail;
+        private readonly IAuditTraillib _auditlog;
+        private readonly IDriverManager _driverManager;
 
         private readonly DriverMapper _mapper;
 
         private ILog _logger;
 
-        public DriverManagementService(IAuditTraillib AuditTrail, IAuditTraillib _auditlog, IDriverManager _driverManager)
+        public DriverManagementService(IAuditTraillib auditTrail, IAuditTraillib auditlog, IDriverManager driverManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _AuditTrail = AuditTrail;
-            auditlog = _auditlog;
-            driverManager = _driverManager;
+            _auditTrail = auditTrail;
+            _auditlog = auditlog;
+            _driverManager = driverManager;
             _mapper = new DriverMapper();
         }
 
@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.driverservice
             try
             {
                 DriverDataList response = new DriverDataList();
-                var result = await driverManager.GetDriver(request.OrgID, request.DriverID);
+                var result = await _driverManager.GetDriver(request.OrgID, request.DriverID);
                 if (result.Count() > 0)
                 {
                     foreach (driver.entity.DriverResponse entity in result)
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.driverservice
                 DriverUpdateResponse response = new DriverUpdateResponse();
                 Driver driver = new Driver();
                 driver = _mapper.ToDriverUpdateResponse(request);
-                var result = await driverManager.UpdateDriver(driver);
+                var result = await _driverManager.UpdateDriver(driver);
 
                 var objDriver = _mapper.DriverToDriverResponse(driver);
                 response.Code = Responcecode.Success;
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.driverservice
             try
             {
                 DriverDeleteResponse response = new DriverDeleteResponse();
-                bool result = await driverManager.DeleteDriver(request.OrgID, request.DriverID);
+                bool result = await _driverManager.DeleteDriver(request.OrgID, request.DriverID);
                 if (result)
                 {
                     response.Message = "Deleted";
@@ -125,7 +125,7 @@ namespace net.atos.daf.ct2.driverservice
             try
             {
                 OptOutOptInResponse response = new OptOutOptInResponse();
-                bool result = await driverManager.UpdateOptinOptout(Optrequest.OrgID, Optrequest.Optoutoptinstatus);
+                bool result = await _driverManager.UpdateOptinOptout(Optrequest.OrgID, Optrequest.Optoutoptinstatus);
                 if (result)
                 {
                     response.Message = "Driver OptOutOptIn updated";
@@ -160,7 +160,7 @@ namespace net.atos.daf.ct2.driverservice
                     lstDriver.Add(_mapper.ToDriver(entity));
                 }
                 List<driver.entity.DriverImportResponse> objDrv = new List<driver.entity.DriverImportResponse>();
-                objDrv = await driverManager.ImportDrivers(lstDriver, request.OrgID);
+                objDrv = await _driverManager.ImportDrivers(lstDriver, request.OrgID);
                 DriverReturns objdrvReturn = new DriverReturns();
 
                 foreach (driver.entity.DriverImportResponse entity in objDrv)

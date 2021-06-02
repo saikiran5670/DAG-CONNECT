@@ -14,13 +14,18 @@ import { MatTableDataSource } from '@angular/material/table';
 import { AnyMxRecord } from 'dns';
 import { POIService } from 'src/app/services/poi.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { LandmarkGroupService } from 'src/app/services/landmarkGroup.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
+import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
+import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 
 declare var H: any;
 
 @Component({
   selector: 'app-alert-advanced-filter',
   templateUrl: './alert-advanced-filter.component.html',
-  styleUrls: ['./alert-advanced-filter.component.css']
+  styleUrls: ['./alert-advanced-filter.component.less']
 })
 export class AlertAdvancedFilterComponent implements OnInit {
   @Input() translationData: any = [];
@@ -30,6 +35,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
   @Input() actionType :any;
   @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
+  dialogRef: MatDialogRef<CommonTableComponent>;
+  selectedGeofence = new SelectionModel(true, []);
+  selectedGroup = new SelectionModel(true, []);
   alertAdvancedFilterForm: FormGroup;
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
@@ -40,6 +48,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isDistanceSelected: boolean= false;
   isOccurenceSelected: boolean= false;
   isDurationSelected: boolean= false;
+  isPoiSelected: boolean= false;
   selectedPoiSite: any;
   marker: any;
   markerArray: any = [];
@@ -52,10 +61,17 @@ export class AlertAdvancedFilterComponent implements OnInit {
   selectedPOI = new SelectionModel(true, []);
   private platform: any;
   poiGridData = [];
-  
+  geofenceGridData = [];
+  groupGridData = [];
+
   @ViewChild("map")
   private mapElement: ElementRef;
-  constructor(private _formBuilder: FormBuilder,private poiService: POIService,private domSanitizer: DomSanitizer,) {
+  constructor(private _formBuilder: FormBuilder,private poiService: POIService,
+              private domSanitizer: DomSanitizer,
+              private landmarkGroupService: LandmarkGroupService,
+              private dialog: MatDialog,
+              private dialogService: ConfirmDialogService,
+              private geofenceService: GeofenceService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
@@ -72,6 +88,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
       occurences: [''],
       duration: ['']
     })
+  }
+
+  onChangeDistance(event: any){
+    if(event.checked){
+      this.isDistanceSelected= true;
+    }
+    else{
+      this.isDistanceSelected= false;
+    }
+  }
+
+  loadMapData(){
     let defaultLayers = this.platform.createDefaultLayers();
     setTimeout(() => {
       this.map = new H.Map(
@@ -86,16 +114,19 @@ export class AlertAdvancedFilterComponent implements OnInit {
       window.addEventListener('resize', () => this.map.getViewPort().resize());
       var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
       var ui = H.ui.UI.createDefault(this.map, defaultLayers);  
-    }, 1000);
-    this.loadPOIData();
+    }, 5000);
   }
 
-  onChangeDistance(event: any){
+  onChangePOI(event: any){
     if(event.checked){
-      this.isDistanceSelected= true;
+      this.isPoiSelected= true;
+      this.loadMapData();
+      this.loadPOIData();
+      this.loadGeofenceData();
+      this.loadGroupData();
     }
     else{
-      this.isDistanceSelected= false;
+      this.isPoiSelected= false;
     }
   }
 
@@ -152,6 +183,112 @@ export class AlertAdvancedFilterComponent implements OnInit {
     }
     this.addMarkerOnMap();
       
+    }
+
+    loadGeofenceData() {
+      this.geofenceService.getGeofenceDetails(this.organizationId).subscribe((geofencelist: any) => {
+        this.geofenceGridData = geofencelist;
+       this.geofenceGridData = this.geofenceGridData.filter(item => item.type == "C" || item.type == "O");
+        this.updateGeofenceDataSource(this.geofenceGridData);
+        if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate')
+          this.loadGeofenceSelectedData(this.geofenceGridData);
+      });
+    }
+
+    loadGeofenceSelectedData(tableData: any){
+      let selectedGeofenceList: any = [];
+      if(this.actionType == 'view'){
+        tableData.forEach((row: any) => {
+          let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
+          if (search.length > 0) {
+            selectedGeofenceList.push(row);
+            setTimeout(() => {
+              this.geofenceCheckboxClicked({checked : true}, row);  
+            }, 1000);
+          }
+        });
+        tableData = selectedGeofenceList;
+        this.displayedColumnsGeofence= ['name', 'categoryName', 'subCategoryName'];
+        this.updateGeofenceDataSource(tableData);
+      }
+      else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.selectGeofenceTableRows(this.selectedRowData);
+      }
+    }
+
+    updateGeofenceDataSource(tableData: any){
+      this.geofenceDataSource = new MatTableDataSource(tableData);
+      this.geofenceDataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+          data.name.toString().toLowerCase().includes(filter) ||
+          data.categoryName.toString().toLowerCase().includes(filter) ||
+          data.subCategoryName.toString().toLowerCase().includes(filter)
+        );
+      };
+      setTimeout(()=>{
+        this.geofenceDataSource.paginator = this.paginator.toArray()[1];
+        this.geofenceDataSource.sort = this.sort.toArray()[1];
+      },2000);
+    }
+
+    loadGroupData(){
+      let objData = { 
+        organizationid : this.organizationId,
+     };
+  
+      this.landmarkGroupService.getLandmarkGroups(objData).subscribe((data: any) => {
+        if(data){
+          this.groupGridData = data["groups"];
+          this.updateGroupDatasource(this.groupGridData);
+          if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+            this.loadGroupSelectedData(this.groupGridData);
+          }
+        }
+      }, (error) => {
+        //console.log(error)
+      });
+    }
+
+    updateGroupDatasource(tableData: any){
+      this.groupDataSource = new MatTableDataSource(tableData);
+      this.groupDataSource.filterPredicate = function(data: any, filter: string): boolean {
+        return (
+          data.name.toString().toLowerCase().includes(filter) ||
+          data.poiCount.toString().toLowerCase().includes(filter) ||
+          data.geofenceCount.toString().toLowerCase().includes(filter)
+        );
+      };
+      setTimeout(()=>{
+        this.groupDataSource.paginator = this.paginator.toArray()[2];
+        this.groupDataSource.sort = this.sort.toArray()[2];
+      },2000);
+    }
+
+    loadGroupSelectedData(tableData: any){
+      let selectedGroupList: any = [];
+      if(this.actionType == 'view'){
+        tableData.forEach((row: any) => {
+          let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
+          if (search.length > 0) {
+            selectedGroupList.push(row);
+          }
+        });
+        tableData = selectedGroupList;
+        this.displayedColumnsGroup= ['name', 'poiCount', 'geofenceCount'];
+        this.updateGroupDatasource(tableData);
+      }
+      else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.selectGroupTableRows();
+      }
+    }
+
+    selectGroupTableRows(){
+      this.groupDataSource.data.forEach((row: any) => {
+        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
+        if (search.length > 0) {
+          this.selectedGroup.select(row);
+        }
+      });
     }
 
     applyFilterForPOI(filterValue: string) {
@@ -249,9 +386,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
         );
       };
       setTimeout(()=>{
-        this.poiDataSource.paginator = this.paginator.toArray()[1];
-        this.poiDataSource.sort = this.sort.toArray()[1];
-      });
+        this.poiDataSource.paginator = this.paginator.toArray()[0];
+        this.poiDataSource.sort = this.sort.toArray()[0];
+      },2000);
     }
 
     selectPOITableRows(rowData: any, event?:any){
@@ -414,6 +551,142 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
       }
 
+      geofenceCheckboxClicked(event: any, row: any) {
+
+        if(event.checked){ 
+          this.geoMarkerArray.push(row);
+        }else{ 
+          let arr = this.geoMarkerArray.filter(item => item.id != row.id);
+          this.geoMarkerArray = arr;
+        }
+        this.addCircleOnMap(event);
+      // });
+        }
+
+        addCircleOnMap(event: any){
+          if(event.checked == false){
+        this.map.removeObjects(this.map.getObjects());
+      }
+    //adding circular geofence points on map
+        this.geoMarkerArray.forEach(element => {
+          if(element.type == "C"){
+          this.marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+          this.map.addObject(this.marker);
+          
+          this.createResizableCircle(element.distance, element);
+          }
+          // "PolygonGeofence"
+          else{
+            this.polyPoints = [];
+            element.nodes.forEach(item => {
+            this.polyPoints.push(Math.abs(item.latitude.toFixed(4)));
+            this.polyPoints.push(Math.abs(item.longitude.toFixed(4)));
+            this.polyPoints.push(0);
+            });
+            this.createResizablePolygon(this.map,this.polyPoints,this);
+          }
+    
+      });
+      //adding poi geofence points on map
+      this.markerArray.forEach(element => {
+        let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
+        this.map.addObject(marker);
+      });
+    
+        }
+
+        onPOIClick(row: any){
+          const colsList = ['icon', 'landmarkname', 'categoryname', 'subcategoryname', 'address'];
+          const colsName = [this.translationData.lblIcon || 'Icon', this.translationData.lblName || 'Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category', this.translationData.lblAddress || 'Address'];
+          const tableTitle = this.translationData.lblPOI || 'POI';
+          let objData = { 
+            organizationid : this.organizationId,
+            groupid : row.id
+          };
+            this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
+            this.selectedRowData = groupDetails["groups"][0].landmarks.filter(item => item.type == "P");
+            if(this.selectedRowData.length > 0){
+              this.selectedRowData.forEach(element => {
+                if(element.icon && element.icon != '' && element.icon.length > 0){
+                  let TYPED_ARRAY = new Uint8Array(element.icon);
+                  let STRING_CHAR = String.fromCharCode.apply(null, TYPED_ARRAY);
+                  let base64String = btoa(STRING_CHAR);
+                  element.icon = this.domSanitizer.bypassSecurityTrustUrl('data:image/jpg;base64,' + base64String);
+                }else{
+                  element.icon = '';
+                }
+              });
+              this.callToCommonTable(this.selectedRowData, colsList, colsName, tableTitle);
+            }
+          });
+        }
+
+        callToCommonTable(tableData: any, colsList: any, colsName: any, tableTitle: any) {
+          const dialogConfig = new MatDialogConfig();
+          dialogConfig.disableClose = true;
+          dialogConfig.autoFocus = true;
+          dialogConfig.data = {
+            tableData: tableData,
+            colsList: colsList,
+            colsName: colsName,
+            tableTitle: tableTitle
+          }
+          this.dialogRef = this.dialog.open(CommonTableComponent, dialogConfig);
+        }
+
+        onGeofenceClick(row: any){
+          const colsList = ['landmarkname', 'categoryname', 'subcategoryname'];
+          const colsName = ['Name', this.translationData.lblCategory || 'Category', this.translationData.lblSubCategory || 'Sub-Category'];
+          const tableTitle = this.translationData.lblGeofence || 'Geofence';
+          let objData = { 
+            organizationid : this.organizationId,
+            groupid : row.id
+         };
+            this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupDetails) => {
+            this.selectedRowData = groupDetails["groups"][0].landmarks.filter(item => (item.type == "C" || item.type == "O"));
+            this.callToCommonTable(this.selectedRowData, colsList, colsName, tableTitle);
+          });
+        }
+
+        onGroupSelect(event: any, row: any){
+          let groupDetails= [];
+          let objData = { 
+            organizationid : this.organizationId,
+            groupid : row.id
+          };
+          this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
+            groupDetails = groupData["groups"][0];
+            this.selectPOITableRows(groupDetails, event);
+            this.selectGeofenceTableRows(groupDetails, event);
+          });
+        }
+
+        selectGeofenceTableRows(rowData: any, event?: any){
+          if(event){
+            this.geofenceDataSource.data.forEach((row: any) => {
+              let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
+              if (event && search.length > 0) {
+                if(event.checked)
+                  this.selectedGeofence.select(row);
+                else
+                  this.selectedGeofence.deselect(row);
+                this.geofenceCheckboxClicked(event,row);
+              }
+            });
+          }
+          else{
+            this.geofenceDataSource.data.forEach((row: any) => {
+              let search = rowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
+              if(search.length > 0) {
+                this.selectedGeofence.select(row);
+                setTimeout(() => {
+                  this.geofenceCheckboxClicked({checked : true}, row);  
+                }, 1000);
+              }
+            });
+          }
+        }
+
       masterToggleForPOI() {
         this.isAllSelectedForPOI()
           ? this.selectedPOI.clear()
@@ -433,6 +706,50 @@ export class AlertAdvancedFilterComponent implements OnInit {
           return `${this.isAllSelectedForPOI() ? 'select' : 'deselect'} all`;
         else
           return `${this.selectedPOI.isSelected(row) ? 'deselect' : 'select'
+            } row`;
+      }
+
+      masterToggleForGeofence() {
+        this.isAllSelectedForGeofence()
+          ? this.selectedGeofence.clear()
+          : this.geofenceDataSource.data.forEach((row) =>
+            this.selectedGeofence.select(row)
+          );
+      }
+    
+      isAllSelectedForGeofence() {
+        const numSelected = this.selectedGeofence.selected.length;
+        const numRows = this.geofenceDataSource.data.length;
+        return numSelected === numRows;
+      }
+    
+      checkboxLabelForGeofence(row?: any): string {
+        if (row)
+          return `${this.isAllSelectedForGeofence() ? 'select' : 'deselect'} all`;
+        else
+          return `${this.selectedGeofence.isSelected(row) ? 'deselect' : 'select'
+            } row`;
+      }
+    
+      masterToggleForGroup() {
+        this.isAllSelectedForGroup()
+          ? this.selectedGroup.clear()
+          : this.groupDataSource.data.forEach((row) =>
+            this.selectedGroup.select(row)
+          );
+      }
+    
+      isAllSelectedForGroup() {
+        const numSelected = this.selectedGroup.selected.length;
+        const numRows = this.groupDataSource.data.length;
+        return numSelected === numRows;
+      }
+    
+      checkboxLabelForGroup(row?: any): string {
+        if (row)
+          return `${this.isAllSelectedForGroup() ? 'select' : 'deselect'} all`;
+        else
+          return `${this.selectedGroup.isSelected(row) ? 'deselect' : 'select'
             } row`;
       }
 

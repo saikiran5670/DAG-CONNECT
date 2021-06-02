@@ -11,5 +11,7 @@ namespace net.atos.daf.ct2.reports
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList);
         Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter);
+        Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
+        Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
     }
 }

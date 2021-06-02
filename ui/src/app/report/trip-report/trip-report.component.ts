@@ -14,6 +14,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { POIService } from '../../services/poi.service';
 //var jsPDF = require('jspdf');
 
 declare var H: any;
@@ -49,6 +50,7 @@ export class TripReportComponent implements OnInit {
   vehicleListData: any = [];
   dataSource: any = new MatTableDataSource([]);
   selectedTrip = new SelectionModel(true, []);
+  selectedPOI = new SelectionModel(true, []);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -65,8 +67,11 @@ export class TripReportComponent implements OnInit {
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any = 12; //-- coming from pref setting
   prefDateFormat: any = ''; //-- coming from pref setting
+  accountPrefObj: any;
+  advanceFilterOpen: boolean = false;
+  userPOIList: any = [];
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private poiService: POIService) {
     this.defaultTranslation();
   }
 
@@ -80,6 +85,7 @@ export class TripReportComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountPrefObj = JSON.parse(localStorage.getItem('accountInfo'));
     this.tripForm = this._formBuilder.group({
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
@@ -99,10 +105,14 @@ export class TripReportComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
-      this.setDefaultStartEndTime();
-      this.setPrefFormatDate();
-      this.setDefaultTodayDate();
-      this.loadWholeTripData();
+      this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
+        this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
+        this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].value;
+        this.setDefaultStartEndTime();
+        this.setPrefFormatDate();
+        this.setDefaultTodayDate();
+        this.loadWholeTripData();
+      });
     });
   }
 
@@ -160,13 +170,23 @@ export class TripReportComponent implements OnInit {
       this.hideloader();
       this.wholeTripData = tripData;
       this.filterDateData();
+      this.loadUserPOI();
     }, (error)=>{
       this.hideloader();
-      this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
-      this.wholeTripData.vinTripList = [];
+      let _tripData = {"code":200,"message":"VIN fetched successfully for given date range of 90 days","vinTripList":[{"vin":"XLR0998HGFFT5566","startTimeStamp":1616161806919,"endTimeStamp":1616161833919},{"vin":"XLR0998HGFFT5566","startTimeStamp":1616963841000,"endTimeStamp":1616964049000},{"vin":"XLR0998HGFFT5566","startTimeStamp":1620654606919,"endTimeStamp":1616914996000},{"vin":"XLR0998HGFFT5566","startTimeStamp":1621432206919,"endTimeStamp":1621432217919},{"vin":"XLR0998HGFFT5566","startTimeStamp":1622166606919,"endTimeStamp":1622166802919},{"vin":"XLRAS47MS0E808088","startTimeStamp":1621432206919,"endTimeStamp":1621432351919},{"vin":"XLRAS47MS0E808088","startTimeStamp":1622166606919,"endTimeStamp":1622166632919}],"vehicleDetailsWithAccountVisibiltyList":[{"vehicleGroupId":0,"accountId":40,"objectType":"V","groupType":"S","functionEnum":"","organizationId":12,"accessType":"F","vehicleGroupName":"","vehicleId":32,"vehicleName":"08: FFT7788","vin":"XLR0998HGFFT7788","registrationNo":"1-DAF-23.989898"},{"vehicleGroupId":16,"accountId":40,"objectType":"V","groupType":"G","functionEnum":"N","organizationId":12,"accessType":"F","vehicleGroupName":"JTC Fleet Group","vehicleId":31,"vehicleName":"Rolls Royce","vin":"XLR0998HGFFT5566","registrationNo":"PLOI097OII"},{"vehicleGroupId":16,"accountId":40,"objectType":"V","groupType":"G","functionEnum":"N","organizationId":12,"accessType":"F","vehicleGroupName":"JTC Fleet Group","vehicleId":32,"vehicleName":"08: FFT7788","vin":"XLR0998HGFFT7788","registrationNo":"1-DAF-23.989898"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":31,"vehicleName":"Rolls Royce","vin":"XLR0998HGFFT5566","registrationNo":"PLOI097OII"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":32,"vehicleName":"08: FFT7788","vin":"XLR0998HGFFT7788","registrationNo":"1-DAF-23.989898"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":41,"vehicleName":"Mercedes Benz","vin":"XLRAS47MS0E808088","registrationNo":"XCVFDG23544"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":42,"vehicleName":"22:","vin":"XLRAS47MS0E808099","registrationNo":"Pb-016-V"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":43,"vehicleName":"14:","vin":"XLRAS47MS0E808000","registrationNo":"XCvFDG23544"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":45,"vehicleName":"16: Vehicle_V2","vin":"XLRAS47MS0E808011","registrationNo":"XCVFDG237845"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":68,"vehicleName":"23: Vehicle_VDemo","vin":"XLRAS47MS0E808321","registrationNo":"XCVFDG2332112"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester","vehicleId":87,"vehicleName":"24:","vin":"XLRAS47MS0E808399","registrationNo":"XCVFDG23321"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":31,"vehicleName":"Rolls Royce","vin":"XLR0998HGFFT5566","registrationNo":"PLOI097OII"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":32,"vehicleName":"08: FFT7788","vin":"XLR0998HGFFT7788","registrationNo":"1-DAF-23.989898"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":41,"vehicleName":"Mercedes Benz","vin":"XLRAS47MS0E808088","registrationNo":"XCVFDG23544"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":42,"vehicleName":"22:","vin":"XLRAS47MS0E808099","registrationNo":"Pb-016-V"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":43,"vehicleName":"14:","vin":"XLRAS47MS0E808000","registrationNo":"XCvFDG23544"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":45,"vehicleName":"16: Vehicle_V2","vin":"XLRAS47MS0E808011","registrationNo":"XCVFDG237845"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":68,"vehicleName":"23: Vehicle_VDemo","vin":"XLRAS47MS0E808321","registrationNo":"XCVFDG2332112"},{"vehicleGroupId":22,"accountId":40,"objectType":"V","groupType":"D","functionEnum":"O","organizationId":12,"accessType":"V","vehicleGroupName":"VG001Tester","vehicleId":87,"vehicleName":"24:","vin":"XLRAS47MS0E808399","registrationNo":"XCVFDG23321"},{"vehicleGroupId":23,"accountId":40,"objectType":"V","groupType":"G","functionEnum":"","organizationId":12,"accessType":"F","vehicleGroupName":"VG001Tester123","vehicleId":0,"vehicleName":"","vin":"","registrationNo":""},{"vehicleGroupId":24,"accountId":40,"objectType":"V","groupType":"G","functionEnum":"","organizationId":12,"accessType":"F","vehicleGroupName":"VG002Tester","vehicleId":0,"vehicleName":"","vin":"","registrationNo":""},{"vehicleGroupId":24,"accountId":40,"objectType":"V","groupType":"G","functionEnum":"","organizationId":12,"accessType":"V","vehicleGroupName":"VG002Tester","vehicleId":0,"vehicleName":"","vin":"","registrationNo":""}]};
+      this.wholeTripData = _tripData;
+      this.filterDateData();
+      this.loadUserPOI();
     });
   }
 
+  loadUserPOI(){
+    this.poiService.getPois(this.accountOrganizationId).subscribe((poiData: any) => {
+      this.userPOIList = poiData; 
+    }, (error) => {
+      this.userPOIList = [];
+    });
+  }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -194,7 +214,10 @@ export class TripReportComponent implements OnInit {
         //console.log(error);
         this.hideloader();
         this.tripData = [];
-        this.tableInfoObj = {};
+        //this.tableInfoObj = {};
+        let _tripData = [{"id":11903,"tripId":"ae6e42d3-4ba1-49eb-8fe1-704a2271bc49","vin":"XLR0998HGFFT5566","startTimeStamp":1587143959831,"endTimeStamp":1587143959831,"distance":139,"idleDuration":53,"averageSpeed":2663,"averageWeight":655350,"odometer":298850780,"startPosition":"NA","endPosition":"NA","fuelConsumed":166.896551724138,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.66896551724138,"liveFleetPosition":[],"startPositionLattitude":50.96831131,"startPositionLongitude":-1.388581276,"endPositionLattitude":50.9678421,"endPositionLongitude":-1.388695598},{"id":12576,"tripId":"11c2c2c1-c56f-42ce-9e62-31685ed5d2ae","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":22,"idleDuration":3,"averageSpeed":6545,"averageWeight":655350,"odometer":298981400,"startPosition":"NA","endPosition":"NA","fuelConsumed":50,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":0.5,"liveFleetPosition":[],"startPositionLattitude":50.81643677,"startPositionLongitude":-0.7481001616,"endPositionLattitude":50.81661987,"endPositionLongitude":-0.74804914},{"id":13407,"tripId":"ce3c49fb-2291-4052-9d1b-3b2ee343ab33","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":213,"idleDuration":39,"averageSpeed":3461,"averageWeight":655350,"odometer":74677630,"startPosition":"NA","endPosition":"NA","fuelConsumed":91,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":0.91,"liveFleetPosition":[],"startPositionLattitude":51.39526367,"startPositionLongitude":-1.229614377,"endPositionLattitude":51.39541626,"endPositionLongitude":-1.231176734},{"id":12582,"tripId":"6adb296a-549e-4d50-af9d-3bfbc6fc3e4b","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":4,"idleDuration":14,"averageSpeed":3130,"averageWeight":655350,"odometer":10327065,"startPosition":"NA","endPosition":"NA","fuelConsumed":175,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.75,"liveFleetPosition":[],"startPositionLattitude":41.71875763,"startPositionLongitude":26.35817528,"endPositionLattitude":41.71875,"endPositionLongitude":26.35810089},{"id":12587,"tripId":"cc5b9533-1d94-4af8-8cc8-903b0dcd5514","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":65,"idleDuration":10,"averageSpeed":8000,"averageWeight":655350,"odometer":14747690,"startPosition":"NA","endPosition":"NA","fuelConsumed":105,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.05,"liveFleetPosition":[],"startPositionLattitude":43.00225067,"startPositionLongitude":22.80965805,"endPositionLattitude":43.00209045,"endPositionLongitude":22.8104248}];
+        this.tripData = this.getConvertTableDateTime(_tripData);
+        this.setTableInfo();
         this.updateDataSource(this.tripData);
       });
     }
@@ -580,4 +603,23 @@ export class TripReportComponent implements OnInit {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
   }
 
+  onAdvanceFilterOpen(){
+    this.advanceFilterOpen = !this.advanceFilterOpen;
+  }
+
+  onDisplayChange(event: any){
+
+  }
+
+  changeUserPOISelection(event: any, poiData: any){
+    //console.log(this.selectedPOI.selected);
+  }
+
+  onMapModeChange(event: any){
+
+  }
+
+  onMapRepresentationChange(event: any){
+
+  }
 }
