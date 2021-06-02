@@ -34,6 +34,7 @@ import { AlertService } from './services/alert.service';
 import { CreateNotificationsAlertComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/create-notifications-alert.component';
 import { ReportService } from './services/report.service';
 import { AlertAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/alert-advanced-filter/alert-advanced-filter.component';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
@@ -52,6 +53,7 @@ export function configFactory(httpClient: HttpClient): ConfigLoader {
     SharedModule,
     ChartsModule,
     FormsModule,
+    NgxSliderModule,
     ReactiveFormsModule,
     ConfigModule.forRoot({
       provide: ConfigLoader,
