@@ -11,11 +11,11 @@ namespace net.atos.daf.ct2.role.repository
     public class RoleRepository : IRoleRepository
     {
 
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
 
-        public RoleRepository(IDataAccess _dataAccess)
+        public RoleRepository(IDataAccess dataAccess)
         {
-            dataAccess = _dataAccess;
+            _dataAccess = dataAccess;
         }
         public async Task<int> CreateRole(RoleMaster roleMaster)
         {
@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.role.repository
             Roleparameter.Add("@level", roleMaster.Level);
             Roleparameter.Add("@code", roleMaster.Code);
 
-            int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
+            int InsertedRoleId = await _dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             // if (roleMaster.FeatureSetID > 0)
             // {
             //     var RoleFeatureQueryStatement = @" INSERT INTO dafconnectmaster.rolefeatureset
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.role.repository
             Roleparameter.Add("@role_id", RoleId);
 
 
-            int InsertedRoleId = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
+            int InsertedRoleId = await _dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, Roleparameter);
             return InsertedRoleId;
         }
 
@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.role.repository
                                     WHERE id = @roleid
                                     RETURNING id;";
 
-                int resultDeletedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
+                int resultDeletedRole = await _dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
 
                 // var RoleFeatureQueryStatement = @"UPDATE dafconnectmaster.rolefeatureset 
                 //                         SET isactive = @isactive
@@ -126,7 +126,7 @@ namespace net.atos.daf.ct2.role.repository
                                             FROM master.accountrole ar left join master.account a
                                             on ar.account_id= a.id
                                             where role_id=@roleid";
-                var accounts = await dataAccess.QueryAsync<AssignedRoles>(RoleQueryStatement, parameter);
+                var accounts = await _dataAccess.QueryAsync<AssignedRoles>(RoleQueryStatement, parameter);
 
                 return accounts;
 
@@ -203,7 +203,7 @@ namespace net.atos.daf.ct2.role.repository
             }
 
 
-            IEnumerable<RoleMaster> roledetails = await dataAccess.QueryAsync<RoleMaster>(QueryStatement, parameter);
+            IEnumerable<RoleMaster> roledetails = await _dataAccess.QueryAsync<RoleMaster>(QueryStatement, parameter);
             return roledetails;
 
         }
@@ -231,7 +231,7 @@ namespace net.atos.daf.ct2.role.repository
                                            level=@level
                                         WHERE id = @id
                                         RETURNING id;";
-            int resultUpdatedRole = await dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
+            int resultUpdatedRole = await _dataAccess.ExecuteScalarAsync<int>(RoleQueryStatement, parameter);
 
             // if (roleMaster.FeatureSetID > 0)
             // {
@@ -262,7 +262,7 @@ namespace net.atos.daf.ct2.role.repository
 
             parameter.Add("@roleName", roleName.Trim());
             parameter.Add("@organization_id", Organization_Id);
-            int resultRoleId = dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+            int resultRoleId = _dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
             return resultRoleId;
 
         }

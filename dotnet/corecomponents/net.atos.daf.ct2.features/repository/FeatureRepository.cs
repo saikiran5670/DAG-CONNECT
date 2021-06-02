@@ -172,7 +172,7 @@ namespace net.atos.daf.ct2.features.repository
 
                 return features;
             }
-            catch (Exception Ex)
+            catch (Exception)
             {
 
                 throw;
