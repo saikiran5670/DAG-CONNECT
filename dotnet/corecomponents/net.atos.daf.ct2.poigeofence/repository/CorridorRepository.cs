@@ -302,8 +302,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<ExistingTripCorridor> AddExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
-            _dataAccess.connection.Open();
-            var transactionScope = _dataAccess.connection.BeginTransaction();
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
 
             try
             {
@@ -359,7 +359,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             finally
             {
-                _dataAccess.connection.Close();
+                _dataAccess.Connection.Close();
             }
 
             return existingTripCorridor;
@@ -516,8 +516,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<ExistingTripCorridor> UpdateExistingTripCorridor(ExistingTripCorridor existingTripCorridor)
         {
-            _dataAccess.connection.Open();
-            var transactionScope = _dataAccess.connection.BeginTransaction();
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
 
             try
             {
@@ -584,7 +584,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             finally
             {
-                _dataAccess.connection.Close();
+                _dataAccess.Connection.Close();
             }
 
             return existingTripCorridor;
@@ -876,8 +876,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<RouteCorridor> UpdateRouteCorridor(RouteCorridor routeCorridor)
         {
-            _dataAccess.connection.Open();
-            var transactionScope = _dataAccess.connection.BeginTransaction();
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
             try
             {
                 var UpdateCorridorparameter = new DynamicParameters();
@@ -1127,7 +1127,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             finally
             {
-                _dataAccess.connection.Close();
+                _dataAccess.Connection.Close();
             }
             return routeCorridor;
         }
