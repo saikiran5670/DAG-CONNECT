@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.poigeofence.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartDataAccess;
         private readonly PoiRepository _poiRepository;
         private readonly IPoiManager _iPoiManager;
 
@@ -22,7 +23,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            // _poiRepository = new PoiRepository(_dataAccess);
+             _poiRepository = new PoiRepository(_dataAccess,_dataMartDataAccess);
             _iPoiManager = new PoiManager(_poiRepository);
         }
 

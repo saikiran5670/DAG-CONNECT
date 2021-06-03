@@ -4,25 +4,14 @@ namespace net.atos.daf.ct2.tcucore
 {
     public class Correlations
     {
-        private String deviceId;
-        private String vehicleId;
-
-        public Correlations(string _deviceId, string _vehicleId)
+        public string DeviceId { get;  }
+        public string VehicleId { get;  }
+        public Correlations(string deviceId, string vehicleId)
         {
-            this.deviceId = _deviceId;
-            this.vehicleId = _vehicleId;
+            this.DeviceId = deviceId;
+            this.VehicleId = vehicleId;
         }
 
-        public string DeviceId
-        {
-            get => deviceId;
-            set => deviceId = value;
-        }
-
-        public string VehicleId
-        {
-            get => vehicleId;
-            set => vehicleId = value;
-        }
+       
     }
 }

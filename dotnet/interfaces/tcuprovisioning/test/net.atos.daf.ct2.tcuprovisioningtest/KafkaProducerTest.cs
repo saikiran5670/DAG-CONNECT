@@ -8,20 +8,19 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
     [TestClass]
     public class KafkaProducerTest
     {
-        IConfiguration config = null;
-        string brokerList = string.Empty;
-        string connectionString = string.Empty;
-        string topic = string.Empty;
-        string caCertLocation = string.Empty;
+        readonly string _brokerList = string.Empty;
+        readonly string _connectionString = string.Empty;
+        readonly string _topic = string.Empty;
+        readonly string _caCertLocation = string.Empty;
 
         public KafkaProducerTest()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettingsDevelopment.json", optional: true, reloadOnChange: true).Build();
 
-            brokerList = config.GetSection("EH_FQDN").Value;
-            connectionString = config.GetSection("EH_CONNECTION_STRING").Value;
-            topic = config.GetSection("EH_NAME").Value;
-            caCertLocation = config.GetSection("CA_CERT_LOCATION").Value;
+            _brokerList = config.GetSection("EH_FQDN").Value;
+            _connectionString = config.GetSection("EH_CONNECTION_STRING").Value;
+            _topic = config.GetSection("EH_NAME").Value;
+            _caCertLocation = config.GetSection("CA_CERT_LOCATION").Value;
         }
 
         [TestMethod]
@@ -32,7 +31,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
 
             //+ Act
             Console.WriteLine("Initializing Producer");
-            var output = Worker.Producer(brokerList, connectionString, topic, caCertLocation, jsonData);
+            var output = Worker.Producer(_brokerList, _connectionString, _topic, _caCertLocation, jsonData);
             output.Wait();
             var result = output.Result;
 

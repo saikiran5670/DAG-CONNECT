@@ -14,9 +14,7 @@ namespace net.atos.daf.ct2.organization.test
     public class OrganizationRepositoryTest
     {
         private readonly IDataAccess _dataAccess;
-        private readonly IConfiguration _config;
         readonly IOrganizationRepository _organizationRepository;
-        private readonly IAuditTraillib _auditlog;
         private readonly IVehicleManager _vehicleManager;
         private readonly IGroupManager _groupManager;
         private readonly IAccountManager _accountManager;

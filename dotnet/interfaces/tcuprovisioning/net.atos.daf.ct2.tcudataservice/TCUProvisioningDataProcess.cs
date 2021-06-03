@@ -20,81 +20,81 @@ namespace net.atos.daf.ct2.tcudataservice
 {
     public class TCUProvisioningDataProcess : ITcuProvisioningDataReceive, ITcuProvisioningDataPost
     {
-        private string brokerList;
-        private string connStr;
-        private string consumergroup;
-        private string topic;
-        private string psqlconnstring;
-        private string cacertlocation;
-        private string dafurl;
-        private string boschTcuBrand;
-        private string boschTcuVesrion;
-        IDataAccess dataacess = null;
-        private ILog log = null;
-        IConfiguration config = null;
-        IAuditTraillib auditlog = null;
-        IAuditLogRepository auditrepo = null;
+        private readonly string _brokerList;
+        private readonly string _connStr;
+        private readonly string _consumergroup;
+        private readonly string _topic;
+        private readonly string _psqlconnstring;
+        private readonly string _cacertlocation;
+        private readonly string _dafurl;
+        private readonly string _boschTcuBrand;
+        private readonly string _boschTcuVesrion;
+        private readonly IDataAccess _dataacess = null;
+        private readonly ILog _log = null;
+        private readonly IConfiguration _config = null;
+        private readonly IAuditTraillib _auditlog = null;
+        private readonly IAuditLogRepository _auditrepo = null;
 
-        private string accessUrl;
-        private string grantType;
-        private string clientId;
-        private string clientSecret;
+        private readonly string _accessUrl;
+        private readonly string _grantType;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
 
-        public TCUProvisioningDataProcess(ILog _log, IConfiguration _config)
+        public TCUProvisioningDataProcess(ILog log, IConfiguration config)
         {
-            this.log = _log;
-            this.config = _config;
-            brokerList = config.GetSection("EH_FQDN").Value;
-            connStr = config.GetSection("EH_CONNECTION_STRING").Value;
-            consumergroup = config.GetSection("CONSUMER_GROUP").Value;
-            topic = config.GetSection("EH_NAME").Value;
-            psqlconnstring = config.GetSection("PSQL_CONNSTRING").Value;
-            cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
-            boschTcuBrand = config.GetSection("BOSCH_TCU_BRAND").Value;
-            boschTcuVesrion = config.GetSection("BOSCH_TCU_VERSION").Value;
-            dafurl = config.GetSection("DAFURL").Value;
-            accessUrl = config.GetSection("ACCESS_TOKEN_URL").Value;
-            grantType = config.GetSection("GRANT_TYPE").Value;
-            clientId = config.GetSection("CLIENT_ID").Value;
-            clientSecret = config.GetSection("CLIENT_SECRET").Value;
+            this._log = log;
+            this._config = config;
+            _brokerList = this._config.GetSection("EH_FQDN").Value;
+            _connStr = this._config.GetSection("EH_CONNECTION_STRING").Value;
+            _consumergroup = this._config.GetSection("CONSUMER_GROUP").Value;
+            _topic = this._config.GetSection("EH_NAME").Value;
+            _psqlconnstring = this._config.GetSection("PSQL_CONNSTRING").Value;
+            _cacertlocation = this._config.GetSection("CA_CERT_LOCATION").Value;
+            _boschTcuBrand = this._config.GetSection("BOSCH_TCU_BRAND").Value;
+            _boschTcuVesrion = this._config.GetSection("BOSCH_TCU_VERSION").Value;
+            _dafurl = this._config.GetSection("DAFURL").Value;
+            _accessUrl = this._config.GetSection("ACCESS_TOKEN_URL").Value;
+            _grantType = this._config.GetSection("GRANT_TYPE").Value;
+            _clientId = this._config.GetSection("CLIENT_ID").Value;
+            _clientSecret = this._config.GetSection("CLIENT_SECRET").Value;
 
-            dataacess = new PgSQLDataAccess(psqlconnstring);
-            auditrepo = new AuditLogRepository(dataacess);
-            auditlog = new AuditTraillib(auditrepo);
+            _dataacess = new PgSQLDataAccess(_psqlconnstring);
+            _auditrepo = new AuditLogRepository(_dataacess);
+            _auditlog = new AuditTraillib(_auditrepo);
         }
 
         public async Task ReadTcuProvisioningData()
         {
             KafkaConfig kafkaConfig = new KafkaConfig();
-            ConsumerConfig consumerConfig = kafkaConfig.GetConsumerConfig(brokerList, connStr, cacertlocation, consumergroup);
+            ConsumerConfig consumerConfig = kafkaConfig.GetConsumerConfig(_brokerList, _connStr, _cacertlocation, _consumergroup);
 
             using (var consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build())
             {
-                log.Info("Subscribing Topic");
-                consumer.Subscribe(topic);
+                _log.Info("Subscribing Topic");
+                consumer.Subscribe(_topic);
 
                 while (true)
                 {
                     try
                     {
-                        log.Info("Consuming Messages");
+                        _log.Info("Consuming Messages");
                         var msg = consumer.Consume();
                         TCUDataReceive tcuDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(msg.Message.Value);
 
                         await PostTcuProvisioningMesssageToDAF(CreateTCUDataInDAFFormat(tcuDataReceive));
 
-                        log.Info("Commiting message");
+                        _log.Info("Commiting message");
                         consumer.Commit(msg);
 
                     }
                     catch (ConsumeException e)
                     {
-                        log.Error($"Consume error: {e.Error.Reason}");
+                        _log.Error($"Consume error: {e.Error.Reason}");
                         consumer.Close();
                     }
                     catch (Exception e)
                     {
-                        log.Error($"Error: {e.Message}");
+                        _log.Error($"Error: {e.Message}");
                         consumer.Close();
                     }
                 }
@@ -115,10 +115,10 @@ namespace net.atos.daf.ct2.tcudataservice
 
                 while (!(response.StatusCode == HttpStatusCode.OK) && i < 5)
                 {
-                    log.Info("Calling DAF rest API for sending data");
-                    response = await client.PostAsync(dafurl, data);
+                    _log.Info("Calling DAF rest API for sending data");
+                    response = await client.PostAsync(_dafurl, data);
 
-                    log.Info("DAF Api respone is " + response.StatusCode);
+                    _log.Info("DAF Api respone is " + response.StatusCode);
                     result = response.Content.ReadAsStringAsync().Result;
 
                     i++;
@@ -126,29 +126,29 @@ namespace net.atos.daf.ct2.tcudataservice
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    log.Info(result);
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data Service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component_Sucess", 0, 0, JsonConvert.SerializeObject(tcuDataSend));
+                    _log.Info(result);
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data Service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component_Sucess", 0, 0, JsonConvert.SerializeObject(tcuDataSend));
                 }
                 else
                 {
-                    log.Error(result);
-                    await auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(tcuDataSend));
+                    _log.Error(result);
+                    await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(tcuDataSend));
                 }
 
             }
             catch (Exception ex)
             {
-                await auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(tcuDataSend));
-                log.Error(ex.Message);
+                await _auditlog.AddLogs(DateTime.Now, DateTime.Now, 0, "TCU data service Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "postTCUProvisioningMesssageToDAF method in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(tcuDataSend));
+                _log.Error(ex.Message);
 
             }
         }
 
         private TCUDataSend CreateTCUDataInDAFFormat(TCUDataReceive tcuDataReceive)
         {
-            log.Info("Coverting message to DAF required format");
+            _log.Info("Coverting message to DAF required format");
 
-            TCU tcu = new TCU(tcuDataReceive.DeviceIdentifier, boschTcuBrand, boschTcuVesrion);
+            TCU tcu = new TCU(tcuDataReceive.DeviceIdentifier, _boschTcuBrand, _boschTcuVesrion);
             TCURegistrationEvent tcuRegistrationEvent = new TCURegistrationEvent(tcuDataReceive.Vin, tcu, tcuDataReceive.ReferenceDate);
             List<TCURegistrationEvent> tcuRegistrationEvents = new List<TCURegistrationEvent>();
             tcuRegistrationEvents.Add(tcuRegistrationEvent);
@@ -173,12 +173,12 @@ namespace net.atos.daf.ct2.tcudataservice
         {
             var form = new Dictionary<string, string>
                 {
-                    {"grant_type", grantType},
-                    {"client_id", clientId},
-                    {"client_secret", clientSecret},
+                    {"grant_type", _grantType},
+                    {"client_id", _clientId},
+                    {"client_secret", _clientSecret},
                 };
 
-            HttpResponseMessage tokenResponse = await client.PostAsync(accessUrl, new FormUrlEncodedContent(form));
+            HttpResponseMessage tokenResponse = await client.PostAsync(_accessUrl, new FormUrlEncodedContent(form));
             var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
             TCUDataToken token = JsonConvert.DeserializeObject<TCUDataToken>(jsonContent);
             return token;
