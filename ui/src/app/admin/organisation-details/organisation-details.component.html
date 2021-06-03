@@ -9,9 +9,7 @@
         </div>
     </div>
     <mat-card class='mat-elevation-z'>
-        <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         <mat-card-content>
-
             <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="start" class='margin-bottom-sm'>
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Organisation Details
@@ -260,6 +258,7 @@
                         </div>
                     </div>
                     <mat-card-actions class='no-margin no-padding'>
+                           
                         <div *ngIf="editPrefereneceFlag" fxLayout="column" fxLayoutAlign="center flex-end">
                             <div fxLayout="row" class='areaWidth'>
                                 <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary"
@@ -273,6 +272,7 @@
                     </mat-card-actions>
                 </form>
             </div>
-        </mat-card-content>
+        </mat-card-content>  
     </mat-card>
+    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 </div>

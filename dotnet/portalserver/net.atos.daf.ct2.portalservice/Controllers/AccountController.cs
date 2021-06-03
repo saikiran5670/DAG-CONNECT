@@ -1860,7 +1860,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("~/getsessioninfo")]
+        public async Task<IActionResult> GetSessionInfo()
+        {
+            await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                                          "Account controller", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                          "GetSessionInfo method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                                          _userDetails.ToString(), Request);
+            return Ok(_userDetails);
+        }
+
         #endregion
-    }
+        }
 
 }

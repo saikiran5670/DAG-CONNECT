@@ -131,7 +131,6 @@ export class MapFunctionsService {
         this.endMarker.setData(endMarkerHtml);
        
         this.group.addObjects([this.startMarker,this.endMarker]);
-        this.hereMap.addObject(this.group)
         if(accountOrganizationId){
           if(_selectedRoutes[i].id){
             this.corridorService.getCorridorFullList(accountOrganizationId,_selectedRoutes[i].id).subscribe((data)=>{
@@ -141,7 +140,7 @@ export class MapFunctionsService {
                    this.setAdditionalData();
                    if( data[0].viaAddressDetail.length > 0){
                     this.viaRoutePlottedPoints =  data[0].viaAddressDetail;
-                    //this.plotViaStopPoints();
+                    this.plotViaStopPoints();
                   }
                 this.calculateTruckRoute();
 
@@ -161,6 +160,22 @@ export class MapFunctionsService {
     }
   }
 
+  viaAddressPositionLat;
+  viaAddressPositionLong;
+  viaMarker : any;
+
+  plotViaStopPoints(){
+    for(var i in this.viaRoutePlottedPoints)
+    this.viaAddressPositionLat  = this.viaRoutePlottedPoints[i]["latitude"];
+    this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]["longitude"];
+    let viaMarker = this.createViaMarker();
+    let markerSize = { w: 26, h: 32 };
+    const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+
+    this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
+    this.mapGroup.addObject(this.viaMarker);
+
+  }
   setAdditionalData(){
     let _data = this.additionalData;
     this.getAttributeData = _data["attribute"];
@@ -267,6 +282,16 @@ export class MapFunctionsService {
     return endMarker;
   }
 
+  createViaMarker(){
+    const viaMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.9998 29.6665C18.6665 24.9998 24.3332 19.2591 24.3332 12.9998C24.3332 6.74061 19.2591 1.6665 12.9998 1.6665C6.74061 1.6665 1.6665 6.74061 1.6665 12.9998C1.6665 19.2591 7.6665 25.3332 12.9998 29.6665Z" fill="#0D7EE7"/>
+    <path d="M13 22.6665C18.5228 22.6665 23 18.4132 23 13.1665C23 7.9198 18.5228 3.6665 13 3.6665C7.47715 3.6665 3 7.9198 3 13.1665C3 18.4132 7.47715 22.6665 13 22.6665Z" fill="white"/>
+    <path d="M19.7616 12.6263L14.0759 6.94057C13.9169 6.78162 13.7085 6.70215 13.5 6.70215C13.2915 6.70215 13.0831 6.78162 12.9241 6.94057L7.23842 12.6263C6.92053 12.9444 6.92053 13.4599 7.23842 13.778L12.9241 19.4637C13.0831 19.6227 13.2915 19.7021 13.5 19.7021C13.7085 19.7021 13.9169 19.6227 14.0759 19.4637L19.7616 13.778C20.0795 13.4599 20.0795 12.9444 19.7616 12.6263ZM13.5 18.3158L8.38633 13.2021L13.5 8.08848L18.6137 13.2021L13.5 18.3158ZM11.0625 12.999V15.0303C11.0625 15.1425 11.1534 15.2334 11.2656 15.2334H12.0781C12.1904 15.2334 12.2812 15.1425 12.2812 15.0303V13.4053H14.3125V14.7695C14.3125 14.8914 14.4123 14.9731 14.5169 14.9731C14.5644 14.9731 14.6129 14.9564 14.6535 14.9188L16.7916 12.9452C16.8787 12.8647 16.8787 12.7271 16.7916 12.6466L14.6535 10.673C14.6129 10.6357 14.5644 10.6187 14.5169 10.6187C14.4123 10.6187 14.3125 10.7004 14.3125 10.8223V12.1865H11.875C11.4263 12.1865 11.0625 12.5504 11.0625 12.999Z" fill="#0D7EE7"/>
+    </svg>`
+
+    return viaMarker;
+  }
    /////////////////////////// v8 calculate ////////////////////
    routePoints:any;
    calculateTruckRoute(){
@@ -346,7 +371,7 @@ export class MapFunctionsService {
        });
    
        // Add the polyline to the map
-       this.mapGroup.addObjects([corridorPath,polylinePath]);
+       this.mapGroup.addObjects([this.startMarker,corridorPath,polylinePath,this.viaMarker,this.endMarker]);
        this.hereMap.addObject(this.mapGroup);
        // And zoom to its bounding rectangle
       //  this.hereMap.getViewModel().setLookAtData({
