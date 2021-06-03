@@ -603,7 +603,7 @@ namespace net.atos.daf.ct2.account
             {
                 messageRequest.RemainingDaysToExpire = Convert.ToInt32(_configuration["RemainingDaysToExpire"]);
             }
-            messageRequest.accountInfo = new AccountInfo
+            messageRequest.AccountInfo = new AccountInfo
             {
                 FullName = account.FullName,
                 OrganizationName = account.OrgName

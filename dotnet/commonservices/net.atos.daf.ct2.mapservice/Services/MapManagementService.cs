@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.map;
 using net.atos.daf.ct2.map.entity;
 
@@ -11,25 +11,43 @@ namespace net.atos.daf.ct2.mapservice
     public class MapManagementService : MapService.MapServiceBase
     {
         private readonly ILogger<MapManagementService> _logger;
-        private readonly IAuditTraillib _auditTrail;
-        private readonly IMapManager  _mapManager;
-        public MapManagementService(ILogger<MapManagementService> logger,IMapManager mapManager)
+        private readonly IMapManager _mapManager;
+        private readonly IConfiguration _configuration;
+        private readonly HereMapConfiguration _apiConfiguration;
+        public MapManagementService(ILogger<MapManagementService> logger, IMapManager mapManager, IConfiguration config)
         {
             _logger = logger;
             _mapManager = mapManager;
+            _configuration = config;
+             _apiConfiguration = new HereMapConfiguration();
+            _configuration.GetSection("HereMapCofiguration").Bind(_apiConfiguration);
         }
 
-        public async Task<GetMapResponse> GetMapAddress(GetMapRequest request, ServerCallContext context)
+        public override async Task<GetMapResponse> GetMapAddress(GetMapRequest request, ServerCallContext context)
         {
             try
             {
-                var response = new GetMapResponse();  
-                var lookupAddress = new LookupAddress();       
-                lookupAddress.Latitude = request.Latitude;
-                lookupAddress.Longitude = request.Longitude;
 
-                //var mapping = _mapManager.GetLookupAddress(lookupAddress).Result;
-               
+                var lookupAddress = new LookupAddress
+                {
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude
+                };
+
+                 _mapManager.InitializeMapGeocoder(_apiConfiguration);
+                var mapping = _mapManager.GetMapAddress(lookupAddress).Result;
+                var response = new GetMapResponse()
+                {
+                    Code = MapResponsecode.Success,
+                    LookupAddresses = new GetMapRequest()
+                    {
+                        Address = mapping.Address,
+                        Id = mapping.Id,
+                        Latitude = mapping.Latitude,
+                        Longitude = mapping.Longitude
+                    },
+                    Message = "Success"
+                };
                 _logger.LogInformation("Get Map details.");
                 return await Task.FromResult(response);
             }
@@ -39,9 +57,9 @@ namespace net.atos.daf.ct2.mapservice
                 return await Task.FromResult(new GetMapResponse
                 {
                     Message = "Exception " + ex.Message,
-                    Code = Responsecode.Failed
+                    Code = MapResponsecode.Failed
                 });
             }
         }
-    }
+    }  
 }
