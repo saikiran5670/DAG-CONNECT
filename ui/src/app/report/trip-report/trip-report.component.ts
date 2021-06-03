@@ -276,25 +276,31 @@ export class TripReportComponent implements OnInit {
     let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
     let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
     let _date: any;
+    let _time: any;
+    if(this.prefTimeFormat == 12){
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
     switch(this.prefDateFormat){
       case 'dd/mm/yyyy': {
-        _date = `${_d}/${_m}/${_y} ${h}:${m}:${s}`;
+        _date = `${_d}/${_m}/${_y} ${_time}`;
         break;
       }
       case 'mm/dd/yyyy': {
-        _date = `${_m}/${_d}/${_y} ${h}:${m}:${s}`;
+        _date = `${_m}/${_d}/${_y} ${_time}`;
         break;
       }
       case 'dd-mm-yyyy': {
-        _date = `${_d}-${-m}-${_y} ${h}:${m}:${s}`;
+        _date = `${_d}-${-m}-${_y} ${_time}`;
         break;
       }
       case 'mm-dd-yyyy': {
-        _date = `${_m}-${_d}-${_y} ${h}:${m}:${s}`;
+        _date = `${_m}-${_d}-${_y} ${_time}`;
         break;
       }
       default:{
-        _date = `${_m}/${_d}/${_y} ${h}:${m}:${s}`;
+        _date = `${_m}/${_d}/${_y} ${_time}`;
       }
     }
     return _date;
@@ -566,8 +572,19 @@ export class TripReportComponent implements OnInit {
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
-    date.setHours(timeObj.split(":")[0]);
-    date.setMinutes(timeObj.split(":")[1]);
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    if(this.prefTimeFormat == 12){
+      if(_y.split(' ')[1] == 'AM' && _x == 12) {
+        date.setHours(0);
+      }else{
+        date.setHours(_x);
+      }
+      date.setMinutes(_y.split(' ')[0]);
+    }else{
+      date.setHours(_x);
+      date.setMinutes(_y);
+    }
     date.setSeconds(type == 'start' ? '00' : '59');
     return date;
   }

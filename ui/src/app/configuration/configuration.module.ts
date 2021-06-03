@@ -34,6 +34,7 @@ import { ExistingTripsComponent } from './landmarks/manage-corridor/create-edit-
 import { Ng2CompleterModule } from 'ng2-completer';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { CreateEditViewReportSchedulerComponent } from './report-scheduler/create-edit-view-report-scheduler/create-edit-view-report-scheduler.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     CreateEditCorridorComponent,
     RouteCalculatingComponent,
     ExistingTripsComponent,
+    CreateEditViewReportSchedulerComponent,
   ],
   imports: [
     CommonModule,
