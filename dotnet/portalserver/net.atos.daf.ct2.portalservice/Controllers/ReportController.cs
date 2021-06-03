@@ -11,7 +11,6 @@ using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
 using Newtonsoft.Json;
 using static net.atos.daf.ct2.reportservice.ReportService;
-using Report = net.atos.daf.ct2.portalservice.Entity.Report;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -187,19 +186,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region - Driver Time Management Report Table Details
-        [HttpGet]
+        [HttpPost]
         [Route("getdriverstimedetails")]
-        public async Task<IActionResult> GetDriversActivity([FromQuery] ActivityFilterRequest request)
+        public async Task<IActionResult> GetDriversActivity([FromBody] ActivityFilterRequest request)
         {
             try
             {
-                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG);
-                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG);
-                if (string.IsNullOrEmpty(request.VINs)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
-                if (string.IsNullOrEmpty(request.DriverIds)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
-                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG);
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (string.IsNullOrEmpty(request.VINs)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (string.IsNullOrEmpty(request.DriverIds)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
 
-                _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
+                _logger.Info("GetDriversActivityAsync method in Report (Multiple Driver Time details Report) API called.");
                 var data = await _reportServiceClient.GetDriversActivityAsync(request);
                 if (data?.DriverActivities?.Count > 0)
                 {
@@ -218,20 +217,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("getsingledrivertimedetails")]
-        public async Task<IActionResult> GetDriverActivity([FromQuery] ActivityFilterRequest request)
+        public async Task<IActionResult> GetDriverActivity([FromBody] ActivityFilterRequest request)
         {
             try
             {
-                if (!(request.StartDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG);
-                if (!(request.EndDateTime > 0)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG);
-                if (string.IsNullOrEmpty(request.VINs)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
-                if (string.IsNullOrEmpty(request.DriverIds)) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG);
-                if (request.StartDateTime > request.EndDateTime) return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_DATEMISMATCH_MSG);
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (string.IsNullOrEmpty(request.VINs)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (string.IsNullOrEmpty(request.DriverIds)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
 
-                _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
-                var data = await _reportServiceClient.GetDriversActivityAsync(request);
+                _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
+                var data = await _reportServiceClient.GetDriverActivityAsync(request);
                 if (data?.DriverActivities?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;

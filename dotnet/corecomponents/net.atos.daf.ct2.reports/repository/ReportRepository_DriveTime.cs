@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             				da.activity_date     >= @FromDate
                                             				AND da.activity_date <= @ToDate
                                             				AND da.driver_id IN ( @DriverIDs )
-                                            				----AND da.vin IN ( @Vins ) --AND da.vin IS NULL
+                                            				AND da.vin IN ( @Vins ) --AND da.vin IS NULL
                                             			GROUP BY da.driver_id, da.activity_date, da.code, da.duration, da.vin, dr.first_name, dr.last_name
                                             			ORDER BY da.activity_date DESC
                                             	)
@@ -81,7 +81,7 @@ namespace net.atos.daf.ct2.reports.repository
 
             List<DriversActivities> lstDriverActivities = (List<DriversActivities>)await _dataMartdataAccess.QueryAsync<DriversActivities>(queryActivities, parameterOfFilters);
 
-            if (lstDriverActivities.Count() > 0)
+            if (lstDriverActivities?.Count() > 0)
             {
                 return lstDriverActivities;
             }

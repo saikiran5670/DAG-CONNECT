@@ -65,7 +65,10 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 _logger.Info("Get GetDriverActivity for single driver.");
                 ReportComponent.entity.DriverActivityFilter objActivityFilter = new ReportComponent.entity.DriverActivityFilter();
-                objActivityFilter.VIN.Append(request.VINs);
+                objActivityFilter.VIN = new System.Collections.Generic.List<string>();
+                objActivityFilter.DriverId = new System.Collections.Generic.List<string>();
+                objActivityFilter.VIN.Add(request.VINs);
+                objActivityFilter.DriverId.Add(request.DriverIds);
                 objActivityFilter.StartDateTime = request.StartDateTime;
                 objActivityFilter.EndDateTime = request.EndDateTime;
 

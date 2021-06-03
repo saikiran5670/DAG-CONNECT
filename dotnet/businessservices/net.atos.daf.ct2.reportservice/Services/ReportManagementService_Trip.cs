@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 TripResponse response = new TripResponse();
                 if (result?.Count > 0)
                 {
-                    var res = JsonConvert.SerializeObject(result);
+                    string res = JsonConvert.SerializeObject(result);
                     response.TripData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
@@ -84,7 +84,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 else
                 {
                     response.Code = Responsecode.NotFound;
-                    response.Message = "No Result Found";
+                    response.Message = ReportConstants.GET_VIN_TRIP_NORESULTFOUND_MSG;
                 }
                 return await Task.FromResult(response);
             }
