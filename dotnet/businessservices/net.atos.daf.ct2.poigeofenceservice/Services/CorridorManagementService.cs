@@ -282,12 +282,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
                 obj.WaterHarm = request.IsWaterHarm;
                 obj.Other = request.IsOther;
-                obj.TollRoad = Convert.ToChar(request.TollRoad);
-                obj.Mortorway = Convert.ToChar(request.Mortorway);
-                obj.BoatFerries = Convert.ToChar(request.BoatFerries);
-                obj.RailFerries = Convert.ToChar(request.RailFerries);
-                obj.Tunnels = Convert.ToChar(request.Tunnels);
-                obj.DirtRoad = Convert.ToChar(request.DirtRoad);
+                obj.TollRoad = request.TollRoad ?? null;
+                obj.Mortorway = request.Mortorway ?? null;
+                obj.BoatFerries = request.BoatFerries ?? null;
+                obj.RailFerries = request.RailFerries ?? null;
+                obj.Tunnels = request.Tunnels ?? null;
+                obj.DirtRoad = request.DirtRoad ?? null;
                 obj.VehicleSizeHeight = request.VehicleSizeHeight;
 
 
@@ -511,12 +511,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
                 obj.WaterHarm = objRequest.Request.IsWaterHarm;
                 obj.Other = objRequest.Request.IsOther;
-                obj.TollRoad = Convert.ToChar(objRequest.Request.TollRoad);
-                obj.Mortorway = Convert.ToChar(objRequest.Request.Mortorway);
-                obj.BoatFerries = Convert.ToChar(objRequest.Request.BoatFerries);
-                obj.RailFerries = Convert.ToChar(objRequest.Request.RailFerries);
-                obj.Tunnels = Convert.ToChar(objRequest.Request.Tunnels);
-                obj.DirtRoad = Convert.ToChar(objRequest.Request.DirtRoad);
+                obj.TollRoad = objRequest.Request.TollRoad ?? null;
+                obj.Mortorway = objRequest.Request.Mortorway ?? null;
+                obj.BoatFerries = objRequest.Request.BoatFerries ?? null;
+                obj.RailFerries = objRequest.Request.RailFerries ?? null;
+                obj.Tunnels = objRequest.Request.Tunnels ?? null;
+                obj.DirtRoad = objRequest.Request.DirtRoad ?? null;
                 obj.VehicleSizeHeight = objRequest.Request.VehicleSizeHeight;
 
 
