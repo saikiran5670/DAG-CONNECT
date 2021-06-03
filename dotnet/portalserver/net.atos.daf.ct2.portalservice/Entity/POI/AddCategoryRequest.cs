@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.POI
 {
@@ -24,12 +20,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         public int Created_By { get; set; }
         public long Modified_At { get; set; }
         public int Modified_By { get; set; }
-        public byte[] icon { get; set; }
+        public byte[] Icon { get; set; }
     }
 
     public class EditCategoryRequest
     {
-        
+
         public int Id { get; set; }
         [StringLength(100)]
         public string Name { get; set; }
@@ -37,7 +33,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.POI
         [StringLength(100)]
         public string Description { get; set; }
         public int Modified_By { get; set; }
-        public byte[] icon { get; set; }
+        public byte[] Icon { get; set; }
         public int Organization_Id { get; set; }
     }
     public class DeleteCategoryRequest

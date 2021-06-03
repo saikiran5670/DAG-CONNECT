@@ -1,12 +1,9 @@
-﻿using net.atos.daf.ct2.vehicle.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Google.Protobuf;
-using Group = net.atos.daf.ct2.group;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.entity;
+using Group = net.atos.daf.ct2.group;
 
 namespace net.atos.daf.ct2.vehicleservice.Entity
 {
@@ -28,7 +25,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             vehicle.Is_Tcu_Register = false;
             vehicle.Reference_Date = null;
             vehicle.Organization_Id = request.OrganizationId;
-           // vehicle.VehiclePropertiesId = null;
+            // vehicle.VehiclePropertiesId = null;
             return vehicle;
         }
 
@@ -94,8 +91,8 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
         {
             VehicleDetails vehicledetails = new VehicleDetails();
             vehicledetails.Id = vehicle.ID;
-            if(Convert.ToInt32(vehicle.Organization_Id)>0)
-            vehicledetails.Organizationid = vehicle.Organization_Id;
+            if (Convert.ToInt32(vehicle.Organization_Id) > 0)
+                vehicledetails.Organizationid = vehicle.Organization_Id;
             vehicledetails.Vin = vehicle.VIN;
             if (!string.IsNullOrEmpty(vehicle.License_Plate_Number))
                 vehicledetails.LicensePlateNumber = vehicle.License_Plate_Number;
@@ -230,7 +227,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             GroupFilter.ObjectType = Group.ObjectType.VehicleGroup;
             GroupFilter.GroupType = Group.GroupType.None;
             GroupFilter.GroupRef = request.Vehicles;
-            GroupFilter.GroupRefCount =true;
+            GroupFilter.GroupRefCount = true;
             GroupFilter.GroupIds = new List<int>();
             foreach (int item in request.GroupIds)
             {
@@ -265,11 +262,11 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
             Group.GroupFilter GroupFilter = new Group.GroupFilter();
             GroupFilter.Id = request.Id;
             GroupFilter.OrganizationId = request.OrganizationId;
-         //   GroupFilter.FunctionEnum = Group.FunctionEnum.None;
+            //   GroupFilter.FunctionEnum = Group.FunctionEnum.None;
             GroupFilter.ObjectType = Group.ObjectType.VehicleGroup;
             GroupFilter.GroupType = Group.GroupType.None;
-         //   GroupFilter.GroupRef = request.Vehicles;
-         //   GroupFilter.GroupRefCount = true;
+            //   GroupFilter.GroupRef = request.Vehicles;
+            //   GroupFilter.GroupRefCount = true;
             //GroupFilter.GroupIds = new List<int>();
             //foreach (int item in request.GroupIds)
             //{

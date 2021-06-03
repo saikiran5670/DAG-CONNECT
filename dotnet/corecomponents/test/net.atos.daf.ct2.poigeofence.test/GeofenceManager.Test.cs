@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofence.repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.test
 {
@@ -48,10 +46,10 @@ namespace net.atos.daf.ct2.poigeofence.test
             geofence.Latitude = 101.11;
             geofence.Longitude = 100.100;
             geofence.Distance = 0;
-          //  geofence.TripId = 0;
+            //  geofence.TripId = 0;
             geofence.CreatedBy = 50;
             geofence.Nodes = new List<Nodes>();
-            geofence.Nodes.Add(new Nodes() { Latitude = 101.11,Longitude=100.100,SeqNo=1 });
+            geofence.Nodes.Add(new Nodes() { Latitude = 101.11, Longitude = 100.100, SeqNo = 1 });
             geofence.Nodes.Add(new Nodes() { Latitude = 102.11, Longitude = 101.101, SeqNo = 2 });
             var resultGeofence = _iGeofenceManager.CreatePolygonGeofence(geofence).Result;
             Assert.IsNotNull(resultGeofence);

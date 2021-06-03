@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.package.ENUM
     {
         VIN = 'V',
         Organization = 'O',
-        ORGVIN='R',
+        ORGVIN = 'R',
         ReadWrite = 'W'
         //None = 0,
         //Vehicle = 1,

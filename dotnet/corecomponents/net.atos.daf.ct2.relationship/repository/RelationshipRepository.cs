@@ -1,13 +1,12 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.relationship.entity;
 using net.atos.daf.ct2.relationship.ENUM;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.relationship.repository
 {
@@ -205,7 +204,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 }
                 return relationships;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -243,7 +242,7 @@ namespace net.atos.daf.ct2.relationship.repository
             return ptype;
 
         }
-        public async Task<RelationshipLevelCode> GetRelationshipLevelCode()
+        public RelationshipLevelCode GetRelationshipLevelCode()
         {
 
             var levelCode = new RelationshipLevelCode();
@@ -326,15 +325,14 @@ namespace net.atos.daf.ct2.relationship.repository
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@owner_org_id", OrganizationID);
-                
+
                 string query = @"select relationship_id,vehicle_group_id,
                      owner_org_id,created_org_id,target_org_id from master.orgrelationshipmapping where owner_org_id=@owner_org_id";
                 var relationships = await _dataAccess.QueryAsync<OrganizationRelationShip>(query, parameter);
                 return relationships;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
@@ -396,7 +394,7 @@ namespace net.atos.daf.ct2.relationship.repository
                 }
                 return relationships;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

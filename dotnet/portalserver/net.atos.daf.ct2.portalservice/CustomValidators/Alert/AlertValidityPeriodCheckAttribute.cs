@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
 {
@@ -26,7 +22,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
                     break;
                 case "C":
                     valid = true;
-                    break;                
+                    break;
             }
 
             if (valid)

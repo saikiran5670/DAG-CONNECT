@@ -1,7 +1,6 @@
-using System;
-using net.atos.daf.ct2.vehicle.entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.response;
 
 namespace net.atos.daf.ct2.vehicle
@@ -40,7 +39,7 @@ namespace net.atos.daf.ct2.vehicle
         #region Vehicle Visibility
 
         Task<List<VisibilityVehicle>> GetVisibilityVehicles(int accountId, int orgId);
-        
+
         #endregion
     }
 }

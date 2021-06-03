@@ -1,15 +1,15 @@
 ﻿
 namespace net.atos.daf.ct2.organization.entity
 {
-   public class OrganizationNameandID
+    public class OrganizationNameandID
     {
-        public int id { get; set; }
-        public string name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 
     public class OrganizationByID
     {
-        public int id { get; set; }
-        public int roleId { get; set; }
+        public int Id { get; set; }
+        public int RoleId { get; set; }
     }
 }

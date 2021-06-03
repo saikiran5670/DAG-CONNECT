@@ -1,48 +1,38 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.repository;
+using net.atos.daf.ct2.subscription.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.organization.repository;
-using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.audit.repository;  
-using net.atos.daf.ct2.audit;
-using AccountComponent = net.atos.daf.ct2.account;
-using Identity = net.atos.daf.ct2.identity;
-using AccountPreference = net.atos.daf.ct2.accountpreference;
-using Swashbuckle.AspNetCore.Swagger;
-using Microsoft.OpenApi.Models;
-using net.atos.daf.ct2.group;
-using Subscription = net.atos.daf.ct2.subscription;
-using net.atos.daf.ct2.subscription.repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.vehicledataservice.Common;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
-using net.atos.daf.ct2.account;
+using net.atos.daf.ct2.vehicledataservice.CustomAttributes;
+using AccountComponent = net.atos.daf.ct2.account;
+using AccountPreference = net.atos.daf.ct2.accountpreference;
+using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using Subscription = net.atos.daf.ct2.subscription;
 
 namespace net.atos.daf.ct2.vehicledataservice
-{  
+{
     public class Startup
     {
-       
-        private readonly string swaggerBasePath = "vehicle-data";
+        private readonly string _swaggerBasePath = "vehicle-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -54,9 +44,11 @@ namespace net.atos.daf.ct2.vehicledataservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-            .ConfigureApiBehaviorOptions(options => {
-                options.InvalidModelStateResponseFactory = actionContext => {
+            services.AddMvc()
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
                     return CustomErrorResponse(actionContext);
                 };
             });
@@ -71,30 +63,30 @@ namespace net.atos.daf.ct2.vehicledataservice
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
 
-            services.AddTransient<IAuditTraillib,AuditTraillib>(); 
-            services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IVehicleManager, VehicleManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
-            services.AddTransient<IOrganizationManager,OrganizationManager>();
+            services.AddTransient<IOrganizationManager, OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
-            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
-            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
             services.AddTransient<IAccountManager, AccountManager>();
             services.AddTransient<IAccountRepository, AccountRepository>();
-            services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
-            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();
-            services.AddTransient<IGroupManager,GroupManager>();
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
+            services.AddTransient<IGroupManager, GroupManager>();
             services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddTransient<Subscription.ISubscriptionManager, Subscription.SubscriptionManager>();
             services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
 
-            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();
-            
-            services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
+            services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+
+            services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
             services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
-            
-            services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
-            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();
+
+            services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
             services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
@@ -110,7 +102,7 @@ namespace net.atos.daf.ct2.vehicledataservice
             //    options.Filters.Add(new ProducesAttribute("application/json"));
             //});
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {
                 options.ApplicationName = "DAFCT2.0";
@@ -119,27 +111,27 @@ namespace net.atos.daf.ct2.vehicledataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MainAccessPolicy,
+                    AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
                 options.AddPolicy(
-                    AccessPolicies.MainMileageAccessPolicy,
+                    AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainMileageAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_MILEAGE_ACCESS_POLICY)));
                 options.AddPolicy(
-                   AccessPolicies.MainNamelistAccessPolicy,
+                   AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY,
                    policy => policy.RequireAuthenticatedUser()
-                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainNamelistAccessPolicy)));
+                                   .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_NAMELIST_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
 
             services.AddSwaggerGen(c =>
             {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vehicle Data Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vehicle Data Service", Version = "v1" });
             });
 
-         
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -165,13 +157,13 @@ namespace net.atos.daf.ct2.vehicledataservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
 
         }

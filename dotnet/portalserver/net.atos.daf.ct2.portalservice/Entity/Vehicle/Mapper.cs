@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
@@ -60,8 +58,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             var vehicle = new VehicleBusinessService.VehicleFilterRequest();
             vehicle.VehicleId = request.VehicleId;
             vehicle.OrganizationId = request.OrganizationId;
-            if(request.VIN !=null)
-            vehicle.VIN = request.VIN;
+            if (request.VIN != null)
+                vehicle.VIN = request.VIN;
             //vehicle.Status = request.Status;
             if (!string.IsNullOrEmpty(request.VehicleIdList))
                 vehicle.VehicleIdList = request.VehicleIdList;
@@ -143,7 +141,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             {
                 group.GroupType = request.VehicleGroup.GroupType;
             }
-            
+
             if (!string.IsNullOrEmpty(request.VehicleGroup.FunctionEnum))
             {
                 group.FunctionEnum = request.VehicleGroup.FunctionEnum;

@@ -238,7 +238,7 @@ export class ManageCorridorComponent implements OnInit {
         this.selectedCorridors.select(row);
         this.markerArray.push(row);
       });
-      this.mapFunctions.viewSelectedRoutes(this.markerArray);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
       this.showMap = true;
     }
     console.log(this.markerArray);
@@ -267,7 +267,7 @@ export class ManageCorridorComponent implements OnInit {
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
       
-    this.mapFunctions.viewSelectedRoutes(this.markerArray);
+    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
     }else{ //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);

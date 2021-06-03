@@ -1,41 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using static net.atos.daf.ct2.utilities.CommonEnums;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
     public class LandmarkGroup
     {
-        public int id { get; set; }
-        public int organization_id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public int icon_id { get; set; }
-        public string state { get; set; }
-        public long created_at { get; set; }
-        public int created_by { get; set; }
-        public long modified_at { get; set; }
-        public int modified_by { get; set; }
-        public int poiCount { get; set; }
-        public int geofenceCount { get; set; }
+        public int Id { get; set; }
+        public int Organization_id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Icon_id { get; set; }
+        public string State { get; set; }
+        public long Created_at { get; set; }
+        public int Created_by { get; set; }
+        public long Modified_at { get; set; }
+        public int Modified_by { get; set; }
+        public int PoiCount { get; set; }
+        public int GeofenceCount { get; set; }
         public List<POI> PoiList { get; set; }
         public List<Geofence> GeofenceList { get; set; }
     }
 
     public class LandmarkgroupRef
     {
-        public int id { get; set; }
-        public int landmark_group_id { get; set; }
-        public LandmarkType type { get; set; }
-        public int ref_id { get; set; }
-        public string category { get; set; }
-        public string categoryname { get; set; }
-        public string landmarkname { get; set; }
-        public int landmarkid { get; set; }
-        public string subcategoryname { get; set; }
-        public byte[] icon { get; set; }
-        public string address { get; set; }
+        public int Id { get; set; }
+        public int Landmark_group_id { get; set; }
+        public LandmarkType Type { get; set; }
+        public int Ref_id { get; set; }
+        public string Category { get; set; }
+        public string Categoryname { get; set; }
+        public string Landmarkname { get; set; }
+        public int Landmarkid { get; set; }
+        public string Subcategoryname { get; set; }
+        public byte[] Icon { get; set; }
+        public string Address { get; set; }
         public int MyProperty { get; set; }
     }
 }

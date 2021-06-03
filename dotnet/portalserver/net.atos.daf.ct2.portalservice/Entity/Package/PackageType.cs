@@ -9,6 +9,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         Vehicle = 1,
         Organization = 2,
         ReadWrite = 3
-         
+
     }
 }

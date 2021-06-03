@@ -1,6 +1,5 @@
-using System;
-using Newtonsoft.Json;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.exceptionhandling.entity
 {

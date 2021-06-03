@@ -6,10 +6,6 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
-  </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Protos\account.proto" GrpcServices="Server" />
   </ItemGroup>  

@@ -1,10 +1,11 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { CorridorService } from '../../../../../services/corridor.service';
+import { TranslationService } from '../../../../../../app/services/translation.service';
 // import { AccountService } from '../../../services/account.service';
 import { CustomValidators } from '../../../../../shared/custom.validators';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
@@ -17,7 +18,8 @@ import { ConfigService } from '@ngx-config/core';
 import { HereService } from 'src/app/services/here.service';
 import { Options } from '@angular-slider/ngx-slider';
 declare var H: any;
-
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS } from '@angular/material/core';
 
 @Component({
   selector: 'app-existing-trips',
@@ -25,6 +27,7 @@ declare var H: any;
   styleUrls: ['./existing-trips.component.less']
 })
 export class ExistingTripsComponent implements OnInit {
+  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() translationData: any;
   @Input() exclusionList :  any;
   @Input() actionType: any; 
@@ -36,34 +39,31 @@ export class ExistingTripsComponent implements OnInit {
   endDate = new FormControl();
   startDate = new FormControl();
   startTime = new FormControl();
-  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  // @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   @Input() disabled: boolean;
   @Input() value: string = '11:00 PM';
   @Input() format: number = 12;
+  @Input() vehicleGroupList: any;
   selectedStartTime: any = '12:00 AM'
   selectedEndTime: any = '11:59 PM'
   selectedStartDateStamp: any;
   selectedEndDateStamp: any;
   startTimeUTC: any;
   endTimeUTC: any;
-  timeValue: any = 0;
-  // range = new FormGroup({
-  //   start: new FormControl(),
-  //   end: new FormControl()
-  // });
-  // translationData: any;
+  selectionTab: any;
+  timeValue: any;
   OrgId: any = 0;
-  // @Output() backToPage = new EventEmitter<any>();
-  // displayedColumns: string[] = ['select', 'firstName', 'emailId', 'roles', 'accountGroups'];
   selectedAccounts = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   displayedColumns = ['All', 'DriverName', 'distance', 'date', 'startPoint', 'endPoint'];
   existingTripData: any = [];
+  dataColValue: any = [];
   createEditStatus = false;
   accountOrganizationId: any = 0;
   corridorCreatedMsg: any = '';
+  covertedDateValue: any = [];
   // actionType: string;
   titleVisible: boolean = false;
   titleFailVisible: boolean = false;
@@ -78,17 +78,6 @@ export class ExistingTripsComponent implements OnInit {
   public locations: Array<any>;
   setEndAddress: any = "";
   setStartAddress: any = ""; 
-  // @Input() translationData: any;
-  // @Input() selectedRowData: any;
-  // @Input() actionType: any;
-  // userCreatedMsg: any = '';
-  // duplicateEmailMsg: boolean = false;
-  // breadcumMsg: any = '';
-  // existingTripForm: FormGroup;
-  // groupTypeList: any = [];
-  // showUserList: boolean = true;
-  // @Input() translationData: any;
-  @Input() vehicleGroupList: any;
   vinList: any = [];
   vinListSelectedValue: any = [];
   vehicleGroupIdsSet: any = [];
@@ -158,7 +147,23 @@ export class ExistingTripsComponent implements OnInit {
 
   createFlag : boolean = true;
 
-  constructor(private here: HereService,private _formBuilder: FormBuilder,private corridorService : CorridorService, private poiService: POIService,private completerService: CompleterService, private config: ConfigService) {
+
+  //Integrating Time date component
+  searchExpandPanel: boolean = true;
+  startDateValue: any;
+  endDateValue: any;
+  last3MonthDate: any;
+  todayDate: any;
+  startTimeDisplay: any = '00:00:00';
+  endTimeDisplay: any = '23:59:59';
+  prefTimeFormat: any = 12; //-- coming from pref setting
+  prefDateFormat: any = ''; //-- coming from pref setting
+
+
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private here: HereService,
+  private _formBuilder: FormBuilder, private translationService: TranslationService,
+  private corridorService : CorridorService, private poiService: POIService,
+  private completerService: CompleterService, private config: ConfigService) {
 
     this.map_key =  config.getSettings("hereMap").api_key;
     this.map_id =  config.getSettings("hereMap").app_id;
@@ -190,35 +195,31 @@ export class ExistingTripsComponent implements OnInit {
       startaddress : ['', [Validators.required]],
       viaroute1: [''],
       viaroute2: [''],
-      // trailer:["Regular"],
-      // tollRoad:['Regular'],
-      // motorWay:['Regular'],
-      // boatFerries:['Regular'],
-      // railFerries:['Regular'],
-      // tunnels:['Regular'],
-      // dirtRoad:['Regular'],
-      // vehicleHeight:[''],
-      // vehicleWidth: [''],
-      // vehicleLength : [''],
-      // limitedWeight: [''],
-      // weightPerAxle: [''],
-
-
       vehicleGroup: ['', [Validators.required]],
       vehicle: ['', [Validators.required]],
-      startDate: ['', [Validators.required]],
-      startTime: ['', [Validators.required]],
-      endDate: ['', [Validators.required]],
-      endTime: ['', [Validators.required]],
+      startDate: ['', []],
+      endDate: ['', []],
+      startTime: ['', []],
+      endTime: ['', []]
       // userGroupDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]]
-    },
-      {
-        validator: [
-          // CustomValidators.specialCharValidationForName('userGroupName'),
-          // CustomValidators.specialCharValidationForNameWithoutRequired('userGroupDescription')
-        ]
+    });
+      let translationObj = {
+        id: 0,
+        code: this.localStLanguage ? this.localStLanguage.code : "EN-GB",
+        type: "Menu",
+        name: "",
+        value: "",
+        filter: "",
+        menuId: 6 //-- for ExistingTrips
+      }
+      this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
+        // this.processTranslation(data);
+        this.setDefaultStartEndTime();
+        this.setPrefFormatDate();
+        this.setDefaultTodayDate();
+      
       });
-    this.loadExistingTripData();
+    // this.loadExistingTripData();
     this.setDefaultTodayDate();
   }
 
@@ -226,25 +227,204 @@ export class ExistingTripsComponent implements OnInit {
     this.initMap();
   }
 
-  // setDefaultStartEndTime(){
-  //   this.selectedStartTime = "00:00";
-  //   this.selectedEndTime = "23:59";
-  // }
+  setDefaultStartEndTime(){
+    this.selectedStartTime = "00:00";
+    this.selectedEndTime = "23:59";
+  }
+
+  setPrefFormatTime(){
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = '00:00:00';
+      this.endTimeDisplay = '23:59:59';
+    }else{
+      this.startTimeDisplay = '12:00 AM';
+      this.endTimeDisplay = '11:59 PM';
+    }
+  }
+
+  setPrefFormatDate(){
+    switch(this.prefDateFormat){
+      case 'dd/mm/yyyy': {
+        this.dateFormats.display.dateInput = "DD/MM/YYYY";
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        this.dateFormats.display.dateInput = "DD-MM-YYYY";
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        this.dateFormats.display.dateInput = "MM-DD-YYYY";
+        break;
+      }
+      default:{
+        this.dateFormats.display.dateInput = "MM/DD/YYYY";
+      }
+    }
+  }
+
+  startTimeChanged(selectedTime: any) {
+    this.selectedStartTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.startTimeDisplay = selectedTime + ':00';
+    }
+    else{
+      this.startTimeDisplay = selectedTime;
+    }
+    this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+  }
+
+  endTimeChanged(selectedTime: any) {
+    this.selectedEndTime = selectedTime;
+    if(this.prefTimeFormat == 24){
+      this.endTimeDisplay = selectedTime + ':59';
+    }
+    else{
+      this.endTimeDisplay = selectedTime;
+    }
+    this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+  }
+
+  getTodayDate(){
+    let todayDate = new Date(); //-- UTC
+    return todayDate;
+  }
+
+  getYesterdaysDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-1);
+    return date;
+  }
+
+  getLastWeekDate() {
+    var date = new Date();
+    date.setDate(date.getDate()-7);
+    return date;
+  }
+
+  getLastMonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-1);
+    return date;
+  }
+
+  getLast3MonthDate(){
+    let date = new Date();
+    date.setMonth(date.getMonth()-3);
+    return date;
+  }
+
+  selectionTimeRange(selection: any){
+    switch(selection){
+      case 'today': {
+        this.selectionTab = 'today';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'yesterday': {
+        this.selectionTab = 'yesterday';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'lastweek': {
+        this.selectionTab = 'lastweek';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'lastmonth': {
+        this.selectionTab = 'lastmonth';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+      case 'last3month': {
+        this.selectionTab = 'last3month';
+        this.setDefaultStartEndTime();
+        this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+        this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        break;
+      }
+    }
+  }
+
+  changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    //this.startDateValue = event.value._d;
+    // console.log("------",event.value, this.selectedStartTime)
+    this.startDateValue = this.setStartEndDateTime(event.value, this.selectedStartTime, 'start');
+  }
+
+  changeEndDateEvent(event: MatDatepickerInputEvent<any>){
+    //this.endDateValue = event.value._d;
+    this.endDateValue = this.setStartEndDateTime(event.value, this.selectedEndTime, 'end');
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+    date.setHours(timeObj.split(":")[0]);
+    date.setMinutes(timeObj.split(":")[1]);
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
+
+  
+  onSearch(){
+    
+    //       ----------This is only test data-----
+    //     VIN: 5A65654
+    // start date: 1616961846000
+    // end date: 1616963318000
+
+    //     VIN: NBVGF1254KLJ55
+    // start date: 1604327461000
+    // end date: 1604336647000
+
+    
+    let _startTime = this.startDateValue.getTime();
+    let _endTime = this.endDateValue.getTime();
+    // _startTime = 1604327461000;
+    // _endTime = 1604336647000;
+    // this.vinListSelectedValue= "NBVGF1254KLJ55";
+   
+      this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
+      console.log("--existingTripData----", existingTripDetails)
+      this.showLoadingIndicator = true;
+      this.initData = existingTripDetails.tripData;
+
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    }, (error) => {
+      this.initData = [];
+      this.hideloader();
+      this.updatedTableData(this.initData);
+    });
+
+  }
+
+
+  onReset(){
+    this.setDefaultStartEndTime();
+    this.setDefaultTodayDate();
+    this.existingTripForm.get('vehicle').setValue('');
+    this.existingTripForm.get('vehicleGroup').setValue('');
+    this.vinListSelectedValue = '';
+    this.vinList = [];
+  }
 
   setDefaultTodayDate(){
-    // this.selectionTab = 'today';
-    // this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
-    // this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-    // this.last3MonthDate = this.getLast3MonthDate();
-    // this.todayDate = this.getTodayDate();
-    let todayDate = new Date(); //-- UTC
-    // return todayDate;
-    this.selectedStartDateStamp = todayDate;
-    this.selectedEndDateStamp = todayDate;
-    this.existingTripForm.controls.startDate.setValue(this.selectedStartDateStamp);
-    this.existingTripForm.controls.endDate.setValue(this.selectedEndDateStamp);
-    console.log("------defaults dates--",this.selectedStartDateStamp)
-
+    this.selectionTab = 'today';
+    this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
+    this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+    this.last3MonthDate = this.getLast3MonthDate();
+    this.todayDate = this.getTodayDate();
   }
   
   initMap(){
@@ -319,17 +499,6 @@ export class ExistingTripsComponent implements OnInit {
     let _data = this.additionalData;
     this.getAttributeData = _data["attribute"];
     this.getExclusionList = _data["exclusion"];
-    // this.combustibleChecked = this.getAttributeData["isCombustible"];
-    // this.corrosiveChecked = this.getAttributeData["isCorrosive"];
-    // this.explosiveChecked = this.getAttributeData["isExplosive"];
-    // this.flammableChecked = this.getAttributeData["isFlammable"];
-    // this.gasChecked = this.getAttributeData["isGas"];
-    // this.organicChecked = this.getAttributeData["isOrganic"];
-    // this.othersChecked = this.getAttributeData["isOther"];
-    // this.poisonChecked = this.getAttributeData["isPoision"];
-    // this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
-    // this.radioactiveChecked = this.getAttributeData["isRadioActive"];
-    // this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
     this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     this.transportDataChecked = _data["isTransportData"];
@@ -346,32 +515,12 @@ export class ExistingTripsComponent implements OnInit {
     this.existingTripForm.controls.vehicleLength.setValue(this.getVehicleSize.vehicleLength);
     this.existingTripForm.controls.limitedWeight.setValue(this.getVehicleSize.vehicleLimitedWeight);
     this.existingTripForm.controls.weightPerAxle.setValue(this.getVehicleSize.vehicleWeightPerAxle);
-    // this.tollRoadId = this.getExclusionList["tollRoadType"];
-    // this.boatFerriesId = this.getExclusionList["boatFerriesType"];
-    // this.dirtRoadId = this.getExclusionList["dirtRoadType"];
-    // this.motorWayId = this.getExclusionList["mortorway"];
-    // this.tunnelId = this.getExclusionList["tunnelsType"];
-    // this.railFerriesId = this.getExclusionList["railFerriesType"];
 
     this.initiateDropDownValues();
 
   }
 
   initiateDropDownValues(){
-    // this.existingTripForm.controls.trailer.setValue(this.selectedTrailerId);
-    // this.trailerValue = this.selectedTrailerId;
-    // this.existingTripForm.controls.tollRoad.setValue(this.tollRoadId);
-    // this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
-    // this.existingTripForm.controls.motorWay.setValue(this.motorWayId);
-    // this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
-    // this.existingTripForm.controls.boatFerries.setValue(this.boatFerriesId);
-    // this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
-    // this.existingTripForm.controls.railFerries.setValue(this.railFerriesId);
-    // this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
-    // this.existingTripForm.controls.tunnels.setValue(this.tunnelId);
-    // this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
-    // this.existingTripForm.controls.dirtRoad.setValue(this.dirtRoadId);
-    // this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
     this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
  }
 
@@ -407,18 +556,9 @@ export class ExistingTripsComponent implements OnInit {
     return viaMarker;
   }
 
-  loadExistingTripData() {
-    // this.showLoadingIndicator = true;
-    // this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
-    //   this.initData = data;
-    //   this.hideloader();
-    //   this.updatedTableData(this.initData);
-    // }, (error) => {
-    //   this.initData = [];
-    //   this.hideloader();
-    //   this.updatedTableData(this.initData);
-    // });
-  }
+  // loadExistingTripData() {
+
+  // }
   
   suggestionData :  any;
   dataService : any;
@@ -439,7 +579,6 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   hideloader() {
-    // Setting display of spinner
     this.showLoadingIndicator = false;
   }
   vehicleGroupSelection(vehicleGroupValue: any) {
@@ -541,9 +680,6 @@ export class ExistingTripsComponent implements OnInit {
       this.checkRoutePlot();
 
     }
-    
-
-    
   }
 
   calculateAB(){
@@ -587,20 +723,9 @@ export class ExistingTripsComponent implements OnInit {
 
   addRouteShapeToMap(result){
     var group = new H.map.Group();
-    // if(this.routeOutlineMarker){
-    //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-    //   this.routeOutlineMarker = null;
-    // }
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
-      // Create a polyline to display the route:
-      // let routeLine = new H.map.Polyline(linestring, {
-      //   style: { strokeColor: '#436ddc', lineWidth: 3 } //b5c7ef
-      // });
-      // this.hereMap.addObject(routeLine);
-      // this.hereMap.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
-     // if (this.corridorWidthKm > 0) {
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
           style: {
             lineWidth: this.corridorWidthKm,
@@ -622,21 +747,7 @@ export class ExistingTripsComponent implements OnInit {
         this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
         this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
 
-      // }
-      // else{
-      //   this.routeOutlineMarker = null;
-      //   this.routeCorridorMarker = null;
-
-      // }
-
     });
-  
-    // // Add the polyline to the map
-    // this.map.addObject(group);
-    // // And zoom to its bounding rectangle
-    // this.map.getViewModel().setLookAtData({
-    //   bounds: group.getBoundingBox()
-    // });
   }
 
 
@@ -679,77 +790,11 @@ export class ExistingTripsComponent implements OnInit {
    this.trafficFlowChecked = _checked;
  }
 
- attributeCheck(_checked, type) {
-  //  switch (type) {
-  //    case 'explosive':
-  //      this.explosiveChecked = _checked;
-  //      break;
-  //    case 'gas':
-  //      this.gasChecked = _checked;
-  //      break;
-  //    case 'flammable':
-  //      this.flammableChecked = _checked;
-  //      break;
-  //    case 'combustible':
-  //      this.combustibleChecked = _checked;
-  //      break;
-  //    case 'organic':
-  //      this.organicChecked = _checked;
-  //      break;
-  //    case 'poison':
-  //      this.poisonChecked = _checked;
-  //      break;
-  //    case 'radioactive':
-  //      this.radioactiveChecked = _checked;
-  //      break;
-  //    case 'corrosive':
-  //      this.corrosiveChecked = _checked;
-  //      break;
-  //    case 'poisonInhale':
-  //      this.poisonInhaleChecked = _checked;
-  //      break;
-  //    case 'waterHarm':
-  //      this.waterHarmChecked = _checked;
-  //      break;
-  //    case 'others':
-  //      this.othersChecked = _checked;
-  //      break;
-  //    default:
-  //      break;
-  //  }
- }
 
  trailerSelected(_event){
    this.selectedTrailerId = _event.value;
  }
 
- exclusionSelected(_event,type){
-  //  console.log(this.exclusionList);
-  //  console.log(_event)
-  //  switch (type) {
-  //    case 'tollRoad':
-  //        this.tollRoadId = _event.value;
-  //      break;
-  //      case 'motorWay':
-  //        this.motorWayId = _event.value;
-  //      break;
-       
-  //      case 'boatFerries':
-  //        this.boatFerriesId = _event.value;
-  //      break;
-  //      case 'railFerries':
-  //        this.railFerriesId = _event.value;
-  //      break;
-  //      case 'tunnel':
-  //        this.tunnelId = _event.value;
-  //      break;
-  //      case 'dirtRoad':
-  //        this.dirtRoadId = _event.value;
-  //      break;
-  //    default:
-  //      break;
-  //  }
- }
 
  createCorridorClicked(){
   
@@ -775,25 +820,8 @@ export class ExistingTripsComponent implements OnInit {
      "modified_By": this.organizationId,
      "attribute": {
        "trailer": this.selectedTrailerId,
-      //  "explosive": this.explosiveChecked,
-      //  "gas": this.gasChecked,
-      //  "flammable": this.flammableChecked,
-      //  "combustible": this.combustibleChecked,
-      //  "organic": this.organicChecked,
-      //  "poision": this.poisonChecked,
-      //  "radioActive": this.radioactiveChecked,
-      //  "corrosive": this.corrosiveChecked,
-      //  "poisonousInhalation": this.poisonInhaleChecked,
-      //  "waterHarm": this.waterHarmChecked,
-      //  "other": this.othersChecked
      },
      "exclusion": {
-      //  "tollRoad": this.tollRoadId,
-      //  "mortorway": this.motorWayId,
-      //  "boatFerries":this.boatFerriesId,
-      //  "railFerries": this.railFerriesId,
-      //  "tunnels": this.tunnelId,
-      //  "dirtRoad":this.dirtRoadId,
      },
      "vehicleSize": {
        "vehicleSizeHeight":this.existingTripForm.controls.vehicleHeight.value ? this.existingTripForm.controls.vehicleHeight.value : 0,
@@ -827,9 +855,6 @@ export class ExistingTripsComponent implements OnInit {
 
  getSuggestion(_event){
    let startValue = _event.target.value;
-   
-  
-   console.log(_event)
  }
 
  backToCorridorList(){
@@ -842,24 +867,6 @@ export class ExistingTripsComponent implements OnInit {
 
  resetValues(){
    if(this.actionType === 'create'){
-       
-  //  this.tollRoadId = 'D';
-  //  this.motorWayId ='D';
-  //  this.railFerriesId = 'D';
-  //  this.tunnelId ='D';
-  //  this.dirtRoadId = 'D';
-  //  this.boatFerriesId = 'D';
-  //  this.explosiveChecked = false;
-  //  this.gasChecked = false;
-  //  this.flammableChecked  = false;
-  //  this.combustibleChecked  = false;
-  //  this.organicChecked  = false;
-  //  this.poisonChecked  = false;
-  //  this.radioactiveChecked  = false;
-  //  this.corrosiveChecked  = false;
-  //  this.poisonInhaleChecked  = false;
-  //  this.waterHarmChecked  = false;
-  //  this.othersChecked  = false;
    this.transportDataChecked = false;
    this.trafficFlowChecked = false;
    this.corridorWidth = 100;
@@ -1055,46 +1062,35 @@ export class ExistingTripsComponent implements OnInit {
       return data;
     }
   }
-  timeChanged(selectedTime: any) {
-    this.selectedStartTime = selectedTime;
-    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  }
-  endtimeChanged(endTime: any) {
-    this.selectedEndTime = endTime;
-    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-  }
+  // timeChanged(selectedTime: any) {
+  //   this.selectedStartTime = selectedTime;
+  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  // }
+  // endtimeChanged(endTime: any) {
+  //   this.selectedEndTime = endTime;
+  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+  // }
 
-  selectedStartDate(startDate: any) {
-    this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
-    // console.log("---selectedStartDate---",this.selectedStartDateStamp)
-    // let dateTime = moment(this.selectedStartDateStamp + ' ' + this.selectedStartTime, 'DD/MM/YYYY HH:mm');
-    // console.log(dateTime.format('DD-MM-YYYY HH:mm'))
-    // this.startTimeUTC = moment.utc(dateTime).valueOf();
-    // console.log("--startTimeUTC----UTC format",this.startTimeUTC)
-    this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  }
-  concateStartDateTimeInUTC(selectedDate: any, selectedTime: any) {
-    let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
-    // console.log("actual date and time value----",dateTime.format('DD-MM-YYYY HH:mm'))
-    this.startTimeUTC = moment.utc(dateTime).valueOf();
-    console.log("--startTimeUTC----UTC format", this.startTimeUTC)
-  }
-  selectedEndDate(endDate: any) {
-    this.selectedEndDateStamp = moment(endDate.target.value).format('DD/MM/YYYY');
-    // console.log("---selectedEndDate---",this.selectedEndDateStamp)
-    // let dateTime = moment(this.selectedEndDateStamp + ' ' + this.selectedEndTime, 'DD/MM/YYYY HH:mm');
-    // console.log(dateTime.format('DD-MM-YYYY HH:mm'))
-    // this.endTimeUTC = moment.utc(dateTime).valueOf();
-    // console.log("--endTimeUTC----UTC format",this.endTimeUTC)
-    this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-  }
-  concateEndDateTimeInUTC(selectedDate: any, selectedTime: any) {
-    let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
-    let concateDateAndTime = dateTime.format('DD-MM-YYYY HH:mm');
-    // console.log("actual date and time value----",dateTime.format('DD-MM-YYYY HH:mm'))
-    this.endTimeUTC = moment.utc(dateTime).valueOf();
-    console.log("--endTimeUTC----UTC format", this.endTimeUTC)
-  }
+  // selectedStartDate(startDate: any) {
+  //   console.log("---startDate--",startDate.target.value)
+  //   this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
+  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
+  // }
+  // concateStartDateTimeInUTC(selectedDate: any, selectedTime: any) {
+  //   let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
+  //   this.startTimeUTC = moment.utc(dateTime).valueOf();
+  //   console.log("--startTimeUTC----UTC format", this.startTimeUTC)
+  // }
+  // selectedEndDate(endDate: any) {
+  //   this.selectedEndDateStamp = moment(endDate.target.value).format('DD/MM/YYYY');
+  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
+  // }
+  // concateEndDateTimeInUTC(selectedDate: any, selectedTime: any) {
+  //   let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
+  //   let concateDateAndTime = dateTime.format('DD-MM-YYYY HH:mm');
+  //   this.endTimeUTC = moment.utc(dateTime).valueOf();
+  //   console.log("--endTimeUTC----UTC format", this.endTimeUTC)
+  // }
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue.value;
     console.log("------vins selection--",this.vinListSelectedValue)
@@ -1111,77 +1107,12 @@ export class ExistingTripsComponent implements OnInit {
     }, 100);
   }
 
-  dateSelection(getDateValue:any) {
-    console.log("---start date value--",this.existingTripForm.controls.startDate.value)
-    let testDate= moment().format('DD/MM/YYYY HH:mm');
-    // console.log("---getValue--",testDate);
-
-    switch (getDateValue) {
-      case "today" : 
-      // let a = moment().subtract(1, 'day');
-      this.selectedStartDateStamp = testDate;
-      
-      // let testValue = this.existingTripForm.get('startDate').setValue(testDate);
-      // let a = moment(startDate.target.value).format('DD/MM/YYYY');
-      // console.log("---from today--",testDate,"convertedValue--",testValue)
-      // return a;
-      break;
-      
-      case "yesterday" : 
-      let b = moment().subtract(2, 'day');
-      console.log("---from today--",b)
-      return b;
-      break;
-      
-      case "lastWeek" : ""
-      break;
-
-      case "lastMonth" : ""
-      break;
-
-      case "last3Months": ""
-      break;
-      
-      default: 
-      return "hey default";
-   }
-  }
-
-  onReset() {
-
-  }
-
-  onSearch() {
-    console.log("---Search calling---")
-    // this.poiService.getalltripdetails(this.accountOrganizationId).subscribe((data: any) => {
-    //     VIN: 5A65654
-    // start date: 1616961846000
-    // end date: 1616963318000
-
-    //     VIN: NBVGF1254KLJ55
-    // start date: 1604327461000
-    // end date: 1604336647000
-
-    //----------This is only test data-----
-    // this.startTimeUTC = 1616961846000;
-    // this.endTimeUTC = 1616963318000;
-    // this.vinListSelectedValue= "5A65654";
-
-    this.poiService.getalltripdetails(this.startTimeUTC, this.endTimeUTC, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
-      console.log("--existingTripData----", existingTripDetails)
-      this.showLoadingIndicator = true;
-      this.initData = existingTripDetails.tripData;
-      console.log("--initData----", this.initData.length)
-      this.hideloader();
-      this.updatedTableData(this.initData);
-    }, (error) => {
-      this.initData = [];
-      this.hideloader();
-      this.updatedTableData(this.initData);
-    });
-    //   }
-
-  }
-
-
+  setDate(date : any){
+    if (date === 0) {
+      return "-";
+    } else {
+     var dateValue=  moment(date).format("DD/MM/YYYY-h:mm:ss")
+     return dateValue;
+    }
+}
 }

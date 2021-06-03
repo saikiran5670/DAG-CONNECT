@@ -1,7 +1,5 @@
-﻿using net.atos.daf.ct2.translation.Enum;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using net.atos.daf.ct2.translation.Enum;
 
 namespace net.atos.daf.ct2.translation.entity
 {
@@ -9,22 +7,22 @@ namespace net.atos.daf.ct2.translation.entity
     {
         public DTCwarning MapWarningDetails(dynamic record)
         {
-            string AdviceText = !string.IsNullOrEmpty(record.advice.Replace("\\n", Environment.NewLine)) ? record.advice : string.Empty; 
-            
+            string AdviceText = !string.IsNullOrEmpty(record.advice.Replace("\\n", Environment.NewLine)) ? record.advice : string.Empty;
+
 
             DTCwarning Entity = new DTCwarning();
-            Entity.id = record.id;
-            Entity.code = record.code;
-            Entity.Warning_type = !string.IsNullOrEmpty(record.type) ? Convert.ToString(MapCharToDTCType(record.type)) : string.Empty;
-            Entity.veh_type = !string.IsNullOrEmpty(record.veh_type) ? record.veh_type : string.Empty;
-            Entity.warning_class = record.warningclass;
-            Entity.number = record.number;
-            Entity.description =  !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
-            Entity.advice = AdviceText; 
-            Entity.expires_at = record.expires_at;
-            Entity.icon_id = record.icon_id;
-            Entity.created_at = record.created_at;
-            Entity.created_by = record.created_by;
+            Entity.Id = record.id;
+            Entity.Code = record.code;
+            Entity.WarningType = !string.IsNullOrEmpty(record.type) ? Convert.ToString(MapCharToDTCType(record.type)) : string.Empty;
+            Entity.VehType = !string.IsNullOrEmpty(record.veh_type) ? record.veh_type : string.Empty;
+            Entity.WarningClass = record.warningclass;
+            Entity.Number = record.number;
+            Entity.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
+            Entity.Advice = AdviceText;
+            Entity.ExpiresAt = record.expires_at;
+            Entity.IconId = record.icon_id;
+            Entity.CreatedAt = record.created_at;
+            Entity.CreatedBy = record.created_by;
             return Entity;
         }
 
@@ -39,7 +37,7 @@ namespace net.atos.daf.ct2.translation.entity
                 case "M":
                     statetype = WarningType.DM;
                     break;
-               
+
             }
             return statetype;
 
@@ -126,9 +124,9 @@ namespace net.atos.daf.ct2.translation.entity
                 case "TR":
                     Code = "Tr-tr";
                     break;
-                //default:
-                //    Code = "";
-                //    break;
+                    //default:
+                    //    Code = "";
+                    //    break;
 
             }
             return Code;

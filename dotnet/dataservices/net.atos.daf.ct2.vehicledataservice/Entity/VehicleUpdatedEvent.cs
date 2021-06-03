@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.vehicledataservice.Entity
 {
-    
     public class VehicleID
     {
         [Required]
@@ -22,7 +19,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public Series Series { get; set; }
         public Model Model { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string ModelYear{ get; set;}
+        public string ModelYear { get; set; }
         public Type Type { get; set; }
     }
 
@@ -31,18 +28,18 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string ID { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string vehicleRange{get; set;}
+        public string VehicleRange { get; set; }
     }
 
     public class Model
     {
         [StringLength(50, MinimumLength = 0)]
-        public string ID { get; set; } 
+        public string ID { get; set; }
     }
     public class Type
     {
         [StringLength(50, MinimumLength = 0)]
-        public string ID { get; set; } 
+        public string ID { get; set; }
     }
 
     public class VehicleNamedStructure
@@ -52,7 +49,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public Transmission Transmission { get; set; }
         public DriveLine DriveLine { get; set; }
         public Cabin Cabin { get; set; }
-        public ElectronicControlUnits ElectronicControlUnits {get; set;}
+        public ElectronicControlUnits ElectronicControlUnits { get; set; }
     }
     public class Chassis
     {
@@ -66,10 +63,11 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string RearOverhang { get; set; }
     }
+
     public class Tank
     {
         [StringLength(50, MinimumLength = 0)]
-        public string nr { get; set; }
+        public string Nr { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Volume { get; set; }
     }
@@ -77,7 +75,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class FuelTanks
     {
         public Tank[] Tank { get; set; }
-    }    
+    }
 
     public class Engine
     {
@@ -94,6 +92,7 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         [StringLength(50, MinimumLength = 0)]
         public string Fuel { get; set; }
     }
+
     public class Transmission
     {
         public GearBox GearBox { get; set; }
@@ -107,7 +106,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public string Type { get; set; }
     }
 
-   
     public class Tire
     {
         [StringLength(50, MinimumLength = 0)]
@@ -122,25 +120,25 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class FrontAxle
     {
         [StringLength(50, MinimumLength = 0)]
-        public string position { get; set; }
+        public string Position { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Type { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string Springs {get; set;}        
-        public AxleSpecificWheels AxleSpecificWheels {get; set;}
+        public string Springs { get; set; }
+        public AxleSpecificWheels AxleSpecificWheels { get; set; }
     }
 
     public class RearAxle
     {
         [StringLength(50, MinimumLength = 0)]
-        public string position { get; set; }
+        public string Position { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Load { get; set; }
         [StringLength(50, MinimumLength = 0)]
         public string Ratio { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string Springs {get; set;}
-        public AxleSpecificWheels AxleSpecificWheels {get; set;}
+        public string Springs { get; set; }
+        public AxleSpecificWheels AxleSpecificWheels { get; set; }
     }
 
     public class AxleSpecificWheels
@@ -159,8 +157,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public RearAxle[] RearAxle { get; set; }
     }
 
-   
-
     public class Cabin
     {
         [StringLength(50, MinimumLength = 0)]
@@ -173,14 +169,14 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
 
     public class ElectronicControlUnits
     {
-        public ElectronicControlUnit ElectronicControlUnit {get; set;}
+        public ElectronicControlUnit ElectronicControlUnit { get; set; }
     }
     public class ElectronicControlUnit
     {
         [StringLength(50, MinimumLength = 0)]
-        public string type {get; set;}
+        public string Type { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string Name {get; set;}
+        public string Name { get; set; }
     }
 
     public class Size
@@ -197,12 +193,13 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     {
         public Weight Weight { get; set; }
     }
+
     public class Weight
     {
         [StringLength(50, MinimumLength = 0)]
-        public string type { get; set; }
+        public string Type { get; set; }
         [StringLength(50, MinimumLength = 0)]
-        public string value { get; set; }
+        public string Value { get; set; }
     }
 
     public class VehicleDimensions
@@ -214,7 +211,6 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
     public class VehicleDelivery
     {
         public string DeliveryDate { get; set; }
-       
     }
 
     public class Vehicle
@@ -225,15 +221,15 @@ namespace net.atos.daf.ct2.vehicledataservice.Entity
         public VehicleDimensions VehicleDimensions { get; set; }
         public VehicleDelivery VehicleDelivery { get; set; }
     }
-    public class VehicleUpdatedEvent    {
+    public class VehicleUpdatedEvent
+    {
         [Required]
-        public Vehicle Vehicle { get; set; } 
+        public Vehicle Vehicle { get; set; }
     }
 
-    public class Root  {
+    public class Root
+    {
         [Required]
-        public VehicleUpdatedEvent VehicleUpdatedEvent { get; set; } 
+        public VehicleUpdatedEvent VehicleUpdatedEvent { get; set; }
     }
-
-
 }

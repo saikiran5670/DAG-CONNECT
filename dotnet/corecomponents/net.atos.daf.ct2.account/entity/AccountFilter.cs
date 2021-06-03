@@ -1,4 +1,3 @@
-using System;
 using net.atos.daf.ct2.account.ENUM;
 namespace net.atos.daf.ct2.account
 {
@@ -11,5 +10,5 @@ namespace net.atos.daf.ct2.account
         public string AccountIds { get; set; }
         public string Name { get; set; }
         public int AccountGroupId { get; set; }
-    }    
+    }
 }

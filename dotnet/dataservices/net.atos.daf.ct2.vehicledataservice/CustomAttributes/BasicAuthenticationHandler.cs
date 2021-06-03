@@ -1,22 +1,19 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.vehicledataservice.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
-        private const string AuthorizationHeaderName = "Authorization";
-        private const string AuthorizationHeaderType = "Bearer";
+        private const string AUTHORIZATION_HEADER_NAME = "Authorization";
+        private const string AUTHORIZATION_HEADER_TYPE = "Bearer";
         private readonly IBasicAuthenticationService _authenticationService;
 
         public BasicAuthenticationHandler(
@@ -32,27 +29,27 @@ namespace net.atos.daf.ct2.vehicledataservice.CustomAttributes
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.ContainsKey(AuthorizationHeaderName))
+            if (!Request.Headers.ContainsKey(AUTHORIZATION_HEADER_NAME))
             {
                 //Authorization header not in request
                 return AuthenticateResult.NoResult();
             }
 
-            if (!AuthenticationHeaderValue.TryParse(Request.Headers[AuthorizationHeaderName], out AuthenticationHeaderValue headerValue))
+            if (!AuthenticationHeaderValue.TryParse(Request.Headers[AUTHORIZATION_HEADER_NAME], out AuthenticationHeaderValue headerValue))
             {
                 //Invalid Authorization header
                 return AuthenticateResult.NoResult();
             }
-            if (!AuthorizationHeaderType.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
+            if (!AUTHORIZATION_HEADER_TYPE.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase))
             {
                 //Not a bearer authentication header type
                 return AuthenticateResult.NoResult();
             }
-            string email = string.Empty;
+            string email;
             try
             {
                 string token = Convert.ToString(headerValue);
-                token = token.Replace(AuthorizationHeaderType,"");
+                token = token.Replace(AUTHORIZATION_HEADER_TYPE, "");
                 email = await _authenticationService.ValidateTokenGuid(token);
             }
             catch (Exception)

@@ -9,6 +9,7 @@ declare var H: any;
 export class ReportMapService {
   platform: any;
   map: any;
+  ui: any
   hereMap: any;
   public mapElement: ElementRef;
   mapGroup: any;
@@ -41,7 +42,7 @@ export class ReportMapService {
     });
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
   }
@@ -53,7 +54,11 @@ export class ReportMapService {
     this.endMarker = null;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any){
+  getUI(){
+    return this.ui;
+  }
+
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any){
     this.clearRoutesFromMap();
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
@@ -71,6 +76,44 @@ export class ReportMapService {
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:iconEnd});
         this.group.addObjects([this.startMarker,this.endMarker]);
+        var startBubble;
+        this.startMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div>
+            <b>Start Location:</b> ${_selectedRoutes[i].startPosition}<br>
+            <b>Start Date:</b> ${_selectedRoutes[i].convertedStartTime}<br>
+            <b>Total Alerts:</b> ${_selectedRoutes[i].alert}
+            </div>`
+          });
+          // show info bubble
+          _ui.addBubble(startBubble);
+        }, false);
+        this.startMarker.addEventListener('pointerleave', function(evt) {
+          startBubble.close();
+        }, false);
+
+        var endBubble;
+        this.endMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div>
+            <b>End Location:</b> ${_selectedRoutes[i].endPosition}<br>
+            <b>End Date:</b> ${_selectedRoutes[i].convertedEndTime}<br>
+            <b>Total Alerts:</b> ${_selectedRoutes[i].alert}
+            </div>`
+          });
+          // show info bubble
+          _ui.addBubble(endBubble);
+        }, false);
+        this.endMarker.addEventListener('pointerleave', function(evt) {
+          endBubble.close();
+        }, false);
+
         this.calculateAtoB();
       }
     }

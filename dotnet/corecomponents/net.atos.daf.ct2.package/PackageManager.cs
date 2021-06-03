@@ -1,11 +1,9 @@
-﻿using net.atos.daf.ct2.features;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.entity;
-using net.atos.daf.ct2.features.repository;
 using net.atos.daf.ct2.package.entity;
 using net.atos.daf.ct2.package.repository;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.package
 {
@@ -33,12 +31,12 @@ namespace net.atos.daf.ct2.package
         {
             return await _packageRepository.Import(packageList);
         }
-        public async Task<Package> Update(Package package) 
+        public async Task<Package> Update(Package package)
         {
             return await _packageRepository.Update(package);
         }
-       
-        public async Task<IEnumerable<Package>> Get(PackageFilter packageFilter )
+
+        public async Task<IEnumerable<Package>> Get(PackageFilter packageFilter)
         {
             return await _packageRepository.Get(packageFilter);
         }
@@ -46,7 +44,7 @@ namespace net.atos.daf.ct2.package
         {
             return await _featureManager.AddFeatureSet(featureSet);
         }
-       
+
         public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, char state) // required is_active parameter
         {
             return await _featureManager.GetFeatureSet(featureSetId, state);

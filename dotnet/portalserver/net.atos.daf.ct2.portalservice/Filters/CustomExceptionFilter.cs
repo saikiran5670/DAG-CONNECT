@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace net.atos.daf.ct2.portalservice.Filters
 {
@@ -12,10 +9,9 @@ namespace net.atos.daf.ct2.portalservice.Filters
     {
         public void OnException(ExceptionContext context)
         {
-            HttpStatusCode status = HttpStatusCode.InternalServerError;
-            String message = String.Empty;
-
             var exceptionType = context.Exception.GetType();
+            string message;
+            HttpStatusCode status;
             if (exceptionType == typeof(UnauthorizedAccessException))
             {
                 message = "Unauthorized Access";

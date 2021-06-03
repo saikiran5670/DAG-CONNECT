@@ -1,5 +1,6 @@
 import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { HereService } from 'src/app/services/here.service';
+import { CorridorService } from 'src/app/services/corridor.service';
 
 declare var H: any;
 
@@ -24,11 +25,28 @@ export class MapFunctionsService {
   corridorWidth : number = 100;
 
   corridorWidthKm : number = 0.1;
-  constructor(private hereSerive : HereService) {
+  additionalData = [];
+  map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  constructor(private hereService : HereService, private corridorService: CorridorService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
     });
    }
+
+   
+  
+  getAttributeData = [];
+  getExclusionList = [];
+  hazardousMaterial = [];
+  tunnelId = undefined;
+  selectedTrailerId = undefined;
+  trafficFlowChecked = false;
+  transportDataChecked = false;
+  vehicleHeightValue = 0
+  vehicleWidthValue = 0
+  vehicleLengthValue =0
+  vehicleLimitedWtValue = 0
+  vehicleWtPerAxleValue =0
 
   
   // public ngAfterViewInit() {
@@ -68,7 +86,9 @@ export class MapFunctionsService {
   
   group = new H.map.Group();
 
-  viewSelectedRoutes(_selectedRoutes){
+  viaRoutePlottedPoints = [];
+
+  viewSelectedRoutes(_selectedRoutes,accountOrganizationId?){
     var group = new H.map.Group();
     group.removeAll();
     this.hereMap.removeObjects(this.hereMap.getObjects())
@@ -111,19 +131,77 @@ export class MapFunctionsService {
         this.endMarker.setData(endMarkerHtml);
        
         this.group.addObjects([this.startMarker,this.endMarker]);
-        this.calculateAB('view');
+        this.hereMap.addObject(this.group)
+        if(accountOrganizationId){
+          if(_selectedRoutes[i].id){
+            this.corridorService.getCorridorFullList(accountOrganizationId,_selectedRoutes[i].id).subscribe((data)=>{
+                console.log(data)
+                if(data[0]["corridorProperties"]){
+                   this.additionalData =  data[0]["corridorProperties"];
+                   this.setAdditionalData();
+                   if( data[0].viaAddressDetail.length > 0){
+                    this.viaRoutePlottedPoints =  data[0].viaAddressDetail;
+                    //this.plotViaStopPoints();
+                  }
+                this.calculateTruckRoute();
+
+                }
+            })
+          }
+        }
+        else{
+        this.calculateTruckRoute();
+
+        }
         this.addInfoBubble(group);
+        
        // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
        // let successRoute = this.calculateAB('view');
       }
     }
   }
 
+  setAdditionalData(){
+    let _data = this.additionalData;
+    this.getAttributeData = _data["attribute"];
+    this.getExclusionList = _data["exclusion"];
+    this.getAttributeData["isCombustible"] ? this.hazardousMaterial.push('combustible'):'';
+    this.getAttributeData["isCorrosive"] ? this.hazardousMaterial.push('corrosive'):'';
+    this.getAttributeData["isExplosive"] ? this.hazardousMaterial.push('explosive'):'';
+    this.getAttributeData["isFlammable"] ? this.hazardousMaterial.push('flammable'):'';
+    this.getAttributeData["isGas"] ? this.hazardousMaterial.push('gas'):'';
+    this.getAttributeData["isOrganic"] ? this.hazardousMaterial.push('organic'):'';
+    this.getAttributeData["isOther"]? this.hazardousMaterial.push('other'):'';
+    this.getAttributeData["isPoision"] ? this.hazardousMaterial.push('poison'):'';
+    this.getAttributeData["isPoisonousInhalation"] ? this.hazardousMaterial.push('poisonousInhalation'):'';
+    this.getAttributeData["isRadioActive"] ? this.hazardousMaterial.push('radioactive'):'';
+    this.getAttributeData["isWaterHarm"]? this.hazardousMaterial.push('harmfulToWater'):'';
+
+    
+    this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
+    this.trafficFlowChecked = _data["isTrafficFlow"];
+    this.transportDataChecked = _data["isTransportData"];
+    this.vehicleHeightValue = _data["vehicleSize"].vehicleHeight;
+    this.vehicleWidthValue = _data["vehicleSize"].vehicleWidth;
+    this.vehicleLengthValue = _data["vehicleSize"].vehicleLength;
+    this.vehicleLimitedWtValue = _data["vehicleSize"].vehicleLimitedWeight;
+    this.vehicleWtPerAxleValue =_data["vehicleSize"].vehicleWeightPerAxle;
+
+    this.tunnelId = this.getExclusionList["tunnelsType"];
+
+    // this.tollRoadId = this.getExclusionList["tollRoadType"];
+    // this.boatFerriesId = this.getExclusionList["boatFerriesType"];
+    // this.dirtRoadId = this.getExclusionList["dirtRoadType"];
+    // this.motorWayId = this.getExclusionList["mortorway"];
+    // this.railFerriesId = this.getExclusionList["railFerriesType"];
+
+  }
+
   plotStartPoint(_locationId){
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
-    this.hereSerive.getLocationDetails(geocodingParameters).then((result) => {
+    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createHomeMarker();
@@ -143,7 +221,7 @@ export class MapFunctionsService {
 
   checkRoutePlot(){
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth != 0){
-      this.calculateAB('');
+      this.calculateTruckRoute();
     }
   }
 
@@ -151,7 +229,7 @@ export class MapFunctionsService {
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
-    this.hereSerive.getLocationDetails(geocodingParameters).then((result) => {
+    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
       this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createEndMarker();
@@ -189,81 +267,95 @@ export class MapFunctionsService {
     return endMarker;
   }
 
-  calculateAB(_type){
-    let routeRequestParams = {
-      'routingMode': 'fast',
-      'transportMode': 'truck',
-      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
-      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
-      'return': 'polyline'
-    };
-    this.hereSerive.calculateRoutePoints(routeRequestParams).then((data)=>{
-      
-       this.addRouteShapeToMap(data,_type);
-      console.log(data)
-    },(error)=>{
-       console.error(error);
-    })
-  }
-
-  addRouteShapeToMap(result,_type?){
-  //  var group = new H.map.Group();
-    if(this.routeOutlineMarker && _type != 'view'){
-      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-
-    }
-    result.routes[0].sections.forEach((section) =>{
-      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
-      //if (this.corridorWidthKm > 0) {
-        this.routeOutlineMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: this.corridorWidthKm,
-            strokeColor: '#b5c7ef',
-          }
-        });
-        // Create a patterned polyline:
-        this.routeCorridorMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: 3,
-            strokeColor: '#436ddc'
-          }
-        }
-        );
-        // create a group that represents the route line and contains
-        // outline and the pattern
-        var routeLine = new H.map.Group();
-        // routeLine.addObjects([routeOutline, routeArrows]);
-        this.group.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-        this.hereMap.addObject(this.group);
-        this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
-
-
-        if(_type != 'view'){
-        this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
-
-        }
-        else{
-       // this.hereMap.getViewModel().setLookAtData({ bounds: this.group.getBoundingBox() });
-
-        }
-
-      // }
-      // else{
-      //   this.routeOutlineMarker = null;
-      //   this.routeCorridorMarker = null;
-
-      // }
-
-    });
-  
-    // // Add the polyline to the map
-    // this.map.addObject(group);
-    // // And zoom to its bounding rectangle
-    // this.map.getViewModel().setLookAtData({
-    //   bounds: group.getBoundingBox()
-    // });
-  }
-
+   /////////////////////////// v8 calculate ////////////////////
+   routePoints:any;
+   calculateTruckRoute(){
+     let lineWidth = this.corridorWidthKm;
+     let routeRequestParams = 
+     'origin='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
+     '&destination='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
+     '&return=polyline,summary,travelSummary'+
+     '&routingMode=fast'+
+     '&transportMode=truck'+
+     '&apikey='+this.map_key
+ 
+     if(this.viaRoutePlottedPoints.length>0){
+       this.viaRoutePlottedPoints.forEach(element => {
+       routeRequestParams += '&via='+ `${element["latitude"]},${element["longitude"]}`
+       });
+     }
+ 
+     if(this.selectedTrailerId){
+       routeRequestParams += '&truck[trailerCount]='+ this.selectedTrailerId;
+     }
+     if(this.tunnelId){
+       routeRequestParams += '&truck[tunnelCategory]='+ this.tunnelId;
+     }
+     if(this.vehicleHeightValue){
+       routeRequestParams += '&truck[height]='+ this.vehicleHeightValue;
+     }
+     if(this.vehicleWidthValue){
+       routeRequestParams += '&truck[width]='+ this.vehicleWidthValue;
+     }
+     if(this.vehicleLengthValue){
+       routeRequestParams += '&truck[length]='+ this.vehicleLengthValue;
+     }
+     if(this.vehicleLimitedWtValue){
+       routeRequestParams += '&truck[grossWeight]='+ this.vehicleLimitedWtValue;
+     }
+     if(this.vehicleWtPerAxleValue){
+       routeRequestParams += '&truck[weightPerAxle]='+ this.vehicleWtPerAxleValue;
+     }
+ 
+     if(this.hazardousMaterial.length > 0){
+       routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+     }
+     this.routePoints= [];
+     this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
+       if(data && data.routes){
+ 
+         this.routePoints = data.routes[0];
+           this.addTruckRouteShapeToMap(lineWidth);
+         }
+       
+     })
+ 
+   }
+ 
+   addTruckRouteShapeToMap(lineWidth?){
+     let pathWidth= this.corridorWidthKm * 10;
+     
+     if(this.routePoints.sections){
+     this.routePoints.sections.forEach((section) => {
+       // decode LineString from the flexible polyline
+       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
+   
+        // Create a corridor width to display the route:
+        let corridorPath = new H.map.Polyline(linestring, {
+         style:  {
+           lineWidth: pathWidth,
+           strokeColor: '#b5c7ef'
+         }
+       });
+       // Create a polyline to display the route:
+       let polylinePath = new H.map.Polyline(linestring, {
+         style:  {
+           lineWidth: 3,
+           strokeColor: '#436ddc'
+         }
+       });
+   
+       // Add the polyline to the map
+       this.mapGroup.addObjects([corridorPath,polylinePath]);
+       this.hereMap.addObject(this.mapGroup);
+       // And zoom to its bounding rectangle
+      //  this.hereMap.getViewModel().setLookAtData({
+      //     bounds: this.mapGroup.getBoundingBox()
+      //  });
+     });
+   }
+   }
+   
   ui: any;
   addInfoBubble(markerGroup) {
 

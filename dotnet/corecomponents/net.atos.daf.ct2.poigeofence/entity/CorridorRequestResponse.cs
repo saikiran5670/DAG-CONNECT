@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
@@ -30,7 +29,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string Description { get; set; }
         public List<ViaAddressDetail> ViaAddressDetails { get; set; }
         public List<ExistingTrip> CorridoreTrips { get; set; }
-        
+
     }
     public class CorridorRequest
     {

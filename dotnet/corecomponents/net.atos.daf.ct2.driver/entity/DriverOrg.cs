@@ -14,6 +14,6 @@ namespace net.atos.daf.ct2.driver.entity
         public DateTime OptOutStatusChangedDate { get; set; }
         public int OptOutLevelId { get; set; }
         public bool IsConsentGiven { get; set; }
-        public DateTime ConsentChangedDate { get; set; }    
+        public DateTime ConsentChangedDate { get; set; }
     }
 }

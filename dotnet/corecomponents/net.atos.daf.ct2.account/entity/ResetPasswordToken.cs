@@ -4,7 +4,7 @@ namespace net.atos.daf.ct2.account.entity
 {
     public class ResetPasswordToken
     {
-        public int Id { get; set; }        
+        public int Id { get; set; }
         public int AccountId { get; set; }
         public Guid ProcessToken { get; set; }
         public ResetTokenStatus Status { get; set; }

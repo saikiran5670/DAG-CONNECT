@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
@@ -9,9 +7,9 @@ namespace net.atos.daf.ct2.poigeofence.entity
     {
 
         public int Id { get; set; }
-        
+
         [Column("organization_id")]
-        public int ? OrganizationId { get; set; }
+        public int? OrganizationId { get; set; }
         [Column("type")]
         public char CorridorType { get; set; }
         [Column("name")]
@@ -23,7 +21,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string EndAddress { get; set; }
         public double EndLatitude { get; set; }
         public double EndLongitude { get; set; }
-       
+
         [Column("width")]
         public int Width { get; set; }
         public int Trailer { get; set; }
@@ -33,8 +31,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public bool Gas { get; set; }
         public bool Flammable { get; set; }
         public bool Combustible { get; set; }
-        public bool organic { get; set; }
-        public bool poision { get; set; }
+        public bool Organic { get; set; }
+        public bool Poision { get; set; }
         public bool RadioActive { get; set; }
         public bool Corrosive { get; set; }
         public bool PoisonousInhalation { get; set; }

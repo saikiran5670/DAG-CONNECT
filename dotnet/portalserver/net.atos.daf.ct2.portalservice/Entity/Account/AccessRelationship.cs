@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Account
 {
 
-      
+
     public class AccessRelationshipResponseDetail
     {
         public List<VehicleAccount> Account { get; set; }
@@ -40,8 +37,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Account
     public class RelationshipData
     {
         public int Id { get; set; }
-        public string Name { get; set; }        
-        public bool IsGroup { get; set; }        
+        public string Name { get; set; }
+        public bool IsGroup { get; set; }
     }
     public class VehicleAccount
     {
@@ -52,6 +49,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Account
         public string VIN { get; set; }
         public string RegistrationNo { get; set; }
     }
-    
+
 }
 

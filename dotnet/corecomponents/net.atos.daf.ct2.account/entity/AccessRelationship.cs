@@ -10,8 +10,8 @@ namespace net.atos.daf.ct2.account.entity
         public AccessRelationType AccessRelationType { get; set; }
         public int AccountGroupId { get; set; }
         public int VehicleGroupId { get; set; }
-        public DateTime ? StartDate { get; set; }
-        public DateTime ? EndDate{ get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public List<int> VehicleGroupIds { get; set; }
         public bool Exists { get; set; }
 
@@ -47,22 +47,22 @@ namespace net.atos.daf.ct2.account.entity
     //}
     public class AccountAccessRelationshipEntity
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string access_type { get; set; }
-        public int count { get; set; }
-        public bool is_group { get; set; }
-        public int group_id { get; set; }
-        public string group_name { get; set; }
-        public bool is_ag_vg_group { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Access_type { get; set; }
+        public int Count { get; set; }
+        public bool Is_group { get; set; }
+        public int Group_id { get; set; }
+        public string Group_name { get; set; }
+        public bool Is_ag_vg_group { get; set; }
 
     }
     public class AccountVehicleEntity
     {
-        public int id { get; set; }
-        public string name { get; set; }        
-        public int count { get; set; }
-        public bool is_group { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Count { get; set; }
+        public bool Is_group { get; set; }
         public string VIN { get; set; }
         public string RegistrationNo { get; set; }
     }

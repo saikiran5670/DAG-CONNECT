@@ -1,7 +1,4 @@
-using net.atos.daf.ct2.audit;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.accountpreference
@@ -10,7 +7,7 @@ namespace net.atos.daf.ct2.accountpreference
     {
         Task<AccountPreference> Create(AccountPreference preference);
         Task<AccountPreference> Update(AccountPreference preference);
-        Task<bool> Delete(int preferenceId, PreferenceType preferenceType);        
+        Task<bool> Delete(int preferenceId, PreferenceType preferenceType);
         Task<IEnumerable<AccountPreference>> Get(AccountPreferenceFilter filter);
     }
 }

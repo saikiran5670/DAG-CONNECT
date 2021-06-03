@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.account.entity
         public string VehicleDisplay { get; set; }
     }
 
-    public class SSOResponse 
+    public class SSOResponse
     {
         public SSOTokenResponse Details { get; set; }
         public HttpStatusCode StatusCode { get; set; }

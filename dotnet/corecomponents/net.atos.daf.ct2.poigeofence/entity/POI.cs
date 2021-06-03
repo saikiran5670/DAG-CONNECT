@@ -1,14 +1,11 @@
-﻿using net.atos.daf.ct2.poigeofence.ENUM;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
     public class POI
     {
         public int Id { get; set; }
-       
+
         public int? OrganizationId { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
@@ -24,16 +21,16 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double Longitude { get; set; }
         public double Distance { get; set; }
         public string State { get; set; }
-      //  public int TripId { get; set; }
+        //  public int TripId { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
-        public byte[] icon { get; set; }
+        public byte[] Icon { get; set; }
     }
 
     public class TripEntityRequest
-    {       
+    {
         public long StartDateTime { get; set; }
         public long EndDateTime { get; set; }
         public string VIN { get; set; }
@@ -57,7 +54,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public double EndPositionLongitude { get; set; }
         public long StartTimeStamp { get; set; }
         public long EndTimeStamp { get; set; }
-        public List<LiveFleetPosition> LiveFleetPosition { get; set; }        
+        public List<LiveFleetPosition> LiveFleetPosition { get; set; }
     }
     public class LiveFleetPosition
     {

@@ -1,14 +1,13 @@
-﻿using Grpc.Core;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Grpc.Core;
+using log4net;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using log4net;
-using System.Threading.Tasks;
-using System.Reflection;
 
 namespace net.atos.daf.ct2.packageservice
 {
@@ -16,15 +15,15 @@ namespace net.atos.daf.ct2.packageservice
     {
         //private readonly ILogger<PackageManagementService> _logger;
 
-         private ILog _logger;
-        private readonly IAuditTraillib _AuditTrail;
+        private ILog _logger;
+        private readonly IAuditTraillib _auditTraillib;
         private readonly IPackageManager _packageManager;
         public PackageManagementService(
                                         IAuditTraillib AuditTrail,
                                         IPackageManager packageManager)
         {
-            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); 
-            _AuditTrail = AuditTrail;
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _auditTraillib = AuditTrail;
             _packageManager = packageManager;
         }
 
@@ -36,7 +35,7 @@ namespace net.atos.daf.ct2.packageservice
                 var package = new Package();
                 package.Code = request.Code;
                 package.FeatureSetID = request.FeatureSetID;
-             //   package.Status = request.Status;
+                //   package.Status = request.Status;
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
@@ -46,9 +45,9 @@ namespace net.atos.daf.ct2.packageservice
                 {
                     return Task.FromResult(new PackageResponse
                     {
-                        Message = "Package Code is "+package.Code+" already exists ",
+                        Message = "Package Code is " + package.Code + " already exists ",
                         PackageId = package.Id,
-                        Code=Responsecode.Conflict
+                        Code = Responsecode.Conflict
                     });
                 }
                 else
@@ -80,7 +79,7 @@ namespace net.atos.daf.ct2.packageservice
                 package.Id = request.Id;
                 package.Code = request.Code;
                 package.FeatureSetID = request.FeatureSetID;
-              //  package.Status = request.Status;
+                //  package.Status = request.Status;
                 package.Name = request.Name;
                 package.Type = request.Type;
                 package.Description = request.Description;
@@ -101,10 +100,10 @@ namespace net.atos.daf.ct2.packageservice
                 {
                     return Task.FromResult(new PackageResponse
                     {
-                        Message = "Package Updated " ,
+                        Message = "Package Updated ",
                         PackageId = package.Id
                     });
-                }               
+                }
             }
             catch (Exception ex)
             {
@@ -158,7 +157,7 @@ namespace net.atos.daf.ct2.packageservice
                 packageFilter.Id = request.Id;
                 packageFilter.Code = request.Code;
                 packageFilter.FeatureSetId = request.FeatureSetID;
-                packageFilter.State = request.State;              
+                packageFilter.State = request.State;
                 packageFilter.Type = request.Type;
                 var packages = _packageManager.Get(packageFilter).Result;
                 response.PacakageList.AddRange(packages
@@ -169,7 +168,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Description = x.Description,
                                          Name = x.Name,
                                          FeatureSetID = x.FeatureSetID,
-                                      //   Status = x.Status,
+                                         //   Status = x.Status,
                                          State = x.State,
                                          CreatedAt = x.CreatedAt,
                                          Type = x.Type
@@ -179,7 +178,7 @@ namespace net.atos.daf.ct2.packageservice
             }
             catch (Exception ex)
             {
-               _logger.Error(null, ex);
+                _logger.Error(null, ex);
                 return await Task.FromResult(new GetPackageResponce
                 {
                     Message = "Exception " + ex.Message,
@@ -203,7 +202,7 @@ namespace net.atos.daf.ct2.packageservice
                     Description = x.Description,
                     FeatureSetID = x.FeatureSetID,
                     Name = x.Name,
-                  //  Status = x.Status,
+                    //  Status = x.Status,
                     Type = x.Type,
                     State = x.State
                 }).ToList());
@@ -217,7 +216,7 @@ namespace net.atos.daf.ct2.packageservice
                                          Description = x.Description,
                                          Name = x.Name,
                                          FeatureSetID = x.FeatureSetID,
-                                        // Status = x.Status,
+                                         // Status = x.Status,
                                          Type = x.Type,
                                          State = x.State,
                                          CreatedAt = x.CreatedAt
@@ -247,14 +246,14 @@ namespace net.atos.daf.ct2.packageservice
             try
             {
                 var package = new Package();
-                package.Id = request.PackageId;              
+                package.Id = request.PackageId;
                 package.State = request.State;
                 package = _packageManager.UpdatePackageState(package).Result;
-                    return Task.FromResult(new UpdatePackageStateResponse
-                    {
-                        Message = "Package state Updated ",
-                        PackageStateResponse = request
-                    });               
+                return Task.FromResult(new UpdatePackageStateResponse
+                {
+                    Message = "Package state Updated ",
+                    PackageStateResponse = request
+                });
             }
             catch (Exception ex)
             {

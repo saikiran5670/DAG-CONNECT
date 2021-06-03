@@ -1,10 +1,7 @@
-﻿using Google.Protobuf.Collections;
-using net.atos.daf.ct2.reports.ENUM;
-using net.atos.daf.ct2.reports.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.ENUM;
 
 namespace net.atos.daf.ct2.reportservice.entity
 {

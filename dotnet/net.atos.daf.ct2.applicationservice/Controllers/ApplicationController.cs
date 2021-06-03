@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace net.atos.daf.ct2.applicationservice.Controllers
 {
@@ -15,13 +10,13 @@ namespace net.atos.daf.ct2.applicationservice.Controllers
         [Route("~/")]
         public IActionResult Index()
         {
-            return StatusCode(401, "");            
+            return StatusCode(401, "");
         }
         [HttpGet]
         [Route("~/health-check")]
         public IActionResult CheckHealth()
         {
-            return StatusCode(200,"");
+            return StatusCode(200, "");
         }
     }
 }

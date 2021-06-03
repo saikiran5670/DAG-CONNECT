@@ -1,8 +1,4 @@
-﻿using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {

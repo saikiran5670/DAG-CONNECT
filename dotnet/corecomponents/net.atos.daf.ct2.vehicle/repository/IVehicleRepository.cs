@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.vehicle.entity;
@@ -48,12 +46,12 @@ namespace net.atos.daf.ct2.vehicle.repository
         Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
 
         #region Vehicle Mileage Data
-        Task<IEnumerable<dtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter);
+        Task<IEnumerable<DtoVehicleMileage>> GetVehicleMileage(long startDate, long endDate, bool noFilter);
 
         #endregion
 
         #region Vehicle Namelist Data
-        Task<IEnumerable<dtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
+        Task<IEnumerable<DtoVehicleNamelist>> GetVehicleNamelist(long startDate, long endDate, bool noFilter);
         #endregion
 
         #region Vehicle Visibility

@@ -4,9 +4,7 @@ using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
 using net.atos.daf.ct2.package.entity;
-using net.atos.daf.ct2.package.ENUM;
 using net.atos.daf.ct2.package.repository;
-using System;
 
 namespace net.atos.daf.ct2.package.test
 {
@@ -44,15 +42,15 @@ namespace net.atos.daf.ct2.package.test
 
             var ObjPackage = new Package()
             {
-                Code = "PKG001",               
-               // FeatureSet = new features.entity.FeatureSet() { FeatureSetID = 5 },
+                Code = "PKG001",
+                // FeatureSet = new features.entity.FeatureSet() { FeatureSetID = 5 },
                 FeatureSetID = 1,
                 State = "A",
                 Name = "Standard",
-                Type ="V",
+                Type = "V",
                 Description = "Package with default featureset",
-               // StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
-               // EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
+                // StartDate = Convert.ToDateTime("2019-02-02T12:34:56"),
+                // EndDate = Convert.ToDateTime("2019-02-02T12:34:56")
 
             };
             var resultPackage = _packageRepository.Create(ObjPackage).Result;

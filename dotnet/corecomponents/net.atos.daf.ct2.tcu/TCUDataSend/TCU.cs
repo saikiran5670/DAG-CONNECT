@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TCUSend
 {
-     public class TCU
+    public class TCU
     {
-        private String id;
-        private String brand;
-        private String version;
-
         public TCU()
         {
 
         }
 
-        public TCU(string ID, string Brand, string Version)
+        public TCU(string id, string brand, string version)
         {
-            this.id = ID;
-            this.brand = Brand;
-            this.version = Version;
+            ID = id;
+            Brand = brand;
+            Version = version;
         }
 
-        public string ID { get => id; set => id = value; }
+        public string ID { get;  }
 
-        public string Brand { get => brand; set => brand = value; }
+        public string Brand { get;  }
 
-        public string Version { get => version; set => version = value; }
+        public string Version { get;  }
     }
 }

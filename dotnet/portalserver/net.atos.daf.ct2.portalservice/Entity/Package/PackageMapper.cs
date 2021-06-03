@@ -1,7 +1,7 @@
-﻿using net.atos.daf.ct2.featureservice;
+﻿using System.Linq;
+using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.portalservice.Common;
-using System.Linq;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Package
 {
@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                 Name = request.Name,
                 FeatureSetID = request.FeatureSetID,
                 Description = request.Description,
-               // Status = request.Status,
+                // Status = request.Status,
                 Type = request.Type,
                 State = request.State
 
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         {
 
             var packageRequest = new ImportPackageRequest();
-            foreach (var x in request.packagesToImport)
+            foreach (var x in request.PackagesToImport)
             {
                 var featureSetID = _featureSetMapper.RetrieveFeatureSetIdByName(x.Features).Result;
                 if (featureSetID > 0)
@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
                         FeatureSetID = featureSetID,
                         Description = x.Description,
                         Name = x.Name,
-                      //  Status = x.Status,
+                        //  Status = x.Status,
                         Type = x.Type,
                         State = x.State
                     };

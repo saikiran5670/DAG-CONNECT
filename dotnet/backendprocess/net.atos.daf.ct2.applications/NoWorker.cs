@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
-using net.atos.daf.ct2.email;
 
 namespace net.atos.daf.ct2.applications
-{     
+{
     public class NoWorker : BackgroundService
     {
         private readonly ILogger<PasswordExpiryWorker> _logger;
-        private readonly IAuditTraillib _auditlog;        
-        private readonly IHostApplicationLifetime _hostApplicationLifetime;        
+        private readonly IAuditTraillib _auditlog;
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
-        public NoWorker(ILogger<PasswordExpiryWorker> logger,                        
-                        IAuditTraillib auditlog,                        
+        public NoWorker(ILogger<PasswordExpiryWorker> logger,
+                        IAuditTraillib auditlog,
                         IHostApplicationLifetime hostApplicationLifetime)
         {
-            _logger = logger;            
-            _auditlog = auditlog;            
+            _logger = logger;
+            _auditlog = auditlog;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
 
@@ -36,7 +32,7 @@ namespace net.atos.daf.ct2.applications
             });
             try
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);                
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await _auditlog.AddLogs(new AuditTrail
                 {
                     Created_at = DateTime.Now,
@@ -45,7 +41,7 @@ namespace net.atos.daf.ct2.applications
                     Component_name = "NoWorker",
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
-                    Event_status =  AuditTrailEnum.Event_status.SUCCESS,
+                    Event_status = AuditTrailEnum.Event_status.SUCCESS,
                     Message = "NoWorker process got executed.",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,

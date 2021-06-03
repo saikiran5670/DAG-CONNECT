@@ -83,12 +83,12 @@ export class RouteCalculatingComponent implements OnInit {
   waterHarmChecked : boolean = false;
   othersChecked : boolean = false;
 
-  tollRoadId = 'D';
-  motorWayId ='D';
-  railFerriesId = 'D';
-  tunnelId ='D';
-  dirtRoadId = 'D';
-  boatFerriesId = 'D';
+  tollRoadId : string = undefined;
+  motorWayId : string = undefined;
+  railFerriesId : string = undefined;
+  tunnelId: string = undefined;
+  dirtRoadId : string = undefined;
+  boatFerriesId : string = undefined;
   
 
   getAttributeData : any;
@@ -115,8 +115,23 @@ export class RouteCalculatingComponent implements OnInit {
   strPresentStart: boolean = false;
   strPresentEnd: boolean = false;
 
+  
+  viaAddressPositionLat : any;
+  viaAddressPositionLong : any;
+  viaRoutePlottedPoints : any = [];
+  viaMarker : any;
+
+  
+  vehicleHeightValue: number = 0;
+  vehicleWidthValue: number = 0;
+  vehicleLengthValue: number = 0;
+  vehicleLimitedWtValue: number = 0;
+  vehicleWtPerAxleValue: number = 0;
+
   createFlag : boolean = true;
-  constructor(private here: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
+  routeDistance: number = 0;
+
+  constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
      this.map_id =  config.getSettings("hereMap").app_id;
@@ -164,15 +179,16 @@ export class RouteCalculatingComponent implements OnInit {
         CustomValidators.numberFieldValidation('widthInput',10)
 
       ]});
-    this.initiateDropDownValues();
+    //this.initiateDropDownValues();
     if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
       this.setCorridorData();
       this.createFlag = false;
       this.strPresentStart = true;
       this.strPresentEnd = true;
     }
-    this.subscribeWidthValue()
-   
+    this.subscribeWidthValue();
+    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
     //this.configureAutoCompleteForLocationSearch();
   }
 
@@ -181,8 +197,19 @@ export class RouteCalculatingComponent implements OnInit {
       console.log(x)
       this.corridorWidthKm = Number(x);
       this.corridorWidth = this.corridorWidthKm  * 1000;
-      this.calculateAB();
-   })
+      //this.calculateAB();
+      let drawWidth = this.corridorWidthKm*10;
+      if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
+        this.addTruckRouteShapeToMap(drawWidth);
+      }
+   });
+
+  }
+
+  vehicleSizeFocusOut(){
+    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
+      this.calculateTruckRoute();
+    }
   }
   setCorridorData(){
     let _selectedElementData = this.selectedElementData;
@@ -198,6 +225,15 @@ export class RouteCalculatingComponent implements OnInit {
               }
           })
       }
+      if(_selectedElementData.viaAddressDetail.length > 0){
+        this.viaRouteCount = true;
+        this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
+        _selectedElementData.viaAddressDetail.forEach(element => {
+          this.viaRoutesList.push(element.corridorViaStopName);
+          
+        });
+        this.plotViaPoint(this.viaRoutesList);
+      }
       this.corridorName = _selectedElementData.corridoreName;
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
@@ -210,29 +246,48 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorWidthKm = this.corridorWidth / 1000;
       this.plotStartPoint(this.searchStr);
       this.plotEndPoint(this.searchEndStr);
-      this.calculateAB()
+      this.calculateTruckRoute()
     }
   }
-  vehicleHeightValue: number = 0;
-  vehicleWidthValue: number = 0;
-  vehicleLengthValue: number = 0;
-  vehicleLimitedWtValue: number = 0;
-  vehicleWtPerAxleValue: number = 0;
+
   setAdditionalData(){
     let _data = this.additionalData;
     this.getAttributeData = _data["attribute"];
     this.getExclusionList = _data["exclusion"];
+    
     this.combustibleChecked = this.getAttributeData["isCombustible"];
+    this.combustibleChecked ? this.hazardousMaterial.push('combustible'):'';
     this.corrosiveChecked = this.getAttributeData["isCorrosive"];
+    this.corrosiveChecked ? this.hazardousMaterial.push('corrosive'):'';
+
     this.explosiveChecked = this.getAttributeData["isExplosive"];
+    this.explosiveChecked ? this.hazardousMaterial.push('explosive'):'';
+
     this.flammableChecked = this.getAttributeData["isFlammable"];
+    this.flammableChecked ? this.hazardousMaterial.push('flammable'):'';
+
     this.gasChecked = this.getAttributeData["isGas"];
+    this.gasChecked ? this.hazardousMaterial.push('gas'):'';
+
     this.organicChecked = this.getAttributeData["isOrganic"];
+    this.organicChecked ? this.hazardousMaterial.push('organic'):'';
+
     this.othersChecked = this.getAttributeData["isOther"];
+    this.othersChecked ? this.hazardousMaterial.push('other'):'';
+
     this.poisonChecked = this.getAttributeData["isPoision"];
+    this.poisonChecked ? this.hazardousMaterial.push('poison'):'';
+
     this.poisonInhaleChecked = this.getAttributeData["isPoisonousInhalation"];
+    this.poisonInhaleChecked ? this.hazardousMaterial.push('poisonousInhalation'):'';
+
     this.radioactiveChecked = this.getAttributeData["isRadioActive"];
+    this.radioactiveChecked ? this.hazardousMaterial.push('radioactive'):'';
+
     this.waterHarmChecked = this.getAttributeData["isWaterHarm"];
+    this.waterHarmChecked ? this.hazardousMaterial.push('harmfulToWater'):'';
+
+    
     this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     this.transportDataChecked = _data["isTransportData"];
@@ -276,13 +331,16 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
     this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
+    this.calculateTruckRoute();
+
  }
 
   public ngAfterViewInit() {
     this.initMap();
   }
 
-  initMap(){
+  initMap() {
     let defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
     this.hereMap = new H.Map(this.mapElement.nativeElement,
@@ -292,63 +350,40 @@ export class RouteCalculatingComponent implements OnInit {
       zoom: 4,
       pixelRatio: window.devicePixelRatio || 1
     });
-
     // add a resize listener to make sure that the map occupies the whole container
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
-
     // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-
-
     // Create the default UI components
     var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
   }
 
-  createHomeMarker(){
-    const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#0D7EE7"/>
-    <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.75 13.3394H5.5L13 6.58936L20.5 13.3394H18.25V19.3394H13.75V14.8394H12.25V19.3394H7.75V13.3394ZM16.75 11.9819L13 8.60687L9.25 11.9819V17.8394H10.75V13.3394H15.25V17.8394H16.75V11.9819Z" fill="#436DDC"/>
-    </svg>`
-    return homeMarker;
-  }
-
-  createEndMarker(){
-    const endMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#D50017"/>
-    <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
-    <path d="M13 18.9644C16.3137 18.9644 19 16.5019 19 13.4644C19 10.4268 16.3137 7.96436 13 7.96436C9.68629 7.96436 7 10.4268 7 13.4644C7 16.5019 9.68629 18.9644 13 18.9644Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`
-    return endMarker;
-  }
-
-  createViaMarker(){
-    const viaMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M12.9998 29.6665C18.6665 24.9998 24.3332 19.2591 24.3332 12.9998C24.3332 6.74061 19.2591 1.6665 12.9998 1.6665C6.74061 1.6665 1.6665 6.74061 1.6665 12.9998C1.6665 19.2591 7.6665 25.3332 12.9998 29.6665Z" fill="#0D7EE7"/>
-    <path d="M13 22.6665C18.5228 22.6665 23 18.4132 23 13.1665C23 7.9198 18.5228 3.6665 13 3.6665C7.47715 3.6665 3 7.9198 3 13.1665C3 18.4132 7.47715 22.6665 13 22.6665Z" fill="white"/>
-    <path d="M19.7616 12.6263L14.0759 6.94057C13.9169 6.78162 13.7085 6.70215 13.5 6.70215C13.2915 6.70215 13.0831 6.78162 12.9241 6.94057L7.23842 12.6263C6.92053 12.9444 6.92053 13.4599 7.23842 13.778L12.9241 19.4637C13.0831 19.6227 13.2915 19.7021 13.5 19.7021C13.7085 19.7021 13.9169 19.6227 14.0759 19.4637L19.7616 13.778C20.0795 13.4599 20.0795 12.9444 19.7616 12.6263ZM13.5 18.3158L8.38633 13.2021L13.5 8.08848L18.6137 13.2021L13.5 18.3158ZM11.0625 12.999V15.0303C11.0625 15.1425 11.1534 15.2334 11.2656 15.2334H12.0781C12.1904 15.2334 12.2812 15.1425 12.2812 15.0303V13.4053H14.3125V14.7695C14.3125 14.8914 14.4123 14.9731 14.5169 14.9731C14.5644 14.9731 14.6129 14.9564 14.6535 14.9188L16.7916 12.9452C16.8787 12.8647 16.8787 12.7271 16.7916 12.6466L14.6535 10.673C14.6129 10.6357 14.5644 10.6187 14.5169 10.6187C14.4123 10.6187 14.3125 10.7004 14.3125 10.8223V12.1865H11.875C11.4263 12.1865 11.0625 12.5504 11.0625 12.999Z" fill="#0D7EE7"/>
-    </svg>`
-
-    return viaMarker;
-  }
-
   sliderChanged(){
      // this.corridorWidth = _event.value;
       this.corridorWidthKm = this.corridorWidth / 1000;
       this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
-      this.checkRoutePlot();
+      let drawWidth = this.corridorWidthKm*10;
+      if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
+        this.addTruckRouteShapeToMap(drawWidth);
+      }
+      //this.checkRoutePlot();
+     // this.updateWidth()
+    //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
+    //  // this.calculateAB();
+    //  this.updateWidth()
+
+    // }
+
       //this.calculateRouteFromAtoB();
   }
 
   checkRoutePlot(){
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-      this.calculateAB();
-      //this.calculateNewRoute()
+     // this.calculateAB();
+     // this.calculateNewRoute()
+     this.calculateTruckRoute();
     }
   }
   changeSliderInput(){
@@ -377,6 +412,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.trafficFlowChecked = _checked;
   }
 
+  hazardousMaterial = [];
   attributeCheck(_checked, type) {
     switch (type) {
       case 'explosive':
@@ -403,20 +439,29 @@ export class RouteCalculatingComponent implements OnInit {
       case 'corrosive':
         this.corrosiveChecked = _checked;
         break;
-      case 'poisonInhale':
+      case 'poisonousInhalation':
         this.poisonInhaleChecked = _checked;
         break;
-      case 'waterHarm':
+      case 'harmfulToWater':
         this.waterHarmChecked = _checked;
         break;
-      case 'others':
+      case 'other':
         this.othersChecked = _checked;
         break;
       default:
         break;
     }
+    _checked ? this.hazardousMaterial.push(type) : this.removeAttributeType(type);
+   this.calculateTruckRoute();
+
   }
 
+  removeAttributeType(_type){
+      if(this.hazardousMaterial.indexOf(_type) != -1){
+        this.hazardousMaterial.splice(this.hazardousMaterial.indexOf(_type))
+      }
+      console.log(this.hazardousMaterial)
+  }
   trailerSelected(_event){
     this.selectedTrailerId = _event.value;
   }
@@ -445,6 +490,7 @@ export class RouteCalculatingComponent implements OnInit {
       default:
         break;
     }
+    this.vehicleSizeFocusOut();
   }
 
   createCorridorClicked(){
@@ -461,7 +507,8 @@ export class RouteCalculatingComponent implements OnInit {
       "endLatitude": this.endAddressPositionLat,
       "endLongitude": this.endAddressPositionLong,
       "width": this.corridorWidth,
-      "viaAddressDetails": this.viaRoutePlottedObject,
+      "distance":this.routeDistance,
+      "viaAddressDetails": this.viaRoutePlottedPoints,
       "transportData": this.transportDataChecked,
       "trafficFlow": this.trafficFlowChecked,
       "state": "A",
@@ -484,12 +531,12 @@ export class RouteCalculatingComponent implements OnInit {
         "other": this.othersChecked
       },
       "exclusion": {
-        "tollRoad": this.tollRoadId,
-        "mortorway": this.motorWayId,
-        "boatFerries":this.boatFerriesId,
-        "railFerries": this.railFerriesId,
-        "tunnels": this.tunnelId,
-        "dirtRoad":this.dirtRoadId,
+        "tollRoad": this.tollRoadId ? this.tollRoadId : 'D',
+        "mortorway": this.motorWayId ? this.motorWayId : 'D',
+        "boatFerries":this.boatFerriesId ? this.boatFerriesId : 'D',
+        "railFerries": this.railFerriesId ?  this.railFerriesId : 'D',
+        "tunnels": this.tunnelId ? this.tunnelId : 'D',
+        "dirtRoad":this.dirtRoadId ? this.dirtRoadId : 'D',
       },
       "vehicleSize": {
         "vehicleSizeHeight":this.corridorFormGroup.controls.vehicleHeight.value ? this.corridorFormGroup.controls.vehicleHeight.value : 0,
@@ -539,12 +586,13 @@ export class RouteCalculatingComponent implements OnInit {
   resetValues(){
     if(this.actionType === 'create'){
         
-    this.tollRoadId = 'D';
-    this.motorWayId ='D';
-    this.railFerriesId = 'D';
-    this.tunnelId ='D';
-    this.dirtRoadId = 'D';
-    this.boatFerriesId = 'D';
+    this.selectedTrailerId = undefined;
+    this.tollRoadId = undefined;
+    this.motorWayId =undefined;
+    this.railFerriesId = undefined;
+    this.tunnelId =undefined;
+    this.dirtRoadId = undefined;
+    this.boatFerriesId = undefined;
     this.explosiveChecked = false;
     this.gasChecked = false;
     this.flammableChecked  = false;
@@ -565,8 +613,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
     this.corridorFormGroup.controls.limitedWeight.setValue("");
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
-    this.corridorFormGroup.controls.startaddress.setValue("");
-    this.corridorFormGroup.controls.endaddress.setValue("");
+    this.clearMap();
     }
     else{
       this.setAdditionalData();
@@ -574,11 +621,11 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   clearMap(){
-    if(this.startMarker && this.endMarker ){
-    this.hereMap.removeObjects([this.startMarker,this.endMarker,this.routeOutlineMarker,this.routeCorridorMarker]);
+    if(this.hereMap.getObjects()){
+      this.mapGroup.removeAll();
 
+      //this.hereMap.removeObject(this.mapGroup);
     }
-
   }
 
   onStartFocus(){
@@ -586,8 +633,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentStart = false;
     this.searchStr = null;
     this.startAddressPositionLat = 0;
-    this.hereMap.removeObjects(this.hereMap.getObjects());
-    
+    this.clearMap();
     if(this.searchEndStr){
       this.plotEndPoint(this.searchEndStr);
     }
@@ -598,8 +644,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentEnd = false;
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
-    this.hereMap.removeObjects(this.hereMap.getObjects());
-    
+    this.clearMap();
     if(this.searchStr){
       this.plotStartPoint(this.searchStr);
     }
@@ -637,6 +682,8 @@ export class RouteCalculatingComponent implements OnInit {
     if(selectedAddress){
       let locationId = selectedAddress["originalObject"]["label"]
       this.viaRoutesList.push(locationId)
+      this.viaRoutePlottedPoints = [];
+
       this.plotViaPoint(this.viaRoutesList)
     }
 
@@ -658,23 +705,54 @@ export class RouteCalculatingComponent implements OnInit {
 
 
   // ------------- Map Functions ------------------------//
+  
+  createHomeMarker(){
+    const homeMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#0D7EE7"/>
+    <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.75 13.3394H5.5L13 6.58936L20.5 13.3394H18.25V19.3394H13.75V14.8394H12.25V19.3394H7.75V13.3394ZM16.75 11.9819L13 8.60687L9.25 11.9819V17.8394H10.75V13.3394H15.25V17.8394H16.75V11.9819Z" fill="#436DDC"/>
+    </svg>`
+    return homeMarker;
+  }
+
+  createEndMarker(){
+    const endMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 13.2979C25 22.6312 13 30.6312 13 30.6312C13 30.6312 1 22.6312 1 13.2979C1 10.1153 2.26428 7.06301 4.51472 4.81257C6.76516 2.56213 9.8174 1.29785 13 1.29785C16.1826 1.29785 19.2348 2.56213 21.4853 4.81257C23.7357 7.06301 25 10.1153 25 13.2979Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.9998 29.9644C18.6665 25.2977 24.3332 19.5569 24.3332 13.2977C24.3332 7.03846 19.2591 1.96436 12.9998 1.96436C6.74061 1.96436 1.6665 7.03846 1.6665 13.2977C1.6665 19.5569 7.6665 25.631 12.9998 29.9644Z" fill="#D50017"/>
+    <path d="M13 22.9644C18.5228 22.9644 23 18.7111 23 13.4644C23 8.21765 18.5228 3.96436 13 3.96436C7.47715 3.96436 3 8.21765 3 13.4644C3 18.7111 7.47715 22.9644 13 22.9644Z" fill="white"/>
+    <path d="M13 18.9644C16.3137 18.9644 19 16.5019 19 13.4644C19 10.4268 16.3137 7.96436 13 7.96436C9.68629 7.96436 7 10.4268 7 13.4644C7 16.5019 9.68629 18.9644 13 18.9644Z" stroke="#D50017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`
+    return endMarker;
+  }
+
+  createViaMarker(){
+    const viaMarker = `<svg width="26" height="32" viewBox="0 0 26 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M25 13C25 22.3333 13 30.3333 13 30.3333C13 30.3333 1 22.3333 1 13C1 9.8174 2.26428 6.76515 4.51472 4.51472C6.76516 2.26428 9.8174 1 13 1C16.1826 1 19.2348 2.26428 21.4853 4.51472C23.7357 6.76515 25 9.8174 25 13Z" stroke="#0D7EE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.9998 29.6665C18.6665 24.9998 24.3332 19.2591 24.3332 12.9998C24.3332 6.74061 19.2591 1.6665 12.9998 1.6665C6.74061 1.6665 1.6665 6.74061 1.6665 12.9998C1.6665 19.2591 7.6665 25.3332 12.9998 29.6665Z" fill="#0D7EE7"/>
+    <path d="M13 22.6665C18.5228 22.6665 23 18.4132 23 13.1665C23 7.9198 18.5228 3.6665 13 3.6665C7.47715 3.6665 3 7.9198 3 13.1665C3 18.4132 7.47715 22.6665 13 22.6665Z" fill="white"/>
+    <path d="M19.7616 12.6263L14.0759 6.94057C13.9169 6.78162 13.7085 6.70215 13.5 6.70215C13.2915 6.70215 13.0831 6.78162 12.9241 6.94057L7.23842 12.6263C6.92053 12.9444 6.92053 13.4599 7.23842 13.778L12.9241 19.4637C13.0831 19.6227 13.2915 19.7021 13.5 19.7021C13.7085 19.7021 13.9169 19.6227 14.0759 19.4637L19.7616 13.778C20.0795 13.4599 20.0795 12.9444 19.7616 12.6263ZM13.5 18.3158L8.38633 13.2021L13.5 8.08848L18.6137 13.2021L13.5 18.3158ZM11.0625 12.999V15.0303C11.0625 15.1425 11.1534 15.2334 11.2656 15.2334H12.0781C12.1904 15.2334 12.2812 15.1425 12.2812 15.0303V13.4053H14.3125V14.7695C14.3125 14.8914 14.4123 14.9731 14.5169 14.9731C14.5644 14.9731 14.6129 14.9564 14.6535 14.9188L16.7916 12.9452C16.8787 12.8647 16.8787 12.7271 16.7916 12.6466L14.6535 10.673C14.6129 10.6357 14.5644 10.6187 14.5169 10.6187C14.4123 10.6187 14.3125 10.7004 14.3125 10.8223V12.1865H11.875C11.4263 12.1865 11.0625 12.5504 11.0625 12.999Z" fill="#0D7EE7"/>
+    </svg>`
+
+    return viaMarker;
+  }
+
   plotStartPoint(_locationId){
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
-    this.here.getLocationDetails(geocodingParameters).then((result) => {
+    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
       this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createHomeMarker();
       let markerSize = { w: 26, h: 32 };
-      const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-  
+      const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } }); 
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
-      var group = new H.map.Group();
-      this.hereMap.addObject(this.startMarker);
-      //this.hereMap.getViewModel().setLookAtData({zoom: 8});
-      //this.hereMap.setZoom(8);
-      this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+      this.mapGroup.addObject(this.startMarker)
+      this.hereMap.addObject(this.mapGroup);
+      this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()});
+
+      //this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
       this.checkRoutePlot();
 
     });
@@ -684,41 +762,37 @@ export class RouteCalculatingComponent implements OnInit {
     let geocodingParameters = {
 		  searchText: _locationId ,
 		};
-    this.here.getLocationDetails(geocodingParameters).then((result) => {
+    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
       this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
       this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
       let houseMarker = this.createEndMarker();
       let markerSize = { w: 26, h: 32 };
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-  
       this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
-      this.hereMap.addObject(this.endMarker);
-     // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-      //this.hereMap.setZoom(8);
-      this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
+      this.mapGroup.addObject(this.endMarker)
+      this.hereMap.addObject(this.mapGroup);
+      this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()});
+
+    //  this.hereMap.addObject(this.endMarker);
+    //  this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
       this.checkRoutePlot();
 
     });
     
   }
 
-  viaAddressPositionLat : any;
-  viaAddressPositionLong : any;
-  viaRoutePlottedObject : any = [];
-  viaMarker : any;
   plotViaPoint(_viaRouteList){
-    this.viaRoutePlottedObject = [];
     if(this.viaMarker){
-      this.hereMap.removeObjects([this.viaMarker]);
-      this.viaMarker = null;
+      this.mapGroup.removeObject(this.viaMarker);
     }
+   // 
     if(_viaRouteList.length >0){
       for(var i in _viaRouteList){
 
         let geocodingParameters = {
           searchText: _viaRouteList[i],
         };
-        this.here.getLocationDetails(geocodingParameters).then((result) => {
+        this.hereService.getLocationDetails(geocodingParameters).then((result) => {
           this.viaAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
           this.viaAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
           let viaMarker = this.createViaMarker();
@@ -726,15 +800,17 @@ export class RouteCalculatingComponent implements OnInit {
           const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       
           this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-          this.hereMap.addObject(this.viaMarker);
+          this.mapGroup.addObject(this.viaMarker);
          // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
           //this.hereMap.setZoom(8);
-          this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
-          this.viaRoutePlottedObject.push({
-            "viaRoutName": _viaRouteList[i],
-            "latitude": this.viaAddressPositionLat,
-            "longitude": this.viaAddressPositionLat
-          });
+        //  this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
+          if(this.actionType === 'create'){
+            this.viaRoutePlottedPoints.push({
+              "viaRoutName": _viaRouteList[i],
+              "latitude": this.viaAddressPositionLat,
+              "longitude": this.viaAddressPositionLat
+            });
+          }
         this.checkRoutePlot();
     
         });
@@ -779,141 +855,109 @@ export class RouteCalculatingComponent implements OnInit {
     this.dataService = this.suggestionData;
     console.log(this.dataService);
   }
-  calculateAB(){
-    let viaPoints = [];
-    for(var i in this.viaRoutePlottedObject){
-      viaPoints.push(`${this.viaRoutePlottedObject[i]["latitude"]},${this.viaRoutePlottedObject[i]["longitude"]}`)
-    }
-    let routeRequestParams = {}
-    if(viaPoints.length > 0){
-      
-    routeRequestParams = {
-      'routingMode': 'fast',
-      'transportMode': 'truck',
-      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`, 
-      'via': viaPoints,//`${this.viaAddressPositionLat},${this.viaAddressPositionLong}`,
-      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
-      'return': 'polyline'
-    };
-    }
-    else{
-      
-    routeRequestParams = {
-      'routingMode': 'fast',
-      'transportMode': 'truck',
-      'origin': `${this.startAddressPositionLat},${this.startAddressPositionLong}`,
-      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`, 
-      'return': 'polyline'
-    };
-    }
-    // if(viaPoints.length>0){
-    //   routeRequestParams["via"] = new H.service.Url.MultiValueQueryParameter(viaPoints);
-    // }
-    this.here.calculateRoutePoints(routeRequestParams).then((data)=>{
-      
-       this.addRouteShapeToMap(data);
-    },(error)=>{
-       console.error(error);
-    })
-  }
 
-  addRouteShapeToMap(result){
-    var group = new H.map.Group();
-    if(this.routeOutlineMarker){
-      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-      this.routeOutlineMarker = null;
-      this.routeCorridorMarker = null;
-    }
-    result.routes[0].sections.forEach((section) =>{
-      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
-      // Create a polyline to display the route:
-     // if (this.corridorWidthKm > 0) {
-       let drawWidth = this.corridorWidthKm * 10;
-        this.routeOutlineMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: drawWidth,
-            strokeColor: '#b5c7ef',
-          }
-        });
-        // Create a patterned polyline:
-        this.routeCorridorMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: 3,
-            strokeColor: '#436ddc'
-          }
-        }
-        );
-        // create a group that represents the route line and contains
-        // outline and the pattern
-        var routeLine = new H.map.Group();
-        // routeLine.addObjects([routeOutline, routeArrows]);
-        this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-        this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
-
-      // }
-      // else{
-      //   this.routeOutlineMarker = null;
-      //   this.routeCorridorMarker = null;
-
-      // }
-
-    });
-  
-  }
-  //
-
-  calculateNewRoute(){
-    if(this.routeOutlineMarker){
-      this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-      this.routeOutlineMarker = null;
-      this.routeCorridorMarker = null;
-    }
-    let param = 
-      'waypoint0='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
-      '&waypoint1='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
-      '&representation=display'+
-      '&mode=fastest;truck'+
-      '&app_id='+this.map_id+
-      '&app_code='+this.map_code
-
-    this.here.getRoutes(param).subscribe((data)=>{
-        var drawPoints = data.response.route[0].shape;
-        this.plotRoute(drawPoints);
-    })
-  }
-
-  plotRoute(_points){
-    var lineString = new H.geo.LineString();
-    _points.forEach(element => {
-    let _split = element.split(',')
-    lineString.pushPoint({lat : _split[0], lng: _split[1]});
-    });
+  updateWidth(){
     let drawWidth = this.corridorWidthKm * 10;
-    this.routeOutlineMarker = new H.map.Polyline(lineString, {
-      style: {
-        lineWidth: drawWidth,
-        strokeColor: '#b5c7ef',
-      }
-    });
-    // Create a patterned polyline:
-    this.routeCorridorMarker = new H.map.Polyline(lineString, {
-      style: {
-        lineWidth: 3,
-        strokeColor: '#436ddc'
-      }
-    }
-    );
-    var routeLine = new H.map.Group();
-    // routeLine.addObjects([routeOutline, routeArrows]);
-    this.hereMap.addObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
-    this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
-
-      // this.hereMap.addObject(new H.map.Polyline(lineString, {
-      //   style: { lineWidth: 3, strokeColor: 'blue' }
-      // }));
-   
+    let allObj = this.mapGroup.getObjects()
+    console.log(allObj)
     
   }
 
+  /////////////////////////// v8 calculate ////////////////////
+  routePoints:any;
+  calculateTruckRoute(){
+    let lineWidth = this.corridorWidthKm;
+    let routeRequestParams = 
+    'origin='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
+    '&destination='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
+    '&return=polyline,summary,travelSummary'+
+    '&routingMode=fast'+
+    '&transportMode=truck'+
+    '&apikey='+this.map_key
+
+    if(this.viaRoutePlottedPoints.length>0){
+      this.viaRoutePlottedPoints.forEach(element => {
+      routeRequestParams += '&via='+ `${element["latitude"]},${element["longitude"]}`
+      });
+    }
+
+    if(this.selectedTrailerId){
+      routeRequestParams += '&truck[trailerCount]='+ this.selectedTrailerId;
+    }
+    if(this.tunnelId){
+      routeRequestParams += '&truck[tunnelCategory]='+ this.tunnelId;
+    }
+    if(this.corridorFormGroup.controls.vehicleHeight.value){
+      routeRequestParams += '&truck[height]='+ this.corridorFormGroup.controls.vehicleHeight.value;
+    }
+    if(this.corridorFormGroup.controls.vehicleWidth.value){
+      routeRequestParams += '&truck[width]='+ this.corridorFormGroup.controls.vehicleWidth.value;
+    }
+    if(this.corridorFormGroup.controls.vehicleLength.value){
+      routeRequestParams += '&truck[length]='+ this.corridorFormGroup.controls.vehicleLength.value;
+    }
+    if(this.corridorFormGroup.controls.limitedWeight.value){
+      routeRequestParams += '&truck[grossWeight]='+ this.corridorFormGroup.controls.limitedWeight.value;
+    }
+    if(this.corridorFormGroup.controls.weightPerAxle.value){
+      routeRequestParams += '&truck[weightPerAxle]='+ this.corridorFormGroup.controls.weightPerAxle.value;
+    }
+
+    if(this.hazardousMaterial.length > 0){
+      routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+    }
+    this.routePoints= [];
+    this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
+      if(data && data.routes){
+
+        this.routePoints = data.routes[0];
+          this.addTruckRouteShapeToMap(lineWidth);
+        }
+      
+    })
+
+  }
+
+  addTruckRouteShapeToMap(lineWidth?){
+    let pathWidth= this.corridorWidthKm * 10;
+    
+    if(this.routePoints.sections){
+    this.routePoints.sections.forEach((section) => {
+      // decode LineString from the flexible polyline
+      this.routeDistance = section.travelSummary.length;
+      let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
+  
+       // Create a corridor width to display the route:
+       let corridorPath = new H.map.Polyline(linestring, {
+        style:  {
+          lineWidth: pathWidth,
+          strokeColor: '#b5c7ef'
+        }
+      });
+      // Create a polyline to display the route:
+      let polylinePath = new H.map.Polyline(linestring, {
+        style:  {
+          lineWidth: 3,
+          strokeColor: '#436ddc'
+        }
+      });
+  
+      // Add the polyline to the map
+      this.mapGroup.addObjects([corridorPath,polylinePath]);
+      this.hereMap.addObject(this.mapGroup);
+      // And zoom to its bounding rectangle
+      this.hereMap.getViewModel().setLookAtData({
+         bounds: this.mapGroup.getBoundingBox()
+      });
+    });
+  }
+  }
+
+
+
+
+
+
+  //////////////////////////////////////////////////////////////
 }

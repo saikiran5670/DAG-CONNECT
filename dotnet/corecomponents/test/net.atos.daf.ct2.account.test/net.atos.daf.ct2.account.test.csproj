@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\net.atos.daf.ct2.accountpreference\net.atos.daf.ct2.accountpreference.csproj" />
     <ProjectReference Include="..\..\net.atos.daf.ct2.account\net.atos.daf.ct2.account.csproj" />
     <ProjectReference Include="..\..\net.atos.daf.ct2.identity\net.atos.daf.ct2.identity.csproj" />
   </ItemGroup>

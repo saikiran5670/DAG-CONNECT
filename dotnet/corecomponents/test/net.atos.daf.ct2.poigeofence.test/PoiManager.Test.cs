@@ -1,10 +1,10 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.poigeofence.repository;
-using net.atos.daf.ct2.poigeofence.entity;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 
 namespace net.atos.daf.ct2.poigeofence.test
 {
@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.poigeofence.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
+        private readonly IDataMartDataAccess _dataMartDataAccess;
         private readonly PoiRepository _poiRepository;
         private readonly IPoiManager _iPoiManager;
 
@@ -22,7 +23,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-           // _poiRepository = new PoiRepository(_dataAccess);
+             _poiRepository = new PoiRepository(_dataAccess,_dataMartDataAccess);
             _iPoiManager = new PoiManager(_poiRepository);
         }
 
@@ -99,7 +100,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                 //TripId = 10,
                 Type = "POI",
                 Zipcode = "411057",
-                  
+
             };
             var resultPackage = _iPoiManager.UpdatePOI(ObjPoi).Result;
             Assert.IsNotNull(resultPackage);
@@ -111,7 +112,7 @@ namespace net.atos.daf.ct2.poigeofence.test
         [TestMethod]
         public void GetPoiTest()
         {
-            var poiFilter = new POI() {  };
+            var poiFilter = new POI() { };
             var result = _iPoiManager.GetAllPOI(poiFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);

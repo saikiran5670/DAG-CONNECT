@@ -1,27 +1,26 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofence.ENUM;
 using net.atos.daf.ct2.utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofence.repository
 {
 
     public class GeofenceRepository : IGeofenceRepository
     {
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
         private readonly ICategoryRepository _categoryRepository;
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog _log =
           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public GeofenceRepository(IDataAccess _dataAccess, ICategoryRepository categoryRepository)
+        public GeofenceRepository(IDataAccess dataAccess, ICategoryRepository categoryRepository)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
             _categoryRepository = categoryRepository;
         }
 
@@ -54,7 +53,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     var OrganizationId = geofence.OrganizationId;
                     if (OrganizationId > 0)
                     {
-                        categoryId = await GetCategoryId(OrganizationId, categoryId);
+                        categoryId = await GetCategoryId(OrganizationId);
                         if (categoryId == 0)
                         {
                             geofence.IsFailed = true;
@@ -100,7 +99,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, width, state, created_at, created_by)
 	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @width, @state, @created_at, @created_by) RETURNING id";
 
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
                 geofence.IsFailed = false;
                 geofence.IsAdded = true;
@@ -122,15 +121,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             nodeparameter.Add("@trip_id", string.IsNullOrEmpty(item.TripId) ? null : item.TripId);
                             string nodeQuery = @"INSERT INTO master.nodes(landmark_id, seq_no, latitude, longitude, state, created_at, created_by,address,trip_id)
 	                                VALUES (@landmark_id, @seq_no, @latitude, @longitude, @state, @created_at, @created_by,@address,@trip_id) RETURNING id";
-                            var nodeId = await dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
+                            var nodeId = await _dataAccess.ExecuteScalarAsync<int>(nodeQuery, nodeparameter);
                             item.Id = nodeId;
                             item.IsFailed = false;
                             item.IsAdded = true;
                         }
                         catch (Exception ex)
                         {
-                            log.Info("Creating Polygon geofence method for Node in repository failed for Name {geofence.Name}:");
-                            log.Error(ex.ToString());
+                            _log.Info("Creating Polygon geofence method for Node in repository failed for Name {geofence.Name}:");
+                            _log.Error(ex.ToString());
                             item.IsFailed = true;
                             item.Message = $"There was an error inserting node data";
                             if (!IsBulkImport) throw;
@@ -141,8 +140,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info("Creating Polygon geofence method in repository failed for Name {geofence.Name}:");
-                log.Error(ex.ToString());
+                _log.Info("Creating Polygon geofence method in repository failed for Name {geofence.Name}:");
+                _log.Error(ex.ToString());
                 geofence.IsFailed = true;
                 geofence.Message = $"There was an error inserting polygon data";
                 if (!IsBulkImport) throw;
@@ -152,7 +151,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<bool> DeleteGeofence(GeofenceDeleteEntity objGeofenceDeleteEntity)
         {
-            log.Info("Delete geofenceIds method called in repository");
+            _log.Info("Delete geofenceIds method called in repository");
             try
             {
                 if (objGeofenceDeleteEntity.GeofenceId.Count > 0)
@@ -165,18 +164,18 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@modified_by", objGeofenceDeleteEntity.ModifiedBy);
                         parameter.Add("@modified_at", updatedTime);
                         var queryLandmark = @"update master.landmark set state='D',modified_at=@modified_at,modified_by=@modified_by where id=@id";
-                        await dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
+                        await _dataAccess.ExecuteScalarAsync<int>(queryLandmark, parameter);
 
                         var queryNodes = @"update master.nodes set state='D',modified_at=@modified_at,modified_by=@modified_by where landmark_id=@id";
-                        await dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
+                        await _dataAccess.ExecuteScalarAsync<int>(queryNodes, parameter);
                     }
                 }
                 return true;
             }
             catch (System.Exception ex)
             {
-                log.Info("Delete geofenceIds method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("Delete geofenceIds method in repository failed :");
+                _log.Error(ex.ToString());
                 // throw;
                 return false;
             }
@@ -184,7 +183,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
         public async Task<IEnumerable<GeofenceEntityResponce>> GetAllGeofence(GeofenceEntityRequest geofenceEntityRequest)
         {
-            log.Info("Get GetAllGeofence method called in repository");
+            _log.Info("Get GetAllGeofence method called in repository");
             GeofenceEntityRequest geofenceEntityRequestList = new GeofenceEntityRequest();
             try
             {
@@ -198,10 +197,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
 								 left join master.category s on L.sub_category_id = s.id and L.state <>'D' and s.state <>'D'
 	                             where L.state='A' and L.type in ('C','O')";
                 var parameter = new DynamicParameters();
-                if (geofenceEntityRequest.organization_id > 0)
+                if (geofenceEntityRequest.Organization_id > 0)
                 {
                     //It will return organization specific geofence along with global geofence 
-                    parameter.Add("@organization_id", geofenceEntityRequest.organization_id);
+                    parameter.Add("@organization_id", geofenceEntityRequest.Organization_id);
                     query = $"{query} and (L.organization_id=@organization_id or L.organization_id is null)";
                 }
                 else
@@ -209,29 +208,29 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     //only return global geofence 
                     query = $"{query} and L.organization_id is null ";
                 }
-                if (geofenceEntityRequest.category_id > 0)
+                if (geofenceEntityRequest.Category_id > 0)
                 {
-                    parameter.Add("@category_id", geofenceEntityRequest.category_id);
+                    parameter.Add("@category_id", geofenceEntityRequest.Category_id);
                     query = $"{query} and L.category_id=@category_id";
                 }
-                if (geofenceEntityRequest.sub_category_id > 0)
+                if (geofenceEntityRequest.Sub_category_id > 0)
                 {
-                    parameter.Add("@sub_category_id", geofenceEntityRequest.sub_category_id);
+                    parameter.Add("@sub_category_id", geofenceEntityRequest.Sub_category_id);
                     query = $"{query} and L.sub_category_id=@sub_category_id";
                 }
-                return await dataAccess.QueryAsync<GeofenceEntityResponce>(query, parameter);
+                return await _dataAccess.QueryAsync<GeofenceEntityResponce>(query, parameter);
             }
             catch (System.Exception ex)
             {
-                log.Info("GetAllGeofence  method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("GetAllGeofence  method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
         public async Task<IEnumerable<Geofence>> GetGeofenceByGeofenceID(int organizationId, int geofenceId)
         {
-            log.Info("Get GetAllGeofence method called in repository");
+            _log.Info("Get GetAllGeofence method called in repository");
             GeofenceEntityRequest geofenceEntityRequestList = new GeofenceEntityRequest();
             try
             {
@@ -272,12 +271,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@organization_id", organizationId);
                     query = $"{query} and L.organization_id=@organization_id ";
                 }
-                return await dataAccess.QueryAsync<Geofence>(query, parameter);
+                return await _dataAccess.QueryAsync<Geofence>(query, parameter);
             }
             catch (System.Exception ex)
             {
-                log.Info("GetGeofenceByGeofenceID  method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("GetGeofenceByGeofenceID  method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -320,7 +319,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     var OrganizationId = geofences.Where(w => w.OrganizationId > 0).FirstOrDefault()?.OrganizationId ?? 0;
                     if (OrganizationId > 0)
                     {
-                        categoryId = await GetCategoryId(OrganizationId, categoryId);
+                        categoryId = await GetCategoryId(OrganizationId);
                         if (categoryId == 0)
                         {
                             foreach (var geofence in geofences)
@@ -382,21 +381,21 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         string query = @"INSERT INTO master.landmark(organization_id, category_id, sub_category_id, name, address, city, country, zipcode, type, latitude, longitude, distance, width, state, created_at, created_by)
 	                              VALUES (@organization_id, @category_id, @sub_category_id, @name, @address, @city, @country, @zipcode, @type, @latitude, @longitude, @distance, @width, @state, @created_at, @created_by) RETURNING id";
 
-                        var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                        var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         item.Id = id;
                         item.IsFailed = false;
                         item.IsAdded = true;
                     }
                     catch (Exception ex)
                     {
-                        log.Info($"Creating Circuler geofence method in repository failed Name {item.Name}:");
-                        log.Error(ex.ToString());
+                        _log.Info($"Creating Circuler geofence method in repository failed Name {item.Name}:");
+                        _log.Error(ex.ToString());
                         item.IsFailed = true;
                         item.Message = $"There was an error inserting Circuler geofence data.";
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -432,10 +431,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                WHERE id=@id
                                     and state='A'
 	                                returning id;";
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -453,15 +452,16 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 foreach (var item in geofences.Where(w => w.Type == "O" || w.Type == "o"))
                     geofenceList.Add(await CreatePolygonGeofence(item, true));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
             return geofenceList;
         }
 
-        private async Task<int> GetCategoryId(int OrganizationId, int categoryId)
+        private async Task<int> GetCategoryId(int OrganizationId)
         {
+            int categoryId;
             var categoryList = await _categoryRepository.GetCategory(new CategoryFilter { OrganizationId = OrganizationId, Type = ((char)CategoryType.Category).ToString(), CategoryName = "BulkImportGeofence" });
             categoryId = categoryList.FirstOrDefault()?.Id ?? 0;
             if (!(categoryId > 0))
@@ -502,7 +502,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         query = query + " and organization_id=@organization_id ";
                     }
                 }
-                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var groupid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (groupid > 0)
                 {
                     geofenceRequest.Exists = true;
@@ -510,7 +510,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 return geofenceRequest;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -520,7 +520,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                string dbCirGeofenceName = await dataAccess.QuerySingleAsync<string>("SELECT name FROM master.landmark where id=@id", new { id = geofence.Id });
+                string dbCirGeofenceName = await _dataAccess.QuerySingleAsync<string>("SELECT name FROM master.landmark where id=@id", new { id = geofence.Id });
                 if (!String.Equals(dbCirGeofenceName, geofence.Name))
                 {
                     geofence = await Exists(geofence);
@@ -548,10 +548,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                WHERE id=@id
                                     and state='A'
 	                                returning id;";
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 geofence.Id = id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -595,7 +595,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                                   ,modified_by=@modified_by
 	                                WHERE State = 'A' and type=@type and name=@name and organization_id = @organization_id
 	                                returning id;";
-                var id = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (id > 0)
                 {
                     geofence.Id = id;
@@ -610,8 +610,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                log.Info($"Updating geofence for Bulk import method in repository failed Name {geofence.Name}:");
-                log.Error(ex.ToString());
+                _log.Info($"Updating geofence for Bulk import method in repository failed Name {geofence.Name}:");
+                _log.Error(ex.ToString());
                 geofence.IsFailed = true;
                 geofence.Message = $"There was an error updating geofence data.";
             }
@@ -753,7 +753,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 }
                 Dictionary<int, Geofence> geofencelookup = new Dictionary<int, Geofence>();
                 var nodelookup = new Dictionary<int, Nodes>();
-                dynamic result = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 List<Geofence> geofencelst = new List<Geofence>();
                 Geofence geofence = new Geofence();
                 Nodes node = new Nodes();
@@ -775,15 +775,15 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         {
                             node = new Nodes();
                             node.Id = item.nodeid;
-                            node.LandmarkId = item.landmarkid != null ? item.landmarkid : 0;
-                            node.SeqNo = item.seqno != null ? item.seqno : 0;
+                            node.LandmarkId = item.landmarkid ?? 0;
+                            node.SeqNo = item.seqno ?? 0;
                             node.Latitude = item.nodelatitude != null ? Convert.ToDouble(item.nodelatitude) : 0;
                             node.Longitude = item.nodelongitude != null ? Convert.ToDouble(item.nodelongitude) : 0;
                             node.State = string.IsNullOrEmpty(item.nodestate) ? item.nodestate : string.Empty;
-                            node.CreatedAt = item.nodecreatedat != null ? item.nodecreatedat : 0;
-                            node.CreatedBy = item.nodecreatedby != null ? item.nodecreatedby : 0;
-                            node.ModifiedAt = item.nodemodifiedat != null ? item.nodemodifiedat : 0;
-                            node.ModifiedBy = item.nodemodifiedby != null ? item.nodemodifiedby : 0;
+                            node.CreatedAt = item.nodecreatedat ?? 0;
+                            node.CreatedBy = item.nodecreatedby ?? 0;
+                            node.ModifiedAt = item.nodemodifiedat ?? 0;
+                            node.ModifiedBy = item.nodemodifiedby ?? 0;
                             //add node to exisitng geofence
                             geofence.Nodes.Add(node);
                             //add distinct node to node dictionary.
@@ -800,8 +800,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (System.Exception ex)
             {
-                log.Info("GetGeofenceByGeofenceID  method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("GetGeofenceByGeofenceID  method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -809,10 +809,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             Geofence geofence = new Geofence();
             geofence.Id = record.id;
-            geofence.OrganizationId = record.organizationid != null ? record.organizationid : 0;
-            geofence.CategoryId = record.categoryid != null ? record.categoryid : 0;
+            geofence.OrganizationId = record.organizationid ?? 0;
+            geofence.CategoryId = record.categoryid ?? 0;
             geofence.CategoryName = !string.IsNullOrEmpty(record.categoryname) ? record.categoryname : string.Empty;
-            geofence.SubCategoryId = record.subcategoryid != null ? record.subcategoryid : 0;
+            geofence.SubCategoryId = record.subcategoryid ?? 0;
             geofence.SubCategoryName = !string.IsNullOrEmpty(record.subcategoryname) ? record.subcategoryname : string.Empty;
             geofence.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
             geofence.Address = !string.IsNullOrEmpty(record.address) ? record.address : string.Empty;
@@ -823,12 +823,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
             geofence.Latitude = Convert.ToDouble(record.latitude);
             geofence.Longitude = Convert.ToDouble(record.logitude);
             geofence.Distance = Convert.ToDouble(record.distance);
-            geofence.Width = record.Width != null ? record.Width : 0;
-            geofence.CreatedAt = record.createdat != null ? record.createdat : 0;
+            geofence.Width = record.Width ?? 0;
+            geofence.CreatedAt = record.createdat ?? 0;
             geofence.State = record.state;
-            geofence.CreatedBy = record.createdby != null ? record.createdby : 0;
-            geofence.ModifiedAt = record.modifiedat != null ? record.modifiedat : 0;
-            geofence.ModifiedBy = record.modifiedby != null ? record.modifiedby : 0;
+            geofence.CreatedBy = record.createdby ?? 0;
+            geofence.ModifiedAt = record.modifiedat ?? 0;
+            geofence.ModifiedBy = record.modifiedby ?? 0;
             return geofence;
         }
         #endregion

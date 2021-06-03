@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.email.Entity
 {
@@ -10,7 +9,7 @@ namespace net.atos.daf.ct2.email.Entity
         {
             Subject = " ";
         }
-         public Dictionary<string, string> ToAddressList { get; set; }
+        public Dictionary<string, string> ToAddressList { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
         public string ContentMimeType { get; set; }
@@ -19,4 +18,4 @@ namespace net.atos.daf.ct2.email.Entity
         public Guid? TokenSecret { get; set; }
         public int RemainingDaysToExpire { get; set; }
     }
-} 
+}

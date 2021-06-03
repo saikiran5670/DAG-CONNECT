@@ -11,10 +11,6 @@ using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
 using net.atos.daf.ct2.package;
 using net.atos.daf.ct2.package.repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.packageservice
 {
@@ -30,7 +26,7 @@ namespace net.atos.daf.ct2.packageservice
         }
         public void ConfigureServices(IServiceCollection services)
         {
-             
+
             services.AddGrpc();
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
@@ -67,8 +63,6 @@ namespace net.atos.daf.ct2.packageservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
-                                                  .RequireCors("AllowAll");
                 endpoints.MapGrpcService<PackageManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
