@@ -309,6 +309,8 @@ export class TripReportComponent implements OnInit {
     this.updateDataSource(this.tripData);
     this.resetTripFormControlValue();
     this.tableInfoObj = {};
+    this.advanceFilterOpen = false;
+    this.selectedPOI.clear();
   }
 
   resetTripFormControlValue(){

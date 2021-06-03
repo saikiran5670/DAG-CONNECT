@@ -23,7 +23,7 @@
             <mat-cell *matCellDef="let row" class="max-width-10-per">
               <mat-checkbox (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForColumns.toggle(row) : null'
-                [checked]="selectionForColumns.isSelected(row) || row.state ==='A'" [aria-label]='checkboxLabelForColumns(row)' [disabled] = '!editFlag'>
+                [checked]="selectionForColumns.isSelected(row)" [aria-label]='checkboxLabelForColumns(row)' [disabled] = '!editFlag'>
               </mat-checkbox>
             </mat-cell>
           </ng-container>
