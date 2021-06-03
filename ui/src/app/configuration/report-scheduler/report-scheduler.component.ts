@@ -245,7 +245,7 @@ export class ReportSchedulerComponent implements OnInit {
   onDeleteReportScheduler(item: any) {
     const options = {
       title: this.translationData.lblDeleteReportScheduler || "Delete Report Scheduler",
-      message: this.translationData.lblAreousureyouwanttodeleteReportScheduler || "Are you sure you want to delete '$' report scheduler?",
+      message: this.translationData.lblAreousureyouwanttodeleteReportScheduler || "Are you sure you want to delete report scheduler?",
       cancelText: this.translationData.lblCancel || "Cancel",
       confirmText: this.translationData.lblDelete || "Delete"
     };

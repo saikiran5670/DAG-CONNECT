@@ -12,6 +12,12 @@
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
                     <div fxLayoutAlign="end" class='full-width'>
+                        <mat-select class="matSelect"placeholder="{{ orgName }}"
+                        (selectionChange)="applyFilterOnOrganization($event.value)">
+                        <mat-option *ngFor="let options of organizationList" [value]="options.id"  matTooltip="{{orgName}}">
+                            {{options.name}}
+                          </mat-option>
+                        </mat-select>
                         <a class="navIcon fullScreen">
                             <mat-icon aria-hidden="false" aria-label="fullscreen"
                                 (click)="isFullScreen ? exitFullScreen() : fullScreen()"
