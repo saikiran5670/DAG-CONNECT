@@ -12,10 +12,11 @@ import { ReportService } from 'src/app/services/report.service';
 
 export class ReportsPreferencesComponent implements OnInit {
   localStLanguage: any;
+  displayMessage: any = '';
   @Input() translationData: any = {};
   updateMsgVisible: boolean = false;
   initData: any = [];
-  displayedColumns = ['All','name'];
+  displayedColumns = ['All','translatedName'];
   showLoadingIndicator: any = false;
   dataSource: any;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -25,6 +26,7 @@ export class ReportsPreferencesComponent implements OnInit {
   selectionForColumns = new SelectionModel(true, []);
   showReport: boolean = false;
   editFlag: boolean = false;
+  tripReportId = 1; //- Trip report
 
   constructor(  private reportService: ReportService, ) { }
 
@@ -33,13 +35,34 @@ export class ReportsPreferencesComponent implements OnInit {
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
+    this.translationUpdate();
     this.loadReportData();
+  }
+
+  translationUpdate(){
+    this.translationData.da_report_details_averageweight = 'Average Weight';
+    this.translationData.da_report_details_vin = 'VIN';
+    this.translationData.da_report_details_vehiclename = 'Vehicle Name';
+    this.translationData.da_report_details_alerts = 'Alerts';
+    this.translationData.da_report_details_registrationnumber = 'Registration Number';
+    this.translationData.da_report_details_events = 'Events';
+    this.translationData.da_report_details_odometer = 'Odometer';
+    this.translationData.da_report_details_averagespeed = 'Average Speed';
+    this.translationData.da_report_details_drivingtime = 'Driving Time';
+    this.translationData.da_report_details_fuelconsumed = 'Fuel consumed';
+    this.translationData.da_report_details_startposition = 'Start Position';
+    this.translationData.da_report_details_idleduration = 'Idle Duration';
+    this.translationData.da_report_details_startdate = 'Start Date';
+    this.translationData.da_report_details_distance = 'Distance';
+    this.translationData.da_report_details_enddate = 'End Date';
+    this.translationData.da_report_details_endposition = 'End Position';
   }
 
   loadReportData(){
     this.showLoadingIndicator = true;
-    this.reportService.getUserPreferenceReport(1,this.accountId,this.accountOrganizationId).subscribe((data : any) => {
+    this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data["userPreferences"];
+      this.initData = this.getTranslatedColumnName(this.initData);
       this.setColumnCheckbox();
       this.hideloader();
       this.updatedTableData(this.initData);
@@ -50,7 +73,19 @@ export class ReportsPreferencesComponent implements OnInit {
     });
   }
 
+  getTranslatedColumnName(prefData: any){
+    prefData.forEach(element => {
+      if(this.translationData[element.key]){
+        element.translatedName = this.translationData[element.key];  
+      }else{
+        element.translatedName = this.getName(element.name);   
+      }
+    });
+    return prefData;
+  }
+
   setColumnCheckbox(){
+    this.selectionForColumns.clear();
     this.initData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForColumns.select(element);
@@ -121,7 +156,48 @@ export class ReportsPreferencesComponent implements OnInit {
   }
 
   onConfirm(){
-    this.editFlag = false;
+    let _dataArr: any = [];
+    this.initData.forEach(element => {
+      let search = this.selectionForColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(search.length > 0){
+        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A" });
+      }else{
+        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I" });
+      }
+    });
+
+    let objData: any = {
+      accountId: this.accountId,
+      reportId: this.tripReportId,
+      organizationId: this.accountOrganizationId,
+      createdAt: 0,
+      modifiedAt: 0,
+      type: "D", //-- For trip report
+      chartType: "D", //-- 'chartType' based on dashboard pref chart-Type. like Doughnut/Pie/Line/Bar etc
+      atributesShowNoShow: _dataArr
+    }
+    this.reportService.createTripReportPreference(objData).subscribe((tripPrefData: any) => {
+      this.loadReportData();
+      this.successMsgBlink(this.getSuccessMsg());
+      this.editFlag = false;
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
+  successMsgBlink(msg: any){
+    this.updateMsgVisible = true;
+    this.displayMessage = msg;
+    setTimeout(() => {  
+      this.updateMsgVisible = false;
+    }, 5000);
+  }
+
+  getSuccessMsg(){
+    if(this.translationData.lblDetailsUpdatedSuccessfully)
+      return this.translationData.lblDetailsUpdatedSuccessfully;
+    else
+      return ("Details Updated Successfully!");
   }
 
 }
