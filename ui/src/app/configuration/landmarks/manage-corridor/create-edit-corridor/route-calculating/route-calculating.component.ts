@@ -225,8 +225,15 @@ export class RouteCalculatingComponent implements OnInit {
               }
           })
       }
-      this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
-     
+      if(_selectedElementData.viaAddressDetail.length > 0){
+        this.viaRouteCount = true;
+        this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
+        _selectedElementData.viaAddressDetail.forEach(element => {
+          this.viaRoutesList.push(element.corridorViaStopName);
+          
+        });
+        this.plotViaPoint(this.viaRoutesList);
+      }
       this.corridorName = _selectedElementData.corridoreName;
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
@@ -675,6 +682,8 @@ export class RouteCalculatingComponent implements OnInit {
     if(selectedAddress){
       let locationId = selectedAddress["originalObject"]["label"]
       this.viaRoutesList.push(locationId)
+      this.viaRoutePlottedPoints = [];
+
       this.plotViaPoint(this.viaRoutesList)
     }
 
@@ -773,11 +782,10 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   plotViaPoint(_viaRouteList){
-    this.viaRoutePlottedPoints = [];
     if(this.viaMarker){
-      this.hereMap.removeObjects([this.viaMarker]);
-      this.viaMarker = null;
+      this.mapGroup.removeObject(this.viaMarker);
     }
+   // 
     if(_viaRouteList.length >0){
       for(var i in _viaRouteList){
 
@@ -792,15 +800,17 @@ export class RouteCalculatingComponent implements OnInit {
           const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       
           this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-          this.hereMap.addObject(this.viaMarker);
+          this.mapGroup.addObject(this.viaMarker);
          // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
           //this.hereMap.setZoom(8);
-          this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
-          this.viaRoutePlottedPoints.push({
-            "viaRoutName": _viaRouteList[i],
-            "latitude": this.viaAddressPositionLat,
-            "longitude": this.viaAddressPositionLat
-          });
+        //  this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
+          if(this.actionType === 'create'){
+            this.viaRoutePlottedPoints.push({
+              "viaRoutName": _viaRouteList[i],
+              "latitude": this.viaAddressPositionLat,
+              "longitude": this.viaAddressPositionLat
+            });
+          }
         this.checkRoutePlot();
     
         });
@@ -899,14 +909,20 @@ export class RouteCalculatingComponent implements OnInit {
     }
     this.routePoints= [];
     this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
+      if(data && data.routes){
+
         this.routePoints = data.routes[0];
-        this.addTruckRouteShapeToMap(lineWidth)
+          this.addTruckRouteShapeToMap(lineWidth);
+        }
+      
     })
 
   }
 
   addTruckRouteShapeToMap(lineWidth?){
     let pathWidth= this.corridorWidthKm * 10;
+    
+    if(this.routePoints.sections){
     this.routePoints.sections.forEach((section) => {
       // decode LineString from the flexible polyline
       this.routeDistance = section.travelSummary.length;
@@ -935,6 +951,7 @@ export class RouteCalculatingComponent implements OnInit {
          bounds: this.mapGroup.getBoundingBox()
       });
     });
+  }
   }
 
 

@@ -38,12 +38,12 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public bool PoisonousInhalation { get; set; }
         public bool WaterHarm { get; set; }
         public bool Other { get; set; }
-        public char TollRoad { get; set; }
-        public char Mortorway { get; set; }
-        public char BoatFerries { get; set; }
-        public char RailFerries { get; set; }
-        public char Tunnels { get; set; }
-        public char DirtRoad { get; set; }
+        public string TollRoad { get; set; }
+        public string Mortorway { get; set; }
+        public string BoatFerries { get; set; }
+        public string RailFerries { get; set; }
+        public string Tunnels { get; set; }
+        public string DirtRoad { get; set; }
         public double VehicleSizeHeight { get; set; }
         public double VehicleSizeWidth { get; set; }
         public double VehicleSizeLength { get; set; }

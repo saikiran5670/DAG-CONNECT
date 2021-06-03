@@ -148,8 +148,8 @@
         <app-spinner *ngIf="showLoadingIndicator" ></app-spinner>
       </mat-card>
   </div>
-  <!-- <div *ngIf='createViewEditStatus'>
-      <app-create-edit-view-alerts [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
-       [alertCategoryList]='alertCategoryList' [alertTypeList]='alertTypeList' [vehicleGroupList]='vehicleGroupList' [vehicleList]='vehicleList' (backToPage)='onBackToPage($event)'></app-create-edit-view-alerts>
-  </div> -->
+  <div *ngIf='createViewEditStatus'>
+      <app-create-edit-view-report-scheduler [translationData]='translationData' [actionType]='actionType' [selectedRowData]="rowsData"
+        (backToPage)='onBackToPage($event)'></app-create-edit-view-report-scheduler>
+  </div>
 </div>
