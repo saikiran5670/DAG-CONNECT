@@ -1,4 +1,31 @@
 syntax = "proto3";
 
 option csharp_namespace = "net.atos.daf.ct2.mapservice";
-service MapService {}
+service MapService {
+
+    rpc Get (GetMapRequest) returns (GetMapResponse);
+   
+}
+
+message GetMapRequest{
+
+     int32 Id=1;
+     int64 Latitude=2;
+     int64 Longitude=3;
+     string Address=4;
+    }
+
+message GetMapResponse{
+
+      repeated GetMapRequest LookupAddresses=1;
+      Responsecode Code=2;
+      string Message=3;
+}
+
+
+enum Responsecode{
+    Success=0;
+    Failed=1;
+    Conflict=2;
+    NotFound=3;
+} 
