@@ -175,11 +175,13 @@ message DriverActivity {
     string DriverName = 2;
     string VIN = 3;
     int64 ActivityDate = 4;
-    int32 Code = 5; 
-    int64 RestTime = 6;
-    int64 AvailableTime = 7;
-    int64 WorkTime = 8;
-    int64 DriveTime = 9;
-    int64 ServiceTime = 10;
+    int64 StartTime = 5;
+    int64 EndTime = 6;
+    int32 Code = 7; 
+    int64 RestTime = 8;
+    int64 AvailableTime = 9;
+    int64 WorkTime = 10;
+    int64 DriveTime = 11;
+    int64 ServiceTime = 12;
 }
 // End   Driver Time Managment Report
