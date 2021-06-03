@@ -36,8 +36,6 @@ namespace net.atos.daf.ct2.utilities
         /// <returns></returns>
         public static string GetConvertedDateTimeFromUTC(long utctimemilleseconds, string timezoneName, string dateformat)
         {
-
-            string sConverteddateTime = string.Empty;
             DateTime date = (new DateTime(1970, 1, 1)).AddMilliseconds(utctimemilleseconds);
             //  TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
             TimeZoneInfo tzinfo = TZConvert.GetTimeZoneInfo(timezoneName);
@@ -54,6 +52,8 @@ namespace net.atos.daf.ct2.utilities
             {
                 dtzone = dtzone.AddHours(1);
             }
+
+            string sConverteddateTime;
             if (dateformat == "MM/DD/YYYY")  //05/29/2015
             {
                 sConverteddateTime = dtzone.ToString("MM/dd/yyyy");

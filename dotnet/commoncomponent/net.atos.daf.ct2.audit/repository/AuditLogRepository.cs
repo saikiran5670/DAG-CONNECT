@@ -28,10 +28,10 @@ namespace net.atos.daf.ct2.audit.repository
         //        //dataAccess = new PgSQLDataAccess(connectionString);
         //        dataAccess= _dataAccess;
         //     }
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
         public AuditLogRepository(IDataAccess _dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = _dataAccess;
         }
         public async Task<int> AddLogs(AuditTrail auditTrail)
         {
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.audit.repository
                 parameter.Add("@organization_id", auditTrail.Organization_Id);
 
                 // return dataAccess.QuerySingle<int>("INSERT INTO dafconnectmaster.auditlog (userorgid, eventid, eventperformed, activitydescription, component, eventtime, eventstatus, createddate, createdby) VALUES(@userorgid, @eventid, @eventperformed, @activitydescription, @component, @eventtime, @eventstatus, @createddate, @createdby) RETURNING auditlogid",parameter);
-                return await dataAccess.QuerySingleAsync<int>("INSERT INTO auditlog.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data,role_id,organization_id) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data,@role_id,@organization_id) RETURNING id", parameter);
+                return await _dataAccess.QuerySingleAsync<int>("INSERT INTO auditlog.audittrail(created_at, performed_at, performed_by, component_name, service_name, event_type, event_status, message, sourceobject_id, targetobject_id, updated_data,role_id,organization_id) VALUES (@created_at, @performed_at, @performed_by, @component_name, @service_name, @event_type, @event_status, @message, @sourceobject_id, @targetobject_id, @updated_data,@role_id,@organization_id) RETURNING id", parameter);
             }
             catch (Exception)
             {
@@ -72,7 +72,7 @@ namespace net.atos.daf.ct2.audit.repository
                 parameter.Add("@performed_by", performed_by);
                 parameter.Add("@component_name", component_name);
                 List<AuditTrail> list = new List<AuditTrail>();
-                var result = await dataAccess.QueryAsync<dynamic>(@"SELECT id,created_at, performed_at, performed_by, component_name, service_name,  message, sourceobject_id, targetobject_id, updated_data
+                var result = await _dataAccess.QueryAsync<dynamic>(@"SELECT id,created_at, performed_at, performed_by, component_name, service_name,  message, sourceobject_id, targetobject_id, updated_data
 	                        FROM auditlog.audittrail where performed_by = @performed_by and component_name = @component_name order by 1 desc", parameter);
                 foreach (var item in result)
                 {
