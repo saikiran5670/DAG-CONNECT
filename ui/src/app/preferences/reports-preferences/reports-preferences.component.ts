@@ -180,6 +180,7 @@ export class ReportsPreferencesComponent implements OnInit {
       this.loadReportData();
       this.successMsgBlink(this.getSuccessMsg());
       this.editFlag = false;
+      window.location.reload(); //-- reload screen
     }, (error) => {
       console.log(error);
     });
@@ -194,10 +195,10 @@ export class ReportsPreferencesComponent implements OnInit {
   }
 
   getSuccessMsg(){
-    if(this.translationData.lblDetailsUpdatedSuccessfully)
-      return this.translationData.lblDetailsUpdatedSuccessfully;
+    if(this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
     else
-      return ("Details Updated Successfully!");
+      return ("Details save successfully");
   }
 
 }
