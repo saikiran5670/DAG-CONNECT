@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.map.entity;
 using net.atos.daf.ct2.map.geocode;
 using net.atos.daf.ct2.map.repository;
@@ -14,9 +15,8 @@ namespace net.atos.daf.ct2.map
             _mapRepository = mapRepository;
             _geocoder = new Geocoder();
 
-        }
-
-        public void InitializeMapGeocoder(string appId, string appCode) => _geocoder.InitializeMapGeocoder(appId, appCode);
+        }      
+        public void InitializeMapGeocoder(HereMapConfiguration  hereMapConfiguration) => _geocoder.InitializeMapGeocoder(hereMapConfiguration.AppId, hereMapConfiguration.AppCode);
 
 
         public async Task<LookupAddress> GetMapAddress(LookupAddress lookupAddress)
