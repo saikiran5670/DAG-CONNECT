@@ -11,13 +11,13 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div  *ngIf='initData.length > 0'>
-        <mat-table [dataSource]="dataSource" class="table-items">
+        <mat-table [dataSource]="dataSource" class="table-items pref-table-checkbox">
           <ng-container matColumnDef="All">
             <mat-header-cell *matHeaderCellDef class="max-width-10-per">
-              <mat-checkbox *ngIf='editFlag' (change)='$event ? masterToggleForColumns() : null'
+              <mat-checkbox (change)='$event ? masterToggleForColumns() : null'
                 [checked]='selectionForColumns.hasValue() && isAllSelectedForColumns()'
                 [indeterminate]='selectionForColumns.hasValue() && !isAllSelectedForColumns()'
-                [aria-label]='checkboxLabelForColumns()'>
+                [aria-label]='checkboxLabelForColumns()' [disabled] = '!editFlag'>
               </mat-checkbox>
             </mat-header-cell>
             <mat-cell *matCellDef="let row" class="max-width-10-per">
