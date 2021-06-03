@@ -282,12 +282,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
                 obj.WaterHarm = request.IsWaterHarm;
                 obj.Other = request.IsOther;
-                obj.TollRoad = Convert.ToChar(request.TollRoad);
-                obj.Mortorway = Convert.ToChar(request.Mortorway);
-                obj.BoatFerries = Convert.ToChar(request.BoatFerries);
-                obj.RailFerries = Convert.ToChar(request.RailFerries);
-                obj.Tunnels = Convert.ToChar(request.Tunnels);
-                obj.DirtRoad = Convert.ToChar(request.DirtRoad);
+                obj.TollRoad = request.TollRoad == "" ? null : request.TollRoad;
+                obj.Mortorway = request.Mortorway == "" ? null : request.Mortorway;
+                obj.BoatFerries = request.BoatFerries == "" ? null : request.BoatFerries;
+                obj.RailFerries = request.RailFerries == "" ? null : request.RailFerries;
+                obj.Tunnels = request.Tunnels == "" ? null : request.Tunnels;
+                obj.DirtRoad = request.DirtRoad == "" ? null : request.DirtRoad;
                 obj.VehicleSizeHeight = request.VehicleSizeHeight;
 
 
@@ -511,12 +511,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
                 obj.WaterHarm = objRequest.Request.IsWaterHarm;
                 obj.Other = objRequest.Request.IsOther;
-                obj.TollRoad = Convert.ToChar(objRequest.Request.TollRoad);
-                obj.Mortorway = Convert.ToChar(objRequest.Request.Mortorway);
-                obj.BoatFerries = Convert.ToChar(objRequest.Request.BoatFerries);
-                obj.RailFerries = Convert.ToChar(objRequest.Request.RailFerries);
-                obj.Tunnels = Convert.ToChar(objRequest.Request.Tunnels);
-                obj.DirtRoad = Convert.ToChar(objRequest.Request.DirtRoad);
+                obj.TollRoad = objRequest.Request.TollRoad == "" ? null : objRequest.Request.TollRoad;
+                obj.Mortorway = objRequest.Request.Mortorway == "" ? null : objRequest.Request.Mortorway;
+                obj.BoatFerries = objRequest.Request.BoatFerries == "" ? null : objRequest.Request.BoatFerries;
+                obj.RailFerries = objRequest.Request.RailFerries == "" ? null : objRequest.Request.RailFerries;
+                obj.Tunnels = objRequest.Request.Tunnels == "" ? null : objRequest.Request.Tunnels;
+                obj.DirtRoad = objRequest.Request.DirtRoad == "" ? null : objRequest.Request.DirtRoad;
                 obj.VehicleSizeHeight = objRequest.Request.VehicleSizeHeight;
 
 

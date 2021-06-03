@@ -47,6 +47,7 @@
     <Protobuf Include="Protos\group.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\alert.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\corridor.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\map.proto" GrpcServices="Client" />
 
 
   </ItemGroup>

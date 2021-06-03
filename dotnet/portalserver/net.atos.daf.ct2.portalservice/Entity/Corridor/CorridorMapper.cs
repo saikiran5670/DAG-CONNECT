@@ -40,12 +40,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
             obj.IsWaterHarm = request.Attribute.IsWaterHarm;
             obj.IsOther = request.Attribute.IsOther;
-            obj.TollRoad = Convert.ToString(request.Exclusion.TollRoad);
-            obj.Mortorway = Convert.ToString(request.Exclusion.Mortorway);
-            obj.BoatFerries = Convert.ToString(request.Exclusion.BoatFerries);
-            obj.RailFerries = Convert.ToString(request.Exclusion.RailFerries);
-            obj.Tunnels = Convert.ToString(request.Exclusion.Tunnels);
-            obj.DirtRoad = Convert.ToString(request.Exclusion.DirtRoad);
+            obj.TollRoad = request.Exclusion.TollRoad ?? "";
+            obj.Mortorway = request.Exclusion.Mortorway ?? "";
+            obj.BoatFerries = request.Exclusion.BoatFerries ?? "";
+            obj.RailFerries = request.Exclusion.RailFerries ?? "";
+            obj.Tunnels = request.Exclusion.Tunnels ?? "";
+            obj.DirtRoad = request.Exclusion.DirtRoad ?? "";
 
 
             obj.VehicleSizeHeight = request.VehicleSize.VehicleSizeHeight;

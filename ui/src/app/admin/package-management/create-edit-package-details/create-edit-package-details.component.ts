@@ -299,5 +299,20 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       return `${this.selectionForFeatures.isSelected(row) ? 'deselect' : 'select'} row`;
   }
 
+  onChange(event: any, row: any){
+    var selectName = row.name;
+    var selectId = row.id;
+    if(!selectName.includes('.')){
+      this.dataSource.data.forEach( row => {
+        if(row.name.startsWith(selectName)){
+          if(event.checked)
+            this.selectionForFeatures.select(row);
+          else if(!event.checked)
+            this.selectionForFeatures.deselect(row);
+        }
+      });
+    }
+  }
+  
 }
   

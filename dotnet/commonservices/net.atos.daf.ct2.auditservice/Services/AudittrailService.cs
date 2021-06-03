@@ -15,11 +15,11 @@ namespace net.atos.daf.ct2.auditservice.Services
     public class AudittrailService : AuditService.AuditServiceBase
     {
         private readonly ILogger _logger;
-        private readonly IAuditTraillib _AuditTrail;
-        public AudittrailService(ILogger<AudittrailService> logger, IAuditTraillib AuditTrail)
+        private readonly IAuditTraillib _auditTrail;
+        public AudittrailService(ILogger<AudittrailService> logger, IAuditTraillib auditTrail)
         {
             _logger = logger;
-            _AuditTrail = AuditTrail;
+            _auditTrail = auditTrail;
         }
 
         public override async Task<AuditResponce> Addlogs(AuditRecord request, ServerCallContext context)
@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.auditservice.Services
                 logs.Updated_data = request.UpdatedData;
                 logs.Role_Id = request.RoleID;
                 logs.Organization_Id = request.OrganizationId;
-                int result = _AuditTrail.AddLogs(logs).Result;
+                int result = _auditTrail.AddLogs(logs).Result;
 
                 return await Task.FromResult(new AuditResponce
                 {
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.auditservice.Services
             try
             {
                 _logger.LogInformation("All langauges method get");
-                var auditlogs = await _AuditTrail.GetAuditLogs(request.PerformedBy, request.ComponentName);
+                var auditlogs = await _auditTrail.GetAuditLogs(request.PerformedBy, request.ComponentName);
 
 
 
@@ -90,14 +90,14 @@ namespace net.atos.daf.ct2.auditservice.Services
                     //logs.CreatedAt = item.Created_at.ToDateTime();
                     // logs.PerformedAt = item.Performed_at.ToDateTime();
                     logs.PerformedBy = item.Performed_by;
-                    logs.ComponentName = item.Component_name == null ? "" : item.Component_name;
-                    logs.ServiceName = item.Service_name == null ? "" : item.Service_name;
+                    logs.ComponentName = item.Component_name ?? "";
+                    logs.ServiceName = item.Service_name ?? "";
                     logs.Type = (Event_type)(int)item.Event_type;
                     logs.Status = (Event_status)(int)item.Event_status;
-                    logs.Message = item.Message == null ? "" : item.Message;
+                    logs.Message = item.Message ?? "";
                     logs.SourceobjectId = item.Sourceobject_id;
                     logs.TargetobjectId = item.Targetobject_id;
-                    logs.UpdatedData = item.Updated_data == null ? "" : item.Updated_data;
+                    logs.UpdatedData = item.Updated_data ?? "";
                     auditLogList.Audittraillist.Add(logs);
                 }
                 return await Task.FromResult(auditLogList);

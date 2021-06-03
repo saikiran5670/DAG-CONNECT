@@ -17,6 +17,7 @@ using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.driverservice;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.organizationservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.poigeofences;
@@ -57,6 +58,7 @@ namespace net.atos.daf.ct2.portalservice
             var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
             var reportservice = Configuration["ServiceConfiguration:reportservice"];
+            var mapservice = Configuration["ServiceConfiguration:mapservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -206,6 +208,10 @@ namespace net.atos.daf.ct2.portalservice
             services.AddGrpcClient<ReportService.ReportServiceClient>(o =>
             {
                 o.Address = new Uri(reportservice);
+            });
+            services.AddGrpcClient<MapService.MapServiceClient>(o =>
+            {
+                o.Address = new Uri(mapservice);
             });
             services.AddSwaggerGen(c =>
             {
