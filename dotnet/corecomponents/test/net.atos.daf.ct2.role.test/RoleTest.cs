@@ -16,22 +16,22 @@ namespace net.atos.daf.ct2.role.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
-        private readonly IRoleRepository _RoleRepository;
+        private readonly IRoleRepository _roleRepository;
 
-        private readonly IRoleManagement _RoleManagement;
+        private readonly IRoleManagement _roleManagement;
 
         private readonly IFeatureManager _featureManagement;
-        private readonly FeatureRepository _FeatureRepository;
+        private readonly FeatureRepository _featureRepository;
 
         public RoleTest()
         {
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y\\97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _RoleRepository = new RoleRepository(_dataAccess);
+            _roleRepository = new RoleRepository(_dataAccess);
 
-            _FeatureRepository = new FeatureRepository(_dataAccess);
-            _featureManagement = new FeatureManager(_FeatureRepository);
-            _RoleManagement = new RoleManagement(_RoleRepository, _featureManagement, _FeatureRepository);
+            _featureRepository = new FeatureRepository(_dataAccess);
+            _featureManagement = new FeatureManager(_featureRepository);
+            _roleManagement = new RoleManagement(_roleRepository, _featureManagement, _featureRepository);
 
         }
 
@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.role.test
             ObjRole.FeatureSet.Features.Add(objfeature);
             ObjRole.FeatureSet.Features.Add(objfeature1);
             ObjRole.FeatureSet.Features.Add(objfeature2);
-            var role = _RoleManagement.CreateRole(ObjRole).Result;
+            var role = _roleManagement.CreateRole(ObjRole).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role > 0);
 
@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.role.test
         {
             int roleid = 1;
             int accountid = 20;
-            var role = _RoleRepository.DeleteRole(roleid, accountid).Result;
+            var role = _roleRepository.DeleteRole(roleid, accountid).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role > 0);
 
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.role.test
         {
             RoleFilter filter = new RoleFilter();
             filter.Organization_Id = 12;
-            var role = _RoleRepository.GetRoles(filter).Result;
+            var role = _roleRepository.GetRoles(filter).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role.Count() > 0);
 
@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.role.test
             roleMaster.Name = "UpdateRole";
             roleMaster.Id = 5;
             roleMaster.Updatedby = 6;
-            var role = _RoleRepository.UpdateRole(roleMaster).Result;
+            var role = _roleRepository.UpdateRole(roleMaster).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role > 0);
 
@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.role.test
             set.Features.Add(objfeature);
             set.Features.Add(objfeature1);
             set.Features.Add(objfeature2);
-            var result = _FeatureRepository.AddFeatureSet(set).Result;
+            var result = _featureRepository.AddFeatureSet(set).Result;
             Assert.IsNotNull(result);
             // Assert.IsTrue(result.da > 0);
 
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.role.test
         public void GetFeatureSet()
         {
             int featuresetid = 0;
-            var result = _FeatureRepository.GetFeatureSet(featuresetid, 'Á').Result;
+            var result = _featureRepository.GetFeatureSet(featuresetid, 'Á').Result;
             Assert.IsNotNull(result);
             // Assert.IsTrue(result.da > 0);
         }

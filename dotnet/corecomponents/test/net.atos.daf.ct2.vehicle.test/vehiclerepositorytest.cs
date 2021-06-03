@@ -13,17 +13,16 @@ using net.atos.daf.ct2.vehicle.repository;
 namespace net.atos.daf.ct2.vehicle.test
 {
     [TestClass]
-    public class vehiclerepositorytest
+    public class Vehiclerepositorytest
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _datamartDataacess;
-        private readonly IConfiguration _config;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IVehicleManager _vehiclemanager;
         private readonly IGroupRepository _groupRepository;
         private readonly IAuditTraillib _auditlog;
 
-        public vehiclerepositorytest()
+        public Vehiclerepositorytest()
         {
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             string datamartconnectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";

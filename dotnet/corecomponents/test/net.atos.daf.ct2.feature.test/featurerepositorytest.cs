@@ -14,13 +14,13 @@ using net.atos.daf.ct2.utilities;
 namespace net.atos.daf.ct2.feature.test
 {
     [TestClass]
-    public class featurerepositorytest
+    public class Featurerepositorytest
     {
-        private readonly IFeatureManager _FeatureManager;
+        private readonly IFeatureManager _featureManager;
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
         private readonly FeatureRepository _featureRepository;
-        public featurerepositorytest()
+        public Featurerepositorytest()
         {
             // string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
 
@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.feature.test
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
             _featureRepository = new FeatureRepository(_dataAccess);
-            _FeatureManager = new FeatureManager(_featureRepository);
+            _featureManager = new FeatureManager(_featureRepository);
 
         }
 
@@ -62,7 +62,7 @@ namespace net.atos.daf.ct2.feature.test
             feature.Features.Add(objfeature1);
             feature.Features.Add(objfeature2);
 
-            var result = await _FeatureManager.CreateFeatureSet(feature);
+            var result = await _featureManager.CreateFeatureSet(feature);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.DataAttributes.Add(objattribute1);
             dataAttributeSet.DataAttributes.Add(objattribute2);
 
-            var result = await _FeatureManager.CreateDataattributeSet(dataAttributeSet);
+            var result = await _featureManager.CreateDataattributeSet(dataAttributeSet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.DataAttributes.Add(objattribute1);
             // dataAttributeSet.DataAttributes.Add(objattribute2);
 
-            var result = await _FeatureManager.UpdatedataattributeSet(dataAttributeSet);
+            var result = await _featureManager.UpdatedataattributeSet(dataAttributeSet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.feature.test
         public async Task UnT_features_FeatureManager_DeleteFeatureSet()
         {
             int FeatureSetid = 135;
-            bool result = await _FeatureManager.DeleteFeatureSet(FeatureSetid);
+            bool result = await _featureManager.DeleteFeatureSet(FeatureSetid);
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
@@ -155,7 +155,7 @@ namespace net.atos.daf.ct2.feature.test
         public async Task UnT_features_FeatureManager_DeleteDataAttribute()
         {
             int dataAttributeSetID = 10;
-            bool result = await _FeatureManager.DeleteDataAttribute(dataAttributeSetID);
+            bool result = await _featureManager.DeleteDataAttribute(dataAttributeSetID);
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
@@ -165,7 +165,7 @@ namespace net.atos.daf.ct2.feature.test
         public async Task UnT_features_FeatureManager_GetDataAttributeSetDetails()
         {
             int DataAttributeSetId = 4;
-            var result = await _FeatureManager.GetDataAttributeSetDetails(DataAttributeSetId);
+            var result = await _featureManager.GetDataAttributeSetDetails(DataAttributeSetId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
@@ -200,7 +200,7 @@ namespace net.atos.daf.ct2.feature.test
             featureSet.Features.Add(objattribute1);
             //featureSet.Features.Add(objattribute2);
 
-            var result = await _FeatureManager.UpdateFeatureSet(featureSet);
+            var result = await _featureManager.UpdateFeatureSet(featureSet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
