@@ -1,32 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.tcucore
 {
     public class TCURegistrationEvent
     {
-        private String vin;
-        private TCU tcu;
-        private DateTime referenceDate;
-
         public TCURegistrationEvent(string _vin, TCU _tcu, DateTime _referenceDate)
         {
-            this.vin = _vin;
-            this.tcu = _tcu;
-            this.referenceDate = _referenceDate;
+            VIN = _vin;
+            TCU = _tcu;
+            ReferenceDate = _referenceDate;
         }
 
-        public string VIN { 
-            get => vin; 
-            set => vin = value; }
+        public string VIN { get;  }
 
-        public TCU TCU { 
-            get => tcu; 
-            set => tcu = value; }
+        public TCU TCU { get;  }
 
-        public DateTime ReferenceDate { 
-            get => referenceDate; 
-            set => referenceDate = value; }
+        public DateTime ReferenceDate { get;  }
     }
 }

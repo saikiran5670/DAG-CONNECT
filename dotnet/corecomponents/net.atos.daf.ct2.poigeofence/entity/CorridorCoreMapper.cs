@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.poigeofence.entity
 {
-   public class CorridorCoreMapper
+    public class CorridorCoreMapper
     {
 
         public RouteCorridor Map(dynamic record)
@@ -52,9 +50,9 @@ namespace net.atos.daf.ct2.poigeofence.entity
                 case "Route Corridor":
                     ctype = "R";
                     break;
-                //case "CATEGORY":
-                //    ctype = "C";
-                //    break;
+                    //case "CATEGORY":
+                    //    ctype = "C";
+                    //    break;
             }
             return ctype;
 

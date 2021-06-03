@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -8,9 +7,7 @@ using log4net;
 using net.atos.daf.ct2.poigeofence;
 using net.atos.daf.ct2.poigeofence.entity;
 using net.atos.daf.ct2.poigeofences;
-using net.atos.daf.ct2.poigeofenceservice;
 using net.atos.daf.ct2.poigeofenceservice.entity;
-using net.atos.daf.ct2.poigeofenceservice.Entity;
 
 namespace net.atos.daf.ct2.poigeofenservice
 {
@@ -20,7 +17,7 @@ namespace net.atos.daf.ct2.poigeofenservice
         // private readonly Mapper _mapper;
         private readonly ICategoryManager _categoryManager;
         private readonly DeleteCategoryMapper _deleteCategoryMapper;
-        public CategoryManagementService(IPoiManager poiManager, ICategoryManager categoryManager)
+        public CategoryManagementService(ICategoryManager categoryManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             //  _mapper = new Mapper();
@@ -46,7 +43,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.State = request.State;
                 obj.Description = request.Description;
                 obj.Created_By = request.CreatedBy;
-                obj.icon = request.Icon.ToByteArray();
+                obj.Icon = request.Icon.ToByteArray();
 
                 var result = await _categoryManager.AddCategory(obj);
                 if (result.Id == -1)
@@ -87,7 +84,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                 obj.Id = request.Id;
                 obj.Name = request.Name;
                 obj.IconName = request.IconName;
-                obj.icon = request.Icon.ToByteArray();
+                obj.Icon = request.Icon.ToByteArray();
                 obj.Description = request.Description;
                 obj.Modified_By = request.ModifiedBy;
                 obj.Organization_Id = request.OrganizationId;
@@ -128,7 +125,7 @@ namespace net.atos.daf.ct2.poigeofenservice
 
 
                 var result = await _categoryManager.DeleteCategory(request.Id);
-                if (result.ID >=0)
+                if (result.ID >= 0)
                 {
                     response.Message = "Delete successfully";
                     response.Code = Responsecode.Success;
@@ -145,7 +142,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     response.Message = "You can not delete the category it contain POI or Geofence  ";
                     response.Code = Responsecode.Failed;
                 }
-                else 
+                else
                 {
                     response.Message = "Category Not found";
                     response.Code = Responsecode.NotFound;
@@ -215,8 +212,8 @@ namespace net.atos.daf.ct2.poigeofenservice
                     {
                         catdetails.Icon = ByteString.CopyFrom(item.Icon);
                     }
-                    catdetails.ParentCategoryName = item.ParentCategory == null ? "" : item.ParentCategory;
-                    catdetails.SubCategoryName = item.SubCategory == null ? "" : item.SubCategory;
+                    catdetails.ParentCategoryName = item.ParentCategory ?? "";
+                    catdetails.SubCategoryName = item.SubCategory ?? "";
                     catdetails.NoOfPOI = item.No_of_POI;
                     catdetails.NoOfGeofence = item.No_of_Geofence;
                     catdetails.Description = !string.IsNullOrEmpty(item.Description) ? item.Description : string.Empty;
@@ -251,13 +248,12 @@ namespace net.atos.daf.ct2.poigeofenservice
         {
             DeleteResponse response = new DeleteResponse();
             CategoryID obj = new CategoryID();
-            DeleteCategoryclass objj = new DeleteCategoryclass();
 
 
-            objj = _deleteCategoryMapper.ToTranslationDeleteEntity(request);
-            var result = await _categoryManager.BulkDeleteCategory(objj);
+            DeleteCategoryclass deleteCategoryclass = _deleteCategoryMapper.ToTranslationDeleteEntity(request);
+            var result = await _categoryManager.BulkDeleteCategory(deleteCategoryclass);
 
-            if (result.CategoryId >0)
+            if (result.CategoryId > 0)
             {
                 response.Code = Responsecode.Success;
                 response.Message = " Category deleted Sucessfully";

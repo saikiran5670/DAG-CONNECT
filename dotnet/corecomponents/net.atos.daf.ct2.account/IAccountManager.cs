@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.account.ENUM;
 using net.atos.daf.ct2.account.entity;
-using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.email.Enum;
+using net.atos.daf.ct2.identity.entity;
 using IdentitySessionEntity = net.atos.daf.ct2.identitysession.entity;
 
 namespace net.atos.daf.ct2.account

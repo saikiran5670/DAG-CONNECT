@@ -40,12 +40,21 @@ export class ReportsPreferencesComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.reportService.getUserPreferenceReport(1,this.accountId,this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data["userPreferences"];
+      this.setColumnCheckbox();
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
       this.initData = [];
       this.hideloader();
       this.updatedTableData(this.initData);
+    });
+  }
+
+  setColumnCheckbox(){
+    this.initData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForColumns.select(element);
+      }
     });
   }
 
@@ -82,9 +91,11 @@ export class ReportsPreferencesComponent implements OnInit {
   }
 
   masterToggleForColumns(){
-    this.isAllSelectedForColumns() ? 
-    this.selectionForColumns.clear() : this.dataSource.data.forEach(row => {this.selectionForColumns.select(row)});
-
+    if(this.isAllSelectedForColumns()){
+      this.selectionForColumns.clear();
+    }else{
+      this.dataSource.data.forEach(row => { this.selectionForColumns.select(row) });
+    }
   }
 
   checkboxLabelForColumns(row?: any): string{
@@ -102,10 +113,11 @@ export class ReportsPreferencesComponent implements OnInit {
 
   onCancel(){
     this.editFlag = false;
+    this.setColumnCheckbox();
   }
 
   onReset(){
-
+    this.setColumnCheckbox();
   }
 
   onConfirm(){

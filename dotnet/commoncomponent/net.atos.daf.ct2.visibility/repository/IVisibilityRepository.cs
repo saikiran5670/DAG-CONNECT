@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using net.atos.daf.ct2.visibility.entity;
-using net.atos.daf.ct2.data;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.visibility.repository
 {

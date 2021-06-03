@@ -1,9 +1,5 @@
-﻿using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
@@ -27,11 +23,11 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public long UrgencylevelEndDate { get; set; }
 
     }
-    public class AlertUrgencyLevelRef :AlertUrgencyLevelRefBase
+    public class AlertUrgencyLevelRef : AlertUrgencyLevelRefBase
     {
         public List<AlertFilterRef> AlertFilterRefs { get; set; } = new List<AlertFilterRef>();
     }
-    public class AlertUrgencyLevelRefEdit: AlertUrgencyLevelRefBase
+    public class AlertUrgencyLevelRefEdit : AlertUrgencyLevelRefBase
     {
         public int Id { get; set; }
         public int AlertId { get; set; }

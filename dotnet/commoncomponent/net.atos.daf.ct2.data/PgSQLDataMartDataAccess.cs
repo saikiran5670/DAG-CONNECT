@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
@@ -16,7 +15,7 @@ namespace net.atos.daf.ct2.data
         /// <summary>
         /// The SQL connection object
         /// </summary>
-        public IDbConnection connection { get; set; }
+        public IDbConnection Connection { get; set; }
 
         #endregion Members
         public PgSQLDataMartDataAccess()
@@ -26,11 +25,11 @@ namespace net.atos.daf.ct2.data
 
         public PgSQLDataMartDataAccess(IDbConnection dbconnection)
         {
-            connection = dbconnection;
+            Connection = dbconnection;
         }
         public PgSQLDataMartDataAccess(string connectionString)
         {
-            connection = new NpgsqlConnection(connectionString);
+            Connection = new NpgsqlConnection(connectionString);
         }
 
 
@@ -43,7 +42,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.Execute(
+            return Connection.Execute(
                 sql,
                 param,
                 transaction,
@@ -59,7 +58,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.Query(
+            return Connection.Query(
                 sql,
                 param,
                 transaction,
@@ -78,7 +77,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TReturn>(string sql,
@@ -90,7 +89,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TReturn>(string sql,
@@ -102,7 +101,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(string sql,
@@ -114,7 +113,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(string sql,
@@ -126,7 +125,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(string sql,
@@ -138,7 +137,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public IEnumerable<TReturn> Query<TReturn>(string sql, Type[] types,
@@ -151,81 +150,81 @@ namespace net.atos.daf.ct2.data
             CommandType? commandType = null)
         {
             // return connection.Query(sql, types, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
-            return connection.Query(sql, types, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.Query(sql, types, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         public dynamic QueryFirst(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirst(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirst(sql, param, transaction, commandTimeout, commandType);
         }
 
         public dynamic QueryFirstOrDefault(string sql, object param = null, IDbTransaction transaction = null,
             int? commandTimeout = null, CommandType? commandType = null)
         {
-            return connection.QueryFirstOrDefault(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstOrDefault(sql, param, transaction, commandTimeout, commandType);
         }
 
         public dynamic QuerySingle(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingle(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingle(sql, param, transaction, commandTimeout, commandType);
         }
 
         public dynamic QuerySingleOrDefault(string sql, object param = null, IDbTransaction transaction = null,
             int? commandTimeout = null, CommandType? commandType = null)
         {
-            return connection.QuerySingleOrDefault(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleOrDefault(sql, param, transaction, commandTimeout, commandType);
         }
 
         public object QueryFirst(Type type, string sql, object param = null, IDbTransaction transaction = null,
             int? commandTimeout = null, CommandType? commandType = null)
         {
-            return connection.QueryFirst(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirst(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public object QueryFirstOrDefault(Type type, string sql, object param = null, IDbTransaction transaction = null,
             int? commandTimeout = null, CommandType? commandType = null)
         {
-            return connection.QueryFirstOrDefault(type, sql, param, transaction, commandTimeout,
+            return Connection.QueryFirstOrDefault(type, sql, param, transaction, commandTimeout,
                 commandType);
         }
 
         public object QuerySingle(Type type, string sql, object param = null, IDbTransaction transaction = null,
             int? commandTimeout = null, CommandType? commandType = null)
         {
-            return connection.QuerySingle(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingle(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public object QuerySingleOrDefault(Type type, string sql, object param = null, IDbTransaction transaction = null,
             int? commandTimeout = null, CommandType? commandType = null)
         {
-            return connection.QuerySingleOrDefault(type, sql, param, transaction, commandTimeout,
+            return Connection.QuerySingleOrDefault(type, sql, param, transaction, commandTimeout,
                 commandType);
         }
 
         public T QueryFirst<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirst<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirst<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public T QueryFirstOrDefault<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstOrDefault<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstOrDefault<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public T QuerySingle<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingle<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingle<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public T QuerySingleOrDefault<T>(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleOrDefault<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleOrDefault<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public IEnumerable<T> Query<T>(
@@ -236,7 +235,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.Query<T>(sql,
+            return Connection.Query<T>(sql,
                 param,
                 transaction,
                 buffered,
@@ -267,7 +266,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.ExecuteScalar(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteScalar(sql, param, transaction, commandTimeout, commandType);
         }
 
         public T ExecuteScalar<T>(
@@ -277,7 +276,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.ExecuteScalar<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteScalar<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         // public object ExecuteScalar(CommandDefinition command)
@@ -297,7 +296,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.ExecuteReader(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteReader(sql, param, transaction, commandTimeout, commandType);
         }
 
         // public IDataReader ExecuteReader(CommandDefinition command)
@@ -319,7 +318,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.Query(type, sql, param, transaction, buffered, commandTimeout, commandType);
+            return Connection.Query(type, sql, param, transaction, buffered, commandTimeout, commandType);
         }
 
         // public IEnumerable<T> Query<T>(CommandDefinition command)
@@ -400,7 +399,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.ExecuteAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<IEnumerable<dynamic>> QueryAsync(
@@ -410,7 +409,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.QueryAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<IEnumerable<T>> QueryAsync<T>(
@@ -420,7 +419,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = default(int?),
             CommandType? commandType = default(CommandType?))
         {
-            return connection.QueryAsync<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryAsync<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         // public async Task<IGridReader> QueryMultipleAsync(
@@ -466,7 +465,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstAsync<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstAsync<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<T> QueryFirstOrDefaultAsync<T>(
@@ -476,7 +475,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstOrDefaultAsync<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstOrDefaultAsync<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<T> QuerySingleAsync<T>(
@@ -486,7 +485,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleAsync<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleAsync<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<T> QuerySingleOrDefaultAsync<T>(
@@ -496,7 +495,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleOrDefaultAsync<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleOrDefaultAsync<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<IEnumerable<object>> QueryAsync(
@@ -507,7 +506,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryAsync(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<object> QueryFirstAsync(
@@ -518,7 +517,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstAsync(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstAsync(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<object> QueryFirstOrDefaultAsync(
@@ -529,7 +528,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstOrDefaultAsync(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstOrDefaultAsync(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<object> QuerySingleAsync(
@@ -540,7 +539,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleAsync(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleAsync(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<object> QuerySingleOrDefaultAsync(
@@ -551,7 +550,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleOrDefaultAsync(type, sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleOrDefaultAsync(type, sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<dynamic> QuerySingleOrDefaultAsync(
@@ -561,7 +560,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleOrDefaultAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleOrDefaultAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<T>> QueryAsync<T>(CommandDefinition command)
@@ -604,7 +603,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(
@@ -625,7 +624,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TReturn>(
@@ -646,7 +645,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TReturn>(
@@ -667,7 +666,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(
@@ -688,7 +687,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(
@@ -709,7 +708,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(CommandDefinition command,
@@ -730,7 +729,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryAsync(sql, types, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
+            return Connection.QueryAsync(sql, types, map, param, transaction, buffered, splitOn, commandTimeout, commandType);
         }
 
         // public async Task<IGridReader> QueryMultipleAsync(CommandDefinition command)
@@ -742,7 +741,7 @@ namespace net.atos.daf.ct2.data
         public Task<IDataReader> ExecuteReaderAsync(string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.ExecuteReaderAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteReaderAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         // public Task<IDataReader> ExecuteReaderAsync(CommandDefinition command)
@@ -762,7 +761,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.ExecuteScalarAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteScalarAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<T> ExecuteScalarAsync<T>(
@@ -772,7 +771,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.ExecuteScalarAsync<T>(sql, param, transaction, commandTimeout, commandType);
+            return Connection.ExecuteScalarAsync<T>(sql, param, transaction, commandTimeout, commandType);
         }
 
         // public Task<object> ExecuteScalarAsync(CommandDefinition command)
@@ -817,7 +816,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<dynamic> QueryFirstOrDefaultAsync(
@@ -827,7 +826,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QueryFirstOrDefaultAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QueryFirstOrDefaultAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         public Task<dynamic> QuerySingleAsync(
@@ -837,7 +836,7 @@ namespace net.atos.daf.ct2.data
             int? commandTimeout = null,
             CommandType? commandType = null)
         {
-            return connection.QuerySingleAsync(sql, param, transaction, commandTimeout, commandType);
+            return Connection.QuerySingleAsync(sql, param, transaction, commandTimeout, commandType);
         }
 
         #endregion Async Methods
@@ -849,7 +848,7 @@ namespace net.atos.daf.ct2.data
         /// </summary>
         public void Dispose()
         {
-            connection.Dispose();
+            Connection.Dispose();
         }
 
         // START : Moq test changes

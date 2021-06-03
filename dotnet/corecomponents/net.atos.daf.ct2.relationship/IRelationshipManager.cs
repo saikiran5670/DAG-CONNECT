@@ -1,6 +1,6 @@
-﻿using net.atos.daf.ct2.relationship.entity;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.relationship.entity;
 
 namespace net.atos.daf.ct2.relationship
 {
@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.relationship
         Task<Relationship> UpdateRelationship(Relationship relationship);
         Task<bool> DeleteRelationship(int relationshipId);
         Task<List<Relationship>> GetRelationship(RelationshipFilter filter);
-        Task<RelationshipLevelCode> GetRelationshipLevelCode();
+        RelationshipLevelCode GetRelationshipLevelCode();
         Task<int> CreateRelationShipMapping(OrganizationRelationShip relationshipMapping);
         Task<int> EndRelationShipMapping(int OrgRelationId);
         Task<int> AllowChaining(int OrgRelationId, bool AllowChaining);

@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.identitysession.entity;
-using net.atos.daf.ct2.data;
 using Dapper;
+using Microsoft.Extensions.Configuration;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.identitysession.entity;
 using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.identitysession.repository
 {
     public class AccountSessionRepository : IAccountSessionRepository
     {
-        private readonly IDataAccess dataAccess;
-        public AccountSessionRepository(IDataAccess _dataAccess)
+        private readonly IDataAccess _dataAccess;
+        public AccountSessionRepository(IDataAccess dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
         public async Task<int> InsertSession(AccountSession accountSession)
         {
@@ -52,10 +52,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
                 parameter.Add("@account_id", accountSession.AccountId);
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int sessionID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -84,10 +84,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                 parameter.Add("@sessoin_expired_at", accountSession.SessionExpiredAt);
                 parameter.Add("@account_id", accountSession.AccountId);
                 parameter.Add("@created_at", accountSession.CreatedAt);
-                int sessionID = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int sessionID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return sessionID;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -105,10 +105,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", Guid.Parse(SessionId));
                 parameter.Add("@sessoin_expired_at", currentUTCFormate);
-                int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return Id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -131,7 +131,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@AccountId", AccountId);
-                dynamic accountsessions = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic accountsessions = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 List<AccountSession> accountsessionsList = new List<AccountSession>();
                 foreach (dynamic record in accountsessions)
@@ -140,7 +140,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 }
                 return accountsessionsList.AsEnumerable();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -156,10 +156,10 @@ namespace net.atos.daf.ct2.identitysession.repository
                                         RETURNING Id;";
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", AccountId);
-                int Id = await dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                int Id = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                 return Id;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -195,7 +195,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 var parameter = new DynamicParameters();
 
                 parameter.Add("@SessionId", SessionId);
-                dynamic accountsessions = await dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic accountsessions = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
 
                 List<AccountSession> accountsessionsList = new List<AccountSession>();
                 foreach (dynamic record in accountsessions)
@@ -204,7 +204,7 @@ namespace net.atos.daf.ct2.identitysession.repository
                 }
                 return accountsessionsList.AsEnumerable().FirstOrDefault();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

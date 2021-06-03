@@ -1,19 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using log4net.Repository.Hierarchy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.rfms;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.responce;
 using net.atos.daf.ct2.rfms.response;
-using net.atos.daf.ct2.rfmsdataservice.Entity;
 using net.atos.daf.ct2.utilities;
-using net.atos.daf.ct2.vehicle;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.rfmsdataservice.Controllers

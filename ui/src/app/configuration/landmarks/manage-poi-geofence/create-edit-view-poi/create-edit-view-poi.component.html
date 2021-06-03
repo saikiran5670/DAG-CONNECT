@@ -78,6 +78,11 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
           </div>
         </div>
+        
+
+
+
+
         <div class="areaWidth min-width-30-per" fxLayout="column">
           <mat-label>
             <span>{{ translationData.lblCategory || 'Category' }}</span><span
@@ -210,6 +215,31 @@
           </div>
         </div>
       </div>
+      
+
+
+      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="start">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+          </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select  (selectionChange)="onTypeChange($event.value)" formControlName="type">
+                    <mat-option *ngFor="let type of types" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+            </div>
+        </div>
+      </div>
+
+
+
+
       <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="end">
         <div fxLayout="row" class='areaWidth'>
           <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{
@@ -222,6 +252,7 @@
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>
       </div>
+
     </mat-card-content>
   </mat-card>
 </form>

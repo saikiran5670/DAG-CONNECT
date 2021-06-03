@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.poigeofence.ENUM
+﻿namespace net.atos.daf.ct2.poigeofence.ENUM
 {
-  public enum CategoryType
+    public enum CategoryType
     {
         None = '0',
-        Category ='C',
-        SubCategory ='S'
+        Category = 'C',
+        SubCategory = 'S'
     }
 }

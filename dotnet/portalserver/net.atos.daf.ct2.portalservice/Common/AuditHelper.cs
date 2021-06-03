@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
+using log4net;
 using Microsoft.AspNetCore.Http;
 using net.atos.daf.ct2.auditservice;
 using net.atos.daf.ct2.portalservice.Entity.Audit;
 using Newtonsoft.Json;
-using Google.Protobuf.WellKnownTypes;
-using log4net;
-using System.Reflection;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
@@ -53,15 +53,15 @@ namespace net.atos.daf.ct2.portalservice.Common
             return headerObj;
         }
 
-        public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
+        public async Task<int> AddLogs(DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
         {
             AuditRecord logs = new AuditRecord();
             try
             {
                 var headerData = GetHeaderData(request);
-                int roleid = headerData.roleId;
-                int organizationid = headerData.orgId;
-                int Accountid = headerData.accountId;
+                int roleid = headerData.RoleId;
+                int organizationid = headerData.OrgId;
+                int Accountid = headerData.AccountId;
 
                 logs.PerformedAt = Timestamp.FromDateTime(Performed_at.ToUniversalTime());
                 logs.PerformedBy = Accountid;

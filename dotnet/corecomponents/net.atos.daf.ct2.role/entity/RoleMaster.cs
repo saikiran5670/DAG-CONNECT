@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using net.atos.daf.ct2.features.entity;
 
 namespace net.atos.daf.ct2.role.entity
@@ -26,12 +24,12 @@ namespace net.atos.daf.ct2.role.entity
     }
 
 
-    public class  AssignedRoles
+    public class AssignedRoles
     {
-        public int roleid { get; set; }
-        public int accountid { get; set; }
-        public string salutation { get; set; }
-        public string firstname { get; set; }
-        public string lastname { get; set; }
+        public int Roleid { get; set; }
+        public int Accountid { get; set; }
+        public string Salutation { get; set; }
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
     }
 }

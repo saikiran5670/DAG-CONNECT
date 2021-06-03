@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.organizationservice.entity
 {
@@ -12,11 +9,11 @@ namespace net.atos.daf.ct2.organizationservice.entity
         [Required]
         public string Name { get; set; }
         public int Level { get; set; }
-        public string Code { get; set; }      
+        public string Code { get; set; }
         [StringLength(120)]
         public string Description { get; set; }
         public List<string> Features { get; set; }
         public string FeatureSetId { get; set; }
-         
+
     }
 }

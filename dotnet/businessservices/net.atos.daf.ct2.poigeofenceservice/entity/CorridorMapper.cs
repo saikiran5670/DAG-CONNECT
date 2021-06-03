@@ -1,9 +1,6 @@
-﻿using net.atos.daf.ct2.corridorservice;
+﻿using System.Linq;
+using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.poigeofence.entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.poigeofenceservice.entity
 {
@@ -15,7 +12,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
             var etcObj = new poigeofence.entity.ExistingTripCorridor()
             {
 
-                Id=request.Id,
+                Id = request.Id,
                 OrganizationId = request.OrganizationId,
                 CorridorType = request.CorridorType,// Convert.ToChar(request.CorridorType);
                 CorridorLabel = request.CorridorLabel,
@@ -43,17 +40,17 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                     StartPosition = x.StartPosition,
                     StartLatitude = x.StartLatitude,
                     StartLongitude = x.StartLongitude,
-                    TripId =x.TripId,
-                    NodePoints = x.NodePoints.Select(node => new poigeofence.entity.Nodepoint() 
-                                    {                                           
-                                        Latitude= node.Latitude,
-                                        TripId=x.TripId,
-                                        Address= node.Address,
-                                        CreatedBy=node.CreatedBy,
-                                        Longitude =node.Longitude,
-                                        SequenceNumber=node.SequenceNumber,
-                                        State="A"                                          
-                                    }).ToList()
+                    TripId = x.TripId,
+                    NodePoints = x.NodePoints.Select(node => new poigeofence.entity.Nodepoint()
+                    {
+                        Latitude = node.Latitude,
+                        TripId = x.TripId,
+                        Address = node.Address,
+                        CreatedBy = node.CreatedBy,
+                        Longitude = node.Longitude,
+                        SequenceNumber = node.SequenceNumber,
+                        State = "A"
+                    }).ToList()
                 }).ToList()
             };
             return etcObj;

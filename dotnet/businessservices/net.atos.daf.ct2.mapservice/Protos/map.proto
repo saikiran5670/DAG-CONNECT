@@ -1,4 +1,0 @@
-syntax = "proto3";
-
-option csharp_namespace = "net.atos.daf.ct2.mapservice";
-service MapService {}

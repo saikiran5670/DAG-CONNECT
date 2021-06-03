@@ -1,21 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Google.Protobuf;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using net.atos.daf.ct2.utilities;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
-using OrganizationBusinessService = net.atos.daf.ct2.organizationservice;
-using net.atos.daf.ct2.portalservice.Entity.Organization;
 namespace net.atos.daf.ct2.portalservice.Entity.Organization
 {
     public class EntityMapper
     {
-      public AccountBusinessService.AccountPreference ToOrganizationPreference(AccountBusinessService.AccountPreference request)
+        public AccountBusinessService.AccountPreference ToOrganizationPreference(AccountBusinessService.AccountPreference request)
         {
             AccountBusinessService.AccountPreference preference = new AccountBusinessService.AccountPreference();
             preference.Id = request.Id;
@@ -30,7 +18,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
-        }    
+        }
 
         // public AccountBusinessService.AccountOrganizationResponse ToPreferenceResponse(accountservice.AccountPreference request)
         // {
@@ -94,31 +82,31 @@ namespace net.atos.daf.ct2.portalservice.Entity.Organization
 
         public net.atos.daf.ct2.organizationservice.OrgCreateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgCreateRequest request)
         {
-          
-            net.atos.daf.ct2.organizationservice.OrgCreateRequest objResponse =new organizationservice.OrgCreateRequest();
+
+            net.atos.daf.ct2.organizationservice.OrgCreateRequest objResponse = new organizationservice.OrgCreateRequest();
             objResponse.Id = request.Id;
-            objResponse.Type=request.Type;
-            objResponse.Name=request.Name;
-            objResponse.Street=request.Street;
-            objResponse.AddressType=request.AddressType;
-            objResponse.StreetNumber=request.StreetNumber;
-            objResponse.PostalCode=request.PostalCode;
-            objResponse.City=request.City;
-            objResponse.CountryCode=request.CountryCode;
-            objResponse.OrgId=request.OrgId;
-            objResponse.ReferenceDate=request.ReferenceDate; 
-            objResponse.VehicleDefaultOptIn="I";
-            objResponse.DriverDefaultOptIn="I";
-             return objResponse;          
-        }    
+            objResponse.Type = request.Type;
+            objResponse.Name = request.Name;
+            objResponse.Street = request.Street;
+            objResponse.AddressType = request.AddressType;
+            objResponse.StreetNumber = request.StreetNumber;
+            objResponse.PostalCode = request.PostalCode;
+            objResponse.City = request.City;
+            objResponse.CountryCode = request.CountryCode;
+            objResponse.OrgId = request.OrgId;
+            objResponse.ReferenceDate = request.ReferenceDate;
+            objResponse.VehicleDefaultOptIn = "I";
+            objResponse.DriverDefaultOptIn = "I";
+            return objResponse;
+        }
 
         public net.atos.daf.ct2.organizationservice.OrgUpdateRequest TOOrgUpdateResponse(net.atos.daf.ct2.organizationservice.OrgUpdateRequest request)
-        {          
-            net.atos.daf.ct2.organizationservice.OrgUpdateRequest objResponse=new organizationservice.OrgUpdateRequest();
-            objResponse.Id = request.Id;           
-            objResponse.VehicleDefaultOptIn=request.VehicleDefaultOptIn; 
-            objResponse.DriverDefaultOptIn=request.DriverDefaultOptIn; 
-            return objResponse;          
-        }               
+        {
+            net.atos.daf.ct2.organizationservice.OrgUpdateRequest objResponse = new organizationservice.OrgUpdateRequest();
+            objResponse.Id = request.Id;
+            objResponse.VehicleDefaultOptIn = request.VehicleDefaultOptIn;
+            objResponse.DriverDefaultOptIn = request.DriverDefaultOptIn;
+            return objResponse;
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using System;
 
 namespace net.atos.daf.ct2.tcucore
 {
@@ -40,7 +39,7 @@ namespace net.atos.daf.ct2.tcucore
             {
                 BootstrapServers = brokerList,
                 SecurityProtocol = SecurityProtocol.SaslSsl,
-                SaslMechanism    = SaslMechanism.Plain,
+                SaslMechanism = SaslMechanism.Plain,
                 SaslUsername = SASLUSERNAME,
                 SaslPassword = connStr,
                 SslCaLocation = cacertLocation,

@@ -1,39 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
 using Microsoft.OpenApi.Models;
-using static Dapper.SqlMapper;
-using net.atos.daf.ct2.subscription.repository;
-using net.atos.daf.ct2.subscription;
-using AccountComponent = net.atos.daf.ct2.account;
-using Identity = net.atos.daf.ct2.identity;
 //using AccountPreference = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authorization;
-using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.featureactivationservice.Common;
+using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
+using net.atos.daf.ct2.subscription;
+using net.atos.daf.ct2.subscription.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
+using AccountComponent = net.atos.daf.ct2.account;
+using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.featureactivationservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "featureactivation-data";
+        private readonly string _swaggerBasePath = "featureactivation-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -60,7 +50,7 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {
                 options.ApplicationName = "DAFCT2.0";
@@ -69,9 +59,9 @@ namespace net.atos.daf.ct2.featureactivationservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MainAccessPolicy,
+                    AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
@@ -119,13 +109,13 @@ namespace net.atos.daf.ct2.featureactivationservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
         }
     }

@@ -1,11 +1,9 @@
-using System;
-
 namespace net.atos.daf.ct2.organization.entity
 {
     public class PreferenceResponse
     {
         public int PreferenceId { get; set; }
-        public int OrganizatioId { get; set; }        
+        public int OrganizationId { get; set; }
         public int LanguageName { get; set; }
         public int Timezone { get; set; }
         public int Currency { get; set; }
@@ -13,21 +11,21 @@ namespace net.atos.daf.ct2.organization.entity
         public int VehicleDisplay { get; set; }
         public int DateFormatType { get; set; }
         public int TimeFormat { get; set; }
-        public string LandingPageDisplay { get; set; }      
+        public string LandingPageDisplay { get; set; }
     }
     public class OrganizationDetailsResponse
     {
-        public int id { get; set; }
-        public int preferenceId { get; set; }
-        public string org_id { get; set; }
-        public string name { get; set; }        
-        public string street { get; set; }
-        public string street_number { get; set; }
-        public string postal_code { get; set; }
-        public string city { get; set; }
-        public string country_code { get; set; }
-        public string vehicle_default_opt_in { get; set; }
-        public string driver_default_opt_in { get; set; }
+        public int Id { get; set; }
+        public int PreferenceId { get; set; }
+        public string OrgId { get; set; }
+        public string Name { get; set; }
+        public string Street { get; set; }
+        public string StreetNumber { get; set; }
+        public string PostalCode { get; set; }
+        public string City { get; set; }
+        public string CountryCode { get; set; }
+        public string VehicleDefaultOptIn { get; set; }
+        public string DriverDefaultOptIn { get; set; }
         public string LanguageName { get; set; }
         public string Timezone { get; set; }
         public string Currency { get; set; }

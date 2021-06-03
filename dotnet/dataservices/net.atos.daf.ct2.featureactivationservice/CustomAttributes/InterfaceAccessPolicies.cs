@@ -2,6 +2,6 @@
 {
     public static class AccessPolicies
     {
-        public const string MainAccessPolicy = "api.subscription";
+        public const string MAIN_ACCESS_POLICY = "api.subscription";
     }
 }

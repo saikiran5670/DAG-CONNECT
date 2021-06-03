@@ -8,18 +8,18 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountAssertionManager : IAccountAssertionManager
     {
-        IAccountAssertionRepository accountassertionRepository;
-        public AccountAssertionManager(IAccountAssertionRepository _accountassertionRepository)
+        IAccountAssertionRepository _accountassertionRepository;
+        public AccountAssertionManager(IAccountAssertionRepository accountassertionRepository)
         {
-            accountassertionRepository = _accountassertionRepository;
+            this._accountassertionRepository = accountassertionRepository;
         }
         public async Task<int> InsertAssertion(AccountAssertion accountAssertion)
         {
             try
             {
-                return await accountassertionRepository.InsertAssertion(accountAssertion);
+                return await _accountassertionRepository.InsertAssertion(accountAssertion);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -27,11 +27,11 @@ namespace net.atos.daf.ct2.identitysession
 
         public async Task<int> UpdateAssertion(AccountAssertion accountAssertion)
         {
-             try
+            try
             {
-                return await accountassertionRepository.UpdateAssertion(accountAssertion);
+                return await _accountassertionRepository.UpdateAssertion(accountAssertion);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -39,33 +39,33 @@ namespace net.atos.daf.ct2.identitysession
 
         public async Task<int> DeleteAssertion(int accountId)
         {
-             try
+            try
             {
-                return await accountassertionRepository.DeleteAssertion(accountId);
+                return await _accountassertionRepository.DeleteAssertion(accountId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
         public async Task<int> DeleteAssertionbySessionId(int sessionId)
         {
-             try
+            try
             {
-                return await accountassertionRepository.DeleteAssertionbySessionId(sessionId);
+                return await _accountassertionRepository.DeleteAssertionbySessionId(sessionId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
         public async Task<IEnumerable<AccountAssertion>> GetAssertion(int accountId)
         {
-             try
+            try
             {
-                return await accountassertionRepository.GetAssertion(accountId);
+                return await _accountassertionRepository.GetAssertion(accountId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

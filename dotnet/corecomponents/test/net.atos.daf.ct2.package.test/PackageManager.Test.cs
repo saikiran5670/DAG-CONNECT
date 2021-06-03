@@ -1,14 +1,12 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.package.entity;
-using net.atos.daf.ct2.package.ENUM;
-using net.atos.daf.ct2.package.repository;
 using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
-using System.IO;
-using System.Collections.Generic;
+using net.atos.daf.ct2.package.entity;
+using net.atos.daf.ct2.package.repository;
 
 namespace net.atos.daf.ct2.package.test
 {
@@ -74,7 +72,7 @@ namespace net.atos.daf.ct2.package.test
                 Name = "Standard Update",
                 Type = "V",
                 Description = "Package with default featureset",
-                 
+
             };
             var resultPackage = _packageManager.Update(ObjPackage).Result;
             Assert.IsNotNull(resultPackage);
@@ -86,7 +84,7 @@ namespace net.atos.daf.ct2.package.test
         [TestMethod]
         public void GetPackage_Manager()
         {
-            var packageFilter = new PackageFilter() {  State = "I" };
+            var packageFilter = new PackageFilter() { State = "I" };
             var result = _packageManager.Get(packageFilter).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);
@@ -98,7 +96,7 @@ namespace net.atos.daf.ct2.package.test
             {
                 string json = r.ReadToEnd();
                 var packages = Newtonsoft.Json.JsonConvert.DeserializeObject<PackageMaster>(json);
-                var result = _packageManager.Import(packages.packages);
+                var result = _packageManager.Import(packages.Packages);
             }
 
         }
@@ -115,7 +113,7 @@ namespace net.atos.daf.ct2.package.test
         public void UpdatePackageStatus()
 
         {
-            var package = new Package() {Id=75, State = "I" };
+            var package = new Package() { Id = 75, State = "I" };
             var result = _packageManager.UpdatePackageState(package).Result;
             Console.WriteLine(result);
             Assert.IsTrue(result != null);

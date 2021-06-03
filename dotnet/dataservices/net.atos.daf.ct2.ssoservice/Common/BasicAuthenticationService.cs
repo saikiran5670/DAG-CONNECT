@@ -1,25 +1,20 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using net.atos.daf.ct2.account.entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AccountComponent = net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.singlesignonservice.Common
 {
     public class BasicAuthenticationService : IBasicAuthenticationService
     {
-        AccountComponent.IAccountIdentityManager accountIdentityManager;
-        private readonly ILogger<BasicAuthenticationService> logger;
-        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager _accountIdentityManager, ILogger<BasicAuthenticationService> _logger) 
+        AccountComponent.IAccountIdentityManager _accountIdentityManager;
+        public BasicAuthenticationService(AccountComponent.IAccountIdentityManager accountIdentityManager)
         {
-            accountIdentityManager = _accountIdentityManager;
-            logger = _logger;
+            this._accountIdentityManager = accountIdentityManager;
         }
         public async Task<string> ValidateTokenGuid(string token)
         {
-            ValidTokenResponse response = await accountIdentityManager.ValidateTokenGuid(token);
+            ValidTokenResponse response = await _accountIdentityManager.ValidateTokenGuid(token);
             if (response != null && !string.IsNullOrEmpty(response.Email))
                 return response.Email;
             else

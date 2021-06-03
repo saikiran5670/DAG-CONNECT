@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace net.atos.daf.ct2.email.Enum
+﻿namespace net.atos.daf.ct2.email.Enum
 {
     public enum EmailContentType
     {

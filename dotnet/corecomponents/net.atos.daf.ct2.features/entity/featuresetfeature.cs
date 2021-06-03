@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.features.entity
+﻿namespace net.atos.daf.ct2.features.entity
 {
-    public class featuresetfeature
+    public class Featuresetfeature
     {
-        public int feature_set_id { get; set; }
-        public int feature_id { get; set; }
+        public int Feature_set_id { get; set; }
+        public int Feature_id { get; set; }
     }
 }

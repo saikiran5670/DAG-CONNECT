@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using System.Reflection;
 namespace net.atos.daf.ct2.customerdataservice.Common
 {
 
@@ -26,5 +22,5 @@ namespace net.atos.daf.ct2.customerdataservice.Common
     }
 }
 
-    
+
 

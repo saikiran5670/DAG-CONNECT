@@ -5,6 +5,6 @@
         None = 0,
         Active = 1,
         Inactive = 2,
-        Delete=3
+        Delete = 3
     }
 }

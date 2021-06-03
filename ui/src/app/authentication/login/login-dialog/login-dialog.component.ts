@@ -2,6 +2,7 @@ import { Component, HostListener, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AccountService } from 'src/app/services/account.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 
 @Component({
@@ -12,7 +13,8 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 export class LoginDialogComponent {
   public loginDialogForm: FormGroup;
   selectedRoles: any = [];
-  constructor(@Inject(MAT_DIALOG_DATA) public data: {
+  constructor( private accountService: AccountService, 
+    @Inject(MAT_DIALOG_DATA) public data: {
     title: string,
     cancelText: string,
     confirmText: string,
@@ -62,6 +64,13 @@ export class LoginDialogComponent {
         accountDetail: this.data.accountDetail,
         accountPreference: this.data.accountPreference
       }
+      let sessionObject: any = {
+        accountId:  this.data.accountDetail.id,
+        orgId: this.loginDialogForm.controls.organization.value,
+        roleId: this.loginDialogForm.controls.role.value
+      }
+      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+      });
       localStorage.setItem("accountInfo", JSON.stringify(loginDetailsObj));
       this.close(false);
       this.dataInterchangeService.getDataInterface(true);

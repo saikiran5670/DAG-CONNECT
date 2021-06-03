@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.identitysession.entity
 {
@@ -13,6 +12,6 @@ namespace net.atos.daf.ct2.identitysession.entity
         public long SessionStartedAt { get; set; }
         public long SessionExpiredAt { get; set; }
         public long CreatedAt { get; set; }
-        public Guid Session_Id {get; set;}
+        public Guid Session_Id { get; set; }
     }
 }

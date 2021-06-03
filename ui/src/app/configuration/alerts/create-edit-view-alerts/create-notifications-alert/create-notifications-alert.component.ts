@@ -144,6 +144,8 @@ if(isButtonClicked){
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
         else {
           this.emailIndex = this.emailIndex+1;
@@ -151,6 +153,8 @@ if(isButtonClicked){
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
       }
       //this is for web service
@@ -162,6 +166,8 @@ if(isButtonClicked){
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
         else {
           this.wsIndex = this.wsIndex+1;
@@ -169,6 +175,8 @@ if(isButtonClicked){
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
      }
     }

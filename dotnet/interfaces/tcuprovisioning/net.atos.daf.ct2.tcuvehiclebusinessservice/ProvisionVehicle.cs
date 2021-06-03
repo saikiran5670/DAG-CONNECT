@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.Enum;
@@ -20,18 +20,17 @@ using net.atos.daf.ct2.organization.repository;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.repository;
 using net.atos.daf.ct2.tcucore;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
 using net.atos.daf.ct2.vehicle.repository;
-using System.Collections.Generic;
-using System.Linq;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.tcuvehiclebusinessservice
 {
     public class ProvisionVehicle : ITcuProvisioningDataReceive
-    {        
+    {
         private string brokerList;
         private string connStr;
         private string consumergroup;
@@ -53,7 +52,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
         public ProvisionVehicle(ILog _log, IConfiguration _config)
         {
             log = _log;
-            config = _config;         
+            config = _config;
             brokerList = config.GetSection("EH_FQDN").Value;
             connStr = config.GetSection("EH_CONNECTION_STRING").Value;
             consumergroup = config.GetSection("CONSUMER_GROUP").Value;
@@ -63,8 +62,8 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
             orgName = config.GetSection("DEFAULT_ORG").Value;
             boschTcuBrand = config.GetSection("BOSCH_TCU_BRAND").Value;
-            boschTcuVesrion = config.GetSection("BOSCH_TCU_VERSION").Value;   
-            
+            boschTcuVesrion = config.GetSection("BOSCH_TCU_VERSION").Value;
+
             dataacess = new PgSQLDataAccess(psqlconnstring);
             datamartDataacess = new PgSQLDataMartDataAccess(datamartpsqlconnstring);
             auditrepo = new AuditLogRepository(dataacess);
@@ -87,7 +86,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                     try
                     {
                         log.Info("Consuming Messages");
-                        var msg = consumer.Consume();                
+                        var msg = consumer.Consume();
                         TCUDataReceive tcuDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(msg.Message.Value);
                         await UpdateVehicleDetails(tcuDataReceive);
 
@@ -130,7 +129,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                     await CreateOrgRelationship(vehicleManager, receivedVehicle.ID, (int)receivedVehicle.Organization_Id);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -160,12 +159,12 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                 VehicleFilter vehicleFilter = GetFilteredVehicle(tcuDataReceive);
                 Vehicle receivedVehicle = null;
                 var vehiclesList = await vehicleManager.Get(vehicleFilter);
-                if(vehiclesList.Count() > 0)
-                    receivedVehicle = vehiclesList.Where(x => x is Vehicle).First();               
+                if (vehiclesList.Count() > 0)
+                    receivedVehicle = vehiclesList.Where(x => x is Vehicle).First();
 
                 return receivedVehicle;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -173,7 +172,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
         }
 
         private async Task<Vehicle> CreateVehicle(TCUDataReceive tcuDataReceive, VehicleManager vehicleManager)
-        {        
+        {
             Vehicle veh = null;
             int OrgId = 0;
 
@@ -205,7 +204,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in TCU Vehicle Component_Sucess", 0, veh.ID, JsonConvert.SerializeObject(veh));
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create vehicle in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(veh));
                 throw;
@@ -233,7 +232,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "update vehicle in TCU Vehicle Component_Sucess", 0, veh.ID, JsonConvert.SerializeObject(veh));
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.FAILED, "update vehicle in TCU Vehicle Component_Failed", 0, 0, JsonConvert.SerializeObject(veh));
                 throw;
@@ -257,23 +256,23 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
                     int OwnerRelationship = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
                     int DAFPACCAR = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
-                    relationship = new RelationshipMapping 
+                    relationship = new RelationshipMapping
                     {
-                        relationship_id = OwnerRelationship,
-                        vehicle_id = vehicleId,
-                        vehicle_group_id = 0,
-                        owner_org_id = DAFPACCAR,
-                        created_org_id = DAFPACCAR,
-                        target_org_id = DAFPACCAR,
-                        isFirstRelation = true,
-                        allow_chain = true
+                        RelationshipId = OwnerRelationship,
+                        VehicleId = vehicleId,
+                        VehicleGroupId = 0,
+                        OwnerOrgId = DAFPACCAR,
+                        CreatedOrgId = DAFPACCAR,
+                        TargetOrgId = DAFPACCAR,
+                        IsFirstRelation = true,
+                        AllowChain = true
                     };
 
                     await org.CreateOwnerRelationship(relationship);
                     await auditlog.AddLogs(DateTime.Now, DateTime.Now, organizationId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create org relationship in TCU Vehicle Component_Sucess", 0, vehicleId, JsonConvert.SerializeObject(relationship));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await auditlog.AddLogs(DateTime.Now, DateTime.Now, organizationId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.FAILED, "Create org relationship in TCU Vehicle Component_Failed", 0, vehicleId, JsonConvert.SerializeObject(relationship));
                 throw;
@@ -281,7 +280,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
         }
 
         private OrganizationManager GetOrgnisationManager(VehicleManager vehicleManager)
-        {   
+        {
             GroupRepository groupRepository = new GroupRepository(dataacess);
             IGroupManager groupManager = new GroupManager(groupRepository, auditlog);
 

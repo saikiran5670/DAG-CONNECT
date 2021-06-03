@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace net.atos.daf.ct2.portalservice.Account
+﻿namespace net.atos.daf.ct2.portalservice.Account
 {
     public class AccountBlobRequest
     {
         public int BlobId { get; set; }
         public int AccountId { get; set; }
         public string ImageType { get; set; }
-        public byte [] Image { get; set; }
-        
+        public byte[] Image { get; set; }
+
     }
 
     public class AccountBlobResponse
     {
-        public int BlobId { get; set; }        
+        public int BlobId { get; set; }
         public byte[] Image { get; set; }
 
     }

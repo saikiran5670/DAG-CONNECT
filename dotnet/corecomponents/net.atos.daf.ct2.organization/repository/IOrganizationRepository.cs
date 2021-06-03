@@ -1,14 +1,14 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.organization.entity;
-using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.organization.repository
 {
     public interface IOrganizationRepository
     {
-       Task<Organization> Create(Organization organization);
+        Task<Organization> Create(Organization organization);
         Task<Organization> Update(Organization organization);
-        Task<bool> Delete(int organizationId);        
+        Task<bool> Delete(int organizationId);
         Task<OrganizationResponse> Get(int organizationId);
         Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId);
 
@@ -17,8 +17,8 @@ namespace net.atos.daf.ct2.organization.repository
         //Task<Organization> UpdateCustomer(Organization organization);
         Task<CustomerRequest> UpdateCustomer(CustomerRequest customer);
         Task<HandOver> KeyHandOverEvent(HandOver keyHandOver);
-     //   Task<int> CreateVehicleParty(List<Customer> customers);
-         
+        //   Task<int> CreateVehicleParty(List<Customer> customers);
+
         Task<int> CreateOwnerRelationship(RelationshipMapping relationshipMapping);
         Task<List<OrganizationResponse>> GetAll(int organizationId);
         Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID);

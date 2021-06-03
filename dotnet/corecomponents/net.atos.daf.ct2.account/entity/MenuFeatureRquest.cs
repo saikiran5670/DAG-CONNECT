@@ -4,7 +4,7 @@
     {
         public int AccountId { get; set; }
         public int RoleId { get; set; }
-        public int OrganizationId { get; set; }       
+        public int OrganizationId { get; set; }
         public string LanguageCode { get; set; }
         public int ContextOrgId { get; set; }
     }

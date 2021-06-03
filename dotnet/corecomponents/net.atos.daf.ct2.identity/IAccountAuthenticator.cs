@@ -4,7 +4,7 @@ namespace net.atos.daf.ct2.identity
 {
     public interface IAccountAuthenticator
     {
-          Task<Response> AccessToken(Identity user);
-          string getURL(Identity user);
+        Task<Response> AccessToken(Identity user);
+        string GetURL(Identity user);
     }
 }

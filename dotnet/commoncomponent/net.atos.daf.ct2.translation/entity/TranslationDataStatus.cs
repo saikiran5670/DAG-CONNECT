@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.translation.entity
+﻿namespace net.atos.daf.ct2.translation.entity
 {
     public class TranslationDataStatus
     {

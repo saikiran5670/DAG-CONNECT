@@ -15,6 +15,7 @@ import { CommonTableComponent } from 'src/app/shared/common-table/common-table.c
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
+import { Options } from '@angular-slider/ngx-slider';
 
 declare var H: any;
 
@@ -32,6 +33,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() alertTypeList: any;
   @Input() vehicleGroupList: any;
   @Input() vehicleList: any;
+  options: Options = {
+    floor: 0,
+    ceil: 10000
+  };
   displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
@@ -93,6 +98,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   notifications: any= [];
   unitTypes: any= [];
   isUnsubscribedVehicle: boolean= false;
+  poiWidth : number = 100;
+  poiWidthKm : number = 0.1;
+  sliderValue : number = 0;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -147,7 +155,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
       warningLevelThreshold: [''],
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
-      unitType: ['']
+      unitType: [''],
+      widthInput: ['']
     },
     {
       validator: [
@@ -184,6 +193,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
       this.loadFiltersData();
   
+      this.alertForm.controls.widthInput.setValue(0.1);
   }
 
   getUnique(arr, comp) {
@@ -480,6 +490,7 @@ PoiCheckboxClicked(event: any, row: any) {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
+      this.createResizableCircle(this.alertForm.controls.widthInput.value * 1000,element);
     });
     this.geoMarkerArray.forEach(element => {
       if(element.type == "C"){
@@ -1714,4 +1725,18 @@ PoiCheckboxClicked(event: any, row: any) {
     }
    });
   }
+
+  sliderChanged(){
+     this.poiWidthKm = this.poiWidth / 1000;
+     this.alertForm.controls.widthInput.setValue(this.poiWidthKm);
+     if(this.markerArray.length > 0){
+     this.addMarkerOnMap();
+     }
+ }
+
+ changeSliderInput(){
+  this.poiWidthKm = this.alertForm.controls.widthInput.value;
+  this.poiWidth = this.poiWidthKm * 1000;
+}
+
 }

@@ -1,47 +1,39 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 using net.atos.daf.ct2.accountservice;
-using net.atos.daf.ct2.packageservice;
-using net.atos.daf.ct2.vehicleservice;
-using net.atos.daf.ct2.featureservice;
-using net.atos.daf.ct2.translationservice;
+using net.atos.daf.ct2.alertservice;
 using net.atos.daf.ct2.auditservice;
-using net.atos.daf.ct2.roleservice;
-using net.atos.daf.ct2.organizationservice;
+using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.driverservice;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Caching.Distributed;
-using net.atos.daf.ct2.portalservice.Common;
-using net.atos.daf.ct2.subscriptionservice;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.mapservice;
+using net.atos.daf.ct2.organizationservice;
+using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poiservice;
-using net.atos.daf.ct2.alertservice;
-using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.reportservice;
+using net.atos.daf.ct2.roleservice;
+using net.atos.daf.ct2.subscriptionservice;
+using net.atos.daf.ct2.translationservice;
+using net.atos.daf.ct2.vehicleservice;
 
 namespace net.atos.daf.ct2.portalservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "portalservice";
+        private readonly string _swaggerBasePath = "portalservice";
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
@@ -66,6 +58,7 @@ namespace net.atos.daf.ct2.portalservice
             var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
             var reportservice = Configuration["ServiceConfiguration:reportservice"];
+            var mapservice = Configuration["ServiceConfiguration:mapservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -106,7 +99,12 @@ namespace net.atos.daf.ct2.portalservice
             });
             services.AddDistributedMemoryCache();
 
-            services.AddSession(options => {
+            services.AddDataProtection()
+                .SetApplicationName(_swaggerBasePath)
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/tmp/keys"));
+
+            services.AddSession(options =>
+            {
                 options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
@@ -211,6 +209,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(reportservice);
             });
+            services.AddGrpcClient<MapService.MapServiceClient>(o =>
+            {
+                o.Address = new Uri(mapservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
@@ -225,7 +227,7 @@ namespace net.atos.daf.ct2.portalservice
             services.AddControllers();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
             //Web Server Configuration
@@ -285,12 +287,12 @@ namespace net.atos.daf.ct2.portalservice
             });
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
         }
     }

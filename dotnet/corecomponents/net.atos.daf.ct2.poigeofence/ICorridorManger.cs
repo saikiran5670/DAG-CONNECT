@@ -1,12 +1,9 @@
-﻿using net.atos.daf.ct2.poigeofence.entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using net.atos.daf.ct2.poigeofence.entity;
 
 namespace net.atos.daf.ct2.poigeofence
 {
-   public interface ICorridorManger
+    public interface ICorridorManger
     {
         Task<CorridorLookUp> GetCorridorList(CorridorRequest objCorridorRequest);
         Task<RouteCorridor> AddRouteCorridor(RouteCorridor routeCorridor);
