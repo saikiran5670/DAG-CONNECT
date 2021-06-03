@@ -11,6 +11,7 @@ import { AccountService } from './services/account.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { OrganizationService } from './services/organization.service';
 
 @Component({
   selector: 'app-root',
@@ -218,8 +219,14 @@ export class AppComponent {
       }
     }
   }
+  orgId: any;
+  organizationList: any = [];
+  accountID: any;
+  languageId: any;
+  orgName: any;
+  roleId: any;
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService : OrganizationService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -590,7 +597,12 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    
+    this.orgId = localStorage.getItem("accountOrganizationId");
+    this.orgName = localStorage.getItem("organizationName");
+    this.accountID = JSON.parse(localStorage.getItem("accountId"));
+    this.roleId = localStorage.getItem('accountRoleId');
+    this.languageId =  JSON.parse(localStorage.getItem("language"));
+    this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
     }
@@ -757,5 +769,25 @@ private setPageTitle() {
   userPreferencesSetting(event){
     this.userPreferencesFlag  = !this.userPreferencesFlag;
   }
+
+  getOrgListData(){
+    this.organizationService.getAllOrganizations().subscribe((data: any) => {
+      if(data){
+        this.organizationList = data["organizationList"];
+      }
+    });
+  }
+
+
+  applyFilterOnOrganization(filterValue: string){
+  let switchObj = {
+    accountId : this.accountID,
+    contextOrgId : filterValue,
+    languageCode : this.languageId.code
+  } 
+  this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
+  })
+
+ }
   
 }

@@ -481,6 +481,18 @@ export class AccountService {
       .pipe(catchError(this.handleError));
   }
 
+  switchOrgContext(switchObj : any){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.accountServiceUrl}/switchorgcontext`,switchObj, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
       return throwError(
