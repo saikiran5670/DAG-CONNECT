@@ -193,7 +193,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
       this.loadFiltersData();
   
-      this.alertForm.controls.widthInput.setValue(0.01);
+      this.alertForm.controls.widthInput.setValue(0.1);
   }
 
   getUnique(arr, comp) {
@@ -490,7 +490,7 @@ PoiCheckboxClicked(event: any, row: any) {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
-      this.createResizableCircle(this.alertForm.controls.widthInput.value * 10000,element);
+      this.createResizableCircle(this.alertForm.controls.widthInput.value * 1000,element);
     });
     this.geoMarkerArray.forEach(element => {
       if(element.type == "C"){
@@ -1727,7 +1727,7 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   sliderChanged(){
-     this.poiWidthKm = this.poiWidth / 10000;
+     this.poiWidthKm = this.poiWidth / 1000;
      this.alertForm.controls.widthInput.setValue(this.poiWidthKm);
      if(this.markerArray.length > 0){
      this.addMarkerOnMap();
@@ -1736,7 +1736,7 @@ PoiCheckboxClicked(event: any, row: any) {
 
  changeSliderInput(){
   this.poiWidthKm = this.alertForm.controls.widthInput.value;
-  this.poiWidth = this.poiWidthKm * 10000;
+  this.poiWidth = this.poiWidthKm * 1000;
 }
 
 }
