@@ -10,13 +10,13 @@ namespace net.atos.daf.ct2.translation.test
     {
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
-        private readonly ITranslationRepository _ITranslationRepository;
+        private readonly ITranslationRepository _translationRepository;
 
         public TransaltionTest()
         {
             string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _ITranslationRepository = new TranslationRepository(_dataAccess);
+            _translationRepository = new TranslationRepository(_dataAccess);
             //  _logs = new AuditTraillib(_ITranslationRepository);
 
             // _IAuditLogRepository = new AuditLogRepository(_dataAccess);
@@ -24,14 +24,14 @@ namespace net.atos.daf.ct2.translation.test
         [TestMethod]
         public void TestMethod1()
         {
-            var result = _ITranslationRepository.GetAllLanguageCode().Result;
+            var result = _translationRepository.GetAllLanguageCode().Result;
             Assert.IsTrue(result.Count() > 0);
         }
 
         [TestMethod]
         public void GetTranslationsByMenu()
         {
-            var result = _ITranslationRepository.GetTranslationsByMenu(24, "L", "EN-GB");
+            var result = _translationRepository.GetTranslationsByMenu(24, "L", "EN-GB");
 
             Assert.IsTrue(result != null);
         }

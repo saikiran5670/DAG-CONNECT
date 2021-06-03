@@ -8,21 +8,21 @@ namespace net.atos.daf.ct2.account.test
     [TestClass]
     public class AccountRepositoryTest
     {
-        private readonly IDataAccess dataAccess;
-        private readonly IConfiguration config;
-        readonly IAccountRepository repository;
+        private readonly IDataAccess _dataAccess;
+        private readonly IConfiguration _config;
+        readonly IAccountRepository _repository;
 
 
         public AccountRepositoryTest()
         {
 
-            config = new ConfigurationBuilder()
+            _config = new ConfigurationBuilder()
              .AddJsonFile("appsettings.Test.json")
             .Build();
             //Get connection string
-            var connectionString = config.GetConnectionString("DevAzure");
-            dataAccess = new PgSQLDataAccess(connectionString);
-            repository = new AccountRepository(dataAccess);
+            var connectionString = _config.GetConnectionString("DevAzure");
+            _dataAccess = new PgSQLDataAccess(connectionString);
+            _repository = new AccountRepository(_dataAccess);
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.account.test
             string imageFilePath = @"C:\DAF\Repo\atos.daf.ct2.0\dotnet\corecomponents\test\net.atos.daf.ct2.account.test\mockdata\image\Profile1.JPG";
             byte[] imgdata = System.IO.File.ReadAllBytes(imageFilePath);
             accountBlob.Image = imgdata;
-            var result = repository.CreateBlob(accountBlob).Result;
+            var result = _repository.CreateBlob(accountBlob).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
         [TestMethod]
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.account.test
             account.entity.AccountBlob accountBlob = new account.entity.AccountBlob();
             accountBlob.Id = 7;
             accountBlob.Type = ImageType.JPEG;
-            var result = repository.GetBlob(accountBlob.Id).Result;
+            var result = _repository.GetBlob(accountBlob.Id).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
 
@@ -59,7 +59,7 @@ namespace net.atos.daf.ct2.account.test
             string imageFilePath = @"C:\DAF\Repo\atos.daf.ct2.0\dotnet\corecomponents\test\net.atos.daf.ct2.account.test\mockdata\image\Profile3.JPG";
             byte[] imgdata = System.IO.File.ReadAllBytes(imageFilePath);
             accountBlob.Image = imgdata;
-            var result = repository.CreateBlob(accountBlob).Result;
+            var result = _repository.CreateBlob(accountBlob).Result;
             Assert.IsTrue(result != null && result.Id > 0);
         }
 
