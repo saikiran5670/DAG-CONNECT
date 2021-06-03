@@ -8,15 +8,17 @@ namespace net.atos.daf.ct2.tcudataservice
 {
     class Program
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        static async System.Threading.Tasks.Task Main(string[] args)
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        static async System.Threading.Tasks.Task Main()
         {
+             
+
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
 
-            TCUProvisioningDataProcess tcuProvisioningDataProcess = new TCUProvisioningDataProcess(log, config);
+            TCUProvisioningDataProcess tcuProvisioningDataProcess = new TCUProvisioningDataProcess(_log, config);
             await tcuProvisioningDataProcess.ReadTcuProvisioningData();
         }
     }

@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
         
          //console.log("data:: ", data)
          if(data.status === 200){
-            //this.cookiesFlag = true;
+           
             if(data.body.accountInfo){
               localStorage.setItem('accountId', data.body.accountInfo.id ? data.body.accountInfo.id : 0);
             }
@@ -160,6 +160,15 @@ export class LoginComponent implements OnInit {
                 this.loginClicks = 0;
                 this.invalidUserMsg= true;
               });
+
+               //this.cookiesFlag = true;
+            let sessionObject: any = {
+              accountId: data.body.accountInfo.id,
+              orgId:  data.body.accountOrganization[0].id,
+              roleId: data.body.accountRole[0].id
+            }
+            this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+            });
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;

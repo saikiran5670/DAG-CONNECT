@@ -9,7 +9,6 @@ namespace net.atos.daf.ct2.translation.test
     public class TransaltionTest
     {
         private readonly IDataAccess _dataAccess;
-        private readonly IConfiguration _config;
         private readonly ITranslationRepository _translationRepository;
 
         public TransaltionTest()

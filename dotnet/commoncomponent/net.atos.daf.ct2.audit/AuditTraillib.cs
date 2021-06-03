@@ -8,23 +8,23 @@ namespace net.atos.daf.ct2.audit
 {
     public class AuditTraillib : IAuditTraillib
     {
-        private readonly IAuditLogRepository repository; // = new TranslationRepository();
-        private static readonly log4net.ILog log =
+        private readonly IAuditLogRepository _repository; // = new TranslationRepository();
+        private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public AuditTraillib(IAuditLogRepository _repository)
         {
-            repository = _repository;
+            this._repository = _repository;
         }
         public async Task<int> AddLogs(AuditTrail auditTrail)
         {
             try
             {
-                return await repository.AddLogs(auditTrail);
+                return await _repository.AddLogs(auditTrail);
             }
             catch (Exception ex)
             {
-                log.Info("Audit Log Add failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(auditTrail));
-                log.Error(ex.ToString());
+                _log.Info("Audit Log Add failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(auditTrail));
+                _log.Error(ex.ToString());
                 return 0;
             }
 
@@ -85,7 +85,7 @@ namespace net.atos.daf.ct2.audit
 
         public async Task<IEnumerable<AuditTrail>> GetAuditLogs(int performed_by, string component_name)
         {
-            return await repository.GetAuditLogs(performed_by, component_name);
+            return await _repository.GetAuditLogs(performed_by, component_name);
         }
     }
 }

@@ -20,33 +20,12 @@ namespace net.atos.daf.ct2.alert.entity
             Dictionary<int, NotificationRecipient> notificationRecipientRefLookup = new Dictionary<int, NotificationRecipient>();
             Dictionary<int, NotificationLimit> notificationLimitkRefLookup = new Dictionary<int, NotificationLimit>();
             Dictionary<int, NotificationAvailabilityPeriod> notificationAvailabilityPeriodLookup = new Dictionary<int, NotificationAvailabilityPeriod>();
-
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            Alert alert = new Alert();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            Notification notification = new Notification();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            AlertUrgencyLevelRef alertUrgencyLevelRef = new AlertUrgencyLevelRef();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            AlertFilterRef alertFilterRef = new AlertFilterRef();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            AlertLandmarkRef alertLandmarkRef = new AlertLandmarkRef();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            NotificationRecipient notificationRecipient = new NotificationRecipient();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            NotificationLimit notificationLimit = new NotificationLimit();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
+           
             NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod();
 
             foreach (var alertItem in alertResult)
             {
-                if (!alertLookup.TryGetValue(Convert.ToInt32(alertItem.Ale_id), out alert))
+                if (!alertLookup.TryGetValue(Convert.ToInt32(alertItem.Ale_id), out Alert alert))
                     alertLookup.Add(Convert.ToInt32(alertItem.Ale_id), alert = ToAlertModel(alertItem));
 
                 if (alert.Notifications == null)
@@ -58,31 +37,33 @@ namespace net.atos.daf.ct2.alert.entity
 
                 if (alertItem.Aleurg_id > 0 && alertItem.Ale_id == alertItem.Aleurg_alert_id)
                 {
-                    if (!alertUrgencyLevelRefLookup.TryGetValue(Convert.ToInt32(alertItem.Aleurg_id), out alertUrgencyLevelRef))
+                    if (!alertUrgencyLevelRefLookup.TryGetValue(Convert.ToInt32(alertItem.Aleurg_id), out AlertUrgencyLevelRef alertUrgencyLevelRef))
                     {
                         alertUrgencyLevelRefLookup.Add(Convert.ToInt32(alertItem.Aleurg_id), alertUrgencyLevelRef = ToAlertUrgencyLevelRefModel(alertItem));
                         alert.AlertUrgencyLevelRefs.Add(alertUrgencyLevelRef);
                     }
                     if (alertItem.Alefil_id > 0 && alertItem.Aleurg_id == alertItem.Alefil_alert_urgency_level_id)
                     {
-                        if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alefil_id), out alertFilterRef))
+                        if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alefil_id), out _))
                         {
-                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef = ToAlertFilterRefModel(alertItem));
+                            var alertFilterRef = ToAlertFilterRefModel(alertItem);
+                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef);
                             alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
                         }
                     }
                 }
                 if (alertItem.Alelan_id > 0 && alertItem.Ale_id == alertItem.Alelan_alert_id)
                 {
-                    if (!alertLandmarkRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alelan_id), out alertLandmarkRef))
+                    if (!alertLandmarkRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alelan_id), out _))
                     {
-                        alertLandmarkRefLookup.Add(Convert.ToInt32(alertItem.Alelan_id), alertLandmarkRef = ToAlertLandmarkRefModel(alertItem));
+                        var alertLandmarkRef = ToAlertLandmarkRefModel(alertItem);
+                        alertLandmarkRefLookup.Add(Convert.ToInt32(alertItem.Alelan_id), alertLandmarkRef);
                         alert.AlertLandmarkRefs.Add(alertLandmarkRef);
                     }
                 }
                 if (alertItem.Noti_id > 0 && alertItem.Ale_id == alertItem.Noti_alert_id)
                 {
-                    if (!notificationLookup.TryGetValue(Convert.ToInt32(alertItem.Noti_id), out notification))
+                    if (!notificationLookup.TryGetValue(Convert.ToInt32(alertItem.Noti_id), out Notification notification))
                     {
                         notificationLookup.Add(Convert.ToInt32(alertItem.Noti_id), notification = ToNotificationModel(alertItem));
                         alert.Notifications.Add(notification);
@@ -97,17 +78,19 @@ namespace net.atos.daf.ct2.alert.entity
                     //}
                     if (alertItem.Notlim_id > 0 && alertItem.Notlim_notification_id == alertItem.Noti_id)
                     {
-                        if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notlim_id), out notificationLimit))
+                        if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notlim_id), out _))
                         {
-                            notificationLimitkRefLookup.Add(Convert.ToInt32(alertItem.Notlim_id), notificationLimit = ToNotificationLimitModel(alertItem));
+                            var notificationLimit = ToNotificationLimitModel(alertItem);
+                            notificationLimitkRefLookup.Add(Convert.ToInt32(alertItem.Notlim_id), notificationLimit);
                             notification.NotificationLimits.Add(notificationLimit);
                         }
                     }
                     if (alertItem.Notrec_id > 0 && alertItem.Notrec_notification_id == alertItem.Noti_id)
                     {
-                        if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notrec_id), out notificationRecipient))
+                        if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notrec_id), out _))
                         {
-                            notificationRecipientRefLookup.Add(Convert.ToInt32(alertItem.Notrec_id), notificationRecipient = ToNotificationRecipientModel(alertItem));
+                            var notificationRecipient = ToNotificationRecipientModel(alertItem);
+                            notificationRecipientRefLookup.Add(Convert.ToInt32(alertItem.Notrec_id), notificationRecipient);
                             notification.NotificationRecipients.Add(notificationRecipient);
                         }
                     }

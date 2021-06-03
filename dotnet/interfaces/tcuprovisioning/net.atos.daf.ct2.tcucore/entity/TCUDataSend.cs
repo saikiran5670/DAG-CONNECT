@@ -2,17 +2,17 @@
 {
     public class TCUDataSend
     {
-        private TCURegistrationEvents tCURegistrationEvents;
+        private TCURegistrationEvents _tCURegistrationEvents;
 
         public TCUDataSend(TCURegistrationEvents _tCURegistrationEvents)
         {
-            this.tCURegistrationEvents = _tCURegistrationEvents;
+            this._tCURegistrationEvents = _tCURegistrationEvents;
         }
 
         public TCURegistrationEvents TCURegistrationEvents
         {
-            get => tCURegistrationEvents;
-            set => tCURegistrationEvents = value;
+            get => _tCURegistrationEvents;
+            set => _tCURegistrationEvents = value;
         }
     }
 }

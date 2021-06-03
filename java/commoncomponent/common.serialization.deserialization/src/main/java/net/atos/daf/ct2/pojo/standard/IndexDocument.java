@@ -52,7 +52,7 @@ public class IndexDocument implements Serializable {
   @JsonProperty(value = "VEngineSpeed")
   private Integer vEngineSpeed;
   @JsonProperty(value = "VEngineTotalHours")
-  private Integer vEngineTotalHours;
+  private Long vEngineTotalHours;
   @JsonProperty(value = "VEngineTotalHoursIdle")
   private Long vEngineTotalHoursIdle;
   @JsonProperty(value = "VFuelCumulated")

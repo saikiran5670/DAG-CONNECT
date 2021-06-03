@@ -4,10 +4,10 @@ namespace net.atos.daf.ct2.visibility.entity
 {
     public class DateTimeStamp
     {
-        public int createdby { get; set; }
-        public int modifiedby { get; set; }
-        public DateTime createddate { get; set; }
-        public DateTime modifieddate { get; set; }
-        public bool isactive { get; set; }
+        public int CreatedBy { get; set; }
+        public int ModifiedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+        public bool IsActive { get; set; }
     }
 }
