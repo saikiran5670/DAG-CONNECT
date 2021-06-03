@@ -28,7 +28,7 @@
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef >{{ translationData.lblTripReportDetails || 'Trip report Details(Trip column view settings)' }}</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef >{{ translationData.lblTripReportDetails || 'Trip report Details' }} <span style='font-size: 15px; font-weight: normal; margin-left: 5px;'>({{ translationData.lblTripcolumnviewsettings || 'Trip column view settings' }})</span></mat-header-cell>
             <mat-cell *matCellDef="let row">{{ getName(row.name) }}</mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
