@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vehicledataservice-deployment
+  name: vehicledataservice-auto-deployment
   labels:
-    app.kubernetes.io/name: vehicledataservice
+    app.kubernetes.io/name: vehicledataservice-auto
     app.kubernetes.io/type: dataservice
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
       labels:
-        app.kubernetes.io/name: vehicledataservice
+        app.kubernetes.io/name: vehicledataservice-auto
         app.kubernetes.io/type: dataservice
     spec:
       automountServiceAccountToken: false
@@ -28,15 +28,15 @@ spec:
               - key: app.kubernetes.io/name
                 operator: In
                 values:
-                - vehicledataservice
+                - vehicledataservice-auto
               - key: app.kubernetes.io/type
                 operator: In
                 values:
                 - dataservice
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: vehicledataservice-container
-        image: #{acrurl}#/vehicledataservice
+      - name: vehicledataservice-auto-container
+        image: #{acrurl}#/vehicledataservice-auto
         imagePullPolicy: "Always"
         volumeMounts:
         - name: tmp
@@ -87,7 +87,7 @@ spec:
             memory: 20Mi
         env:
         - name: serviceName
-          value: "VehicleDataService"
+          value: "VehicleDataService-Auto"
       volumes:
       - name: tmp
         emptyDir: {}
@@ -100,15 +100,15 @@ spec:
         agentpool: npuser01         
   selector:
     matchLabels:
-        app.kubernetes.io/name: vehicledataservice
+        app.kubernetes.io/name: vehicledataservice-auto
         app.kubernetes.io/type: dataservice
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vehicledataservice
+  name: vehicledataservice-auto
   labels:
-    svc.kubernetes.io/name: vehicledataservice
+    svc.kubernetes.io/name: vehicledataservice-auto
     svc.kubernetes.io/type: dataservice
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
@@ -119,16 +119,16 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app.kubernetes.io/name: vehicledataservice
+    app.kubernetes.io/name: vehicledataservice-auto
     app.kubernetes.io/type: dataservice
 
 ---
 kind: HorizontalPodAutoscaler 
 apiVersion: autoscaling/v2beta1 
 metadata: 
-  name: vehicledataservice-hpa
+  name: vehicledataservice-auto-hpa
   labels:
-    hpa.kubernetes.io/name: vehicledataservice
+    hpa.kubernetes.io/name: vehicledataservice-auto
     hpa.kubernetes.io/type: dataservice 
 spec: 
   maxReplicas: 5 
@@ -136,7 +136,7 @@ spec:
   scaleTargetRef: 
     apiVersion: apps/v1 
     kind: Deployment 
-    name: vehicledataservice-deployment 
+    name: vehicledataservice-auto-deployment 
   metrics: 
   - type: Resource 
     resource: 

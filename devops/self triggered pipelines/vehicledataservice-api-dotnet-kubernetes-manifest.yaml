@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reportservice-grpc
+  name: vehicledataservice-auto-deployment
 spec:
   selector:
     matchLabels:
-      run: reportservice-grpc
+      run: vehicledataservice-auto
   replicas: 2
   template:
     metadata:
       labels:
-        run: reportservice-grpc
+        run: vehicledataservice-auto
     spec:
       containers:
-      - name: reportservice-grpc
-        image: dafdev017756.azurecr.io/reportservice-grpc
+      - name: vehicledataservice-auto
+        image: dafdev017756.azurecr.io/vehicledataservice-auto
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reportservice
+  name: vehicledataservice-auto
 spec:
   type: ClusterIP
   ports:
@@ -36,4 +36,4 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    run: reportservice-grpc
+    run: vehicledataservice-auto
