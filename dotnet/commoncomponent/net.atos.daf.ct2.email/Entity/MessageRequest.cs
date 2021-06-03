@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.email.Entity
         public string Content { get; set; }
         public string ContentMimeType { get; set; }
         public EmailConfiguration Configuration { get; set; }
-        public AccountInfo accountInfo { get; set; }
+        public AccountInfo AccountInfo { get; set; }
         public Guid? TokenSecret { get; set; }
         public int RemainingDaysToExpire { get; set; }
     }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.POI;
@@ -21,20 +22,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private ILog _logger;
         private readonly POIService.POIServiceClient _poiServiceClient;
+        private readonly MapService.MapServiceClient _mapServiceClient;
+
         private readonly AuditHelper _auditHelper;
         private readonly Mapper _mapper;
         private readonly AccountPrivilegeChecker _privilegeChecker;
         private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
-            Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+                                    AccountPrivilegeChecker privilegeChecker,
+                                    IHttpContextAccessor _httpContextAccessor, 
+                                    SessionHelper sessionHelper,
+                                    MapService.MapServiceClient mapServiceClient) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
+            _mapServiceClient = mapServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
             _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+            
         }
 
         [HttpGet]
@@ -89,6 +97,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     request.OrganizationId = GetContextOrgId();
                 }
                 var poiRequest = new POIRequest();
+               // var mapRequest = new GetMapRequest() { Latitude = request.Latitude, Longitude = request.Longitude };
+              //var lookupAddress=await  _mapServiceClient.GetMapAddressAsync(mapRequest);
+
                 request.State = "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.CreatePOIAsync(poiRequest);
