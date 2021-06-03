@@ -16,6 +16,12 @@ namespace net.atos.daf.ct2.reports
         }
 
         #region Select User Preferences
+
+        public Task<IEnumerable<ReportDetails>> GetReportDetails()
+        {
+            return _reportRepository.GetReportDetails();
+        }
+
         public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
                                                                                                   int accountId,
                                                                                                   int organizationId)

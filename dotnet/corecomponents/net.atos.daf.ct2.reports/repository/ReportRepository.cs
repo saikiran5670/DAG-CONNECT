@@ -24,6 +24,18 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #region Select User Preferences
+        public Task<IEnumerable<ReportDetails>> GetReportDetails()
+        {
+            try
+            {
+                var query = @"select id as Id,name as Name, key as Key from master.report";
+                return _dataAccess.QueryAsync<ReportDetails>(query);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
                                                                                                   int accountId,
                                                                                                   int OrganizationId)

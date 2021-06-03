@@ -12,6 +12,7 @@ rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (Ve
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
 rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetDriverActivity (ActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 }
 
 enum Responsecode{
@@ -22,6 +23,23 @@ enum Responsecode{
   NotFound = 404;
   InternalServerError = 500;
 }
+message TempPara {
+  int32 TempID = 1;
+}
+message ReportDetailsResponse {
+    repeated ReportDetails ReportDetails = 1;
+    Responsecode Code = 2;
+    string message = 3; 
+}
+
+message ReportDetails {
+    int32 Id = 1;
+    string Name = 2;
+    string Key = 3;
+}
+
+
+
 
 message IdRequest {
   int32 ReportId = 1;
@@ -185,3 +203,4 @@ message DriverActivity {
     int64 ServiceTime = 12;
 }
 // End   Driver Time Managment Report
+
