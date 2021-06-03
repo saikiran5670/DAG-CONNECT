@@ -12,7 +12,7 @@ namespace net.atos.daf.ct2.poigeofence.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
-        private readonly CorridorRepository _CorridorRepository;
+        private readonly CorridorRepository _corridorRepository;
         private readonly ICorridorManger _iCorridorManger;
 
         public CorridorManagerTest()
@@ -21,8 +21,8 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _CorridorRepository = new CorridorRepository(_dataAccess);
-            _iCorridorManger = new CorridorManger(_CorridorRepository);
+            _corridorRepository = new CorridorRepository(_dataAccess);
+            _iCorridorManger = new CorridorManger(_corridorRepository);
         }
 
         [TestCategory("Unit-Test-Case")]

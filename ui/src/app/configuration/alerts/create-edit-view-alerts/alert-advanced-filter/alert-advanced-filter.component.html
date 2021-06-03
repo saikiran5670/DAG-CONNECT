@@ -1,6 +1,6 @@
 <form [formGroup]="alertAdvancedFilterForm">
   <!-- distance option -->
-  <mat-card class='mat-elevation-z'>
+  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A')" class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -16,7 +16,7 @@
             <mat-form-field appearance="outline">
               <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="distance">
             </mat-form-field>
-            <button>m</button>
+            <mat-label>m</mat-label>
           </mat-label>
         </div>
         <div fxLayout="column" class="areaWidth">
@@ -30,7 +30,9 @@
   </mat-card>
 
   <!-- No of occurences option -->
-  <mat-card class='mat-elevation-z'>
+  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
+                || (alert_category_selected === 'F' && (alert_type_selected === 'I' || alert_type_selected === 'A'))"
+   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -60,7 +62,9 @@
   </mat-card>
 
   <!-- Duration option -->
-  <mat-card class='mat-elevation-z'>
+  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
+                  || (alert_category_selected === 'F' && alert_type_selected === 'A')" 
+    class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -76,7 +80,7 @@
             <mat-form-field appearance="outline">
               <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="duration">
             </mat-form-field>
-            <button>s</button>
+            <mat-label>s</mat-label>
           </mat-label>
         </div>
         <div fxLayout="column" class="areaWidth">
@@ -90,7 +94,10 @@
   </mat-card>
 
   <!-- POI condition option -->
-  <mat-card class='mat-elevation-z'>
+  <mat-card *ngIf="(alert_category_selected === 'F' && 
+  (alert_type_selected === 'I' || alert_type_selected === 'A' || alert_type_selected === 'L' || 
+  alert_type_selected === 'T' || alert_type_selected === 'P'))"
+  class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -110,6 +117,21 @@
       </mat-radio-group>
 
       <!-- entering site -->
+
+      <div class="areawidth" *ngIf="isPoiSelected">
+        <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+          <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"
+            (focusout)="changeSliderInput()">
+          <span style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
+        </span>
+        <div class="areawidth" fxLayout="row" fxLayoutAlign="left">
+          <div class="col-sm-4  areawidth">
+            <ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
+          </div>
+          <mat-label>(mtr)</mat-label>
+        </div>
+      </div>
+
       <!-- Map -->
 
         <div *ngIf="isPoiSelected" #map id="map" style="width: 100%; height: 450px; margin-bottom: 25px">

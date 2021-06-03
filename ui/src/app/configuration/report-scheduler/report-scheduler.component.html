@@ -65,8 +65,8 @@
         <div *ngIf='initData.length > 0'>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items" matSort >
              <ng-container matColumnDef="reportType">      
-              <mat-header-cell *matHeaderCellDef style="max-width: 7%;"> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
-              <mat-cell *matCellDef="let row" style="max-width: 7%; word-break: 'break-word'">
+              <mat-header-cell *matHeaderCellDef> {{ translationData.lblReportType || 'Report Type'}}</mat-header-cell>     
+              <mat-cell *matCellDef="let row" style="word-break: 'break-word'">
                 <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>               
                 <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
                 <span [ngClass]="{ 'marginLeft-14': row.newTag }">{{row.reportType}}</span> 

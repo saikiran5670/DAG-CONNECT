@@ -31,6 +31,7 @@ export class ReportSchedulerComponent implements OnInit {
   localStLanguage: any;
   dataSource: any; 
   initData: any = [];
+  schedulerData: any= [];
   originalAlertData: any= [];
   rowsData: any;
   accountOrganizationId: any;
@@ -67,7 +68,8 @@ export class ReportSchedulerComponent implements OnInit {
         menuId: 19 //-- for report scheduler
       }
       this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-        this.processTranslation(data);      
+        this.processTranslation(data);    
+        this.loadScheduledReports();  
       }); 
       
       this.ReportTypeList= [{id : 1, name : "Fuel Report"}, {id : 2, name : "Distance Report"}, {id : 3, name : "Milage Report"}]
@@ -106,7 +108,7 @@ export class ReportSchedulerComponent implements OnInit {
     if(objData.successMsg && objData.successMsg != ''){
       this.successMsgBlink(objData.successMsg);
     }
-    this.loadAlertsData();
+    this.loadScheduledReports();
   }
   
   pageSizeUpdated(_event){
@@ -125,11 +127,11 @@ export class ReportSchedulerComponent implements OnInit {
       this.showLoadingIndicator=false;
   }
 
-   loadAlertsData(){    
+   loadScheduledReports(){    
     let obj: any = {
       
     } 
-    this. initData = [
+    let data = [
       {
         reportType : "Fuel Report",
         vehicleGroupName : "Vehicle Group 1",
@@ -138,7 +140,9 @@ export class ReportSchedulerComponent implements OnInit {
         driver : "Driver name 1",
         lastRun : "19/10/2020",
         nextRun : "19/11/2020",
-        state : "A"
+        state : "A",
+        createdAt : new Date().getTime(),
+        reportTypeId : 1
       },
       {
         reportType : "Distance Report",
@@ -148,7 +152,9 @@ export class ReportSchedulerComponent implements OnInit {
         driver : "Driver name 2",
         lastRun : "19/10/2020",
         nextRun : "19/11/2020",
-        state : "I"
+        state : "I",
+        createdAt : new Date().getTime(),
+        reportTypeId : 2
       },
       {
         reportType : "Milage Report",
@@ -158,7 +164,8 @@ export class ReportSchedulerComponent implements OnInit {
         driver : "Driver name 1",
         lastRun : "19/10/2020",
         nextRun : "19/11/2020",
-        state : "A"
+        state : "A",
+        reportTypeId : 3
       },
       {
         reportType : "Fuel Report",
@@ -168,7 +175,8 @@ export class ReportSchedulerComponent implements OnInit {
         driver : "Driver name 2",
         lastRun : "19/10/2020",
         nextRun : "19/11/2020",
-        state : "A"
+        state : "A",
+        reportTypeId : 1
       },
       {
         reportType : "Distance Report",
@@ -178,20 +186,22 @@ export class ReportSchedulerComponent implements OnInit {
         driver : "Driver name 1",
         lastRun : "19/10/2020",
         nextRun : "19/11/2020",
-        state : "I"
+        state : "I",
+        reportTypeId : 2
       }
     ]
        
     // this.reportSchedulerService.getReportSchedulerData().subscribe((data) => {
-    //   this.initData =data;  
-       this.updateDatasource(this.initData);  
+       this.schedulerData =data;  
+       this.updateDatasource(data);  
     // }, (error) => {
     // })   
    this.hideloader();     
  }
 
   updateDatasource(data){
-    if(data && data.length > 0){
+    this.initData = data;
+    if(this.initData.length > 0){
       this.initData = this.getNewTagData(data); 
     } 
     this.dataSource = new MatTableDataSource(this.initData);
@@ -245,7 +255,7 @@ export class ReportSchedulerComponent implements OnInit {
     if (res) {
       // this.reportSchedulerService.deleteReportScheduler(item.id).subscribe((res) => {
       //     this.successMsgBlink(this.getDeletMsg(name));
-      //     this.loadAlertsData();
+      //     this.loadScheduledReports();
       //   }, error => {
       
       //   });
@@ -307,24 +317,24 @@ export class ReportSchedulerComponent implements OnInit {
       if(res == true){ 
       //  if(rowData.state == 'A'){
       //     this.reportSchedulerService.suspendAlert(rowData.id).subscribe((data) => {
-      //       this.loadAlertsData();
+      //       this.loadScheduledReports();
             
       //     }, error => {
-      //       this.loadAlertsData();
+      //       this.loadScheduledReports();
       //     });
       //  }
       //  else{
       //   this.alertService.activateAlert(rowData.id).subscribe((data) => {
-      //     this.loadAlertsData();
+      //     this.loadScheduledReports();
           
       //   }, error => {
-      //     this.loadAlertsData();
+      //     this.loadScheduledReports();
       //   });
 
       //  }
         
       }else {
-        this.loadAlertsData();
+        this.loadScheduledReports();
       }
     });
   }
@@ -362,10 +372,10 @@ export class ReportSchedulerComponent implements OnInit {
   onReportTypeChange(_event: any){
     this.reportTypeSelection = parseInt(_event.value);
     if(this.reportTypeSelection == 0 && this.statusSelection == 0){
-      this.updateDatasource(this.initData); //-- load all data
+      this.updateDatasource(this.schedulerData); //-- load all data
     }
     else if(this.reportTypeSelection == 0 && this.statusSelection != 0){
-      let filterData = this.initData.filter(item => item.state == this.statusSelection);
+      let filterData = this.schedulerData.filter(item => item.state == this.statusSelection);
       if(filterData){
         this.updateDatasource(filterData);
       }
@@ -376,7 +386,7 @@ export class ReportSchedulerComponent implements OnInit {
     else{
       let selectedReportType = this.reportTypeSelection;
       let selectedStatus = this.statusSelection;
-      let reportSchedulerData = this.initData.filter(item => item.reportTypeId === selectedReportType);
+      let reportSchedulerData = this.schedulerData.filter(item => item.reportTypeId === selectedReportType);
       if(selectedStatus != 0){
         reportSchedulerData = reportSchedulerData.filter(item => item.state === selectedStatus);
       }
@@ -387,10 +397,10 @@ export class ReportSchedulerComponent implements OnInit {
   onStatusSelectionChange(_event: any){
     this.statusSelection = _event.value == '0' ? parseInt(_event.value) : _event.value;
     if(this.reportTypeSelection == 0 && this.statusSelection == 0){
-      this.updateDatasource(this.initData); //-- load all data
+      this.updateDatasource(this.schedulerData); //-- load all data
     }
     else if(this.statusSelection == 0 && this.reportTypeSelection != 0){
-      let filterData = this.initData.filter(item => item.reportTypeId === this.reportTypeSelection);
+      let filterData = this.schedulerData.filter(item => item.reportTypeId === this.reportTypeSelection);
       if(filterData){
         this.updateDatasource(filterData);
       }
@@ -399,7 +409,7 @@ export class ReportSchedulerComponent implements OnInit {
       }
     }
     else if(this.statusSelection != 0 && this.reportTypeSelection == 0){
-      let filterData = this.initData.filter(item => item.state == this.statusSelection);
+      let filterData = this.schedulerData.filter(item => item.state == this.statusSelection);
       if(filterData){
         this.updateDatasource(filterData);
       }
@@ -410,7 +420,7 @@ export class ReportSchedulerComponent implements OnInit {
     else{
       let selectedReportType = this.reportTypeSelection;
       let selectedStatus = this.statusSelection;
-      let reportSchedulerData = this.initData.filter(item => item.reportTypeId === selectedReportType);
+      let reportSchedulerData = this.schedulerData.filter(item => item.reportTypeId === selectedReportType);
       if(selectedStatus != 0){
         reportSchedulerData = reportSchedulerData.filter(item => item.state === selectedStatus);
       }

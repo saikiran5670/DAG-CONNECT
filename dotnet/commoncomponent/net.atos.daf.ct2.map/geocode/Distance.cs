@@ -9,9 +9,9 @@ namespace net.atos.daf.ct2.map.geocode
     }
     public struct Distance
     {
-        public const double EarthRadiusInMiles = 3956.545;
-        public const double EarthRadiusInKilometers = 6378.135;
-        private const double ConversionConstant = 0.621371192;
+        public const double EARTH_RADIUS_IN_MILES = 3956.545;
+        public const double EARTH_RADIUS_IN_KILOMETERS = 6378.135;
+        private const double CONVERSION_CONSTANT = 0.621371192;
 
         public double Value { get; }
 
@@ -44,10 +44,10 @@ namespace net.atos.daf.ct2.map.geocode
             switch (units)
             {
                 case DistanceUnits.Miles:
-                    newValue = Value * ConversionConstant;
+                    newValue = Value * CONVERSION_CONSTANT;
                     break;
                 case DistanceUnits.Kilometers:
-                    newValue = Value / ConversionConstant;
+                    newValue = Value / CONVERSION_CONSTANT;
                     break;
                 default:
                     newValue = 0;

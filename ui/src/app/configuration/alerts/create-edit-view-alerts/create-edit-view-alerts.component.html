@@ -175,7 +175,10 @@
     </div>
 
      <!-- Advance filter -->
-    <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <div *ngIf="actionType != 'view' && (alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
+    alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
+    || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) )"
+     fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
         </div>
@@ -382,12 +385,18 @@
              </div>
            </div>
           
-<div class="col-sm-4  areawidth" *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
+<div class="areawidth" *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||
 (alert_category_selected === 'L' && alert_type_selected === 'C')">
   <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
     <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
+    <span style="color:red;">{{translationData.lblWidthcannotbe0mtrs ||'Width can not be 0 mtrs'}}</span>
 </span>
-  <ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
+<div class="areawidth" fxLayout="row" fxLayoutAlign="left">
+  <div class="col-sm-4  areawidth">
+<ngx-slider [(value)]="poiWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
+</div>  
+<mat-label>(mtr)</mat-label>
+</div>
 </div>
         <!-- Map -->
         <div *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) ||

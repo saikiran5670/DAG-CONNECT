@@ -5,13 +5,13 @@ namespace net.atos.daf.ct2.map.geocode
 {
     public class Location
     {
-        double latitude;
-        double longitude;
+        double _latitude;
+        double _longitude;
 
         [JsonProperty("lat")]
         public virtual double Latitude
         {
-            get => latitude;
+            get => _latitude;
             set
             {
                 if (value < -90 || value > 90)
@@ -24,14 +24,14 @@ namespace net.atos.daf.ct2.map.geocode
                     throw new ArgumentException("Latitude must be a valid number.", "Latitude");
                 }
 
-                latitude = value;
+                _latitude = value;
             }
         }
 
         [JsonProperty("lng")]
         public virtual double Longitude
         {
-            get => longitude;
+            get => _longitude;
             set
             {
                 if (value < -180 || value > 180)
@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.map.geocode
                     throw new ArgumentException("Longitude must be a valid number.", "Longitude");
                 }
 
-                longitude = value;
+                _longitude = value;
             }
         }
 
@@ -64,7 +64,7 @@ namespace net.atos.daf.ct2.map.geocode
 
         public virtual Distance DistanceBetween(Location location, DistanceUnits units)
         {
-            double earthRadius = (units == DistanceUnits.Miles) ? Distance.EarthRadiusInMiles : Distance.EarthRadiusInKilometers;
+            double earthRadius = (units == DistanceUnits.Miles) ? Distance.EARTH_RADIUS_IN_MILES : Distance.EARTH_RADIUS_IN_KILOMETERS;
 
             double latRadian = ToRadian(location.Latitude - this.Latitude);
             double longRadian = ToRadian(location.Longitude - this.Longitude);
@@ -86,6 +86,6 @@ namespace net.atos.daf.ct2.map.geocode
 
         public override int GetHashCode() => Latitude.GetHashCode() ^ Latitude.GetHashCode();
 
-        public override string ToString() => string.Format("{0}, {1}", latitude, longitude);
+        public override string ToString() => string.Format("{0}, {1}", _latitude, _longitude);
     }
 }

@@ -19,6 +19,7 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
+import { Options } from '@angular-slider/ngx-slider';
 
 declare var H: any;
 
@@ -63,6 +64,13 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiGridData = [];
   geofenceGridData = [];
   groupGridData = [];
+  poiWidth : number = 100;
+  poiWidthKm : number = 0.1;
+  sliderValue : number = 0;
+  options: Options = {
+    floor: 0,
+    ceil: 10000
+  };
 
   @ViewChild("map")
   private mapElement: ElementRef;
@@ -86,8 +94,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
       poiSite: [''],
       distance: [''],
       occurences: [''],
-      duration: ['']
+      duration: [''],
+      widthInput: ['']
     })
+    this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
   }
 
   onChangeDistance(event: any){
@@ -336,6 +346,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
         let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
         this.map.addObject(marker);
         // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
+        this.createResizableCircle(this.alertAdvancedFilterForm.controls.widthInput.value * 1000,element);
       });
       this.geoMarkerArray.forEach(element => {
         if(element.type == "C"){
@@ -752,5 +763,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
           return `${this.selectedGroup.isSelected(row) ? 'deselect' : 'select'
             } row`;
       }
+
+      sliderChanged(){
+        this.poiWidthKm = this.poiWidth / 1000;
+        this.alertAdvancedFilterForm.controls.widthInput.setValue(this.poiWidthKm);
+        if(this.markerArray.length > 0){
+        this.addMarkerOnMap();
+        }
+    }
+   
+    changeSliderInput(){
+     this.poiWidthKm = this.alertAdvancedFilterForm.controls.widthInput.value;
+     this.poiWidth = this.poiWidthKm * 1000;
+   }
 
 }

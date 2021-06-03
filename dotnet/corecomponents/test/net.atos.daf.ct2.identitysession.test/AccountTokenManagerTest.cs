@@ -15,7 +15,6 @@ namespace net.atos.daf.ct2.identitysession.test
         private readonly IAccountTokenManager _accountTokenManager;
 
         private readonly IDataAccess _dataAccess;
-        private readonly IConfiguration _config;
         private readonly AccountTokenRepository _accountTokenRepository;
         public AccountTokenManagerTest()
         {

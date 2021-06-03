@@ -22,8 +22,8 @@ namespace net.atos.daf.ct2.alert.repository
         #region Create Alert
         public async Task<Alert> CreateAlert(Alert alert)
         {
-            _dataAccess.connection.Open();
-            var transactionScope = _dataAccess.connection.BeginTransaction();
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
             try
             {
                 alert = await Exists(alert);
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             finally
             {
-                _dataAccess.connection.Close();
+                _dataAccess.Connection.Close();
             }
             return alert;
         }
@@ -388,8 +388,8 @@ namespace net.atos.daf.ct2.alert.repository
         public async Task<Alert> UpdateAlert(Alert alert)
         {
             //Begin transaction scope for master.alert table
-            _dataAccess.connection.Open();
-            var transactionScope = _dataAccess.connection.BeginTransaction();
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
             try
             {
                 alert = await Exists(alert);
@@ -503,7 +503,7 @@ namespace net.atos.daf.ct2.alert.repository
             }
             finally
             {
-                _dataAccess.connection.Close();
+                _dataAccess.Connection.Close();
             }
 
             return alert;

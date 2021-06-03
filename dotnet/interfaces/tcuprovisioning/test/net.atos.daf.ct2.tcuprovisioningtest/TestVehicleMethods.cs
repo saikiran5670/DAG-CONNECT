@@ -15,34 +15,33 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
     [TestClass]
     public class TestVehicleMethods
     {
-        private string psqlconnstring;
-        private string datamartpsqlconnstring;
-        IDataAccess dataacess = null;
-        IDataMartDataAccess datamartDataacess = null;
-        IConfiguration config = null;
-        IAuditTraillib auditlog = null;
-        IAuditLogRepository auditrepo = null;
-        IVehicleRepository vehiclerepo = null;
+        private readonly string _psqlconnstring;
+        private readonly string _datamartpsqlconnstring;
+        private readonly IDataAccess _dataacess = null;
+        private readonly IDataMartDataAccess _datamartDataacess = null;
+        private readonly IAuditTraillib _auditlog = null;
+        private readonly IAuditLogRepository _auditrepo = null;
+        private readonly IVehicleRepository _vehiclerepo = null;
 
         public TestVehicleMethods()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettingsDevelopment.json", optional: true, reloadOnChange: true).Build();
 
-            psqlconnstring = config.GetSection("PSQL_CONNSTRING").Value;
-            datamartpsqlconnstring = config.GetSection("DATAMART_CONNECTION_STRING").Value;
+            _psqlconnstring = config.GetSection("PSQL_CONNSTRING").Value;
+            _datamartpsqlconnstring = config.GetSection("DATAMART_CONNECTION_STRING").Value;
 
-            dataacess = new PgSQLDataAccess(psqlconnstring);
-            datamartDataacess = new PgSQLDataMartDataAccess(datamartpsqlconnstring);
-            auditrepo = new AuditLogRepository(dataacess);
-            auditlog = new AuditTraillib(auditrepo);
-            vehiclerepo = new VehicleRepository(dataacess, datamartDataacess);
+            _dataacess = new PgSQLDataAccess(_psqlconnstring);
+            _datamartDataacess = new PgSQLDataMartDataAccess(_datamartpsqlconnstring);
+            _auditrepo = new AuditLogRepository(_dataacess);
+            _auditlog = new AuditTraillib(_auditrepo);
+            _vehiclerepo = new VehicleRepository(_dataacess, _datamartDataacess);
         }
 
         [TestMethod]
         public async Task TestVehicleUpdate()
         {
             var vin = "KLRAE75PC0E200148";
-            VehicleManager vehicleManager = new VehicleManager(vehiclerepo, auditlog);
+            VehicleManager vehicleManager = new VehicleManager(_vehiclerepo, _auditlog);
 
             var receivedVehicle = await GetVehicle(vin, vehicleManager);
 
@@ -95,7 +94,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
         private async Task<Vehicle> UpdateVehicle(Vehicle receivedVehicle, VehicleManager vehicleManager)
         {
 
-            Vehicle veh = null;
+            Vehicle veh ;
             try
             {
                 veh = await vehicleManager.Update(receivedVehicle);
@@ -103,7 +102,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
             }
             catch (Exception ex)
             {
-                var messageError = ex.Message;
+                string messageError = ex.Message;
                 throw;
             }
             return veh;

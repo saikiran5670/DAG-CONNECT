@@ -309,6 +309,8 @@ export class TripReportComponent implements OnInit {
     this.updateDataSource(this.tripData);
     this.resetTripFormControlValue();
     this.tableInfoObj = {};
+    this.advanceFilterOpen = false;
+    this.selectedPOI.clear();
   }
 
   resetTripFormControlValue(){
@@ -417,7 +419,8 @@ export class TripReportComponent implements OnInit {
         this.tripTraceArray.push(row);
       });
       this.showMap = true;
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
     }
   }
 
@@ -445,12 +448,14 @@ export class TripReportComponent implements OnInit {
     this.showMap = this.selectedTrip.selected.length > 0 ? true : false;
     if(event.checked){ //-- add new marker
       this.tripTraceArray.push(row);
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
     }
     else{ //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
       this.tripTraceArray = arr;
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray);
+      let _ui = this.reportMapService.getUI();
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
     }
   }
 

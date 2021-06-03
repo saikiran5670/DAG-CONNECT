@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.reports.repository
         #region Create Preference
         public async Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest)
         {
-            _dataAccess.connection.Open();
+            _dataAccess.Connection.Open();
             string queryInsert = @"INSERT INTO master.reportpreference
                                     (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at)
                              VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at)";
@@ -112,7 +112,7 @@ namespace net.atos.daf.ct2.reports.repository
             userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@chart_type", objUserPreferenceRequest.ChartType);
 
-            using (var transactionScope = _dataAccess.connection.BeginTransaction())
+            using (var transactionScope = _dataAccess.Connection.BeginTransaction())
             {
                 try
                 {
@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.reports.repository
                 }
                 finally
                 {
-                    _dataAccess.connection.Close();
+                    _dataAccess.Connection.Close();
                 }
             }
             return rowsEffected;

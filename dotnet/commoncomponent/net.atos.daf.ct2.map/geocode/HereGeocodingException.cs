@@ -3,14 +3,14 @@ namespace net.atos.daf.ct2.map.geocode
 {
     public class HereGeocodingException : GeocodingException
     {
-        const string defaultMessage = "There was an error processing the geocoding request. See InnerException for more information.";
+        const string DEFAULT_MESSAGE = "There was an error processing the geocoding request. See InnerException for more information.";
 
         public string ErrorType { get; }
 
         public string ErrorSubtype { get; }
 
         public HereGeocodingException(Exception innerException)
-            : base(defaultMessage, innerException)
+            : base(DEFAULT_MESSAGE, innerException)
         {
         }
 
