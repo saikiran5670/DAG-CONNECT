@@ -601,5 +601,29 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
+        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int OrganizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                string query = @"SELECT c.id as CategoryId,
+	                               c.name as CategoryName,
+		                           l.name as POIName
+	                            FROM master.category c
+	                            LEFT JOIN  master.landmark l on c.id = l.category_id 
+	                            WHERE l.organization_id = @organization_id
+	                            AND l.type = 'P' 
+	                            AND l.state= 'A'";
+                parameter.Add("@organization_id", OrganizationId);
+                var data = await _dataAccess.QueryAsync<CategoryWisePOI>(query, parameter);
+                return data.ToList();
+            }
+            catch (Exception ex)
+            {
+                _log.Info($"Get CategoryWisePOI method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(OrganizationId)}");
+                _log.Error(ex.ToString());
+                throw;
+            }
+        }
     }
 }
