@@ -173,16 +173,16 @@ namespace net.atos.daf.ct2.alert.entity
             alertFilterRef.LandmarkType = request.Alefil_landmark_type;
             alertFilterRef.RefId = request.Alefil_ref_id;
             alertFilterRef.PositionType = request.Alefil_position_type;
-            if (request.Aleurg_day_type != null)
-            {
-                for (int i = 0; i < request.Aleurg_day_type.Length; i++)
-                {
-                    alertFilterRef.DayType[i] = request.Aleurg_day_type.Get(i);
-                }
-            }
-            alertFilterRef.PeriodType = request.Alefil_period_type;
-            alertFilterRef.FilterStartDate = request.Alefil_filter_start_date;
-            alertFilterRef.FilterEndDate = request.Alefil_filter_end_date;
+            //if (request.Aleurg_day_type != null)
+            //{
+            //    for (int i = 0; i < request.Aleurg_day_type.Length; i++)
+            //    {
+            //        alertFilterRef.DayType[i] = request.Aleurg_day_type.Get(i);
+            //    }
+            //}
+            //alertFilterRef.PeriodType = request.Alefil_period_type;
+            //alertFilterRef.FilterStartDate = request.Alefil_filter_start_date;
+            //alertFilterRef.FilterEndDate = request.Alefil_filter_end_date;
             alertFilterRef.State = request.Alefil_state;
             alertFilterRef.CreatedAt = request.Alefil_created_at;
             alertFilterRef.ModifiedAt = request.Alefil_modified_at;
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.alert.entity
             notification.ModifiedAt = request.Noti_modified_at;
             notification.NotificationRecipients = new List<NotificationRecipient>();
             notification.NotificationLimits = new List<NotificationLimit>();
-            notification.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
+            //notification.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
             return notification;
         }
         public NotificationRecipient ToNotificationRecipientModel(AlertResult request)

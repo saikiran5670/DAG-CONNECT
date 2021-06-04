@@ -8,6 +8,7 @@ using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.ENUM;
 using net.atos.daf.ct2.reportservice.entity;
 using net.atos.daf.ct2.visibility;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.reportservice.Services
 {
@@ -26,6 +27,32 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
 
         #region Select User Preferences
+
+        public override async Task<ReportDetailsResponse> GetReportDetails(TempPara Id, ServerCallContext context)
+        {
+            try
+            {
+                var reportDetails = await _reportManager.GetReportDetails();
+                var reportDetailsResponse = new ReportDetailsResponse
+                {
+                    Code = Responsecode.Success,
+                    Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG
+                };
+                var res = JsonConvert.SerializeObject(reportDetails);
+                reportDetailsResponse.ReportDetails.AddRange(
+                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<ReportDetails>>(res)
+                    );
+                return await Task.FromResult(reportDetailsResponse);
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new ReportDetailsResponse
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = ex.Message
+                });
+            }
+        }
         public override async Task<UserPreferenceDataColumnResponse> GetUserPreferenceReportDataColumn(IdRequest request, ServerCallContext context)
         {
             try

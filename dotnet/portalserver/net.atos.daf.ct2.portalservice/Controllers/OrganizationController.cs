@@ -55,7 +55,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _vehicleClient = vehicleClient;
             Configuration = configuration;
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         //OrgRelationship
@@ -100,7 +99,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                          "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                          "CreateRelationship  method in Organnization controller", 0, orgResponse.Relationship.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                         return Ok("Relationship Created :" + orgResponse);
                     }
                 }
@@ -114,7 +113,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                  "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "CreateRelationship  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request),
-                Request);
+                _userDetails);
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -166,23 +165,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                        "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                       "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+                       "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
                         return Ok("Relationship updated :" + orgResponse);
                     }
                 }
                 else
                 {
-
                     return StatusCode(500, "Please provide Featureset id");
-
                 }
-
             }
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                      "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                     "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+                     "UPDATERelationship  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))
@@ -193,8 +189,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
-
 
         [HttpGet]
         [Route("relationship/get")]
@@ -287,7 +281,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                    "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                   "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), Request);
+                   "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), _userDetails);
                     return Ok(response);
                 }
                 else if (response.Code == organizationservice.Responcecode.Conflict)
@@ -300,7 +294,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "RelationshipManagement Component",
                   "RelationshipManagement service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                  "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), Request);
+                  "DeleteRelationship  method in Organnization controller", relationshipId, relationshipId, JsonConvert.SerializeObject(relationshipRequest), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -349,7 +343,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                 "Create  method in Organnization controller", 0, orgResponse.Organization.Id, JsonConvert.SerializeObject(request), Request);
+                 "Create  method in Organnization controller", 0, orgResponse.Organization.Id, JsonConvert.SerializeObject(request), _userDetails);
 
                     return Ok(orgResponse);
                 }
@@ -358,7 +352,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "Create  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+                 "Create  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -421,7 +415,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                 "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+                "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(orgResponse.Organization);
                 }
             }
@@ -429,7 +423,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
           "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-          "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+          "Update  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 //  await auditlog.AddLogs(DateTime.Now,2,"Organization Component","Organization Service",AuditTrailEnum.Event_type.DELETE,AuditTrailEnum.Event_status.FAILED,"Update method in organization manager",0,0,JsonConvert.SerializeObject(request));      
                 if (ex.Message.Contains(_fk_Constraint))
@@ -523,6 +517,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("getallcontextorganizations")]
+        public async Task<IActionResult> GetAllOrganizationsForContext()
+        {
+            try
+            {
+                var orgResponse = await _organizationClient.GetAllOrganizationsForContextAsync(new Google.Protobuf.WellKnownTypes.Empty());
+                if(orgResponse.Code == OrganizationBusinessService.Responcecode.Success)
+                    return Ok(orgResponse.ContextOrgs);
+                else if (orgResponse.Code == OrganizationBusinessService.Responcecode.NotFound)
+                    return NotFound("Organizations detail not found.");
+                else
+                    return StatusCode(500, orgResponse.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         //Begin Account Preference
         [HttpPost]
         [Route("preference/create")]
@@ -546,7 +562,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
          "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-         "CreatePreference  method in Organnization controller", 0, preference.AccountPreference.Id, JsonConvert.SerializeObject(request), Request);
+         "CreatePreference  method in Organnization controller", 0, preference.AccountPreference.Id, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else
@@ -558,7 +574,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                       "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                      "CreatePreference  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+                      "CreatePreference  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -598,7 +614,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                     "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                    "UpdatePreference  method in Organization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+                    "UpdatePreference  method in Organization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else
@@ -610,7 +626,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                    "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                   "UpdatePreference  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), Request);
+                   "UpdatePreference  method in Organnization controller", request.Id, request.Id, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -640,7 +656,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                    "Organization service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                   "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), Request);
+                   "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok("Preference Deleted.");
                 }
                 else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
@@ -656,7 +672,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                  "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), Request);
+                  "DeletePreference  method in Organnization controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -735,7 +751,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                   "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+                  "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(CreateResponce);
                 }
                 if (CreateResponce.Code == OrganizationBusinessService.Responcecode.Conflict)
@@ -752,7 +768,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                  "Organization service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+                 "CreateOrgRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -781,7 +797,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                 "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+                "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(UpdateResponce);
                 }
                 else
@@ -794,7 +810,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-               "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), Request);
+               "EndOrganizationRelationShip  method in Organnization controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -821,7 +837,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                          "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                         "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), Request);
+                         "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), _userDetails);
                     UpdateResponce.Message = "Updated allow chain";
                     return Ok(UpdateResponce);
                 }
@@ -835,7 +851,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Organization Component",
                        "Organization service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                       "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), Request);
+                       "AllowChaining  method in Organnization controller", request.OrgRelationID, request.OrgRelationID, JsonConvert.SerializeObject(request), _userDetails);
 
                 _logger.Error(null, ex);
                 // check for fk violation

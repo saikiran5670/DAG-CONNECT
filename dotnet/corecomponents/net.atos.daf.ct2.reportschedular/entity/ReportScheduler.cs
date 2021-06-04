@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.reportschedular.entity
+namespace net.atos.daf.ct2.reportscheduler.entity
 {
-    public class ReportSchedular
+    public class ReportScheduler
     {
         public int Id { get; set; }
         public int OrganizationId { get; set; }
@@ -27,6 +27,8 @@ namespace net.atos.daf.ct2.reportschedular.entity
         public string MailSubject { get; set; }
         public string MailDescription { get; set; }
         public long ReportDispatchTime { get; set; }
+        public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
+        public List<ScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<ScheduledReportRecipient>();
     }
     public class ScheduledReport
     {

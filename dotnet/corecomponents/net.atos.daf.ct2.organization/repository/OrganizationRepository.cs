@@ -989,6 +989,21 @@ namespace net.atos.daf.ct2.organization.repository
             }
         }
 
+        public async Task<IEnumerable<OrganizationContextListResponse>> GetAllOrganizationsForContext()
+        {
+            try
+            {
+                var query = @"SELECT id,coalesce(name, '(' || org_id || ')') as name
+	                        FROM master.organization org where org.state='A'";
+
+                return await _dataAccess.QueryAsync<OrganizationContextListResponse>(query, null);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         private OrganizationResponse MapOrg(dynamic record)
         {
             var orgResponse = new OrganizationResponse();

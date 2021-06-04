@@ -10,6 +10,7 @@ import java.sql.Types;
 import net.atos.daf.common.ct2.exception.TechnicalException;
 import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.DriverActivityPojo;
+
 import net.atos.daf.postgre.util.DafConstants;
 
 public class LiveFleetDriverActivityDao implements Serializable {
@@ -113,6 +114,7 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		ResultSet rs_driver = null;
 		String newCode;
 		Long start_time = null;
+		
 
 		try {
 
@@ -164,8 +166,15 @@ public class LiveFleetDriverActivityDao implements Serializable {
 		} else
 			stmt_insert_driver_activity.setLong(4, DafConstants.DTM_NULL_VAL);
 
+		if (row.getVin() != null) {
+			System.out.println("Vin for Driver Activity--->"+ row.getVin());
 		stmt_insert_driver_activity.setString(5, row.getVin()); // 5-vin
-
+		} else {
+			stmt_insert_driver_activity.setString(5, "");
+		}
+		
+		
+		
 		if (row.getDriverID() != null)
 			stmt_insert_driver_activity.setString(6, (String) row.getDriverID()); // 6-DriverID
 		else

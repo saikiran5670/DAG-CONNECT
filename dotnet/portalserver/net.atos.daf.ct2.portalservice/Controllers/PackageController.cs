@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.packageservice;
@@ -18,7 +19,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [ApiController]
     [Route("package")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class PackageController : ControllerBase
+    public class PackageController : BaseController
     {
         private readonly AuditHelper _auditHelper;
         //private readonly ILogger<PackageController> _logger;
@@ -31,7 +32,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public PackageController(PackageService.PackageServiceClient packageClient,
             FeatureService.FeatureServiceClient featureclient
-            , AuditHelper auditHelper)
+            , AuditHelper auditHelper, SessionHelper sessionHelper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, sessionHelper)
         {
             _packageClient = packageClient;
             _featureclient = featureclient;
@@ -70,7 +71,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return StatusCode(409, packageResponse.Message);
                     }
 
-
                     if (packageResponse != null
                        && packageResponse.Message == PortalConstants.PackageValidation.ERROR_MESSAGE)
                     {
@@ -87,8 +87,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                           "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                           "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
-
-                                           Request);
+                                           _userDetails);
 
                         return Ok(packageResponse);
                     }
@@ -110,7 +109,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "Create method in Package controller", 0, packageResponse.PackageId, JsonConvert.SerializeObject(request),
-                                             Request);
+                                             _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -175,7 +174,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                            "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Update method in Package controller", request.Id, packageResponse.PackageId, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
 
                         return Ok(packageResponse);
                     }
@@ -200,7 +199,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "Update method in Package controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -286,7 +285,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                            "Package service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Delete method in Package controller", packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
-                                            Request);
+                                            _userDetails);
 
                     return Ok(response);
                 }
@@ -299,7 +298,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "Delete method in Package controller", packageRequest.Id, packageRequest.Id, JsonConvert.SerializeObject(packageId),
-                                             Request);
+                                             _userDetails);
 
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -337,7 +336,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
-                                              Request);
+                                              _userDetails);
 
                         return Ok(packageResponse);
                     }
@@ -362,7 +361,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "Import method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -406,7 +405,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                              "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
-                                              Request);
+                                              _userDetails);
 
                     return Ok(packageResponse);
                 }
@@ -420,7 +419,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Package Component",
                                             "Package service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "UpdatePackageStatus method in Package controller", 0, 0, JsonConvert.SerializeObject(request),
-                                             Request);
+                                             _userDetails);
 
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);

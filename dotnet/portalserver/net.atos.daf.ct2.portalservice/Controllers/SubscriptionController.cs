@@ -32,7 +32,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _subscribeClient = subscribeClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
         #endregion
 

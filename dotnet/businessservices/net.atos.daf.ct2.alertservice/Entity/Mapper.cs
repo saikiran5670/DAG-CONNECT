@@ -189,10 +189,10 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertFilterRef.LandmarkType = request.LandmarkType;
             alertFilterRef.RefId = request.RefId;
             alertFilterRef.PositionType = request.PositionType;
-            alertFilterRef.DayType = request.DayType.ToArray();
-            alertFilterRef.PeriodType = request.PeriodType;
-            alertFilterRef.FilterStartDate = request.FilterStartDate;
-            alertFilterRef.FilterEndDate = request.FilterEndDate;
+            //alertFilterRef.DayType = request.DayType.ToArray();
+            //alertFilterRef.PeriodType = request.PeriodType;
+            //alertFilterRef.FilterStartDate = request.FilterStartDate;
+            //alertFilterRef.FilterEndDate = request.FilterEndDate;
             alertFilterRef.State = request.State;
             alertFilterRef.CreatedAt = request.CreatedAt;
             alertFilterRef.ModifiedAt = request.ModifiedAt;
@@ -212,9 +212,9 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertFilterRef.RefId = request.RefId;
             alertFilterRef.PositionType = string.IsNullOrEmpty(request.PositionType) ? string.Empty : request.PositionType; ;
             //alertFilterRef.DayType = request.DayType.ToArray();
-            alertFilterRef.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
-            alertFilterRef.FilterStartDate = request.FilterStartDate;
-            alertFilterRef.FilterEndDate = request.FilterEndDate;
+            //alertFilterRef.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
+            //alertFilterRef.FilterStartDate = request.FilterStartDate;
+            //alertFilterRef.FilterEndDate = request.FilterEndDate;
             alertFilterRef.State = request.State;
             alertFilterRef.CreatedAt = request.CreatedAt;
             alertFilterRef.ModifiedAt = request.ModifiedAt;
@@ -251,12 +251,12 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     notification.NotificationLimits.Add(ToNotificationLimitEntity(item));
                 }
             }
-            notification.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
-            if (request.NotificationAvailabilityPeriods.Count > 0)
+            notification.AlertTimingDetails = new List<AlertTimingDetail>();
+            if (request.AlertTimingDetail.Count > 0)
             {
-                foreach (var item in request.NotificationAvailabilityPeriods)
+                foreach (var item in request.AlertTimingDetail)
                 {
-                    notification.NotificationAvailabilityPeriods.Add(ToNotificationAvailabilityPeriodEntity(item));
+                    notification.AlertTimingDetails.Add(ToAlertTimingDetailEntity(item));
                 }
             }
             return notification;
@@ -293,11 +293,11 @@ namespace net.atos.daf.ct2.alertservice.Entity
                 }
             }
 
-            if (request.NotificationAvailabilityPeriods.Count > 0)
+            if (request.AlertTimingDetails.Count > 0)
             {
-                foreach (var item in request.NotificationAvailabilityPeriods)
+                foreach (var item in request.AlertTimingDetails)
                 {
-                    notification.NotificationAvailabilityPeriods.Add(MapNotificationAvailabilityPeriodEntity(item));
+                    notification.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
                 }
             }
             return notification;
@@ -439,6 +439,34 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertLandmarkRef.CreatedAt = request.CreatedAt;
             alertLandmarkRef.ModifiedAt = request.ModifiedAt;
             return alertLandmarkRef;
+        }
+        public AlertTimingDetail ToAlertTimingDetailEntity(AlertTimingDetailRequest request)
+        {
+            AlertTimingDetail alertTimingDetail = new AlertTimingDetail();
+            alertTimingDetail.Id = request.Id;
+            alertTimingDetail.Type = request.Type;
+            alertTimingDetail.RefId = request.RefId;
+            alertTimingDetail.PeriodType = request.PeriodType;
+            alertTimingDetail.StartDate = request.StartDate;
+            alertTimingDetail.EndDate = request.EndDate;
+            alertTimingDetail.State = request.State;
+            alertTimingDetail.CreatedAt = request.CreatedAt;
+            alertTimingDetail.ModifiedAt = request.ModifiedAt;
+            return alertTimingDetail;
+        }
+        public AlertTimingDetailRequest MapAlertTimingDetailEntity(AlertTimingDetail request)
+        {
+            AlertTimingDetailRequest alertTimingDetailRequest = new AlertTimingDetailRequest();
+            alertTimingDetailRequest.Id = request.Id;
+            alertTimingDetailRequest.Type = request.Type;
+            alertTimingDetailRequest.RefId = request.RefId;
+            alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
+            alertTimingDetailRequest.StartDate = request.StartDate;
+            alertTimingDetailRequest.EndDate = request.EndDate;
+            alertTimingDetailRequest.State = request.State;
+            alertTimingDetailRequest.CreatedAt = request.CreatedAt;
+            alertTimingDetailRequest.ModifiedAt = request.ModifiedAt;
+            return alertTimingDetailRequest;
         }
     }
 }
