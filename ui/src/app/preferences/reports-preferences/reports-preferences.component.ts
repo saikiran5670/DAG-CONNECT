@@ -2,6 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { ReportService } from 'src/app/services/report.service';
 
 @Component({
@@ -29,7 +30,7 @@ export class ReportsPreferencesComponent implements OnInit {
   tripReportId = 1; //- Trip report
   reqField: boolean = false;
 
-  constructor(  private reportService: ReportService, ) { }
+  constructor(  private reportService: ReportService, private router: Router) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -197,10 +198,16 @@ export class ReportsPreferencesComponent implements OnInit {
       this.loadReportData();
       this.successMsgBlink(this.getSuccessMsg());
       this.editFlag = false;
-      window.location.reload(); //-- reload screen
+      if((this.router.url).includes("tripreport")){
+        this.reloadCurrentComponent();
+      }
     }, (error) => {
       console.log(error);
     });
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
   }
 
   successMsgBlink(msg: any){
