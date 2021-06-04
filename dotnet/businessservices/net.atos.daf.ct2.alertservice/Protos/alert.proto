@@ -155,6 +155,7 @@ message AlertUrgencyLevelRefRequest
 	int64 CreatedAt=11;
 	int64 ModifiedAt=12;
 	repeated AlertFilterRefRequest AlertFilterRefs=13;
+	repeated AlertTimingDetailRequest AlertTimingDetail=14;
 }
 
 message NotificationRequest

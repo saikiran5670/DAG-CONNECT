@@ -717,12 +717,15 @@ namespace net.atos.daf.ct2.alert.repository
                     FROM master.alert ale
                     left join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
+
                     left join master.alertfilterref alefil
                     on aleurg.id=alefil.alert_urgency_level_id and alefil.state in ('A','I')
+
                     left join master.alertlandmarkref alelan
                     on ale.id=alelan.alert_id and alelan.state in ('A','I')
                     left join master.notification noti
                     on ale.id=noti.alert_id and ale.state in ('A','I') and noti.state in ('A','I')
+                   
                     left join master.notificationrecipient notrec
                     on noti.id=notrec.notification_id and notrec.state in ('A','I')
                     left join master.notificationlimit notlim
