@@ -26,7 +26,9 @@ declare var H: any;
 })
 
 export class TripReportComponent implements OnInit {
+  tripReportId: any = 1;
   selectionTab: any;
+  reportPrefData: any = [];
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
@@ -65,11 +67,83 @@ export class TripReportComponent implements OnInit {
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
-  prefTimeFormat: any = 12; //-- coming from pref setting
-  prefDateFormat: any = ''; //-- coming from pref setting
+  prefTimeFormat: any = 24; //-- coming from pref setting
+  prefDateFormat: any = 'mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'metric'; //-- coming from pref setting
   accountPrefObj: any;
   advanceFilterOpen: boolean = false;
+  showField: any = {
+    vehicleName: true,
+    vin: true,
+    regNo: true
+  };
   userPOIList: any = [];
+  prefMapData: any = [
+    // {
+    //   key: 'da_report_details_vehiclename',
+    //   value: 'vehiclename'
+    // },
+    {
+      key: 'da_report_details_averagespeed',
+      value: 'averageSpeed'
+    },
+    {
+      key: 'da_report_details_drivingtime',
+      value: 'drivingTime'
+    },
+    {
+      key: 'da_report_details_alerts',
+      value: 'alert'
+    },
+    {
+      key: 'da_report_details_averageweight',
+      value: 'averageWeight'
+    },
+    {
+      key: 'da_report_details_events',
+      value: 'events'
+    },
+    {
+      key: 'da_report_details_distance',
+      value: 'distance'
+    },
+    {
+      key: 'da_report_details_enddate',
+      value: 'endTimeStamp'
+    },
+    {
+      key: 'da_report_details_endposition',
+      value: 'endPosition'
+    },
+    {
+      key: 'da_report_details_fuelconsumed',
+      value: 'fuelConsumed100Km'
+    },
+    {
+      key: 'da_report_details_idleduration',
+      value: 'idleDuration'
+    },
+    // {
+    //   key: 'da_report_details_odometer',
+    //   value: 'odometer'
+    // },
+    // {
+    //   key: 'da_report_details_registrationnumber',
+    //   value: 'registrationnumber'
+    // },
+    {
+      key: 'da_report_details_startdate',
+      value: 'startTimeStamp'
+    },
+    // {
+    //   key: 'da_report_details_vin',
+    //   value: 'vin'
+    // },
+    {
+      key: 'da_report_details_startposition',
+      value: 'startPosition'
+    }
+  ];
   
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private poiService: POIService) {
     this.defaultTranslation();
@@ -108,12 +182,48 @@ export class TripReportComponent implements OnInit {
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
         this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].value;
+        this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].value;
         this.setDefaultStartEndTime();
         this.setPrefFormatDate();
         this.setDefaultTodayDate();
-        this.loadWholeTripData();
+        this.getReportPreferences();
       });
     });
+  }
+
+  getReportPreferences(){
+    this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+      this.reportPrefData = data["userPreferences"];
+      this.setDisplayColumnBaseOnPref();
+      this.loadWholeTripData();
+    }, (error) => {
+      this.reportPrefData = [];
+      this.setDisplayColumnBaseOnPref();
+      this.loadWholeTripData();
+    });
+  }
+
+  setDisplayColumnBaseOnPref(){
+    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
+    if(filterPref.length > 0){
+      filterPref.forEach(element => {
+        let search = this.prefMapData.filter(i => i.key == element.key);
+        if(search.length > 0){
+          let index = this.displayedColumns.indexOf(search[0].value);
+          if (index > -1) {
+              this.displayedColumns.splice(index, 1);
+          }
+        }
+
+        if(element.key == 'da_report_details_vehiclename'){
+          this.showField.vehicleName = false;
+        }else if(element.key == 'da_report_details_vin'){
+          this.showField.vin = false;
+        }else if(element.key == 'da_report_details_registrationnumber'){
+          this.showField.regNo = false;
+        }
+      });
+    }
   }
 
   setPrefFormatTime(){
@@ -206,7 +316,8 @@ export class TripReportComponent implements OnInit {
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
-        this.tripData = this.getConvertTableDateTime(_tripData.tripData);
+        // this.tripData = this.getConvertTableDateTime(_tripData.tripData);
+        this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat);
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error)=>{
@@ -292,7 +403,7 @@ export class TripReportComponent implements OnInit {
         break;
       }
       case 'dd-mm-yyyy': {
-        _date = `${_d}-${-m}-${_y} ${_time}`;
+        _date = `${_d}-${_m}-${_y} ${_time}`;
         break;
       }
       case 'mm-dd-yyyy': {
@@ -387,14 +498,14 @@ export class TripReportComponent implements OnInit {
       var tempObj =[];
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
-      tempObj.push( e.distance);
-      tempObj.push( e.idleDuration);
-      tempObj.push( e.averageSpeed);
+      tempObj.push(e.convertedDistance);
+      tempObj.push(e.convertedIdleDuration);
+      tempObj.push(e.averageSpeed);
       tempObj.push(e.averageWeight);
       tempObj.push(e.startPosition);
       tempObj.push(e.endPosition);
       tempObj.push(e.fuelConsumed100Km);
-      tempObj.push(e.drivingTime);
+      tempObj.push(e.convertedDrivingTime);
       tempObj.push(e.alert);
       tempObj.push(e.events);
 
@@ -405,7 +516,7 @@ export class TripReportComponent implements OnInit {
       body: prepare,
       theme: 'striped',
       didDrawCell: data => {
-        console.log(data.column.index)
+        //console.log(data.column.index)
       }
     })
     // below line for Download PDF document  

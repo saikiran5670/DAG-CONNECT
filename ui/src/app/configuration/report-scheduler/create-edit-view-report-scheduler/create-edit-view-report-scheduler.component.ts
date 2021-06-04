@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReportSchedulerService } from 'src/app/services/report.scheduler.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 
@@ -44,6 +44,11 @@ export class CreateEditViewReportSchedulerComponent implements OnInit {
       driver : ['', [Validators.required]],
       mailSubject : ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       mailDescription : ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
+      dailyStartTime : new FormControl({value: '00:00', disabled: true}),
+      dailyEndTime : new FormControl({value: '23:59', disabled: true}),
+      dailyReportDispatchTime : new FormControl({value: '23:59'}),
+      weeklyStartDay : new FormControl({value: 'Monday', disabled: true}),
+      weeklyEndDay : new FormControl({value: 'Sunday', disabled: true})
     });
     
     this.breadcumMsg = this.getBreadcum();

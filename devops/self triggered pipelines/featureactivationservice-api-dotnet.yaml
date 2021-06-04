@@ -1,0 +1,123 @@
+trigger:
+  branches:
+    include:
+    - development
+    - release
+    - testing
+  paths:
+    include:
+    - dotnet/dataservices/net.atos.daf.ct2.featureactivationservice
+
+variables:
+ - name: imageName
+   value: 'featureactivationservice-auto'
+ - name: dockerFile
+   value: 'dotnet/FeatureActivationService_Dockerfile'
+ - name: manifestFile
+   value: 'featureactivationservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+ - name: manifestFileDev0
+   value: 'featureactivationservice-api-dotnet-kubernetes-manifest.yaml'
+ - name: appsettingsFile
+   value: 'dotnet/dataservices/net.atos.daf.ct2.featureactivationservice/appsettings.Production.json'
+ - name: log4netConfigFile
+   value: 'dotnet/dataservices/net.atos.daf.ct2.featureactivationservice/log4net.config'
+
+stages:
+  - stage: stage1
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'ats-sub1-d-app-automation'
+        containerRegistry: '{"loginServer":"dafdev017756.azurecr.io", "id" : "/subscriptions/f0b7c74e-ef18-46e8-ae31-7abbd0e5fd8f/resourceGroups/DAFCT_DEV0_DTA_K8S/providers/Microsoft.ContainerRegistry/registries/dafdev017756"}'
+        variableGroup: 'DEV0-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFileDev0)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], 'development')
+
+  - stage: stage2
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE DEV1'
+        containerRegistry: '{"loginServer":"acrakspzfu3h3wyefhu.azurecr.io", "id" : "/subscriptions/6bd8b39f-86c3-4026-985a-34db67361301/resourceGroups/daf-lan1-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakspzfu3h3wyefhu"}'
+        variableGroup: 'DEV01-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'], 'development')
+       
+  - stage: stage3
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE DEV2'
+        containerRegistry: '{"loginServer":"acraksvyajhwtrez6ou.azurecr.io", "id" : "/subscriptions/160509b9-0278-4c38-8a1b-c967aab4381d/resourceGroups/daf-lan2-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksvyajhwtrez6ou"}'
+        variableGroup: 'DEV02-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'development')
+
+  - stage: stage4
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE TST1'
+        containerRegistry: '{"loginServer":"acraksoxvoiq64cpv6y.azurecr.io", "id" : "/subscriptions/0d01fd30-a216-42aa-809a-57c280730851/resourceGroups/daf-lan3-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksoxvoiq64cpv6y"}'
+        variableGroup: 'TEST01-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'testing')
+
+  - stage: stage5
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE TST2'
+        containerRegistry: '{"loginServer":"acrakswoxum6mmjejgo.azurecr.io", "id" : "/subscriptions/668f8417-6aa1-48d9-91df-e477881365fb/resourceGroups/daf-lan4-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acrakswoxum6mmjejgo"}'
+        variableGroup: 'TEST02-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'testing')
+
+# Commented out because ACC 1 builds should not be triggered. It will be un-commented in future
+  # - stage: stage6
+  #   jobs:
+  #   - template: dotnet-pipeline-template.yaml  # Template reference
+  #     parameters:
+  #       subscription: 'DAF CT AZURE DTA LANDING ZONE ACC1'
+  #       containerRegistry: '{"loginServer":"acraksk3kcvqdoasw7w.azurecr.io", "id" : "/subscriptions/72b19713-3728-48ab-95ac-3edf02341c45/resourceGroups/daf-lan7-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksk3kcvqdoasw7w"}'
+  #       variableGroup: 'ACC01-Build-Variables'
+  #       imageName: $(imageName)
+  #       dockerFile: $(dockerFile)
+  #       manifestFile: $(manifestFile)
+  #       appsettingsPath: $(appsettingsFile)
+  #       log4netConfigPath: $(log4netConfigFile)
+  #   condition: eq(variables['Build.SourceBranchName'],  'release')
+
+  - stage: stage7
+    jobs:
+    - template: dotnet-pipeline-template.yaml  # Template reference
+      parameters:
+        subscription: 'DAF CT AZURE DTA LANDING ZONE ACC3'
+        containerRegistry: '{"loginServer":"acraksdvcvcjczm35es.azurecr.io", "id" : "/subscriptions/16d3cc12-0943-4b96-a358-56b562370f39/resourceGroups/daf-lan5-d-euwe-rsg-aks/providers/Microsoft.ContainerRegistry/registries/acraksdvcvcjczm35es"}'
+        variableGroup: 'ACC03-Build-Variables'
+        imageName: $(imageName)
+        dockerFile: $(dockerFile)
+        manifestFile: $(manifestFile)
+        appsettingsPath: $(appsettingsFile)
+        log4netConfigPath: $(log4netConfigFile)
+    condition: eq(variables['Build.SourceBranchName'],  'release')

@@ -98,6 +98,13 @@ namespace net.atos.daf.ct2.alert.repository
                         alertfilter.AlertUrgencyLevelId = urgencylevelRefId;
                         int alertfilterRefId = await CreateAlertFilterRef(alertfilter);
                         alertfilter.Id = alertfilterRefId;
+                        foreach (var alertTimingDetail in alertfilter.AlertTimingDetails)
+                        {
+                            alertTimingDetail.RefId = alertfilterRefId;
+                            alertTimingDetail.Type = AlertTimingDetailType.AlertAdvanceFilter.ToString();
+                            int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                            alertTimingDetail.Id = alertTimingDetailId;
+                        }
                     }
                 }
                 foreach (var notification in alert.Notifications)
@@ -105,11 +112,12 @@ namespace net.atos.daf.ct2.alert.repository
                     notification.AlertId = alertId;
                     int notificationId = await CreateNotification(notification);
                     notification.Id = notificationId;
-                    foreach (var availabilityPeriod in notification.NotificationAvailabilityPeriods)
+                    foreach (var alertTimingDetail in notification.AlertTimingDetails)
                     {
-                        availabilityPeriod.NotificationId = notificationId;
-                        int alertfilterRefId = await CreateNotificationAvailabilityPeriod(availabilityPeriod);
-                        availabilityPeriod.Id = alertfilterRefId;
+                        alertTimingDetail.RefId = notificationId;
+                        alertTimingDetail.Type = AlertTimingDetailType.NotificationAdvanceFilter.ToString();
+                        int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                        alertTimingDetail.Id = alertTimingDetailId;
                     }
                     foreach (var limit in notification.NotificationLimits)
                     {
@@ -476,10 +484,12 @@ namespace net.atos.daf.ct2.alert.repository
                         {
                             notification.AlertId = alertId;
                             int notificationId = await CreateNotification(notification);
-                            foreach (var availabilityPeriod in notification.NotificationAvailabilityPeriods)
+                            foreach (var alertTimingDetail in notification.AlertTimingDetails)
                             {
-                                availabilityPeriod.NotificationId = notificationId;
-                                int alertfilterRefId = await CreateNotificationAvailabilityPeriod(availabilityPeriod);
+                                alertTimingDetail.RefId = notificationId;
+                                alertTimingDetail.Type = AlertTimingDetailType.NotificationAdvanceFilter.ToString();
+                                int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                                alertTimingDetail.Id = alertTimingDetailId;
                             }
                             foreach (var limit in notification.NotificationLimits)
                             {
@@ -878,6 +888,37 @@ namespace net.atos.daf.ct2.alert.repository
             }
         }
 
+        private async Task<int> CreateAlertTimingDetail(AlertTimingDetail alertTimingDetail)
+        {
+            try
+            {
+                var parameteralertTimingDetail = new DynamicParameters();
+                parameteralertTimingDetail.Add("@type", Convert.ToChar(alertTimingDetail.Type));
+                parameteralertTimingDetail.Add("@ref_id", alertTimingDetail.RefId);
+                BitArray bitArray = new BitArray(7);
+                for (int i = 0; i < alertTimingDetail.DayType.Length; i++)
+                {
+                    bitArray.Set(i, alertTimingDetail.DayType[i]);
+                }
+                parameteralertTimingDetail.Add("@day_type", bitArray);
+                if (alertTimingDetail.PeriodType != null && alertTimingDetail.PeriodType.Length > 0)
+                    parameteralertTimingDetail.Add("@period_type", Convert.ToChar(alertTimingDetail.PeriodType));
+                else
+                    parameteralertTimingDetail.Add("@period_type", null);
+                parameteralertTimingDetail.Add("@start_date", alertTimingDetail.StartDate);
+                parameteralertTimingDetail.Add("@end_date", alertTimingDetail.EndDate);
+                parameteralertTimingDetail.Add("@state", AlertState.Active);
+                parameteralertTimingDetail.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                string queryAvailabilityperiod = @"INSERT INTO master.alerttimingdetail(type, ref_id, day_type, period_type, start_date, end_date, state, created_at)
+	                                    VALUES (@type, @ref_id, @day_type, @period_type, @start_date, @end_date, @state, @created_at) RETURNING id";
+                var id = await _dataAccess.ExecuteScalarAsync<int>(queryAvailabilityperiod, parameteralertTimingDetail);
+                return id;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region Landmark Delete Validation

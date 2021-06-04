@@ -32,7 +32,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _driverClient = driverClient;
             _mapper = new DriverMapper();
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
         }
 
         [HttpGet]
@@ -101,7 +100,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                            "Driver service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Update method in Driver controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
 
                 return Ok(Response.Driver);
             }
@@ -110,7 +109,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "Update method in Driver controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))
@@ -146,7 +145,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Delete method in Driver controller", idRequest.DriverID, idRequest.DriverID, JsonConvert.SerializeObject(driverId),
-                                              Request);
+                                              _userDetails);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -154,7 +153,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "Delete method in Driver controller", idRequest.DriverID, idRequest.DriverID, JsonConvert.SerializeObject(driverId),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))
@@ -190,7 +189,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "UpdateOptinOptout method in Driver controller", 0, 0, JsonConvert.SerializeObject(Optrequest),
-                                              Request);
+                                              _userDetails);
 
                 return Ok(response);
             }
@@ -199,7 +198,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "UpdateOptinOptout method in Driver controller", 0, 0, JsonConvert.SerializeObject(Optrequest),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))
@@ -248,7 +247,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "ImportDrivers method in Driver controller", 0, 0, JsonConvert.SerializeObject(drivers),
-                                              Request);
+                                              _userDetails);
                 return Ok(response.Driver);
             }
             catch (Exception ex)
@@ -256,7 +255,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Driver Component",
                                              "Driver service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "ImportDrivers method in Driver controller", 0, 0, JsonConvert.SerializeObject(drivers),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(_fk_Constraint))

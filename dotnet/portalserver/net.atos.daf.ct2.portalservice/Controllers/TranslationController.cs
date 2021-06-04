@@ -33,7 +33,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
             _audit = auditHelper;
-            _userDetails = _audit.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
 
@@ -402,8 +401,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _audit.AddLogs(DateTime.Now, "Translation Component",
                        "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                        "InsertTranslationFileDetails  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                        Request);
-
+                        _userDetails);
 
                     return Ok(ResponseList);
                 }
@@ -417,8 +415,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, ex);
                 return StatusCode(500, "Failed to upload translations details");
             }
-
-
         }
 
         // [AllowAnonymous]
@@ -454,9 +450,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Error(null, Ex);
                 return StatusCode(500, "Failed to fetch file details");
             }
-
-
-
         }
 
         [HttpPost]
@@ -485,7 +478,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _audit.AddLogs(DateTime.Now, "Translation Component",
                           "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                           "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                           Request);
+                           _userDetails);
                     return Ok(DTCResponse);
                 }
                 else if (DTCResponse != null && DTCResponse.Message == "violates foreign key constraint for Icon_ID , Please enter valid data for Warning_Class and Warning_Number")
@@ -503,7 +496,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _audit.AddLogs(DateTime.Now, "Translation Component",
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                       "ImportDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                       Request);
+                       _userDetails);
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
@@ -580,21 +573,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _audit.AddLogs(DateTime.Now, "Translation Component",
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                       "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                       Request);
+                       _userDetails);
                     return Ok(DTCResponse);
                 }
                 else
                 {
                     return StatusCode(500, "Warning response is null");
                 }
-
             }
             catch (Exception ex)
             {
                 await _audit.AddLogs(DateTime.Now, "Translation Component",
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCWarningData  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                      Request);
+                      _userDetails);
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
@@ -602,7 +594,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 return StatusCode(500, "Please contact system administrator. " + ex.Message + " " + ex.StackTrace);
             }
-
         }
 
         #region  Terms And Conditions
@@ -645,7 +636,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "AddUserAcceptedTermCondition  method in Translation controller", 0, termsAndCondResponse.AcceptedTermCondition != null ? termsAndCondResponse.AcceptedTermCondition.Id : 0,
                                         JsonConvert.SerializeObject(request),
-                                         Request);
+                                         _userDetails);
                     return Ok(termsAndCondResponse);
                 }
                 else
@@ -660,7 +651,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "AddUserAcceptedTermCondition  method in Translation controller", 0, 0,
                                         JsonConvert.SerializeObject(request),
-                                         Request);
+                                         _userDetails);
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {
@@ -934,7 +925,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                         "Translation service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "UploadTermsAndCondition  method in Translation controller", 0, 0,
                                         JsonConvert.SerializeObject(request),
-                                         Request);
+                                         _userDetails);
                 return Ok(data.Uploadedfilesaction);
             }
             else
@@ -979,7 +970,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _audit.AddLogs(DateTime.Now, "Translation Component",
                       "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                       "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                       Request);
+                       _userDetails);
                     return Ok(DTCResponse);
                 }
                 else if (DTCResponse.Message == "File Name not exist .")
@@ -997,7 +988,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _audit.AddLogs(DateTime.Now, "Translation Component",
                      "Translation service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "UpdateDTCTranslationIcon  method in Translation controller", 0, 0, JsonConvert.SerializeObject(request),
-                      Request);
+                      _userDetails);
                 _logger.Error(null, ex);
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
                 {

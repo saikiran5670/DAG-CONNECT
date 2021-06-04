@@ -9,9 +9,11 @@ namespace net.atos.daf.ct2.portalservice.Common
     public class SessionHelper
     {
         private readonly ILog _logger;
-        public SessionHelper()
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public SessionHelper(IHttpContextAccessor httpContextAccessor)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public HeaderObj GetSessionInfo(ISession session)
@@ -33,10 +35,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                     {
                         headerObj.OrgId = session.GetInt32(SessionConstants.OrgKey).Value;
                     }
-                    //if (session.Keys.Any(x => x.Equals(SessionConstants.ContextOrgKey)))
-                    //{
-                    //    headerObj.contextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
-                    //}
+                    if (session.Keys.Any(x => x.Equals(SessionConstants.ContextOrgKey)))
+                    {
+                        headerObj.ContextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
+                    }
                 }
             }
             catch (Exception ex)

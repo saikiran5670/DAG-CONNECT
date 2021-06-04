@@ -20,6 +20,7 @@ import { Options } from '@angular-slider/ngx-slider';
 declare var H: any;
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { MapFunctionsService } from '../../map-functions.service';
 
 @Component({
   selector: 'app-existing-trips',
@@ -163,6 +164,7 @@ export class ExistingTripsComponent implements OnInit {
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats,private here: HereService,
   private _formBuilder: FormBuilder, private translationService: TranslationService,
   private corridorService : CorridorService, private poiService: POIService,
+  private mapFunctions: MapFunctionsService,
   private completerService: CompleterService, private config: ConfigService) {
 
     this.map_key =  config.getSettings("hereMap").api_key;
@@ -224,7 +226,10 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   public ngAfterViewInit() {
-    this.initMap();
+    // this.initMap();
+    setTimeout(() => {
+      this.mapFunctions.initMap(this.mapElement);
+      }, 0);
   }
 
   setDefaultStartEndTime(){
@@ -386,13 +391,14 @@ export class ExistingTripsComponent implements OnInit {
     //     VIN: NBVGF1254KLJ55
     // start date: 1604327461000
     // end date: 1604336647000
-
+    // StartDateTime=1078724200000&EndDateTime=2078724200000&VIN=XLR0998HGFFT76657
     
     let _startTime = this.startDateValue.getTime();
     let _endTime = this.endDateValue.getTime();
-    // _startTime = 1604327461000;
-    // _endTime = 1604336647000;
-    // this.vinListSelectedValue= "NBVGF1254KLJ55";
+    // //For testing data
+    // _startTime = 1078724200000;
+    // _endTime = 2078724200000;
+    // this.vinListSelectedValue= "XLR0998HGFFT76657";
    
       this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       console.log("--existingTripData----", existingTripDetails)
@@ -946,18 +952,22 @@ export class ExistingTripsComponent implements OnInit {
 
   masterToggleForCorridor() {
     this.markerArray = [];
-    if (this.isAllSelectedForCorridor()) {
+    if(this.isAllSelectedForCorridor()){
       this.selectedCorridors.clear();
+      this.mapFunctions.clearRoutesFromMap();
       this.showMap = false;
     }
-    else {
-      this.dataSource.data.forEach((row) => {
+    else{
+      this.dataSource.data.forEach((row) =>{
         this.selectedCorridors.select(row);
         this.markerArray.push(row);
       });
+      this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
       this.showMap = true;
     }
-    // this.addPolylineToMap();
+    console.log(this.markerArray);
+    
+    //this.addPolylineToMap();
   }
 
   isAllSelectedForCorridor() {
@@ -977,8 +987,23 @@ export class ExistingTripsComponent implements OnInit {
   checkboxClicked(event: any, row: any) {
     
     let startAddress =  row.startPositionlattitude + "," + row.startPositionLongitude;
-    let endAddress =  row.endPositionlattitude + "," + row.endPositionLongitude;
+    let endAddress =   row.endPositionlattitude + "," + row.endPositionLongitude;
     // this.position = row.startPositionlattitude + "," + row.startPositionLongitude;
+
+    if(event.checked){ //-- add new marker
+      this.markerArray.push(row);
+      
+    this.mapFunctions.viewSelectedRoutes(this.markerArray);
+    }else{ //-- remove existing marker
+      //It will filter out checked points only
+      let arr = this.markerArray.filter(item => item.id != row.id);
+      this.markerArray = arr;
+      this.mapFunctions.clearRoutesFromMap();
+
+      }
+    // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+    
+    
     this.here.getAddressFromLatLng(startAddress).then(result => {
       this.locations = <Array<any>>result;
       
@@ -987,14 +1012,7 @@ export class ExistingTripsComponent implements OnInit {
       console.log("--hey Chckbox clicked startAddress---",this.setStartAddress)
       
       this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
-      // // //console.log(this.locations[0].Location.Address);
-      // let pos = this.locations[0].Location.DisplayPosition;
-      // // //console.log(data);
-      // this.data = data;
-      // thisRef.poiFlag = false;
-      // thisRef.setAddressValues(data, pos);
     }, error => {
-      // console.error(error);
     });
     
     this.here.getAddressFromLatLng(endAddress).then(result => {
@@ -1004,14 +1022,8 @@ export class ExistingTripsComponent implements OnInit {
       this.setEndAddress = this.locations[0].Location.Address.Label;
       console.log("--hey Chckbox clicked endAddress---",this.setEndAddress)
       this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
-      // // //console.log(this.locations[0].Location.Address);
-      // let pos = this.locations[0].Location.DisplayPosition;
-      // // //console.log(data);
-      // this.data = data;
-      // thisRef.poiFlag = false;
-      // thisRef.setAddressValues(data, pos);
+
     }, error => {
-      // console.error(error);
     });
 
 

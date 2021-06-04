@@ -29,7 +29,6 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
 
-	String livefleetposition = null;
 
 	// private PreparedStatement statement;
 	Connection connection = null;
@@ -48,8 +47,6 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 		log.info("########## In LiveFleet Drive Time Management ##############");
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-
-		livefleetposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION);
 
 		driverDAO = new LiveFleetDriverActivityDao();
 		System.out.println("read Query--->"+net.atos.daf.postgre.util.DafConstants.DRIVER_ACTIVITY_READ);
@@ -170,7 +167,7 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 
 		DriverActivity.setTripId(null);
 		DriverActivity.setVid(row.getVid());
-		DriverActivity.setVin(null);
+		//DriverActivity.setVin(null);
 		//DriverActivity.setTripStartTimeStamp(Types);
 		//DriverActivity.setTripEndTimeStamp(null);
 		try {
@@ -223,7 +220,8 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 		DriverActivity.setModifiedAt(null); // it will be null when record
 											// creates.
 		DriverActivity.setLastProcessedMessageTimestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-
+		DriverActivity.setVin(row.getVin());
+		System.out.println("in driver activity sink class---"+row.getVin());
 		return DriverActivity;
 
 	}
