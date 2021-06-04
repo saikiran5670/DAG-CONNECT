@@ -23,10 +23,54 @@
                 <div class="bgtrans tabs">
                     <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
                       <mat-tab label="{{ translationData.lblDaily || 'Daily' }}">
-                        <div *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" ></div>
+                        <div *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" >
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblEverydayStartTime || 'Everyday Start Time' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input type="time"  matInput formControlName="dailyStartTime">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblEverydayEndTime || 'Everyday End Time' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input type="time"  matInput formControlName="dailyEndTime">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            
+                        </div>
                       </mat-tab>
                       <mat-tab label="{{ translationData.lblWeekly || 'Weekly' }}">
-                        <div *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)"></div>
+                        <div *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)">
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblStartDay || 'Start Day' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input matInput formControlName="weeklyStartDay">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblEndDay || 'End Day' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input matInput formControlName="weeklyEndDay">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            
+                        </div>
                       </mat-tab>
                       <mat-tab label="{{ translationData.lblBiweekly || 'Biweekly' }}">
                         <div *ngIf="selectedIndex == 2" (tabVisibility)="tabVisibilityHandler($event)"></div>
@@ -38,6 +82,16 @@
                         <div *ngIf="selectedIndex == 4" (tabVisibility)="tabVisibilityHandler($event)"></div>
                       </mat-tab>
                     </mat-tab-group>
+                    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                        <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>
+                                {{ translationData.lblReportDispatchTime || 'Report Dispatch Time' }}
+                            </mat-label>
+                            <mat-form-field appearance="outline">
+                                <input type="time"  matInput formControlName="dailyReportDispatchTime">
+                            </mat-form-field>
+                        </div>
+                    </div>
                 </div>
             </div>
           </div>
@@ -260,7 +314,7 @@
             <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
               (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
             <button class='no-margin' [disabled]="!reportSchedulerForm.valid" mat-raised-button color="primary"
-              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblCreate || 'Create') :
+              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblSchedule || 'Schedule') :
               (translationData.lblConfirm || 'Confirm') }}</button>
           </div>
         </div>
