@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: featureactivationservice-auto-deployment
+  name: authenticationdataservice-auto-deployment
 spec:
   selector:
     matchLabels:
-      run: featureactivationservice-auto
+      run: authenticationdataservice-auto
   replicas: 2
   template:
     metadata:
       labels:
-        run: featureactivationservice-auto
+        run: authenticationdataservice-auto
     spec:
       containers:
-      - name: featureactivationservice-auto
-        image: dafdev017756.azurecr.io/featureactivationservice-auto
+      - name: authenticationservicerest-auto
+        image: dafdev017756.azurecr.io/authenticationservicerest-auto
         imagePullPolicy: Always
         resources:
           limits:
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: featureactivationservice-auto
+  name: authenticationdataservice-auto
 spec:
   type: LoadBalancer
   ports:
@@ -36,4 +36,4 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    run: featureactivationservice-auto
+    run: authenticationdataservice-auto
