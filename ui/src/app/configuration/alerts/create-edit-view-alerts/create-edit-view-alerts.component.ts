@@ -163,6 +163,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
         CustomValidators.specialCharValidationForName('alertName')  
       ]
     });
+    if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
+      this.breadcumMsg = this.getBreadcum();
+    }
 
     this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
@@ -177,9 +180,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
     }
-    if(this.actionType == 'view' || this.actionType == 'edit'){
-      this.breadcumMsg = this.getBreadcum();
-    }
+    
 
     // this.alertTypeByCategoryList= this.alertTypeList;
     this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
@@ -196,6 +197,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.alertForm.controls.widthInput.setValue(0.1);
   }
 
+  
+  toBack() {
+    let emitObj = {
+      stepFlag: false,
+      msg: ""
+    }
+    this.backToPage.emit(emitObj);
+  }
   getUnique(arr, comp) {
 
     // store the comparison  values in array
@@ -715,13 +724,7 @@ PoiCheckboxClicked(event: any, row: any) {
       ));
     }
   
-    // toBack() {
-    //   let emitObj = {
-    //     stepFlag: false,
-    //     msg: ""
-    //   }
-    //   this.backToPage.emit(emitObj);
-    // }
+
 
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
