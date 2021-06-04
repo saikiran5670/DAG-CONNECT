@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.accountpreference;
@@ -551,6 +552,35 @@ namespace net.atos.daf.ct2.organizationservice
             }
             return await Task.FromResult(response);
         }
+
+        public override async Task<GetAllContextOrgsResponse> GetAllOrganizationsForContext(Empty empty, ServerCallContext context)
+        {
+            try
+            {
+                var contextOrgs = await _organizationtmanager.GetAllOrganizationsForContext();
+
+                var response = new GetAllContextOrgsResponse();
+                foreach(var item in contextOrgs)
+                {
+                    var listItem = new ContextOrgsList();
+                    listItem.Id = item.Id;
+                    listItem.Name = item.Name;
+                    response.ContextOrgs.Add(listItem);
+                }
+                response.Code = contextOrgs.Count() > 0 ? Responcecode.Success : Responcecode.NotFound;                
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetAllContextOrgsResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get all context orgs failed due to - " + ex.Message
+                });
+            }            
+        }
+
         public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Dapper;
 using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
@@ -16,6 +17,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             _dataAccess = dataAccess;
         }
 
+        #region Activate Report Scheduler
         
+        #endregion
+
     }
 }
