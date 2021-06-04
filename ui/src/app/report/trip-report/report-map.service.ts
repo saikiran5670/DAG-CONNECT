@@ -181,5 +181,97 @@ export class ReportMapService {
         // this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
     });
   }
-  
+
+  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any){
+    gridData.forEach(element => {
+      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat);
+      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat);
+      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedDrivingTime = this.getHhMmTime(element.idleDuration);
+      element.convertedIdleDuration = this.getHhMmTime(element.drivingTime);
+    });
+    return gridData;
+  }
+
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any){
+    let sTime: any = 0;
+    if(startTime != 0){
+      sTime = this.formStartEndDate(new Date(startTime), dateFormat, timeFormat);
+    }
+    return sTime;
+  }
+
+  getEndTime(endTime: any, dateFormat: any, timeFormat: any){
+    let eTime: any = 0;
+    if(endTime != 0){
+      eTime = this.formStartEndDate(new Date(endTime), dateFormat, timeFormat);
+    }
+    return eTime;
+  }
+
+  getDistance(distance: any, unitFormat: any){
+    // distance in meter
+    let _distance = 0;
+    switch(unitFormat){
+      case 'metric': { 
+        _distance = distance/1000; //-- km
+        break;
+      }
+      case 'imperial':
+      case 'US imperial': {
+        _distance = distance/1,609.344; //-- mile
+        break;
+      }
+    }
+    return _distance;    
+  }
+
+  getHhMmTime(totalSeconds: any){
+    let data: any = "00:00";
+    let hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    data = `${(hours.toString().length >= 10) ? hours : ('0'+hours)}:${(minutes.toString().length >= 10) ? minutes : ('0'+minutes)}`;
+    return data;
+  }
+
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if(timeFormat == 12){
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    switch(dateFormat){
+      case 'dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+   
 }
