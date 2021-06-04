@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import net.atos.daf.common.ct2.exception.TechnicalException;
-import net.atos.daf.ct2.pojo.standard.Monitor;
 import net.atos.daf.postgre.bo.Co2Master;
 import net.atos.daf.postgre.bo.LiveFleetPojo;
+import net.atos.daf.postgre.util.DafConstants;
 
 public class LiveFleetPosition implements Serializable {
 	/**
@@ -22,32 +22,24 @@ public class LiveFleetPosition implements Serializable {
 	private static final String READ_LIVEFLEET_POSITION = "SELECT distance_until_next_service from livefleet.livefleet_position_statistics WHERE vin = ? ORDER BY created_at_m2m DESC limit 1";
 	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm    ) VALUES (?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    )";
 
-	//public boolean insert(Monitor row, Long fuel_consumption, Co2Master cm)
-	public boolean insert(LiveFleetPojo currentPosition, Long fuel_consumption, Co2Master cm)
+		public boolean insert(LiveFleetPojo currentPosition, Long fuel_consumption, Co2Master cm)
 			throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_livefleet_position;
 
 		boolean result = false;
-		// String varTripID = row.getDocument().getTripID(); /// taken
-		/// in two classes
-
+	
 		try {
 
 			if (null != currentPosition && null != (connection = getConnection())) {
 				stmt_insert_livefleet_position = connection.prepareStatement(INSERT_LIVEFLEET_POSITION);
-				/*
-				 * stmt_insert_livefleet_position =
-				 * fillStatement(stmt_insert_livefleet_position, row,
-				 * fuel_consumption, cm);
-				 */
+
 				stmt_insert_livefleet_position = fillStatement(stmt_insert_livefleet_position, currentPosition);
-				System.out.println("inside LiveFleetDriverActivityDao Insert");
+				
 				stmt_insert_livefleet_position.addBatch();
 				stmt_insert_livefleet_position.executeBatch();
 			}
 		} catch (SQLException e) {
-			System.out.println("inside catch LiveFleetDriverActivityDao Insert");
-			e.printStackTrace();
+						e.printStackTrace();
 		}
 
 		return result;
@@ -67,13 +59,13 @@ public class LiveFleetPosition implements Serializable {
 				stmt_read_livefleet_position.setString(1, vin);
 
 				rs_position = stmt_read_livefleet_position.executeQuery();
-				System.out.println("inside livefleet position");
+				
 				while (rs_position.next()) {
 
 					distance_until_next_service = rs_position.getInt("distance_until_next_service");
 
 				}
-				System.out.println("outside livefleet position while loop");
+				
 				rs_position.close();
 			}
 
@@ -101,15 +93,13 @@ public class LiveFleetPosition implements Serializable {
 		if (currentPosition.getTripId() != null)
 			stmt_insert_livefleet_position.setString(1, currentPosition.getTripId());
 		else
-		 stmt_insert_livefleet_position.setString(1, "NA");
+			stmt_insert_livefleet_position.setString(1, DafConstants.UNKNOWN);
 
 		if (currentPosition.getVid() != null)
 			stmt_insert_livefleet_position.setString(2, currentPosition.getVid());
 		else
 			stmt_insert_livefleet_position.setString(2, currentPosition.getVin());
-			
 
-		
 		if (currentPosition.getMessageTimestamp() != null)
 			stmt_insert_livefleet_position.setDouble(3, currentPosition.getMessageTimestamp());
 		else

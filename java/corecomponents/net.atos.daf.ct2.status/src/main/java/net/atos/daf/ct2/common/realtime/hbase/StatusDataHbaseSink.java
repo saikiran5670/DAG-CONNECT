@@ -289,13 +289,13 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 		// VAccelerationPedalDistr
 		System.out.println("VAccelerationPedalDistr Data Fields in Status Data");
 		if (value.getValue().getDocument().getVAccelerationPedalDistr() != null) {
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(
 					String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMinRangeInt())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(
 					String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrMaxRangeInt())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
 					String.valueOf(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrStep())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayTime"), Bytes.toBytes(
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrArrayTime"), Bytes.toBytes(
 					Arrays.toString(value.getValue().getDocument().getVAccelerationPedalDistr().getDistrArrayInt())));
 		}
 		// VEngineLoadAtEngineSpeedDistr
@@ -303,26 +303,26 @@ public class StatusDataHbaseSink extends RichSinkFunction<KafkaRecord<Status>> {
 
 		if (value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr() != null) {
 
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
 					.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMinRangeInt())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
 					.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrMaxRangeInt())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrStep"), Bytes.toBytes(
 					String.valueOf(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrStep())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
 					.toString(value.getValue().getDocument().getVEngineLoadAtEngineSpeedDistr().getDistrArrayInt())));
 		}
 		// VRetarderTorqueActualDistr
 		System.out.println("VRetarderTorqueActualDistr Data Fields in Status Data");
 
 		if (value.getValue().getDocument().getVRetarderTorqueActualDistr() != null) {
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMinRangeInt"), Bytes.toBytes(String
 					.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMinRangeInt())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrMaxRangeInt"), Bytes.toBytes(String
 					.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrMaxRangeInt())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrStep "), Bytes.toBytes(
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrStep "), Bytes.toBytes(
 					String.valueOf(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrStep())));
-			put.addColumn(Bytes.toBytes("VDetails"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
+			put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("DistrArrayInt"), Bytes.toBytes(Arrays
 					.toString(value.getValue().getDocument().getVRetarderTorqueActualDistr().getDistrArrayInt())));
 		}
 		table.put(put);
