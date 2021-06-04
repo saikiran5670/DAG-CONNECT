@@ -32,7 +32,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _vehicleClient = vehicleClient;
             _mapper = new Mapper();
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpPut]
@@ -74,7 +73,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
-                   Request);
+                   _userDetails);
 
                     var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
                     return Ok(response);
@@ -90,7 +89,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -184,7 +183,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                    "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                    "CreateGroup  method in Vehicle controller", 0, response.VehicleGroup.Id, JsonConvert.SerializeObject(group),
-                    Request);
+                    _userDetails);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -201,7 +200,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                       "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                      "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(group), Request);
+                      "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(group), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -248,7 +247,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                      "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                     "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), Request);
+                     "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), _userDetails);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -265,7 +264,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                     "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                    "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), Request);
+                    "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -291,7 +290,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), Request);
+                  "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(response.Result);
                 }
                 else
@@ -304,7 +303,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), Request);
+                "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
@@ -559,7 +558,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+                "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
 
                     return Ok(vehicleResponse.Result);
                 }
@@ -573,7 +572,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
               "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-              "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+              "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -614,7 +613,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
             "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-            "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+            "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -627,7 +626,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
           "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-          "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+          "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -669,7 +668,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
        "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-       "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+       "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -682,7 +681,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
    "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-   "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+   "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))

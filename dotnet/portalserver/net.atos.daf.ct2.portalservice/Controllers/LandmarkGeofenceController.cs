@@ -35,7 +35,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             _alertServiceClient = alertServiceClient;
         }
 
@@ -81,7 +80,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Create polygon method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                   Request);
+                   _userDetails);
 
                     return Ok(geofenceResponse);
                 }
@@ -96,7 +95,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -159,7 +158,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Create Circular  method in Geofence controller", request[0].Id, request[0].Id, JsonConvert.SerializeObject(request),
-                   Request);
+                   _userDetails);
 
                     return Ok(geofenceResponse);
                 }
@@ -174,7 +173,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in Geofence controller", request[0].Id, request[0].Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -222,7 +221,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                          "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                          "DeleteGeofence  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
-                          Request);
+                          _userDetails);
                         return Ok(objGeofenceDeleteResponse);
                     }
                     else
@@ -236,7 +235,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Delete  method in Geofence controller", 0, 0, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
 
                 //// check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -271,7 +270,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetGeofenceByGeofenceID  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                 Request);
+                 _userDetails);
                 if (request.OrganizationId > 0)
                 {
                     idRequest.OrganizationId = request.OrganizationId;
@@ -293,7 +292,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetGeofenceByGeofenceID  method in Geofence controller", Convert.ToInt32(request.GeofenceId), Convert.ToInt32(request.OrganizationId), JsonConvert.SerializeObject(request),
-                 Request);
+                 _userDetails);
 
                 if (ex.Message.Contains(_fk_Constraint))
                 {
@@ -327,7 +326,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetAllGeofence  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                 Request);
+                 _userDetails);
 
                 var result = await _geofenceServiceClient.GetAllGeofenceAsync(objGeofenceRequest);
                 return Ok(result);
@@ -337,7 +336,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetAllGeofence  method in Geofence controller", Convert.ToInt32(request.OrganizationId), Convert.ToInt32(request.CategoryId), JsonConvert.SerializeObject(request),
-                 Request);
+                 _userDetails);
                 if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
@@ -395,7 +394,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Update polygon method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                   Request);
+                   _userDetails);
 
                     return Ok(geofenceResponse);
                 }
@@ -410,7 +409,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update polygon method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -452,7 +451,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.BULK, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  $"BulkImportGeofence method Failed", 1, 2, JsonConvert.SerializeObject(requests),
-                  Request);
+                  _userDetails);
                 //_logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -511,7 +510,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                   "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Update Circular method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                   Request);
+                   _userDetails);
 
                     return Ok(geofenceResponse);
                 }
@@ -526,7 +525,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                  "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update Circular method in Geofence controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(_fk_Constraint))
@@ -565,7 +564,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                 Request);
+                 _userDetails);
 
                     return Ok(result.Geofences);
                 }
@@ -579,7 +578,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Geofence Component",
                 "Geofence service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "GetAllGeofences  method in Geofence controller", request.OrganizationId, request.OrganizationId, JsonConvert.SerializeObject(request),
-                 Request);
+                 _userDetails);
                 if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");

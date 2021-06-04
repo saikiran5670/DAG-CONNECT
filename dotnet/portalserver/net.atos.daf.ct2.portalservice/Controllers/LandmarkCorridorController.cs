@@ -30,7 +30,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _corridorServiceClient = corridorServiceClient;
             _auditHelper = auditHelper;
             _corridorMapper = new CorridorMapper();
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpGet]
@@ -112,7 +111,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                            "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "AddRouteCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responsecode.Conflict)
@@ -131,7 +130,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "AddRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
 
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -165,7 +164,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                            "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "AddExistingTripCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responsecode.Conflict)
@@ -184,22 +183,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "AddExistingTripCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
 
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
 
-
         [HttpPost]
         [Route("updateexistingtripcorridor")]
-
         public async Task<IActionResult> UpdateExistingTripCorridor(ExistingTripCorridor request)
         {
             try
             {
-
                 if (request.OrganizationId == 0 && request.Id == 0)
                 {
                     //bool hasRights = await HasAdminPrivilege();
@@ -218,7 +214,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                            "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "UpdateExistingTripCorridor method in Landmark Corridor controller", data.CorridorID, data.CorridorID, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responsecode.Conflict)
@@ -229,15 +225,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(500, data.Message);
                 }
-
             }
-
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "UpdateExistingTripCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
 
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -264,7 +258,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                          "DeleteCorridor method in Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
                     return Ok(data);
                 }
                 else if (data != null && data.Code == Responsecode.NotFound)
@@ -282,7 +276,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "DeleteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -312,7 +306,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                            "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "UpdateRouteCorridor method in Landmark Corridor controller", data.Response.CorridorID, data.Response.CorridorID, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                     return Ok(data.Response);
                 }
                 else if (data != null && data.Response.Code == Responsecode.Conflict)
@@ -329,7 +323,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",
                                          "Corridor service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "UpdateRouteCorridor method in Landmark Corridor controller", 0, 0, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
             }
