@@ -27,6 +27,7 @@ export class ReportsPreferencesComponent implements OnInit {
   showReport: boolean = false;
   editFlag: boolean = false;
   tripReportId = 1; //- Trip report
+  reqField: boolean = false;
 
   constructor(  private reportService: ReportService, ) { }
 
@@ -64,6 +65,7 @@ export class ReportsPreferencesComponent implements OnInit {
       this.initData = data["userPreferences"];
       this.initData = this.getTranslatedColumnName(this.initData);
       this.setColumnCheckbox();
+      this.validateRequiredField();
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
@@ -128,9 +130,22 @@ export class ReportsPreferencesComponent implements OnInit {
   masterToggleForColumns(){
     if(this.isAllSelectedForColumns()){
       this.selectionForColumns.clear();
+      this.validateRequiredField();
     }else{
       this.dataSource.data.forEach(row => { this.selectionForColumns.select(row) });
+      this.validateRequiredField();
     }
+  }
+
+  validateRequiredField(){
+    let _flag = true;
+    if(this.selectionForColumns.selected.length > 0){
+      let _search = this.selectionForColumns.selected.filter(i => (i.key == 'da_report_details_vehiclename' || i.key == 'da_report_details_vin' || i.key == 'da_report_details_registrationnumber'));
+      if(_search.length){
+        _flag = false;
+      }
+    }
+    this.reqField = _flag;
   }
 
   checkboxLabelForColumns(row?: any): string{
@@ -149,10 +164,12 @@ export class ReportsPreferencesComponent implements OnInit {
   onCancel(){
     this.editFlag = false;
     this.setColumnCheckbox();
+    this.validateRequiredField();
   }
 
   onReset(){
     this.setColumnCheckbox();
+    this.validateRequiredField();
   }
 
   onConfirm(){
@@ -199,6 +216,10 @@ export class ReportsPreferencesComponent implements OnInit {
       return this.translationData.lblDetailssavesuccessfully;
     else
       return ("Details save successfully");
+  }
+
+  checkboxClicked(event: any, rowData: any){
+    this.validateRequiredField();
   }
 
 }
