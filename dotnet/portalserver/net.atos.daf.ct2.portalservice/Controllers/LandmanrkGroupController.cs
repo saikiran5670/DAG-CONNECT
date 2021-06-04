@@ -27,9 +27,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _groupServiceclient = groupService;
             _auditHelper = auditHelper;
             _mapper = new Mapper();
-
-            _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpPost]
@@ -77,7 +74,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in Group controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(result);
                 }
                 else
@@ -152,7 +149,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(result);
                 }
                 else
@@ -207,7 +204,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Delete method in POI controller", GroupId, GroupId, JsonConvert.SerializeObject(GroupId),
-                    Request);
+                    _userDetails);
                     return Ok(result);
                 }
                 else

@@ -41,8 +41,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
-            
         }
 
         [HttpGet]
@@ -117,7 +115,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(poiResponse);
                 }
                 else
@@ -131,7 +129,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
@@ -181,7 +179,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(poiResponse);
                 }
                 else
@@ -195,7 +193,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
@@ -276,7 +274,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
-                    Request);
+                    _userDetails);
                     poiResponse.Message = "POI's has been deleted";
                     return Ok(poiResponse);
                 }
@@ -291,7 +289,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
-                  Request);
+                  _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
