@@ -91,6 +91,13 @@ namespace net.atos.daf.ct2.alert.repository
                     urgencylevel.AlertId = alertId;
                     int urgencylevelRefId = await CreateAlertUrgencyLevelRef(urgencylevel);
                     urgencylevel.Id = urgencylevelRefId;
+                    foreach (var alertTimingDetail in urgencylevel.AlertTimingDetails)
+                    {
+                        alertTimingDetail.RefId = urgencylevel.Id;
+                        alertTimingDetail.Type = AlertTimingDetailType.AlertBasicFilter.ToString();
+                        int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                        alertTimingDetail.Id = alertTimingDetailId;
+                    }
 
                     foreach (var alertfilter in urgencylevel.AlertFilterRefs)
                     {
@@ -471,11 +478,25 @@ namespace net.atos.daf.ct2.alert.repository
                     {
                         urgencylevel.AlertId = alertId;
                         int urgencylevelRefId = await CreateAlertUrgencyLevelRef(urgencylevel);
+                        foreach (var alertTimingDetail in urgencylevel.AlertTimingDetails)
+                        {
+                            alertTimingDetail.RefId = urgencylevelRefId;
+                            alertTimingDetail.Type = AlertTimingDetailType.AlertBasicFilter.ToString();
+                            int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                            alertTimingDetail.Id = alertTimingDetailId;
+                        }
                         foreach (var alertfilter in urgencylevel.AlertFilterRefs)
                         {
                             alertfilter.AlertId = alertId;
                             alertfilter.AlertUrgencyLevelId = urgencylevelRefId;
                             int alertfilterRefId = await CreateAlertFilterRef(alertfilter);
+                            foreach (var alertTimingDetail in alertfilter.AlertTimingDetails)
+                            {
+                                alertTimingDetail.RefId = alertfilterRefId;
+                                alertTimingDetail.Type = AlertTimingDetailType.AlertAdvanceFilter.ToString();
+                                int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                                alertTimingDetail.Id = alertTimingDetailId;
+                            }
                         }
                     }
                     if (alert.Notifications.Count() > 0)
