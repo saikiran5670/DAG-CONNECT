@@ -97,7 +97,10 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetDriversActivity(DriverActivityFilter);
         }
-
+        public async Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN)
+        {
+            return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
+        }
         #endregion
     }
 }
