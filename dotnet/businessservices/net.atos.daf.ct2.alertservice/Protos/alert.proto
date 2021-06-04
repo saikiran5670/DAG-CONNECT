@@ -124,6 +124,7 @@ message AlertFilterRefRequest
 	string State=14;
 	int64 CreatedAt=15;
 	int64 ModifiedAt=16;
+	repeated AlertTimingDetailRequest AlertTimingDetail=17;
 }
 
 message AlertLandmarkRefRequest
@@ -171,7 +172,7 @@ message NotificationRequest
 	int32 ModifiedBy=11;
 	repeated NotificationRecipientRequest NotificationRecipients=12;
 	repeated NotificationLimitRequest NotificationLimits=13;
-	repeated NotificationAvailabilityPeriodRequest NotificationAvailabilityPeriods=14;
+	repeated AlertTimingDetailRequest AlertTimingDetail=14;
 }
 
 message NotificationAvailabilityPeriodRequest
@@ -257,4 +258,19 @@ message NotificationRecipientResponse
 	repeated NotificationRecipientRequest NotificationRecipient=1;
 	ResponseCode Code=2;
     string Message = 3;
+}
+
+message AlertTimingDetailRequest
+{
+	int32 Id = 1;
+	string Type=2;
+	int32 RefId = 3;
+	repeated bool DayType=4;
+	string PeriodType=5;
+	int64 StartDate=6;
+	int64 EndDate=7;
+	string State=8;
+	int64 CreatedAt=9;
+	int64 ModifiedAt=10;
+
 }

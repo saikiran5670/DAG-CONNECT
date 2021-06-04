@@ -192,7 +192,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.reportschedular", "corecomponents\net.atos.daf.ct2.reportschedular\net.atos.daf.ct2.reportschedular.csproj", "{A0792B02-6034-4A2E-8DE7-84F04CD60512}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.reportscheduler", "corecomponents\net.atos.daf.ct2.reportschedular\net.atos.daf.ct2.reportscheduler.csproj", "{A0792B02-6034-4A2E-8DE7-84F04CD60512}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.reportschedularservice", "businessservices\net.atos.daf.ct2.reportschedularservice\net.atos.daf.ct2.reportschedularservice.csproj", "{3CF8A506-28A8-437F-B0DD-D7918EF840BB}"
 EndProject
