@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.map
         //Task<List<LookupAddress>> AddLookupAddress(List<LookupAddress> lookupAddresses);
 
         //  Task<LookupAddress> AddMapAddress(LookupAddress lookupAddress);
-        void InitializeMapGeocoder(string appId, string appCode);
+        void InitializeMapGeocoder(HereMapConfiguration apiConfiguration);
         Task<LookupAddress> GetMapAddress(LookupAddress lookupAddress);
     }
 }

@@ -9,4 +9,17 @@ service ReportSchedularService{
   
 }
 
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message IdRequest {
+  int32 ReportScheulerId = 1;  
+}
+
 

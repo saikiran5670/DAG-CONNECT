@@ -31,11 +31,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
             _mapper = new Mapper();
         }
 
         #region Select User Preferences
+
+        [HttpGet]
+        [Route("getreportdetails")]
+        public async Task<IActionResult> GetReportDetails()
+        {
+            try
+            {
+                var response = await _reportServiceClient.GetReportDetailsAsync(new TempPara { TempID = 0 });
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == Responsecode.Success)
+                    return Ok(response);
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportConstants.GET_REPORT_DETAILS_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
+                //  Request);
+                // check for fk violation
+                if (ex.Message.Contains(_socketException))
+                {
+                    return StatusCode(500, "Internal Server Error.(02)");
+                }
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         [HttpGet]
         [Route("getuserpreferencereportdatacolumn")]
         public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId)
@@ -122,7 +153,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     case Responsecode.Success:
                         await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
-                                 Request);
+                                 _userDetails);
                         return Ok(response);
                     case Responsecode.Failed:
                         return StatusCode((int)response.Code, response.Message);
@@ -137,7 +168,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"createuserpreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
-                                  Request);
+                                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.POI;
@@ -21,20 +22,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private ILog _logger;
         private readonly POIService.POIServiceClient _poiServiceClient;
+        private readonly MapService.MapServiceClient _mapServiceClient;
+
         private readonly AuditHelper _auditHelper;
         private readonly Mapper _mapper;
         private readonly AccountPrivilegeChecker _privilegeChecker;
         private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
 
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
-            Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+                                    AccountPrivilegeChecker privilegeChecker,
+                                    IHttpContextAccessor _httpContextAccessor, 
+                                    SessionHelper sessionHelper,
+                                    MapService.MapServiceClient mapServiceClient) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
+            _mapServiceClient = mapServiceClient;
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
 
         [HttpGet]
@@ -89,6 +95,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     request.OrganizationId = GetContextOrgId();
                 }
                 var poiRequest = new POIRequest();
+               // var mapRequest = new GetMapRequest() { Latitude = request.Latitude, Longitude = request.Longitude };
+              //var lookupAddress=await  _mapServiceClient.GetMapAddressAsync(mapRequest);
+
                 request.State = "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
                 poiservice.POIResponse poiResponse = await _poiServiceClient.CreatePOIAsync(poiRequest);
@@ -106,7 +115,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(poiResponse);
                 }
                 else
@@ -120,7 +129,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Create  method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
@@ -170,7 +179,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(poiResponse);
                 }
                 else
@@ -184,7 +193,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {
@@ -265,7 +274,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
-                    Request);
+                    _userDetails);
                     poiResponse.Message = "POI's has been deleted";
                     return Ok(poiResponse);
                 }
@@ -280,7 +289,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                  "POI service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "DeletePOIBulk method in POI controller", 0, 0, JsonConvert.SerializeObject(ids),
-                  Request);
+                  _userDetails);
                 // check for fk violation
                 if (ex.Message.Contains(_socketException))
                 {

@@ -71,19 +71,19 @@ namespace net.atos.daf.ct2.email
                     case EmailEventType.CreateAccount:
                         Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ messageRequest.TokenSecret }");
 
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, messageRequest.accountInfo.OrganizationName, setUrl.AbsoluteUri);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, messageRequest.AccountInfo.OrganizationName, setUrl.AbsoluteUri);
                         break;
                     case EmailEventType.ResetPassword:
                         Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ messageRequest.TokenSecret }");
                         Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ messageRequest.TokenSecret }");
 
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
                         break;
                     case EmailEventType.ChangeResetPasswordSuccess:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri);
                         break;
                     case EmailEventType.PasswordExpiryNotification:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
                 }
 

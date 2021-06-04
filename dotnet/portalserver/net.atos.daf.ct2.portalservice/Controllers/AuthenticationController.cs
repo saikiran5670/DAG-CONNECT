@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             await _auditHelper.AddLogs(DateTime.Now, "Authentication Component",
                                     "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                     "RemoveRoles  method in Authentication controller", 0, response.AccountInfo.Id, JsonConvert.SerializeObject(identityRequest),
-                                     Request);
+                                     new HeaderObj() { AccountId = accIdentity.AccountInfo.Id });
 
 
                             return Ok(accIdentity);
@@ -166,7 +166,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Authentication Component",
                 "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
-                 Request);
+                 new HeaderObj());
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
         }

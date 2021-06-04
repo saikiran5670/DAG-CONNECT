@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -17,6 +21,7 @@ using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.driverservice;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.organizationservice;
 using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.poigeofences;
@@ -57,6 +62,7 @@ namespace net.atos.daf.ct2.portalservice
             var landmarkservice = Configuration["ServiceConfiguration:landmarkservice"];
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
             var reportservice = Configuration["ServiceConfiguration:reportservice"];
+            var mapservice = Configuration["ServiceConfiguration:mapservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -207,6 +213,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(reportservice);
             });
+            services.AddGrpcClient<MapService.MapServiceClient>(o =>
+            {
+                o.Address = new Uri(mapservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
@@ -267,6 +277,7 @@ namespace net.atos.daf.ct2.portalservice
             });
             app.UseRouting();
             app.UseSession();
+            app.UseSessionValidator();
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
