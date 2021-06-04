@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: featureactivationservice-auto
+spec:
+  selector:
+    matchLabels:
+      run: featureactivationservice-auto
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: featureactivationservice-auto
+    spec:
+      containers:
+      - name: featureactivationservice-auto
+        image: dafdev017756.azurecr.io/featureactivationservice-auto
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: featureactivationservice-auto
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: featureactivationservice-auto
