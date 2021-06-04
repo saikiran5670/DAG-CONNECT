@@ -183,11 +183,16 @@
                         <!-- <mat-form-field appearance="outline" class="full-width"> -->
                             <div fxLayout="row" fxLayoutGap = "6px">
                             <input type="number" min="0" max="60" matInput formControlName="emailEach" class="textField">
-                            <mat-select appearance="outline" placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="minutes">
+                            <mat-form-field appearance="outline" class="areawidth">
+                            <mat-select placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="minutes">
                                 <mat-option>
                                     Minutes
                                 </mat-option>
+                                <mat-option>
+                                    Hours
+                                </mat-option>
                             </mat-select>
+                        </mat-form-field>
                         </div>
                         <!-- </mat-form-field> -->
                     </div>

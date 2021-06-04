@@ -340,11 +340,12 @@ export class RouteCalculatingComponent implements OnInit {
     this.initMap();
   }
 
+  defaultLayers : any;
   initMap() {
-    let defaultLayers = this.platform.createDefaultLayers();
+    this.defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
     this.hereMap = new H.Map(this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.vector.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
@@ -355,7 +356,7 @@ export class RouteCalculatingComponent implements OnInit {
     // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
     // Create the default UI components
-    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    var ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
   }
@@ -405,11 +406,25 @@ export class RouteCalculatingComponent implements OnInit {
 
   transportDataCheckedFn(_checked){
     this.transportDataChecked = _checked;
+    if(_checked){
+      this.hereMap.addLayer(this.defaultLayers.vector.normal.truck)
+    }
+    else{
+      this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck)
+
+    }
   }
 
   
   trafficFlowCheckedFn(_checked){
     this.trafficFlowChecked = _checked;
+    if(_checked){
+      this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic)
+    }
+    else{
+      this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic)
+
+    }
   }
 
   hazardousMaterial = [];

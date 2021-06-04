@@ -22,4 +22,10 @@ namespace net.atos.daf.ct2.organization.entity
         public List<OrganizationResponse> OrganizationList { get; set; }
 
     }
+
+    public class OrganizationContextListResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

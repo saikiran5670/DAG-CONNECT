@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.reportschedularservice
+namespace net.atos.daf.ct2.reportschedulerservice
 {
     public class Program
     {

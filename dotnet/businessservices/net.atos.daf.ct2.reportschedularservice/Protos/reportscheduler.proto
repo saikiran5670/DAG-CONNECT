@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-option csharp_namespace = "net.atos.daf.ct2.reportschedularservice";
+option csharp_namespace = "net.atos.daf.ct2.reportschedulerservice";
 
-package reportschedular;
+package reportscheduler;
 
 // The greeting service definition.
-service ReportSchedularService{
+service ReportSchedulerService{
   
 }
 

@@ -31,7 +31,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _userDetails = _auditHelper.GetHeaderData(httpContextAccessor.HttpContext.Request);
             _mapper = new Mapper();
         }
 
@@ -154,7 +153,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     case Responsecode.Success:
                         await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
-                                 Request);
+                                 _userDetails);
                         return Ok(response);
                     case Responsecode.Failed:
                         return StatusCode((int)response.Code, response.Message);
@@ -169,7 +168,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  $"createuserpreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
-                                  Request);
+                                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
