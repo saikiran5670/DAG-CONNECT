@@ -65,6 +65,7 @@ emailCount : number = 0;
 wsCount : number = 0;
 emailLabel : any;
 wsLabel: any;
+limitButton: any;
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -103,7 +104,10 @@ wsLabel: any;
         notifyPeriod: ['A'],
         emailRecipientLabel: [''],
         emailContactModes: [''],
-        receipientId: []
+        receipientId: [],
+        retrictTo: ['1'],
+        emailEach: ['1'],
+        minutes: ['1']
       });
 
     }
@@ -119,7 +123,8 @@ wsLabel: any;
         notifyPeriodweb: ['A'],        
         webRecipientLabel: [''],
         webContactModes: [''],
-        receipientId: []
+        receipientId: [],
+        widthInput: ['']
       });
 
     }
@@ -276,6 +281,10 @@ if(isButtonClicked){
 
   onRadioButtonChange(event: any){
     this.radioButtonVal = event.value;
+  }
+
+  onLimitationButtonChange(event: any){
+    this.limitButton = event.value;
   }
 
   onClickAdvancedFilter(){

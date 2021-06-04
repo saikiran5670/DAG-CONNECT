@@ -14,5 +14,8 @@
         public const string GET_VIN_VISIBILITY_FAILURE_MSG = "No vehicle found for Account Id {0} and Organization Id {1}";
         public const string GET_VIN_TRIP_NOTFOUND_MSG = "No trip for vehicle found for Account Id {0} and Organization Id {1}. for last 90 days.";
         public const string GET_VIN_TRIP_NORESULTFOUND_MSG = "No Result Found";
+
+        public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
+        public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
     }
 }

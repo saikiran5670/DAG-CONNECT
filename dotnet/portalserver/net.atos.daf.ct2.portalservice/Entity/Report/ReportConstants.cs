@@ -13,6 +13,8 @@
         public const string ACCOUNT_REQUIRED_MSG = "Account id is required.";
         public const string ORGANIZATION_REQUIRED_MSG = "Organization id is required.";
 
+        public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
+        public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
 
         #region Trip Details Report
         public const string GET_TRIP_VALIDATION_STARTDATE_MSG = "Invalid start date.";

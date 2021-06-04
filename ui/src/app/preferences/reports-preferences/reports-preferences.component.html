@@ -1,4 +1,13 @@
-<mat-card class='mat-elevation-z no-padding margin-bottom-xlg margin-top-20'>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg margin-top-20 background-transparent'>
+  <div *ngIf='updateMsgVisible' fxLayout="row" fxLayoutAlign="center center"
+    style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+      {{ displayMessage }}
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+    </div>
+  </div>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showReport" (opened)="showReport == true" (closed)="showReport == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -27,9 +36,9 @@
               </mat-checkbox>
             </mat-cell>
           </ng-container>
-          <ng-container matColumnDef="name">
+          <ng-container matColumnDef="translatedName">
             <mat-header-cell *matHeaderCellDef >{{ translationData.lblTripReportDetails || 'Trip report Details' }} <span style='font-size: 15px; font-weight: normal; margin-left: 5px;'>({{ translationData.lblTripcolumnviewsettings || 'Trip column view settings' }})</span></mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ getName(row.name) }}</mat-cell>
+            <mat-cell *matCellDef="let row">{{ row.translatedName }}</mat-cell>
           </ng-container>
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
