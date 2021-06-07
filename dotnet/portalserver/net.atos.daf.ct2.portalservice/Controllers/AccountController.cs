@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -44,7 +45,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _mapper = new Mapper();
             _cache = cache;
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
             _privilegeChecker = privilegeChecker;
         }
         #endregion
@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Create Account method in Account controller", 0, accountResponse.Account.Id, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                     return Ok(response);
                 }
                 else
@@ -137,7 +137,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "Create Account method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
-                                           Request);
+                                           _userDetails);
 
                 _logger.Error(null, ex);
                 // check for fk violation
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Update Account method in Account controller", accountResponse.Account.Id, accountResponse.Account.Id, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                     return Ok(request);
                 }
                 else
@@ -231,7 +231,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                            "Update Account method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                            Request);
+                                            _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -264,7 +264,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "Update Account method in Account controller", AccountId, AccountId, JsonConvert.SerializeObject(accountRequest),
-                                            Request);
+                                            _userDetails);
                     return Ok(accountRequest);
                 }
                 else
@@ -275,7 +275,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                          "Delete Account method in Account controller", AccountId, AccountId, JsonConvert.SerializeObject(accountRequest),
-                                          Request);
+                                          _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -301,7 +301,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                              "ChangePassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(request),
-                                              Request);//accountid requred here
+                                              _userDetails);//accountid requred here
                     return Ok("Password has been changed.");
 
                 }
@@ -319,7 +319,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "ChangePassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(request),
-                                              Request);//accountid requred here
+                                              _userDetails);//accountid requred here
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -432,7 +432,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                             "AddAccountOrg  method in Account controller", request.OrganizationId, response.AccountOrgId, JsonConvert.SerializeObject(request),
-                                             Request);
+                                             _userDetails);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -440,7 +440,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "AddAccountOrg  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
-                                             Request);
+                                             _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -471,7 +471,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "ResetPasswordInitiate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                           JsonConvert.SerializeObject(request), Request);
+                                           JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(response.Message);
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
@@ -484,7 +484,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "ResetPasswordInitiate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                          JsonConvert.SerializeObject(request), Request);
+                                          JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while initiating reset password process.");
             }
@@ -511,7 +511,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "GetResetPasswordTokenStatus method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                        JsonConvert.SerializeObject(request), Request);
+                                        JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(response.Message);
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
@@ -522,7 +522,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "GetResetPasswordTokenStatus  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                        JsonConvert.SerializeObject(request), Request);
+                                        JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while fetching reset password token status.");
             }
@@ -550,7 +550,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "ResetPassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                        JsonConvert.SerializeObject(request), Request);
+                                        JsonConvert.SerializeObject(request), _userDetails);
                     return Ok("Reset password process is successfully completed.");
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.BadRequest)
@@ -565,7 +565,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "ResetPassword  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                        JsonConvert.SerializeObject(request), Request);
+                                        JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while reseting account password");
             }
@@ -592,7 +592,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                         "ResetPasswordInvalidate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                        JsonConvert.SerializeObject(request), Request);
+                                        JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(response.Message);
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
@@ -605,7 +605,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "ResetPasswordInvalidate  method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                        JsonConvert.SerializeObject(request), Request);
+                                        JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error while invalidating reset password invalidate process.");
             }
@@ -621,7 +621,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     AccountId = request.AccountId,
                     RoleId = request.RoleId,
-                    OrganizationId = request.OrganizationId,
+                    OrganizationId = GetUserSelectedOrgId(),
                     LanguageCode = request.LanguageCode,
                     ContextOrgId = GetContextOrgId()
                 };
@@ -674,7 +674,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "SaveProfilePicture  method in Account controller", accountBlobRequest.AccountId, accountBlobRequest.AccountId, JsonConvert.SerializeObject(accountBlobRequest),
-                                            Request);
+                                            _userDetails);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -682,7 +682,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "SaveProfilePicture  method in Account controller", accountBlobRequest.AccountId, accountBlobRequest.AccountId, JsonConvert.SerializeObject(accountBlobRequest),
-                                           Request);
+                                           _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -793,7 +793,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                          "CreateAccountPreference  method in Account controller", 0, preference.AccountPreference.Id, JsonConvert.SerializeObject(request),
-                                          Request);
+                                          _userDetails);
 
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
@@ -807,7 +807,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                         "CreateAccountPreference  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
-                                         Request);
+                                         _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -841,7 +841,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                        "UpdateAccountPreference  method in Account controller", request.Id, preference.AccountPreference.Id, JsonConvert.SerializeObject(request),
-                                        Request);
+                                        _userDetails);
                     return Ok(_mapper.ToAccountPreference(preference.AccountPreference));
                 }
                 else
@@ -854,7 +854,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                        "UpdateAccountPreference  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                        Request);
+                                        _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -883,7 +883,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                      "DeleteAccountPreference  method in Account controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request),
-                                      Request);
+                                      _userDetails);
 
                     return Ok("Preference Deleted.");
                 }
@@ -901,7 +901,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                      "DeleteAccountPreference  method in Account controller", preferenceId, preferenceId, JsonConvert.SerializeObject(request),
-                                      Request);
+                                      _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -980,7 +980,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                    "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                    "CreateVehicleAccessRelationship  method in Account controller", request.Id, 0, JsonConvert.SerializeObject(request),
-                                    Request);
+                                    _userDetails);
 
                     return Ok(request);
                 }
@@ -994,7 +994,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                      "CreateVehicleAccessRelationship  method in Account controller", request.Id, 0, JsonConvert.SerializeObject(request),
-                                      Request);
+                                      _userDetails);
 
                 _logger.Error(null, ex);
                 // check for fk violation
@@ -1026,7 +1026,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                     "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                     "UpdateVehicleAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                     Request);
+                                     _userDetails);
                     return Ok(request);
                 }
                 else
@@ -1039,7 +1039,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                    "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                    "UpdateVehicleAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                    Request);
+                                    _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1073,7 +1073,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                    "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                    "DeleteVehicleAccessRelationship  method in Account controller", deleteRequest.Id, deleteRequest.Id, JsonConvert.SerializeObject(deleteRequest),
-                                    Request);
+                                    _userDetails);
                     return Ok(true);
                 }
                 else
@@ -1086,7 +1086,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                  "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                  "DeleteVehicleAccessRelationship  method in Account controller", deleteRequest.Id, deleteRequest.Id, JsonConvert.SerializeObject(deleteRequest),
-                                  Request);
+                                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, string.Empty);
             }
@@ -1111,7 +1111,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                 "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                 "CreateAccountAccessRelationshipAsync  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
-                                 Request);
+                                 _userDetails);
                     return Ok(request);
                 }
                 else
@@ -1124,7 +1124,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                "CreateAccountAccessRelationshipAsync  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
-                                Request);
+                                _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1154,7 +1154,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                "UpdateAccountAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                                Request);
+                                _userDetails);
                     return Ok(request);
                 }
                 else
@@ -1167,7 +1167,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                               "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                               "UpdateAccountAccessRelationship  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                               Request);
+                               _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1200,7 +1200,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                               "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                               "DeleteAccountAccessRelationship  method in Account controller", deleteRequest.Id, deleteRequest.Id, JsonConvert.SerializeObject(deleteRequest),
-                               Request);
+                               _userDetails);
                     return Ok(true);
                 }
                 else
@@ -1213,7 +1213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                              "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                              "DeleteAccountAccessRelationship  method in Account controller", deleteRequest.Id, deleteRequest.Id, JsonConvert.SerializeObject(deleteRequest),
-                              Request);
+                              _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, string.Format(PortalConstants.ResponseError.INTERNAL_SERVER_ERROR, "02"));
             }
@@ -1322,7 +1322,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                             "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                             "CreateAccountGroup  method in Account controller", 0, response.AccountGroup.Id, JsonConvert.SerializeObject(request),
-                             Request);
+                             _userDetails);
 
 
                     return Ok(_mapper.ToAccountGroup(response));
@@ -1341,7 +1341,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                           "CreateAccountGroup  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
-                           Request);
+                           _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500);
             }
@@ -1366,7 +1366,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                          "UpdateAccountGroup  method in Account controller", request.Id, response.AccountGroup.Id, JsonConvert.SerializeObject(request),
-                          Request);
+                          _userDetails);
                     return Ok(_mapper.ToAccountGroup(response));
                 }
                 else if (response != null && response.Code == AccountBusinessService.Responcecode.Conflict)
@@ -1383,7 +1383,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                         "UpdateAccountGroup  method in Account controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                         Request);
+                         _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -1408,7 +1408,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                        "DeleteAccountGroup  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
-                        Request);
+                        _userDetails);
                     return Ok(response.AccountGroup);
                 }
                 else
@@ -1421,7 +1421,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                      "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                      "DeleteAccountGroup  method in Account controller", 0, request.Id, JsonConvert.SerializeObject(request),
-                      Request);
+                      _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -1452,7 +1452,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                    "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                    "AddAccountsToGroup  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
-                    Request);//verify
+                    _userDetails);//verify
                     return Ok(true);
                 }
                 else
@@ -1465,7 +1465,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                   "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                   "AddAccountsToGroup  method in Account controller", 0, 0, JsonConvert.SerializeObject(request),
-                   Request);//verify
+                   _userDetails);//verify
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1496,7 +1496,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                          "DeleteAccountFromGroup  method in Account controller", id, id, JsonConvert.SerializeObject(request),
-                          Request);
+                          _userDetails);
                     return Ok(true);
                 }
                 else
@@ -1509,7 +1509,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                          "DeleteAccountFromGroup  method in Account controller", id, id, JsonConvert.SerializeObject(request),
-                          Request);
+                          _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1617,7 +1617,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                          "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                          "AddRoles  method in Account controller", roles.AccountId, roles.AccountId, JsonConvert.SerializeObject(request),
-                          Request);
+                          _userDetails);
                     return Ok(true);
                 }
                 else
@@ -1630,7 +1630,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                         "AddRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
-                         Request);
+                         _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1661,7 +1661,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                         "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                         "RemoveRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
-                         Request);
+                         _userDetails);
                     return Ok(true);
                 }
                 else
@@ -1674,7 +1674,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                        "Account service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                        "RemoveRoles  method in Account controller", request.AccountId, request.AccountId, JsonConvert.SerializeObject(request),
-                        Request);
+                        _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(PortalConstants.ExceptionKeyWord.FK_CONSTRAINT))
@@ -1744,7 +1744,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                            "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                            "GenerateSSOToken method in Account controller", ssoRequest.AccountID, ssoRequest.AccountID,
-                                           JsonConvert.SerializeObject(ssoRequest), Request);
+                                           JsonConvert.SerializeObject(ssoRequest), _userDetails);
                     return Ok(response.Token);
                 }
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
@@ -1759,7 +1759,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "GenerateSSOToken method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                          null, Request);
+                                          null, _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal server error");
             }
@@ -1777,7 +1777,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Session org context switching
-
+        
         [HttpPost]
         [Route("setuserselection")]
         public async Task<IActionResult> SetUserSelection([FromBody] AccountInfoRequest request)
@@ -1799,7 +1799,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "SetAccountInfo method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                          null, Request);
+                                          null, _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error occurred while saving account information.");
             }
@@ -1854,20 +1854,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                          null, Request);
+                                          null, _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
             }
         }
 
+        [AllowAnonymous]
         [HttpGet]
-        [Route("~/getsessioninfo")]
+        [Route("getsessioninfo")]
         public async Task<IActionResult> GetSessionInfo()
         {
             await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                                           "Account controller", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                           "GetSessionInfo method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
-                                          _userDetails.ToString(), Request);
+                                          _userDetails.ToString(), _userDetails);
             return Ok(_userDetails);
         }
 

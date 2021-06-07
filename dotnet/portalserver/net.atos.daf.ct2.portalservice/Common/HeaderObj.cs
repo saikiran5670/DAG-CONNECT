@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.portalservice.Common
         public int RoleId { get; set; }
         public int AccountId { get; set; }
         public int OrgId { get; set; }
-        public int ContextOrgId => OrgId;
+        public int ContextOrgId { get; set; }
 
         public override string ToString()
         {

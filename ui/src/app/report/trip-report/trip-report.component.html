@@ -209,7 +209,7 @@
       </div>
       <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
         <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+          <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblFrom || 'From' }}: </span>
@@ -222,27 +222,33 @@
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
               </span>
             </div>
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
               </span>
             </div>
-          </div>
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='!showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblTo || 'To' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
               </span>
             </div>
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          </div>
+          <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <span>{{ translationData.lblTo || 'To' }}: </span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+              </span>
+            </div>
+            <div *ngIf='showField.vehicleName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
               </span>
             </div>
-            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <div *ngIf='showField.regNo' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
                 <span>{{ translationData.lblRegPlateNumber || 'Reg. Plate Number' }}: </span>
                 <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
@@ -298,12 +304,12 @@
             <ng-container matColumnDef="distance">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{ translationData.lblkm || 'km' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.distance != '' ? row.distance : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="idleDuration">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.idleDuration != '' ? row.idleDuration : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="averageSpeed">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ translationData.lblkmh || 'km/h' }})</span>
@@ -333,7 +339,7 @@
             <ng-container matColumnDef="drivingTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime || 'Driving Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.drivingTime != '' ? row.drivingTime : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="alert">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAlerts || 'Alerts' }}

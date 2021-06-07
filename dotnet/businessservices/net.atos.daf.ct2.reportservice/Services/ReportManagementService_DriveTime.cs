@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using ReportComponent = net.atos.daf.ct2.reports;
 
 namespace net.atos.daf.ct2.reportservice.Services
@@ -98,7 +99,59 @@ namespace net.atos.daf.ct2.reportservice.Services
                 });
             }
         }
+        public override async Task<DriverListAndVehicleDetailsResponse> GetDriverActivityParameters(IdRequestForDriverActivity request, ServerCallContext context)
+        {
+            ///1. Call GetVehicleByAccountVisibility from vesibility to pull the list of VIN
+            ///2. Pull the drivers details based on VIN
+            ///3. Fill the DriverActivityParameters object and return it.
+            DriverListAndVehicleDetailsResponse response = new DriverListAndVehicleDetailsResponse();
+            try
+            {
+                var vehicleDeatilsWithAccountVisibility =
+                                   await _visibilityManager.GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
 
+                if (vehicleDeatilsWithAccountVisibility.Count() > 0)
+                {
+                    string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                    response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
+
+                    List<string> vinList = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
+                    //string VINs = "'" + string.Join("','", vinList) + "'";
+                    var lstDriver = await _reportManager.GetDriversByVIN(request.StartDateTime, request.EndDateTime, vinList);
+
+                    if (lstDriver.Count() > 0)
+                    {
+                        string resDrivers = JsonConvert.SerializeObject(lstDriver);
+                        response.DriverList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromDriverTimeDetails>>(resDrivers));
+                    }
+                    else
+                    {
+                        VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
+                        response.DriverList.Add(vehicleFromDriverTimeDetails);
+                    }
+                }
+                else
+                {
+                    VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
+                    response.DriverList.Add(vehicleFromDriverTimeDetails);
+                    VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
+                    response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                }
+
+                response.Code = Responsecode.Success;
+                response.Message = Responsecode.Success.ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new DriverListAndVehicleDetailsResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetDriverActivityParameters failed due to - " + ex.Message
+                });
+            }
+            return await Task.FromResult(response);
+        }
         #endregion
     }
 }

@@ -13,5 +13,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter);
         Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
+        Task<IEnumerable<ReportDetails>> GetReportDetails();
+        Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN);
     }
 }

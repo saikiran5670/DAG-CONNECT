@@ -9,9 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.reportschedularservice.Services;
+using net.atos.daf.ct2.reportschedulerservice.Services;
+using net.atos.daf.ct2.reportscheduler;
+using net.atos.daf.ct2.reportscheduler.repository;
 
-namespace net.atos.daf.ct2.reportschedularservice
+namespace net.atos.daf.ct2.reportschedulerservice
 {
     public class Startup
     {
@@ -41,6 +43,8 @@ namespace net.atos.daf.ct2.reportschedularservice
             {
                 return new PgSQLDataAccess(connectionString);
             });
+            services.AddTransient<IReportSchedulerManager, ReportSchedulerManager>();
+            services.AddTransient<IReportSchedulerRepository, ReportSchedulerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +61,7 @@ namespace net.atos.daf.ct2.reportschedularservice
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<ReportSchedularManagementService>().EnableGrpcWeb()
+                endpoints.MapGrpcService<ReportSchedulerManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
                 endpoints.MapGet("/", async context =>
