@@ -515,12 +515,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
 
-
-                if (string.IsNullOrEmpty(Request.LanguageCode))
-                {
-                    return StatusCode(400, "Language Code is Required");
-                }
-
                 var response = await _translationServiceClient.GetDTCWarningDataAsync(Request);
 
 
