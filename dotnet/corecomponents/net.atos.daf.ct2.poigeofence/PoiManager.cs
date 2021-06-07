@@ -48,5 +48,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.GetAllTripDetails(tripEntityRequest);
         }
+
+        public async Task<TripAddressDetails> UpdateTripArddress(TripAddressDetails tripAddressDetails) {
+
+            return await _poiRepository.UpdateTripArddress(tripAddressDetails);
+        }
     }
 }
