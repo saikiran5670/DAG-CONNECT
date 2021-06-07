@@ -201,9 +201,8 @@ namespace net.atos.daf.ct2.reports.repository
                     return new List<LiveFleetPosition>();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
             
