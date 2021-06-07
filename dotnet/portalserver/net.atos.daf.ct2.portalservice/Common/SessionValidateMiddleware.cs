@@ -38,10 +38,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                             await context.Response.WriteAsync("Session not found. Please login first to perform the operation.");
-                        }
-                        else
-                        {
-                            await _next(context);
+                            return;
                         }
                     }
                     else
@@ -51,22 +48,12 @@ namespace net.atos.daf.ct2.portalservice.Common
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                             await context.Response.WriteAsync("Session not found. Please login first to perform the operation.");
-                        }
-                        else
-                        {
-                            await _next(context);
+                            return;
                         }
                     }                    
                 }
-                else
-                {
-                    await _next(context);
-                }
             }
-            else
-            {
-                await _next(context);
-            }
+            await _next(context);
         }
     }
 
