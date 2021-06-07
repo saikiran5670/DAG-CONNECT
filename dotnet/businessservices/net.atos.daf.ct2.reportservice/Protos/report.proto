@@ -14,7 +14,7 @@ rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
-
+rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
 }
 
 enum Responsecode{
@@ -39,9 +39,6 @@ message ReportDetails {
     string Name = 2;
     string Key = 3;
 }
-
-
-
 
 message IdRequest {
   int32 ReportId = 1;
@@ -242,3 +239,22 @@ message IdRequestForDriverActivity {
   }
 // End   Driver Time Managment Report
 
+message CreateEcoScoreProfileRequest {
+  string Name = 1;
+  string Description = 2;
+  bool IsDAFStandard = 3;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 4;
+}
+
+message CreateEcoScoreProfileKPI {
+  int32 Id = 1;
+  double LimitValue = 2;
+  double TargetValue = 3;
+  double LowerValue = 4;
+  double UpperValue = 5;
+}
+
+message CreateEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+}
