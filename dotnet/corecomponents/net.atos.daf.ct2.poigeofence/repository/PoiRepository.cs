@@ -13,6 +13,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
+        private static readonly log4net.ILog _log =
+       log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public PoiRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
         {
             this._dataAccess = _dataAccess;
@@ -688,7 +691,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                throw;
+
+                _log.Error(ex.ToString());
             }
             return await Task.FromResult(tripAddressDetails);
         }
