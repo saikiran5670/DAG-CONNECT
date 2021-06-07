@@ -1,49 +1,69 @@
-<!-- <div appearance="outline">
-    <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-      <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-        <mat-checkbox (change)="onChangeMondaySelection($event)">Monday</mat-checkbox>
-      </div> 
-      <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-        <mat-radio-group [disabled]="!isMondaySelected" formControlName="mondayPeriod">
-          <mat-radio-button style='margin-right: 20px;' value="full_day">
-              {{ translationData.lblFullDay || 'Full Day' }}
-          </mat-radio-button>
-          <mat-radio-button style='margin-right: 20px;' value="custom">
-              {{ translationData.lblCustomPeriod || 'Custom Period' }}
-          </mat-radio-button>
-        </mat-radio-group>
-      </div> 
-    </div>
-    <div *ngIf="alertForm.controls['mondayPeriod'].value == 'custom'"   fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
-      <mat-form-field appearance="outline" class="full-width">
-        <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput>
-      </mat-form-field>
-    </div>
-  </div> -->
 <form [formGroup]="periodSelectionForm">
   <div fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
-<mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectCalender || 'Select Calender' }} </mat-label>  
-<mat-label>{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span class='mandatoryColor'>*</span>
- <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per day)'}}</mat-label>
-</mat-label>  
-<!-- calendar -->
-<div fxLayout="row" class="full-width margin-bottom-sm">
-  <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-    <mat-checkbox >Sunday</mat-checkbox>
-  </div> 
-  <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
-    <mat-radio-group [disabled]="!isMondaySelected" formControlName="mondayPeriod">
-      <mat-radio-button style='margin-right: 20px;' value="full_day">
-          {{ translationData.lblFullDay || 'Full Day' }}
-      </mat-radio-button>
-      <mat-radio-button style='margin-right: 20px;' value="custom">
-          {{ translationData.lblCustomPeriod || 'Custom Period' }}
-      </mat-radio-button>
-    </mat-radio-group>
-  </div> 
-
-</div>
-</div>
+    <mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectCalender || 'Select Calender' }}
+    </mat-label>
+    <mat-label>{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
+        class='mandatoryColor'>*</span>
+      <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per
+        day)'}}</mat-label>
+    </mat-label>
+    <!-- calendar -->
+    <div formArrayName="FormArrayItems">
+      <div *ngFor="let item of weekDays().controls; let periodIndex = index">
+        <div [formGroupName]="periodIndex">
+          <div style="border: 1px solid #000;">
+            <div fxLayout="row" class="full-width margin-bottom-sm">
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-checkbox (change)="onChangeDaySelection($event)" formControlName="daySelection">
+                  {{ days[periodIndex] }}</mat-checkbox>
+              </div>
+              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-radio-group [disabled]="!isMondaySelected" formControlName="fulldayCustom">
+                    <mat-radio-button style='margin-right: 20px;' value="A">
+                        {{ translationData.lblFullDay || 'Full Day' }}
+                    </mat-radio-button>
+                    <mat-radio-button style='margin-right: 20px;' value="C">
+                        {{ translationData.lblCustomPeriod || 'Custom Period' }}
+                    </mat-radio-button>
+                  </mat-radio-group>
+              </div> 
+            </div>
+            <div fxLayout="row" class="full-width margin-bottom-sm">
+              <div fxLayout="column" class="max-width-90-per"  fxLayoutAlign="left">
+                <div formArrayName="FormArrayCustomItems">
+                 <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index">
+                  <div [formGroupName]="customIndex">
+                    <div class="areaWidth max-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                      <div  fxLayout="row" class="full-width margin-bottom-sm">
+                        <div class="halfWidth" fxLayout="column">
+                          <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
+                          <mat-form-field appearance="outline" class="full-width">
+                              <input type="time" matInput formControlName="fromTime" >
+                          </mat-form-field>
+                        </div>
+                        <div class="halfWidth" fxLayout="column">
+                          <mat-label>{{ translationData.lblTo || 'To' }}</mat-label>
+                          <mat-form-field appearance="outline" class="full-width">
+                              <input type="time" matInput formControlName="toTime" >
+                          </mat-form-field>
+                          <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
+                            <mat-icon class="deleteIcon">delete_outline</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 </div>
+                </div> 
+              </div>   
+              <div  fxLayout="column" class="max-width-10-per"  fxLayoutAlign="left">
+                <button class='no-margin' mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex)'>
+                  {{ translationData.lblAdd || 'Add' }}</button>
+              </div>
+            </div>
+         </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </form>
-
-
