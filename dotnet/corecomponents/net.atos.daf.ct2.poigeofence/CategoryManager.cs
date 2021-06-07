@@ -42,5 +42,10 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _categoryRepository.BulkDeleteCategory(deleteCategoryclass);
         }
+
+        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int OrganizationId)
+        {
+            return await _categoryRepository.GetCategoryWisePOI(OrganizationId);
+        }
     }
 }

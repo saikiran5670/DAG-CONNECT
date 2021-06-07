@@ -336,5 +336,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("getcategorywisepoi")]
+        public async Task<IActionResult> GetCategoryWisePOI()
+        {
+            try
+            {
+                CategoryWisePOIRequest objCategoryWisePOIRequest = new CategoryWisePOIRequest();
+                objCategoryWisePOIRequest.OrganizationId = GetContextOrgId();
+                var data = await _categoryServiceClient.GetCategoryWisePOIAsync(objCategoryWisePOIRequest);
+
+                if (data != null && data.Code == Responsecode.Success)
+                {
+                    if (data.CategoryWisePOI != null && data.CategoryWisePOI.Count > 0)
+                    {
+                        return Ok(data.CategoryWisePOI);
+                    }
+                    else
+                    {
+                        return StatusCode(404, "Category Wise POI details are not found.");
+                    }
+                }
+                else
+                {
+                    return StatusCode(500, data.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
     }
 }

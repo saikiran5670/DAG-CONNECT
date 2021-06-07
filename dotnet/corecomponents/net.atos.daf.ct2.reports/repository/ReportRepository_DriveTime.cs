@@ -99,6 +99,34 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN)
+        {
+            var parameterOfReport = new DynamicParameters();
+            parameterOfReport.Add("@FromDate", StartDateTime);
+            parameterOfReport.Add("@ToDate", EndDateTime);
+            parameterOfReport.Add("@Vins", VIN.ToArray());
+            string queryDriversPull = @"SELECT da.vin VIN,
+                                               da.driver_id DriverId,
+                                               d.first_name FirstName,
+                                               d.last_name LastName,
+                                               da.activity_date ActivityDateTime
+                                            FROM livefleet.livefleet_trip_driver_activity da
+                                            Left join master.driver d on d.driver_id=da.driver_id
+                                            WHERE (da.activity_date >= @FromDate AND da.activity_date <= @ToDate) and vin=ANY (@Vins)
+                                            GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date
+                                            ORDER BY da.driver_id DESC ";
+
+            List<Driver> lstDriver = (List<Driver>)await _dataMartdataAccess.QueryAsync<Driver>(queryDriversPull, parameterOfReport);
+            if (lstDriver?.Count() > 0)
+            {
+                return lstDriver;
+            }
+            else
+            {
+                return new List<Driver>();
+            }
+        }
+
         #endregion
     }
 }

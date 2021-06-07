@@ -58,7 +58,7 @@ public class TripSinkDao implements Serializable {
 
 				stmt = connection.prepareStatement(INSERT_STATEMENT);
 				stmt = fillStatement(stmt, dataObject);
-
+				logger.info("trip stmt :: "+stmt);
 				stmt.addBatch();
 				stmt.executeBatch();
 				logger.info("after executeBatch ");
