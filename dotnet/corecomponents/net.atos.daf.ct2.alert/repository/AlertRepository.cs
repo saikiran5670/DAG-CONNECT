@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.alert.repository
                     foreach (var alertTimingDetail in urgencylevel.AlertTimingDetails)
                     {
                         alertTimingDetail.RefId = urgencylevel.Id;
-                        alertTimingDetail.Type = AlertTimingDetailType.UrgencyLevelBasicFilter.ToString();
+                        alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.UrgencyLevelBasicFilter).ToString();
                         int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                         alertTimingDetail.Id = alertTimingDetailId;
                     }
@@ -108,7 +108,7 @@ namespace net.atos.daf.ct2.alert.repository
                         foreach (var alertTimingDetail in alertfilter.AlertTimingDetails)
                         {
                             alertTimingDetail.RefId = alertfilterRefId;
-                            alertTimingDetail.Type = AlertTimingDetailType.FilterRefAdvanceFilter.ToString();
+                            alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.FilterRefAdvanceFilter).ToString();
                             int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                             alertTimingDetail.Id = alertTimingDetailId;
                         }
@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.alert.repository
                     foreach (var alertTimingDetail in notification.AlertTimingDetails)
                     {
                         alertTimingDetail.RefId = notificationId;
-                        alertTimingDetail.Type = AlertTimingDetailType.NotificationAdvanceFilter.ToString();
+                        alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.NotificationAdvanceFilter).ToString();
                         int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                         alertTimingDetail.Id = alertTimingDetailId;
                     }
@@ -919,7 +919,7 @@ namespace net.atos.daf.ct2.alert.repository
             try
             {
                 var parameteralertTimingDetail = new DynamicParameters();
-                parameteralertTimingDetail.Add("@type", Convert.ToChar(alertTimingDetail.Type));
+                parameteralertTimingDetail.Add("@type", alertTimingDetail.Type.ToString());
                 parameteralertTimingDetail.Add("@ref_id", alertTimingDetail.RefId);
                 BitArray bitArray = new BitArray(7);
                 for (int i = 0; i < alertTimingDetail.DayType.Length; i++)
@@ -928,12 +928,12 @@ namespace net.atos.daf.ct2.alert.repository
                 }
                 parameteralertTimingDetail.Add("@day_type", bitArray);
                 if (alertTimingDetail.PeriodType != null && alertTimingDetail.PeriodType.Length > 0)
-                    parameteralertTimingDetail.Add("@period_type", Convert.ToChar(alertTimingDetail.PeriodType));
+                    parameteralertTimingDetail.Add("@period_type", Convert.ToChar(alertTimingDetail.PeriodType.ToString()));
                 else
                     parameteralertTimingDetail.Add("@period_type", null);
                 parameteralertTimingDetail.Add("@start_date", alertTimingDetail.StartDate);
                 parameteralertTimingDetail.Add("@end_date", alertTimingDetail.EndDate);
-                parameteralertTimingDetail.Add("@state", AlertState.Active);
+                parameteralertTimingDetail.Add("@state", Convert.ToChar(AlertState.Active));
                 parameteralertTimingDetail.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryAvailabilityperiod = @"INSERT INTO master.alerttimingdetail(type, ref_id, day_type, period_type, start_date, end_date, state, created_at)
 	                                    VALUES (@type, @ref_id, @day_type, @period_type, @start_date, @end_date, @state, @created_at) RETURNING id";
