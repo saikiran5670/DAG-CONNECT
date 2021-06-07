@@ -22,13 +22,11 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         public string GetAddress(double lat, double lng)
         {
-           // if (ValidateLatLng(lat,lng))
-            {
+           
                 var mapRequest = new GetMapRequest() { Latitude = lat, Longitude = lng };
                 var lookupAddress = _mapServiceClient.GetMapAddressAsync(mapRequest).GetAwaiter().GetResult();
                 return lookupAddress.LookupAddresses.Address ?? string.Empty;
-            }
-            return string.Empty;
+            
 
         }
 
