@@ -671,6 +671,16 @@ namespace net.atos.daf.ct2.alert.repository
                     aleurg.state as aleurg_state,
                     aleurg.created_at as aleurg_created_at,
                     aleurg.modified_at as aleurg_modified_at,
+					aletimeurg.id as aletimeurg_id, 
+					aletimeurg.type as aletimeurg_type, 
+					aletimeurg.ref_id as aletimeurg_ref_id, 
+					aletimeurg.day_type as aletimeurg_day_type, 
+					aletimeurg.period_type as aletimeurg_period_type, 
+					aletimeurg.start_date as aletimeurg_start_date, 
+					aletimeurg.end_date as aletimeurg_end_date, 
+					aletimeurg.state as aletimeurg_state, 
+					aletimeurg.created_at as aletimeurg_created_at, 
+					aletimeurg.modified_at as aletimeurg_modified_at,
                     alefil.id as alefil_id,
                     alefil.alert_id as alefil_alert_id,
                     alefil.alert_urgency_level_id as alefil_alert_urgency_level_id,
@@ -683,6 +693,16 @@ namespace net.atos.daf.ct2.alert.repository
                     alefil.state as alefil_state,
                     alefil.created_at as alefil_created_at,
                     alefil.modified_at as alefil_modified_at,
+					aletimefil.id as aletimefil_id, 
+					aletimefil.type as aletimefil_type, 
+					aletimefil.ref_id as aletimefil_ref_id, 
+					aletimefil.day_type as aletimefil_day_type, 
+					aletimefil.period_type as aletimefil_period_type, 
+					aletimefil.start_date as aletimefil_start_date, 
+					aletimefil.end_date as aletimefil_end_date, 
+					aletimefil.state as aletimefil_state, 
+					aletimefil.created_at as aletimefil_created_at, 
+					aletimefil.modified_at as aletimefil_modified_at,
                     alelan.id as alelan_id,
                     alelan.alert_id as alelan_alert_id,
                     alelan.landmark_type as alelan_landmark_type,
@@ -703,6 +723,16 @@ namespace net.atos.daf.ct2.alert.repository
                     noti.created_by as noti_created_by,
                     noti.modified_at as noti_modified_at,
                     noti.modified_by as noti_modified_by,
+					aletimenoti.id as aletimenoti_id, 
+					aletimenoti.type as aletimenoti_type, 
+					aletimenoti.ref_id as aletimenoti_ref_id, 
+					aletimenoti.day_type as aletimenoti_day_type, 
+					aletimenoti.period_type as aletimenoti_period_type, 
+					aletimenoti.start_date as aletimenoti_start_date, 
+					aletimenoti.end_date as aletimenoti_end_date, 
+					aletimenoti.state as aletimenoti_state, 
+					aletimenoti.created_at as aletimenoti_created_at, 
+					aletimenoti.modified_at as aletimenoti_modified_at,
                     notrec.id as notrec_id,
                     notrec.notification_id as notrec_notification_id,
                     notrec.recipient_label as notrec_recipient_label,
@@ -738,15 +768,18 @@ namespace net.atos.daf.ct2.alert.repository
                     FROM master.alert ale
                     left join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
-
+					left join master.alerttimingdetail aletimeurg
+					on aletimeurg.ref_id= aleurg.id and aletimeurg.type='U' and aletimeurg.state in ('A','I') and aleurg.state in ('A','I')
                     left join master.alertfilterref alefil
                     on aleurg.id=alefil.alert_urgency_level_id and alefil.state in ('A','I')
-
+					left join master.alerttimingdetail aletimefil
+					on aletimefil.ref_id= alefil.id and aletimeurg.type='F' and aletimefil.state in ('A','I') and alefil.state in ('A','I')
                     left join master.alertlandmarkref alelan
                     on ale.id=alelan.alert_id and alelan.state in ('A','I')
                     left join master.notification noti
                     on ale.id=noti.alert_id and ale.state in ('A','I') and noti.state in ('A','I')
-                   
+                   	left join master.alerttimingdetail aletimenoti
+					on aletimenoti.ref_id= noti.id and aletimeurg.type='N' and aletimenoti.state in ('A','I') and noti.state in ('A','I')
                     left join master.notificationrecipient notrec
                     on noti.id=notrec.notification_id and notrec.state in ('A','I')
                     left join master.notificationlimit notlim

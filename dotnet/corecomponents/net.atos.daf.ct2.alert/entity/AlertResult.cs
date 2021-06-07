@@ -31,6 +31,16 @@ namespace net.atos.daf.ct2.alert.entity
         public string Aleurg_state { get; set; }
         public long Aleurg_created_at { get; set; }
         public long Aleurg_modified_at { get; set; }
+        public int Aletimeurg_id { get; set; }
+        public string Aletimeurg_type { get; set; }
+        public int Aletimeurg_ref_id { get; set; }
+        public BitArray Aletimeurg_day_type { get; set; }
+        public string Aletimeurg_period_type { get; set; }
+        public long Aletimeurg_start_date { get; set; }
+        public long Aletimeurg_end_date { get; set; }
+        public string Aletimeurg_state { get; set; }
+        public long Aletimeurg_created_at { get; set; }
+        public long Aletimeurg_modified_at { get; set; }
         public int Alefil_id { get; set; }
         public int Alefil_alert_id { get; set; }
         public int Alefil_alert_urgency_level_id { get; set; }
@@ -47,6 +57,16 @@ namespace net.atos.daf.ct2.alert.entity
         public string Alefil_state { get; set; }
         public long Alefil_created_at { get; set; }
         public long Alefil_modified_at { get; set; }
+        public int Aletimefil_id { get; set; }
+        public string Aletimefil_type { get; set; }
+        public int Aletimefil_ref_id { get; set; }
+        public BitArray Aletimefil_day_type { get; set; }
+        public string Aletimefil_period_type { get; set; }
+        public long Aletimefil_start_date { get; set; }
+        public long Aletimefil_end_date { get; set; }
+        public string Aletimefil_state { get; set; }
+        public long Aletimefil_created_at { get; set; }
+        public long Aletimefil_modified_at { get; set; }
         public int Alelan_id { get; set; }
         public int Alelan_alert_id { get; set; }
         public string Alelan_landmark_type { get; set; }
@@ -67,6 +87,16 @@ namespace net.atos.daf.ct2.alert.entity
         public int Noti_created_by { get; set; }
         public long Noti_modified_at { get; set; }
         public int Noti_modified_by { get; set; }
+        public int Aletimenoti_id { get; set; }
+        public int Aletimenoti_ref_id { get; set; }
+        public string Aletimenoti_type { get; set; }
+        public BitArray Aletimenoti_day_type { get; set; }
+        public string Aletimenoti_period_type { get; set; }
+        public long Aletimenoti_start_date { get; set; }
+        public long Aletimenoti_end_date { get; set; }
+        public string Aletimenoti_state { get; set; }
+        public long Aletimenoti_created_at { get; set; }
+        public long Aletimenoti_modified_at { get; set; }
         public int Notrec_id { get; set; }
         public int Notrec_notification_id { get; set; }
         public string Notrec_recipient_label { get; set; }
