@@ -671,5 +671,28 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw;
             }
         }
+        public async Task<TripAddressDetails> UpdateTripArddress(TripAddressDetails tripAddressDetails)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", tripAddressDetails.Id);
+                parameter.Add("@startAddress", tripAddressDetails.StartAddress);
+                parameter.Add("@endAddress", tripAddressDetails.EndAddress);
+              
+                string query = @"update tripdetail.trip_statistics set start_position=@startAddress, 
+                                                           end_position=@endAddress                                                                                                                                                                                                                     
+                                                           where id = @Id RETURNING id";
+                tripAddressDetails.Id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);             
+                
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return await Task.FromResult(tripAddressDetails);
+        }
+
+
     }
 }
