@@ -158,7 +158,7 @@ namespace net.atos.daf.ct2.reports.repository
                 List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
                 if (combineTrips.Count > 0)
                 {
-                    foreach (string item in combineTrips)
+                    foreach (var item in combineTrips)
                     {
                         // Collecting all batch to add under respective trip
                         lstLiveFleetPosition.AddRange(await GetFleetOfTripWithINClause(item.ToArray()));
