@@ -20,3 +20,30 @@
       </mat-form-field>
     </div>
   </div> -->
+<form [formGroup]="periodSelectionForm">
+  <div fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
+<mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectCalender || 'Select Calender' }} </mat-label>  
+<mat-label>{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span class='mandatoryColor'>*</span>
+ <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per day)'}}</mat-label>
+</mat-label>  
+<!-- calendar -->
+<div fxLayout="row" class="full-width margin-bottom-sm">
+  <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+    <mat-checkbox >Sunday</mat-checkbox>
+  </div> 
+  <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+    <mat-radio-group [disabled]="!isMondaySelected" formControlName="mondayPeriod">
+      <mat-radio-button style='margin-right: 20px;' value="full_day">
+          {{ translationData.lblFullDay || 'Full Day' }}
+      </mat-radio-button>
+      <mat-radio-button style='margin-right: 20px;' value="custom">
+          {{ translationData.lblCustomPeriod || 'Custom Period' }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div> 
+
+</div>
+</div>
+</form>
+
+

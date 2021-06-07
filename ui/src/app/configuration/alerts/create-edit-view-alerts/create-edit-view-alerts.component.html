@@ -662,8 +662,8 @@
           <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'S'"
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblSelectCalender || 'Select Calender' }} <span class='mandatoryColor'>*</span></mat-label>  
-                <div appearance="outline">
+                <!-- <mat-label>{{ translationData.lblSelectCalender || 'Select Calender' }} <span class='mandatoryColor'>*</span></mat-label>   -->
+                <!-- <div appearance="outline">
                   <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                     <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-checkbox (change)="onChangeMondaySelection($event)">Monday</mat-checkbox>
@@ -684,7 +684,9 @@
                       <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput>
                     </mat-form-field>
                   </div>
-                </div>
+                </div> -->
+                <app-period-selection-filter 
+                [translationData] = 'translationData'></app-period-selection-filter>
              </div>
            </div>
           
