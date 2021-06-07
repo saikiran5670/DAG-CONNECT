@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using ReportComponent = net.atos.daf.ct2.reports;
 
 namespace net.atos.daf.ct2.reportservice.Services
