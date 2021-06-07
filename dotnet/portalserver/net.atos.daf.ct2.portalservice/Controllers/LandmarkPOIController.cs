@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
-            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient);
+            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient,_poiServiceClient);
         }
 
         [HttpGet]
@@ -453,9 +453,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objTripRequest.StartDateTime = request.StartDateTime;
                 objTripRequest.EndDateTime = request.EndDateTime;
                 var data = await _poiServiceClient.GetAllTripDetailsAsync(objTripRequest);
-                data.TripData.Select(x => { x.StartAddress = _hereMapAddressProvider.GetAddress(x.StartPositionlattitude, x.StartPositionLongitude);
-                                            x.EndAddress =  _hereMapAddressProvider.GetAddress(x.EndPositionLattitude, x.EndPositionLongitude);
-                                     return x; }).ToList();
+               data.TripData.Select(x => {
+                    x = _hereMapAddressProvider.UpdateTripAddress(x);
+                    return x;
+                }).ToList();
                 if (data != null)
                 {
                     return Ok(data);
