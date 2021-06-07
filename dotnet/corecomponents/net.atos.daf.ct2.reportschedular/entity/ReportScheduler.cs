@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace net.atos.daf.ct2.reportschedular.entity
+namespace net.atos.daf.ct2.reportscheduler.entity
 {
-    public class ReportSchedular
+    public class ReportScheduler
     {
         public int Id { get; set; }
         public int OrganizationId { get; set; }

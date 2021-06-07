@@ -1,6 +1,6 @@
 
 syntax = "proto3";
-//import "google/protobuf/wrappers.proto";
+import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.reportservice";
 
 package report;
@@ -13,6 +13,8 @@ rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
 rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetDriverActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
+rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
+
 }
 
 enum Responsecode{
@@ -131,10 +133,10 @@ message TripDetils {
     double EndPositionLongitude=22;
 }
 message LiveFleetPosition {
-    int64 GpsAltitude=1;
-    int64 GpsHeading=2; 
-    int64 GpsLatitude=3;
-    int64 GpsLongitude=4; 
+    double GpsAltitude=1;
+    double GpsHeading=2; 
+    double GpsLatitude=3;
+    double GpsLongitude=4; 
     int32 Id=5;
 }
 // End Trip Report Table
@@ -202,5 +204,29 @@ message DriverActivity {
     int64 DriveTime = 11;
     int64 ServiceTime = 12;
 }
+
+
+message DriverListAndVehicleDetailsResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated VehicleFromDriverTimeDetails DriverList = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+message VehicleFromDriverTimeDetails {
+google.protobuf.StringValue Vin = 1;
+google.protobuf.StringValue DriverID=2;
+google.protobuf.StringValue FirstName=3;
+google.protobuf.StringValue LastName=4;
+int64 ActivityDateTime=5;
+}
+
+message IdRequestForDriverActivity {
+  int32 ReportId = 1;
+  int32 AccountId=2;
+  int32 OrganizationId=3;
+  int64 StartDateTime = 4;
+  int64 EndDateTime = 5; 
+  }
 // End   Driver Time Managment Report
 

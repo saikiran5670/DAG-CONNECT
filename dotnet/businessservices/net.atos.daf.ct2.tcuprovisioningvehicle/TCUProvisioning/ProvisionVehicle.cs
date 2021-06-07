@@ -31,29 +31,29 @@ namespace TCUProvisioning
 {
     class ProvisionVehicle
     {
-        private ILog log;
-        private string brokerList;
-        private string connStr;
-        private string consumergroup;
-        private string topic;
-        private string psqlconnstring;
-        private string datamartpsqlconnstring;
-        private string cacertlocation;
-        IConfiguration config = null;
-        IAuditTraillib _auditlog;
+        private readonly ILog _log;
+        private readonly string _brokerList;
+        private readonly string _connStr;
+        private readonly string _consumerGroup;
+        private readonly string _topic;
+        private readonly string _psqlconnstring;
+        private readonly string _datamartpsqlconnstring;
+        private readonly string _cacertlocation;
+        private readonly IConfiguration _config = null;
+        private readonly IAuditTraillib _auditlog;
 
         public ProvisionVehicle(ILog log, IConfiguration config, IAuditTraillib auditlog)
         {
-            this.log = log;
-            this.config = config;
+            this._log = log;
+            this._config = config;
             _auditlog = auditlog;
-            brokerList = config.GetSection("EH_FQDN").Value;
-            connStr = config.GetSection("EH_CONNECTION_STRING").Value;
-            consumergroup = config.GetSection("CONSUMER_GROUP").Value;
-            topic = config.GetSection("EH_NAME").Value;
-            psqlconnstring = config.GetSection("psqlconnstring").Value;
-            cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
-            datamartpsqlconnstring = config.GetSection("psqlconnstring").Value;
+            _brokerList = config.GetSection("EH_FQDN").Value;
+            _connStr = config.GetSection("EH_CONNECTION_STRING").Value;
+            _consumerGroup = config.GetSection("CONSUMER_GROUP").Value;
+            _topic = config.GetSection("EH_NAME").Value;
+            _psqlconnstring = config.GetSection("psqlconnstring").Value;
+            _cacertlocation = config.GetSection("CA_CERT_LOCATION").Value;
+            _datamartpsqlconnstring = config.GetSection("psqlconnstring").Value;
         }
 
         public async Task ReadTCUProvisioningData()
@@ -62,32 +62,32 @@ namespace TCUProvisioning
 
             using (var consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build())
             {
-                log.Info("Subscribing Topic");
-                consumer.Subscribe(topic);
+                _log.Info("Subscribing Topic");
+                consumer.Subscribe(_topic);
 
                 while (true)
                 {
                     try
                     {
-                        log.Info("Consuming Messages");
+                        _log.Info("Consuming Messages");
                         var msg = consumer.Consume();
                         String TCUDataFromTopic = msg.Message.Value;
                         TCUDataReceive TCUDataReceive = JsonConvert.DeserializeObject<TCUDataReceive>(TCUDataFromTopic);
-                        await UpdateVehicleDetails(TCUDataReceive, psqlconnstring);
+                        await UpdateVehicleDetails(TCUDataReceive, _psqlconnstring);
 
-                        log.Info("Commiting message");
+                        _log.Info("Commiting message");
                         consumer.Commit(msg);
 
                     }
                     catch (ConsumeException e)
                     {
-                        log.Error($"Consume error: {e.Error.Reason}");
+                        _log.Error($"Consume error: {e.Error.Reason}");
                         consumer.Close();
 
                     }
                     catch (Exception e)
                     {
-                        log.Error($"Error: {e.Message}");
+                        _log.Error($"Error: {e.Message}");
                         consumer.Close();
 
                     }
@@ -99,15 +99,15 @@ namespace TCUProvisioning
         {
             var config = new ConsumerConfig
             {
-                BootstrapServers = brokerList,
+                BootstrapServers = _brokerList,
                 SecurityProtocol = SecurityProtocol.SaslSsl,
                 SocketTimeoutMs = 60000,
                 SessionTimeoutMs = 30000,
                 SaslMechanism = SaslMechanism.Plain,
                 SaslUsername = "$ConnectionString",
-                SaslPassword = connStr,
-                SslCaLocation = cacertlocation,
-                GroupId = consumergroup,
+                SaslPassword = _connStr,
+                SslCaLocation = _cacertlocation,
+                GroupId = _consumerGroup,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 BrokerVersionFallback = "1.0.0",
                 EnableAutoCommit = false
@@ -120,7 +120,7 @@ namespace TCUProvisioning
         {
             try
             {
-                log.Info("Fetching Vehicle object from database");
+                _log.Info("Fetching Vehicle object from database");
 
                 IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
                 VehicleManager vehicleManager = GetVehicleManager(psqlConnString);
@@ -130,7 +130,7 @@ namespace TCUProvisioning
 
                 if (receivedVehicle == null)
                 {
-                    receivedVehicle = await CreateVehicle(receivedVehicle, TCUDataReceive, dataacess, psqlConnString, vehicleManager);
+                    receivedVehicle = await CreateVehicle(receivedVehicle, TCUDataReceive, dataacess, vehicleManager);
                     await CreateOrgRelationship(vehicleManager, psqlConnString, receivedVehicle.ID, (int)receivedVehicle.Organization_Id);
                 }
                 else
@@ -148,13 +148,13 @@ namespace TCUProvisioning
 
         }
 
-        private async Task<Vehicle> CreateVehicle(Vehicle receivedVehicle, TCUDataReceive TCUDataReceive, IDataAccess dataacess, string psqlConnString, VehicleManager vehicleManager)
+        private async Task<Vehicle> CreateVehicle(Vehicle receivedVehicle, TCUDataReceive TCUDataReceive, IDataAccess dataacess, VehicleManager vehicleManager)
         {
             int OrgId = 0;
             Vehicle veh;
             try
             {
-                log.Info("Vehicle is not present in database proceeding to create vehicle");
+                _log.Info("Vehicle is not present in database proceeding to create vehicle");
 
                 receivedVehicle = new Vehicle();
 
@@ -175,7 +175,7 @@ namespace TCUProvisioning
                 OrgId = await dataacess.QuerySingleAsync<int>("select coalesce((SELECT id FROM master.organization where lower(name)=@name), null)", new { name = "daf-paccar" });
                 receivedVehicle.Organization_Id = OrgId;
 
-                log.Info("Creating Vehicle Object in database");
+                _log.Info("Creating Vehicle Object in database");
                 veh = await vehicleManager.Create(receivedVehicle);
 
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, OrgId, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.CREATE, AuditTrailEnum.Event_status.SUCCESS, "Create method in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
@@ -201,10 +201,10 @@ namespace TCUProvisioning
 
                 if (IsVehicleIdExist <= 0)
                 {
-                    log.Info("Organisation relationship is not present in database proceeding to create relationship");
+                    _log.Info("Organisation relationship is not present in database proceeding to create relationship");
 
-                    int OwnerRelationship = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
-                    int DAFPACCAR = Convert.ToInt32(this.config.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
+                    int OwnerRelationship = Convert.ToInt32(this._config.GetSection("DefaultSettings").GetSection("OwnerRelationship").Value);
+                    int DAFPACCAR = Convert.ToInt32(this._config.GetSection("DefaultSettings").GetSection("DAFPACCAR").Value);
 
                     relationship = new RelationshipMapping();
                     relationship.RelationshipId = OwnerRelationship;
@@ -229,7 +229,7 @@ namespace TCUProvisioning
 
         private async Task<Vehicle> UpdateVehicle(Vehicle receivedVehicle, TCUDataReceive TCUDataReceive, VehicleManager vehicleManager)
         {
-            log.Info("Vehicle is  present in database proceeding to update vehicle");
+            _log.Info("Vehicle is  present in database proceeding to update vehicle");
 
             Vehicle veh = null;
             try
@@ -241,7 +241,7 @@ namespace TCUProvisioning
                 receivedVehicle.Tcu_Brand = "Bosch";
                 receivedVehicle.Tcu_Version = "1.0";
 
-                log.Info("Updating Vehicle details in database");
+                _log.Info("Updating Vehicle details in database");
                 veh = await vehicleManager.Update(receivedVehicle);
                 await _auditlog.AddLogs(DateTime.Now, DateTime.Now, (int)veh.Organization_Id, "TCU Vehicle Component", "TCU Component", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "update vehicle in TCU Vehicle Component", 0, veh.ID, JsonConvert.SerializeObject(receivedVehicle));
 
@@ -290,20 +290,20 @@ namespace TCUProvisioning
 
             var idenityconfiguration = new IdentityJsonConfiguration()
             {
-                Realm = this.config.GetSection("IdentityConfiguration").GetSection("realm").Value,
-                BaseUrl = this.config.GetSection("IdentityConfiguration").GetSection("baseUrl").Value,
-                AuthUrl = this.config.GetSection("IdentityConfiguration").GetSection("authUrl").Value,
-                UserMgmUrl = this.config.GetSection("IdentityConfiguration").GetSection("userMgmUrl").Value,
-                AuthClientId = this.config.GetSection("IdentityConfiguration").GetSection("AuthClientId").Value,
-                AuthClientSecret = this.config.GetSection("IdentityConfiguration").GetSection("AuthClientSecret").Value,
-                UserMgmClientId = this.config.GetSection("IdentityConfiguration").GetSection("UserMgmClientId").Value,
-                UserMgmClientSecret = this.config.GetSection("IdentityConfiguration").GetSection("UserMgmClientSecret").Value,
+                Realm = this._config.GetSection("IdentityConfiguration").GetSection("realm").Value,
+                BaseUrl = this._config.GetSection("IdentityConfiguration").GetSection("baseUrl").Value,
+                AuthUrl = this._config.GetSection("IdentityConfiguration").GetSection("authUrl").Value,
+                UserMgmUrl = this._config.GetSection("IdentityConfiguration").GetSection("userMgmUrl").Value,
+                AuthClientId = this._config.GetSection("IdentityConfiguration").GetSection("AuthClientId").Value,
+                AuthClientSecret = this._config.GetSection("IdentityConfiguration").GetSection("AuthClientSecret").Value,
+                UserMgmClientId = this._config.GetSection("IdentityConfiguration").GetSection("UserMgmClientId").Value,
+                UserMgmClientSecret = this._config.GetSection("IdentityConfiguration").GetSection("UserMgmClientSecret").Value,
                 // ReferralUrl="https://dafexternal",
-                Issuer = this.config.GetSection("IdentityConfiguration").GetSection("Issuer").Value,
-                Audience = this.config.GetSection("IdentityConfiguration").GetSection("Audience").Value,
+                Issuer = this._config.GetSection("IdentityConfiguration").GetSection("Issuer").Value,
+                Audience = this._config.GetSection("IdentityConfiguration").GetSection("Audience").Value,
                 // ReferralId="8c51b38a-f773-4810-8ac5-63b5fb9ca217",
-                RsaPrivateKey = this.config.GetSection("IdentityConfiguration").GetSection("RsaPrivateKey").Value,
-                RsaPublicKey = this.config.GetSection("IdentityConfiguration").GetSection("RsaPublicKey").Value
+                RsaPrivateKey = this._config.GetSection("IdentityConfiguration").GetSection("RsaPrivateKey").Value,
+                RsaPublicKey = this._config.GetSection("IdentityConfiguration").GetSection("RsaPublicKey").Value
             };
 
             IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
@@ -313,7 +313,7 @@ namespace TCUProvisioning
             ITranslationManager translationManager = new TranslationManager(translationRepository);
 
             IAccountRepository accountrepo = new AccountRepository(dataacess);
-            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, audit, iaccountManager, config, translationManager);
+            net.atos.daf.ct2.account.IAccountManager accManager = new net.atos.daf.ct2.account.AccountManager(accountrepo, audit, iaccountManager, _config, translationManager);
 
             OrganizationRepository orgRepo = new OrganizationRepository(dataacess, vehicleManager, groupManager, accManager, subscriptionManager, accountSessionManager, accountTokenManager);
             OrganizationManager org = new OrganizationManager(orgRepo, audit);
@@ -323,7 +323,7 @@ namespace TCUProvisioning
         private VehicleManager GetVehicleManager(string psqlConnString)
         {
             IDataAccess dataacess = new PgSQLDataAccess(psqlConnString);
-            IDataMartDataAccess datamartDataacess = new PgSQLDataMartDataAccess(datamartpsqlconnstring);
+            IDataMartDataAccess datamartDataacess = new PgSQLDataMartDataAccess(_datamartpsqlconnstring);
             IVehicleRepository vehiclerepo = new VehicleRepository(dataacess, datamartDataacess);
             IAuditLogRepository auditrepo = new AuditLogRepository(dataacess);
             IAuditTraillib audit = new AuditTraillib(auditrepo);

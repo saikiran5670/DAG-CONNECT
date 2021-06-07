@@ -12,6 +12,7 @@ rpc DeleteCategory (CategoryDeleteRequest) returns (CategoryDeleteResponse);
 rpc GetCategoryType (CategoryGetRequest) returns (CategoryGetResponse);
 rpc GetCategoryDetails (GetRequest) returns (GetResponse);
 rpc BulkDeleteCategory (DeleteRequest) returns (DeleteResponse);
+rpc GetCategoryWisePOI (CategoryWisePOIRequest) returns (CategoryWisePOIResponse);
     }
 
 
@@ -159,4 +160,20 @@ message DeleteResponse
   string Message = 2;  
   repeated IdList DeleteRequestList  =3;
 
+}
+
+message CategoryWisePOIResponse{
+  Responsecode Code=1;
+  string Message = 2; 
+  repeated CategoryWisePOI  categoryWisePOI = 3;
+}
+
+message CategoryWisePOI{
+  int32 CategoryId = 1;
+  string CategoryName = 2;
+  string POIName = 3;
+}
+
+message CategoryWisePOIRequest{
+  int32 OrganizationId = 1;
 }

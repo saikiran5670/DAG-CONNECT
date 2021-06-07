@@ -275,9 +275,7 @@ namespace net.atos.daf.ct2.portalservice
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
                 await next();
             });
-            app.UseRouting();
-            app.UseSession();
-            app.UseSessionValidator();
+            app.UseRouting();                      
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {
@@ -286,6 +284,8 @@ namespace net.atos.daf.ct2.portalservice
                 builder.AllowAnyHeader();
             });
             app.UseAuthorization();
+            app.UseSession();
+            //app.UseSessionValidator();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

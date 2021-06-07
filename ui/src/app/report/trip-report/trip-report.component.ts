@@ -67,10 +67,16 @@ export class TripReportComponent implements OnInit {
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
-  prefTimeFormat: any = 12; //-- coming from pref setting
-  prefDateFormat: any = ''; //-- coming from pref setting
+  prefTimeFormat: any = 24; //-- coming from pref setting
+  prefDateFormat: any = 'mm/dd/yyyy'; //-- coming from pref setting
+  prefUnitFormat: any = 'metric'; //-- coming from pref setting
   accountPrefObj: any;
   advanceFilterOpen: boolean = false;
+  showField: any = {
+    vehicleName: true,
+    vin: true,
+    regNo: true
+  };
   userPOIList: any = [];
   prefMapData: any = [
     // {
@@ -176,6 +182,7 @@ export class TripReportComponent implements OnInit {
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
         this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].value;
+        this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].value;
         this.setDefaultStartEndTime();
         this.setPrefFormatDate();
         this.setDefaultTodayDate();
@@ -206,6 +213,14 @@ export class TripReportComponent implements OnInit {
           if (index > -1) {
               this.displayedColumns.splice(index, 1);
           }
+        }
+
+        if(element.key == 'da_report_details_vehiclename'){
+          this.showField.vehicleName = false;
+        }else if(element.key == 'da_report_details_vin'){
+          this.showField.vin = false;
+        }else if(element.key == 'da_report_details_registrationnumber'){
+          this.showField.regNo = false;
         }
       });
     }
@@ -301,7 +316,8 @@ export class TripReportComponent implements OnInit {
       this.showLoadingIndicator = true;
       this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
         this.hideloader();
-        this.tripData = this.getConvertTableDateTime(_tripData.tripData);
+        // this.tripData = this.getConvertTableDateTime(_tripData.tripData);
+        this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat);
         this.setTableInfo();
         this.updateDataSource(this.tripData);
       }, (error)=>{
@@ -482,14 +498,14 @@ export class TripReportComponent implements OnInit {
       var tempObj =[];
       tempObj.push(e.convertedStartTime);
       tempObj.push(e.convertedEndTime);
-      tempObj.push(e.distance);
-      tempObj.push(e.idleDuration);
+      tempObj.push(e.convertedDistance);
+      tempObj.push(e.convertedIdleDuration);
       tempObj.push(e.averageSpeed);
       tempObj.push(e.averageWeight);
       tempObj.push(e.startPosition);
       tempObj.push(e.endPosition);
       tempObj.push(e.fuelConsumed100Km);
-      tempObj.push(e.drivingTime);
+      tempObj.push(e.convertedDrivingTime);
       tempObj.push(e.alert);
       tempObj.push(e.events);
 

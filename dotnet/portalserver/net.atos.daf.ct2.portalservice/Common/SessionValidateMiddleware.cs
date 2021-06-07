@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                                   .Select(x => x.CustomAttributes.Where(y => y.AttributeType == typeof(RouteAttribute)))
                                   .Select(x => x.First().ConstructorArguments.First().Value.ToString().Replace("~", "").Replace("/", "").ToLower())
                                   .ToList();
-                var requestedPath = context.Request.Path.Value.Replace("~","").Replace("/", "").ToLower();
+                var requestedPath = context.Request.Path.Value.Substring(context.Request.Path.Value.LastIndexOf("/") + 1).Replace("~","").Replace("/", "").ToLower();
                 if (!serviceCalls.Any(x => requestedPath.Contains(x)))
                 {
                     if(context.Request.Path.Value.Contains("setuserselection"))
@@ -38,35 +38,22 @@ namespace net.atos.daf.ct2.portalservice.Common
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                             await context.Response.WriteAsync("Session not found. Please login first to perform the operation.");
-                        }
-                        else
-                        {
-                            await _next(context);
+                            return;
                         }
                     }
                     else
                     {
                         var keys = new string[] { SessionConstants.AccountKey, SessionConstants.RoleKey, SessionConstants.OrgKey, SessionConstants.ContextOrgKey };
-                        if (!context.Session.Keys.Any(x => keys.Contains(x)))
+                        if (keys.Except(context.Session.Keys).Any())
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                             await context.Response.WriteAsync("Session not found. Please login first to perform the operation.");
-                        }
-                        else
-                        {
-                            await _next(context);
+                            return;
                         }
                     }                    
                 }
-                else
-                {
-                    await _next(context);
-                }
             }
-            else
-            {
-                await _next(context);
-            }
+            await _next(context);
         }
     }
 
