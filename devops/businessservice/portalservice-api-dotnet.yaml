@@ -21,7 +21,7 @@ parameters:
   - ACC01
   - ACC02
 
-pool: $(PRIVATEAGENT)
+pool: Azure Pipelines
 
 variables:
 - ${{ if eq(parameters.ENV, 'DEV0') }}:
