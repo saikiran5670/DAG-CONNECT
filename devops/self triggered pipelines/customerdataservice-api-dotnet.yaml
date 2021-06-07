@@ -6,21 +6,21 @@ trigger:
     - testing
   paths:
     include:
-    - dotnet/dataservices/net.atos.daf.ct2.vehicledataservice
+    - dotnet/dataservices/net.atos.daf.ct2.customerdataservice
 
 variables:
  - name: imageName
-   value: 'vehicledataservice-auto'
+   value: 'customerdataservice-auto'
  - name: dockerFile
-   value: 'dotnet/VehicleDataService_Dockerfile'
+   value: 'dotnet/CustomerDataService_Dockerfile'
  - name: manifestFile
-   value: 'vehicledataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'customerdataservice-api-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'vehicledataservice-api-dotnet-kubernetes-manifest.yaml'
+   value: 'customerdataservice-api-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
-   value: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/appsettings.Production.json'
+   value: 'dotnet/dataservices/net.atos.daf.ct2.customerdataservice/appsettings.Production.json'
  - name: log4netConfigFile
-   value: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/log4net.config'
+   value: 'dotnet/dataservices/net.atos.daf.ct2.customerdataservice/log4net.config'
 
 stages:
   - stage: stage_dev0
