@@ -856,7 +856,7 @@ namespace net.atos.daf.ct2.alert.repository
                 await _dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
