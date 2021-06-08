@@ -14,7 +14,7 @@
         public const string ALERT_FAILURE_MSG = "Either alert id is not available or not exist in vaild state.";
         public const string SOCKET_EXCEPTION_MSG= "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         public const string ALERT_ID_NON_ZERO_MSG = "Alert id cannot be zero.";
-        public const string ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG = "Account id or Orgnization id or Role Id cannot be null.";
+        public const string ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG = "Account id or Orgnization id cannot be null.";
         public const string ALERT_ORG_ID_NOT_NULL_MSG = "Orgnization id cannot be null.";
         public const string ALERT_CATEGORY_NOT_FOUND_MSG = "Alert Category are not found.";
         public const string ALERT_DUPLICATE_NOTIFICATION_RECIPIENT_MSG = "Duplicate notification recipient label added in list.";
@@ -29,9 +29,7 @@
         public const string DUPLICATE_ALERT_CHECK_TYPE_MSG = "Alert type should be same while duplicating the alert";
         public const string ALERT_CREATE_FAILED_MSG = "There is an error while creating alert.";
         public const string ALERT_NOT_FOUND_MSG = "Alert are not found.";
-        public const string ALERT_RECIPIENT_LABEL_NOT_FOUND_MSG = "Recipient Label are not found.";        
-        public const string ALERT_FILTER_SUCCESS_MSG = "Alert Category Filter data retrieved";
-        public const string ALERT_FILTER_FAILURE_MSG = "Alert Category Filter data retrieve failed. Error : - {0}";
+        public const string ALERT_RECIPIENT_LABEL_NOT_FOUND_MSG = "Recipient Label are not found.";
 
     }
 }

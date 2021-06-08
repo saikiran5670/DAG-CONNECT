@@ -6,9 +6,7 @@ namespace net.atos.daf.ct2.alert
 {
     public enum AlertTimingDetailType
     {
-        UrgencyLevelBasicFilter = 'U',
-        FilterRefAdvanceFilter = 'F',
+        AlertAdvanceFilter = 'O',
         NotificationAdvanceFilter = 'N',
-
     }
 }

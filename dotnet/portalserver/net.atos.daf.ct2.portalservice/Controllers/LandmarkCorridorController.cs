@@ -10,7 +10,6 @@ using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Corridor;
 using Newtonsoft.Json;
-using Alert = net.atos.daf.ct2.alertservice;    
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -24,14 +23,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly CorridorService.CorridorServiceClient _corridorServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly CorridorMapper _corridorMapper;
-        private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
-        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+
+        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper, privilegeChecker)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorServiceClient = corridorServiceClient;
             _auditHelper = auditHelper;
             _corridorMapper = new CorridorMapper();
-            _alertServiceClient = alertServiceClient;
         }
 
         [HttpGet]
@@ -253,20 +251,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Corridor id is required.");
                 }
-
-                Alert.LandmarkIdRequest landmarkIdRequest = new Alert.LandmarkIdRequest();
-                landmarkIdRequest.LandmarkId.Add(request.Id);
-
-                Alert.LandmarkIdExistResponse isLandmarkavalible = await _alertServiceClient.IsLandmarkActiveInAlertAsync(landmarkIdRequest);
-
-                if (isLandmarkavalible.IsLandmarkActive)
-                {
-                    return StatusCode(409, "Corridor is used in alert.");
-                }
                 var MapRequest = _corridorMapper.MapId(request);
                 var data = await _corridorServiceClient.DeleteCorridorAsync(MapRequest);
-
-
                 if (data != null && data.Code == Responsecode.Success)
                 {
                     await _auditHelper.AddLogs(DateTime.Now, "Landmark Corridor Component",

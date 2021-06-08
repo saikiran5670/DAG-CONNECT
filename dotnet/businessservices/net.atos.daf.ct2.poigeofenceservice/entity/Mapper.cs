@@ -337,8 +337,6 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 }
                 response.StartPositionlattitude = entity.StartPositionlattitude;
                 response.StartPositionLongitude = entity.StartPositionLongitude;
-                response.EndPositionLattitude = entity.EndPositionLattitude;
-                response.EndPositionLongitude = entity.EndPositionLongitude;
                 response.StartTimeStamp = entity.StartTimeStamp;
                 response.EndTimeStamp = entity.EndTimeStamp;
 

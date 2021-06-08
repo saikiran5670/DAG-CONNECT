@@ -14,10 +14,12 @@ using net.atos.daf.ct2.vehicle.repository;
 
 namespace net.atos.daf.ct2.rfmsdataservice
 {
+
+
     public class Startup
     {
 
-        private readonly string _swaggerBasePath = "rfms-data";
+        private readonly string swaggerBasePath = "rfms-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -52,10 +54,46 @@ namespace net.atos.daf.ct2.rfmsdataservice
             services.AddTransient<IRfmsRepository, RfmsRepository>();
             services.AddTransient<IRfmsManager, RfmsManager>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
+
+
+            //   services.AddSingleton<IPostConfigureOptions<BasicAuthenticationOptions>, BasicAuthenticationPostConfigureOptions>();
+            // services.AddTransient<IBasicAuthenticationService, BasicAuthenticationService>();
+
+            //services.AddMvc(options =>
+            //{
+            //    options.Filters.Add(new ProducesAttribute("application/json"));
+            //});
+
+            //services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            //.AddBasic<BasicAuthenticationService>(options =>
+            //{
+            //    options.ApplicationName = "DAFCT2.0";
+            //});
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy(
+            //        AccessPolicies.MainAccessPolicy,
+            //        policy => policy.RequireAuthenticatedUser()
+            //                        .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+            //    options.AddPolicy(
+            //        AccessPolicies.MainMileageAccessPolicy,
+            //        policy => policy.RequireAuthenticatedUser()
+            //                        .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainMileageAccessPolicy)));
+            //    options.AddPolicy(
+            //       AccessPolicies.MainNamelistAccessPolicy,
+            //       policy => policy.RequireAuthenticatedUser()
+            //                       .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainNamelistAccessPolicy)));
+            //});
+
+            // services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Vehicle Data Service", Version = "v1" });
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,13 +119,13 @@ namespace net.atos.daf.ct2.rfmsdataservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{swaggerBasePath}/swagger";
             });
 
         }

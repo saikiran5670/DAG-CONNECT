@@ -67,12 +67,10 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetAllTripDetails.");
-                ReportComponent.entity.TripFilterRequest objTripFilter = new ReportComponent.entity.TripFilterRequest
-                {
-                    VIN = request.VIN,
-                    StartDateTime = request.StartDateTime,
-                    EndDateTime = request.EndDateTime
-                };
+                ReportComponent.entity.TripFilterRequest objTripFilter = new ReportComponent.entity.TripFilterRequest();
+                objTripFilter.VIN = request.VIN;
+                objTripFilter.StartDateTime = request.StartDateTime;
+                objTripFilter.EndDateTime = request.EndDateTime;
 
                 var result = await _reportManager.GetFilteredTripDetails(objTripFilter);
                 TripResponse response = new TripResponse();

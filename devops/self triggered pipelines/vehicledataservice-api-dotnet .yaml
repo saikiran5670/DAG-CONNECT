@@ -23,7 +23,7 @@ variables:
    value: 'dotnet/dataservices/net.atos.daf.ct2.vehicledataservice/log4net.config'
 
 stages:
-  - stage: stage_dev0
+  - stage: stage1
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
       parameters:
@@ -37,7 +37,7 @@ stages:
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'], 'development')
 
-  - stage: stage_dev1
+  - stage: stage2
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
       parameters:
@@ -51,7 +51,7 @@ stages:
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'], 'development')
        
-  - stage: stage_dev2
+  - stage: stage3
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
       parameters:
@@ -65,7 +65,7 @@ stages:
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'development')
 
-  - stage: stage_tst1
+  - stage: stage4
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
       parameters:
@@ -79,7 +79,7 @@ stages:
         log4netConfigPath: $(log4netConfigFile)
     condition: eq(variables['Build.SourceBranchName'],  'testing')
 
-  - stage: stage_tst2
+  - stage: stage5
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
       parameters:
@@ -94,7 +94,7 @@ stages:
     condition: eq(variables['Build.SourceBranchName'],  'testing')
 
 # Commented out because ACC 1 builds should not be triggered. It will be un-commented in future
-  # - stage: stage_acc1
+  # - stage: stage6
   #   jobs:
   #   - template: dotnet-pipeline-template.yaml  # Template reference
   #     parameters:
@@ -108,7 +108,7 @@ stages:
   #       log4netConfigPath: $(log4netConfigFile)
   #   condition: eq(variables['Build.SourceBranchName'],  'release')
 
-  - stage: stage_acc3
+  - stage: stage7
     jobs:
     - template: dotnet-pipeline-template.yaml  # Template reference
       parameters:

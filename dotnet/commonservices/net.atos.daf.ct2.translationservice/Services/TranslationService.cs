@@ -860,25 +860,20 @@ namespace net.atos.daf.ct2.translationservice
 
                 }).ToList());
 
-                string result = await _iconManager.UpdateIcons(icons);
+                bool result = await _iconManager.UpdateIcons(icons);
                 _logger.LogInformation("UpdateDTCTranslationIcon service called.");
 
                 IconUpdateResponse Response = new IconUpdateResponse();
-                var count = icons.Count;
-                var Text = "File Name not exist";
-                
-                var NotFoundcount = result.ToLowerInvariant().Split(new string[] { Text.ToLowerInvariant() }, StringSplitOptions.None).Count() - 1;
-                if (count == NotFoundcount )
+                if (result)
+                {
+                    Response.Code = Responcecode.Success;
+                    Response.Message = "Update Icon in DTC translation.";
+                }
+                else
                 {
                     Response.Code = Responcecode.Failed;
                     Response.Message = "File Name not exist .";
                 }
-                else if (result != "")
-                {
-                    Response.Code = Responcecode.Success;
-                    Response.Message = "Update Icon in DTC translation for :" + result;
-                }
-                
                 return await Task.FromResult(Response);
             }
             catch (Exception ex)

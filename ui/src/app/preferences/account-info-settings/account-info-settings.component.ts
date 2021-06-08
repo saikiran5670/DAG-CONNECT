@@ -9,7 +9,6 @@ import { TranslationService } from '../../services/translation.service';
 import { DataInterchangeService } from 'src/app/services/data-interchange.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { OrganizationService } from '../../services/organization.service';
-import { FileValidator } from 'ngx-material-file-input';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -60,12 +59,6 @@ export class AccountInfoSettingsComponent implements OnInit {
   imageError= '';
   profilePicture: any= '';
   croppedImageTemp= '';
-  readonly maxSize= 5242880; //5 MB
-  imageEmptyMsg: boolean= false;
-  clearInput: any;
-  imageMaxMsg: boolean = false;
-  file: any;
-  uploadLogo: any = "";
   salutationList: any = [
     {
       name: 'Mr'
@@ -116,11 +109,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       dateFormat: ['', []],
       timeFormat: ['',, []],
       vehDisplay: ['',[]],
-      landingPage: ['', []],
-      uploadBrandLogo: [
-        undefined,
-        [FileValidator.maxContentSize(this.maxSize)]
-      ]
+      landingPage: ['', []]
     });
     // this.changePictureFlag = true;
     // this.isSelectPictureConfirm = true;
@@ -196,7 +185,6 @@ export class AccountInfoSettingsComponent implements OnInit {
       if(preferenceId > 0){ //-- account pref
         this.accountService.getAccountPreference(preferenceId).subscribe(resp => {
           this.accountPreferenceData = resp;
-          this.uploadLogo= resp["logo"] ?  resp["logo"] : '';
           this.goForword(this.accountPreferenceData);
         }, (error) => {  });
       }
@@ -561,28 +549,5 @@ export class AccountInfoSettingsComponent implements OnInit {
       }
     } 
   }
-
-  addfile(event: any, clearInput: any){ 
-    this.clearInput = clearInput;
-    this.imageEmptyMsg = false;  
-    this.imageMaxMsg = false;
-    this.file = event.target.files[0];     
-    if(this.file){
-      if(this.file.size > this.maxSize){ //-- 32*32 px
-        this.imageMaxMsg = true;
-      }
-      else{
-        //this.uploadIconName = this.file.name.substring(0, this.file.name.length - 4);
-        var reader = new FileReader();
-        reader.onload = this._handleReaderLoaded.bind(this);
-        reader.readAsBinaryString(this.file);
-      }
-    }
-  }
-
-  _handleReaderLoaded(readerEvt: any) {
-    var binaryString = readerEvt.target.result;
-    this.uploadLogo = btoa(binaryString);
-   }
 
 }

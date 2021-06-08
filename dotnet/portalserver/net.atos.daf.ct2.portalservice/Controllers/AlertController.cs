@@ -428,35 +428,5 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
-        #region Alert Category Filter
-        [HttpGet]
-        [Route("getalertcategoryfilter")]
-        public async Task<IActionResult> GetAlertCategoryFilter(int accountId, int roleid)
-        {
-            try
-            {
-                int orgnizationid = GetUserSelectedOrgId();
-                if (accountId == 0 || orgnizationid == 0 || roleid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
-                
-                var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid , RoleId = roleid });
-                if (response == null)
-                    return StatusCode(500, "Internal Server Error.(01)");
-                if (response.Code == ResponseCode.Success)
-                    return Ok(response);
-                if (response.Code == ResponseCode.InternalServerError)
-                    return StatusCode((int)response.Code, String.Format(AlertConstants.ALERT_FILTER_FAILURE_MSG, response.Message));
-                return StatusCode((int)response.Code, response.Message);
-            }
-            catch (Exception ex)
-            {
-                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
-                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlertCategory", ex.Message), 1, 2, Convert.ToString(accountId),
-                  _userDetails);
-                _logger.Error(null, ex);
-                return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
-        }
-        #endregion
     }
 }

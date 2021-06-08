@@ -14,16 +14,17 @@ namespace net.atos.daf.ct2.relationship.repository
     {
         private readonly IDataAccess _dataAccess;
 
-        private static readonly log4net.ILog _log =
+        private static readonly log4net.ILog log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public RelationshipRepository(IDataAccess dataAccess)
         {
             _dataAccess = dataAccess;
+
         }
 
         public async Task<Relationship> CreateRelationship(Relationship relationship)
         {
-            _log.Info("Create Organization method called in repository");
+            log.Info("Create Organization method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
@@ -52,8 +53,8 @@ namespace net.atos.daf.ct2.relationship.repository
             }
             catch (Exception ex)
             {
-                _log.Info("Create Organization Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationship));
-                _log.Error(ex.ToString());
+                log.Info("Create Organization Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationship));
+                log.Error(ex.ToString());
                 throw;
             }
             return relationship;
@@ -61,7 +62,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
         public async Task<Relationship> UpdateRelationship(Relationship relationship)
         {
-            _log.Info("Update Organization method called in repository");
+            log.Info("Update Organization method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
@@ -98,8 +99,8 @@ namespace net.atos.daf.ct2.relationship.repository
             }
             catch (Exception ex)
             {
-                _log.Info("Update Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationship));
-                _log.Error(ex.ToString());
+                log.Info("Update Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationship));
+                log.Error(ex.ToString());
                 throw;
             }
             return relationship;
@@ -107,7 +108,7 @@ namespace net.atos.daf.ct2.relationship.repository
 
         public async Task<bool> DeleteRelationship(int relationshipId)
         {
-            _log.Info("Delete Organization Relationship method called in repository");
+            log.Info("Delete Organization Relationship method called in repository");
             try
             {
                 //check either relationship id maaped with organization or not 
@@ -131,8 +132,8 @@ namespace net.atos.daf.ct2.relationship.repository
             }
             catch (Exception ex)
             {
-                _log.Info("Delete  Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationshipId));
-                _log.Error(ex.ToString());
+                log.Info("Delete  Relationship method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(relationshipId));
+                log.Error(ex.ToString());
                 throw;
             }
         }
@@ -212,13 +213,13 @@ namespace net.atos.daf.ct2.relationship.repository
         private Relationship MapData(dynamic record)
         {
             var relationship = new Relationship();
-            relationship.Id = record.id ?? 0;
+            relationship.Id = record.id != null ? record.id : 0;
             relationship.Code = !string.IsNullOrEmpty(record.code) ? record.code : string.Empty;
-            relationship.Level = record.level ?? 0;
+            relationship.Level = record.level != null ? record.level : 0;
             relationship.Description = !string.IsNullOrEmpty(record.description) ? record.description : string.Empty;
             relationship.Name = !string.IsNullOrEmpty(record.name) ? record.name : string.Empty;
-            relationship.FeaturesetId = record.feature_set_id ?? 0;
-            relationship.OrganizationId = record.organization_id ?? 0;
+            relationship.FeaturesetId = record.feature_set_id != null ? record.feature_set_id : 0;
+            relationship.OrganizationId = record.organization_id != null ? record.organization_id : 0;
             relationship.State = !string.IsNullOrEmpty(record.state) ? MapCharToState(record.state) : string.Empty;
             relationship.CreatedAt = record.created_at;
             return relationship;
@@ -268,22 +269,23 @@ namespace net.atos.daf.ct2.relationship.repository
 
             var Inputparameter = new DynamicParameters();
             var relationships = new List<Relationship>();
-            Inputparameter.Add("@relationship_id", relationshipMapping.Relationship_id);
+            string query = string.Empty;
+            Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);
             //Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-            if (relationshipMapping.Vehicle_group_id == 0)
+            if (relationshipMapping.vehicle_group_id == 0)
             {
                 Inputparameter.Add("@vehicle_group_id", null);
             }
             else
             {
-                Inputparameter.Add("@vehicle_group_id", relationshipMapping.Vehicle_group_id);
+                Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
             }
-            Inputparameter.Add("@owner_org_id", relationshipMapping.Owner_org_id);
-            Inputparameter.Add("@created_org_id", relationshipMapping.Created_org_id);
-            Inputparameter.Add("@target_org_id", relationshipMapping.Target_org_id);
+            Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);
+            Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id);
+            Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);
             Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             Inputparameter.Add("@end_date", null);
-            Inputparameter.Add("@allow_chain", relationshipMapping.Allow_chain);
+            Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
             Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
             var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_group_id,
@@ -359,24 +361,24 @@ namespace net.atos.daf.ct2.relationship.repository
                         parameter.Add("@id", filter.Id);
                         query = query + " and orgmap.id=@id ";
                     }
-                    if (filter.Target_org_id > 0)
+                    if (filter.target_org_id > 0)
                     {
-                        parameter.Add("@target_org_id", filter.Target_org_id);
+                        parameter.Add("@target_org_id", filter.target_org_id);
                         query = query + " and orgmap.target_org_id=@target_org_id ";
                     }
-                    if (filter.Created_org_id > 0)
+                    if (filter.created_org_id > 0)
                     {
-                        parameter.Add("@created_org_id", filter.Created_org_id);
+                        parameter.Add("@created_org_id", filter.created_org_id);
                         query = query + " and orgmap.created_org_id=@created_org_id ";
                     }
-                    if (filter.Relationship_id > 0)
+                    if (filter.relationship_id > 0)
                     {
-                        parameter.Add("@relationship_id", filter.Relationship_id);
+                        parameter.Add("@relationship_id", filter.relationship_id);
                         query = query + " and orgmap.relationship_id=@relationship_id ";
                     }
-                    if (filter.Vehicle_group_id > 0)
+                    if (filter.vehicle_group_id > 0)
                     {
-                        parameter.Add("@vehicle_group_id", filter.Vehicle_group_id);
+                        parameter.Add("@vehicle_group_id", filter.vehicle_group_id);
                         query = query + " and orgmap.vehicle_group_id=@vehicle_group_id ";
                     }
 
@@ -403,16 +405,16 @@ namespace net.atos.daf.ct2.relationship.repository
         private OrganizationRelationShip MapOrgData(dynamic record)
         {
             var relationship = new OrganizationRelationShip();
-            relationship.Id = record.id ?? 0;
-            relationship.Relationship_id = record.relationship_id ?? 0;
-            relationship.Vehicle_group_id = record.vehicle_group_id ?? 0;
-            relationship.Owner_org_id = record.owner_org_id ?? 0;
-            relationship.Created_org_id = record.created_org_id ?? 0;
-            relationship.Target_org_id = record.target_org_id ?? 0;
-            relationship.Start_date = record.start_date ?? 0;
-            relationship.End_date = record.end_date ?? 0;
-            relationship.Created_at = record.created_at ?? 0;
-            relationship.Allow_chain = record.allow_chain ?? false;
+            relationship.Id = record.id != null ? record.id : 0;
+            relationship.relationship_id = record.relationship_id != null ? record.relationship_id : 0;
+            relationship.vehicle_group_id = record.vehicle_group_id != null ? record.vehicle_group_id : 0;
+            relationship.owner_org_id = record.owner_org_id != null ? record.owner_org_id : 0;
+            relationship.created_org_id = record.created_org_id != null ? record.created_org_id : 0;
+            relationship.target_org_id = record.target_org_id != null ? record.target_org_id : 0;
+            relationship.start_date = record.start_date != null ? record.start_date : 0;
+            relationship.end_date = record.end_date != null ? record.end_date : 0;
+            relationship.created_at = record.created_at != null ? record.created_at : 0;
+            relationship.allow_chain = record.allow_chain != null ? record.allow_chain : false;
             relationship.OrganizationName = !string.IsNullOrEmpty(record.orgname) ? record.orgname : string.Empty;
             relationship.RelationshipName = !string.IsNullOrEmpty(record.relationshipname) ? record.relationshipname : string.Empty;
             relationship.VehicleGroupName = !string.IsNullOrEmpty(record.vehgroupname) ? record.vehgroupname : string.Empty;

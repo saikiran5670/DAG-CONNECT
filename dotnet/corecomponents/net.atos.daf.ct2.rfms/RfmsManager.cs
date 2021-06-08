@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.repository;
 using net.atos.daf.ct2.rfms.responce;
@@ -8,21 +9,25 @@ namespace net.atos.daf.ct2.rfms
 {
     public class RfmsManager : IRfmsManager
     {
-        IRfmsRepository _rfmsRepository;
+        IRfmsRepository rfmsRepository;
+        IAuditTraillib auditlog;
 
-        public RfmsManager(IRfmsRepository rfmsRepository)
+        public RfmsManager(IRfmsRepository _rfmsRepository, IAuditTraillib _auditlog)
         {
-            _rfmsRepository = rfmsRepository;
+            rfmsRepository = _rfmsRepository;
+            auditlog = _auditlog;
         }
 
         public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
         {
-            return await _rfmsRepository.GetVehicles(rfmsVehicleRequest);
+            return await rfmsRepository.GetVehicles(rfmsVehicleRequest);
         }
 
         public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
-            return await _rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
+
+            return await rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
         }
+
     }
 }

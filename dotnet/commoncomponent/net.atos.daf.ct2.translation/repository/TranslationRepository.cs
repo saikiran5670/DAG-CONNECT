@@ -733,11 +733,7 @@ namespace net.atos.daf.ct2.translation.repository
                 GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class as Warningclass, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
                                                                 FROM master.dtcwarning
                                                                   where 1=1";
-                if (LanguageCode != null && LanguageCode != "")
-                {
-
-                    GetDTCWarningDataQueryStatement = GetDTCWarningDataQueryStatement + " and code=@LanguageCode";
-                }
+                GetDTCWarningDataQueryStatement = GetDTCWarningDataQueryStatement + " and code=@LanguageCode";
 
 
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(GetDTCWarningDataQueryStatement, parameter);
