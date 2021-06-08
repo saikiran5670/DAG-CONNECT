@@ -169,7 +169,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameterlandmarkref.Add("@unit_type", Convert.ToChar(landmark.UnitType));
                 else
                     parameterlandmarkref.Add("@unit_type", null);
-                parameterlandmarkref.Add("@state", 'A');
+                parameterlandmarkref.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterlandmarkref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryLandmarkref = @"INSERT INTO master.alertlandmarkref(alert_id, landmark_type, ref_id, distance, unit_type, state, created_at)
                                                 VALUES (@alert_id, @landmark_type, @ref_id, @distance, @unit_type, @state, @created_at) RETURNING id";
@@ -208,7 +208,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameterurgencylevelref.Add("@period_type", null);
                 parameterurgencylevelref.Add("@urgencylevel_start_date", urgencylevel.UrgencylevelStartDate);
                 parameterurgencylevelref.Add("@urgencylevel_end_date", urgencylevel.UrgencylevelEndDate);
-                parameterurgencylevelref.Add("@state", 'A');
+                parameterurgencylevelref.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterurgencylevelref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryUrgencylevel = @"INSERT INTO master.alerturgencylevelref(alert_id, urgency_level_type, threshold_value, unit_type, day_type, period_type, urgencylevel_start_date, urgencylevel_end_date, state, created_at)
 	                                                                            VALUES (@alert_id, @urgency_level_type, @threshold_value, @unit_type, @day_type, @period_type, @urgencylevel_start_date, @urgencylevel_end_date, @state, @created_at) RETURNING id";
@@ -257,7 +257,7 @@ namespace net.atos.daf.ct2.alert.repository
                 //    parameteralertfilterref.Add("@period_type", null);
                 //parameteralertfilterref.Add("@filter_start_date", alertfilter.FilterStartDate);
                 //parameteralertfilterref.Add("@filter_end_date", alertfilter.FilterEndDate);
-                parameteralertfilterref.Add("@state", 'A');
+                parameteralertfilterref.Add("@state", Convert.ToChar(AlertState.Active));
                 parameteralertfilterref.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 //string queryAlertfilter = @"INSERT INTO master.alertfilterref(alert_id, alert_urgency_level_id, filter_type, threshold_value, unit_type, landmark_type, ref_id, position_type, day_type, period_type, filter_start_date, filter_end_date, state, created_at)
                 //                     VALUES (@alert_id, @alert_urgency_level_id, @filter_type, @threshold_value, @unit_type, @landmark_type, @ref_id, @position_type, @day_type, @period_type, @filter_start_date, @filter_end_date, @state, @created_at) RETURNING id";
@@ -290,7 +290,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameternotification.Add("@validity_type", Convert.ToChar(notification.ValidityType.ToUpper()));
                 else
                     parameternotification.Add("@validity_type", null);
-                parameternotification.Add("@state", 'A');
+                parameternotification.Add("@state", Convert.ToChar(AlertState.Active));
                 parameternotification.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameternotification.Add("@created_by", notification.CreatedBy);
                 string queryNotification = @"INSERT INTO master.notification(alert_id, alert_urgency_level_type, frequency_type, frequency_threshhold_value, validity_type,state, created_at,created_by)
@@ -319,7 +319,7 @@ namespace net.atos.daf.ct2.alert.repository
                     parameteravailabilityperiod.Add("@period_type", null);
                 parameteravailabilityperiod.Add("@start_time", availabilityperiod.StartTime);
                 parameteravailabilityperiod.Add("@end_time", availabilityperiod.EndTime);
-                parameteravailabilityperiod.Add("@state", 'A');
+                parameteravailabilityperiod.Add("@state", Convert.ToChar(AlertState.Active));
                 parameteravailabilityperiod.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryAvailabilityperiod = @"INSERT INTO master.notificationavailabilityperiod(notification_id, availability_period_type, period_type, start_time, end_time, state, created_at)
 	                                    VALUES (@notification_id, @availability_period_type, @period_type, @start_time, @end_time, @state, @created_at) RETURNING id";
@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.alert.repository
                 else
                     parameterlimit.Add("@notification_period_type", null);
                 parameterlimit.Add("@period_limit", limit.PeriodLimit);
-                parameterlimit.Add("@state", 'A');
+                parameterlimit.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterlimit.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryLimit = @"INSERT INTO master.notificationlimit(notification_id, notification_mode_type, max_limit, notification_period_type, period_limit, state, created_at)
 	                                                            VALUES (@notification_id, @notification_mode_type, @max_limit, @notification_period_type, @period_limit, @state, @created_at) RETURNING id";
@@ -384,7 +384,7 @@ namespace net.atos.daf.ct2.alert.repository
                 parameterrecipient.Add("@ws_text", recipient.WsText);
                 parameterrecipient.Add("@ws_login", recipient.WsLogin);
                 parameterrecipient.Add("@ws_password", recipient.WsPassword);
-                parameterrecipient.Add("@state", 'A');
+                parameterrecipient.Add("@state", Convert.ToChar(AlertState.Active));
                 parameterrecipient.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryRecipient = @"INSERT INTO master.notificationrecipient(notification_id, recipient_label, account_group_id, notification_mode_type, phone_no, sms, email_id, email_sub, email_text, ws_url, ws_type, ws_text, ws_login, ws_password, state, created_at)
                                     VALUES (@notification_id, @recipient_label, @account_group_id, @notification_mode_type, @phone_no, @sms, @email_id, @email_sub, @email_text, @ws_url, @ws_type, @ws_text, @ws_login, @ws_password, @state, @created_at) RETURNING id";

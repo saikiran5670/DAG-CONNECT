@@ -78,7 +78,7 @@ stages:
         manifestFile: $(manifestFile)
         appsettingsPath: $(appsettingsFile)
         log4netConfigPath: $(log4netConfigFile)
-    condition: eq(variables['Build.SourceBranchName'],  'testing')
+    condition: eq(variables['Build.SourceBranchName'],  'development')
 
   - stage: stage5
     jobs:

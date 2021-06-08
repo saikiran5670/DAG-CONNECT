@@ -304,7 +304,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 {
                     landmarkIds.Add(item);
                 }
-                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds,request.LandmarkType);
+                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds, request.LandmarkType);
                 landmarkResponse.IsLandmarkActive = IsLandmarkIdActive != false ? true : false;
             }
             catch (Exception ex)
@@ -394,22 +394,36 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 var response = new AlertCategoryFilterResponse();
                 var enumTranslationList = await _alertManager.GetAlertCategory();
-                
+
                 foreach (var item in enumTranslationList)
                 {
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                 }
 
-                var vehicleByVisibilityAndFeature
-                                            = await _visibilityManager
-                                                .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                   request.RoleId, AlertConstants.ALERT_FEATURE_NAME);
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
 
-                var res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
-                response.AlertCategoryFilterRequest.AddRange(
-                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res)
-                    );
+                if (vehicleDetailsAccountVisibilty.Any())
+                {
 
+                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
+                    response.AssociatedVehicleRequest.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
+                        );
+
+                    var vehicleByVisibilityAndFeature
+                                                = await _visibilityManager
+                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                                                                                       request.RoleId,vehicleDetailsAccountVisibilty,
+                                                                                       AlertConstants.ALERT_FEATURE_NAME);
+
+                    res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
+                    response.AlertCategoryFilterRequest.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res)
+                        );
+
+                }
                 response.Message = AlertConstants.ALERT_FILTER_SUCCESS_MSG;
                 response.Code = ResponseCode.Success;
                 _logger.Info("Get method in alert service called.");
@@ -421,7 +435,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 return await Task.FromResult(new AlertCategoryFilterResponse
                 {
                     Code = ResponseCode.InternalServerError,
-                    Message =  ex.Message
+                    Message = ex.Message
                 });
             }
         }
