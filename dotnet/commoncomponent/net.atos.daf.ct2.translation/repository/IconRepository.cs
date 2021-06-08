@@ -17,11 +17,11 @@ namespace net.atos.daf.ct2.translation.repository
             _dataAccess = dataAccess;
             _iconCoreMapper = new IconCoreMapper();
         }
-        public async Task<bool> UpdateIcons(List<Icon> iconlist)
+        public async Task<string> UpdateIcons(Icon iconlist)
         {
             try
             {
-                bool is_Result = false;
+                string is_Result = "";
                 var QueryStatement = @"UPDATE master.icon
                                     SET                                
                                     icon=@icon, 
@@ -30,24 +30,25 @@ namespace net.atos.daf.ct2.translation.repository
                                     WHERE name=@name                                                                 
                                     RETURNING id;";
                 int iconId = 0;
-                foreach (var icon in iconlist)
-                {
+                
                     //If name is exist then update
-                    int name_cnt = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(*) FROM master.icon where name=@name), 0)", new { name = icon.Name });
+                    int name_cnt = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(*) FROM master.icon where name=@name), 0)", new { name = iconlist.Name });
 
                     if (name_cnt > 0)
                     {
                         var parameter = new DynamicParameters();
-                        parameter.Add("@icon", icon.Iconn);
+                        parameter.Add("@icon", iconlist.Iconn);
                         parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                        parameter.Add("@modified_by", icon.ModifiedBy);
-                        parameter.Add("@name", icon.Name);
+                        parameter.Add("@modified_by", iconlist.ModifiedBy);
+                        parameter.Add("@name", iconlist.Name);
 
                         iconId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
                     }
-
-                    is_Result = iconId > 0;
-                }
+                    if (iconId > 0)
+                    {
+                        is_Result = iconlist.Name;
+                    }
+                
 
                 return is_Result;
             }

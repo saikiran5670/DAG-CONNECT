@@ -134,12 +134,14 @@ namespace net.atos.daf.ct2.reports.repository
                 foreach (var positionData in PositionData)
                 {
 
-                    LiveFleetPosition objLiveFleetPosition = new LiveFleetPosition();
-                    objLiveFleetPosition.GpsAltitude = positionData.GpsAltitude;
-                    objLiveFleetPosition.GpsHeading = positionData.GpsHeading;
-                    objLiveFleetPosition.GpsLatitude = positionData.GpsLatitude;
-                    objLiveFleetPosition.GpsLongitude = positionData.GpsLongitude;
-                    objLiveFleetPosition.Id = positionData.Id;
+                    LiveFleetPosition objLiveFleetPosition = new LiveFleetPosition
+                    {
+                        GpsAltitude = positionData.GpsAltitude,
+                        GpsHeading = positionData.GpsHeading,
+                        GpsLatitude = positionData.GpsLatitude,
+                        GpsLongitude = positionData.GpsLongitude,
+                        Id = positionData.Id
+                    };
                     lstLiveFleetPosition.Add(objLiveFleetPosition);
                 }
             }
