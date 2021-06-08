@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.portalservice
                 options.Cookie.SecurePolicy = options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
                 if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
                 {
-                    options.Cookie.SameSite = SameSiteMode.Unspecified;
+                    options.Cookie.SameSite = SameSiteMode.None;
                 }
                 else
                 {
@@ -122,7 +122,7 @@ namespace net.atos.daf.ct2.portalservice
                 options.Cookie.IsEssential = true;
                 if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
                 {
-                    options.Cookie.SameSite = SameSiteMode.Unspecified;
+                    options.Cookie.SameSite = SameSiteMode.None;
                 }
                 else
                 {
