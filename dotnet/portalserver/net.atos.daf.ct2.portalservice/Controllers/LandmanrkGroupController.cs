@@ -8,6 +8,7 @@ using net.atos.daf.ct2.geofenceservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.POI;
 using Newtonsoft.Json;
+using net.atos.daf.ct2.alertservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -18,15 +19,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly GroupService.GroupServiceClient _groupServiceclient;
         private readonly AuditHelper _auditHelper;
-        private readonly Mapper _mapper;
-        private string _fk_Constraint = "violates foreign key constraint";
-
-        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
+        private readonly Entity.POI.Mapper _mapper;
+        private string FK_Constraint = "violates foreign key constraint";
+        private readonly AlertService.AlertServiceClient _alertServiceClient;
+        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _groupServiceclient = groupService;
             _auditHelper = auditHelper;
             _mapper = new Mapper();
+            _alertServiceClient = alertServiceClient;
+            
+           
         }
 
         [HttpPost]
@@ -79,10 +83,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    if (result.Message.Contains(_fk_Constraint))
+                    if (result.Message.Contains(FK_Constraint))
                     {
                         _logger.Error(result);
-                        return StatusCode(500, _fk_Constraint);
+                        return StatusCode(500, FK_Constraint);
 
                     }
                     else
@@ -154,10 +158,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    if (result.Message.Contains(_fk_Constraint))
+                    if (result.Message.Contains(FK_Constraint))
                     {
                         _logger.Error(result);
-                        return StatusCode(500, _fk_Constraint);
+                        return StatusCode(500, FK_Constraint);
                     }
                     else
                     {
@@ -186,7 +190,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Group ID is required");
                 }
-                _logger.Info("Add Group.");
+                _logger.Info("Delete Group.");
+
+                LandmarkIdRequest landmarkIdRequest = new LandmarkIdRequest();
+                landmarkIdRequest.LandmarkId.Add(GroupId);
+                landmarkIdRequest.LandmarkType = "G";
+
+                LandmarkIdExistResponse isLandmarkavalible = await _alertServiceClient.IsLandmarkActiveInAlertAsync(landmarkIdRequest);
+
+                if (isLandmarkavalible.IsLandmarkActive)
+                {
+                    return StatusCode(409, "Corridor is used in alert.");
+                }
 
                 GroupDeleteRequest objgroup = new GroupDeleteRequest();
                 objgroup.Id = GroupId;

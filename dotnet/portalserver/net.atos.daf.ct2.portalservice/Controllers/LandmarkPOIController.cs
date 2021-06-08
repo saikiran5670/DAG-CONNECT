@@ -13,6 +13,9 @@ using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.POI;
 using Newtonsoft.Json;
 
+using net.atos.daf.ct2.organizationservice;
+using Alert = net.atos.daf.ct2.alertservice;
+
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
@@ -25,15 +28,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly MapService.MapServiceClient _mapServiceClient;
 
         private readonly AuditHelper _auditHelper;
-        private readonly Mapper _mapper;
-        private readonly AccountPrivilegeChecker _privilegeChecker;
+        private readonly Entity.POI.Mapper _mapper;        
+        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
-
-        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
-                                    AccountPrivilegeChecker privilegeChecker,
-                                    IHttpContextAccessor _httpContextAccessor, 
-                                    SessionHelper sessionHelper,
-                                    MapService.MapServiceClient mapServiceClient) : base(_httpContextAccessor, sessionHelper)
+        private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
+        public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, 
+            Common.AccountPrivilegeChecker privilegeChecker, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
+            _alertServiceClient = alertServiceClient;
         }
 
         [HttpGet]
@@ -252,12 +253,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("delete")]
         public async Task<IActionResult> DeletePOIBulk(List<int> ids)
         {
+            Alert.LandmarkIdRequest landmarkIdRequest = new Alert.LandmarkIdRequest();
             try
             {
                 if (ids.Count == 0)
                 {
                     return StatusCode(400, "The POI id is required.");
                 }
+
+                foreach (var item in ids)
+                {
+                    landmarkIdRequest.LandmarkId.Add(item);
+                }
+                Alert.LandmarkIdExistResponse isLandmarkavalible = await _alertServiceClient.IsLandmarkActiveInAlertAsync(landmarkIdRequest);
+
+                if (isLandmarkavalible.IsLandmarkActive)
+                {
+                    return StatusCode(409, "POI is used in alert.");
+                }
+
                 POIDeleteBulkRequest bulkRequest = new POIDeleteBulkRequest();
                 foreach (var item in ids)
                 {
