@@ -2,8 +2,8 @@
    "CompanyUpdatedEvent": {
       "Company": {
          "type": "FleetManager",
-         "ID": "12345",         
-         "Name": "DAF Trucks",
+         "ID": "DAF686616",         
+         "Name": "Atos_Connect_Trucks",
          "Address":
             {
                "type": "Home",
@@ -12,8 +12,9 @@
                "PostalCode": "2591AB",
                "City": "Denhag",
                "CountryCode": "NL"
-            },         
-      "ReferenceDateTime": "2019-02-02T12:34:56"
+            },      
+      "ReferenceDateTime": "2019-02-02T12:34:56" 
       }
    }
 }
+
