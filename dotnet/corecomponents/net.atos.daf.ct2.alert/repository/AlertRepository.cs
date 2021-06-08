@@ -989,7 +989,8 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Landmark Delete Validation
-        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        //landmark type is added only for grouo table as landmark group refers to other table.
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId,string Landmarktype)
         {
             try
             {
@@ -997,25 +998,50 @@ namespace net.atos.daf.ct2.alert.repository
                 var query = string.Empty;
                 dynamic responseId;
 
-                query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state";
-                parameter.Add("@ref_id", landmarkId);
-                parameter.Add("@state", Convert.ToChar(AlertState.Active));
-                responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
-                if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                if (Landmarktype != null && Landmarktype != string.Empty)
                 {
-                    query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state";
+                    query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state and landmark_type=@type";
                     parameter.Add("@ref_id", landmarkId);
                     parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    parameter.Add("@type", Landmarktype);
                     responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                     if (((System.Collections.Generic.List<object>)responseId).Count == 0)
-                        return false;
+                    {
+                        query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state and landmark_type=@type";
+                        parameter.Add("@ref_id", landmarkId);
+                        parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                        responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                        if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                            return false;
+                        else
+                            return true;
+                    }
                     else
                         return true;
                 }
                 else
-                    return true;
+                {
+                    query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state";
+                    parameter.Add("@ref_id", landmarkId);
+                    parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                    if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                    {
+                        query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state";
+                        parameter.Add("@ref_id", landmarkId);
+                        parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                        responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                        if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                            return false;
+                        else
+                            return true;
+                    }
+                    else
+                        return true;
+                }
+                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

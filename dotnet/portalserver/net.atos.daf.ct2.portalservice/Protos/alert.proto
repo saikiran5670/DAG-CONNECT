@@ -227,6 +227,7 @@ message NotificationRecipientRequest
 
 message LandmarkIdRequest {
   repeated int32 LandmarkId = 1;
+  string LandmarkType=2;
 }
 
 message LandmarkIdExistResponse{   

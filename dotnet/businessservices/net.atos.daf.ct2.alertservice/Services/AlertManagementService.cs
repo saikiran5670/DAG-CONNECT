@@ -304,7 +304,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 {
                     landmarkIds.Add(item);
                 }
-                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds);
+                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds,request.LandmarkType);
                 landmarkResponse.IsLandmarkActive = IsLandmarkIdActive != false ? true : false;
             }
             catch (Exception ex)
