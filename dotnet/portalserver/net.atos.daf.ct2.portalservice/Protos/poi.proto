@@ -15,6 +15,7 @@ rpc DeletePOIBulk (POIDeleteBulkRequest) returns (POIResponse);
 rpc DownloadPOIForExcel (DownloadPOIRequest) returns (POIResponseList);
 rpc UploadPOIExcel (POIUploadRequest) returns (POIUploadResponse);
 rpc GetAllTripDetails (TripRequest) returns (TripResponce);
+rpc UpdateTripAddress (AddTripAddressRequest) returns (AddTripAddressResponse);
     }
 
  message POIUploadRequest{
@@ -32,6 +33,20 @@ message POIEntityRequest{
     int32 CategoryId = 1;
      google.protobuf.Int32Value SubCategoryId = 2;
 }
+
+message AddTripAddressRequest{
+    int32 Id =1;      
+    string StartAddress=2;
+    string EndAddress =3;
+}
+message AddTripAddressResponse{
+AddTripAddressRequest TripAddressDetails=1;
+Responsecode Responsecode=2;
+string message=3;
+
+}
+
+
 enum Responsecode{
   None = 0;
   Success = 200;

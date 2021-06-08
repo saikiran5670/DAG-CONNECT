@@ -100,7 +100,7 @@
                       <mat-radio-button style='margin-right: 20px;' value="G">
                           {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
                       </mat-radio-button>
-                      <mat-radio-button style='margin-right: 20px;' value="S">
+                      <mat-radio-button style='margin-right: 20px;' value="V">
                           {{ translationData.lblVehicle || 'vehicle' }}
                       </mat-radio-button>
                   </mat-radio-group>
@@ -130,7 +130,7 @@
               <span style='font-weight: 500!important;'>{{ selectedRowData.vehicleGroupName != '' ? selectedRowData.vehicleGroupName : '-' }}</span>
             </div>
         </div>
-        <div *ngIf="selectedApplyOn == 'S'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf="selectedApplyOn == 'V'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
@@ -151,7 +151,7 @@
               <span style='font-weight: 500!important;'>{{ selectedRowData.vin != '' ? selectedRowData.vin : '-' }}</span>
             </div>
         </div>
-        <div *ngIf="selectedApplyOn != 'S'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div *ngIf="selectedApplyOn != 'V'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -662,8 +662,8 @@
           <div *ngIf="alert_category_selected === 'L' && alert_type_selected === 'S'"
              fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
-                <mat-label>{{ translationData.lblSelectCalender || 'Select Calender' }} <span class='mandatoryColor'>*</span></mat-label>  
-                <div appearance="outline">
+                <!-- <mat-label>{{ translationData.lblSelectCalender || 'Select Calender' }} <span class='mandatoryColor'>*</span></mat-label>   -->
+                <!-- <div appearance="outline">
                   <div  fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
                     <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                       <mat-checkbox (change)="onChangeMondaySelection($event)">Monday</mat-checkbox>
@@ -684,7 +684,9 @@
                       <input placeholder="{{ translationData.lblEnterThreshold || 'Enter Threshold' }}"  matInput>
                     </mat-form-field>
                   </div>
-                </div>
+                </div> -->
+                <app-period-selection-filter 
+                [translationData] = 'translationData'></app-period-selection-filter>
              </div>
            </div>
           

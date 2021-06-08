@@ -16,7 +16,7 @@
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblCreateScheduleDetails || 'Create Schedule Details') : actionType == 'edit' ? (translationData.lblEditScheduleDetails || 'Edit Schedule Details') : (translationData.lblViewScheduleDetails || 'View Schedule Details') }}</span>
         </div>
       </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px"  *ngIf="actionType != 'view'">
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
             <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
@@ -104,9 +104,9 @@
         </div>
         <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
           <div class='full-width' fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
-              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                   <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                      <mat-label>{{ translationData.lblReportType || 'Report Type' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                      <mat-label>{{ translationData.lblReportType || 'Report Type' }}<span class='mandatoryColor'>*</span></mat-label>
                       <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}" formControlName="reportType">
                             <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.enum">
@@ -129,7 +129,7 @@
                       </mat-error> -->
                   </div>
                   <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" formControlName="vehicleGroup">
                             <mat-option *ngFor="let rer of VehicleGroupList" [value]="rer.enum">
@@ -153,9 +153,9 @@
                   </div>
             </div>
 
-            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
+            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <mat-label>{{ translationData.lblLanguageForRecipient || 'Language (For Recipient`)' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                    <mat-label>{{ translationData.lblLanguageForRecipient || 'Language (For Recipient`)' }}<span class='mandatoryColor'>*</span></mat-label>
                     <mat-form-field appearance="outline">
                         <mat-select placeholder="{{ translationData.lblSelectLanguage || 'Select Language' }}" formControlName="language">
                             <mat-option *ngFor="let rer of LanguageCodeList" [value]="rer.id">
@@ -178,7 +178,7 @@
                     </mat-error> -->
                 </div>
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                         <mat-option *ngFor="let rer of VehicleList" [value]="rer.enum">
@@ -202,10 +202,10 @@
                 </div>
               </div>
 
-              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblRecipientsEmail || 'Recipients Email' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        {{ translationData.lblRecipientsEmail || 'Recipients Email' }}<span class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -226,7 +226,7 @@
                     </mat-error> -->
                 </div>
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                  <mat-label>{{ translationData.lblDriver || 'Driver' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
+                  <mat-label>{{ translationData.lblDriver || 'Driver' }}<span class='mandatoryColor'>*</span></mat-label>
                   <mat-form-field appearance="outline">
                     <mat-select placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
                         <mat-option *ngFor="let rer of DriverList" [value]="rer.enum">
@@ -250,10 +250,10 @@
                 </div>
               </div>
 
-              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
                 <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblMailSubject || 'Mail Subject' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        {{ translationData.lblMailSubject || 'Mail Subject' }}<span class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -279,7 +279,7 @@
               <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
                 <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <mat-label style='display: flex; place-content: space-between;'>
-                        {{ translationData.lblMailDescription || 'Mail Description' }}<span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+                        {{ translationData.lblMailDescription || 'Mail Description' }}<span class='mandatoryColor'>*</span>
                         <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max' }}</span>
                     </mat-label>
                     <mat-form-field appearance="outline">
@@ -303,6 +303,10 @@
               </div>
           </div>
         </div>
+      </div>
+
+      <div *ngIf="actionType == 'view'">
+
       </div>
       
     </mat-card-content>
