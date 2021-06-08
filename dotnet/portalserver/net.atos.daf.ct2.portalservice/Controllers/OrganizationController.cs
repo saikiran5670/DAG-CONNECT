@@ -517,6 +517,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpGet]
+        [Route("getallcontextorganizations")]
+        public async Task<IActionResult> GetAllOrganizationsForContext()
+        {
+            try
+            {
+                var orgResponse = await _organizationClient.GetAllOrganizationsForContextAsync(new Google.Protobuf.WellKnownTypes.Empty());
+                if(orgResponse.Code == OrganizationBusinessService.Responcecode.Success)
+                    return Ok(orgResponse.ContextOrgs);
+                else if (orgResponse.Code == OrganizationBusinessService.Responcecode.NotFound)
+                    return NotFound("Organizations detail not found.");
+                else
+                    return StatusCode(500, orgResponse.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         //Begin Account Preference
         [HttpPost]
         [Route("preference/create")]

@@ -1862,7 +1862,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("~/getsessioninfo")]
+        [Route("getsessioninfo")]
         public async Task<IActionResult> GetSessionInfo()
         {
             await _auditHelper.AddLogs(DateTime.Now, "Account Component",

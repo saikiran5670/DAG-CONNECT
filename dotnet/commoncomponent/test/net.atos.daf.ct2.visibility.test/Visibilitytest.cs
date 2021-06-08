@@ -37,5 +37,29 @@ namespace net.atos.daf.ct2.Audittrail.test
                                     .GetVehicleByAccountVisibility(51, 93);
             Assert.IsTrue(result.Count() > 0);
         }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetVehicleByFeatureAndSubsction Sucess case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVehicleByFeatureAndSubsction_Success()
+        {
+
+            var result = await _visibilityManager
+                                    .GetVehicleByFeatureAndSubscription(51, 93,160, "Alert");
+            Assert.IsTrue(result.Count() > 0);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetVehicleByVisibilityAndFeature Sucess case")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task GetVehicleByVisibilityAndFeature_Success()
+        {
+
+            var result = await _visibilityManager
+                                    .GetVehicleByVisibilityAndFeature(51, 93, 160, null, "Alert");
+            Assert.IsTrue(result.Count() > 0);
+        }
     }
 }

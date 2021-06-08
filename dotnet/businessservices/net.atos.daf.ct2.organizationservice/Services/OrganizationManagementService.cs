@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.accountpreference;
@@ -242,7 +243,7 @@ namespace net.atos.daf.ct2.organizationservice
                     {
                         foreach (var vehgroup in request.VehicleGroupID)
                         {
-                            if (relationships.Any(i => i.target_org_id == organization && i.vehicle_group_id == vehgroup && i.relationship_id == request.RelationShipId))
+                            if (relationships.Any(i => i.Target_org_id == organization && i.Vehicle_group_id == vehgroup && i.Relationship_id == request.RelationShipId))
                             {
                                 Relationscount++;
                                 responce.Code = Responcecode.Conflict;
@@ -257,13 +258,13 @@ namespace net.atos.daf.ct2.organizationservice
                 {
                     foreach (var vehgroup in request.VehicleGroupID)
                     {
-                        objRelationship.relationship_id = request.RelationShipId;
-                        objRelationship.vehicle_group_id = vehgroup;
-                        objRelationship.owner_org_id = request.OwnerOrId;
-                        objRelationship.created_org_id = request.CreatedOrgId;
-                        objRelationship.target_org_id = organization;
-                        objRelationship.allow_chain = request.AllowChain;
-                        if (relationships.Any(i => i.target_org_id == objRelationship.target_org_id && i.vehicle_group_id == objRelationship.vehicle_group_id && i.relationship_id == objRelationship.relationship_id))
+                        objRelationship.Relationship_id = request.RelationShipId;
+                        objRelationship.Vehicle_group_id = vehgroup;
+                        objRelationship.Owner_org_id = request.OwnerOrId;
+                        objRelationship.Created_org_id = request.CreatedOrgId;
+                        objRelationship.Target_org_id = organization;
+                        objRelationship.Allow_chain = request.AllowChain;
+                        if (relationships.Any(i => i.Target_org_id == objRelationship.Target_org_id && i.Vehicle_group_id == objRelationship.Vehicle_group_id && i.Relationship_id == objRelationship.Relationship_id))
                         {
                             OrgRelationshipMappingGetRequest Presetrelationships = new OrgRelationshipMappingGetRequest();
                             Presetrelationships.RelationShipId = request.RelationShipId;
@@ -363,27 +364,27 @@ namespace net.atos.daf.ct2.organizationservice
                 var response = new OrgRelationshipGetResponse();
                 var orgRelationshipFilter = new OrganizationRelationShip();
                 orgRelationshipFilter.Id = request.Id;
-                orgRelationshipFilter.relationship_id = request.RelationShipId;
-                orgRelationshipFilter.vehicle_group_id = request.VehicleGroupID;
-                orgRelationshipFilter.owner_org_id = request.OwnerOrId;
-                orgRelationshipFilter.created_org_id = request.CreatedOrgId;
-                orgRelationshipFilter.target_org_id = request.TargetOrgId;
+                orgRelationshipFilter.Relationship_id = request.RelationShipId;
+                orgRelationshipFilter.Vehicle_group_id = request.VehicleGroupID;
+                orgRelationshipFilter.Owner_org_id = request.OwnerOrId;
+                orgRelationshipFilter.Created_org_id = request.CreatedOrgId;
+                orgRelationshipFilter.Target_org_id = request.TargetOrgId;
 
                 var orgRelationships = _relationshipManager.GetRelationshipMapping(orgRelationshipFilter).Result;
                 response.OrgRelationshipMappingList.AddRange(orgRelationships
                                      .Select(x => new OrgRelationshipMappingGetRequest()
                                      {
                                          Id = x.Id,
-                                         RelationShipId = x.relationship_id,
-                                         TargetOrgId = x.target_org_id,
-                                         CreatedOrgId = x.created_org_id,
-                                         StartDate = x.start_date,
-                                         CreatedAt = x.created_at,
-                                         EndDate = x.end_date,
-                                         AllowChain = x.allow_chain,
+                                         RelationShipId = x.Relationship_id,
+                                         TargetOrgId = x.Target_org_id,
+                                         CreatedOrgId = x.Created_org_id,
+                                         StartDate = x.Start_date,
+                                         CreatedAt = x.Created_at,
+                                         EndDate = x.End_date,
+                                         AllowChain = x.Allow_chain,
                                          OrganizationName = x.OrganizationName,
-                                         VehicleGroupID = x.vehicle_group_id,
-                                         OrgRelationId = x.relationship_id,
+                                         VehicleGroupID = x.Vehicle_group_id,
+                                         OrgRelationId = x.Relationship_id,
                                          RelationshipName = x.RelationshipName,
                                          VehicleGroupName = x.VehicleGroupName
 
@@ -551,6 +552,35 @@ namespace net.atos.daf.ct2.organizationservice
             }
             return await Task.FromResult(response);
         }
+
+        public override async Task<GetAllContextOrgsResponse> GetAllOrganizationsForContext(Empty empty, ServerCallContext context)
+        {
+            try
+            {
+                var contextOrgs = await _organizationtmanager.GetAllOrganizationsForContext();
+
+                var response = new GetAllContextOrgsResponse();
+                foreach(var item in contextOrgs)
+                {
+                    var listItem = new ContextOrgsList();
+                    listItem.Id = item.Id;
+                    listItem.Name = item.Name;
+                    response.ContextOrgs.Add(listItem);
+                }
+                response.Code = contextOrgs.Count() > 0 ? Responcecode.Success : Responcecode.NotFound;                
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetAllContextOrgsResponse
+                {
+                    Code = Responcecode.Failed,
+                    Message = "Get all context orgs failed due to - " + ex.Message
+                });
+            }            
+        }
+
         public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)
         {
             try

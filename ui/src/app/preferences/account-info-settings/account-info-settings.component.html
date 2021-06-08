@@ -287,7 +287,12 @@
             {{ !landingPageDisplayData ? '--' : landingPageDisplayData.length > 0 ? landingPageDisplayData[0].value : landingPageDisplayDropdownData[0].value }}
           </mat-label>
         </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
+          <mat-label class='custom-font'>
+            {{ uploadLogo != '' ? uploadLogo : '--' }}
+          </mat-label>
+        </div>
       </div>
       <form [formGroup]="userSettingsForm" *ngIf="editGeneralSettingsFlag">
         <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm mobile-view" fxLayoutGap="10px">
@@ -375,7 +380,24 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left"></div>
+          <div class="areaWidth min-width-30-per max-width-30-per mobile-margin-right-0 myform-wrappe uploadArea" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblBrandLogoForPersonalizingReport || 'Brand Logo (For Personalizing Report)' }}</mat-label>
+            <mat-form-field appearance="outline">
+                <ngx-mat-file-input #removableInput (change)="addfile($event, removableInput)" [accept]="'.png, .jpg, .gif'" formControlName="uploadBrandLogo" placeholder="Upload Logo" ></ngx-mat-file-input>
+                <button mat-flat-button color="primary" matSuffix>{{ translationData.lblbrowse || 'Browse' }}</button>
+            </mat-form-field>
+            <span>{{ translationData.lblIconSelectionCriteriaMsg || 'Supporting file format - .jpg, .png, .gif and Max size- 5 MB' }}</span>
+            <!-- <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('required')">
+                {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+            </mat-error> -->
+            <mat-error *ngIf="userSettingsForm.get('uploadBrandLogo').hasError('maxContentSize')">
+                The total size must not exceed {{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').maxSize | byteFormat}} ({{userSettingsForm.get('uploadBrandLogo')?.getError('maxContentSize').actualSize
+                | byteFormat}}).
+            </mat-error>
+            <mat-error *ngIf="imageEmptyMsg">
+                {{ translationData.lblEmptyFile || 'Empty File' }}
+            </mat-error>
+          </div>
         </div>
         <div fxLayout="row" fxLayoutAlign="end end" class="areaWidth full-width mobile-view mobile-btn-align">
           <button class='resetCancelBtnColor margin-right-10 mobile-full-width mobile-margin-bottom-10' mat-raised-button color="primary"

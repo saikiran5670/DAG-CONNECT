@@ -53,10 +53,7 @@ namespace net.atos.daf.ct2.reports
 
         #region Trip Report Table Details
 
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter)
-        {
-            return await _reportRepository.GetFilteredTripDetails(tripFilter);
-        }
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter) => await _reportRepository.GetFilteredTripDetails(tripFilter);
 
         #endregion
 
@@ -93,9 +90,11 @@ namespace net.atos.daf.ct2.reports
         /// </summary>
         /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
         /// <returns></returns>
-        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter)
+        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter) => await _reportRepository.GetDriversActivity(DriverActivityFilter);
+
+        public async Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN)
         {
-            return await _reportRepository.GetDriversActivity(DriverActivityFilter);
+            return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
         }
 
         #endregion

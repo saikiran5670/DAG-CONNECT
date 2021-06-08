@@ -148,6 +148,14 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     alertUrgencyLevelRef.AlertFilterRefs.Add(ToAlertFilterRefEntity(item));
                 }
             }
+            alertUrgencyLevelRef.AlertTimingDetails = new List<AlertTimingDetail>();
+            if (request.AlertTimingDetail.Count > 0)
+            {
+                foreach (var item in request.AlertTimingDetail)
+                {
+                    alertUrgencyLevelRef.AlertTimingDetails.Add(ToAlertTimingDetailEntity(item));
+                }
+            }
             return alertUrgencyLevelRef;
         }
 
@@ -174,6 +182,13 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     alertUrgencyLevelRef.AlertFilterRefs.Add(MapAlertFilterRefEntity(item));
                 }
             }
+            if (request.AlertTimingDetails.Count > 0)
+            {
+                foreach (var item in request.AlertTimingDetails)
+                {
+                    alertUrgencyLevelRef.AlertTimingDetail.Add(MapAlertTimingDetailUrgencyEntity(item));
+                }
+            }
             return alertUrgencyLevelRef;
         }
 
@@ -189,13 +204,21 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertFilterRef.LandmarkType = request.LandmarkType;
             alertFilterRef.RefId = request.RefId;
             alertFilterRef.PositionType = request.PositionType;
-            alertFilterRef.DayType = request.DayType.ToArray();
-            alertFilterRef.PeriodType = request.PeriodType;
-            alertFilterRef.FilterStartDate = request.FilterStartDate;
-            alertFilterRef.FilterEndDate = request.FilterEndDate;
+            //alertFilterRef.DayType = request.DayType.ToArray();
+            //alertFilterRef.PeriodType = request.PeriodType;
+            //alertFilterRef.FilterStartDate = request.FilterStartDate;
+            //alertFilterRef.FilterEndDate = request.FilterEndDate;
             alertFilterRef.State = request.State;
             alertFilterRef.CreatedAt = request.CreatedAt;
             alertFilterRef.ModifiedAt = request.ModifiedAt;
+            alertFilterRef.AlertTimingDetails = new List<AlertTimingDetail>();
+            if (request.AlertTimingDetail.Count > 0)
+            {
+                foreach (var item in request.AlertTimingDetail)
+                {
+                    alertFilterRef.AlertTimingDetails.Add(ToAlertTimingDetailEntity(item));
+                }
+            }
             return alertFilterRef;
         }
 
@@ -212,12 +235,19 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertFilterRef.RefId = request.RefId;
             alertFilterRef.PositionType = string.IsNullOrEmpty(request.PositionType) ? string.Empty : request.PositionType; ;
             //alertFilterRef.DayType = request.DayType.ToArray();
-            alertFilterRef.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
-            alertFilterRef.FilterStartDate = request.FilterStartDate;
-            alertFilterRef.FilterEndDate = request.FilterEndDate;
+            //alertFilterRef.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
+            //alertFilterRef.FilterStartDate = request.FilterStartDate;
+            //alertFilterRef.FilterEndDate = request.FilterEndDate;
             alertFilterRef.State = request.State;
             alertFilterRef.CreatedAt = request.CreatedAt;
             alertFilterRef.ModifiedAt = request.ModifiedAt;
+            if (request.AlertTimingDetails.Count > 0)
+            {
+                foreach (var item in request.AlertTimingDetails)
+                {
+                    alertFilterRef.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
+                }
+            }
             return alertFilterRef;
         }
 
@@ -251,12 +281,12 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     notification.NotificationLimits.Add(ToNotificationLimitEntity(item));
                 }
             }
-            notification.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
-            if (request.NotificationAvailabilityPeriods.Count > 0)
+            notification.AlertTimingDetails = new List<AlertTimingDetail>();
+            if (request.AlertTimingDetail.Count > 0)
             {
-                foreach (var item in request.NotificationAvailabilityPeriods)
+                foreach (var item in request.AlertTimingDetail)
                 {
-                    notification.NotificationAvailabilityPeriods.Add(ToNotificationAvailabilityPeriodEntity(item));
+                    notification.AlertTimingDetails.Add(ToAlertTimingDetailEntity(item));
                 }
             }
             return notification;
@@ -293,11 +323,11 @@ namespace net.atos.daf.ct2.alertservice.Entity
                 }
             }
 
-            if (request.NotificationAvailabilityPeriods.Count > 0)
+            if (request.AlertTimingDetails.Count > 0)
             {
-                foreach (var item in request.NotificationAvailabilityPeriods)
+                foreach (var item in request.AlertTimingDetails)
                 {
-                    notification.NotificationAvailabilityPeriods.Add(MapNotificationAvailabilityPeriodEntity(item));
+                    notification.AlertTimingDetail.Add(MapAlertTimingDetailNotificationEntity(item));
                 }
             }
             return notification;
@@ -439,6 +469,75 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertLandmarkRef.CreatedAt = request.CreatedAt;
             alertLandmarkRef.ModifiedAt = request.ModifiedAt;
             return alertLandmarkRef;
+        }
+        public AlertTimingDetail ToAlertTimingDetailEntity(AlertTimingDetailRequest request)
+        {
+            AlertTimingDetail alertTimingDetail = new AlertTimingDetail();
+            alertTimingDetail.Id = request.Id;
+            alertTimingDetail.Type = request.Type;
+            alertTimingDetail.RefId = request.RefId;
+            alertTimingDetail.DayType = request.DayType.ToArray();
+            alertTimingDetail.PeriodType = request.PeriodType;
+            alertTimingDetail.StartDate = request.StartDate;
+            alertTimingDetail.EndDate = request.EndDate;
+            alertTimingDetail.State = request.State;
+            alertTimingDetail.CreatedAt = request.CreatedAt;
+            alertTimingDetail.ModifiedAt = request.ModifiedAt;
+            return alertTimingDetail;
+        }
+        public AlertTimingDetailRequest MapAlertTimingDetailEntity(AlertTimingDetail request)
+        {
+            AlertTimingDetailRequest alertTimingDetailRequest = new AlertTimingDetailRequest();
+            alertTimingDetailRequest.Id = request.Id;
+            alertTimingDetailRequest.Type = request.Type;
+            alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
+            alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
+            alertTimingDetailRequest.StartDate = request.StartDate;
+            alertTimingDetailRequest.EndDate = request.EndDate;
+            alertTimingDetailRequest.State = request.State;
+            alertTimingDetailRequest.CreatedAt = request.CreatedAt;
+            alertTimingDetailRequest.ModifiedAt = request.ModifiedAt;
+            return alertTimingDetailRequest;
+        }
+        public AlertTimingDetailRequest MapAlertTimingDetailUrgencyEntity(AlertTimingDetail request)
+        {
+            AlertTimingDetailRequest alertTimingDetailRequest = new AlertTimingDetailRequest();
+            alertTimingDetailRequest.Id = request.Id;
+            alertTimingDetailRequest.Type = request.Type;
+            alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
+            alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
+            alertTimingDetailRequest.StartDate = request.StartDate;
+            alertTimingDetailRequest.EndDate = request.EndDate;
+            alertTimingDetailRequest.State = request.State;
+            alertTimingDetailRequest.CreatedAt = request.CreatedAt;
+            alertTimingDetailRequest.ModifiedAt = request.ModifiedAt;
+            return alertTimingDetailRequest;
+        }
+        public AlertTimingDetailRequest MapAlertTimingDetailNotificationEntity(AlertTimingDetail request)
+        {
+            AlertTimingDetailRequest alertTimingDetailRequest = new AlertTimingDetailRequest();
+            alertTimingDetailRequest.Id = request.Id;
+            alertTimingDetailRequest.Type = request.Type;
+            alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
+            alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
+            alertTimingDetailRequest.StartDate = request.StartDate;
+            alertTimingDetailRequest.EndDate = request.EndDate;
+            alertTimingDetailRequest.State = request.State;
+            alertTimingDetailRequest.CreatedAt = request.CreatedAt;
+            alertTimingDetailRequest.ModifiedAt = request.ModifiedAt;
+            return alertTimingDetailRequest;
         }
     }
 }

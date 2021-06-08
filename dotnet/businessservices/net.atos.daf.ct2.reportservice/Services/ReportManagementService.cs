@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 {
     public partial class ReportManagementService : ReportService.ReportServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IReportManager _reportManager;
         private readonly IVisibilityManager _visibilityManager;
         private readonly Mapper _mapper;
