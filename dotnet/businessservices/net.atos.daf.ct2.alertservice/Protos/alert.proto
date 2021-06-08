@@ -14,8 +14,9 @@ service AlertService {
   rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
   rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
   rpc IsLandmarkActiveInAlert (LandmarkIdRequest) returns (LandmarkIdExistResponse);
-  rpc GetNotificationTemplate(AccountIdRequest) returns (NotificationTemplateResponse);
-  rpc GetRecipientLabelList(OrgIdRequest) returns (NotificationRecipientResponse);
+  rpc GetNotificationTemplate (AccountIdRequest) returns (NotificationTemplateResponse);
+  rpc GetRecipientLabelList (OrgIdRequest) returns (NotificationRecipientResponse);
+  rpc GetAlertCategoryFilter (AlertCategoryFilterIdRequest) returns (AlertCategoryFilterResponse);
 }
 
 enum ResponseCode{
@@ -275,4 +276,29 @@ message AlertTimingDetailRequest
 	int64 CreatedAt=9;
 	int64 ModifiedAt=10;
 
+}
+
+message AlertCategoryFilterIdRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
+  int32 RoleId = 3;
+}
+
+message AlertCategoryFilterRequest {
+		 int32 VehicleGroupId =  1;
+         string VehicleGroupName =  2;
+         int32 VehicleId =  3;
+         string VehicleName =  4;
+         string Vin =  5;
+         string RegistrationNo =  6;
+         string FeatureName =  7;
+         string FeatureKey =  8;
+         bool Subscribe =  9;
+}
+
+message AlertCategoryFilterResponse{
+    ResponseCode Code = 1;
+    string message = 2;
+    repeated EnumTranslation EnumTranslation = 3;
+	repeated AlertCategoryFilterRequest AlertCategoryFilterRequest = 4;
 }

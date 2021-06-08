@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
@@ -28,8 +29,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly MapService.MapServiceClient _mapServiceClient;
 
         private readonly AuditHelper _auditHelper;
-        private readonly Entity.POI.Mapper _mapper;        
-        private readonly Common.AccountPrivilegeChecker _privilegeChecker;
+        private readonly Mapper _mapper;
+        private readonly HereMapAddressProvider _hereMapAddressProvider;
+        private readonly AccountPrivilegeChecker _privilegeChecker;
         private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, 
@@ -41,6 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
+            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient,_poiServiceClient);
             _alertServiceClient = alertServiceClient;
         }
 
@@ -95,9 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     request.OrganizationId = GetContextOrgId();
                 }
-                var poiRequest = new POIRequest();
-               // var mapRequest = new GetMapRequest() { Latitude = request.Latitude, Longitude = request.Longitude };
-              //var lookupAddress=await  _mapServiceClient.GetMapAddressAsync(mapRequest);
+                var poiRequest = new POIRequest();             
 
                 request.State = "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
@@ -466,6 +467,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objTripRequest.StartDateTime = request.StartDateTime;
                 objTripRequest.EndDateTime = request.EndDateTime;
                 var data = await _poiServiceClient.GetAllTripDetailsAsync(objTripRequest);
+               data.TripData.Select(x => {
+                    x = _hereMapAddressProvider.UpdateTripAddress(x);
+                    return x;
+                }).ToList();
                 if (data != null)
                 {
                     return Ok(data);
