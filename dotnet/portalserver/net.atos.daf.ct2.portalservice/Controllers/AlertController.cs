@@ -322,7 +322,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
                 {
-                    return StatusCode(500, AlertConstants.ALERT_CREATE_FAILED_MSG);
+                    return StatusCode(500, AlertConstants.ALERT_UPDATE_FAILED_MSG);
                 }
                 else if (alertResponse != null && alertResponse.Code == ResponseCode.Conflict)
                 {
@@ -338,7 +338,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, AlertConstants.ALERT_CREATE_FAILED_MSG);
+                    return StatusCode(500, AlertConstants.ALERT_UPDATE_FAILED_MSG);
                 }
 
             }
