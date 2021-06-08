@@ -339,12 +339,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getcategorywisepoi")]
-        public async Task<IActionResult> GetCategoryWisePOI()
+        public async Task<IActionResult> GetCategoryWisePOI(int OrganizationId)
         {
             try
             {
                 CategoryWisePOIRequest objCategoryWisePOIRequest = new CategoryWisePOIRequest();
-                objCategoryWisePOIRequest.OrganizationId = GetContextOrgId();
+                if (GetContextOrgId() > 0)
+                {
+                    objCategoryWisePOIRequest.OrganizationId = GetContextOrgId();
+                }
+                else
+                {
+                    objCategoryWisePOIRequest.OrganizationId = OrganizationId;
+                }
+                if (objCategoryWisePOIRequest.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "Organization Id Required.");
+                }
                 var data = await _categoryServiceClient.GetCategoryWisePOIAsync(objCategoryWisePOIRequest);
 
                 if (data != null && data.Code == Responsecode.Success)

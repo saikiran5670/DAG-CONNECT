@@ -324,6 +324,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             //request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             //request.ModifiedAt = entity.ModifiedAt;
+            if (entity.AlertTimingDetails.Count > 0)
+            {
+                foreach (var item in entity.AlertTimingDetails)
+                {
+                    request.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
+                }
+            }
             return request;
         }
 

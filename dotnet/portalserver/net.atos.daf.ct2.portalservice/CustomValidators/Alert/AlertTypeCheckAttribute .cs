@@ -6,23 +6,17 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
     public class AlertTypeCheckAttribute : ValidationAttribute
     {
         private readonly string _comparisonProperty;
-
         public AlertTypeCheckAttribute(string comparisonProperty)
         {
             _comparisonProperty = comparisonProperty;
         }
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             string currentValue = (string)value;
-
             var property = validationContext.ObjectType.GetProperty(_comparisonProperty);
-
             if (property == null)
                 throw new ArgumentException("Property with this name not found");
-
             string comparisonValue = (string)property.GetValue(validationContext.ObjectInstance);
-
             if ((comparisonValue.ToUpper() == "L" &&
                 (currentValue.ToUpper() == "C" || currentValue.ToUpper() == "D" || currentValue.ToUpper() == "G" ||
                  currentValue.ToUpper() == "N" || currentValue.ToUpper() == "S" || currentValue.ToUpper() == "U" ||
@@ -41,7 +35,6 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
             }
             else
                 return new ValidationResult(ErrorMessage);
-
         }
     }
 }
