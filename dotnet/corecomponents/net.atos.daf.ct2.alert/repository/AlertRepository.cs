@@ -1041,7 +1041,7 @@ namespace net.atos.daf.ct2.alert.repository
                 }
                 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

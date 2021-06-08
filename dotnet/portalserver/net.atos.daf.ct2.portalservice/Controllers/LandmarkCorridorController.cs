@@ -10,9 +10,6 @@ using net.atos.daf.ct2.corridorservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Corridor;
 using Newtonsoft.Json;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
 using Alert = net.atos.daf.ct2.alertservice;    
 
 namespace net.atos.daf.ct2.portalservice.Controllers
