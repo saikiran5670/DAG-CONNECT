@@ -479,6 +479,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             alertTimingDetailRequest.Id = request.Id;
             alertTimingDetailRequest.Type = request.Type;
             alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
             alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
             alertTimingDetailRequest.StartDate = request.StartDate;
             alertTimingDetailRequest.EndDate = request.EndDate;
@@ -490,6 +494,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             AlertTimingDetailRequest alertTimingDetailRequest = new AlertTimingDetailRequest();
             alertTimingDetailRequest.Type = request.Type;
             alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
             alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
             alertTimingDetailRequest.StartDate = request.StartDate;
             alertTimingDetailRequest.EndDate = request.EndDate;
@@ -502,6 +510,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             alertTimingDetailRequest.Id = request.Id;
             alertTimingDetailRequest.Type = request.Type;
             alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
             alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
             alertTimingDetailRequest.StartDate = request.StartDate;
             alertTimingDetailRequest.EndDate = request.EndDate;
