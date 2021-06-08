@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly GroupService.GroupServiceClient _groupServiceclient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
+        private string _fK_Constraint = "violates foreign key constraint";
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
         {
@@ -83,10 +83,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    if (result.Message.Contains(FK_Constraint))
+                    if (result.Message.Contains(_fK_Constraint))
                     {
                         _logger.Error(result);
-                        return StatusCode(500, FK_Constraint);
+                        return StatusCode(500, _fK_Constraint);
 
                     }
                     else
@@ -158,10 +158,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    if (result.Message.Contains(FK_Constraint))
+                    if (result.Message.Contains(_fK_Constraint))
                     {
                         _logger.Error(result);
-                        return StatusCode(500, FK_Constraint);
+                        return StatusCode(500, _fK_Constraint);
                     }
                     else
                     {

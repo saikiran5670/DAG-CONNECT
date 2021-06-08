@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly CorridorMapper _corridorMapper;
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
-        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorServiceClient = corridorServiceClient;

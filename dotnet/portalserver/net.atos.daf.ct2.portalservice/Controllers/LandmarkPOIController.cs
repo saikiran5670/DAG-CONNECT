@@ -35,7 +35,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper, 
-            Common.AccountPrivilegeChecker privilegeChecker, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+            AccountPrivilegeChecker privilegeChecker, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper,
+                                    MapService.MapServiceClient mapServiceClient) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _poiServiceClient = poiServiceClient;
