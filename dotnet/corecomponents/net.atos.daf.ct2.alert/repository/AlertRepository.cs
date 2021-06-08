@@ -1077,11 +1077,12 @@ namespace net.atos.daf.ct2.alert.repository
 	                                                    on notirec.notification_id=noti.id
 	                                                    inner join master.alert alert
 	                                                    on noti.alert_id=alert.id
-	                                                    where notirec.state='A'
-	                                                    and noti.state='A'
-	                                                    and alert.state='A'
+	                                                    where notirec.state=@state
+	                                                    and noti.state=@state
+	                                                    and alert.state=@state
                                                         and alert.organization_id=@organization_id";
                 parameter.Add("@organization_id", organizationId);
+                parameter.Add("@state", AlertState.Active);
                 IEnumerable<NotificationRecipient> notificationRecipientResult = await _dataAccess.QueryAsync<NotificationRecipient>(queryRecipientLabel, parameter);
                 return notificationRecipientResult;
             }
