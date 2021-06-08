@@ -276,42 +276,6 @@ namespace net.atos.daf.ct2.poigeofenservice
 
         //}
 
-        public override async Task<CategoryWisePOIResponse> GetCategoryWisePOI(CategoryWisePOIRequest request, ServerCallContext context)
-        {
-            CategoryWisePOIResponse objCategoryWisePOIResponse = new CategoryWisePOIResponse();
-            try
-            {
-                var data = await _categoryManager.GetCategoryWisePOI(request.OrganizationId);
-                _logger.Info("Get GetCategoryWisePOI Service Called .");
-
-                if (data.Count > 0)
-                {
-                    objCategoryWisePOIResponse.Code = Responsecode.Success;
-                    objCategoryWisePOIResponse.Message = POIGeoFenceServiceConstants.GET_POI_DETAILS_SUCCESS_MSG;
-                    for (int i = 0; i < data.Count; i++)
-                    {
-                        net.atos.daf.ct2.poigeofences.CategoryWisePOI objCategoryWisePOI = new net.atos.daf.ct2.poigeofences.CategoryWisePOI();
-                        objCategoryWisePOI.CategoryId = data[i].CategoryId;
-                        objCategoryWisePOI.CategoryName = data[i].CategoryName ?? null;
-                        objCategoryWisePOI.POIName = data[i].POIName ?? null;
-                        objCategoryWisePOIResponse.CategoryWisePOI.Add(objCategoryWisePOI);
-                    }
-                }
-                else
-                {
-                    objCategoryWisePOIResponse.Code = Responsecode.Success;
-                    objCategoryWisePOIResponse.Message = POIGeoFenceServiceConstants.GET_POI_DETAILS__NORESULTFOUND_MSG;
-                }
-                return await Task.FromResult(objCategoryWisePOIResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(null, ex);
-                objCategoryWisePOIResponse.Code = Responsecode.Failed;
-                objCategoryWisePOIResponse.Message = string.Format(POIGeoFenceServiceConstants.GET_POI_DETAILS_FAILURE_MSG, ex.Message);
-            }
-            return await Task.FromResult(objCategoryWisePOIResponse);
-        }
         // END - Category
 
     }

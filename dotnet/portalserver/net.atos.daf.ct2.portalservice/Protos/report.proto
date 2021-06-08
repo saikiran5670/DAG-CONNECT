@@ -11,10 +11,10 @@ rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCr
 rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
 rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
 rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
-rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetDriverActivity (ActivityFilterRequest) returns (DriverActivityResponse);
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
-rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
+
 }
 
 enum Responsecode{
@@ -133,10 +133,10 @@ message TripDetils {
     double EndPositionLongitude=22;
 }
 message LiveFleetPosition {
-    double GpsAltitude=1;
-    double GpsHeading=2; 
-    double GpsLatitude=3;
-    double GpsLongitude=4; 
+    int64 GpsAltitude=1;
+    int64 GpsHeading=2; 
+    int64 GpsLatitude=3;
+    int64 GpsLongitude=4; 
     int32 Id=5;
 }
 // End Trip Report Table
@@ -178,24 +178,13 @@ int32 OrganizationId = 4;
 //End Vehicle Visibility and Trip filtered records
 
 // Start Driver Time Managment Report
-message SingleDriverActivityFilterRequest {
-    int64 StartDateTime = 1;
-    int64 EndDateTime = 2;
-    string VIN = 3;
-    string DriverId = 4;
-}
 message ActivityFilterRequest {
     int64 StartDateTime = 1;
     int64 EndDateTime = 2;
-    repeated string VINs = 3;
-    repeated string DriverIds = 4;
+    string VINs = 3;
+    string DriverIds = 4;
 }
-//message VinsRepeated {
-//    string VIN=1;
-//}
-//message DriverIdRepeated {
-//    string DriverId=1;
-//}
+
 message DriverActivityResponse {
     repeated DriverActivity DriverActivities = 1;   
     Responsecode code = 2;
@@ -241,22 +230,3 @@ message IdRequestForDriverActivity {
   }
 // End   Driver Time Managment Report
 
-message CreateEcoScoreProfileRequest {
-  string Name = 1;
-  string Description = 2;
-  bool IsDAFStandard = 3;
-  repeated CreateEcoScoreProfileKPI ProfileKPIs = 4;
-}
-
-message CreateEcoScoreProfileKPI {
-  int32 Id = 1;
-  double LimitValue = 2;
-  double TargetValue = 3;
-  double LowerValue = 4;
-  double UpperValue = 5;
-}
-
-message CreateEcoScoreProfileResponse {
-  Responsecode Code = 1;
-  string Message = 2;
-}

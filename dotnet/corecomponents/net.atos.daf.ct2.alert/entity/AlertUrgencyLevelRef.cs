@@ -29,7 +29,5 @@ namespace net.atos.daf.ct2.alert.entity
         public long ModifiedAt { get; set; }
 
         public List<AlertFilterRef> AlertFilterRefs { get; set; } = new List<AlertFilterRef>();
-        public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
-
     }
 }

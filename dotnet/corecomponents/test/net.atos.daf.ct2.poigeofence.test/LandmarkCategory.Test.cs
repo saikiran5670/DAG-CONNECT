@@ -106,17 +106,6 @@ namespace net.atos.daf.ct2.poigeofence.test
             Assert.IsNotNull(result);
         }
 
-        [TestCategory("Unit-Test-Case")]
-        [Description("Test for Get Category Wise POI")]
-        [TestMethod]
-        [Timeout(TestTimeout.Infinite)]
-        public void GetCategoryWisePOI()
-        {
-            int OrganizationId = 100;
-            var result =  _categoryManager.GetCategoryWisePOI(OrganizationId).Result;
-            Assert.IsTrue(result.Count > 0);
-        }
-
 
     }
 }

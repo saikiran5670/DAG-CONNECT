@@ -9,8 +9,6 @@ using net.atos.daf.ct2.alert;
 using net.atos.daf.ct2.alert.entity;
 using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.alertservice.Entity;
-using net.atos.daf.ct2.visibility;
-using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -19,14 +17,11 @@ namespace net.atos.daf.ct2.alertservice.Services
         private ILog _logger;
         private readonly IAlertManager _alertManager;
         private readonly Mapper _mapper;
-        private readonly IVisibilityManager _visibilityManager;
-
-        public AlertManagementService(IAlertManager alertManager, IVisibilityManager visibilityManager)
+        public AlertManagementService(IAlertManager alertManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _alertManager = alertManager;
             _mapper = new Mapper();
-            _visibilityManager = visibilityManager;
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -304,7 +299,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 {
                     landmarkIds.Add(item);
                 }
-                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds,request.LandmarkType);
+                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds);
                 landmarkResponse.IsLandmarkActive = IsLandmarkIdActive != false ? true : false;
             }
             catch (Exception ex)
@@ -387,45 +382,6 @@ namespace net.atos.daf.ct2.alertservice.Services
 
         #endregion
 
-        #region Alert Category Filter
-        public override async Task<AlertCategoryFilterResponse> GetAlertCategoryFilter(AlertCategoryFilterIdRequest request, ServerCallContext context)
-        {
-            try
-            {
-                var response = new AlertCategoryFilterResponse();
-                var enumTranslationList = await _alertManager.GetAlertCategory();
-                
-                foreach (var item in enumTranslationList)
-                {
-                    response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
-                }
-
-                var vehicleByVisibilityAndFeature
-                                            = await _visibilityManager
-                                                .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                   request.RoleId, AlertConstants.ALERT_FEATURE_NAME);
-
-                var res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
-                response.AlertCategoryFilterRequest.AddRange(
-                    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res)
-                    );
-
-                response.Message = AlertConstants.ALERT_FILTER_SUCCESS_MSG;
-                response.Code = ResponseCode.Success;
-                _logger.Info("Get method in alert service called.");
-                return await Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(null, ex);
-                return await Task.FromResult(new AlertCategoryFilterResponse
-                {
-                    Code = ResponseCode.InternalServerError,
-                    Message =  ex.Message
-                });
-            }
-        }
-        #endregion
     }
 }
 

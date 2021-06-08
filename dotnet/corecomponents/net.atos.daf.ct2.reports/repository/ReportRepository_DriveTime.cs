@@ -12,18 +12,12 @@ namespace net.atos.daf.ct2.reports.repository
 
         public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter activityFilters)
         {
-            try
-            {
-
-
-                var parameterOfFilters = new DynamicParameters();
-                parameterOfFilters.Add("@FromDate", activityFilters.StartDateTime);
-                parameterOfFilters.Add("@ToDate", activityFilters.EndDateTime);
-                parameterOfFilters.Add("@Vins", activityFilters.VIN);
-                parameterOfFilters.Add("@DriverIDs", activityFilters.DriverId);
-                //parameterOfFilters.Add("@Vins", string.Join(",", activityFilters.VIN));
-                //parameterOfFilters.Add("@DriverIDs", string.Join(",", activityFilters.DriverId));
-                string queryActivities = @"WITH cte_dailyActivity AS (
+            var parameterOfFilters = new DynamicParameters();
+            parameterOfFilters.Add("@FromDate", activityFilters.StartDateTime);
+            parameterOfFilters.Add("@ToDate", activityFilters.EndDateTime);
+            parameterOfFilters.Add("@Vins", string.Join(",", activityFilters.VIN));
+            parameterOfFilters.Add("@DriverIDs", string.Join(",", activityFilters.DriverId));
+            string queryActivities = @"WITH cte_dailyActivity AS (
                                          		SELECT
                                          			dr.first_name || ' ' || dr.last_name AS driverName
                                          		  , da.vin
@@ -39,10 +33,8 @@ namespace net.atos.daf.ct2.reports.repository
                                          			WHERE
                                          				da.activity_date     >= @FromDate
                                          				AND da.activity_date <= @ToDate
-                                                        AND da.driver_id = ANY( @DriverIDs )
-                                         				AND da.vin = ANY( @Vins )
-                                         				----AND da.driver_id IN ( @DriverIDs )
-                                         				----AND da.vin IN ( @Vins )
+                                         				AND da.driver_id IN ( @DriverIDs )
+                                         				AND da.vin IN ( @Vins )
                                          			GROUP BY da.driver_id, da.activity_date, da.code, da.duration, da.vin, dr.first_name, dr.last_name, da.end_time, da.start_time
                                          			ORDER BY da.activity_date DESC
                                          	)
@@ -95,15 +87,15 @@ namespace net.atos.daf.ct2.reports.repository
                                          	cte_pivotedtable
                                          	GROUP BY 	driverName , driver_id, vin, activity_date, code, rest_time, available_time, work_time, drive_time, start_time, end_time";
 
-                List<DriversActivities> lstDriverActivities = (List<DriversActivities>)await _dataMartdataAccess.QueryAsync<DriversActivities>(queryActivities, parameterOfFilters);
+            List<DriversActivities> lstDriverActivities = (List<DriversActivities>)await _dataMartdataAccess.QueryAsync<DriversActivities>(queryActivities, parameterOfFilters);
 
-                return lstDriverActivities?.Count() > 0 ? lstDriverActivities : new List<DriversActivities>();
-
-            }
-            catch (System.Exception)
+            if (lstDriverActivities?.Count() > 0)
             {
-
-                throw;
+                return lstDriverActivities;
+            }
+            else
+            {
+                return new List<DriversActivities>();
             }
         }
 

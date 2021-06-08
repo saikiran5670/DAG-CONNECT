@@ -8,8 +8,7 @@ using net.atos.daf.ct2.alert;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.alertservice.Services;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.visibility;
-using net.atos.daf.ct2.visibility.repository;
+
 
 namespace net.atos.daf.ct2.alertservice
 {
@@ -47,8 +46,6 @@ namespace net.atos.daf.ct2.alertservice
             //});
             services.AddTransient<IAlertManager, AlertManager>();
             services.AddTransient<IAlertRepository, AlertRepository>();
-            services.AddTransient<IVisibilityRepository, VisibilityRepository>();
-            services.AddTransient<IVisibilityManager, VisibilityManager>();
             //services.AddTransient<IVehicleManager, VehicleManager>();
             //services.AddTransient<IVehicleRepository, VehicleRepository>();
             //services.AddTransient<IAuditLogRepository, AuditLogRepository>();

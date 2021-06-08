@@ -75,13 +75,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
                     request.AlertFilterRefs.Add(ToAlertFilterRefRequest(item));
                 }
             }
-            if (entity.AlertTimingDetails.Count > 0)
-            {
-                foreach (var item in entity.AlertTimingDetails)
-                {
-                    request.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
-                }
-            }
             return request;
         }
         public AlertFilterRefRequest ToAlertFilterRefRequest(PortalAlertEntity.AlertFilterRef entity)
@@ -106,13 +99,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             //request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             //request.ModifiedAt = entity.ModifiedAt;
-            if (entity.AlertTimingDetails.Count > 0)
-            {
-                foreach (var item in entity.AlertTimingDetails)
-                {
-                    request.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
-                }
-            }
             return request;
         }
         public AlertLandmarkRefRequest ToAlertLandmarkRequest(PortalAlertEntity.AlertLandmarkRef entity)
@@ -290,15 +276,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
                     request.AlertFilterRefs.Add(ToAlertEditFilterRefRequest(item));
                 }
             }
-
-            if (entity.AlertTimingDetails.Count > 0)
-            {
-                foreach (var item in entity.AlertTimingDetails)
-                {
-                    request.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
-                }
-            }
-
             return request;
         }
 

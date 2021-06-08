@@ -6,7 +6,7 @@ namespace net.atos.daf.ct2.translation
 {
     public interface IIconManager
     {
-        Task<string> UpdateIcons(List<Icon> iconlist);
+        Task<bool> UpdateIcons(List<Icon> iconlist);
         Task<List<Icon>> GetIcons(int icon_id);
     }
 }

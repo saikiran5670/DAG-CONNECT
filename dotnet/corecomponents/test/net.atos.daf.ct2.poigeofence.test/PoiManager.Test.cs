@@ -21,11 +21,6 @@ namespace net.atos.daf.ct2.poigeofence.test
         {
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json")
                                                 .Build();
-
-
-            string datamartconnectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-            _dataMartDataAccess = new PgSQLDataMartDataAccess(datamartconnectionString);
-
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
              _poiRepository = new PoiRepository(_dataAccess,_dataMartDataAccess);
@@ -146,18 +141,6 @@ namespace net.atos.daf.ct2.poigeofence.test
             Console.WriteLine(result);
             Assert.IsTrue(result);
         }
-
-        [TestMethod]
-        public void UpdateTripArddress( )
-        {
-
-            var tripAddressDetails = new TripAddressDetails() {Id= 215015,
-                                                               StartAddress= "87160 Saint-Sulpice-les-Feuilles, France",
-                                                               EndAddress= "Impasse de la Poste, 41700 Le Controis-en-Sologne, France" };
-            var result = _iPoiManager.UpdateTripArddress(tripAddressDetails).Result;
-            Console.WriteLine(result);
-        }
-
 
     }
 }

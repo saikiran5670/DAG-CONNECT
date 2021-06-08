@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using ReportComponent = net.atos.daf.ct2.reports;
 
 namespace net.atos.daf.ct2.reportservice.Services
@@ -22,13 +22,10 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Get GetDriversActivity for multiple drivers.");
-                ReportComponent.entity.DriverActivityFilter objActivityFilter = new ReportComponent.entity.DriverActivityFilter
-                {
-                    VIN = request.VINs.ToList<string>(),
-                    DriverId = request.DriverIds.ToList<string>(),
-                    StartDateTime = request.StartDateTime,
-                    EndDateTime = request.EndDateTime
-                };
+                ReportComponent.entity.DriverActivityFilter objActivityFilter = new ReportComponent.entity.DriverActivityFilter();
+                objActivityFilter.VIN.Append(request.VINs);
+                objActivityFilter.StartDateTime = request.StartDateTime;
+                objActivityFilter.EndDateTime = request.EndDateTime;
 
                 var result = await _reportManager.GetDriversActivity(objActivityFilter);
                 DriverActivityResponse response = new DriverActivityResponse();
@@ -63,14 +60,16 @@ namespace net.atos.daf.ct2.reportservice.Services
         /// <param name="request"> Filters for driver activity with VIN and Driver ID </param>
         /// <param name="context">GRPC Context</param>
         /// <returns>Driver activity by type column</returns>
-        public override async Task<DriverActivityResponse> GetDriverActivity(SingleDriverActivityFilterRequest request, ServerCallContext context)
+        public override async Task<DriverActivityResponse> GetDriverActivity(ActivityFilterRequest request, ServerCallContext context)
         {
             try
             {
                 _logger.Info("Get GetDriverActivity for single driver.");
-                ReportComponent.entity.DriverActivityFilter objActivityFilter = new ReportComponent.entity.DriverActivityFilter { VIN = new List<string>(), DriverId = new List<string>() };
-                objActivityFilter.VIN.Add(request.VIN);
-                objActivityFilter.DriverId.Add(request.DriverId);
+                ReportComponent.entity.DriverActivityFilter objActivityFilter = new ReportComponent.entity.DriverActivityFilter();
+                objActivityFilter.VIN = new System.Collections.Generic.List<string>();
+                objActivityFilter.DriverId = new System.Collections.Generic.List<string>();
+                objActivityFilter.VIN.Add(request.VINs);
+                objActivityFilter.DriverId.Add(request.DriverIds);
                 objActivityFilter.StartDateTime = request.StartDateTime;
                 objActivityFilter.EndDateTime = request.EndDateTime;
 

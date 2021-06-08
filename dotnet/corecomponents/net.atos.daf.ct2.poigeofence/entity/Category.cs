@@ -41,11 +41,6 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public int SubCategoryId { get; set; }
     }
 
-    public class CategoryWisePOI
-    {
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
-        public string POIName { get; set; }
-    }
+
 
 }
