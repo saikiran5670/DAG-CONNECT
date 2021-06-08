@@ -20,12 +20,12 @@ namespace net.atos.daf.ct2.visibility
                                                                                                 string featureName = "Alert") => _visibilityRepository.GetVehicleByFeatureAndSubscription(accountId, organizationId, roleId, featureName);
 
         public async Task<IEnumerable<VehicleDetailsVisibiltyAndFeature>> GetVehicleByVisibilityAndFeature(int accountId, int organizationId, int roleId,
-                                                                                                           string featureName = "Alert")
+                                                                                                           IEnumerable<VehicleDetailsAccountVisibilty> vehicleDetailsAccountVisibilty,string featureName = "Alert")
         {
             try
             {
                 var vehicleByVisibilityAndFeature = new List<VehicleDetailsVisibiltyAndFeature>();
-                var vehicleByVisibility = await GetVehicleByAccountVisibility(accountId, organizationId);
+                var vehicleByVisibility = vehicleDetailsAccountVisibilty ?? await GetVehicleByAccountVisibility(accountId, organizationId);
 
                 if (!vehicleByVisibility.Any())
                 {
@@ -36,21 +36,7 @@ namespace net.atos.daf.ct2.visibility
 
                 if (!vehicleByFeature.Any())
                 {
-                    foreach (var item in vehicleByVisibility)
-                    {
-                        vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeature
-                        {
-                            VehicleGroupId = item.VehicleGroupId,
-                            VehicleGroupName = item.VehicleGroupName,
-                            VehicleId = item.VehicleId,
-                            VehicleName = item.VehicleName,
-                            Vin = item.Vin,
-                            RegistrationNo = item.RegistrationNo,
-                            FeatureName = string.Empty,
-                            FeatureKey = string.Empty,
-                            Subscribe = false
-                        });
-                    }
+                    return await Task.FromResult(new List<VehicleDetailsVisibiltyAndFeature>());
                 }
                 else
                 {
@@ -63,11 +49,7 @@ namespace net.atos.daf.ct2.visibility
                                 vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeature
                                 {
                                     VehicleGroupId = item.VehicleGroupId,
-                                    VehicleGroupName = item.VehicleGroupName,
                                     VehicleId = item.VehicleId,
-                                    VehicleName = item.VehicleName,
-                                    Vin = item.Vin,
-                                    RegistrationNo = item.RegistrationNo,
                                     FeatureName = feature.Name,
                                     FeatureKey = feature.FeatureEnum,
                                     Subscribe = true
@@ -83,11 +65,7 @@ namespace net.atos.daf.ct2.visibility
                                     vehicleByVisibilityAndFeature.Add(new VehicleDetailsVisibiltyAndFeature
                                     {
                                         VehicleGroupId = item.VehicleGroupId,
-                                        VehicleGroupName = item.VehicleGroupName,
                                         VehicleId = item.VehicleId,
-                                        VehicleName = item.VehicleName,
-                                        Vin = item.Vin,
-                                        RegistrationNo = item.RegistrationNo,
                                         FeatureName = feature.Name,
                                         FeatureKey = feature.FeatureEnum,
                                         Subscribe = true
