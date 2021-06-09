@@ -431,8 +431,12 @@ this.map.setZoom(14);
     {
       zip = "";
     }
+    if(this.poiFormGroup.controls.type.value && this.poiFormGroup.controls.type.value == 'Global'){
+      this.organizationId = 0;
+    }
     let objData = {
       id: 0,
+      //icon: this.poiFormGroup.controls.type.value,
       organizationId: this.organizationId,
       categoryId: this.poiFormGroup.controls.category.value,
       subCategoryId: subcatId,

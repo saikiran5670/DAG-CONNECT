@@ -29,17 +29,39 @@
 
         internal reportservice.CreateEcoScoreProfileRequest MapCreateEcoScoreProfile(EcoScoreProfileCreateRequest request)
         {
-            var grpcRequest = new reportservice.CreateEcoScoreProfileRequest();
-
-            grpcRequest.Name = request.Name;
-            grpcRequest.Description = request.Description;
-            grpcRequest.IsDAFStandard = request.IsDAFStandard;
+            var grpcRequest = new reportservice.CreateEcoScoreProfileRequest
+            {
+                Name = request.Name,
+                Description = request.Description,
+                IsDAFStandard = request.IsDAFStandard
+            };
 
             foreach (var kpi in request.ProfileKPIs)
             {
                 grpcRequest.ProfileKPIs.Add(new reportservice.CreateEcoScoreProfileKPI()
                 {
-                    Id = kpi.KPIId,
+                    KPIId = kpi.KPIId,
+                    LimitValue = kpi.LimitValue,
+                    TargetValue = kpi.TargetValue,
+                    LowerValue = kpi.LowerValue,
+                    UpperValue = kpi.UpperValue
+                });
+            }
+            return grpcRequest;
+        }
+        internal reportservice.UpdateEcoScoreProfileRequest MapUpdateEcoScoreProfile(EcoScoreProfileUpdateRequest request)
+        {
+            var grpcRequest = new reportservice.UpdateEcoScoreProfileRequest();
+
+            grpcRequest.ProfileId = request.ProfileId;
+            grpcRequest.Name = request.Name;
+            grpcRequest.Description = request.Description;
+
+            foreach (var kpi in request.ProfileKPIs)
+            {
+                grpcRequest.ProfileKPIs.Add(new reportservice.CreateEcoScoreProfileKPI()
+                {
+                    KPIId = kpi.KPIId,
                     LimitValue = kpi.LimitValue,
                     TargetValue = kpi.TargetValue,
                     LowerValue = kpi.LowerValue,

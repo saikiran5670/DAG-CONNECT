@@ -114,7 +114,9 @@ export class OrganisationDetailsComponent implements OnInit {
   }
 
   loadOrganisationdata(){
+    this.showLoadingIndicator=  true;
     this.organizationService.getOrganizationDetails(this.selectedOrganisationId).subscribe((orgData: any) => {
+      this.showLoadingIndicator=  false;
       this.organisationData = orgData;
       this.organizationIdNo = orgData.id;
       this.preferenceId = orgData.preferenceId;
@@ -124,6 +126,7 @@ export class OrganisationDetailsComponent implements OnInit {
       //console.log("---orgData---",this.organisationData)
     });
   }
+
 
   updateVehicleDefault(){
     switch (this.organisationData.vehicleOptIn) {

@@ -324,6 +324,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             //request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             //request.ModifiedAt = entity.ModifiedAt;
+            if (entity.AlertTimingDetails.Count > 0)
+            {
+                foreach (var item in entity.AlertTimingDetails)
+                {
+                    request.AlertTimingDetail.Add(MapAlertTimingDetailEntity(item));
+                }
+            }
             return request;
         }
 
@@ -460,7 +467,16 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             objvehiclegroup.SubcriptionStatus = vehiclegroup.SubcriptionStatus;
             return objvehiclegroup;
         }
-
+        public NotificationTemplate MapNotificationTemplate(net.atos.daf.ct2.alertservice.NotificationTemplate notificationTemplate)
+        {
+            NotificationTemplate objNotificationTemplate = new NotificationTemplate();
+            objNotificationTemplate.Id = notificationTemplate.Id;
+            objNotificationTemplate.AlertCategoryType = string.IsNullOrEmpty(notificationTemplate.AlertCategoryType) ? string.Empty : notificationTemplate.AlertCategoryType;
+            objNotificationTemplate.AlertType = string.IsNullOrEmpty(notificationTemplate.AlertType) ? string.Empty : notificationTemplate.AlertType;
+            objNotificationTemplate.Text = string.IsNullOrEmpty(notificationTemplate.Text) ? string.Empty : notificationTemplate.Text;
+            objNotificationTemplate.Subject = string.IsNullOrEmpty(notificationTemplate.Subject) ? string.Empty : notificationTemplate.Subject;
+            return objNotificationTemplate;
+        }
         public AlertTimingDetail ToAlertTimingDetailEntity(AlertTimingDetailRequest request)
         {
             AlertTimingDetailEdit alertTimingDetail = new AlertTimingDetailEdit();
@@ -479,6 +495,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             alertTimingDetailRequest.Id = request.Id;
             alertTimingDetailRequest.Type = request.Type;
             alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
             alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
             alertTimingDetailRequest.StartDate = request.StartDate;
             alertTimingDetailRequest.EndDate = request.EndDate;
@@ -490,6 +510,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             AlertTimingDetailRequest alertTimingDetailRequest = new AlertTimingDetailRequest();
             alertTimingDetailRequest.Type = request.Type;
             alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
             alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
             alertTimingDetailRequest.StartDate = request.StartDate;
             alertTimingDetailRequest.EndDate = request.EndDate;
@@ -502,6 +526,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             alertTimingDetailRequest.Id = request.Id;
             alertTimingDetailRequest.Type = request.Type;
             alertTimingDetailRequest.RefId = request.RefId;
+            for (int i = 0; i < request.DayType.Length; i++)
+            {
+                alertTimingDetailRequest.DayType.Add(request.DayType[i]);
+            }
             alertTimingDetailRequest.PeriodType = string.IsNullOrEmpty(request.PeriodType) ? string.Empty : request.PeriodType;
             alertTimingDetailRequest.StartDate = request.StartDate;
             alertTimingDetailRequest.EndDate = request.EndDate;

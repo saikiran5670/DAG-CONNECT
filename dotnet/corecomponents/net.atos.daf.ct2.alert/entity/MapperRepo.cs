@@ -48,9 +48,9 @@ namespace net.atos.daf.ct2.alert.entity
                     {
                         if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alefil_id), out AlertFilterRef alertFilterRef))
                         {
-                            var alertFilterRefDetails = ToAlertFilterRefModel(alertItem);
-                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRefDetails);
-                            alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRefDetails);
+                            //var alertFilterRefDetails = ToAlertFilterRefModel(alertItem);                           
+                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef= ToAlertFilterRefModel(alertItem));
+                            alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
                         }
                         if (alertItem.Aletimefil_id > 0 && alertItem.Aletimefil_ref_id == alertItem.Alefil_id)
                         {

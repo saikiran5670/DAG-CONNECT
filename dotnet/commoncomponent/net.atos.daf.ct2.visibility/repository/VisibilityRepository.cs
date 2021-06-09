@@ -315,7 +315,7 @@ namespace net.atos.daf.ct2.visibility.repository
 									,case when VehicleName is null  then '' else VehicleName end as VehicleName
 									,case when Vin is null  then '' else Vin end as Vin
 									,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
-						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) order by 1;";
+						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) AND VehicleId>0 order by 1;";
                 #endregion
                 return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
             }
@@ -339,7 +339,7 @@ namespace net.atos.daf.ct2.visibility.repository
                 var query = @"
                              with org_veh_subscriptions
 as (
-select fea.id as featureid
+select distinct fea.id as featureid
        ,fea.name
        ,fea.key
        ,fea.level
@@ -353,6 +353,7 @@ select fea.id as featureid
        ,sub.subscription_start_date as subscriptionstartdate
        ,sub.is_zuora_package
        ,sub.vehicle_id as vehicleid 
+	   ,feasetfea.feature_set_id as featuresetid 
 from master.subscription sub
 inner join master.package pac
 on sub.package_id=pac.id and sub.state='A' and pac.state='A' and sub.organization_id in(@organization_id) 
@@ -360,93 +361,73 @@ inner join master.featuresetfeature feasetfea
 on pac.feature_set_id=feasetfea.feature_set_id
 inner join master.feature fea
 on feasetfea.feature_id=fea.id and fea.state='A' and fea.type='F'
-inner join master.role rol
-on rol.feature_set_id=feasetfea.feature_set_id and rol.state='A' and rol.organization_id=sub.organization_id
-inner join master.accountrole accrol
-on rol.id=accrol.role_id and accrol.account_id=@account_id and accrol.role_id=@role_id
 where sub.organization_id in(@organization_id)
 and 
 fea.name like @feature_name
 and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
     else COALESCE(subscription_end_date,0) =0 end
 order by 1
-),
+)
+--select * from org_veh_subscriptions
+,
  org_subscriptions
  as (
      select * from  org_veh_subscriptions where subscriptiontype='O'
- ),
+ )
+ -- select * from org_subscriptions
+ ,
  veh_subscriptions
  as (
      select * from  org_veh_subscriptions where subscriptiontype='V'
  )
 -- select * from veh_subscriptions
- ,
-vehicle_associated_account_group as (
-select distinct ass.account_group_id as accountgroupid
-        ,ovs.vehicleid as v1
-        ,ovs2.vehicleid as v2        
-        from master.accessrelationship ass
-        inner join master.group grp 
-        on ass.vehicle_group_id=grp.id and grp.object_type='V' and grp.organization_id=@organization_id 
-        left join org_veh_subscriptions ovs
-        on ovs.vehicleid=grp.ref_id  and (((ovs.vehicleid> 0 and grp.ref_id = ovs.vehicleid) or (ovs.vehicleid = 0 and grp.ref_id is not null)) or grp.ref_id is null) 
-        left join master.groupref vgrpref 
-        on  grp.id=vgrpref.group_id 
-        left join org_veh_subscriptions ovs2
-        on ovs2.vehicleid=vgrpref.ref_id and (( ovs2.vehicleid > 0 and vgrpref.ref_id =ovs2.vehicleid) or (ovs2.vehicleid =0 and 1=1) )
-        where grp.organization_id=@organization_id 
-        and (grp.ref_id=ovs.vehicleid or vgrpref.ref_id=ovs2.vehicleid )
-)
---select * from vehicle_associated_account_group order by 1
-, 
- vehicle_associated_account as (
- select 
-     grp.id
-     ,case when grp.ref_id is null then vgrpref.ref_id
-      when vgrpref.ref_id is null then grp.ref_id
-      else 0 end accountid
-     ,case when vaa.v1 is null then vaa.v2
-      when vaa.v2 is null then vaa.v1
-      else 0 end vehicleid
- from vehicle_associated_account_group vaa
- inner join master.group grp 
-        on vaa.accountgroupid=grp.id and grp.object_type='A' and ((@account_id > 0 and grp.ref_id = @account_id) or grp.ref_id is null) -- and grp.organization_id in(@organization_id) 
-        left join master.groupref vgrpref
-        on  grp.id=vgrpref.group_id and  (( @account_id > 0 and vgrpref.ref_id = @account_id) or (@account_id =0 and 1=1) )
-         where grp.organization_id=@organization_id  and (grp.ref_id=@account_id or vgrpref.ref_id=@account_id)
-),
-vehicle_wise_associated_account as (
-select count(vehicleid) vehiclegroupcount ,vehicleid,accountid from vehicle_associated_account 
-group by vehicleid,accountid 
-)
---select * from vehicle_wise_associated_account
 ,
-vehicle_associated_account_subscription as (
-select vehsub.*
-from veh_subscriptions vehsub
-inner join vehicle_wise_associated_account vwac
-on vehsub.vehicleid=vwac.vehicleid and vehiclegroupcount>0
-),
---select * from vehicle_associated_account_subscription
+matching_org_veh_features
+as
+(
+	select featureid,key,name,organizationid,featuresetid from org_subscriptions
+	intersect
+	select featureid,key,name,organizationid,featuresetid from veh_subscriptions 
+)
+--select * from matching_org_veh_features
+,
+veh_features_not_in_org
+as
+(
+	select *  
+	from veh_subscriptions 
+	where featureid not in ( select featureid from matching_org_veh_features) 	
+)
+--select * from veh_features_not_in_org
+,
 org_veh_subscribe_features
 as
 (
-select featureid,key,name,vehicleid,organizationid,subscriptiontype from org_subscriptions
-union
-select vehsub.featureid,vehsub.key,vehsub.name,vehsub.vehicleid,vehsub.organizationid,vehsub.subscriptiontype 
-from vehicle_associated_account_subscription vehsub
-inner join  org_subscriptions orgsub
-on vehsub.featureid = orgsub.featureid and vehsub.organizationid=orgsub.organizationid
+	select distinct  movf.featureid,movf.key,movf.name,0 as vehicleid, movf.organizationid , 'O' as subscriptiontype,
+	case when featuresetid is null then '0' else featuresetid end as featuresetid 
+	from matching_org_veh_features movf
+	union
+	select distinct  featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid , organizationid , subscriptiontype,
+	case when featuresetid is null then 0 else featuresetid end as featuresetid 
+	from  veh_features_not_in_org
+	union
+	select distinct featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid, organizationid , subscriptiontype,case when featuresetid is null then 0 else featuresetid end as featuresetid  from  org_subscriptions
 )
-select featureid as FeatureId, 
-case when ovsf.key is null then '' else ovsf.key end as key,
-case when name is null then '' else name end as Name,vehicleid as VehicleId,organizationid as OrganizationId,
-case when subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
+
+--select distinct ovsf.featureid, ovsf.key as featurekey,ovsf.name,ovsf.vehicleid,ovsf.organizationid,ovsf.subscriptiontype,enutra.key as enumkey,ovsf.featuresetid
+select ovsf.featureid as FeatureId, 
+case when ovsf.key is null  then '' else ovsf.key end as key,
+case when ovsf.name is null then '' else ovsf.name end as Name,ovsf.vehicleid as VehicleId,ovsf.organizationid as OrganizationId,
+case when ovsf.subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
 case when enutra.key is null then '' else enutra.key end as FeatureEnum  
-from org_veh_subscribe_features ovsf
+FROM master.Account acc
+INNER JOIN master.AccountRole accrol ON acc.id = accrol.account_id AND acc.id = @account_id  AND accrol.organization_id = @organization_id AND accrol.role_id = @role_id AND acc.state = 'A'
+INNER JOIN master.Role rol ON accrol.role_id = rol.id AND rol.state = 'A'
+inner join org_veh_subscribe_features ovsf ON rol.feature_set_id=ovsf.featuresetid
 left join translation.enumtranslation enutra
-on ovsf.featureid = enutra.feature_id  
-and enutra.type='T'
+on   ovsf.featureid = enutra.feature_id
+and enutra.type='T' 
+order by 1 desc
 ";
                 #endregion
                 

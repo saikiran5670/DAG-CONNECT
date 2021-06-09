@@ -64,5 +64,5 @@ public class Trip implements Serializable {
 	private Long etlProcessingTS;
 	private Long kafkaProcessingTS;
 	private Double vGrossWtSum; 
-	private Integer numberOfIndexMessage;
+	private Long numberOfIndexMessage;
 }

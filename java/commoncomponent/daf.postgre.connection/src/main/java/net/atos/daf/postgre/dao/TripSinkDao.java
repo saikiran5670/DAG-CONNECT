@@ -294,7 +294,7 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(45, 0);
 
 		if (rec.getNumberOfIndexMessage() != null)
-			statement.setInt(46, rec.getNumberOfIndexMessage());
+			statement.setLong(46, rec.getNumberOfIndexMessage());
 		else
 			statement.setInt(46, 0);
 
@@ -512,7 +512,7 @@ public class TripSinkDao implements Serializable {
 			statement.setDouble(90, 0);
 
 		if (rec.getNumberOfIndexMessage() != null)
-			statement.setInt(91, rec.getNumberOfIndexMessage());
+			statement.setLong(91, rec.getNumberOfIndexMessage());
 		else
 			statement.setInt(91, 0);
 

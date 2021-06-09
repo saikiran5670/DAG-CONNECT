@@ -39,6 +39,8 @@ namespace net.atos.daf.ct2.portalservice.Common
                     {
                         headerObj.ContextOrgId = session.GetInt32(SessionConstants.ContextOrgKey).Value;
                     }
+
+                    _logger.Info(headerObj.ToString() + $"\nSession Id - { session.Id }");
                 }
             }
             catch (Exception ex)

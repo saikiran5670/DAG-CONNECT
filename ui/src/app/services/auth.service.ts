@@ -35,4 +35,14 @@ export class AuthService {
         };
         return this.httpClient.post(`${this.domainUrl}/login`, null, httpOptions);
     }
+
+    public signOut() {
+        let headerObj = this.generateHeader();
+        const httpOptions = {
+            headers: new HttpHeaders({
+                headerObj  
+            })
+        };
+        return this.httpClient.post(`${this.domainUrl}/logout`,httpOptions);
+    }
 }

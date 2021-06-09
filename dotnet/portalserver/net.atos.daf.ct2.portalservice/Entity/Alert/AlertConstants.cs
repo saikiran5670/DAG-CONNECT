@@ -28,6 +28,7 @@
         public const string DUPLICATE_ALERT_CHECK_AUTH_WS_MSG = "Duplicate alert can't be create for authentication type web service.";
         public const string DUPLICATE_ALERT_CHECK_TYPE_MSG = "Alert type should be same while duplicating the alert";
         public const string ALERT_CREATE_FAILED_MSG = "There is an error while creating alert.";
+        public const string ALERT_UPDATE_FAILED_MSG = "There is an error while updating alert.";
         public const string ALERT_NOT_FOUND_MSG = "Alert are not found.";
         public const string ALERT_RECIPIENT_LABEL_NOT_FOUND_MSG = "Recipient Label are not found.";        
         public const string ALERT_FILTER_SUCCESS_MSG = "Alert Category Filter data retrieved";
