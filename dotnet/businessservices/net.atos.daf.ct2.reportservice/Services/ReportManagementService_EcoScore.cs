@@ -69,5 +69,61 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
 
         #endregion
+        #region - Update Eco score
+        public override async Task<UpdateEcoScoreProfileResponse> UpdateEcoScoreProfile(UpdateEcoScoreProfileRequest request, ServerCallContext context)
+        {
+            var response = new UpdateEcoScoreProfileResponse();
+            try
+            {
+                _logger.Info("Update Eco Score Profile Report .");
+
+                EcoScoreProfileDto obj = new EcoScoreProfileDto();
+                obj.Id = request.ProfileId;
+                obj.Name = request.Name;
+                obj.OrganizationId = request.OrgId;
+                obj.Description = request.Description;
+                obj.ActionedBy = request.AccountId;
+                obj.ProfileKPIs = new List<EcoScoreProfileKPI>();
+                foreach (var item in request.ProfileKPIs)
+                {
+                    var data = new EcoScoreProfileKPI();
+                    data.KPIId = item.KPIId;
+                    data.LimitValue = item.LimitValue;
+                    data.LowerValue = item.LowerValue;
+                    data.TargetValue = item.TargetValue;
+                    data.UpperValue = item.UpperValue;
+                    obj.ProfileKPIs.Add(data);
+                }
+
+                var result = await _reportManager.UpdateEcoScoreProfile(obj);
+
+                if (result != null)
+                {
+                    response.Message = "Update successfully";
+                    response.Code = Responsecode.Success;
+
+                }
+                else
+                {
+                    response.Message = "Transaction failed";
+                    response.Code = Responsecode.Failed;
+
+                }
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new UpdateEcoScoreProfileResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "UpdateEcoScoreProfile get failed due to - " + ex.Message
+                });
+            }
+        }
+
+       
+        #endregion
     }
 }

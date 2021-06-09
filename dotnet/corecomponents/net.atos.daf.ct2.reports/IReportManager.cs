@@ -16,5 +16,6 @@ namespace net.atos.daf.ct2.reports
         Task<IEnumerable<ReportDetails>> GetReportDetails();
         Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN);
         Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto);
+        Task<string> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto);
     }
 }

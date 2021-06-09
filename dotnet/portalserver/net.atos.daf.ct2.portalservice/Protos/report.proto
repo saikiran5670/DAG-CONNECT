@@ -15,6 +15,7 @@ rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivit
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
 rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
+rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
 }
 
 enum Responsecode{
@@ -259,6 +260,18 @@ message CreateEcoScoreProfileKPI {
 }
 
 message CreateEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+}
+message UpdateEcoScoreProfileRequest {
+  int32 ProfileId = 1;
+  string Name = 2;
+  string Description = 3;
+    int32 OrgId = 4;
+  int32 AccountId = 5;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
+}
+message UpdateEcoScoreProfileResponse {
   Responsecode Code = 1;
   string Message = 2;
 }
