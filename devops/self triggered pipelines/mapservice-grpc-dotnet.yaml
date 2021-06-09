@@ -14,9 +14,9 @@ variables:
  - name: dockerFile
    value: 'dotnet/MapService_Dockerfile'
  - name: manifestFile
-   value: 'mapservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
+   value: 'devops/self\ triggered\ pipelines/mapservice-grpc-dotnet-kubernetes-manifest-dev1-dev2.yaml'
  - name: manifestFileDev0
-   value: 'mapservice-grpc-dotnet-kubernetes-manifest.yaml'
+   value: 'devops/self\ triggered\ pipelines/mapservice-grpc-dotnet-kubernetes-manifest.yaml'
  - name: appsettingsFile
    value: 'dotnet/commonservices/net.atos.daf.ct2.mapservice/appsettings.Production.json'
  - name: log4netConfigFile
