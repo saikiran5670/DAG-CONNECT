@@ -22,7 +22,7 @@ public class LiveFleetPosition implements Serializable {
 	private static final String READ_LIVEFLEET_POSITION = "SELECT distance_until_next_service from livefleet.livefleet_position_statistics WHERE vin = ? ORDER BY created_at_m2m DESC limit 1";
 	private static final String INSERT_LIVEFLEET_POSITION = "INSERT INTO livefleet.livefleet_position_statistics ( trip_id    , vin    ,message_time_stamp    ,gps_altitude    ,gps_heading    ,gps_latitude    ,gps_longitude    ,co2_emission    ,fuel_consumption    , last_odometer_val  ,distance_until_next_service    , created_at_m2m    ,created_at_kafka    ,created_at_dm    ) VALUES (?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    ,?    )";
 
-		public boolean insert(LiveFleetPojo currentPosition, Long fuel_consumption, Co2Master cm)
+		public boolean insert(LiveFleetPojo currentPosition)
 			throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_livefleet_position;
 
@@ -95,10 +95,10 @@ public class LiveFleetPosition implements Serializable {
 		else
 			stmt_insert_livefleet_position.setString(1, DafConstants.UNKNOWN);
 
-		if (currentPosition.getVid() != null)
-			stmt_insert_livefleet_position.setString(2, currentPosition.getVid());
-		else
+		if (currentPosition.getVin() != null)
 			stmt_insert_livefleet_position.setString(2, currentPosition.getVin());
+		else
+			stmt_insert_livefleet_position.setString(2, currentPosition.getVid());
 
 		if (currentPosition.getMessageTimestamp() != null)
 			stmt_insert_livefleet_position.setDouble(3, currentPosition.getMessageTimestamp());
