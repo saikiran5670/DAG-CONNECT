@@ -245,11 +245,13 @@ message CreateEcoScoreProfileRequest {
   string Name = 1;
   string Description = 2;
   bool IsDAFStandard = 3;
-  repeated CreateEcoScoreProfileKPI ProfileKPIs = 4;
+  int32 OrgId = 4;
+  int32 AccountId = 5;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
 }
 
 message CreateEcoScoreProfileKPI {
-  int32 Id = 1;
+  int32 KPIId = 1;
   double LimitValue = 2;
   double TargetValue = 3;
   double LowerValue = 4;

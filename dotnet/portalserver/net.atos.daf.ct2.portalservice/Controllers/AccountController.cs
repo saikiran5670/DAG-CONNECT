@@ -33,12 +33,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AccountPrivilegeChecker _privilegeChecker;
         private readonly ILog _logger;
         private readonly IMemoryCacheExtensions _cache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         #endregion
 
         #region Constructor
         public AccountController(AccountBusinessService.AccountService.AccountServiceClient accountClient, IMemoryCacheExtensions cache,
-             AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(_httpContextAccessor, sessionHelper)
+             AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker) : base(httpContextAccessor, sessionHelper)
         {
             _accountClient = accountClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -46,6 +47,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _cache = cache;
             _auditHelper = auditHelper;
             _privilegeChecker = privilegeChecker;
+            _httpContextAccessor = httpContextAccessor;
         }
         #endregion
 
@@ -1789,6 +1791,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
                     HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
                     HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.OrgId);
+
+                    _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
+                    await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                      "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                      "SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                      _userDetails.ToString(), _userDetails);
+
                     return Ok();
                 }
                 else
@@ -1815,6 +1824,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 int s_roleId = _userDetails.RoleId;
                 int s_orgId = _userDetails.OrgId;
                 int s_contextOrgId = _userDetails.ContextOrgId;
+
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                              "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                              "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                              _userDetails.ToString(), _userDetails);
 
                 if (request.AccountId != s_accountId)
                     return BadRequest("Account Id mismatched");

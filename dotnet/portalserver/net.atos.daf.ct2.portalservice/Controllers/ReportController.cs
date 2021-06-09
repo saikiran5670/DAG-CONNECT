@@ -323,6 +323,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var grpcRequest = _mapper.MapCreateEcoScoreProfile(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
                 var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
                 return StatusCode((int)response.Code, response.Message);
             }
