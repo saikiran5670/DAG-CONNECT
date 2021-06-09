@@ -13,6 +13,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
+        private static readonly log4net.ILog _log =
+       log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public PoiRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
         {
             this._dataAccess = _dataAccess;
@@ -671,5 +674,29 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw;
             }
         }
+        public async Task<TripAddressDetails> UpdateTripArddress(TripAddressDetails tripAddressDetails)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", tripAddressDetails.Id);
+                parameter.Add("@startAddress", tripAddressDetails.StartAddress);
+                parameter.Add("@endAddress", tripAddressDetails.EndAddress);
+              
+                string query = @"update tripdetail.trip_statistics set start_position=@startAddress, 
+                                                           end_position=@endAddress                                                                                                                                                                                                                     
+                                                           where id = @Id RETURNING id";
+                tripAddressDetails.Id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);             
+                
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error(ex.ToString());
+            }
+            return await Task.FromResult(tripAddressDetails);
+        }
+
+
     }
 }

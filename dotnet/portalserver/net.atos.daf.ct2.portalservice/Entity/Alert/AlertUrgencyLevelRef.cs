@@ -26,6 +26,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     public class AlertUrgencyLevelRef : AlertUrgencyLevelRefBase
     {
         public List<AlertFilterRef> AlertFilterRefs { get; set; } = new List<AlertFilterRef>();
+        public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
+
     }
     public class AlertUrgencyLevelRefEdit : AlertUrgencyLevelRefBase
     {
@@ -34,5 +36,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public string State { get; set; }
         //public long ModifiedAt { get; set; }
         public List<AlertFilterRefEdit> AlertFilterRefs { get; set; } = new List<AlertFilterRefEdit>();
+        public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
+
     }
 }
