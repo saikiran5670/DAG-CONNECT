@@ -108,15 +108,15 @@ namespace net.atos.daf.ct2.reports
 
         #endregion
         #region  Eco Score Report - Update Profile
-        public async Task<string> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
+        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
             if (await isExist)
             {
-                return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                 return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
             }
             else
-                return ecoScoreProfileDto.Name;
+                return -1 ;
         }
         #endregion
     }
