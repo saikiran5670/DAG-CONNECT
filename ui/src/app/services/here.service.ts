@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/internal/operators';
+
 import {
     HttpClient,
     HttpErrorResponse,
@@ -89,9 +90,9 @@ export class HereService {
         return this.httpClient.get<any>(suggestURL + params);
     }
 
-    lookUpSuggestion(_id): Observable<any> {
-        let lookUpURL = 'https://lookup.search.hereapi.com/v1/lookup?id=';
-        return this.httpClient.get<any>(lookUpURL + _id);
+    lookUpSuggestion(qParam: any): Observable<any> {
+        let lookUpURL = 'https://lookup.search.hereapi.com/v1/lookup?';
+        return this.httpClient.get<any>(lookUpURL + qParam);
     }
 
     getTruckRoutes(params: any): Observable<any> {
