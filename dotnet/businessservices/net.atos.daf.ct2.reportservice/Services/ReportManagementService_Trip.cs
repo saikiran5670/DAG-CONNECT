@@ -79,7 +79,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 if (result?.Count > 0)
                 {
                     string res = JsonConvert.SerializeObject(result);
-                    response.TripData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetils>>(res));
+                    response.TripData.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<TripDetails>>(res));
                     response.Code = Responsecode.Success;
                     response.Message = Responsecode.Success.ToString();
                 }

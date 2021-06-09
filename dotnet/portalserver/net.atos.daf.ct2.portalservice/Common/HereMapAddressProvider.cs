@@ -3,11 +3,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.poiservice;
+using net.atos.daf.ct2.reportservice;
 using static net.atos.daf.ct2.mapservice.MapService;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
-    public class HereMapAddressProvider
+    public class HereMapAddressProvider 
     {
         private readonly MapServiceClient _mapServiceClient;
         private POIService.POIServiceClient _poiServiceClient;
@@ -26,10 +27,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                 var mapRequest = new GetMapRequest() { Latitude = lat, Longitude = lng };
                 var lookupAddress = _mapServiceClient.GetMapAddressAsync(mapRequest).GetAwaiter().GetResult();
                 return lookupAddress.LookupAddresses.Address ?? string.Empty;
-            
+
 
         }
-
+        
         public TripData UpdateTripAddress(TripData tripData)
         {
             
@@ -47,6 +48,24 @@ namespace net.atos.daf.ct2.portalservice.Common
             }        
 
             return tripData;
+        }
+        public TripDetails UpdateTripReportAddress(TripDetails tripDetails)
+        {
+
+
+            if (string.IsNullOrEmpty(tripDetails.StartPosition) && string.IsNullOrEmpty(tripDetails.EndPosition))
+            {
+
+                tripDetails.StartPosition = GetAddress(tripDetails.StartPositionLattitude, tripDetails.StartPositionLongitude);
+                tripDetails.EndPosition = GetAddress(tripDetails.EndPositionLattitude, tripDetails.EndPositionLongitude);
+                if (!string.IsNullOrEmpty(tripDetails.StartPosition) && !string.IsNullOrEmpty(tripDetails.EndPosition))
+                {
+                    var updtetrip = new AddTripAddressRequest() { Id = tripDetails.Id, StartAddress = tripDetails.StartPosition, EndAddress = tripDetails.EndPosition };
+                    var result = _poiServiceClient.UpdateTripAddress(updtetrip);
+                }
+            }
+
+            return tripDetails;
         }
         private bool ValidateLatLng(double lat, double lng)
         {
