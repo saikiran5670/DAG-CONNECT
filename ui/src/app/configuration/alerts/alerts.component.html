@@ -79,9 +79,7 @@
             </ng-container>
             <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.name }}
-              </mat-cell>
+              <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.name}}">{{row.name}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
