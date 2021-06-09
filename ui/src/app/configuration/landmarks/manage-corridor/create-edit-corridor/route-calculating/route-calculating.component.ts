@@ -131,6 +131,15 @@ export class RouteCalculatingComponent implements OnInit {
   createFlag : boolean = true;
   routeDistance: number = 0;
 
+  
+  tollRoadChecked = false;
+  motorwayChecked = false;
+  boatFerriesChecked = false;
+  railFerriesChecked =false;
+  tunnelsChecked=false;
+  dirtRoadChecked = false;
+  exclusions = [];
+
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
      this.map_key =  config.getSettings("hereMap").api_key;
@@ -199,16 +208,16 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorWidth = this.corridorWidthKm  * 1000;
       //this.calculateAB();
       let drawWidth = this.corridorWidthKm*10;
-      if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-        this.addTruckRouteShapeToMap(drawWidth);
-      }
+      // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
+      //   this.addTruckRouteShapeToMap(drawWidth);
+      // }
    });
 
   }
 
   vehicleSizeFocusOut(){
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-      this.calculateTruckRoute();
+      //this.calculateTruckRoute();
     }
   }
   setCorridorData(){
@@ -244,8 +253,8 @@ export class RouteCalculatingComponent implements OnInit {
       this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
       this.corridorWidthKm = this.corridorWidth / 1000;
-      this.plotStartPoint(this.searchStr);
-      this.plotEndPoint(this.searchEndStr);
+      this.plotStartPoint();
+      this.plotEndPoint();
       this.calculateTruckRoute()
     }
   }
@@ -290,7 +299,13 @@ export class RouteCalculatingComponent implements OnInit {
     
     this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
+    if(this.trafficFlowChecked){
+      this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+    }
     this.transportDataChecked = _data["isTransportData"];
+    if(this.transportDataChecked){
+      this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+    }
     this.getVehicleSize = _data["vehicleSize"];
     this.vehicleHeightValue = this.getVehicleSize.vehicleHeight;
     this.vehicleWidthValue = this.getVehicleSize.vehicleWidth;
@@ -304,12 +319,12 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.vehicleLength.setValue(this.getVehicleSize.vehicleLength);
     this.corridorFormGroup.controls.limitedWeight.setValue(this.getVehicleSize.vehicleLimitedWeight);
     this.corridorFormGroup.controls.weightPerAxle.setValue(this.getVehicleSize.vehicleWeightPerAxle);
-    this.tollRoadId = this.getExclusionList["tollRoadType"];
-    this.boatFerriesId = this.getExclusionList["boatFerriesType"];
-    this.dirtRoadId = this.getExclusionList["dirtRoadType"];
-    this.motorWayId = this.getExclusionList["mortorway"];
-    this.tunnelId = this.getExclusionList["tunnelsType"];
-    this.railFerriesId = this.getExclusionList["railFerriesType"];
+    this.tollRoadChecked = this.getExclusionList["tollRoadType"] == 'A'? true : false;
+    this.boatFerriesChecked = this.getExclusionList["boatFerriesType"] == 'A'? true : false;
+    this.dirtRoadChecked = this.getExclusionList["dirtRoadType"] == 'A'? true : false;
+    this.motorwayChecked = this.getExclusionList["mortorway"] == 'A'? true : false;
+    this.tunnelsChecked = this.getExclusionList["tunnelsType"]== 'A' ? true : false;
+    this.railFerriesChecked = this.getExclusionList["railFerriesType"] == 'A'? true : false;
 
     this.initiateDropDownValues();
 
@@ -318,21 +333,21 @@ export class RouteCalculatingComponent implements OnInit {
   initiateDropDownValues(){
     this.corridorFormGroup.controls.trailer.setValue(this.selectedTrailerId);
     this.trailerValue = this.selectedTrailerId;
-    this.corridorFormGroup.controls.tollRoad.setValue(this.tollRoadId);
-    this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
-    this.corridorFormGroup.controls.motorWay.setValue(this.motorWayId);
-    this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
-    this.corridorFormGroup.controls.boatFerries.setValue(this.boatFerriesId);
-    this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
-    this.corridorFormGroup.controls.railFerries.setValue(this.railFerriesId);
-    this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
-    this.corridorFormGroup.controls.tunnels.setValue(this.tunnelId);
-    this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
-    this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
-    this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
-    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+    // this.corridorFormGroup.controls.tollRoad.setValue(this.tollRoadId);
+    // this.tollRoadValue = this.exclusionList.filter(e=> e.enum === this.tollRoadId)[0].value;
+    // this.corridorFormGroup.controls.motorWay.setValue(this.motorWayId);
+    // this.motorWayValue = this.exclusionList.filter(e=> e.enum === this.motorWayId)[0].value;
+    // this.corridorFormGroup.controls.boatFerries.setValue(this.boatFerriesId);
+    // this.boatFerriesValue = this.exclusionList.filter(e=> e.enum === this.boatFerriesId)[0].value;
+    // this.corridorFormGroup.controls.railFerries.setValue(this.railFerriesId);
+    // this.railFerriesValue = this.exclusionList.filter(e=> e.enum === this.railFerriesId)[0].value;
+    // this.corridorFormGroup.controls.tunnels.setValue(this.tunnelId);
+    // this.tunnelValue = this.exclusionList.filter(e=> e.enum === this.tunnelId)[0].value;
+    // this.corridorFormGroup.controls.dirtRoad.setValue(this.dirtRoadId);
+    // this.dirtRoadValue = this.exclusionList.filter(e=> e.enum === this.dirtRoadId)[0].value;
+     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
 
-    this.calculateTruckRoute();
+    //this.calculateTruckRoute();
 
  }
 
@@ -365,10 +380,10 @@ export class RouteCalculatingComponent implements OnInit {
      // this.corridorWidth = _event.value;
       this.corridorWidthKm = this.corridorWidth / 1000;
       this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
-      let drawWidth = this.corridorWidthKm*10;
-      if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-        this.addTruckRouteShapeToMap(drawWidth);
-      }
+      //let drawWidth = this.corridorWidthKm*10;
+      // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
+      //   this.addTruckRouteShapeToMap(drawWidth);
+      // }
       //this.checkRoutePlot();
      // this.updateWidth()
     //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
@@ -384,7 +399,7 @@ export class RouteCalculatingComponent implements OnInit {
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
      // this.calculateAB();
      // this.calculateNewRoute()
-     this.calculateTruckRoute();
+     //this.calculateTruckRoute();
     }
   }
   changeSliderInput(){
@@ -466,21 +481,46 @@ export class RouteCalculatingComponent implements OnInit {
       default:
         break;
     }
-    _checked ? this.hazardousMaterial.push(type) : this.removeAttributeType(type);
-   this.calculateTruckRoute();
+    _checked ? this.hazardousMaterial.push(type) : this.removeAttributeType(type,this.hazardousMaterial);
+   //this.calculateTruckRoute();
 
   }
 
-  removeAttributeType(_type){
-      if(this.hazardousMaterial.indexOf(_type) != -1){
-        this.hazardousMaterial.splice(this.hazardousMaterial.indexOf(_type))
+  removeAttributeType(_type,_list){
+      if(_list.indexOf(_type) != -1){
+        _list.splice(this.hazardousMaterial.indexOf(_type))
       }
-      console.log(this.hazardousMaterial)
   }
   trailerSelected(_event){
     this.selectedTrailerId = _event.value;
   }
 
+  exclusionCheck(_checked,type){
+    switch (type) {
+      case 'tollRoad':
+          this.tollRoadChecked = _checked;
+        break;
+        case 'controlledAccessHighway':
+          this.motorwayChecked = _checked;
+        break;
+        
+        case 'ferry':
+          this.boatFerriesChecked = _checked;
+        break;
+        case 'carShuttleTrain':
+          this.railFerriesChecked = _checked;
+        break;
+        case 'tunnel':
+          this.tunnelsChecked = _checked;
+        break;
+        case 'dirtRoad':
+          this.dirtRoadChecked = _checked;
+        break;
+      default:
+        break;
+    }
+    _checked ? this.exclusions.push(type) : this.removeAttributeType(type,this.exclusions);
+  }
   exclusionSelected(_event,type){
     switch (type) {
       case 'tollRoad':
@@ -546,12 +586,12 @@ export class RouteCalculatingComponent implements OnInit {
         "other": this.othersChecked
       },
       "exclusion": {
-        "tollRoad": this.tollRoadId ? this.tollRoadId : 'D',
-        "mortorway": this.motorWayId ? this.motorWayId : 'D',
-        "boatFerries":this.boatFerriesId ? this.boatFerriesId : 'D',
-        "railFerries": this.railFerriesId ?  this.railFerriesId : 'D',
-        "tunnels": this.tunnelId ? this.tunnelId : 'D',
-        "dirtRoad":this.dirtRoadId ? this.dirtRoadId : 'D',
+        "tollRoad": this.tollRoadChecked ? 'A' : 'I',
+        "mortorway": this.motorwayChecked ? 'A' : 'I',
+        "boatFerries":this.boatFerriesChecked ? 'A' : 'I',
+        "railFerries": this.railFerriesChecked ? 'A' : 'I',
+        "tunnels": this.tunnelsChecked ? 'A' : 'I',
+        "dirtRoad":this.dirtRoadChecked ? 'A' : 'I',
       },
       "vehicleSize": {
         "vehicleSizeHeight":this.corridorFormGroup.controls.vehicleHeight.value ? this.corridorFormGroup.controls.vehicleHeight.value : 0,
@@ -602,12 +642,14 @@ export class RouteCalculatingComponent implements OnInit {
     if(this.actionType === 'create'){
         
     this.selectedTrailerId = undefined;
-    this.tollRoadId = undefined;
-    this.motorWayId =undefined;
-    this.railFerriesId = undefined;
-    this.tunnelId =undefined;
-    this.dirtRoadId = undefined;
-    this.boatFerriesId = undefined;
+    this.tollRoadChecked = false;
+    this.motorwayChecked = false;
+    this.boatFerriesChecked = false;
+    this.railFerriesChecked =false;
+    this.tunnelsChecked=false;
+    this.dirtRoadChecked = false;
+    this.exclusions = [];
+  
     this.explosiveChecked = false;
     this.gasChecked = false;
     this.flammableChecked  = false;
@@ -619,6 +661,8 @@ export class RouteCalculatingComponent implements OnInit {
     this.poisonInhaleChecked  = false;
     this.waterHarmChecked  = false;
     this.othersChecked  = false;
+    this.hazardousMaterial = [];
+
     this.transportDataChecked = false;
     this.trafficFlowChecked = false;
     this.corridorWidth = 100;
@@ -629,6 +673,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.limitedWeight.setValue("");
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
     this.clearMap();
+    this.resetMapLayers();
     }
     else{
       this.setAdditionalData();
@@ -643,6 +688,12 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
+  resetMapLayers(){
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic)
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck)
+
+  }
+  
   onStartFocus(){
     this.searchStrError = true;
     this.strPresentStart = false;
@@ -650,7 +701,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.startAddressPositionLat = 0;
     this.clearMap();
     if(this.searchEndStr){
-      this.plotEndPoint(this.searchEndStr);
+     // this.plotEndPoint(this.searchEndStr);
     }
     
   }
@@ -661,7 +712,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.endAddressPositionLat = 0;
     this.clearMap();
     if(this.searchStr){
-      this.plotStartPoint(this.searchStr);
+      this.plotStartPoint();
     }
   }
 
@@ -672,8 +723,13 @@ export class RouteCalculatingComponent implements OnInit {
        this.strPresentStart = true;
     }
     if(selectedAddress){
-      let postalCode = selectedAddress["originalObject"]["label"];
-      this.plotStartPoint(postalCode)
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey='+this.map_key + '&id='+ id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+        this.startAddressPositionLat = data.position.lat;
+        this.startAddressPositionLong = data.position.lng;
+        this.plotStartPoint();
+      })
     }
 
   }
@@ -684,22 +740,42 @@ export class RouteCalculatingComponent implements OnInit {
       this.searchEndStrError = false;
       this.strPresentEnd = true;
       }
-    if(selectedAddress){
-      let locationId = selectedAddress["originalObject"]["label"]
-      this.plotEndPoint(locationId)
-    }
+      if(selectedAddress){
+        let id = selectedAddress["originalObject"]["id"];
+        let qParam = 'apiKey='+this.map_key + '&id='+ id;
+        this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+          this.endAddressPositionLat = data.position.lat;
+          this.endAddressPositionLong = data.position.lng;
+          this.plotEndPoint();
+        })
+      }
 
   }
 
+  viaRouteObj : any = [];
   viaRoutesList = [];
-  onViaSelected(selectedAddress: CompleterItem){
-    
-    if(selectedAddress){
-      let locationId = selectedAddress["originalObject"]["label"]
-      this.viaRoutesList.push(locationId)
-      this.viaRoutePlottedPoints = [];
 
-      this.plotViaPoint(this.viaRoutesList)
+  onViaSelected(selectedAddress: CompleterItem){
+    if(selectedAddress){
+      let id = selectedAddress["originalObject"]["id"];
+      let qParam = 'apiKey='+this.map_key + '&id='+ id;
+      this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+        this.viaAddressPositionLat = data.position.lat;
+        this.viaAddressPositionLong = data.position.lng;
+        this.plotEndPoint();
+      })
+    }
+    if(selectedAddress){
+      let locationLabel= selectedAddress["originalObject"]["title"];
+      let locationId = selectedAddress["originalObject"]["id"];
+
+      this.viaRouteObj.push({
+        'label':locationLabel,
+        'id':locationId
+      })
+      this.viaRoutesList.push(locationLabel)
+      this.viaRoutePlottedPoints = [];
+      this.plotViaPointIds()
     }
 
   }
@@ -752,34 +828,18 @@ export class RouteCalculatingComponent implements OnInit {
     return viaMarker;
   }
 
-  plotStartPoint(_locationId){
-    let geocodingParameters = {
-		  searchText: _locationId ,
-		};
-    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
-      this.startAddressPositionLat = result[0]["Location"]["DisplayPosition"]["Latitude"];
-      this.startAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+  plotStartPoint(){
       let houseMarker = this.createHomeMarker();
       let markerSize = { w: 26, h: 32 };
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } }); 
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
       this.mapGroup.addObject(this.startMarker)
       this.hereMap.addObject(this.mapGroup);
-      this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()});
-
-      //this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+      this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()}); //this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
       this.checkRoutePlot();
-
-    });
   }
 
-  plotEndPoint(_locationId){
-    let geocodingParameters = {
-		  searchText: _locationId ,
-		};
-    this.hereService.getLocationDetails(geocodingParameters).then((result) => {
-      this.endAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
-      this.endAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
+  plotEndPoint(){
       let houseMarker = this.createEndMarker();
       let markerSize = { w: 26, h: 32 };
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
@@ -787,13 +847,35 @@ export class RouteCalculatingComponent implements OnInit {
       this.mapGroup.addObject(this.endMarker)
       this.hereMap.addObject(this.mapGroup);
       this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()});
+      this.checkRoutePlot();   
+  }
 
-    //  this.hereMap.addObject(this.endMarker);
-    //  this.hereMap.setCenter({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong}, 'default');
-      this.checkRoutePlot();
-
-    });
-    
+  plotViaPointIds(){
+    if(this.viaMarker){
+      this.mapGroup.removeObject(this.viaMarker);
+    }
+    let qParam = 'apiKey='+this.map_key
+    if(this.viaRouteObj.length>0){
+      for(var i in this.viaRouteObj){
+        qParam += '&id='+ this.viaRouteObj[i]['id'];
+        this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+          this.viaAddressPositionLat  = data.position.lat;
+          this.viaAddressPositionLong = data.position.lng;
+          let viaMarker = this.createViaMarker();
+          let markerSize = { w: 26, h: 32 };
+          const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+          this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
+          this.mapGroup.addObject(this.viaMarker);
+          if(this.actionType === 'create'){
+            this.viaRoutePlottedPoints.push({
+              "viaRoutName": this.viaRouteObj[i]['label'],
+              "latitude": data.position.lat,
+              "longitude":  data.position.lng
+            });
+          }
+        })
+      }
+    }
   }
 
   plotViaPoint(_viaRouteList){
@@ -861,14 +943,21 @@ export class RouteCalculatingComponent implements OnInit {
 
   private configureAutoSuggest(){
     let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
-    let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
+    let URL = 'https://autocomplete.search.hereapi.com/v1/autocomplete?'+'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+   // let URL = 'https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json'+'?'+ '&apiKey='+this.map_key+'&limit=5'+'&query='+searchParam ;
     this.suggestionData = this.completerService.remote(
-      URL,
-      "label",
-      "label");
-    this.suggestionData.dataField("suggestions");
-    this.dataService = this.suggestionData;
-    console.log(this.dataService);
+    URL,'title','title');
+    this.suggestionData.dataField("items");
+      this.dataService = this.suggestionData;
+    // let queryParams= 'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
+    // if(searchParam != ''){
+      
+    // this.hereService.getSuggestions(queryParams).subscribe((data)=>{
+      
+    //   this.dataService = data.item;
+    //   console.log(this.dataService);
+    //   })
+    // }
   }
 
 
@@ -881,6 +970,11 @@ export class RouteCalculatingComponent implements OnInit {
 
   /////////////////////////// v8 calculate ////////////////////
   routePoints:any;
+
+  searchRoute(){
+    this.calculateTruckRoute();
+  }
+
   calculateTruckRoute(){
     let lineWidth = this.corridorWidthKm;
     let routeRequestParams = 
@@ -921,6 +1015,10 @@ export class RouteCalculatingComponent implements OnInit {
 
     if(this.hazardousMaterial.length > 0){
       routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+    }
+    if(this.exclusions.length>0){
+      routeRequestParams += '&avoid[features]=' + this.exclusions.join();
+
     }
     this.routePoints= [];
     this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
