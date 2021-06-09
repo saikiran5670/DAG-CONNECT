@@ -544,6 +544,7 @@ export class AppComponent {
       let preferenceLanguageId = 1;
       this.translationService.getLanguageCodes().subscribe(languageCodes => {
         this.languages = languageCodes;
+        localStorage.setItem("languageCodeList", JSON.stringify(this.languages));
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         let filterLang = [];
         if(this.localStLanguage){

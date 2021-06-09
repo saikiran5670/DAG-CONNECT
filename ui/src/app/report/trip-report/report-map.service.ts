@@ -1,5 +1,6 @@
 import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { HereService } from '../../services/here.service';
+import { Util } from '../../shared/util';
 
 declare var H: any;
 
@@ -196,7 +197,7 @@ export class ReportMapService {
   getStartTime(startTime: any, dateFormat: any, timeFormat: any){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(new Date(startTime), dateFormat, timeFormat);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime), dateFormat, timeFormat);
     }
     return sTime;
   }
@@ -204,7 +205,7 @@ export class ReportMapService {
   getEndTime(endTime: any, dateFormat: any, timeFormat: any){
     let eTime: any = 0;
     if(endTime != 0){
-      eTime = this.formStartEndDate(new Date(endTime), dateFormat, timeFormat);
+      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime), dateFormat, timeFormat);
     }
     return eTime;
   }
