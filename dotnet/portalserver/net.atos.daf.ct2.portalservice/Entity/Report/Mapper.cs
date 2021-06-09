@@ -2,7 +2,7 @@
 {
     public class Mapper
     {
-        internal reportservice.UserPreferenceCreateRequest MapCreateUserPrefences(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        internal reportservice.UserPreferenceCreateRequest MapCreateUserPrefences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             reportservice.UserPreferenceCreateRequest obj
                    = new reportservice.UserPreferenceCreateRequest();
@@ -25,6 +25,28 @@
                 });
             }
             return obj;
+        }
+
+        internal reportservice.CreateEcoScoreProfileRequest MapCreateEcoScoreProfile(EcoScoreProfileCreateRequest request)
+        {
+            var grpcRequest = new reportservice.CreateEcoScoreProfileRequest();
+
+            grpcRequest.Name = request.Name;
+            grpcRequest.Description = request.Description;
+            grpcRequest.IsDAFStandard = request.IsDAFStandard;
+
+            foreach (var kpi in request.ProfileKPIs)
+            {
+                grpcRequest.ProfileKPIs.Add(new reportservice.CreateEcoScoreProfileKPI()
+                {
+                    Id = kpi.KPIId,
+                    LimitValue = kpi.LimitValue,
+                    TargetValue = kpi.TargetValue,
+                    LowerValue = kpi.LowerValue,
+                    UpperValue = kpi.UpperValue
+                });
+            }
+            return grpcRequest;
         }
     }
 }

@@ -91,6 +91,13 @@ namespace net.atos.daf.ct2.alert.repository
                     urgencylevel.AlertId = alertId;
                     int urgencylevelRefId = await CreateAlertUrgencyLevelRef(urgencylevel);
                     urgencylevel.Id = urgencylevelRefId;
+                    foreach (var alertTimingDetail in urgencylevel.AlertTimingDetails)
+                    {
+                        alertTimingDetail.RefId = urgencylevel.Id;
+                        alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.UrgencyLevelBasicFilter).ToString();
+                        int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                        alertTimingDetail.Id = alertTimingDetailId;
+                    }
 
                     foreach (var alertfilter in urgencylevel.AlertFilterRefs)
                     {
@@ -101,7 +108,7 @@ namespace net.atos.daf.ct2.alert.repository
                         foreach (var alertTimingDetail in alertfilter.AlertTimingDetails)
                         {
                             alertTimingDetail.RefId = alertfilterRefId;
-                            alertTimingDetail.Type = AlertTimingDetailType.AlertAdvanceFilter.ToString();
+                            alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.FilterRefAdvanceFilter).ToString();
                             int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                             alertTimingDetail.Id = alertTimingDetailId;
                         }
@@ -115,7 +122,7 @@ namespace net.atos.daf.ct2.alert.repository
                     foreach (var alertTimingDetail in notification.AlertTimingDetails)
                     {
                         alertTimingDetail.RefId = notificationId;
-                        alertTimingDetail.Type = AlertTimingDetailType.NotificationAdvanceFilter.ToString();
+                        alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.NotificationAdvanceFilter).ToString();
                         int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                         alertTimingDetail.Id = alertTimingDetailId;
                     }
@@ -471,11 +478,25 @@ namespace net.atos.daf.ct2.alert.repository
                     {
                         urgencylevel.AlertId = alertId;
                         int urgencylevelRefId = await CreateAlertUrgencyLevelRef(urgencylevel);
+                        foreach (var alertTimingDetail in urgencylevel.AlertTimingDetails)
+                        {
+                            alertTimingDetail.RefId = urgencylevelRefId;
+                            alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.UrgencyLevelBasicFilter).ToString();
+                            int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                            alertTimingDetail.Id = alertTimingDetailId;
+                        }
                         foreach (var alertfilter in urgencylevel.AlertFilterRefs)
                         {
                             alertfilter.AlertId = alertId;
                             alertfilter.AlertUrgencyLevelId = urgencylevelRefId;
                             int alertfilterRefId = await CreateAlertFilterRef(alertfilter);
+                            foreach (var alertTimingDetail in alertfilter.AlertTimingDetails)
+                            {
+                                alertTimingDetail.RefId = alertfilterRefId;
+                                alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.FilterRefAdvanceFilter).ToString();
+                                int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
+                                alertTimingDetail.Id = alertTimingDetailId;
+                            }
                         }
                     }
                     if (alert.Notifications.Count() > 0)
@@ -487,7 +508,7 @@ namespace net.atos.daf.ct2.alert.repository
                             foreach (var alertTimingDetail in notification.AlertTimingDetails)
                             {
                                 alertTimingDetail.RefId = notificationId;
-                                alertTimingDetail.Type = AlertTimingDetailType.NotificationAdvanceFilter.ToString();
+                                alertTimingDetail.Type = Convert.ToChar(AlertTimingDetailType.NotificationAdvanceFilter).ToString();
                                 int alertTimingDetailId = await CreateAlertTimingDetail(alertTimingDetail);
                                 alertTimingDetail.Id = alertTimingDetailId;
                             }
@@ -650,6 +671,16 @@ namespace net.atos.daf.ct2.alert.repository
                     aleurg.state as aleurg_state,
                     aleurg.created_at as aleurg_created_at,
                     aleurg.modified_at as aleurg_modified_at,
+					aletimeurg.id as aletimeurg_id, 
+					aletimeurg.type as aletimeurg_type, 
+					aletimeurg.ref_id as aletimeurg_ref_id, 
+					aletimeurg.day_type as aletimeurg_day_type, 
+					aletimeurg.period_type as aletimeurg_period_type, 
+					aletimeurg.start_date as aletimeurg_start_date, 
+					aletimeurg.end_date as aletimeurg_end_date, 
+					aletimeurg.state as aletimeurg_state, 
+					aletimeurg.created_at as aletimeurg_created_at, 
+					aletimeurg.modified_at as aletimeurg_modified_at,
                     alefil.id as alefil_id,
                     alefil.alert_id as alefil_alert_id,
                     alefil.alert_urgency_level_id as alefil_alert_urgency_level_id,
@@ -662,6 +693,16 @@ namespace net.atos.daf.ct2.alert.repository
                     alefil.state as alefil_state,
                     alefil.created_at as alefil_created_at,
                     alefil.modified_at as alefil_modified_at,
+					aletimefil.id as aletimefil_id, 
+					aletimefil.type as aletimefil_type, 
+					aletimefil.ref_id as aletimefil_ref_id, 
+					aletimefil.day_type as aletimefil_day_type, 
+					aletimefil.period_type as aletimefil_period_type, 
+					aletimefil.start_date as aletimefil_start_date, 
+					aletimefil.end_date as aletimefil_end_date, 
+					aletimefil.state as aletimefil_state, 
+					aletimefil.created_at as aletimefil_created_at, 
+					aletimefil.modified_at as aletimefil_modified_at,
                     alelan.id as alelan_id,
                     alelan.alert_id as alelan_alert_id,
                     alelan.landmark_type as alelan_landmark_type,
@@ -682,6 +723,16 @@ namespace net.atos.daf.ct2.alert.repository
                     noti.created_by as noti_created_by,
                     noti.modified_at as noti_modified_at,
                     noti.modified_by as noti_modified_by,
+					aletimenoti.id as aletimenoti_id, 
+					aletimenoti.type as aletimenoti_type, 
+					aletimenoti.ref_id as aletimenoti_ref_id, 
+					aletimenoti.day_type as aletimenoti_day_type, 
+					aletimenoti.period_type as aletimenoti_period_type, 
+					aletimenoti.start_date as aletimenoti_start_date, 
+					aletimenoti.end_date as aletimenoti_end_date, 
+					aletimenoti.state as aletimenoti_state, 
+					aletimenoti.created_at as aletimenoti_created_at, 
+					aletimenoti.modified_at as aletimenoti_modified_at,
                     notrec.id as notrec_id,
                     notrec.notification_id as notrec_notification_id,
                     notrec.recipient_label as notrec_recipient_label,
@@ -717,12 +768,18 @@ namespace net.atos.daf.ct2.alert.repository
                     FROM master.alert ale
                     left join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
+					left join master.alerttimingdetail aletimeurg
+					on aletimeurg.ref_id= aleurg.id and aletimeurg.type='U' and aletimeurg.state in ('A','I') and aleurg.state in ('A','I')
                     left join master.alertfilterref alefil
                     on aleurg.id=alefil.alert_urgency_level_id and alefil.state in ('A','I')
+					left join master.alerttimingdetail aletimefil
+					on aletimefil.ref_id= alefil.id and aletimefil.type='F' and aletimefil.state in ('A','I') and alefil.state in ('A','I')
                     left join master.alertlandmarkref alelan
                     on ale.id=alelan.alert_id and alelan.state in ('A','I')
                     left join master.notification noti
                     on ale.id=noti.alert_id and ale.state in ('A','I') and noti.state in ('A','I')
+                   	left join master.alerttimingdetail aletimenoti
+					on aletimenoti.ref_id= noti.id and aletimenoti.type='N' and aletimenoti.state in ('A','I') and noti.state in ('A','I')
                     left join master.notificationrecipient notrec
                     on noti.id=notrec.notification_id and notrec.state in ('A','I')
                     left join master.notificationlimit notlim
@@ -784,16 +841,26 @@ namespace net.atos.daf.ct2.alert.repository
 
         private async Task<bool> RemoveAlertRef(long modifiedAt, int alertId, int ModifiedBy)
         {
-            char deleteChar = 'D';
-            char activeState = 'A';
-            await _dataAccess.ExecuteAsync("UPDATE master.alertfilterref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
-            await _dataAccess.ExecuteAsync("UPDATE master.alertlandmarkref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
-            await _dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
-            await _dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at, modified_by=@modified_by WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, modified_by = ModifiedBy, alert_id = alertId, activeState = activeState });
-            //await dataAccess.ExecuteAsync("UPDATE master.notificationavailabilityperiod SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
-            await _dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
-            await _dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
-            return true;
+            try
+            {
+                char deleteChar = Convert.ToChar(AlertState.Delete);
+                char activeState = Convert.ToChar(AlertState.Active);
+                await _dataAccess.ExecuteAsync("UPDATE master.alertfilterref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+                await _dataAccess.ExecuteAsync("UPDATE master.alerttimingdetail SET state = @state , modified_at = @modified_at , type=@type WHERE ref_id in (select id from master.alertfilterref where alert_id = @alert_id and state=@activeState) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState, type = Convert.ToChar(AlertTimingDetailType.FilterRefAdvanceFilter).ToString() });
+                await _dataAccess.ExecuteAsync("UPDATE master.alertlandmarkref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+                await _dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+                await _dataAccess.ExecuteAsync("UPDATE master.alerttimingdetail SET state = @state , modified_at = @modified_at , type=@type WHERE ref_id in (select id from master.alerturgencylevelref where alert_id = @alert_id and state=@activeState) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState, type = Convert.ToChar(AlertTimingDetailType.UrgencyLevelBasicFilter).ToString() });
+                await _dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at, modified_by=@modified_by WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, modified_by = ModifiedBy, alert_id = alertId, activeState = activeState });
+                await _dataAccess.ExecuteAsync("UPDATE master.alerttimingdetail SET state = @state , modified_at = @modified_at , type=@type WHERE ref_id in (select id from master.notification where alert_id = @alert_id and state=@activeState) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState, type = Convert.ToChar(AlertTimingDetailType.NotificationAdvanceFilter).ToString() });
+                await _dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+                await _dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         private async Task<Alert> Exists(Alert alert)
@@ -893,7 +960,7 @@ namespace net.atos.daf.ct2.alert.repository
             try
             {
                 var parameteralertTimingDetail = new DynamicParameters();
-                parameteralertTimingDetail.Add("@type", Convert.ToChar(alertTimingDetail.Type));
+                parameteralertTimingDetail.Add("@type", alertTimingDetail.Type.ToString());
                 parameteralertTimingDetail.Add("@ref_id", alertTimingDetail.RefId);
                 BitArray bitArray = new BitArray(7);
                 for (int i = 0; i < alertTimingDetail.DayType.Length; i++)
@@ -902,12 +969,12 @@ namespace net.atos.daf.ct2.alert.repository
                 }
                 parameteralertTimingDetail.Add("@day_type", bitArray);
                 if (alertTimingDetail.PeriodType != null && alertTimingDetail.PeriodType.Length > 0)
-                    parameteralertTimingDetail.Add("@period_type", Convert.ToChar(alertTimingDetail.PeriodType));
+                    parameteralertTimingDetail.Add("@period_type", Convert.ToChar(alertTimingDetail.PeriodType.ToString()));
                 else
                     parameteralertTimingDetail.Add("@period_type", null);
                 parameteralertTimingDetail.Add("@start_date", alertTimingDetail.StartDate);
                 parameteralertTimingDetail.Add("@end_date", alertTimingDetail.EndDate);
-                parameteralertTimingDetail.Add("@state", AlertState.Active);
+                parameteralertTimingDetail.Add("@state", Convert.ToChar(AlertState.Active));
                 parameteralertTimingDetail.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 string queryAvailabilityperiod = @"INSERT INTO master.alerttimingdetail(type, ref_id, day_type, period_type, start_date, end_date, state, created_at)
 	                                    VALUES (@type, @ref_id, @day_type, @period_type, @start_date, @end_date, @state, @created_at) RETURNING id";
@@ -922,7 +989,8 @@ namespace net.atos.daf.ct2.alert.repository
         #endregion
 
         #region Landmark Delete Validation
-        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        //landmark type is added only for grouo table as landmark group refers to other table.
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId,string Landmarktype)
         {
             try
             {
@@ -930,23 +998,48 @@ namespace net.atos.daf.ct2.alert.repository
                 var query = string.Empty;
                 dynamic responseId;
 
-                query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state";
-                parameter.Add("@ref_id", landmarkId);
-                parameter.Add("@state", Convert.ToChar(AlertState.Active));
-                responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
-                if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                if (Landmarktype != null && Landmarktype != string.Empty)
                 {
-                    query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state";
+                    query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state and landmark_type=@type";
                     parameter.Add("@ref_id", landmarkId);
                     parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    parameter.Add("@type", Landmarktype);
                     responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                     if (((System.Collections.Generic.List<object>)responseId).Count == 0)
-                        return false;
+                    {
+                        query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state and landmark_type=@type";
+                        parameter.Add("@ref_id", landmarkId);
+                        parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                        responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                        if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                            return false;
+                        else
+                            return true;
+                    }
                     else
                         return true;
                 }
                 else
-                    return true;
+                {
+                    query = @"select id from master.alertfilterref where ref_id = any(@ref_id) and state=@state";
+                    parameter.Add("@ref_id", landmarkId);
+                    parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                    if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                    {
+                        query = @"select id from master.alertlandmarkref where ref_id = any(@ref_id) and state=@state";
+                        parameter.Add("@ref_id", landmarkId);
+                        parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                        responseId = await _dataAccess.QueryAsync<dynamic>(query, parameter);
+                        if (((System.Collections.Generic.List<object>)responseId).Count == 0)
+                            return false;
+                        else
+                            return true;
+                    }
+                    else
+                        return true;
+                }
+                
             }
             catch (Exception)
             {
@@ -1010,11 +1103,12 @@ namespace net.atos.daf.ct2.alert.repository
 	                                                    on notirec.notification_id=noti.id
 	                                                    inner join master.alert alert
 	                                                    on noti.alert_id=alert.id
-	                                                    where notirec.state='A'
-	                                                    and noti.state='A'
-	                                                    and alert.state='A'
+	                                                    where notirec.state=@state
+	                                                    and noti.state=@state
+	                                                    and alert.state=@state
                                                         and alert.organization_id=@organization_id";
                 parameter.Add("@organization_id", organizationId);
+                parameter.Add("@state", AlertState.Active);
                 IEnumerable<NotificationRecipient> notificationRecipientResult = await _dataAccess.QueryAsync<NotificationRecipient>(queryRecipientLabel, parameter);
                 return notificationRecipientResult;
             }

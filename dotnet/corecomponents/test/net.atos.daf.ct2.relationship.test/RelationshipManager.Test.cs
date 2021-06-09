@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.relationship.test
         [TestMethod]
         public void GetRelationshipMapping_Test()
         {
-            var relationship = new OrganizationRelationShip() { created_org_id = 10 };
+            var relationship = new OrganizationRelationShip() { Created_org_id = 10 };
             var result = _relationshipManager.GetRelationshipMapping(relationship).Result;
             Assert.IsTrue(result != null);
         }

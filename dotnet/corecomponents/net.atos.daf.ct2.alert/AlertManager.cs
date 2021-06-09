@@ -69,9 +69,9 @@ namespace net.atos.daf.ct2.alert
         }
         #endregion
 
-        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId, string Landmarktype)
         {
-            return await _alertRepository.IsLandmarkActiveInAlert(landmarkId);
+            return await _alertRepository.IsLandmarkActiveInAlert(landmarkId, Landmarktype);
         }
         public async Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate()
         {

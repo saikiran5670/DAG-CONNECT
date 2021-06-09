@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.mapservice
             _logger = logger;
             _mapManager = mapManager;
             _configuration = config;
-             _apiConfiguration = new HereMapConfiguration();
+            _apiConfiguration = new HereMapConfiguration();
             _configuration.GetSection("HereMapCofiguration").Bind(_apiConfiguration);
         }
 
@@ -33,20 +33,26 @@ namespace net.atos.daf.ct2.mapservice
                     Latitude = request.Latitude,
                     Longitude = request.Longitude
                 };
-
-                 _mapManager.InitializeMapGeocoder(_apiConfiguration);
+                var response = new GetMapResponse();
+                _mapManager.InitializeMapGeocoder(_apiConfiguration);
                 var mapping = _mapManager.GetMapAddress(lookupAddress).Result;
-                var response = new GetMapResponse()
+                if (string.IsNullOrEmpty(mapping.Address))
                 {
-                    Code = MapResponsecode.Success,
-                    LookupAddresses = new GetMapRequest()
-                    {
-                        Address = mapping.Address,
-                        Id = mapping.Id,
-                        Latitude = mapping.Latitude,
-                        Longitude = mapping.Longitude
-                    },
-                    Message = "Success"
+                    response.Code = MapResponsecode.Conflict;
+                    response.Message = "Invalid format of latitue and longitude value";
+                }
+
+                else
+                {
+                    response.Code = MapResponsecode.Success;                   
+                    response.Message = "Success";
+                }
+                response.LookupAddresses = new GetMapRequest()
+                {
+                    Address = mapping.Address ?? string.Empty,
+                    Id = mapping.Id,
+                    Latitude = mapping.Latitude,
+                    Longitude = mapping.Longitude
                 };
                 _logger.LogInformation("Get Map details.");
                 return await Task.FromResult(response);
@@ -61,5 +67,5 @@ namespace net.atos.daf.ct2.mapservice
                 });
             }
         }
-    }  
+    }
 }

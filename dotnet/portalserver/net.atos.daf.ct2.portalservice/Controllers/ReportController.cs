@@ -19,10 +19,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Route("report")]
     public class ReportController : BaseController
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly ReportServiceClient _reportServiceClient;
         private readonly AuditHelper _auditHelper;
-        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Mapper _mapper;
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
@@ -219,18 +219,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region - Driver Time Management Report Table Details
         [HttpPost]
         [Route("getdriverstimedetails")]
-        public async Task<IActionResult> GetDriversActivity([FromBody] ActivityFilterRequest request)
+        public async Task<IActionResult> GetDriversActivity([FromBody] Entity.Report.DriversTimeFilter request)
         {
             try
             {
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
-                if (string.IsNullOrEmpty(request.VINs)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
-                if (string.IsNullOrEmpty(request.DriverIds)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (request.DriverIds.Count <= 0) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
 
+                string _filters = JsonConvert.SerializeObject(request);
+                ActivityFilterRequest objMultipleDrivers = JsonConvert.DeserializeObject<ActivityFilterRequest>(_filters);
                 _logger.Info("GetDriversActivityAsync method in Report (Multiple Driver Time details Report) API called.");
-                var data = await _reportServiceClient.GetDriversActivityAsync(request);
+                var data = await _reportServiceClient.GetDriversActivityAsync(objMultipleDrivers);
                 if (data?.DriverActivities?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
@@ -250,18 +252,20 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("getsingledrivertimedetails")]
-        public async Task<IActionResult> GetDriverActivity([FromBody] ActivityFilterRequest request)
+        public async Task<IActionResult> GetDriverActivity([FromBody] Entity.Report.SingleDriverTimeFilter request)
         {
             try
             {
                 if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
                 if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
-                if (string.IsNullOrEmpty(request.VINs)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
-                if (string.IsNullOrEmpty(request.DriverIds)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (string.IsNullOrEmpty(request.VIN)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
+                if (string.IsNullOrEmpty(request.DriverId)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
 
+                string _filters = JsonConvert.SerializeObject(request);
+                SingleDriverActivityFilterRequest objSingleDriver = JsonConvert.DeserializeObject<SingleDriverActivityFilterRequest>(_filters);
                 _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
-                var data = await _reportServiceClient.GetDriverActivityAsync(request);
+                var data = await _reportServiceClient.GetDriverActivityAsync(objSingleDriver);
                 if (data?.DriverActivities?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
@@ -278,6 +282,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         [HttpPost]
         [Route("getdriveractivityparameters")]
         public async Task<IActionResult> GetDriverActivityParameters([FromBody] IdRequestForDriverActivity request)
@@ -307,6 +312,30 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        #endregion
+
+        #region Eco Score Report - Create
+
+        [HttpPost]
+        [Route("ecoscoreprofile/create")]
+        public async Task<IActionResult> Create([FromBody] EcoScoreProfileCreateRequest request)
+        {
+            try
+            {
+                var grpcRequest = _mapper.MapCreateEcoScoreProfile(request);
+                var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile created successfully", 0, 0, JsonConvert.SerializeObject(request),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         #endregion
     }
 }

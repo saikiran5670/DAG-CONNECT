@@ -20,9 +20,11 @@ namespace net.atos.daf.ct2.alert.entity
             Dictionary<int, NotificationRecipient> notificationRecipientRefLookup = new Dictionary<int, NotificationRecipient>();
             Dictionary<int, NotificationLimit> notificationLimitkRefLookup = new Dictionary<int, NotificationLimit>();
             Dictionary<int, NotificationAvailabilityPeriod> notificationAvailabilityPeriodLookup = new Dictionary<int, NotificationAvailabilityPeriod>();
-           
-            NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod();
 
+            NotificationAvailabilityPeriod notificationAvailabilityPeriod = new NotificationAvailabilityPeriod();
+            Dictionary<int, AlertTimingDetail> alertTimingUrgencyLookup = new Dictionary<int, AlertTimingDetail>();
+            Dictionary<int, AlertTimingDetail> alertTimingFilterLookup = new Dictionary<int, AlertTimingDetail>();
+            Dictionary<int, AlertTimingDetail> alertTimingNotificationLookup = new Dictionary<int, AlertTimingDetail>();
             foreach (var alertItem in alertResult)
             {
                 if (!alertLookup.TryGetValue(Convert.ToInt32(alertItem.Ale_id), out Alert alert))
@@ -44,11 +46,30 @@ namespace net.atos.daf.ct2.alert.entity
                     }
                     if (alertItem.Alefil_id > 0 && alertItem.Aleurg_id == alertItem.Alefil_alert_urgency_level_id)
                     {
-                        if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alefil_id), out _))
+                        if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alefil_id), out AlertFilterRef alertFilterRef))
                         {
-                            var alertFilterRef = ToAlertFilterRefModel(alertItem);
-                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef);
+                            //var alertFilterRefDetails = ToAlertFilterRefModel(alertItem);                           
+                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef= ToAlertFilterRefModel(alertItem));
                             alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
+                        }
+                        if (alertItem.Aletimefil_id > 0 && alertItem.Aletimefil_ref_id == alertItem.Alefil_id)
+                        {
+                            if (!alertTimingFilterLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimefil_id), out _))
+                            {
+                                var alertTimingalertFilter = ToAlertTimingDetailModel(alertItem,'F');
+                                alertTimingFilterLookup.Add(Convert.ToInt32(alertItem.Aletimefil_id), alertTimingalertFilter);
+                                alertFilterRef.AlertTimingDetails.Add(alertTimingalertFilter);
+                            }
+                        }
+                    }
+                    
+                    if (alertItem.Aletimeurg_id > 0 && alertItem.Aletimeurg_ref_id == alertItem.Alefil_alert_urgency_level_id)
+                    {
+                        if (!alertTimingUrgencyLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimeurg_id), out _))
+                        {
+                            var alertTimingUrgencyFilter = ToAlertTimingDetailModel(alertItem,'U');
+                            alertTimingUrgencyLookup.Add(Convert.ToInt32(alertItem.Aletimeurg_id), alertTimingUrgencyFilter);
+                            alertUrgencyLevelRef.AlertTimingDetails.Add(alertTimingUrgencyFilter);
                         }
                     }
                 }
@@ -67,6 +88,15 @@ namespace net.atos.daf.ct2.alert.entity
                     {
                         notificationLookup.Add(Convert.ToInt32(alertItem.Noti_id), notification = ToNotificationModel(alertItem));
                         alert.Notifications.Add(notification);
+                    }
+                    if (alertItem.Aletimenoti_id > 0 && alertItem.Aletimenoti_ref_id == alertItem.Noti_id)
+                    {
+                        if (!alertTimingNotificationLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimenoti_id), out _))
+                        {
+                            var alertTimingNotificationFilter = ToAlertTimingDetailModel(alertItem,'N');
+                            alertTimingNotificationLookup.Add(Convert.ToInt32(alertItem.Aletimenoti_id), alertTimingNotificationFilter);
+                            notification.AlertTimingDetails.Add(alertTimingNotificationFilter);
+                        }
                     }
                     //if (alertItem.notava_id > 0 && alertItem.notava_notification_id == alertItem.noti_id)
                     //{
@@ -243,6 +273,69 @@ namespace net.atos.daf.ct2.alert.entity
             notificationRecipient.CreatedAt = request.Notrec_created_at;
             notificationRecipient.ModifiedAt = request.Notrec_modified_at;
             return notificationRecipient;
+        }
+
+        public AlertTimingDetail ToAlertTimingDetailModel(AlertResult request, char alerttimetype)
+        {
+            AlertTimingDetail alerttimingdetail = new AlertTimingDetail();
+            if (alerttimetype == 'U')
+            {
+                alerttimingdetail.Id = request.Aletimeurg_id;
+                alerttimingdetail.Type = request.Aletimeurg_type;
+                alerttimingdetail.RefId = request.Aletimeurg_ref_id;               
+                if (request.Aletimeurg_day_type != null)
+                {
+                    for (int i = 0; i < request.Aletimeurg_day_type.Length; i++)
+                    {
+                        alerttimingdetail.DayType[i] = request.Aletimeurg_day_type.Get(i);
+                    }
+                }
+                alerttimingdetail.PeriodType = request.Aletimeurg_period_type;
+                alerttimingdetail.StartDate = request.Aletimeurg_start_date;
+                alerttimingdetail.EndDate = request.Aletimeurg_end_date;
+                alerttimingdetail.State = request.Aletimeurg_state;
+                alerttimingdetail.CreatedAt = request.Aletimeurg_created_at;
+                alerttimingdetail.ModifiedAt = request.Aletimeurg_modified_at;
+            }
+            else if (alerttimetype == 'F')
+            {
+                alerttimingdetail.Id = request.Aletimefil_id;
+                alerttimingdetail.Type = request.Aletimefil_type;
+                alerttimingdetail.RefId = request.Aletimefil_ref_id;               
+                if (request.Aletimefil_day_type != null)
+                {
+                    for (int i = 0; i < request.Aletimefil_day_type.Length; i++)
+                    {
+                        alerttimingdetail.DayType[i] = request.Aletimefil_day_type.Get(i);
+                    }
+                }
+                alerttimingdetail.PeriodType = request.Aletimefil_period_type;
+                alerttimingdetail.StartDate = request.Aletimefil_start_date;
+                alerttimingdetail.EndDate = request.Aletimefil_end_date;
+                alerttimingdetail.State = request.Aletimefil_state;
+                alerttimingdetail.CreatedAt = request.Aletimefil_created_at;
+                alerttimingdetail.ModifiedAt = request.Aletimefil_modified_at;
+            }
+            else if (alerttimetype == 'N')
+            {
+                alerttimingdetail.Id = request.Aletimenoti_id;
+                alerttimingdetail.Type = request.Aletimenoti_type;
+                alerttimingdetail.RefId = request.Aletimenoti_ref_id;               
+                if (request.Aletimenoti_day_type != null)
+                {
+                    for (int i = 0; i < request.Aletimenoti_day_type.Length; i++)
+                    {
+                        alerttimingdetail.DayType[i] = request.Aletimenoti_day_type.Get(i);
+                    }
+                }
+                alerttimingdetail.PeriodType = request.Aletimenoti_period_type;
+                alerttimingdetail.StartDate = request.Aletimenoti_start_date;
+                alerttimingdetail.EndDate = request.Aletimenoti_end_date;
+                alerttimingdetail.State = request.Aletimenoti_state;
+                alerttimingdetail.CreatedAt = request.Aletimenoti_created_at;
+                alerttimingdetail.ModifiedAt = request.Aletimenoti_modified_at;
+            }
+            return alerttimingdetail;
         }
         public NotificationLimit ToNotificationLimitModel(AlertResult request)
         {

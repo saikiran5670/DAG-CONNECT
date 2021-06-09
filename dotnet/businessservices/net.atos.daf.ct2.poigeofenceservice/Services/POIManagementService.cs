@@ -304,7 +304,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 });
             }
         }
-
+        
         public override async Task<TripResponce> GetAllTripDetails(TripRequest request, ServerCallContext context)
         {
             try
@@ -336,5 +336,30 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 });
             }
         }
+
+        public override async Task<AddTripAddressResponse> UpdateTripAddress(AddTripAddressRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Update tripdetail.trip_statistics start position and end position.");
+                AddTripAddressResponse response = new AddTripAddressResponse();
+                var tripDetails = new TripAddressDetails() { Id = request.Id, StartAddress = request.StartAddress, EndAddress = request.EndAddress };
+
+                var result = await _poiManager.UpdateTripArddress(tripDetails);
+                response.TripAddressDetails.Id = result.Id;
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AddTripAddressResponse
+                {
+                    Responsecode = Responsecode.Failed,
+                    Message = "Update tripdetail.trip_statistics start position and end position get faile due to - " + ex.Message
+                });
+            }
+        }
+
+
     }
 }
