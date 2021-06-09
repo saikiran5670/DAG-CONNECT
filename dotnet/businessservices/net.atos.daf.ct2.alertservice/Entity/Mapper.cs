@@ -539,5 +539,16 @@ namespace net.atos.daf.ct2.alertservice.Entity
             alertTimingDetailRequest.ModifiedAt = request.ModifiedAt;
             return alertTimingDetailRequest;
         }
+
+        public NotificationTemplate MapNotificationTemplate(net.atos.daf.ct2.alertservice.NotificationTemplate notificationTemplate)
+        {
+            NotificationTemplate objNotificationTemplate = new NotificationTemplate();
+            objNotificationTemplate.Id = notificationTemplate.Id;
+            objNotificationTemplate.AlertCategoryType = string.IsNullOrEmpty(notificationTemplate.AlertCategoryType) ? string.Empty : notificationTemplate.AlertCategoryType;
+            objNotificationTemplate.AlertType = string.IsNullOrEmpty(notificationTemplate.AlertType) ? string.Empty : notificationTemplate.AlertType;
+            objNotificationTemplate.Text = string.IsNullOrEmpty(notificationTemplate.Text) ? string.Empty : notificationTemplate.Text;
+            objNotificationTemplate.Subject = string.IsNullOrEmpty(notificationTemplate.Subject) ? string.Empty : notificationTemplate.Subject;
+            return objNotificationTemplate;
+        }
     }
 }

@@ -339,5 +339,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
+        #region Eco score Report - Update
+
+        [HttpPut]
+        [Route("ecoscoreprofile/update")]
+        public async Task<IActionResult> Update([FromBody] EcoScoreProfileUpdateRequest request)
+        {
+            try
+            {
+                var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
+                var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile updated successfully", 0, 0, JsonConvert.SerializeObject(request),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }

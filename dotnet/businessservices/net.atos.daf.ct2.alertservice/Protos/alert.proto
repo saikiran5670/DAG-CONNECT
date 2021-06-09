@@ -307,4 +307,5 @@ message AlertCategoryFilterResponse{
     repeated EnumTranslation EnumTranslation = 3;
 	repeated AlertCategoryFilterRequest AlertCategoryFilterRequest = 4;
 	repeated AssociatedVehicleRequest AssociatedVehicleRequest =5;
+	repeated NotificationTemplate NotificationTemplate=6;
 }
