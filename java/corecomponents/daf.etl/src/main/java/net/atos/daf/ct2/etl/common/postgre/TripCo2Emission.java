@@ -43,6 +43,9 @@ public class TripCo2Emission extends RichFlatMapFunction<TripStatusData, TripSta
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
 			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: " + e);
+			logger.error("serverNm :: "+envParams.get(ETLConstants.MASTER_POSTGRE_SERVER_NAME) +" port :: "+Integer.parseInt(envParams.get(ETLConstants.MASTER_POSTGRE_PORT)));
+			logger.error("databaseNm :: "+envParams.get(ETLConstants.MASTER_POSTGRE_DATABASE_NAME) +" user :: "+envParams.get(ETLConstants.MASTER_POSTGRE_USER) + " pwd :: "+envParams.get(ETLConstants.MASTER_POSTGRE_PASSWORD));
+			logger.error("masterConnection :: " + masterConnection);
 			throw e;
 		}
 
