@@ -661,11 +661,12 @@ private setPageTitle() {
   }
 
   logOut() {
-    this.isLogedIn = false;
-    localStorage.clear(); // clear all localstorage
-    this.router.navigate(["/auth/login"]);
-    this.fileUploadedPath= '';
-    this.authService.signOut().subscribe(()=>{});
+    this.authService.signOut().subscribe(()=>{
+      this.isLogedIn = false; 
+      localStorage.clear(); // clear all localstorage
+      this.fileUploadedPath= '';
+      this.router.navigate(["/auth/login"]);
+    });
   }
 
   fullScreen() {
