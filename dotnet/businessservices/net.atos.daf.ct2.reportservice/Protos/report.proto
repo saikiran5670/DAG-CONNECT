@@ -15,6 +15,7 @@ rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivit
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
 rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
+rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
 }
 
 enum Responsecode{
@@ -98,11 +99,11 @@ message TripFilterRequest{
 }
 
 message TripResponse {
-    repeated TripDetils TripData=1;   
+    repeated TripDetails TripData=1;   
     Responsecode code = 2;
     string message = 3;
 }
-message TripDetils {
+message TripDetails {
     int32 Id =1;
     string TripId=2;
     string VIN=3;
@@ -243,11 +244,13 @@ message CreateEcoScoreProfileRequest {
   string Name = 1;
   string Description = 2;
   bool IsDAFStandard = 3;
-  repeated CreateEcoScoreProfileKPI ProfileKPIs = 4;
+  int32 OrgId = 4;
+  int32 AccountId = 5;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
 }
 
 message CreateEcoScoreProfileKPI {
-  int32 Id = 1;
+  int32 KPIId = 1;
   double LimitValue = 2;
   double TargetValue = 3;
   double LowerValue = 4;
@@ -255,6 +258,18 @@ message CreateEcoScoreProfileKPI {
 }
 
 message CreateEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+}
+message UpdateEcoScoreProfileRequest {
+  int32 ProfileId = 1;
+  string Name = 2;
+  string Description = 3;
+    int32 OrgId = 4;
+  int32 AccountId = 5;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
+}
+message UpdateEcoScoreProfileResponse {
   Responsecode Code = 1;
   string Message = 2;
 }

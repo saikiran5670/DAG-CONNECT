@@ -315,7 +315,7 @@ namespace net.atos.daf.ct2.visibility.repository
 									,case when VehicleName is null  then '' else VehicleName end as VehicleName
 									,case when Vin is null  then '' else Vin end as Vin
 									,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
-						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) order by 1;";
+						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) AND VehicleId>0 order by 1;";
                 #endregion
                 return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
             }
@@ -426,7 +426,7 @@ INNER JOIN master.Role rol ON accrol.role_id = rol.id AND rol.state = 'A'
 inner join org_veh_subscribe_features ovsf ON rol.feature_set_id=ovsf.featuresetid
 left join translation.enumtranslation enutra
 on   ovsf.featureid = enutra.feature_id
-and enutra.type='T'
+and enutra.type='T' 
 order by 1 desc
 ";
                 #endregion

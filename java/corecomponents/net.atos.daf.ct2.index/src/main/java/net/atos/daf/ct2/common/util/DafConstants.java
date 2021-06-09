@@ -90,5 +90,18 @@ public class DafConstants {
 	
 	public static final int CURRENT_TRIP_INDICATOR = 1;		
 	public static final String DTM_TS_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";	
+	
+	
+public static final int FUEL_CONSUMPTION_INDICATOR = 2;		
+	
+	//master datamart
+		public static final String MASTER_POSTGRE_SERVER_NAME = "master_postgre_server_name";
+		public static final String MASTER_POSTGRE_PORT = "master_postgre_port";
+		public static final String MASTER_POSTGRE_DATABASE_NAME = "master_postgre_database_name";
+		public static final String MASTER_POSTGRE_USER = "master_postgre_userId";
+		public static final String MASTER_POSTGRE_PASSWORD = "master_postgre_password";
+		
+		
+		
 
 }

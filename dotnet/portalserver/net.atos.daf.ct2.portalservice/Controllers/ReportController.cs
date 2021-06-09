@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.mapservice; 
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
@@ -24,14 +26,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly AuditHelper _auditHelper;
         private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Mapper _mapper;
+        private readonly HereMapAddressProvider _hereMapAddressProvider;
+        private readonly poiservice.POIService.POIServiceClient _poiServiceClient;
+        private readonly MapService.MapServiceClient _mapServiceClient;
 
         public ReportController(ReportServiceClient reportServiceClient, AuditHelper auditHelper,
-                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+                               IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper,
+                               MapService.MapServiceClient mapServiceClient, poiservice.POIService.POIServiceClient poiServiceClient
+                               ) : base(httpContextAccessor, sessionHelper)
         {
             _reportServiceClient = reportServiceClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Mapper();
+            _poiServiceClient = poiServiceClient;
+            _mapServiceClient = mapServiceClient;
+            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
         }
 
         #region Select User Preferences
@@ -119,6 +129,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _logger.Info("GetFilteredTripDetailsAsync method in Report (Trip Report) API called.");
                 var data = await _reportServiceClient.GetFilteredTripDetailsAsync(request);
+
+                data.TripData.Select(x =>
+                {
+                    x = _hereMapAddressProvider.UpdateTripReportAddress(x);
+                    return x;
+                }).ToList();
+
+
                 if (data?.TripData?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
@@ -323,6 +341,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var grpcRequest = _mapper.MapCreateEcoScoreProfile(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
                 var response = await _reportServiceClient.CreateEcoScoreProfileAsync(grpcRequest);
                 return StatusCode((int)response.Code, response.Message);
             }
@@ -336,6 +356,28 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        #endregion
+        #region Eco score Report - Update
+
+        [HttpPut]
+        [Route("ecoscoreprofile/update")]
+        public async Task<IActionResult> Update([FromBody] EcoScoreProfileUpdateRequest request)
+        {
+            try
+            {
+                var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
+                var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, "Eco Score profile updated successfully", 0, 0, JsonConvert.SerializeObject(request),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }

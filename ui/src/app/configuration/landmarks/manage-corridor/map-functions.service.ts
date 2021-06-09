@@ -27,6 +27,15 @@ export class MapFunctionsService {
 
   corridorWidthKm: number = 0.1;
   additionalData = [];
+  
+  tollRoadChecked = false;
+  motorwayChecked = false;
+  boatFerriesChecked = false;
+  railFerriesChecked =false;
+  tunnelsChecked=false;
+  dirtRoadChecked = false;
+  exclusions = [];
+
   map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
   constructor(private hereService: HereService, private corridorService: CorridorService) {
     this.platform = new H.service.Platform({
@@ -48,6 +57,7 @@ export class MapFunctionsService {
   vehicleLengthValue = 0
   vehicleLimitedWtValue = 0
   vehicleWtPerAxleValue = 0
+  defaultLayers : any; 
 
 
   // public ngAfterViewInit() {
@@ -55,10 +65,10 @@ export class MapFunctionsService {
   // }
 
   initMap(mapElement) {
-    let defaultLayers = this.platform.createDefaultLayers();
     //Step 2: initialize a map - this map is centered over Europe
+    this.defaultLayers  = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      this.defaultLayers.vector.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
@@ -73,7 +83,7 @@ export class MapFunctionsService {
 
 
     // Create the default UI components
-    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.hereMap, this.defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
   }
@@ -198,6 +208,8 @@ export class MapFunctionsService {
     let _data = this.additionalData;
     this.getAttributeData = _data["attribute"];
     this.getExclusionList = _data["exclusion"];
+    this.hazardousMaterial = [];
+    this.exclusions = [];
     this.getAttributeData["isCombustible"] ? this.hazardousMaterial.push('combustible') : '';
     this.getAttributeData["isCorrosive"] ? this.hazardousMaterial.push('corrosive') : '';
     this.getAttributeData["isExplosive"] ? this.hazardousMaterial.push('explosive') : '';
@@ -214,19 +226,26 @@ export class MapFunctionsService {
     this.selectedTrailerId = this.getAttributeData["noOfTrailers"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     this.transportDataChecked = _data["isTransportData"];
+    this.trafficFlowChecked = _data["isTrafficFlow"];
+    if(this.trafficFlowChecked){
+      this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+    }
+    this.transportDataChecked = _data["isTransportData"];
+    if(this.transportDataChecked){
+      this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+    }
     this.vehicleHeightValue = _data["vehicleSize"].vehicleHeight;
     this.vehicleWidthValue = _data["vehicleSize"].vehicleWidth;
     this.vehicleLengthValue = _data["vehicleSize"].vehicleLength;
     this.vehicleLimitedWtValue = _data["vehicleSize"].vehicleLimitedWeight;
     this.vehicleWtPerAxleValue = _data["vehicleSize"].vehicleWeightPerAxle;
 
-    this.tunnelId = this.getExclusionList["tunnelsType"];
-
-    // this.tollRoadId = this.getExclusionList["tollRoadType"];
-    // this.boatFerriesId = this.getExclusionList["boatFerriesType"];
-    // this.dirtRoadId = this.getExclusionList["dirtRoadType"];
-    // this.motorWayId = this.getExclusionList["mortorway"];
-    // this.railFerriesId = this.getExclusionList["railFerriesType"];
+    this.getExclusionList["tunnelsType"] == 'A'  ? this.exclusions.push('tunnel') :'';
+    this.getExclusionList["tollRoadType"] == 'A'  ? this.exclusions.push('tollRoad') :'';
+    this.getExclusionList["boatFerriesType"] == 'A'  ? this.exclusions.push('ferry') :'';
+    this.getExclusionList["dirtRoadType"] == 'A'  ? this.exclusions.push('dirtRoad') :'';
+    this.getExclusionList["mortorway"] == 'A'  ? this.exclusions.push('controlledAccessHighway') :'';
+    this.getExclusionList["railFerriesType"] == 'A'  ? this.exclusions.push('carShuttleTrain') :'';
 
   }
 
@@ -352,6 +371,11 @@ export class MapFunctionsService {
 
     if (this.hazardousMaterial.length > 0) {
       routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+    }
+    
+    if(this.exclusions.length>0){
+      routeRequestParams += '&avoid[features]=' + this.exclusions.join();
+
     }
     this.routePoints = [];
     this.hereService.getTruckRoutes(routeRequestParams).subscribe((data) => {

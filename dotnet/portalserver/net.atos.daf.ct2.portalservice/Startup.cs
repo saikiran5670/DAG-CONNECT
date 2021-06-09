@@ -84,7 +84,15 @@ namespace net.atos.daf.ct2.portalservice
                 options.Cookie.Name = "Account";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
+                if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
+                {
+                    options.Cookie.SameSite = SameSiteMode.None;
+                }
+                else
+                {
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                }
+
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
                 options.Events = new CookieAuthenticationEvents
@@ -112,6 +120,14 @@ namespace net.atos.daf.ct2.portalservice
                 options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+                if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
+                {
+                    options.Cookie.SameSite = SameSiteMode.None;
+                }
+                else
+                {
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                }
                 options.Cookie.SecurePolicy = string.IsNullOrEmpty(isdevelopmentenv) || isdevelopmentenv.Contains("Configuration") ? CookieSecurePolicy.None : CookieSecurePolicy.Always;
             });
             services.AddAuthorization(options =>

@@ -40,7 +40,7 @@ public class User extends CommonFunctionLib{
 	}
 	public static void selectRoleInUser() throws Exception {
 		try {
-			String GRPTBL = getTextFromOR("GRP_STEP2_TBL"); 
+			String GRPTBL = "//*[@id='cdk-step-content-0-0']";//getTextFromOR("GRP_STEP1_TBL");//("GRP_STEP2_TBL"); selectCheckBoxInTbl
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "/div/div";
@@ -76,11 +76,12 @@ public class User extends CommonFunctionLib{
 	}
 	public static void selectRoleInUserPOPUP() throws Exception {
 		try {
+			String Tbl = getTextFromOR("GRP_STEP1_TBL");
 			String GRPTBL = getTextFromOR("GRP_POPUP_TBL"); 
 			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
 			String GRP_ROW = getTextFromOR("GRP_ROW");
 			String CELL = "";
-			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL);
+			CommonFunctionLib.selectCheckBoxInTbl(GRPTBL+Tbl, COLHEAD, GRP_ROW, CELL);
 			
 				
 			}catch (Exception e) {

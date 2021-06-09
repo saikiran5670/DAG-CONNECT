@@ -25,7 +25,7 @@ import net.atos.daf.postgre.dao.Co2MasterDao;
 import net.atos.daf.postgre.dao.LiveFleetPosition;
 import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
 
-public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<Monitor>> implements Serializable {
+public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<Monitor>> implements Serializable {/*
 
 	private static final long serialVersionUID = 1L;
 	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
@@ -92,7 +92,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 						Fuel_consumption = currentTripData.getFuel_consumption();
 						currentPosition = tripCalculation(row, currentPosition);
 
-						positionDAO.insert(currentPosition, Fuel_consumption, cmData);
+						positionDAO.insert(currentPosition);
 
 					}
 				}
@@ -231,4 +231,4 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	}
 
-}
+*/}

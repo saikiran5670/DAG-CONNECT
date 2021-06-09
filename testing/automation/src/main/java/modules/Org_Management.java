@@ -110,4 +110,23 @@ public class Org_Management extends CommonFunctionLib {
 		return false;
 		}
 		}
+		public static void clickOnRelationshipLink() throws Exception {
+		try {
+			String GRPTBL = getTextFromOR("GRP_STEP1_TBL"); 
+			String COLHEAD = getTextFromOR("GRP_COLUMNHEADER");; 
+			String GRP_ROW = getTextFromOR("GRP_ROW");
+			String CELL = "/div/child::div[1]";
+				//div/div";
+			CommonFunctionLib.clickLinkInTbl(GRPTBL, COLHEAD, GRP_ROW, CELL);
+			DriverScript.bResult = true;
+				
+			}catch (Exception e) {
+				test.log(LogStatus.FAIL, e.getMessage());
+				Log.error("Data is not present in table..." + e.getMessage());
+				String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+				test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+				ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+				DriverScript.bResult = false;				
+				}
+	}
 }

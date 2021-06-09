@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
@@ -7,6 +8,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         [Required(ErrorMessage = "Urgency level type is required.")]
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Urgency level type should be 1 character.")]
+        [UrgencyLevelCheck(ErrorMessage = "Urgency level is invalid.")]
         public string UrgencyLevelType { get; set; }
 
         public double ThresholdValue { get; set; }

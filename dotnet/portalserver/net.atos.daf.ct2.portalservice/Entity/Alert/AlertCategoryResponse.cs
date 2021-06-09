@@ -6,6 +6,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         public List<EnumTranslation> EnumTranslation { get; set; } = new List<EnumTranslation>();
         public List<VehicleGroup> VehicleGroup { get; set; } = new List<VehicleGroup>();
+        public List<NotificationTemplate> NotificationTemplate { get; set; } = new List<NotificationTemplate>();
     }
     public class EnumTranslation
     {
@@ -24,5 +25,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public string Vin { get; set; }
         public string RegNo { get; set; }
         public bool SubcriptionStatus { get; set; }
+    }
+    public class NotificationTemplate
+    {
+        public int Id { get; set; }
+        public string AlertCategoryType { get; set; }
+        public string AlertType { get; set; }
+        public string Text { get; set; }
+        public string Subject { get; set; }
     }
 }

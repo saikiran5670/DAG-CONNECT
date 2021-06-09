@@ -12,6 +12,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from './services/organization.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -226,7 +227,7 @@ export class AppComponent {
   orgName: any;
   roleId: any;
 
-  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService : OrganizationService) {
+  constructor(private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService : OrganizationService) {
     this.defaultTranslation();
     this.landingPageForm = this.fb.group({
       'organization': [''],
@@ -660,10 +661,12 @@ private setPageTitle() {
   }
 
   logOut() {
-    this.isLogedIn = false;
-    localStorage.clear(); // clear all localstorage
-    this.router.navigate(["/auth/login"]);
-    this.fileUploadedPath= '';
+    this.authService.signOut().subscribe(()=>{
+      this.isLogedIn = false; 
+      localStorage.clear(); // clear all localstorage
+      this.fileUploadedPath= '';
+      this.router.navigate(["/auth/login"]);
+    });
   }
 
   fullScreen() {

@@ -78,7 +78,23 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.name ? selectedElementData.name : '--' }}</span>
           </div>
         </div>
-        
+
+        <div class="areaWidth min-width-30-per" fxLayout="column">
+          <mat-label>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+          </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select  (selectionChange)="onTypeChange($event.value)" formControlName="type">
+                    <mat-option *ngFor="let type of types" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
+            </div>
+        </div>
 
 
 
@@ -105,6 +121,8 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.categoryName ? selectedElementData.categoryName : '--' }}</span>
           </div>
         </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class="areaWidth min-width-30-per" fxLayout="column">
           <mat-label>
             <span>{{ translationData.lblSubCategory || 'Sub-Category' }}</span>
@@ -124,8 +142,6 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.subCategoryName ? selectedElementData.subCategoryName : '--' }}</span>
           </div>
         </div>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
         <div class="areaWidth min-width-30-per" fxLayout="column">
           <mat-label>
             <span>{{ translationData.lblAddress || 'Address' }}</span>
@@ -154,6 +170,8 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.zipcode ? selectedElementData.zipcode : '--' }}</span>
           </div>
         </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
         <div class="areaWidth min-width-30-per" fxLayout="column">
           <mat-label>
             <span>{{ translationData.lblCity || 'City' }}</span>
@@ -168,8 +186,6 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.city ? selectedElementData.city : '--' }}</span>
           </div>
         </div>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
         <div class="areaWidth min-width-30-per" fxLayout="column">
           <mat-label>
             <span>{{ translationData.lblCountry || 'Country' }}</span>
@@ -199,7 +215,9 @@
             <span style='font-weight: 500!important;'>{{ selectedElementData.latitude ? selectedElementData.latitude : '--' }}</span>
           </div>
         </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column">
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-xlg'>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>
             <span>{{ translationData.lblLongitude || 'Longitude' }}</span><span *ngIf="actionType != 'view'"
               class='mandatoryColor'>*</span>
@@ -218,7 +236,7 @@
       
 
 
-      <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="start">
+      <!-- <div *ngIf="actionType != 'view'" fxLayout="row" fxLayoutAlign="start">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
           <mat-label>{{ translationData.lblType || 'Type' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
           </mat-label>
@@ -235,7 +253,7 @@
               <span style='font-weight: 500!important;'>{{ (selectedElementData.organizationId == 0) ? types[1] : types[0] }}</span>
             </div>
         </div>
-      </div>
+      </div> -->
 
 
 
