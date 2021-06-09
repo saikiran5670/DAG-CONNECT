@@ -55,8 +55,8 @@ namespace net.atos.daf.ct2.reports.repository
 	                        ,average_speed AS AverageSpeed
 	                        ,average_weight AS AverageWeight
 	                        ,last_odometer AS Odometer
-                            ,CASE WHEN start_position IS NULL THEN 'NA' ELSE start_position END AS StartPosition
-                            ,CASE WHEN end_position IS NULL THEN 'NA' ELSE end_position END AS EndPosition
+                            ,CASE WHEN start_position IS NULL THEN '' ELSE start_position END AS StartPosition
+                            ,CASE WHEN end_position IS NULL THEN '' ELSE end_position END AS EndPosition
 	                        ,start_position_lattitude AS StartPositionLattitude
 	                        ,start_position_longitude AS StartPositionLongitude
 	                        ,end_position_lattitude AS EndPositionLattitude

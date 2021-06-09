@@ -51,7 +51,7 @@ public class MonitorDataProcess {
 			consumerStream.addSink(new MonitorDataHbaseSink()); // Writing into HBase Table
 			
 			
-			consumerStream.addSink(new LiveFleetPositionPostgreSink()); // Writing into PostgreSQL Table
+			//consumerStream.addSink(new LiveFleetPositionPostgreSink()); // Writing into PostgreSQL Table
 			
 			consumerStream.addSink(new DriverTimeManagementSink()); //Drive Time Management
 

@@ -12,36 +12,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
-import net.atos.daf.ct2.common.realtime.dataprocess.MonitorDataProcess;
-//import net.atos.daf.ct2.common.realtime.pojo.monitordata.MonitorMessage;
+import net.atos.daf.ct2.common.realtime.dataprocess.IndexDataProcess;
 import net.atos.daf.ct2.common.util.DafConstants;
 import net.atos.daf.ct2.pojo.KafkaRecord;
-import net.atos.daf.ct2.pojo.standard.Monitor;
+import net.atos.daf.ct2.pojo.standard.Index;
 import net.atos.daf.postgre.bo.Co2Master;
-import net.atos.daf.postgre.bo.CurrentTrip;
 import net.atos.daf.postgre.bo.LiveFleetPojo;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
 import net.atos.daf.postgre.dao.Co2MasterDao;
 import net.atos.daf.postgre.dao.LiveFleetPosition;
 import net.atos.daf.postgre.dao.LivefleetCurrentTripStatisticsDao;
 
-public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<Monitor>> implements Serializable {/*
+public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecord<Index>> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	Logger log = LoggerFactory.getLogger(MonitorDataProcess.class);
+	Logger log = LoggerFactory.getLogger(IndexDataProcess.class);
 
-	// String livefleetposition = "INSERT INTO
-	// livefleet.livefleet_position_statistics ( trip_id , vin
-	// ,message_time_stamp
-	// ,gps_altitude ,gps_heading ,gps_latitude ,gps_longitude ,co2_emission
-	// ,fuel_consumption , last_odometer_val ,distance_until_next_service ,
-	// created_at_m2m ,created_at_kafka ,created_at_dm ) VALUES (? ,? ,? ,? ,?
-	// ,? ,?
-	// ,? ,? ,? ,? ,? ,? ,? )";
-
+	
 	String livefleetposition = null;
-
-	// private PreparedStatement statement;
 	Connection connection = null;
 
 	Connection masterConnection = null;
@@ -52,17 +40,17 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	LiveFleetPojo currentPosition;// later we have to implement it inside invoke
 
-	private List<Monitor> queue;
-	private List<Monitor> synchronizedCopy;
+	private List<Index> queue;
+	private List<Index> synchronizedCopy;
 
 	Long Fuel_consumption = 0L;
 
-	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
+	public void invoke(KafkaRecord<Index> index) throws Exception {
 
-		queue = new ArrayList<Monitor>();
-		synchronizedCopy = new ArrayList<Monitor>();
+		queue = new ArrayList<Index>();
+		synchronizedCopy = new ArrayList<Index>();
 
-		Monitor row = monitor.getValue();
+		Index row = index.getValue();
 
 		currentPosition = new LiveFleetPojo();
 
@@ -76,20 +64,15 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 			if (queue.size() >= 1) {
 
 				synchronized (synchronizedCopy) {
-					synchronizedCopy = new ArrayList<Monitor>(queue);
+					synchronizedCopy = new ArrayList<Index>(queue);
 					queue.clear();
-					for (Monitor monitorData : synchronizedCopy) {
+					for (Index indexData : synchronizedCopy) {
 						String tripID = "NOT AVAILABLE";
 
-						if (monitorData.getDocument().getTripID() != null) {
-							tripID = monitorData.getDocument().getTripID();
+						if (indexData.getDocument().getTripID() != null) {
+							tripID = indexData.getDocument().getTripID();
 						}
 						
-						CurrentTrip currentTripData = currentTripDAO.read(tripID,
-								DafConstants.FUEL_CONSUMPTION_INDICATOR);
-						// Co2Master cmData = cmDAO.read();
-
-						Fuel_consumption = currentTripData.getFuel_consumption();
 						currentPosition = tripCalculation(row, currentPosition);
 
 						positionDAO.insert(currentPosition);
@@ -141,7 +124,7 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	}
 
-	public LiveFleetPojo tripCalculation(Monitor row, LiveFleetPojo currentPosition) {
+	public LiveFleetPojo tripCalculation(Index row, LiveFleetPojo currentPosition) {
 
 		int varVEvtid = 0;
 		if (row.getVEvtID() != null) {
@@ -194,9 +177,13 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 				currentPosition.setGpsLongitude(0.0);
 			}
 		}
-
-		if (Fuel_consumption != null) {
+		Integer Fuel_consumption= row.getVUsedFuel();
+		System.out.println("Fuel_Consuption---->"+ Fuel_consumption );
+		if (Fuel_consumption!= null) {
+			System.out.println("Co2-cofficient-->"+cmData.getCoefficient());
 			double co2emission = (Fuel_consumption * cmData.getCoefficient()) / 1000;
+			
+			System.out.println("co2emission-->"+ co2emission);
 			currentPosition.setCo2Emission(co2emission); // co2emission
 			currentPosition.setFuelConsumption(Fuel_consumption.doubleValue());// fuel_consumption
 		} else {
@@ -211,11 +198,15 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 			currentPosition.setLastOdometerValue(0);
 		}
 
-		if (varVEvtid == 42 || varVEvtid == 43) {
+		/*if (varVEvtid == 42 || varVEvtid == 43) {
 			currentPosition.setDistUntilNextService(row.getDocument().getVDistanceUntilService());// distance_until_next_service
 		} else {
 			currentPosition.setDistUntilNextService(0);
-		}
+		}*/
+		
+		
+			currentPosition.setDistUntilNextService(0);
+		
 
 		return currentPosition;
 
@@ -231,4 +222,4 @@ public class LiveFleetPositionPostgreSink extends RichSinkFunction<KafkaRecord<M
 
 	}
 
-*/}
+}
