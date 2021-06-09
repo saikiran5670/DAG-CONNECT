@@ -433,6 +433,7 @@ this.map.setZoom(14);
     }
     let objData = {
       id: 0,
+      icon: this.poiFormGroup.controls.type.value,
       organizationId: this.organizationId,
       categoryId: this.poiFormGroup.controls.category.value,
       subCategoryId: subcatId,
