@@ -11,7 +11,7 @@
     <div formArrayName="FormArrayItems">
       <div *ngFor="let item of weekDays().controls; let periodIndex = index">
         <div [formGroupName]="periodIndex">
-          <div class="margin-bottom-sm" style="border: 1px solid #000;">
+          <mat-card class='mat-elevation-z' style="border: 1px solid #000; margin-bottom: 15px;">
             <div fxLayout="row" class="full-width margin-bottom-sm">
               <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-checkbox (change)="onChangeDaySelection($event, periodIndex)" formControlName="daySelection">
@@ -63,7 +63,7 @@
                   {{ translationData.lblAdd || 'Add' }}</button>
               </div>
             </div>
-         </div>
+          </mat-card>
         </div>
       </div>
     </div>
