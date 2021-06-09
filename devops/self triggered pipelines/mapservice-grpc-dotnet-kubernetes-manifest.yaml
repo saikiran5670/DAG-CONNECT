@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mapservice-grpc-deployment
+spec:
+  selector:
+    matchLabels:
+      run: mapservice-grpc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: mapservice-grpc
+    spec:
+      containers:
+      - name: mapservice-grpc
+        image: dafdev017756.azurecr.io/mapservice-grpc
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mapservice
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    run: mapservice-grpc
