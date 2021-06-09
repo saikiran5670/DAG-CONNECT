@@ -51,7 +51,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
                 var response = await _alertServiceClient.ActivateAlertAsync(new IdRequest { AlertId = alertId });
                 if (response == null)
-                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,1));
+                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
                     return Ok(String.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, alertId));
                 if (response.Code == ResponseCode.Failed)
@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,2));
+                    return StatusCode(500, String.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -103,7 +103,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, string.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG,2));
+                    return StatusCode(500, string.Format(AlertConstants.ACTIVATED_ALERT_SUCCESS_MSG, 2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -118,7 +118,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (alertId == 0) return BadRequest(AlertConstants.ALERT_ID_NON_ZERO_MSG);
                 var response = await _alertServiceClient.DeleteAlertAsync(new IdRequest { AlertId = alertId });
                 if (response == null)
-                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,1));
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 1));
                 if (response.Code == ResponseCode.Success)
                     return Ok(String.Format(AlertConstants.DELETE_ALERT_SUCCESS_MSG, alertId));
                 if (response.Code == ResponseCode.Conflict)
@@ -133,13 +133,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
                  "Alert service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG,"DeleteAlert",ex.Message), 1, 2, Convert.ToString(alertId),
+                  string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "DeleteAlert", ex.Message), 1, 2, Convert.ToString(alertId),
                   _userDetails);
                 //_logger.Error(null, ex);
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500,string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,2));
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, 2));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -156,20 +156,32 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (accountId == 0 || orgnizationid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
                 net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse response = new net.atos.daf.ct2.portalservice.Entity.Alert.AlertCategoryResponse();
+                //
                 var alertcategory = await _alertServiceClient.GetAlertCategoryAsync(new AccountIdRequest { AccountId = accountId });
+                //Vehicle and Vehicle group
                 VehicleGroupResponse vehicleGroup = await _vehicleClient.GetVehicleGroupbyAccountIdAsync(new VehicleGroupListRequest { AccountId = accountId, OrganizationId = GetUserSelectedOrgId() });
-                if (alertcategory.EnumTranslation != null)
+                //Notification Template
+                NotificationTemplateResponse notificationTemplate = await _alertServiceClient.GetNotificationTemplateAsync(new AccountIdRequest { AccountId = accountId });
+                if (alertcategory.EnumTranslation != null || vehicleGroup.VehicleGroupList != null || notificationTemplate.NotificationTemplatelist != null)
                 {
                     foreach (var item in alertcategory.EnumTranslation)
                     {
                         response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
                     }
+
                     foreach (var item in vehicleGroup.VehicleGroupList)
                     {
                         response.VehicleGroup.Add(_mapper.MapVehicleGroup(item));
                     }
+
+                    foreach (var item in notificationTemplate.NotificationTemplatelist)
+                    {
+                        response.NotificationTemplate.Add(_mapper.MapNotificationTemplate(item));
+                    }
+
                     return Ok(response);
                 }
+
                 else
                 {
                     return StatusCode(404, AlertConstants.ALERT_CATEGORY_NOT_FOUND_MSG);
@@ -213,7 +225,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     VehicleGroupRequest.RefId = alertRequest.VehicleGroupId;
                     VehicleGroupRequest.FunctionEnum = "N";
                     VehicleGroupRequest.OrganizationId = GetContextOrgId();
-                    VehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME,alertRequest.Name ,alertRequest.OrganizationId);
+                    VehicleGroupRequest.Description = string.Format(AlertConstants.VEHICLE_GROUP_NAME, alertRequest.Name, alertRequest.OrganizationId);
                     vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
                     alertRequest.VehicleGroupId = response.VehicleGroup.Id;
                 }
@@ -243,7 +255,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else
                         {
-                            return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,"1"));
+                            return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "1"));
                         }
                     }
                 }
@@ -280,7 +292,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,"2"));
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -322,7 +334,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (alertResponse != null && alertResponse.Code == ResponseCode.Failed)
                 {
-                    return StatusCode(500, AlertConstants.ALERT_CREATE_FAILED_MSG);
+                    return StatusCode(500, AlertConstants.ALERT_UPDATE_FAILED_MSG);
                 }
                 else if (alertResponse != null && alertResponse.Code == ResponseCode.Conflict)
                 {
@@ -338,7 +350,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, AlertConstants.ALERT_CREATE_FAILED_MSG);
+                    return StatusCode(500, AlertConstants.ALERT_UPDATE_FAILED_MSG);
                 }
 
             }
@@ -351,7 +363,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 // check for fk violation
                 if (ex.Message.Contains(AlertConstants.SOCKET_EXCEPTION_MSG))
                 {
-                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG,"2"));
+                    return StatusCode(500, string.Format(AlertConstants.INTERNAL_SERVER_ERROR_MSG, "2"));
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -428,5 +440,35 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region Alert Category Filter
+        [HttpGet]
+        [Route("getalertcategoryfilter")]
+        public async Task<IActionResult> GetAlertCategoryFilter(int accountId, int roleid)
+        {
+            try
+            {
+                int orgnizationid = 10;//GetUserSelectedOrgId();
+                if (accountId == 0 || orgnizationid == 0 || roleid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
+
+                var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
+                if (response == null)
+                    return StatusCode(500, "Internal Server Error.(01)");
+                if (response.Code == ResponseCode.Success)
+                    return Ok(response);
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(AlertConstants.ALERT_FILTER_FAILURE_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, AlertConstants.ALERT_CONTROLLER_NAME,
+                 AlertConstants.ALERT_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(AlertConstants.ALERT_EXCEPTION_LOG_MSG, "GetAlertCategory", ex.Message), 1, 2, Convert.ToString(accountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }

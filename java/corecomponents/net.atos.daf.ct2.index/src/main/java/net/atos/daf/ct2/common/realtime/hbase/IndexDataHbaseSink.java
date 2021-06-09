@@ -55,12 +55,16 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 			conn = connectionPool.getHbaseConnection();
 			if (null == conn) {
 				log.warn("get connection from pool failed");
+				System.out.println("get connection from pool failed");
 
 			}
 			TableName tabName = TableName.valueOf(tableName);
 			table = conn.getConnection().getTable(tabName);
 
 			log.info("table_name  -- " + tableName);
+			
+			System.out.println("table_name  -- " + tableName);
+			
 
 		} catch (IOException e) {
 			log.error("create connection failed from the configuration" + e.getMessage());
@@ -81,6 +85,9 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 				+ "_" + value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
 
 		log.info("Index Data Row_Key :: "
+				+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
+						+ value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
+		System.out.println("Index Data Row_Key :: "
 				+ (value.getValue().getTransID() + "_" + value.getValue().getDocument().getTripID() + "_"
 						+ value.getValue().getVid() + "_" + value.getValue().getReceivedTimestamp()));
 		

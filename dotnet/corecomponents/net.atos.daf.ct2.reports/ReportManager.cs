@@ -98,5 +98,26 @@ namespace net.atos.daf.ct2.reports
         }
 
         #endregion
+
+        #region Eco Score Report - Create Profile
+
+        public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
+        {            
+            return await _reportRepository.CreateEcoScoreProfile(dto);
+        }
+
+        #endregion
+        #region  Eco Score Report - Update Profile
+        public async Task<string> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
+        {
+            var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
+            if (await isExist)
+            {
+                return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+            }
+            else
+                return ecoScoreProfileDto.Name;
+        }
+        #endregion
     }
 }

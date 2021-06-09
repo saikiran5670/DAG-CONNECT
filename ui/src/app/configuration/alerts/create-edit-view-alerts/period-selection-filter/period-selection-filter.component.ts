@@ -51,9 +51,12 @@ days: any= [];
     });
   }
 
-  onChangeDaySelection(event){
+  onChangeDaySelection(event, periodIndex){
     if(event.checked){
-      this.periodSelectionForm.get('fulldayCustom').setValue('A');
+      this.weekDays().at(periodIndex).get("fulldayCustom").setValue('A');
+    }
+    else{
+      this.weekDays().at(periodIndex).get("fulldayCustom").setValue('');
     }
   }
   

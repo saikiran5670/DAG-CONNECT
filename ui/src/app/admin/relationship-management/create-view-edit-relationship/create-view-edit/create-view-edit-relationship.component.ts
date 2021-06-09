@@ -91,6 +91,9 @@ export class CreateViewEditRelationshipComponent implements OnInit {
       }
       setTimeout(()=>{
         this.dataSource = new MatTableDataSource(data);
+        this.dataSource.filterPredicate = function(data, filter: any){
+          return data.name.toLowerCase().includes(filter);
+        }
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         if(!this.createStatus){

@@ -10,7 +10,8 @@ public class Constants {
 	public static final String Chrome_Driver_Path_Server  = "";
 	public static final String Chrome_Driver_Path_Server_exe  = "";	
 	public static final String APIURL = "https://api.dev2.ct2.atos.net/";
-	public static final String APITestURL = "https://api.tst2.ct2.atos.net/";
+	public static final String APITestURL = "https://api.acc3.ct2.atos.net/";
+	//public static final String APITestURL = "https://api.tst2.ct2.atos.net/";
 	public static final String Json_Path = "\\src\\main\\resources\\jsonFiles\\";
 	//public static final String baseUrl = "http://51.144.184.19/UserGroup/";
 	public static final String customer_data ="customer-data/";
