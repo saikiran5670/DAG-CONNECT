@@ -42,7 +42,7 @@
         </ng-container>
         <ng-container matColumnDef="vin">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.vin }}</mat-cell>
+          <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vin}}">{{row.vin}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="licensePlateNumber">
           <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}</mat-header-cell>
