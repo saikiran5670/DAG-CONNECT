@@ -1786,16 +1786,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                await _auditHelper.AddLogs(DateTime.Now, "Account Component",
+                  "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                  "Before SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                  _userDetails.ToString(), _userDetails);
+
                 if (request.AccountId == _userDetails.AccountId)
                 {
-                    HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
-                    HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
-                    HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.OrgId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.RoleKey, request.RoleId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.OrgKey, request.OrgId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.OrgId);
 
                     _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
                     await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                       "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                      "SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
+                      "After SetUserSelection method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                       _userDetails.ToString(), _userDetails);
 
                     return Ok();
@@ -1842,7 +1847,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (s_contextOrgId != request.ContextOrgId)
                 {
-                    HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
+                    _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
 
                     //return menu items
                     var response = await _accountClient.GetMenuFeaturesAsync(new AccountBusinessService.MenuFeatureRequest()
