@@ -87,7 +87,7 @@
             <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
         </div>
         <div *ngIf="actionType != 'view'">
-            <ngx-slider [(value)]="corridorWidth" [options]="options" (mousemove)="sliderChanged()"></ngx-slider>
+            <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()" (mousemove)="sliderChanged()"></ngx-slider>
             <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
         <!-- <mat-label>{{min}}</mat-label>
             <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
@@ -146,10 +146,13 @@
 
 <div fxLayout="row" class="margin-bottom-sm">
 <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
-    <button mat-flat-button color="primary" (click)="searchRoute()">
+    <button mat-button color="primary" (click)="searchRoute()" [disabled]='searchDisable'>
         {{ translationData.lblSearch || 'Search'}}
     </button>
 </div> 
+<mat-error *ngIf="noRouteErr">
+    {{ translationData.lblNoRouteFound|| 'No Route Found' }}
+</mat-error>
 </div>
 <div class="fixDiv"></div>
 <mat-accordion class="example-headers-align" style="background-color:#7e7878;">
