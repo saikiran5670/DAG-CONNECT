@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         public LandmarkPOIController(POIService.POIServiceClient poiServiceClient, AuditHelper auditHelper,
                                     AccountPrivilegeChecker privilegeChecker,
-                                    IHttpContextAccessor _httpContextAccessor, 
+                                    IHttpContextAccessor _httpContextAccessor,
                                     SessionHelper sessionHelper,
                                     MapService.MapServiceClient mapServiceClient) : base(_httpContextAccessor, sessionHelper)
         {
@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _privilegeChecker = privilegeChecker;
-            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient,_poiServiceClient);
+            _hereMapAddressProvider = new HereMapAddressProvider(_mapServiceClient, _poiServiceClient);
         }
 
         [HttpGet]
@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     request.OrganizationId = GetContextOrgId();
                 }
-                var poiRequest = new POIRequest();             
+                var poiRequest = new POIRequest();
 
                 request.State = "Active";
                 poiRequest = _mapper.ToPOIRequest(request);
@@ -453,12 +453,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objTripRequest.StartDateTime = request.StartDateTime;
                 objTripRequest.EndDateTime = request.EndDateTime;
                 var data = await _poiServiceClient.GetAllTripDetailsAsync(objTripRequest);
-               data.TripData.Select(x => {
+                data.TripData.Select(x =>
+                {
                     x = _hereMapAddressProvider.UpdateTripAddress(x);
                     return x;
                 }).ToList();
                 if (data != null)
-                {
+                { 
                     return Ok(data);
                 }
                 else

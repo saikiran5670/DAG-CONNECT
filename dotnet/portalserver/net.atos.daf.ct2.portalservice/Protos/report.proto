@@ -101,11 +101,11 @@ message TripFilterRequest{
 }
 
 message TripResponse {
-    repeated TripDetils TripData=1;   
+    repeated TripDetails TripData=1;   
     Responsecode code = 2;
     string message = 3;
 }
-message TripDetils {
+message TripDetails {
     int32 Id =1;
     string TripId=2;
     string VIN=3;
