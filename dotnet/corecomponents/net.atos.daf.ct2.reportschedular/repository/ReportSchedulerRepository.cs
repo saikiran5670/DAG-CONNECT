@@ -63,7 +63,25 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-     
+
+        public async Task<IEnumerable<DriverDetail>> GetDriverDetails()
+        {
+            try
+            {
+                var queryStatement = @"SELECT
+                                       dr.first_name || ' ' || dr.last_name AS DriverName                                         		  
+                                      ,dr.driver_id as Id                                        		                                 		                                    		  
+                                       FROM 
+                                       master.driver dr;";
+                IEnumerable<DriverDetail> driverdetails = await _dataAccess.QueryAsync<DriverDetail>(queryStatement, null);
+                return driverdetails;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         #endregion
 
     }

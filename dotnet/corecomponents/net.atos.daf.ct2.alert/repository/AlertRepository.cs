@@ -653,7 +653,7 @@ namespace net.atos.daf.ct2.alert.repository
                     ale.validity_period_type as ale_validity_period_type,
                     ale.validity_start_date as ale_validity_start_date,
                     ale.validity_end_date as ale_validity_end_date,
-                    ale.vehicle_group_id as ale_vehicle_group_id,
+                    (CASE WHEN grp.group_type='S' THEN vehs.id ELSE ale.vehicle_group_id END) as ale_vehicle_group_id,
                     ale.state as ale_state,
                     ale.created_at as ale_created_at,
                     ale.created_by as ale_created_by,
@@ -764,7 +764,7 @@ namespace net.atos.daf.ct2.alert.repository
                     (CASE WHEN grp.group_type='S' THEN vehs.license_plate_number END) as regno,
 					(CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
 					(CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
-                    (CASE WHEN grp.group_type='S' THEN 'V' ELSE 'G' END) as ale_applyon
+                    (CASE WHEN grp.group_type='S' THEN 'S' ELSE 'G' END) as ale_applyon
                     FROM master.alert ale
                     left join master.alerturgencylevelref aleurg
                     on ale.id= aleurg.alert_id and ale.state in ('A','I') and aleurg.state in ('A','I')
