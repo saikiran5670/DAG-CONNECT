@@ -99,7 +99,7 @@
                   </ng-container>
                   <ng-container matColumnDef="distance">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance(km)' }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{ row.distance }}</mat-cell>
+                    <mat-cell *matCellDef="let row">{{ row.distance/1000 }}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="width">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWidth || 'Width(mtr)' }}</mat-header-cell>

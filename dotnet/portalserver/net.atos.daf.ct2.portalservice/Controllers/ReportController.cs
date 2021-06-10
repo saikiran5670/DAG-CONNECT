@@ -379,5 +379,63 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region Eco Score Report - Get Profile & KPI details
+
+        [HttpGet]
+        [Route("ecoscoreprofile/getprofiles")]
+        public async Task<IActionResult> GetEcoScoreProfiles(int organizationId)
+        {
+            try
+            {
+                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
+                //organizationId = GetUserSelectedOrgId();
+                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId });
+                if (response?.Profiles?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                    return StatusCode((int)response.Code, response.Message);
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG, 0, 0, Convert.ToString(organizationId),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpGet]
+        [Route("ecoscoreprofile/getprofilekpis")]
+        public async Task<IActionResult> GetEcoScoreProfileKPIs(int profileId)
+        {
+            try
+            {
+                var response = await _reportServiceClient.GetEcoScoreProfileKPIDetailsAsync(new GetEcoScoreProfileKPIRequest { ProfileId = profileId });
+                if (response?.Profile?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                    return StatusCode((int)response.Code, response.Message);
+            }
+
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG, 0, 0, Convert.ToString(profileId),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
     }
 }

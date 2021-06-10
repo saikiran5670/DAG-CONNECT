@@ -9,4 +9,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public string ReportName { get; set; }
     }
+    public class DriverDetail
+    {
+        public int Id { get; set; }
+        public string DriverName { get; set; }
+    }
 }

@@ -121,9 +121,9 @@ export class MapFunctionsService {
           this.endAddressPositionLong = _selectedRoutes[i].endLong;
           this.corridorWidth = _selectedRoutes[i].width;
           this.corridorWidthKm = this.corridorWidth / 1000;
-          let corridorName = _selectedRoutes[i].corridoreName;
-          let startAddress = _selectedRoutes[i].startPoint;
-          let endAddress = _selectedRoutes[i].endPoint;
+          corridorName = _selectedRoutes[i].corridoreName;
+          startAddress = _selectedRoutes[i].startPoint;
+          endAddress = _selectedRoutes[i].endPoint;
 
         } else {
           this.startAddressPositionLat = _selectedRoutes[i].startPositionlattitude;

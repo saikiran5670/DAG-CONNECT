@@ -41,6 +41,10 @@
         public const string GET_VIN_TRIP_NOTFOUND_MSG = "No trip for vehicle found for Account Id {0} and Organization Id {1}. for last 90 days.";
         public const string GET_VIN_VISIBILITY_FAILURE_MSG2 = "Error fetching VIN and Vehicla Details for Account Id {0} and Organization Id {1}. With error: {2}.";
 
+        #region Eco-Score Report
+        public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
+        public const string GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile KPI details fetched successfully for given profile.";
+        #endregion
 
 
 

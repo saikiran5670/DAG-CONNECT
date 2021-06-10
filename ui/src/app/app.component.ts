@@ -272,7 +272,8 @@ export class AppComponent {
     }
 
     this.appForm = this.fb.group({
-      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : (this.accountInfo ? this.accountInfo.accountPreference.languageId : 8)]
+      'languageSelection': [this.localStLanguage ? this.localStLanguage.id : (this.accountInfo ? this.accountInfo.accountPreference.languageId : 8)],
+      'contextOrgSelection': this.organizationList.length > 0 ? this.organizationList[0].id : 1
     });
 
     router.events.subscribe((val:any) => {
@@ -538,8 +539,9 @@ export class AppComponent {
   }
 
   getTranslationLabels(){
-    let curAccId = localStorage.getItem("accountId");
+    let curAccId = parseInt(localStorage.getItem("accountId"));
     if(curAccId){ //- checked for refresh page
+      this.accountID = curAccId;
       this.accountInfo = JSON.parse(localStorage.getItem("accountInfo"));
       let preferencelanguageCode= "";
       let preferenceLanguageId = 1;
@@ -581,23 +583,52 @@ export class AppComponent {
         }
 
         this.appForm.get("languageSelection").setValue(this.localStLanguage.id); //-- set language dropdown
-
-        let translationObj = {
-          id: 0,
-          code: preferencelanguageCode, //-- TODO: Lang code based on account 
-          type: "Menu",
-          name: "",
-          value: "",
-          filter: "",
-          menuId: 0 //-- for common & user preference
-        }
-        this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
-          this.processTranslation(data);
-          this.getAccountInfo();
+        
+        this.organizationService.getAllOrganizations().subscribe((data: any) => {
+          if(data){
+            this.organizationList = data["organizationList"];
+            let _contextOrgId = parseInt(localStorage.getItem("contextOrgId"));
+            let _orgId: any;
+            if(_contextOrgId){
+              _orgId = _contextOrgId;
+            }else{
+              _orgId = parseInt(localStorage.getItem("accountOrganizationId"));
+            }
+            let _searchOrg = this.organizationList.filter(i => i.id == _orgId);
+            if(_searchOrg.length > 0){
+              localStorage.setItem("contextOrgId", _searchOrg[0].id);
+              this.appForm.get("contextOrgSelection").setValue(_searchOrg[0].id); //-- set context org dropdown
+            }
+            else{
+              localStorage.setItem("contextOrgId", this.organizationList[0].id);
+              this.appForm.get("contextOrgSelection").setValue(this.organizationList[0].id); //-- set context org dropdown
+            }
+            this.calledTranslationLabels(preferencelanguageCode);
+          }
+        }, (error) => {
+          this.organizationList = [];
+          this.calledTranslationLabels(preferencelanguageCode);
         });
       });
     }
   }
+
+  calledTranslationLabels(_code: any){
+    let translationObj = {
+      id: 0,
+      code: _code, //-- TODO: Lang code based on account 
+      type: "Menu",
+      name: "",
+      value: "",
+      filter: "",
+      menuId: 0 //-- for common & user preference
+    }
+    this.translationService.getMenuTranslations(translationObj).subscribe( (data) => {
+      this.processTranslation(data);
+      this.getAccountInfo();
+    });
+  }
+
 
   processTranslation(transData: any){
     this.translationData = transData.reduce((acc, cur) => ({ ...acc, [cur.name]: cur.value }), {});
@@ -609,7 +640,7 @@ export class AppComponent {
     this.accountID = parseInt(localStorage.getItem("accountId"));
     this.roleId = localStorage.getItem('accountRoleId');
     this.languageId =  JSON.parse(localStorage.getItem("language"));
-    this.getOrgListData();
+    //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
     }
@@ -779,25 +810,19 @@ private setPageTitle() {
     this.userPreferencesFlag  = !this.userPreferencesFlag;
   }
 
-  getOrgListData(){
-    this.organizationService.getAllOrganizations().subscribe((data: any) => {
-      if(data){
-        this.organizationList = data["organizationList"];
-      }
-    });
-  }
-
-
   applyFilterOnOrganization(filterValue: string){
-  let switchObj = {
-    accountId : this.accountID,
-    contextOrgId : filterValue,
-    languageCode : this.languageId.code
-  } 
-  this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
-    this.getMenu(data);
-  })
-
+    let _search = this.organizationList.filter(i => i.id == parseInt(filterValue));
+    if(_search.length > 0){
+      localStorage.setItem("contextOrgId", _search[0].id);
+    }
+    let switchObj = {
+      accountId : this.accountID,
+      contextOrgId : filterValue,
+      languageCode : this.localStLanguage.code
+    } 
+    this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
+      this.getMenu(data);
+    });
  }
   
 }
