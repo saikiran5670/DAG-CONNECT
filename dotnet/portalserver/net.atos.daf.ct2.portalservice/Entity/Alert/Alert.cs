@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public int ModifiedBy { get; set; }
 
         public List<Notification> Notifications { get; set; } = new List<Notification>();
-
+        [MinLength(1, ErrorMessage = "At least 1 alert urgency level required.")]
         public List<AlertUrgencyLevelRef> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRef>();
 
         public List<AlertLandmarkRef> AlertLandmarkRefs { get; set; } = new List<AlertLandmarkRef>();
@@ -70,6 +70,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
         public List<NotificationEdit> Notifications { get; set; } = new List<NotificationEdit>();
+        [MinLength(1, ErrorMessage = "At least 1 alert urgency level required.")]
         public List<AlertUrgencyLevelRefEdit> AlertUrgencyLevelRefs { get; set; } = new List<AlertUrgencyLevelRefEdit>();
         public List<AlertLandmarkRefEdit> AlertLandmarkRefs { get; set; } = new List<AlertLandmarkRefEdit>();
     }

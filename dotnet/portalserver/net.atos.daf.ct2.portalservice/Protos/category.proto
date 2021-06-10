@@ -170,6 +170,7 @@ message CategoryWisePOI{
   int32 CategoryId = 1;
   string CategoryName = 2;
   string POIName = 3;
+  string POIAddress = 4;
 }
 
 message CategoryWisePOIRequest{

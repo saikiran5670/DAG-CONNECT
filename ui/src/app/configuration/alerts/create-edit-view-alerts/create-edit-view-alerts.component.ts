@@ -16,6 +16,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 import { Options } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
 
 declare var H: any;
 
@@ -104,6 +105,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertFeatures: any= [];
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
+
+  @ViewChild(PeriodSelectionFilterComponent)
+  periodSelectionComponent: PeriodSelectionFilterComponent;
 
   typesOfLevel: any= [
                       {
@@ -1268,7 +1272,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
+    let alertTimingRefHoursOfService= [];
     let alertFilterRefs: any= [];
+    let alertTimingRefAdvancedAlert= [];
     let urgenyLevelObj= {};
 
     if((this.alert_category_selected == 'L' && 
@@ -1425,6 +1431,9 @@ PoiCheckboxClicked(event: any, row: any) {
           }
         }
       }
+      else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours if Service
+        alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
+      }
     }
     else{
       if(this.isCriticalLevelSelected){
@@ -1440,7 +1449,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService 
           }
         }
         else if(this.actionType == 'edit'){
@@ -1457,7 +1467,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(criticalUrgenyLevelObj);
@@ -1475,7 +1486,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         else if(this.actionType == 'edit'){
@@ -1492,7 +1504,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(warningUrgenyLevelObj);
@@ -1510,7 +1523,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         else if(this.actionType == 'edit'){
@@ -1527,7 +1541,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(advisoryUrgenyLevelObj);
