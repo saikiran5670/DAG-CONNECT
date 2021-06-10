@@ -34,8 +34,8 @@
                 <!-- <div formArrayName="FormArrayCustomItems">
                  <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index">
                   <div [formGroupName]="customIndex"> -->
-                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
-                      <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm" style="background: #dedddd;"  fxLayoutGap="5px">
+                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;"  class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                      <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm"  fxLayoutGap="5px">
                         <div class="max-width-40-per" fxLayout="column">
                           <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
                           <mat-form-field appearance="outline" class="full-width">
@@ -49,9 +49,9 @@
                           </mat-form-field>
                         </div>
                         <div class="max-width-10-per" fxLayout="column">
-                          <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">
-                            <mat-icon class="deleteIcon">delete_outline</mat-icon>
-                          </button>
+                          <!-- <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}"> -->
+                            <mat-icon class="deleteIcon" (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">delete_outline</mat-icon>
+                          <!-- </button> -->
                         </div>
 
                       </div>
