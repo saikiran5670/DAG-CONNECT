@@ -146,9 +146,9 @@ message TripData {
          repeated LiveFleetPosition LiveFleetPosition=17;
 }
 message LiveFleetPosition {
-         int64 GpsAltitude=1;
-         int64 GpsHeading=2; 
-         int64 GpsLatitude=3;
-         int64 GpsLongitude=4; 
+         double GpsAltitude=1;
+         double GpsHeading=2; 
+         double GpsLatitude=3;
+         double GpsLongitude=4; 
          int32 Id=5;
 }

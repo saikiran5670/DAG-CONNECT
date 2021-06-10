@@ -49,6 +49,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public string POIAddress { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public double Width { get; set; }
+        public double Distance { get; set; }
     }
-
 }

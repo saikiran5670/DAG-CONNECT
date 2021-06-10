@@ -100,7 +100,7 @@
                       <mat-radio-button style='margin-right: 20px;' value="G">
                           {{ translationData.lblVehicleGroup || 'Vehicle Group' }}
                       </mat-radio-button>
-                      <mat-radio-button style='margin-right: 20px;' value="V">
+                      <mat-radio-button style='margin-right: 20px;' value="S">
                           {{ translationData.lblVehicle || 'Vehicle' }}
                       </mat-radio-button>
                   </mat-radio-group>
@@ -130,7 +130,7 @@
               <span style='font-weight: 500!important;'>{{ selectedRowData.vehicleGroupName != '' ? selectedRowData.vehicleGroupName : '-' }}</span>
             </div>
         </div>
-        <div *ngIf="selectedApplyOn == 'V'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf="selectedApplyOn == 'S'" class="areaWidth min-width-30-per max-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span></mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
@@ -151,7 +151,7 @@
               <span style='font-weight: 500!important;'>{{ selectedRowData.vin != '' ? selectedRowData.vin : '-' }}</span>
             </div>
         </div>
-        <div *ngIf="selectedApplyOn != 'V'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div *ngIf="selectedApplyOn != 'S'" class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">

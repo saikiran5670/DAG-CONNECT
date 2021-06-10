@@ -642,10 +642,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameterPosition.Add("@trip_id", item.TripId);
                     string queryPosition = @"select id, 
                               vin,
-                              gps_altitude, 
-                              gps_heading,
-                              gps_latitude,
-                              gps_longitude
+                              gps_altitude as GpsAltitude, 
+                              gps_heading as GpsHeading,
+                              gps_latitude as GpsLatitude,
+                              gps_longitude as GpsLongitude
                               from livefleet.livefleet_position_statistics
                               where vin=@vin and trip_id = @trip_id order by id desc";
                     var PositionData = await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);

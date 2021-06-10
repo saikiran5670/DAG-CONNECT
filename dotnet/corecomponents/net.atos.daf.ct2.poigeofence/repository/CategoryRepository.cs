@@ -611,7 +611,9 @@ namespace net.atos.daf.ct2.poigeofence.repository
 		                           l.name as POIName,
                                    l.address as POIAddress,
                                    l.latitude as Latitude,
-								   l.longitude as Longitude
+								   l.longitude as Longitude,
+								   l.width as Width,
+								   l.distance as Distance
 	                            FROM master.category c
 	                            LEFT JOIN  master.landmark l on c.id = l.category_id 
 	                            WHERE l.organization_id = @organization_id
