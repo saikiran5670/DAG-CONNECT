@@ -820,7 +820,7 @@ export class RouteCalculatingComponent implements OnInit {
       let _arr = this.viaRouteObj;
       let _viaArr = this.viaRoutePlottedPoints;
       this.viaRouteObj = _arr.filter(obj => obj.label !== route);
-      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.label !== route);
+      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.corridorViaStopName !== route);
     }
    
     this.plotSeparateVia();
