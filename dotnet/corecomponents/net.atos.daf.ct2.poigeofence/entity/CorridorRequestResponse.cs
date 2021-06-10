@@ -41,8 +41,8 @@ namespace net.atos.daf.ct2.poigeofence.entity
     {
         public int CorridorViaStopId { get; set; }
         public string CorridorViaStopName { get; set; }
-        public int Latitude { get; set; }
-        public int Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 
     public class CorridorEditViewResponse : CorridorResponse
