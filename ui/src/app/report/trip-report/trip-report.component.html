@@ -148,7 +148,7 @@
               <div class='scrollArea' *ngIf='userPOIList.length > 0'>
                 <div *ngFor="let userPOI of userPOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox (click)='$event.stopPropagation()'
-                  (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.name }}</mat-checkbox>
+                  (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.poiName }}</mat-checkbox>
                 </div>
               </div>
               <div *ngIf='userPOIList.length == 0'>{{ translationData.lblNoUserPOIFound || 'No User POI Found!' }}</div>

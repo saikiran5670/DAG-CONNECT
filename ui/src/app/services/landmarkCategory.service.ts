@@ -53,7 +53,7 @@ export class LandmarkCategoryService {
         // .get<any[]>(`${this.landmarkCategoryServiceUrl}/getcategoryType?Type=${type}`, headers)
         .get<any[]>(`${this.landmarkCategoryServiceUrl}/getcategoryType?Type=${data.type}&Organization_Id=${data.Orgid}`, headers)
         .pipe(catchError(this.handleError));
-  }
+    }
 
     getLandmarkCategoryDetails(): Observable<any[]> {
         let headerObj = this.generateHeader();
@@ -132,6 +132,16 @@ export class LandmarkCategoryService {
       };
       return this.httpClient
         .get<any[]>(`${this.geofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}&SubCategoryId=${subCategoryId}`, headers)
+        .pipe(catchError(this.handleError));
+    }
+
+    getCategoryWisePOI(orgId: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .get<any[]>(`${this.landmarkCategoryServiceUrl}/getcategorywisepoi?OrganizationId=${orgId}`, headers)
         .pipe(catchError(this.handleError));
     }
 

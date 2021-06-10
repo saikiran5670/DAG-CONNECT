@@ -15,6 +15,8 @@ rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivit
 rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
 rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
 rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
+rpc GetEcoScoreProfiles (GetEcoScoreProfileRequest) returns (GetEcoScoreProfileResponse);
+rpc GetEcoScoreProfileKPIDetails (GetEcoScoreProfileKPIRequest) returns (GetEcoScoreProfileKPIResponse);
 rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
 }
 
@@ -263,6 +265,66 @@ message CreateEcoScoreProfileResponse {
   Responsecode Code = 1;
   string Message = 2;
 }
+
+// START : Get EcoScore Profile Details
+message GetEcoScoreProfileRequest {
+  int32 OrgId = 1;
+}
+
+message GetEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+ repeated EcoScoreProfiles Profiles = 3;
+}
+
+message EcoScoreProfiles {
+ int32 ProfileId = 1; 
+ string ProfileName = 2;
+ string ProfileDescription = 3;
+ bool IsDeleteAllowed = 4;
+}
+
+message GetEcoScoreProfileKPIRequest {
+  int32 ProfileId = 1;
+}
+
+message GetEcoScoreProfileKPIResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreProfileDetails Profile = 3;
+}
+
+message EcoScoreProfileDetails {
+ int32 ProfileId = 1; 
+ string ProfileName = 2;
+ string ProfileDescription = 3;
+ string LastUpdate = 4; 
+ string UpdatedBy = 5;
+ repeated EcoScoreProfileKPIs ProfileSection = 6;
+}
+
+message EcoScoreProfileKPIs {
+int32 SectionId = 1;
+string SectionName = 2;
+string SectionDescription = 3;
+repeated EcoScoreKPI ProfileKPIDetails = 4;
+}
+
+message EcoScoreKPI {
+int32 EcoScoreKPIId = 1; 
+string KPIName = 2; 
+string LimitType = 3; 
+double LimitValue = 4; 
+double TargetValue = 5; 
+double LowerValue = 6; 
+double UpperValue = 7; 
+string RangeValueType = 8; 
+double MaxUpperValue = 9; 
+int32 SequenceNo = 10; 
+}
+
+// END : Get EcoScore Profile Details
+
 message UpdateEcoScoreProfileRequest {
   int32 ProfileId = 1;
   string Name = 2;
