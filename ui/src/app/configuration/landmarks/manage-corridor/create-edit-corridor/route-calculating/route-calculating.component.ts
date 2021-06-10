@@ -199,6 +199,7 @@ export class RouteCalculatingComponent implements OnInit {
     // }
     this.subscribeWidthValue();
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+    this.noRouteErr = false;
 
     //this.configureAutoCompleteForLocationSearch();
   }
@@ -236,6 +237,18 @@ export class RouteCalculatingComponent implements OnInit {
               }
           })
       }
+      
+      this.corridorName = _selectedElementData.corridoreName;
+      this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
+      this.searchStr = _selectedElementData.startPoint;
+      this.searchEndStr = _selectedElementData.endPoint;
+      this.startAddressPositionLat = _selectedElementData.startLat;
+      this.startAddressPositionLong = _selectedElementData.startLong;
+      this.endAddressPositionLat = _selectedElementData.endLat;
+      this.endAddressPositionLong = _selectedElementData.endLong;
+      this.corridorWidth = _selectedElementData.width;
+      this.corridorWidthKm = this.corridorWidth / 1000;
+
       this.plotStartPoint();
       this.plotEndPoint();
       if(_selectedElementData.viaAddressDetail.length > 0){
@@ -249,20 +262,6 @@ export class RouteCalculatingComponent implements OnInit {
         this.plotSeparateVia();
 
       }
-      
-      this.calculateTruckRoute();
-      this.corridorName = _selectedElementData.corridoreName;
-      this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
-      this.searchStr = _selectedElementData.startPoint;
-      this.searchEndStr = _selectedElementData.endPoint;
-      this.startAddressPositionLat = _selectedElementData.startLat;
-      this.startAddressPositionLong = _selectedElementData.startLong;
-      this.endAddressPositionLat = _selectedElementData.endLat;
-      this.endAddressPositionLong = _selectedElementData.endLong;
-      this.corridorWidth = _selectedElementData.width;
-      this.corridorWidthKm = this.corridorWidth / 1000;
-      this.plotStartPoint();
-      this.plotEndPoint();
       this.calculateTruckRoute()
     }
   }
@@ -393,6 +392,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.mapGroup = group;
   }
 
+  onSearchClicked : boolean = false;
   sliderChanged(){
      // this.corridorWidth = _event.value;
       this.corridorWidthKm = this.corridorWidth / 1000;
@@ -413,6 +413,8 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   checkRoutePlot(){
+    this.onSearchClicked = false;
+
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth!=0){
       this.searchDisable = false;
     }
@@ -692,6 +694,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
     this.clearMap();
     this.resetMapLayers();
+
+    this.noRouteErr = false;
+
     }
     else{
       this.setAdditionalData();
@@ -1045,19 +1050,19 @@ export class RouteCalculatingComponent implements OnInit {
       routeRequestParams += '&truck[tunnelCategory]='+ this.tunnelId;
     }
     if(this.corridorFormGroup.controls.vehicleHeight.value){
-      routeRequestParams += '&truck[height]='+ this.corridorFormGroup.controls.vehicleHeight.value;
+      routeRequestParams += '&truck[height]='+ Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
     }
     if(this.corridorFormGroup.controls.vehicleWidth.value){
-      routeRequestParams += '&truck[width]='+ this.corridorFormGroup.controls.vehicleWidth.value;
+      routeRequestParams += '&truck[width]='+ Math.round(this.corridorFormGroup.controls.vehicleWidth.value);
     }
     if(this.corridorFormGroup.controls.vehicleLength.value){
-      routeRequestParams += '&truck[length]='+ this.corridorFormGroup.controls.vehicleLength.value;
+      routeRequestParams += '&truck[length]='+ Math.round(this.corridorFormGroup.controls.vehicleLength.value);
     }
     if(this.corridorFormGroup.controls.limitedWeight.value){
-      routeRequestParams += '&truck[grossWeight]='+ this.corridorFormGroup.controls.limitedWeight.value;
+      routeRequestParams += '&truck[grossWeight]='+ Math.round(this.corridorFormGroup.controls.limitedWeight.value);
     }
     if(this.corridorFormGroup.controls.weightPerAxle.value){
-      routeRequestParams += '&truck[weightPerAxle]='+ this.corridorFormGroup.controls.weightPerAxle.value;
+      routeRequestParams += '&truck[weightPerAxle]='+ Math.round(this.corridorFormGroup.controls.weightPerAxle.value);
     }
 
     if(this.hazardousMaterial.length > 0){
@@ -1073,8 +1078,12 @@ export class RouteCalculatingComponent implements OnInit {
         if(data.routes.length == 0){
           this.noRouteErr = true;
         }
-        this.routePoints = data.routes[0];
+        else{
+          this.onSearchClicked = true;
+          this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
+        }
+        
         }
       
     })
