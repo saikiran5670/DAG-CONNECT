@@ -28,6 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     public class AlertUrgencyLevelRef : AlertUrgencyLevelRefBase
     {
         public List<AlertFilterRef> AlertFilterRefs { get; set; } = new List<AlertFilterRef>();
+        [MaxLength(4, ErrorMessage = "Maximum 4 custom period user can add per day.")]
         public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
 
     }
@@ -38,6 +39,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public string State { get; set; }
         //public long ModifiedAt { get; set; }
         public List<AlertFilterRefEdit> AlertFilterRefs { get; set; } = new List<AlertFilterRefEdit>();
+        [MaxLength(4, ErrorMessage = "Maximum 4 custom period user can add per day.")]
         public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
 
     }

@@ -294,6 +294,11 @@ namespace net.atos.daf.ct2.poigeofenservice
                         objCategoryWisePOI.CategoryId = data[i].CategoryId;
                         objCategoryWisePOI.CategoryName = data[i].CategoryName ?? null;
                         objCategoryWisePOI.POIName = data[i].POIName ?? null;
+                        objCategoryWisePOI.POIAddress = data[i].POIAddress ?? null;
+                        objCategoryWisePOI.Latitude = data[i].Latitude;
+                        objCategoryWisePOI.Longitude = data[i].Longitude;
+                        objCategoryWisePOI.Width = data[i].Width;
+                        objCategoryWisePOI.Distance = data[i].Distance;
                         objCategoryWisePOIResponse.CategoryWisePOI.Add(objCategoryWisePOI);
                     }
                 }

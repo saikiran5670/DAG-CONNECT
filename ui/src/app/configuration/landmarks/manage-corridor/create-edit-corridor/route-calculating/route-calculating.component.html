@@ -111,7 +111,7 @@
                     matInput formControlName="endaddress" (focusout)="endAddressFocusOut()" required>
             </mat-form-field> -->
         </div>
-        <span class= "pt-2">
+        <span class= "pt-2" *ngIf="actionType != 'view'">
         <mat-chip-list #viaRoutes aria-label="via route">
             <mat-chip
               *ngFor="let route of viaRoutesList"
@@ -128,9 +128,8 @@
               {{route}}
             </mat-list-option>
           </mat-selection-list> -->
-        <div *ngIf="actionType == 'view'">
-            <span style='font-weight: 500!important;'>{{searchViaStr}}</span>
-        </div>
+        <span  *ngIf="actionType == 'view'" style='font-weight: 500!important;'>{{searchViaStr}}</span>
+      
     </div>
     <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
         <button mat-flat-button color="primary" (click)="addViaRoute()" [disabled]='viaRouteCount'>
@@ -150,10 +149,10 @@
         {{ translationData.lblSearch || 'Search'}}
     </button>
 </div> 
+</div>
 <mat-error *ngIf="noRouteErr">
     {{ translationData.lblNoRouteFound|| 'No Route Found' }}
 </mat-error>
-</div>
 <div class="fixDiv"></div>
 <mat-accordion class="example-headers-align" style="background-color:#7e7878;">
     <mat-expansion-panel>
