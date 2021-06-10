@@ -70,12 +70,12 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblImported || 'Imported' }} <span style='color: green'>{{ newDriverCount }} {{ translationData.lblnewdrivers || 'new drivers' }}</span></span>
+                    <span>{{ translationData.lblImported || 'Imported' }}  <span style='color: green'>{{ newDriverCount }} {{ translationData.lblnewdriverrecords || 'records processed successfully' }}</span></span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start space-between">
                 <div style='width:50%;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                    <span>{{ translationData.lblRejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedDriverList.length }} {{ translationData.lbldrivers || 'drivers' }}</span></span>
+                    <span>{{ translationData.lblRejected || 'Rejected' }} <span [ngClass]="{'cursor-pointer': rejectedDriverList.length > 0}" (click)="(rejectedDriverList.length > 0) ? showDriverListPopup(rejectedDriverList) : ''" style='color: red; text-decoration-line: underline;'>{{ rejectedDriverList.length }} {{ translationData.lbldriverrecords || 'records' }}</span></span>
                 </div>
             </div>
         </mat-card>

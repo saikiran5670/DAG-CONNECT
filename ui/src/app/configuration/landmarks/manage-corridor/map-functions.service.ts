@@ -354,19 +354,19 @@ export class MapFunctionsService {
       routeRequestParams += '&truck[tunnelCategory]=' + this.tunnelId;
     }
     if (this.vehicleHeightValue) {
-      routeRequestParams += '&truck[height]=' + this.vehicleHeightValue;
+      routeRequestParams += '&truck[height]=' + Math.round(this.vehicleHeightValue);
     }
     if (this.vehicleWidthValue) {
-      routeRequestParams += '&truck[width]=' + this.vehicleWidthValue;
+      routeRequestParams += '&truck[width]=' + Math.round(this.vehicleWidthValue);
     }
     if (this.vehicleLengthValue) {
-      routeRequestParams += '&truck[length]=' + this.vehicleLengthValue;
+      routeRequestParams += '&truck[length]=' + Math.round(this.vehicleLengthValue);
     }
     if (this.vehicleLimitedWtValue) {
-      routeRequestParams += '&truck[grossWeight]=' + this.vehicleLimitedWtValue;
+      routeRequestParams += '&truck[grossWeight]=' + Math.round(this.vehicleLimitedWtValue);
     }
     if (this.vehicleWtPerAxleValue) {
-      routeRequestParams += '&truck[weightPerAxle]=' + this.vehicleWtPerAxleValue;
+      routeRequestParams += '&truck[weightPerAxle]=' + Math.round(this.vehicleWtPerAxleValue);
     }
 
     if (this.hazardousMaterial.length > 0) {
@@ -421,6 +421,9 @@ export class MapFunctionsService {
           this.mapGroup.addObject(this.viaMarker);
         }
         this.hereMap.addObject(this.mapGroup);
+        this.hereMap.getViewModel().setLookAtData({
+          bounds: this.mapGroup.getBoundingBox()
+       });
         // And zoom to its bounding rectangle
         //  this.hereMap.getViewModel().setLookAtData({
         //     bounds: this.mapGroup.getBoundingBox()
