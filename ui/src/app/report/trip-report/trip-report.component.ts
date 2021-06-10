@@ -70,6 +70,7 @@ export class TripReportComponent implements OnInit {
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
   prefTimeFormat: any; //-- coming from pref setting
+  prefTimeZone: any; //-- coming from pref setting
   prefDateFormat: any = 'mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'metric'; //-- coming from pref setting
   accountPrefObj: any;
@@ -183,6 +184,7 @@ export class TripReportComponent implements OnInit {
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
         this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
+        this.prefTimeZone = prefData.timezone.filter(i => i.id == this.accountPrefObj.accountPreference.timezoneId)[0].value;
         this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].value;
         this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].value;
         this.setDefaultStartEndTime();
@@ -606,7 +608,7 @@ export class TripReportComponent implements OnInit {
   }
 
   getTodayDate(){
-    let _todayDate: any = Util.getUTCDate();
+    let _todayDate: any = Util.getUTCDate(this.prefTimeZone);
     return _todayDate;
     //let todayDate = new Date();
     // let _date = moment.utc(todayDate.getTime());
@@ -627,28 +629,28 @@ export class TripReportComponent implements OnInit {
 
   getYesterdaysDate() {
     //var date = new Date();
-    var date = Util.getUTCDate();
+    var date = Util.getUTCDate(this.prefTimeZone);
     date.setDate(date.getDate()-1);
     return date;
   }
 
   getLastWeekDate() {
     // var date = new Date();
-    var date = Util.getUTCDate();
+    var date = Util.getUTCDate(this.prefTimeZone);
     date.setDate(date.getDate()-7);
     return date;
   }
 
   getLastMonthDate(){
     // let date = new Date();
-    var date = Util.getUTCDate();
+    var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-1);
     return date;
   }
 
   getLast3MonthDate(){
     // let date = new Date();
-    var date = Util.getUTCDate();
+    var date = Util.getUTCDate(this.prefTimeZone);
     date.setMonth(date.getMonth()-3);
     return date;
   }
