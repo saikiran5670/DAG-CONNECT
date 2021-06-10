@@ -14,7 +14,7 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
-import { POIService } from '../../services/poi.service';
+import { LandmarkCategoryService } from '../../services/landmarkCategory.service'; 
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
@@ -148,7 +148,7 @@ export class TripReportComponent implements OnInit {
     }
   ];
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private poiService: POIService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService) {
     this.defaultTranslation();
   }
 
@@ -294,7 +294,7 @@ export class TripReportComponent implements OnInit {
   }
 
   loadUserPOI(){
-    this.poiService.getPois(this.accountOrganizationId).subscribe((poiData: any) => {
+    this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
       this.userPOIList = poiData; 
     }, (error) => {
       this.userPOIList = [];
