@@ -305,6 +305,8 @@ if(isButtonClicked){
 
   getNotificationDetails() : any{
    this.notificationReceipients= [];
+   let notificationLimits= [];
+   let alertTimingRefNotifications= [];
 
   let WsData;
     let EmailData;
@@ -418,8 +420,8 @@ if(this.actionType == 'create' || this.actionType == 'duplicate'){
       "validityType": "A",
       "createdBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "notificationLimits": [],
-      "notificationAvailabilityPeriods": []
+      "notificationLimits": notificationLimits,
+      "alertTimingDetails": alertTimingRefNotifications
     }
   ]
 }
@@ -435,8 +437,8 @@ else if(this.actionType == 'edit'){
       "alertId": this.selectedRowData.id,
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "notificationLimits": [],
-      "notificationAvailabilityPeriods": []
+      "notificationLimits": notificationLimits,
+      "notificationAvailabilityPeriods": alertTimingRefNotifications
     }
   ]
 }
