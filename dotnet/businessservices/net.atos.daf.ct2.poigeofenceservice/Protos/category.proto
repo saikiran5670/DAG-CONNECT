@@ -177,6 +177,7 @@ message CategoryWisePOI{
   double Longitude = 6;
   double Width = 7;
   double Distance = 8;
+  int32 POIId = 9;
 }
 
 message CategoryWisePOIRequest{

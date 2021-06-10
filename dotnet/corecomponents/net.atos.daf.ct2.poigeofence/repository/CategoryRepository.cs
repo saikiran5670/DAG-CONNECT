@@ -608,7 +608,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 string query = @"SELECT c.id as CategoryId,
 	                               c.name as CategoryName,
-		                           l.name as POIName,
+		                           l.id as POIId,
+								   l.name as POIName,
                                    l.address as POIAddress,
                                    l.latitude as Latitude,
 								   l.longitude as Longitude,
