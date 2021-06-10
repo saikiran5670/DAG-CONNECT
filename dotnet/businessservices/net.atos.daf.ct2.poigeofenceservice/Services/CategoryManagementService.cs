@@ -295,6 +295,8 @@ namespace net.atos.daf.ct2.poigeofenservice
                         objCategoryWisePOI.CategoryName = data[i].CategoryName ?? null;
                         objCategoryWisePOI.POIName = data[i].POIName ?? null;
                         objCategoryWisePOI.POIAddress = data[i].POIAddress ?? null;
+                        objCategoryWisePOI.Latitude = data[i].Latitude;
+                        objCategoryWisePOI.Longitude = data[i].Longitude;
                         objCategoryWisePOIResponse.CategoryWisePOI.Add(objCategoryWisePOI);
                     }
                 }
