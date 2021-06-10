@@ -608,7 +608,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 var parameter = new DynamicParameters();
                 string query = @"SELECT c.id as CategoryId,
 	                               c.name as CategoryName,
-		                           l.name as POIName
+		                           l.name as POIName,
+                                   l.address as POIAddress
 	                            FROM master.category c
 	                            LEFT JOIN  master.landmark l on c.id = l.category_id 
 	                            WHERE l.organization_id = @organization_id
