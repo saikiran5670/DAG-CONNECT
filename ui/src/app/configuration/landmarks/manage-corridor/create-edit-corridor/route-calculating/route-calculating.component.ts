@@ -413,12 +413,12 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   checkRoutePlot(){
-    this.onSearchClicked = false;
 
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth!=0){
       this.searchDisable = false;
     }
     else{
+      this.onSearchClicked = false;
       this.searchDisable = true;
     }
   }
