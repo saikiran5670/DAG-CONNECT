@@ -401,6 +401,7 @@ export class AppComponent {
         })
         //console.log("accountNavMenu:: ", landingPageMenus)
         localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+         localStorage.setItem("accountFeatures", JSON.stringify( this.menuPages));      
        //-- For checking Access of the User --//
        let accessNameList = [];
        this.menuPages.features.forEach((obj: any) => {
@@ -544,6 +545,7 @@ export class AppComponent {
       let preferenceLanguageId = 1;
       this.translationService.getLanguageCodes().subscribe(languageCodes => {
         this.languages = languageCodes;
+        localStorage.setItem("languageCodeList", JSON.stringify(this.languages));
         this.localStLanguage = JSON.parse(localStorage.getItem("language"));
         let filterLang = [];
         if(this.localStLanguage){
