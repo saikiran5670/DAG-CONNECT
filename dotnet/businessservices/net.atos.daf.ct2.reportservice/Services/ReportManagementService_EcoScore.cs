@@ -97,15 +97,15 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 var result = await _reportManager.UpdateEcoScoreProfile(obj);
 
-                if (result != null)
+                if (result > 0)
                 {
-                    response.Message = "Update successfully";
+                    response.Message = obj.Name + " Update successfully";
                     response.Code = Responsecode.Success;
 
                 }
                 else
                 {
-                    response.Message = "Transaction failed";
+                    response.Message = obj.Name + " Update failed";
                     response.Code = Responsecode.Failed;
 
                 }

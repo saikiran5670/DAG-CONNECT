@@ -34,7 +34,13 @@ days: any= [];
 
     for(let i = 1; i < 7; i++ )
       this.weekDays().push(this.initPeriodItems());
+
+      // for(let i=0; i<4; i++){
+      //   this.addCustomPeriod(i);
+      // }  
     }
+
+   
 
   initPeriodItems(): FormGroup{
     return this._formBuilder.group({
@@ -63,8 +69,6 @@ days: any= [];
   onDeleteCustomPeriod(periodIndex, customIndex){
      this.customPeriods(periodIndex).removeAt(customIndex);
   }
-
-
 
   addCustomPeriod(periodIndex){
     if(this.customPeriods(periodIndex).length < 4)

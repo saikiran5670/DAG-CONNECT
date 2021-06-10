@@ -334,7 +334,7 @@
             <ng-container matColumnDef="fuelConsumed100Km">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} <span style="font-weight: normal;">({{ translationData.lblLtr100Km || 'Ltr/100 Km' }})</span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.fuelConsumed100Km != '' ? row.fuelConsumed100Km : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.fuelConsumed100Km != '' ? row.fuelConsumed100Km.toFixed(4) : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="drivingTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime || 'Driving Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>

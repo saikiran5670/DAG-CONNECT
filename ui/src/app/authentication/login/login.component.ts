@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
   loginClicks = 0;
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   translationData: any;
+  showLoadingIndicator: any;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
     this.loginForm = this.fb.group({
@@ -60,6 +61,7 @@ export class LoginComponent implements OnInit {
 
 
   public onLogin(values: Object) {
+    this.showLoadingIndicator=true;
     this.errorMsg= '';
     this.invalidUserMsg = false;
     if (this.loginForm.valid) {

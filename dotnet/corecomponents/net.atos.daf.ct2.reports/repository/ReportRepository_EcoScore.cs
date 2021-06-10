@@ -77,7 +77,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #endregion
-        public async Task<string> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
+        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             _dataAccess.Connection.Open();
             IDbTransaction txnScope = _dataAccess.Connection.BeginTransaction();
@@ -111,9 +111,13 @@ namespace net.atos.daf.ct2.reports.repository
             var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), Updateparameter);
 
                 var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, ecoScoreProfileDto.ActionedBy, id);
-
+                if (id <= 0 || tripDetails == false)
+                {
+                    id = -1;
+                }
                 txnScope.Commit();
-                return ecoScoreProfileDto.Name;
+               
+                return id;
             }
             catch (Exception)
             {
@@ -144,7 +148,6 @@ namespace net.atos.daf.ct2.reports.repository
                 temp.TargetValue = item.TargetValue;
                 temp.UpperValue = item.UpperValue;
 
-                //Updateparameter.Add("@KPIId", temp.KPIId);
                 Updateparameter.Add("@LimitValue", temp.LimitValue);
                 Updateparameter.Add("@LowerValue", temp.LowerValue);
                 Updateparameter.Add("@TargetValue", temp.TargetValue);

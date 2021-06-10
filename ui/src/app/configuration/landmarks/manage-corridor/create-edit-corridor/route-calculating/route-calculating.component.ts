@@ -114,7 +114,6 @@ export class RouteCalculatingComponent implements OnInit {
   searchEndStrError : boolean = false;
   strPresentStart: boolean = false;
   strPresentEnd: boolean = false;
-
   
   viaAddressPositionLat : any;
   viaAddressPositionLong : any;
@@ -139,6 +138,9 @@ export class RouteCalculatingComponent implements OnInit {
   tunnelsChecked=false;
   dirtRoadChecked = false;
   exclusions = [];
+
+  searchDisable : boolean = true;
+  noRouteErr : boolean = false;
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
@@ -206,6 +208,7 @@ export class RouteCalculatingComponent implements OnInit {
       console.log(x)
       this.corridorWidthKm = Number(x);
       this.corridorWidth = this.corridorWidthKm  * 1000;
+      this.checkRoutePlot();
       //this.calculateAB();
       let drawWidth = this.corridorWidthKm*10;
       // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
@@ -325,7 +328,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.motorwayChecked = this.getExclusionList["mortorway"] == 'A'? true : false;
     this.tunnelsChecked = this.getExclusionList["tunnelsType"]== 'A' ? true : false;
     this.railFerriesChecked = this.getExclusionList["railFerriesType"] == 'A'? true : false;
-
+    
     this.initiateDropDownValues();
 
   }
@@ -384,7 +387,7 @@ export class RouteCalculatingComponent implements OnInit {
       // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
       //   this.addTruckRouteShapeToMap(drawWidth);
       // }
-      //this.checkRoutePlot();
+      this.checkRoutePlot();
      // this.updateWidth()
     //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
     //  // this.calculateAB();
@@ -396,10 +399,11 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   checkRoutePlot(){
-    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-     // this.calculateAB();
-     // this.calculateNewRoute()
-     //this.calculateTruckRoute();
+    if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth!=0){
+      this.searchDisable = false;
+    }
+    else{
+      this.searchDisable = true;
     }
   }
   changeSliderInput(){
@@ -699,10 +703,10 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentStart = false;
     this.searchStr = null;
     this.startAddressPositionLat = 0;
-    this.clearMap();
-    if(this.searchEndStr){
-     // this.plotEndPoint(this.searchEndStr);
-    }
+    //this.clearMap();
+    // if(this.searchEndStr){
+    //  // this.plotEndPoint(this.searchEndStr);
+    // }
     
   }
   onEndFocus(){
@@ -710,10 +714,10 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentEnd = false;
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
-    this.clearMap();
-    if(this.searchStr){
-      this.plotStartPoint();
-    }
+    //this.clearMap();
+    // if(this.searchStr){
+    //   this.plotStartPoint();
+    // }
   }
 
   onSelected(selectedAddress: CompleterItem){
@@ -834,8 +838,8 @@ export class RouteCalculatingComponent implements OnInit {
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } }); 
       this.startMarker = new H.map.Marker({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong},{icon:icon});
       this.mapGroup.addObject(this.startMarker)
-      this.hereMap.addObject(this.mapGroup);
-      this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()}); //this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
+      //this.hereMap.addObject(this.mapGroup);
+      //this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()}); //this.hereMap.setCenter({lat:this.startAddressPositionLat, lng:this.startAddressPositionLong}, 'default');
       this.checkRoutePlot();
   }
 
@@ -845,15 +849,12 @@ export class RouteCalculatingComponent implements OnInit {
       const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
       this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:icon});
       this.mapGroup.addObject(this.endMarker)
-      this.hereMap.addObject(this.mapGroup);
-      this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()});
+      //this.hereMap.addObject(this.mapGroup);
+      //this.hereMap.getViewModel().setLookAtData({bounds: this.mapGroup.getBoundingBox()});
       this.checkRoutePlot();   
   }
 
   plotViaPointIds(){
-    if(this.viaMarker){
-      this.mapGroup.removeObject(this.viaMarker);
-    }
     let qParam = 'apiKey='+this.map_key
     if(this.viaRouteObj.length>0){
       for(var i in this.viaRouteObj){
@@ -865,7 +866,7 @@ export class RouteCalculatingComponent implements OnInit {
           let markerSize = { w: 26, h: 32 };
           const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
           this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-          this.mapGroup.addObject(this.viaMarker);
+          //this.mapGroup.addObject(this.viaMarker);
           if(this.actionType === 'create'){
             this.viaRoutePlottedPoints.push({
               "viaRoutName": this.viaRouteObj[i]['label'],
@@ -972,6 +973,8 @@ export class RouteCalculatingComponent implements OnInit {
   routePoints:any;
 
   searchRoute(){
+    this.noRouteErr = false;
+    this.clearMap();
     this.calculateTruckRoute();
   }
 
@@ -1023,7 +1026,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.routePoints= [];
     this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
       if(data && data.routes){
-
+        if(data.routes.length == 0){
+          this.noRouteErr = true;
+        }
         this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
         }

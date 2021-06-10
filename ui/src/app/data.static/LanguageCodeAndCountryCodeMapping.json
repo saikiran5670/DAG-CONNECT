@@ -1,0 +1,120 @@
+{
+    "LanguageCode": {
+        "da-dk": {
+            "CountryCode": "DK",
+            "CountryName": "Denmark"
+        },
+        "nl-BE": {
+            "CountryCode": "NL",
+            "CountryName": "Netherlands"
+        },
+        "en-GB": {
+            "CountryCode": "GB",
+            "CountryName": "Britain (UK)"
+        },
+        "fi-FI": {
+            "CountryCode": "FI",
+            "CountryName": "Finland"
+        },
+        "fr-BE": {
+            "CountryCode": "FR",
+            "CountryName": "France"
+        },
+        "de-DE": {
+            "CountryCode": "DE",
+            "CountryName": "Germany"
+        },
+        "hu-HU": {
+            "CountryCode": "HU",
+            "CountryName": "Hungary"
+        },
+        "it-IT": {
+            "CountryCode": "IT",
+            "CountryName": "Italy"
+        },
+        "nb-NO": {
+            "CountryCode": "NO",
+            "CountryName": "Norway"
+        },
+        "pl-PL": {
+            "CountryCode": "PL",
+            "CountryName": "Poland"
+        },
+        "pt-PT": {
+            "CountryCode": "PT",
+            "CountryName": "Portugal"
+        },
+        "es-ES": {
+            "CountryCode": "ES",
+            "CountryName": "Spain"
+        },
+        "sv-SE": {
+            "CountryCode": "SE",
+            "CountryName": "Sweden"
+        },
+        "ro-RO": {
+            "CountryCode": "RO",
+            "CountryName": "Romania"
+        },
+        "et-EE": {
+            "CountryCode": "EE",
+            "CountryName": "Estonia"
+        },
+        "lv-LV": {
+            "CountryCode": "LV",
+            "CountryName": "Latvia"
+        },
+        "lt-LT": {
+            "CountryCode": "LT",
+            "CountryName": "Lithuania"
+        },
+        "sk-SK": {
+            "CountryCode": "SK",
+            "CountryName": "Slovakia"
+        },
+        "hr-HR": {
+            "CountryCode": "HR",
+            "CountryName": "Croatia"
+        },
+        "el-GR": {
+            "CountryCode": "GR",
+            "CountryName": "Greece"
+        },
+        "ru-ru": {
+            "CountryCode": "RU",
+            "CountryName": "Russia"
+        },
+        "uk-UA": {
+            "CountryCode": "UA",
+            "CountryName": "Ukraine"
+        },
+        "be-BY": {
+            "CountryCode": "BY",
+            "CountryName": "Belarus"
+        },
+        "bg-BG": {
+            "CountryCode": "BG",
+            "CountryName": "Bulgaria"
+        },
+        "mk-MK": {
+            "CountryCode": "MK",
+            "CountryName": "Macedonia"
+        },
+        "tr-TR": {
+            "CountryCode": "TR",
+            "CountryName": "Turkey"
+        },
+        "cs-CZ": {
+            "CountryCode": "CZ",
+            "CountryName": "Czech Republic"
+        },
+        "sr-Latn-CS": {
+            "CountryCode": "RS",
+            "CountryName": "Serbia"
+        },
+        "sl-SI": {
+            "CountryCode": "SI",
+            "CountryName": "Slovenia"
+        }
+    }
+}
