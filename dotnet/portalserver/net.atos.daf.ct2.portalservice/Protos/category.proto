@@ -171,6 +171,10 @@ message CategoryWisePOI{
   string CategoryName = 2;
   string POIName = 3;
   string POIAddress = 4;
+  double Latitude = 5;
+  double Longitude = 6;
+  double Width = 7;
+  double Distance = 8;
 }
 
 message CategoryWisePOIRequest{

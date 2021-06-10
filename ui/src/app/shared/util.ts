@@ -9,8 +9,8 @@ export class Util {
         return _utc._d.getTime();
     }
 
-    public static getUTCDate(){
-        let date: any = moment.utc();
+    public static getUTCDate(prefTimezone){
+        let date: any = moment.utc().tz(prefTimezone);
         return date._d;
     }
 

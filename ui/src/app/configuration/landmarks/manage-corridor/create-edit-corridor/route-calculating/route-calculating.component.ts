@@ -191,21 +191,21 @@ export class RouteCalculatingComponent implements OnInit {
 
       ]});
     //this.initiateDropDownValues();
-    if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
-      this.setCorridorData();
-      this.createFlag = false;
-      this.strPresentStart = true;
-      this.strPresentEnd = true;
-    }
+    // if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
+    //   this.setCorridorData();
+    //   this.createFlag = false;
+    //   this.strPresentStart = true;
+    //   this.strPresentEnd = true;
+    // }
     this.subscribeWidthValue();
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+    this.noRouteErr = false;
 
     //this.configureAutoCompleteForLocationSearch();
   }
 
   subscribeWidthValue(){
     this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
-      console.log(x)
       this.corridorWidthKm = Number(x);
       this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
@@ -237,15 +237,7 @@ export class RouteCalculatingComponent implements OnInit {
               }
           })
       }
-      if(_selectedElementData.viaAddressDetail.length > 0){
-        this.viaRouteCount = true;
-        this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
-        _selectedElementData.viaAddressDetail.forEach(element => {
-          this.viaRoutesList.push(element.corridorViaStopName);
-          
-        });
-        this.plotViaPoint(this.viaRoutesList);
-      }
+      
       this.corridorName = _selectedElementData.corridoreName;
       this.corridorFormGroup.controls.label.setValue(_selectedElementData.corridoreName);
       this.searchStr = _selectedElementData.startPoint;
@@ -256,8 +248,20 @@ export class RouteCalculatingComponent implements OnInit {
       this.endAddressPositionLong = _selectedElementData.endLong;
       this.corridorWidth = _selectedElementData.width;
       this.corridorWidthKm = this.corridorWidth / 1000;
+
       this.plotStartPoint();
       this.plotEndPoint();
+      if(_selectedElementData.viaAddressDetail.length > 0){
+        this.viaRouteCount = true;
+        this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
+        _selectedElementData.viaAddressDetail.forEach(element => {
+          this.viaRoutesList.push(element.corridorViaStopName);
+          
+        });
+       // this.plotViaPoint(this.viaRoutesList);
+        this.plotSeparateVia();
+
+      }
       this.calculateTruckRoute()
     }
   }
@@ -356,6 +360,15 @@ export class RouteCalculatingComponent implements OnInit {
 
   public ngAfterViewInit() {
     this.initMap();
+    if((this.actionType === 'edit' || this.actionType === 'view') && this.selectedElementData){
+      this.setCorridorData();
+      this.createFlag = false;
+      this.strPresentStart = true;
+      this.strPresentEnd = true;
+    }
+    this.subscribeWidthValue();
+    this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
   }
 
   defaultLayers : any;
@@ -379,6 +392,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.mapGroup = group;
   }
 
+  onSearchClicked : boolean = false;
   sliderChanged(){
      // this.corridorWidth = _event.value;
       this.corridorWidthKm = this.corridorWidth / 1000;
@@ -399,6 +413,8 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   checkRoutePlot(){
+    this.onSearchClicked = false;
+
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth!=0){
       this.searchDisable = false;
     }
@@ -678,6 +694,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
     this.clearMap();
     this.resetMapLayers();
+
+    this.noRouteErr = false;
+
     }
     else{
       this.setAdditionalData();
@@ -703,6 +722,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentStart = false;
     this.searchStr = null;
     this.startAddressPositionLat = 0;
+    this.checkRoutePlot();
     //this.clearMap();
     // if(this.searchEndStr){
     //  // this.plotEndPoint(this.searchEndStr);
@@ -714,6 +734,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.strPresentEnd = false;
     this.searchEndStr = null;
     this.endAddressPositionLat = 0;
+    this.checkRoutePlot();
     //this.clearMap();
     // if(this.searchStr){
     //   this.plotStartPoint();
@@ -760,16 +781,11 @@ export class RouteCalculatingComponent implements OnInit {
   viaRoutesList = [];
 
   onViaSelected(selectedAddress: CompleterItem){
-    if(selectedAddress){
+    this.searchViaStr = null;
+    let qParam = '';
+    if(selectedAddress && this.viaRoutesList.length<5){
       let id = selectedAddress["originalObject"]["id"];
-      let qParam = 'apiKey='+this.map_key + '&id='+ id;
-      this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
-        this.viaAddressPositionLat = data.position.lat;
-        this.viaAddressPositionLong = data.position.lng;
-        this.plotEndPoint();
-      })
-    }
-    if(selectedAddress){
+      qParam = 'apiKey='+this.map_key + '&id='+ id;
       let locationLabel= selectedAddress["originalObject"]["title"];
       let locationId = selectedAddress["originalObject"]["id"];
 
@@ -777,11 +793,23 @@ export class RouteCalculatingComponent implements OnInit {
         'label':locationLabel,
         'id':locationId
       })
-      this.viaRoutesList.push(locationLabel)
-      this.viaRoutePlottedPoints = [];
-      this.plotViaPointIds()
+      this.viaRoutesList.push(locationLabel);
+      
+      this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
+        this.viaAddressPositionLat = data.position.lat;
+        this.viaAddressPositionLong = data.position.lng;
+        if(this.actionType === 'create'){
+          this.viaRoutePlottedPoints.push({
+            "viaRoutName": locationLabel,
+            "latitude": data.position.lat,
+            "longitude":  data.position.lng
+          });
+        }
+        
+      this.plotSeparateVia();
+      })
+      //this.viaRoutePlottedPoints = [];
     }
-
   }
 
   remove(route: string): void {
@@ -789,8 +817,13 @@ export class RouteCalculatingComponent implements OnInit {
 
     if (index >= 0) {
       this.viaRoutesList.splice(index, 1);
+      let _arr = this.viaRouteObj;
+      let _viaArr = this.viaRoutePlottedPoints;
+      this.viaRouteObj = _arr.filter(obj => obj.label !== route);
+      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.label !== route);
     }
-    this.plotViaPoint(this.viaRoutesList)
+   
+    this.plotSeparateVia();
   }
   resetToEditData(){
     this.searchStrError = false;
@@ -854,6 +887,19 @@ export class RouteCalculatingComponent implements OnInit {
       this.checkRoutePlot();   
   }
 
+  plotSeparateVia(){
+    if(this.viaRoutePlottedPoints.length>0){
+      for(var i in this.viaRoutePlottedPoints){
+        this.viaAddressPositionLat = this.viaRoutePlottedPoints[i]['latitude'];
+        this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]['longitude'];
+        let viaMarker = this.createViaMarker();
+        let markerSize = { w: 26, h: 32 };
+        const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+        this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
+        this.mapGroup.addObject(this.viaMarker);
+      }
+    }
+  }
   plotViaPointIds(){
     let qParam = 'apiKey='+this.map_key
     if(this.viaRouteObj.length>0){
@@ -866,7 +912,7 @@ export class RouteCalculatingComponent implements OnInit {
           let markerSize = { w: 26, h: 32 };
           const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
           this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-          //this.mapGroup.addObject(this.viaMarker);
+          this.mapGroup.addObject(this.viaMarker);
           if(this.actionType === 'create'){
             this.viaRoutePlottedPoints.push({
               "viaRoutName": this.viaRouteObj[i]['label'],
@@ -975,6 +1021,9 @@ export class RouteCalculatingComponent implements OnInit {
   searchRoute(){
     this.noRouteErr = false;
     this.clearMap();
+    this.plotStartPoint();
+    this.plotEndPoint();
+    this.plotSeparateVia();
     this.calculateTruckRoute();
   }
 
@@ -1001,19 +1050,19 @@ export class RouteCalculatingComponent implements OnInit {
       routeRequestParams += '&truck[tunnelCategory]='+ this.tunnelId;
     }
     if(this.corridorFormGroup.controls.vehicleHeight.value){
-      routeRequestParams += '&truck[height]='+ this.corridorFormGroup.controls.vehicleHeight.value;
+      routeRequestParams += '&truck[height]='+ Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
     }
     if(this.corridorFormGroup.controls.vehicleWidth.value){
-      routeRequestParams += '&truck[width]='+ this.corridorFormGroup.controls.vehicleWidth.value;
+      routeRequestParams += '&truck[width]='+ Math.round(this.corridorFormGroup.controls.vehicleWidth.value);
     }
     if(this.corridorFormGroup.controls.vehicleLength.value){
-      routeRequestParams += '&truck[length]='+ this.corridorFormGroup.controls.vehicleLength.value;
+      routeRequestParams += '&truck[length]='+ Math.round(this.corridorFormGroup.controls.vehicleLength.value);
     }
     if(this.corridorFormGroup.controls.limitedWeight.value){
-      routeRequestParams += '&truck[grossWeight]='+ this.corridorFormGroup.controls.limitedWeight.value;
+      routeRequestParams += '&truck[grossWeight]='+ Math.round(this.corridorFormGroup.controls.limitedWeight.value);
     }
     if(this.corridorFormGroup.controls.weightPerAxle.value){
-      routeRequestParams += '&truck[weightPerAxle]='+ this.corridorFormGroup.controls.weightPerAxle.value;
+      routeRequestParams += '&truck[weightPerAxle]='+ Math.round(this.corridorFormGroup.controls.weightPerAxle.value);
     }
 
     if(this.hazardousMaterial.length > 0){
@@ -1029,8 +1078,12 @@ export class RouteCalculatingComponent implements OnInit {
         if(data.routes.length == 0){
           this.noRouteErr = true;
         }
-        this.routePoints = data.routes[0];
+        else{
+          this.onSearchClicked = true;
+          this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
+        }
+        
         }
       
     })
@@ -1039,11 +1092,11 @@ export class RouteCalculatingComponent implements OnInit {
 
   addTruckRouteShapeToMap(lineWidth?){
     let pathWidth= this.corridorWidthKm * 10;
-    
+    this.routeDistance = 0;
     if(this.routePoints.sections){
     this.routePoints.sections.forEach((section) => {
       // decode LineString from the flexible polyline
-      this.routeDistance = section.travelSummary.length;
+      this.routeDistance += section.travelSummary.length;
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
   
        // Create a corridor width to display the route:
