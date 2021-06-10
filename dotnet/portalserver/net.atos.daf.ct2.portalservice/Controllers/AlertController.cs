@@ -447,7 +447,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int orgnizationid = 10;//GetUserSelectedOrgId();
+                int orgnizationid = GetUserSelectedOrgId();
                 if (accountId == 0 || orgnizationid == 0 || roleid == 0) return BadRequest(AlertConstants.ALERT_ACC_OR_ORG_ID_NOT_NULL_MSG);
 
                 var response = await _alertServiceClient.GetAlertCategoryFilterAsync(new AlertCategoryFilterIdRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });

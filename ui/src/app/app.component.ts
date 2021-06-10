@@ -401,6 +401,7 @@ export class AppComponent {
         })
         //console.log("accountNavMenu:: ", landingPageMenus)
         localStorage.setItem("accountNavMenu", JSON.stringify(landingPageMenus));
+         localStorage.setItem("accountFeatures", JSON.stringify( this.menuPages));      
        //-- For checking Access of the User --//
        let accessNameList = [];
        this.menuPages.features.forEach((obj: any) => {

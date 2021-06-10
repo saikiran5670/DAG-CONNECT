@@ -1,12 +1,13 @@
 trigger:
-  branches:
-    include:
-    - development
-    - release
-    - testing
-  paths:
-    include:
-    - dotnet/portalserver/net.atos.daf.ct2.portalservice
+  #branches:
+  #  include:
+  #  - development
+  #  - release
+  #  - testing
+  #paths:
+  #  include:
+  #  - dotnet/portalserver/net.atos.daf.ct2.portalservice
+  none
 
 variables:
  - name: imageName

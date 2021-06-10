@@ -46,7 +46,7 @@ export class ReportsPreferencesComponent implements OnInit {
     this.translationData.da_report_details_vin = 'VIN';
     this.translationData.da_report_details_vehiclename = 'Vehicle Name';
     this.translationData.da_report_details_alerts = 'Alerts';
-    this.translationData.da_report_details_registrationnumber = 'Registration Number';
+    this.translationData.da_report_details_registrationnumber = 'Reg. Plate Number';
     this.translationData.da_report_details_events = 'Events';
     this.translationData.da_report_details_odometer = 'Odometer';
     this.translationData.da_report_details_averagespeed = 'Average Speed';

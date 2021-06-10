@@ -69,7 +69,7 @@ export class TripReportComponent implements OnInit {
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
-  prefTimeFormat: any = 24; //-- coming from pref setting
+  prefTimeFormat: any; //-- coming from pref setting
   prefDateFormat: any = 'mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'metric'; //-- coming from pref setting
   accountPrefObj: any;

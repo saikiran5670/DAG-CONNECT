@@ -1,12 +1,13 @@
 trigger:
-  branches:
-    include:
-    - development
-    - release
-    - testing
-  paths:
-    include:
-    - dotnet/dataservices/net.atos.daf.ct2.featureactivationservice
+  #branches:
+  #  include:
+  #  - development
+  #  - release
+  #  - testing
+  #paths:
+  #  include:
+  #  - dotnet/dataservices/net.atos.daf.ct2.featureactivationservice
+  none
 
 variables:
  - name: imageName
