@@ -135,11 +135,11 @@ namespace net.atos.daf.ct2.utilities
         /// <param name="sourceDateTime"></param>
         /// <param name="timezonename"></param>
         /// <returns></returns>
-        public static long GetUTCFromDateTime(string sourceDateTime, string timezonename)
+        public static long GetUTCFromDateTime(DateTime sourceDateTime, string timezonename)
         {
             // TimeZoneInfo tzinfo = TimeZoneInfo.FindSystemTimeZoneById(timezonename);    
             TimeZoneInfo tzinfo = TZConvert.GetTimeZoneInfo(timezonename);
-            DateTimeOffset utcTime = new DateTimeOffset(Convert.ToDateTime(sourceDateTime), tzinfo.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
+            DateTimeOffset utcTime = new DateTimeOffset(sourceDateTime, tzinfo.GetUtcOffset(Convert.ToDateTime(sourceDateTime)));
             long dtunixTime = utcTime.ToUnixTimeMilliseconds();
             return dtunixTime;
         }
