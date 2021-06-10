@@ -88,10 +88,14 @@ export class MapFunctionsService {
     this.mapGroup = group;
   }
 
-  clearRoutesFromMap() {
-    var group = new H.map.Group();
-    group.removeAll();
-    this.hereMap.removeObjects(this.hereMap.getObjects())
+  // clearRoutesFromMap() {
+  //   var group = new H.map.Group();
+  //   group.removeAll();
+  //   this.hereMap.removeObjects(this.hereMap.getObjects())
+  //   this.startMarker = null; this.endMarker = null;
+  // }
+  clearRoutesFromMap() { 
+    this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
   }
 
