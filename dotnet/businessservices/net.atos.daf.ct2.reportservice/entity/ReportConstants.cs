@@ -17,5 +17,10 @@
 
         public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
         public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
+
+        #region Eco-Score Report
+        public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
+        public const string GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile KPI details fetched successfully for given profile.";
+        #endregion
     }
 }
