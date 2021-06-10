@@ -295,8 +295,8 @@ namespace net.atos.daf.ct2.account
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@email", emailId);
-                var query = @"select id, email, salutation, first_name, last_name from master.account where email = @email and state='A'";
+                parameter.Add("@email", emailId.ToLower());
+                var query = @"select id, email, salutation, first_name, last_name from master.account where lower(email) = @email and state='A'";
 
                 dynamic result = await _dataAccess.QuerySingleAsync<dynamic>(query, parameter);
 
@@ -491,10 +491,10 @@ namespace net.atos.daf.ct2.account
             {
                 var parameter = new DynamicParameters();
 
-                parameter.Add("@emailId", emailId);
+                parameter.Add("@emailId", emailId.ToLower());
 
                 string accountQuery =
-                    @"SELECT preference_id from master.account where email = @emailId";
+                    @"SELECT preference_id from master.account where lower(email) = @emailId";
 
                 var accountPreferenceId = await _dataAccess.QueryFirstAsync<int?>(accountQuery, parameter);
 
@@ -517,7 +517,7 @@ namespace net.atos.daf.ct2.account
                             @"SELECT o.preference_id from master.account acc
                             INNER JOIN master.accountOrg ao ON acc.id=ao.account_id
                             INNER JOIN master.organization o ON ao.organization_id=o.id
-                            where acc.email = @emailId";
+                            where lower(acc.email) = @emailId";
 
                         orgPreferenceId = await _dataAccess.QueryFirstAsync<int?>(orgQuery, parameter);
                     }
@@ -1209,14 +1209,14 @@ namespace net.atos.daf.ct2.account
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@email", emailId);
+                parameter.Add("@email", emailId.ToLower());
                 parameter.Add("@feature", featureName);
 
                 var query =
                     @"SELECT EXISTS 
                 (
                     SELECT 1 FROM master.account acc
-                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.email = @email AND acc.state = 'A'
+                    INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND lower(acc.email) = @email AND acc.state = 'A'
                     INNER JOIN master.Role r ON r.id = ar.role_id AND r.state = 'A'
                     INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
