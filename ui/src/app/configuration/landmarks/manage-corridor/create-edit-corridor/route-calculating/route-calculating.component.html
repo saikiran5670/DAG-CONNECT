@@ -128,19 +128,19 @@
               {{route}}
             </mat-list-option>
           </mat-selection-list> -->
-        <span  *ngIf="actionType == 'view'" style='font-weight: 500!important;'>{{searchViaStr}}</span>
-      
+        <!-- <span  *ngIf="actionType == 'view'" style='font-weight: 500!important;'>{{searchViaStr}}</span> -->
+        <span *ngIf="actionType === 'view' && viaRoutePlottedPoints.length!=0" class="col-sm-4 areaWidth">
+            <ul>
+                <li class='viaList' *ngFor="let list of viaRoutePlottedPoints"> {{ list.corridorViaStopName}} </li>
+            </ul>
+        </span> 
     </div>
     <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
         <button mat-flat-button color="primary" (click)="addViaRoute()" [disabled]='viaRouteCount'>
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute || 'Via Route'}}
         </button>
     </div> 
-    <div *ngIf="actionType === 'view' && viaRoutePlottedPoints.length!=0" class="col-sm-4 areaWidth">
-        <ul>
-            <li class='viaList' *ngFor="let list of viaRoutePlottedPoints"> {{ list.corridorViaStopName}} </li>
-        </ul>
-    </div> 
+    
 </div>
 
 <div fxLayout="row" class="margin-bottom-sm">
@@ -355,7 +355,7 @@
     </button>
 </span>
 <span *ngIf="actionType !== 'view'">
-    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)"><!--&& !strPresentStart && !strPresentEnd [disabled]="!corridorFormGroup.valid"-->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!onSearchClicked && searchDisable"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
         <span>Create</span>
     </button>
 </span>
