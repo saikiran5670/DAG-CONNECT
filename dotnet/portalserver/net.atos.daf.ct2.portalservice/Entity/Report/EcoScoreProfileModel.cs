@@ -82,13 +82,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     {
         public int ProfileId { get; set; }
     }
+  
+}
 
-    public class EcoScoreGetProfilesResponse
-    {
-        public int ProfileId { get; set; }
-        public string Name { get; set; }
-        public bool IsDeleteAllowed { get; set; }
-    }
+
 
     public enum LimitType
     {
@@ -102,4 +99,5 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         Decimal = 'D',
         Time = 'T'
     }
-}
+
+  
