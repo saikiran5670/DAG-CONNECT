@@ -344,7 +344,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 _logger.Info("Update tripdetail.trip_statistics start position and end position.");
                 AddTripAddressResponse response = new AddTripAddressResponse();
                 var tripDetails = new TripAddressDetails() { Id = request.Id, StartAddress = request.StartAddress, EndAddress = request.EndAddress };
-
+                response.TripAddressDetails = new AddTripAddressRequest();
                 var result = await _poiManager.UpdateTripArddress(tripDetails);
                 response.TripAddressDetails.Id = result.Id;
                 return await Task.FromResult(response);
