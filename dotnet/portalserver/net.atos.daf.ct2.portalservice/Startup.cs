@@ -117,7 +117,7 @@ namespace net.atos.daf.ct2.portalservice
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(authcookiesexpireat) || authcookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(authcookiesexpireat));
+                options.IdleTimeout = TimeSpan.FromMinutes(string.IsNullOrEmpty(cookiesexpireat) || cookiesexpireat.Contains("Configuration") ? 5184000 : Convert.ToDouble(cookiesexpireat));
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
                 if (isdevelopmentenv.Contains("Configuration") || Convert.ToBoolean(isdevelopmentenv))
