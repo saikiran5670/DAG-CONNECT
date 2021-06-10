@@ -270,9 +270,9 @@ namespace net.atos.daf.ct2.vehicle.repository
             if (record.status != null)
                 vehicle.Status = (VehicleCalculatedStatus)(Convert.ToChar(record.status));
             if (record.status_changed_date != null)
-                vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date, "America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+                vehicle.Status_Changed_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.status_changed_date, "UTC", "yyyy-MM-ddTHH:mm:ss"));
             if (record.termination_date != null)
-                vehicle.Termination_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.termination_date, "Africa/Mbabane", "yyyy-MM-ddTHH:mm:ss"));
+                vehicle.Termination_Date = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.termination_date, "UTC", "yyyy-MM-ddTHH:mm:ss"));
             vehicle.ModelId = record.model_id;
             vehicle.Vid = record.vid;
             vehicle.Type = (VehicleType)(Convert.ToChar(record.type ?? 'N'));

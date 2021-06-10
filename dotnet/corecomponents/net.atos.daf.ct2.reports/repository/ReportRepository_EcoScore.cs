@@ -229,7 +229,7 @@ namespace net.atos.daf.ct2.reports.repository
                     objProfile.Name = pro.profilename;
                     objProfile.Description = pro.profiledescription;
                     objProfile.ActionedBy = pro.actionedby;
-                    objProfile.LastUpdate = pro.lastupdate != null ? Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(pro.lastupdate, "America/New_York", "yyyy-MM-ddTHH:mm:ss")) : default(DateTime);
+                    objProfile.LastUpdate = pro.lastupdate != null ? Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(pro.lastupdate, "UTC", "yyyy-MM-ddTHH:mm:ss")) : default(DateTime);
                 }
                 List<EcoScoreProfileKPI> lstProfileKPI = new List<EcoScoreProfileKPI>();
                 foreach (dynamic obj in profileKPI)

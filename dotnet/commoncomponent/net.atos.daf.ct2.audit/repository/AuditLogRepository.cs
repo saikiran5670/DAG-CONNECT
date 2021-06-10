@@ -92,9 +92,9 @@ namespace net.atos.daf.ct2.audit.repository
             AuditTrail Entity = new AuditTrail();
             Entity.Audittrailid = record.id;
             if (record.created_at != null)
-                Entity.Created_at = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+                Entity.Created_at = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "UTC", "yyyy-MM-ddTHH:mm:ss"));
             if (record.performed_at != null)
-                Entity.Performed_at = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.performed_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss"));
+                Entity.Performed_at = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.performed_at, "UTC", "yyyy-MM-ddTHH:mm:ss"));
             Entity.Performed_by = record.performed_by;
             Entity.Component_name = record.component_name;
             Entity.Service_name = record.service_name;
