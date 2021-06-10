@@ -16,6 +16,8 @@ import 'jspdf-autotable';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { POIService } from '../../services/poi.service';
 //var jsPDF = require('jspdf');
+import * as moment from 'moment-timezone';
+import { Util } from '../../shared/util';
 
 declare var H: any;
 
@@ -67,7 +69,7 @@ export class TripReportComponent implements OnInit {
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
-  prefTimeFormat: any = 24; //-- coming from pref setting
+  prefTimeFormat: any; //-- coming from pref setting
   prefDateFormat: any = 'mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'metric'; //-- coming from pref setting
   accountPrefObj: any;
@@ -309,8 +311,8 @@ export class TripReportComponent implements OnInit {
   }
 
   onSearch(){
-    let _startTime = this.startDateValue.getTime();
-    let _endTime = this.endDateValue.getTime();
+    let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
+    let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
@@ -333,14 +335,14 @@ export class TripReportComponent implements OnInit {
   getConvertTableDateTime(data: any){
     data.forEach(element => {
       if(element.startTimeStamp != 0){
-        element.convertedStartTime = this.formStartDate(new Date(element.startTimeStamp));
+        element.convertedStartTime = this.formStartDate(Util.convertUtcToDate(element.startTimeStamp));
       }
       else{
         element.convertedStartTime = 0;
       }
 
       if(element.endTimeStamp != 0){
-        element.convertedEndTime = this.formStartDate(new Date(element.endTimeStamp));
+        element.convertedEndTime = this.formStartDate(Util.convertUtcToDate(element.endTimeStamp));
       }else{
         element.convertedEndTime = 0;
       }
@@ -604,30 +606,49 @@ export class TripReportComponent implements OnInit {
   }
 
   getTodayDate(){
-    let todayDate = new Date(); //-- UTC
-    return todayDate;
+    let _todayDate: any = Util.getUTCDate();
+    return _todayDate;
+    //let todayDate = new Date();
+    // let _date = moment.utc(todayDate.getTime());
+    // let _tz = moment.utc().tz('Europe/London');
+    // let __tz = moment.utc(todayDate.getTime()).tz('Europe/London').isDST();
+    // var timedifference = new Date().getTimezoneOffset(); //-- difference from the clients timezone from UTC time.
+    // let _tzOffset = this.getUtcOffset(todayDate);
+    // let dt = moment(todayDate).toDate();
   }
 
+  // getUtcOffset(date) {
+  //   return moment(date)
+  //     .subtract(
+  //       moment(date).utcOffset(), 
+  //       'seconds')
+  //     .utc()
+  // }
+
   getYesterdaysDate() {
-    var date = new Date();
+    //var date = new Date();
+    var date = Util.getUTCDate();
     date.setDate(date.getDate()-1);
     return date;
   }
 
   getLastWeekDate() {
-    var date = new Date();
+    // var date = new Date();
+    var date = Util.getUTCDate();
     date.setDate(date.getDate()-7);
     return date;
   }
 
   getLastMonthDate(){
-    let date = new Date();
+    // let date = new Date();
+    var date = Util.getUTCDate();
     date.setMonth(date.getMonth()-1);
     return date;
   }
 
   getLast3MonthDate(){
-    let date = new Date();
+    // let date = new Date();
+    var date = Util.getUTCDate();
     date.setMonth(date.getMonth()-3);
     return date;
   }
@@ -705,8 +726,8 @@ export class TripReportComponent implements OnInit {
     let finalVINDataList: any = [];
     let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
     let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    let currentStartTime = _last3m.getTime();
-    let currentEndTime = _yesterday.getTime();
+    let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
+    let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);

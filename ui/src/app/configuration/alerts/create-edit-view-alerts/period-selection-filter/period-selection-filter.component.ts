@@ -34,13 +34,8 @@ days: any= [];
 
     for(let i = 1; i < 7; i++ )
       this.weekDays().push(this.initPeriodItems());
-
-      // for(let i=0; i<4; i++){
-      //   this.addCustomPeriod(i);
-      // }  
-    }
-
-   
+      
+  }
 
   initPeriodItems(): FormGroup{
     return this._formBuilder.group({
@@ -82,5 +77,10 @@ days: any= [];
   customPeriods(periodIndex: number) : FormArray {
     return this.weekDays().at(periodIndex).get("FormArrayCustomItems") as FormArray
   }
+
+  getAlertTimingPayload(){
+    let alertTimingRef= [{id : 1}];
+    return alertTimingRef;
+  }
 
 }

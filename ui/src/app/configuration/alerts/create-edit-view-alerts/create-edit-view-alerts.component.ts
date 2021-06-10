@@ -16,6 +16,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 import { Options } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
 
 declare var H: any;
 
@@ -101,8 +102,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
   poiWidth : number = 100;
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
+  alertFeatures: any= [];
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
+
+  @ViewChild(PeriodSelectionFilterComponent)
+  periodSelectionComponent: PeriodSelectionFilterComponent;
 
   typesOfLevel: any= [
                       {
@@ -180,24 +185,23 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
     }
-    
-
+      
+    this.alertFeatures = JSON.parse(localStorage.getItem('accountFeatures'));  
     // this.alertTypeByCategoryList= this.alertTypeList;
     this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
     this.vehicleGroupList= this.vehicleGroupList.filter(item=> item.vehicleGroupId != 0);
     this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
-
+    
     if(this.vehicleList.length > 0){
       this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
     }
-    
+   
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
-      this.loadFiltersData();
-  
       this.alertForm.controls.widthInput.setValue(0.1);
-  }
-
+      this.loadFiltersData();   
+}
   
+
   toBack() {
     let emitObj = {
       stepFlag: false,
@@ -227,13 +231,51 @@ export class CreateEditViewAlertsComponent implements OnInit {
       });
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
+      let newAlertFeatures= this.alertFeatures.features;
+            
+      let featAlertFeatures = [];
+      let alertActiveFeatures = [];
+      let alertActiveCategory = [];
+
+      newAlertFeatures.forEach((item) => {
+        if(item.key.includes("feat_alert")){        
+          featAlertFeatures.push(item);
+        }        
+      });     
+
+      featAlertFeatures.forEach((element) => {
+        let fetureNames = element.key.split('feat_alert_');
+        this.alertTypeList.forEach((item) => {
+          let newAlertType = item.key.split('enumtype_');           
+          if(newAlertType[1].includes(fetureNames[1])){
+            alertActiveFeatures.push(item);            
+          }
+       });           
+      });     
+      this.alertTypeList=alertActiveFeatures;
+
+      this.alertTypeList.forEach((element) => {
+        this.alertCategoryList.forEach((item) => {
+        if(element.parentEnum.includes(item.enum)){
+          alertActiveCategory.push(item);  
+          alertActiveCategory = alertActiveCategory.filter((test, index, array) =>
+          index === array.findIndex((findTest) =>
+          findTest.value === test.value
+          )    
+          );     
+        }       
+       });
+      });  
+      this.alertCategoryList = alertActiveCategory;  
+      console.log(alertActiveFeatures); console.log(alertActiveCategory);
+     
       this.vehicleList= data["vehicleGroup"];
       if(this.vehicleList.length > 0){
         this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
       }
       this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
       this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
-    }, (error) => {
+      }, (error) => {
 
     })
   }
@@ -1230,7 +1272,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
+    let alertTimingRefHoursOfService= [];
     let alertFilterRefs: any= [];
+    let alertTimingRefAdvancedAlert= [];
     let urgenyLevelObj= {};
 
     if((this.alert_category_selected == 'L' && 
@@ -1387,6 +1431,9 @@ PoiCheckboxClicked(event: any, row: any) {
           }
         }
       }
+      else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours if Service
+        alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
+      }
     }
     else{
       if(this.isCriticalLevelSelected){
@@ -1402,7 +1449,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService 
           }
         }
         else if(this.actionType == 'edit'){
@@ -1419,7 +1467,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(criticalUrgenyLevelObj);
@@ -1437,7 +1486,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         else if(this.actionType == 'edit'){
@@ -1454,7 +1504,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(warningUrgenyLevelObj);
@@ -1472,7 +1523,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         else if(this.actionType == 'edit'){
@@ -1489,7 +1541,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(advisoryUrgenyLevelObj);
