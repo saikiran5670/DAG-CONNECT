@@ -230,7 +230,7 @@ namespace net.atos.daf.ct2.organization.repository
                     objOrganization.City = item.City;
                     objOrganization.CountryCode= item.CountryCode;
                     objOrganization.State = item.State;
-                    objOrganization.ReferenceDate = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.ReferenceDate), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
+                    objOrganization.ReferenceDate = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.ReferenceDate), "UTC", "yyyy-MM-ddTHH:mm:ss");
                     objOrganization.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
                     objOrganization.DriverDefaultOptIn= item.DriverDefaultOptIn;
                 }
@@ -416,7 +416,7 @@ namespace net.atos.daf.ct2.organization.repository
                     }
                     if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime.ToString());
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime, "UTC");
                     }
                     else
                     {
@@ -554,12 +554,17 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     parameterOrgUpdate.Add("@CountryCode", keyHandOver.CountryCode);
                 }
-                // var queryOrgUpdate = @"update master.organization set org_id=@org_id,name=@Name,
-                //address_type=@AddressType,street=@AddressStreet,street_number=@AddressStreetNumber,
-                //postal_code=@PostalCode,city=@City,country_code=@CountryCode                 
-                //              WHERE org_id=@org_id RETURNING id;";
 
-                var queryOrgUpdate = @"update master.organization set org_id=@org_id";
+                if (keyHandOver.ReferenceDateTime != null)
+                {
+                    parameterOrgUpdate.Add("@reference_date", UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime, "UTC"));
+                }
+                else
+                {
+                    parameterOrgUpdate.Add("@reference_date", 0);
+                }
+
+                var queryOrgUpdate = @"update master.organization set org_id=@org_id, reference_date=@reference_date";
                 if ((keyHandOver.CustomerName != null) && (keyHandOver.CustomerName.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", name=@Name";
@@ -620,7 +625,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                 if (keyHandOver.ReferenceDateTime != null)
                 {
-                    parameterOrgInsert.Add("@reference_date", UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime));
+                    parameterOrgInsert.Add("@reference_date", UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime, "UTC"));
                 }
                 else
                 {
@@ -1018,7 +1023,7 @@ namespace net.atos.daf.ct2.organization.repository
             orgResponse.CountryCode= record.country_code;
             orgResponse.OrgId= record.org_id;
             orgResponse.State = Convert.ToChar(record.state);
-            orgResponse.ReferenceDate= UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
+            orgResponse.ReferenceDate= UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "UTC", "yyyy-MM-ddTHH:mm:ss");
             orgResponse.VehicleDefaultOptIn = record.vehicle_default_opt_in;
             orgResponse.DriverDefaultOptIn = record.driver_default_opt_in;
             return orgResponse;

@@ -1472,7 +1472,6 @@ namespace net.atos.daf.ct2.account
             if ((record.created_at as object) != null)
             {
                 account.CreatedAt = record.created_at;
-                //account.CreatedAt = Convert.ToDateTime(UTCHandling.GetConvertedDateTimeFromUTC(record.created_at, "America/New_York", "yyyy-MM-ddTHH:mm:ss"));
             }
             return account;
         }
