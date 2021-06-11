@@ -238,16 +238,24 @@ export class ReportMapService {
   }
 
   formStartEndDate(date: any, dateFormat: any, timeFormat: any){
-    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
-    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
-    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
-    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
-    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
-    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    // let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    // let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    // let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let date1 = date.split(" ")[0];
+    let time1 = date.split(" ")[1];
+    let h = time1.split(":")[0];
+    let m = time1.split(":")[1];
+    let s = time1.split(":")[2];
+    let _d = date1.split("/")[2];
+    let _m = date1.split("/")[1];
+    let _y = date1.split("/")[0];
     let _date: any;
     let _time: any;
     if(timeFormat == 12){
-      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
     }else{
       _time = `${h}:${m}:${s}`;
     }
