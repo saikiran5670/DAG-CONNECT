@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using log4net;
+using Microsoft.Extensions.Configuration;
 using net.atos.daf.ct2.reports;
 using net.atos.daf.ct2.reports.ENUM;
 using net.atos.daf.ct2.reportservice.entity;
@@ -18,12 +19,14 @@ namespace net.atos.daf.ct2.reportservice.Services
         private readonly IReportManager _reportManager;
         private readonly IVisibilityManager _visibilityManager;
         private readonly Mapper _mapper;
-        public ReportManagementService(IReportManager reportManager, IVisibilityManager visibilityManager)
+        private readonly IConfiguration _configuration;
+        public ReportManagementService(IReportManager reportManager, IVisibilityManager visibilityManager, IConfiguration configuration)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _reportManager = reportManager;
             _visibilityManager = visibilityManager;
             _mapper = new Mapper();
+            _configuration = configuration;
         }
 
         #region Select User Preferences

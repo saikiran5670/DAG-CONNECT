@@ -55,6 +55,8 @@ namespace net.atos.daf.ct2.reports.repository
                     parameters.Add("@upper_val", profileKPI.UpperValue);
                     parameters.Add("@created_at", now);
                     parameters.Add("@created_by", dto.ActionedBy);
+                    parameters.Add("@modified_at", now);
+                    parameters.Add("@modified_by", dto.ActionedBy);
 
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 }
@@ -73,6 +75,25 @@ namespace net.atos.daf.ct2.reports.repository
                     _dataAccess.Connection.Close();
                     txn.Dispose();
                 }
+            }
+        }
+
+        public async Task<int> GetEcoScoreProfilesCount(int orgId)
+        {
+            try
+            {
+                string query = @"SELECT COUNT(1) 
+                                FROM master.ecoscoreprofile
+                                WHERE organization_id = @organization_id";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@organization_id", orgId);
+              
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameters);               
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
