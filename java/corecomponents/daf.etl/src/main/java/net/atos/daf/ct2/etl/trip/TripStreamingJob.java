@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.etl.common.audittrail.TripAuditTrail;
+import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.kafka.FlinkKafkaStatusMsgConsumer;
 import net.atos.daf.ct2.etl.common.postgre.TripSink;
@@ -70,8 +71,9 @@ public class TripStreamingJob {
 			
 			SingleOutputStreamOperator<TripStatusData> tripStsWithCo2Emission = tripAggregation.getTripStsWithCo2Emission(statusDataStream);
 						
-			DataStream<Trip> finalTripData = tripAggregation.getConsolidatedTripData(tripStsWithCo2Emission, indxData,Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), tableEnv);
+			DataStream<TripAggregatedData> tripAggrData = tripAggregation.getConsolidatedTripData(tripStsWithCo2Emission, indxData,Long.valueOf(envParams.get(ETLConstants.TRIP_TIME_WINDOW_MILLISEC)), tableEnv);
 			
+			DataStream<Trip> finalTripData = tripAggregation.getTripStatisticData(tripAggrData, tableEnv);
 			// Call Audit Trail
 			TripAuditTrail.auditTrail(envParams, ETLConstants.AUDIT_EVENT_STATUS_START, ETLConstants.TRIP_STREAMING_JOB_NAME,
 					"Trip Streaming Job Started", ETLConstants.AUDIT_CREATE_EVENT_TYPE);
@@ -159,8 +161,6 @@ public class TripStreamingJob {
 			tripStsData.setVin(stsMsg.getVin());
 			tripStsData.setNumberOfIndexMessage(stsMsg.getNumberOfIndexMessage());
 			
-			// tripStsData.setIncrement(stsMsg.getIncrement());
-
 			if (stsMsg.getEventDateTimeFirstIndex() != null) {
 				tripStsData.setStartDateTime(TimeFormatter.getInstance().convertUTCToEpochMilli(
 						stsMsg.getEventDateTimeFirstIndex().toString(),
