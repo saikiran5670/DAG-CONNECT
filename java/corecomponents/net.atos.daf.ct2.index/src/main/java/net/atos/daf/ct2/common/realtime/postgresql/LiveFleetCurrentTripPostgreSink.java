@@ -129,8 +129,8 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						Integer[] ttvalue = row.getDocument().getTt_ListValue(); // 12//
 																					// vehicle
 																					// status
-
-						if (ttvalue.length == 0) {
+						currentTripPojo.setVehicle_status(0);
+						/*if (ttvalue.length == 0) {
 							currentTripPojo.setVehicle_status(0);
 
 						} else {
@@ -151,7 +151,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							if (status == 7) {
 								currentTripPojo.setVehicle_status(4);
 							}
-						}
+						}*/
 
 						// currentTripPojo.setVehicle_status(null); //Look after
 						currentTripPojo.setDriver1_status(indexValue.getDocument().getDriver1WorkingState());
