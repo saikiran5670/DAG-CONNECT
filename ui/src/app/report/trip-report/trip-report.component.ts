@@ -506,11 +506,11 @@ export class TripReportComponent implements OnInit {
       tempObj.push(e.convertedEndTime);
       tempObj.push(e.convertedDistance);
       tempObj.push(e.convertedIdleDuration);
-      tempObj.push(e.averageSpeed);
-      tempObj.push(e.averageWeight);
+      tempObj.push(e.convertedAverageSpeed);
+      tempObj.push(e.convertedAverageWeight);
       tempObj.push(e.startPosition);
       tempObj.push(e.endPosition);
-      tempObj.push(e.fuelConsumed100Km);
+      tempObj.push(e.convertedFuelConsumed100Km);
       tempObj.push(e.convertedDrivingTime);
       tempObj.push(e.alert);
       tempObj.push(e.events);
