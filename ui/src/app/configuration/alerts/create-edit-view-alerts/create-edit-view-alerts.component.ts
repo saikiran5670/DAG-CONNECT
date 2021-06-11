@@ -470,8 +470,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
         }
         case "FF": { //Fuel Consumed
           this.labelForThreshold= this.translationData.lblFuelConsumed ? this.translationData.lblFuelConsumed : "Fuel Consumed";
-          this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
-          this.unitTypeEnum= "L";
+          // this.unitForThreshold= this.translationData.lblLiters ? this.translationData.lblLiters : "Liters";
+          // this.unitTypeEnum= "L";
+           this.unitForThreshold= "%";
+           this.unitTypeEnum= "P";
           break;
         }
       }
