@@ -76,6 +76,13 @@ export class CreateEditCorridorComponent implements OnInit {
     this.backToPage.emit(emitObj);
   }
 
+  backFromUpdate(){
+    let emitObj = {
+      booleanFlag: false,
+      successMsg: "update",
+    }  
+    this.backToPage.emit(emitObj);
+  }
   backFromReject(){
     let emitObj = {
       booleanFlag: false,
