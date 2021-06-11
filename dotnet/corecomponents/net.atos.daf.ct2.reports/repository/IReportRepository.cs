@@ -20,5 +20,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId);
         Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto);
         Task<bool> CheckEcoScoreProfileIsexist(int ? OrganizationId, string Name);
+        Task<int> DeleteEcoScoreProfile(int ProfileId);
+        Task<string> IsEcoScoreProfileBasicOrAdvance(int ProfileId);
+        Task<string> GetProfileName(int ProfileId);
     }
 }

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     {
         #region Parameter Report Schedular
         Task<IEnumerable<ReportType>> GetReportType(int accountid, int organizationid);
-        Task<IEnumerable<string>> GetRecipientsEmail(int organizationid);
+        Task<IEnumerable<ReceiptEmails>> GetRecipientsEmails(int organizationid);
         Task<IEnumerable<DriverDetail>> GetDriverDetails(int organizationid);
         #endregion
     }

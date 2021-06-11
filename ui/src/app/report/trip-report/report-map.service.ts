@@ -217,14 +217,17 @@ export class ReportMapService {
     // distance in meter
     let _distance: any = 0;
     switch(unitFormat){
-      case 'Metric': { 
+      case 'dunit_Metric': { 
         _distance = (distance/1000).toFixed(2); //-- km
         break;
       }
-      case 'Imperial':
-      case 'US Imperial': {
+      case 'dunit_Imperial':
+      case 'dunit_USImperial': {
         _distance = (distance/1609.344).toFixed(2); //-- mile
         break;
+      }
+      default: {
+        _distance = distance.toFixed(2);
       }
     }
     return _distance;    
@@ -233,17 +236,20 @@ export class ReportMapService {
   getAvrgWeight(avgWeight: any, unitFormat: any ){
     let _avgWeight: any = 0;
     switch(unitFormat){
-      case 'Metric': { 
+      case 'dunit_Metric': { 
         _avgWeight = avgWeight.toFixed(2); //-- kg/count
         break;
       }
-      case 'Imperial':{
+      case 'dunit_Imperial':{
         _avgWeight =(avgWeight * 2.2).toFixed(2); //pounds/count
         break;
       }
-      case 'US Imperial': {
+      case 'dunit_USImperial': {
         _avgWeight = (avgWeight * 2.2 * 1.009).toFixed(2); //-- imperial * 1.009
         break;
+      }
+      default: {
+        _avgWeight = avgWeight.toFixed(2);
       }
     }
     return _avgWeight;    
@@ -252,36 +258,42 @@ export class ReportMapService {
   getAvergSpeed(avgSpeed: any, unitFormat: any){
     let _avgSpeed : any = 0;
     switch(unitFormat){
-      case 'Metric': { 
+      case 'dunit_Metric': { 
         _avgSpeed = (avgSpeed * 360).toFixed(2); //-- km/h(converted from m/ms)
         break;
       }
-      case 'Imperial':{
+      case 'dunit_Imperial':{
         _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //miles/h
         break;
       }
-      case 'US Imperial': {
+      case 'dunit_USImperial': {
         _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //-- miles/h
         break;
+      }
+      default: {
+        _avgSpeed = avgSpeed.toFixed(2);
       }
     }
     return _avgSpeed;    
   }
 
-  getFuelConsumed(fuelConsumed : number, unitFormat: any){
+  getFuelConsumed(fuelConsumed: any, unitFormat: any){
     let _fuelConsumed: any = 0;
     switch(unitFormat){
-      case 'Metric': { 
+      case 'dunit_Metric': { 
         _fuelConsumed = (fuelConsumed / 100).toFixed(2); //-- ltr/km(converted from ml/m)
         break;
       }
-      case 'Imperial':{
+      case 'dunit_Imperial':{
         _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(2); //gallons/miles
         break;
       }
-      case 'US Imperial': {
+      case 'dunit_USImperial': {
         _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(2); //-- imperial * 1.2
         break;
+      }
+      default: {
+        _fuelConsumed = fuelConsumed.toFixed(2);
       }
     }
     return _fuelConsumed; 
@@ -320,19 +332,19 @@ export class ReportMapService {
       _time = `${h}:${m}:${s}`;
     }
     switch(dateFormat){
-      case 'dd/mm/yyyy': {
+      case 'ddateformat_dd/mm/yyyy': {
         _date = `${_d}/${_m}/${_y} ${_time}`;
         break;
       }
-      case 'mm/dd/yyyy': {
+      case 'ddateformat_mm/dd/yyyy': {
         _date = `${_m}/${_d}/${_y} ${_time}`;
         break;
       }
-      case 'dd-mm-yyyy': {
+      case 'ddateformat_dd-mm-yyyy': {
         _date = `${_d}-${_m}-${_y} ${_time}`;
         break;
       }
-      case 'mm-dd-yyyy': {
+      case 'ddateformat_mm-dd-yyyy': {
         _date = `${_m}-${_d}-${_y} ${_time}`;
         break;
       }

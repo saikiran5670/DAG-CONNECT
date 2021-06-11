@@ -124,16 +124,30 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetEcoScoreProfileKPIDetails(profileId);
         }
         #endregion
-        #region  Eco Score Report - Update Profile
+        #region  Eco Score Report - Update/Delete Profile
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
             if (await isExist)
             {
-                 return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
             }
             else
-                return -1 ;
+                return -1;
+        }
+        public async Task<int> DeleteEcoScoreProfile(int ProfileId)
+        {
+            int ecoScoreProfileId = 0;
+            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(ProfileId);
+            if (versionType == "" || versionType == null)
+            {
+                ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(ProfileId);
+            }
+            return ecoScoreProfileId;
+        }
+        public async Task<string> GetProfileName(int ProfileId)
+        {
+            return await _reportRepository.GetProfileName(ProfileId);
         }
         #endregion
     }
