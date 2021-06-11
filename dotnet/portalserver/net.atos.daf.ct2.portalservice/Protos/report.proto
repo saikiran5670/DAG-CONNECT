@@ -282,6 +282,7 @@ message EcoScoreProfiles {
  string ProfileName = 2;
  string ProfileDescription = 3;
  bool IsDeleteAllowed = 4;
+ int32 OrganizationId = 5;
 }
 
 message GetEcoScoreProfileKPIRequest {

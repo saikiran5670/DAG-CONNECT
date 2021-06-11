@@ -272,7 +272,9 @@ export class AlertsComponent implements OnInit {
           findTest.value === test.value
           )   
        ); 
-      }        
+      } else {
+        item.vehicleGroupName = item.vehicleName;
+      }              
      }); 
       this.updateDatasource(this.initData);  
     }, (error) => {

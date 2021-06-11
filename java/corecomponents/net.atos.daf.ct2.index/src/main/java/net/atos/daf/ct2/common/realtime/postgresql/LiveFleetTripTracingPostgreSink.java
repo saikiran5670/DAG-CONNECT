@@ -125,7 +125,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 	}
 
 	public LiveFleetPojo tripCalculation(Index row, LiveFleetPojo currentPosition) {
-
+		System.out.println("Inside Trip Calculation");
 		int varVEvtid = 0;
 		if (row.getVEvtID() != null) {
 			varVEvtid = row.getVEvtID();
@@ -149,7 +149,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		currentPosition.setCreated_at_m2m(row.getReceivedTimestamp());
 		currentPosition.setCreated_at_kafka(Long.parseLong(row.getKafkaProcessingTS()));
 		currentPosition.setCreated_at_dm(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
-
+		System.out.println("Inside Trip Calculation in Mid");
 		if (varGPSLongi == 255.0) {
 			currentPosition.setGpsAltitude(255.0); // gpsAltitude
 			currentPosition.setGpsHeading(255.0); // gpsHeading
@@ -190,7 +190,7 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 			currentPosition.setCo2Emission(0.0); // co2 emission
 			currentPosition.setFuelConsumption(0.0); // fuel_consumption
 		}
-
+		System.out.println("Inside Trip Calculation in Mid after");
 		if (varVEvtid == 26 || varVEvtid == 28 || varVEvtid == 29 || varVEvtid == 32 || varVEvtid == 42
 				|| varVEvtid == 43 || varVEvtid == 44 || varVEvtid == 45 || varVEvtid == 46) {
 			currentPosition.setLastOdometerValue(row.getDocument().getVTachographSpeed());// TotalTachoMileage
@@ -206,9 +206,11 @@ public class LiveFleetTripTracingPostgreSink extends RichSinkFunction<KafkaRecor
 		
 		
 			currentPosition.setDistUntilNextService(0);
-		
+			System.out.println("Inside Trip Calculation in end");
 
 		return currentPosition;
+		
+		
 
 	}
 

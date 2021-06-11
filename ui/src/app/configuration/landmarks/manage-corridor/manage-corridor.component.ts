@@ -32,6 +32,7 @@ export class ManageCorridorComponent implements OnInit {
   dataSource: any;
   markerArray: any = [];
   corridorNameList = [];
+  routeType = 'R';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
