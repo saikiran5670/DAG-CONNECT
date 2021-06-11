@@ -762,6 +762,7 @@ export class ExistingTripsComponent implements OnInit {
     // this.corridorWidth = _event.value;
      this.corridorWidthKm = this.corridorWidth / 1000;
      this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
+     this.mapFunctions.updateWidth(this.corridorWidthKm);
      this.checkRoutePlot();
      //this.calculateRouteFromAtoB();
  }
@@ -805,60 +806,230 @@ export class ExistingTripsComponent implements OnInit {
 
  createCorridorClicked(){
   
+// var existingTripObj = {
+//     "id": this.corridorId ? this.corridorId : 0,
+//     "organizationId": this.organizationId,
+//     "corridorType": "E",
+//     "corridorLabel": this.existingTripForm.controls.label.value,
+//     "width": this.corridorWidth,
+//     "createdAt": 0,
+//     "createdBy": this.organizationId,
+//     "modifiedAt": 0,
+//     "modifiedBy": this.organizationId,
+//     "description": "string",
+//     "address": "string",
+//     "city": "string",
+//     "country": "string",
+//     "zipcode": "string",
+//     "startLatitude": 0,
+//     "startLongitude": 0,
+//     "distance": 0,
+//     "state": "string",
+//     "existingTrips": [
+//       {
+//         "id": 0,
+//         "landmarkId": 0,
+//         "tripId": "string",
+//         "startDate": 0,
+//         "endDate": 0,
+//         "driverId1": "string",
+//         "driverId2": "string",
+//         "startLatitude": this.startAddressPositionLat,
+//         "startLongitude": this.startAddressPositionLong,
+//         "startPosition": "string",
+//         "endLatitude": this.endAddressPositionLat,
+//         "endLongitude": this.endAddressPositionLong,
+//         "endPosition": "string",
+//         "distance": 0,
+//         "nodePoints": [
+//           {
+//             "id": 0,
+//             "landmarkId": 0,
+//             "tripId": "string",
+//             "sequenceNumber": 0,
+//             "latitude": 0,
+//             "longitude": 0,
+//             "state": "string",
+//             "address": "string",
+//             "createdAt": 0,
+//             "createdBy": 0,
+//             "modifiedAt": 0,
+//             "modifiedBy": 0
+//           }
+//         ]
+//       }
+//     ]
+//   }
+
+
+//     "id": this.corridorId ? this.corridorId : 0,
+//     "organizationId": this.organizationId,
+//     "corridorType": "E",
 var existingTripObj = {
-    "id": this.corridorId ? this.corridorId : 0,
-    "organizationId": this.organizationId,
-    "corridorType": "E",
-    "corridorLabel": this.existingTripForm.controls.label.value,
-    "width": this.corridorWidth,
-    "createdAt": 0,
-    "createdBy": this.organizationId,
-    "modifiedAt": 0,
-    "modifiedBy": this.organizationId,
-    "description": "string",
-    "address": "string",
-    "city": "string",
-    "country": "string",
-    "zipcode": "string",
-    "startLatitude": 0,
-    "startLongitude": 0,
-    "distance": 0,
-    "state": "string",
-    "existingTrips": [
-      {
-        "id": 0,
-        "landmarkId": 0,
-        "tripId": "string",
-        "startDate": 0,
-        "endDate": 0,
-        "driverId1": "string",
-        "driverId2": "string",
-        "startLatitude": this.startAddressPositionLat,
-        "startLongitude": this.startAddressPositionLong,
-        "startPosition": "string",
-        "endLatitude": this.endAddressPositionLat,
-        "endLongitude": this.endAddressPositionLong,
-        "endPosition": "string",
-        "distance": 0,
-        "nodePoints": [
-          {
-            "id": 0,
-            "landmarkId": 0,
-            "tripId": "string",
-            "sequenceNumber": 0,
-            "latitude": 0,
-            "longitude": 0,
-            "state": "string",
-            "address": "string",
-            "createdAt": 0,
-            "createdBy": 0,
-            "modifiedAt": 0,
-            "modifiedBy": 0
-          }
-        ]
-      }
-    ]
-  }
+
+
+  "id": this.corridorId ? this.corridorId : 0,
+  "organizationId": this.accountOrganizationId,
+  "corridorType": "E",
+  "corridorLabel": this.existingTripForm.controls.label.value,
+  "width": 12,
+  "createdAt": 0,
+  "createdBy": 0,
+  "modifiedAt": 0,
+  "modifiedBy": 0,
+  "description": "",
+  "address": "",
+  "city": "",
+  "country": "",
+  "zipcode": "",
+  "startLatitude": this.startAddressPositionLat,
+  "startLongitude": this.startAddressPositionLong,
+  "distance": 0,
+  "state": "",
+
+  
+  
+  "existingTrips": [
+    {
+      "id": 12,
+      "landmarkId": 197,
+      "tripId": "trip13",
+      "startDate": 11313,
+      "endDate": 121323,
+      "driverId1": "d1",
+      "driverId2": "",
+      "startLatitude": 43.34,
+      "startLongitude": 12.34,
+      "startPosition": "start address",
+      "endLatitude": 51.07,
+      "endLongitude": 51.07,
+      "endPosition": "End address",
+      "distance": 10,
+      "nodePoints": [
+        {
+          "id": 95,
+          "landmarkId": 197,
+          "tripId": "trip13",
+          "sequenceNumber": 1,
+          "latitude": 12.34,
+          "longitude": 33.23,
+          "state": "A",
+          "address": "Node address",
+          "createdAt": 0,
+          "createdBy": 0,
+          "modifiedAt": 0,
+          "modifiedBy": 0
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "landmarkId": 197,
+      "tripId": "trip11",
+      "startDate": 11313,
+      "endDate": 121323,
+      "driverId1": "d2",
+      "driverId2": "",
+      "startLatitude": 43.34,
+      "startLongitude": 12.34,
+      "startPosition": "start address",
+      "endLatitude": 51.07,
+      "endLongitude": 51.07,
+      "endPosition": "End address",
+      "distance": 16,
+      "nodePoints": [
+        {
+          "id": 96,
+          "landmarkId": 197,
+          "tripId": "trip11",
+          "sequenceNumber": 1,
+          "latitude": 12.34,
+          "longitude": 33.23,
+          "state": "A",
+          "address": "Node address11",
+          "createdAt": 0,
+          "createdBy": 0,
+          "modifiedAt": 0,
+          "modifiedBy": 0
+        },
+        {
+          "id": 97,
+          "landmarkId": 197,
+          "tripId": "trip11",
+          "sequenceNumber": 1,
+          "latitude": 12.34,
+          "longitude": 33.23,
+          "state": "A",
+          "address": "Node address11",
+          "createdAt": 0,
+          "createdBy": 0,
+          "modifiedAt": 0,
+          "modifiedBy": 0
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "landmarkId": 197,
+      "tripId": "trip12",
+      "startDate": 11313,
+      "endDate": 121323,
+      "driverId1": "d3",
+      "driverId2": "",
+      "startLatitude": 43.34,
+      "startLongitude": 12.34,
+      "startPosition": "start address",
+      "endLatitude": 51.07,
+      "endLongitude": 51.07,
+      "endPosition": "End address",
+      "distance": 13,
+      "nodePoints": [
+        {
+          "id": 98,
+          "landmarkId": 197,
+          "tripId": "trip12",
+          "sequenceNumber": 1,
+          "latitude": 12.34,
+          "longitude": 33.23,
+          "state": "A",
+          "address": "Node address12",
+          "createdAt": 0,
+          "createdBy": 0,
+          "modifiedAt": 0,
+          "modifiedBy": 0
+        },
+        {
+          "id": 99,
+          "landmarkId": 197,
+          "tripId": "trip12",
+          "sequenceNumber": 1,
+          "latitude": 12.34,
+          "longitude": 33.23,
+          "state": "A",
+          "address": "Node address122",
+          "createdAt": 0,
+          "createdBy": 0,
+          "modifiedAt": 0,
+          "modifiedBy": 0
+        },
+        {
+          "id": 100,
+          "landmarkId": 197,
+          "tripId": "trip12",
+          "sequenceNumber": 1,
+          "latitude": 12.34,
+          "longitude": 33.23,
+          "state": "A",
+          "address": "Node address123",
+          "createdAt": 0,
+          "createdBy": 0,
+          "modifiedAt": 0,
+          "modifiedBy": 0
+        }
+      ]
+    }
+  ]
+}
 
 
 

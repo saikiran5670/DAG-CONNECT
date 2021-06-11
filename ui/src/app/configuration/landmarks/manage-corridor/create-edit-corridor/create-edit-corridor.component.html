@@ -35,6 +35,6 @@
     <!-- Map Div-->
     <div class='fixDiv'></div>
     <app-route-calculating  *ngIf='selectedCorridorTypeId ==46 && exclusionList' [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate()" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
-                            [selectedElementData]="selectedElementData"></app-route-calculating>
+                            [selectedElementData]="selectedElementData" [corridorNameList]='corridorNameList'></app-route-calculating>
     <app-existing-trips *ngIf='selectedCorridorTypeId ==45' [vehicleGroupList]="vehicleGroupList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate()" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
     [selectedElementData]="selectedElementData"></app-existing-trips>

@@ -143,6 +143,8 @@ export class RouteCalculatingComponent implements OnInit {
 
   searchDisable : boolean = true;
   noRouteErr : boolean = false;
+  duplicateError : boolean = false;
+  duplicateErrorMsg : string = '';
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
@@ -200,6 +202,7 @@ export class RouteCalculatingComponent implements OnInit {
     //   this.strPresentEnd = true;
     // }
     this.subscribeWidthValue();
+    this.subscribeLabelValue();
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
@@ -211,6 +214,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorWidthKm = Number(x);
       this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
+      this.updateWidth();
       //this.calculateAB();
       let drawWidth = this.corridorWidthKm*10;
       // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
@@ -218,6 +222,13 @@ export class RouteCalculatingComponent implements OnInit {
       // }
    });
 
+  }
+
+  subscribeLabelValue(){
+    this.corridorFormGroup.get("label").valueChanges.subscribe(x => {
+      this.duplicateError = false;
+      this.duplicateErrorMsg = '';
+   });
   }
 
   vehicleSizeFocusOut(){
@@ -404,7 +415,7 @@ export class RouteCalculatingComponent implements OnInit {
       //   this.addTruckRouteShapeToMap(drawWidth);
       // }
       this.checkRoutePlot();
-     // this.updateWidth()
+      this.updateWidth();
     //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
     //  // this.calculateAB();
     //  this.updateWidth()
@@ -636,12 +647,14 @@ export class RouteCalculatingComponent implements OnInit {
         }
       },(error)=>{
           if(error.status === 409){
+            this.duplicateError = true;
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
               fromCreate:true,
             }  
-            this.backToReject.emit(emitObj);
+           // this.backToReject.emit(emitObj);
           }
       })
     }else{
@@ -656,16 +669,25 @@ export class RouteCalculatingComponent implements OnInit {
         }
       },(error)=>{
           if(error.status === 409){
+            this.duplicateError = true;
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
               fromCreate:true,
             }  
-            this.backToReject.emit(emitObj);
+           // this.backToReject.emit(emitObj);
           }
       })
     }
    
+  }
+
+  getDuplicateMsg(name: any) {
+    if (this.translationData.lblDuplicateMsg)
+      return this.translationData.lblDuplicateMsg.replace('$', name);
+    else
+      return ("Corridor '$' already exists.").replace('$', name);
   }
 
   getSuggestion(_event){
@@ -1031,14 +1053,6 @@ export class RouteCalculatingComponent implements OnInit {
     // }
   }
 
-
-  updateWidth(){
-    let drawWidth = this.corridorWidthKm * 10;
-    let allObj = this.mapGroup.getObjects()
-    console.log(allObj)
-    
-  }
-
   /////////////////////////// v8 calculate ////////////////////
   routePoints:any;
 
@@ -1114,6 +1128,7 @@ export class RouteCalculatingComponent implements OnInit {
 
   }
 
+  corridorPath;
   addTruckRouteShapeToMap(lineWidth?){
     let pathWidth= this.corridorWidthKm * 10;
     this.routeDistance = 0;
@@ -1124,10 +1139,10 @@ export class RouteCalculatingComponent implements OnInit {
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
   
        // Create a corridor width to display the route:
-       let corridorPath = new H.map.Polyline(linestring, {
+        this.corridorPath = new H.map.Polyline(linestring, {
         style:  {
           lineWidth: pathWidth,
-          strokeColor: '#b5c7ef'
+          strokeColor: 'rgba(181, 199, 239, 0.6)'
         }
       });
       // Create a polyline to display the route:
@@ -1139,7 +1154,7 @@ export class RouteCalculatingComponent implements OnInit {
       });
   
       // Add the polyline to the map
-      this.mapGroup.addObjects([corridorPath,polylinePath]);
+      this.mapGroup.addObjects([this.corridorPath,polylinePath]);
       this.hereMap.addObject(this.mapGroup);
       // And zoom to its bounding rectangle
       this.hereMap.getViewModel().setLookAtData({
@@ -1149,7 +1164,22 @@ export class RouteCalculatingComponent implements OnInit {
   }
   }
 
+  updateWidth(){
+    let setWidth = this.corridorWidthKm * 10;
+    // this.addTruckRouteShapeToMap();
+    //let geoLineString = this.corridorPath.getGeometry();
+    if (this.corridorPath) {
 
+      this.corridorPath.setStyle({
+        lineWidth: setWidth,
+        strokeColor: 'rgba(181, 199, 239, 0.6)'
+      });
+
+    }
+    //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
+    //console.log(geoLineString)
+    //this.corridorPath.setGeometry(geoLineString);
+  }
 
 
 
