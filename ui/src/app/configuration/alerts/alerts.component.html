@@ -107,7 +107,7 @@
                   <ng-template [ngIf]="row.vehicleGroupName!=''" [ngIfElse]="vehicleVIN">
                     <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
                     (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                    test{{ row.vehicleGroupName }}</span>
+                    {{ row.vehicleGroupName }}</span>
                   </ng-template>   
                   <ng-template #vehicleVIN>
                     <span>{{ row.vin }}</span>
