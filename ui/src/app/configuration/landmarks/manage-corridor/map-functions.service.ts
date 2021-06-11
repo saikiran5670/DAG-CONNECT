@@ -37,6 +37,8 @@ export class MapFunctionsService {
   exclusions = [];
 
   map_key = "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw";
+  ui: any;
+
   constructor(private hereService: HereService, private corridorService: CorridorService) {
     this.platform = new H.service.Platform({
       "apikey": "BmrUv-YbFcKlI4Kx1ev575XSLFcPhcOlvbsTxqt0uqw"
@@ -162,7 +164,28 @@ export class MapFunctionsService {
         </table>
         </div>`
         this.endMarker.setData(endMarkerHtml);
+        let bubble;
 
+        this.endMarker.addEventListener('pointerenter',  (evt)=> {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div style="font-size:12px;font-family:Times New Roman">
+            <table>
+            <tr><td><b>Corridor Name:</b></td> <td>${corridorName} </td></tr>
+            <tr><td><b>Start Point:</b></td><td>${startAddress}</td></tr>
+            <tr><td><b>End Point:</b></td><td>${endAddress}</td></tr>
+            <tr><td><b>Width:</b></td><td>${this.corridorWidthKm} km</td></tr>
+            </table>
+            </div>`
+          });
+          // show info bubble
+          this.ui.addBubble(bubble);
+        }, false);
+        this.endMarker.addEventListener('pointerleave', function(evt) {
+          bubble.close();
+        }, false);
         this.group.addObjects([this.startMarker, this.endMarker]);
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
@@ -185,7 +208,7 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
-        this.addInfoBubble(this.group);
+        //this.addInfoBubble(this.group);
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');
@@ -438,7 +461,6 @@ export class MapFunctionsService {
     }
   }
 
-  ui: any;
   addInfoBubble(markerGroup) {
 
     var group = new H.map.Group();
