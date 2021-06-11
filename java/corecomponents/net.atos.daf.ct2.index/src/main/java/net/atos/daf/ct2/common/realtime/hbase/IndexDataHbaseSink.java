@@ -223,6 +223,7 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TT_ListValue"),
 				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTt_ListValue())));
+	System.out.println("below ttList");
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("EngineCoolantLevel"),
 				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getEngineCoolantLevel())));
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("EngineOilLevel"),
@@ -255,9 +256,11 @@ public class IndexDataHbaseSink extends RichSinkFunction<KafkaRecord<Index>> {
 				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTachoVehicleSpeed())));
 		put.addColumn(Bytes.toBytes("t"), Bytes.toBytes("TotalTachoMileage"),
 				Bytes.toBytes(Arrays.toString(value.getValue().getDocument().getTotalTachoMileage())));
+		System.out.println("hbase techo values-->");
 
 		table.put(put);
-
+		
+		System.out.println("table data added-->");
 	}
 
 	@Override
