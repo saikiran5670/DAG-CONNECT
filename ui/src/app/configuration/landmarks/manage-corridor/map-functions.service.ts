@@ -233,11 +233,11 @@ export class MapFunctionsService {
     this.transportDataChecked = _data["isTransportData"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     if(this.trafficFlowChecked){
-      this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+      //this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
     }
     this.transportDataChecked = _data["isTransportData"];
     if(this.transportDataChecked){
-      this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+      //this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
     }
     this.vehicleHeightValue = _data["vehicleSize"].vehicleHeight;
     this.vehicleWidthValue = _data["vehicleSize"].vehicleWidth;
