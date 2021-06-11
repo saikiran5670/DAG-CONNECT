@@ -436,5 +436,31 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
+        #region - Delete Profile
+
+        [HttpDelete]
+        [Route("ecoscoreprofile/delete")]
+
+        public async Task<IActionResult> DeleteEcoScoreProfile([FromQuery] EcoScoreProfileDeleteRequest request)
+        {
+            try
+            {
+                //bool hasRights = await HasAdminPrivilege();
+                var grpcRequest = new reportservice.DeleteEcoScoreProfileRequest();
+                grpcRequest.ProfileId = request.ProfileId;
+                var response = await _reportServiceClient.DeleteEcoScoreProfileAsync(grpcRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.DELETE_ECOSCORE_PROFILE_KPI_SUCCESS_MSG, 0, 0, Convert.ToString(request.ProfileId),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
     }
 }

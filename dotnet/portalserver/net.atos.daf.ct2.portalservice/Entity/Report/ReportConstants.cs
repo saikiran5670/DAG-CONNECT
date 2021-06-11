@@ -44,6 +44,7 @@
         #region Eco-Score Report
         public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
         public const string GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile KPI details fetched successfully for given profile.";
+        public const string DELETE_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile Deleted successfully.";
         #endregion
 
 

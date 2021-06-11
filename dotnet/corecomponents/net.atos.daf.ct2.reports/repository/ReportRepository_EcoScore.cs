@@ -305,8 +305,8 @@ namespace net.atos.daf.ct2.reports.repository
                 Updateparameter.Add("@description", ecoScoreProfileDto.Description);
                 queryForUpdateEcoScoreProfile.Append(", description=@description");
             }
-            Updateparameter.Add("@modified_by", ecoScoreProfileDto.ActionedBy);
-            queryForUpdateEcoScoreProfile.Append(", modified_by=@modified_by");
+            Updateparameter.Add("@modified_by", Convert.ToInt32( ecoScoreProfileDto.ActionedBy));
+            queryForUpdateEcoScoreProfile.Append(", modified_by= @modified_by");
             Updateparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             Updateparameter.Add("@id", ecoScoreProfileDto.Id);
             queryForUpdateEcoScoreProfile.Append(" where id=@id RETURNING id");
@@ -316,7 +316,7 @@ namespace net.atos.daf.ct2.reports.repository
             var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), Updateparameter);
 
                 var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, Convert.ToInt32(ecoScoreProfileDto.ActionedBy), id);
-                if (id <= 0 || tripDetails == false)
+                if (id <= 0 && tripDetails == false)
                 {
                     id = -1;
                 }
@@ -343,6 +343,7 @@ namespace net.atos.daf.ct2.reports.repository
         private async Task<bool> UpdateEcoscoreProfileKpi(List<EcoScoreProfileKPI> ecoScoreProfileKPI, int ActionedBy, int id)
         {
             var Updateparameter = new DynamicParameters();
+            StringBuilder query = new StringBuilder();
             foreach (var item in ecoScoreProfileKPI)
             {
 
@@ -362,17 +363,16 @@ namespace net.atos.daf.ct2.reports.repository
                 Updateparameter.Add("@modified_by", ActionedBy);
                 Updateparameter.Add("@Id", id);
 
-                var updateEcoscoreProfileKpiTable = @"UPDATE master.ecoscoreprofilekpi
-                                          SET   limit_val=@LimitValue,
-                                                target_val=@TargetValue, 
-                                                lower_val=@LowerValue, 
-                                                upper_val=@UpperValue, 
-                                                modified_at=@modified_at, 
-                                                modified_by=@modified_by
-                                                where profile_id = @Id 
-                                                       and ecoscore_kpi_id = @KPIId RETURNING id";
+                query.Append("UPDATE master.ecoscoreprofilekpi Set modified_at =@modified_at");
 
-                id = await _dataAccess.ExecuteScalarAsync<int>(updateEcoscoreProfileKpiTable, Updateparameter);
+                query.Append(", limit_val=@LimitValue");
+                query.Append(", target_val=@TargetValue");
+                query.Append(", lower_val=@LowerValue");
+                query.Append(", upper_val=@UpperValue");
+                query.Append(", modified_by=@modified_by");
+                query.Append(" where profile_id=@Id and ecoscore_kpi_id = @KPIId RETURNING id");
+
+                id = await _dataAccess.ExecuteScalarAsync<int>(query.ToString(), Updateparameter);
             }
             return id > 0 ? true : false;
         }
@@ -404,5 +404,56 @@ namespace net.atos.daf.ct2.reports.repository
 
             return ReportNameExist == 0 ? false : true;
         }
+        
+        
+        #region - Delete Eco Score Profile
+        public async Task<int> DeleteEcoScoreProfile(int ProfileId)
+        {
+            _log.Info("Delete Eco Score Profile method called in repository");
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                var deleteProfile = @"UPDATE master.ecoscoreprofile
+                                            SET  state=@State 
+                                   WHERE id = @ProfileId  RETURNING id";
+
+                parameter.Add("@ProfileId", ProfileId);
+                parameter.Add("@State", "D");
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(deleteProfile, parameter);
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                _log.Info("Delete Eco-Score Profile method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(ProfileId));
+                _log.Error(ex.ToString());
+                throw;
+            }
+        }
+        public async Task<string> GetProfileName(int ProfileId)
+        {
+            var parameter = new DynamicParameters();
+
+            StringBuilder query = new StringBuilder();
+
+            query.Append("select name from master.ecoscoreprofile where id= @ProfileId ");
+            parameter.Add("@ProfileId", ProfileId);
+
+            string ProfileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+
+            return ProfileName;
+        }
+        public async Task<string> IsEcoScoreProfileBasicOrAdvance(int ProfileId)
+        {
+            var parameter = new DynamicParameters();
+            StringBuilder query = new StringBuilder();
+            query.Append("SELECT  default_es_version_type FROM master.ecoscoreprofile where id =@ProfileId and state in ('A','I')");
+            parameter.Add("@ProfileId", ProfileId);
+            var versionType = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+            return versionType;
+        }
+        #endregion
     }
 }

@@ -18,6 +18,7 @@ rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScore
 rpc GetEcoScoreProfiles (GetEcoScoreProfileRequest) returns (GetEcoScoreProfileResponse);
 rpc GetEcoScoreProfileKPIDetails (GetEcoScoreProfileKPIRequest) returns (GetEcoScoreProfileKPIResponse);
 rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
+rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScoreProfileResponse);
 }
 
 enum Responsecode{
@@ -334,6 +335,15 @@ message UpdateEcoScoreProfileRequest {
   repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
 }
 message UpdateEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+}
+message DeleteEcoScoreProfileRequest
+{
+ int32 ProfileId = 1;
+}
+message DeleteEcoScoreProfileResponse
+{
   Responsecode Code = 1;
   string Message = 2;
 }
