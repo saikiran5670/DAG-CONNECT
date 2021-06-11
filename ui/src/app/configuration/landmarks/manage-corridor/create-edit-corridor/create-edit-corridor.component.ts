@@ -19,12 +19,13 @@ export class CreateEditCorridorComponent implements OnInit {
   organizationId: number;
   localStLanguage: any;
   accountId: any = 0;
-  corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 46;
+  corridorTypeList = [];//[{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
+  selectedCorridorTypeId : string = 'R';
   exclusionList : any;
   vehicleGroupList : any;
 
   constructor(private alertService: AlertService) {
+
    }
 
   ngOnInit(): void {
@@ -32,6 +33,8 @@ export class CreateEditCorridorComponent implements OnInit {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
+    this.selectedCorridorTypeId = this.selectedElementData.corridorType;
+
     this.loadDropdownData();
     //console.log(this.selectedCorridorTypeId)
   }
@@ -58,7 +61,7 @@ export class CreateEditCorridorComponent implements OnInit {
   }
 
   corridorTypeChanged(_event){
-    this.selectedCorridorTypeId = _event.value;
+    this.selectedCorridorTypeId = _event.type;
   }
 
   backToCorridorList(){
