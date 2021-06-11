@@ -1800,4 +1800,10 @@ PoiCheckboxClicked(event: any, row: any) {
   this.poiWidth = this.poiWidthKm * 1000;
 }
 
+keyPressNumbers(event) {    
+  var limit = parseInt(event.max);
+  var exclude = /Backspace|Enter/;  
+  if (event.value.length == limit) event.preventDefault();
+return true;   
+}
 }
