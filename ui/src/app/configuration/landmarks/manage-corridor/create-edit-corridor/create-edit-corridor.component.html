@@ -11,7 +11,7 @@
     </div>
 </div>
 
-    <mat-card class='mat-elevation-z' *ngIf="actionType!=='view'">
+    <mat-card class='mat-elevation-z' *ngIf="actionType==='create'">
         <mat-card-content>
             <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
                 <span>{{ translationData.lblAddNewCorridor || 'Add New Corridor' }}</span>
@@ -36,5 +36,5 @@
     <div class='fixDiv'></div>
     <app-route-calculating  *ngIf='selectedCorridorTypeId ==46 && exclusionList' [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate()" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
                             [selectedElementData]="selectedElementData" [corridorNameList]='corridorNameList'></app-route-calculating>
-    <app-existing-trips *ngIf='selectedCorridorTypeId ==45' [vehicleGroupList]="vehicleGroupList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate()" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
+    <app-existing-trips *ngIf='selectedCorridorTypeId ==45 && vehicleGroupList' [vehicleGroupList]="vehicleGroupList" [translationData]="translationData" (backToPage) = "backToCorridorList()" (backToCreate) = "backFromCreate()" (backToUpdate)="backFromUpdate()" (backToReject) = "backFromReject()" [exclusionList]="exclusionList" [actionType]='actionType'
     [selectedElementData]="selectedElementData"></app-existing-trips>

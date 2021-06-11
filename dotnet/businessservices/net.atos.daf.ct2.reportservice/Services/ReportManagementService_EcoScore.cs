@@ -36,7 +36,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     else
                     {
                         response.Code = Responsecode.Forbidden;
-                        response.Message = "Max limit of creation of Eco-Score profile has reached from specified organization. New profile cannot be created.";
+                        response.Message = "Max limit has reached for the creation of Eco-Score profile of requested organization. New profile cannot be created.";
                     }
                 }
                 else
@@ -152,6 +152,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     ProfileName = profile.Name ?? string.Empty,
                     ProfileDescription = profile.Description ?? string.Empty,
                     IsDeleteAllowed = profile.IsDeleteAllowed,
+                    OrganizationId = Convert.ToInt32(profile.OrganizationId),
                 });
             }
             return lstProfile;

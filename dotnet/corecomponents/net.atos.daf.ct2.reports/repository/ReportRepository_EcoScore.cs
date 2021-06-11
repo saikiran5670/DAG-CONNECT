@@ -33,7 +33,9 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@description", dto.Description);
                 parameters.Add("@state", 'A');
                 parameters.Add("@created_at", now);
-                parameters.Add("@created_by", dto.ActionedBy);
+                parameters.Add("@created_by", Convert.ToInt32(dto.ActionedBy));
+                parameters.Add("@modified_at", now);
+                parameters.Add("@modified_by", Convert.ToInt32(dto.ActionedBy));
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 dto.Id = id;
@@ -54,9 +56,9 @@ namespace net.atos.daf.ct2.reports.repository
                     parameters.Add("@lower_val", profileKPI.LowerValue);
                     parameters.Add("@upper_val", profileKPI.UpperValue);
                     parameters.Add("@created_at", now);
-                    parameters.Add("@created_by", dto.ActionedBy);
+                    parameters.Add("@created_by", Convert.ToInt32(dto.ActionedBy));
                     parameters.Add("@modified_at", now);
-                    parameters.Add("@modified_by", dto.ActionedBy);
+                    parameters.Add("@modified_by", Convert.ToInt32(dto.ActionedBy));
 
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 }
@@ -115,7 +117,8 @@ namespace net.atos.daf.ct2.reports.repository
                 string query = @"select id as ProfileId, organization_id as OrganizationID, name as ProfileName, description as ProfileDescription,
                                  case when default_es_version_type is null then 'TRUE' ELSE 'FALSE' end as IsDeleteAllowed
                                  from master.ecoscoreprofile
-                                 where state='A' and (organization_id is null or organization_id = @organization_id)";
+                                 where state='A' and (organization_id is null or organization_id = @organization_id)
+                                 order by default_es_version_type asc, organization_id desc, name";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
@@ -148,6 +151,7 @@ namespace net.atos.daf.ct2.reports.repository
             objProfile.Name = profile.profilename;
             objProfile.Description = profile.profiledescription;
             objProfile.IsDeleteAllowed = Convert.ToBoolean(profile.isdeleteallowed);
+            objProfile.OrganizationId = profile.organizationid;
             return objProfile;
         }
 

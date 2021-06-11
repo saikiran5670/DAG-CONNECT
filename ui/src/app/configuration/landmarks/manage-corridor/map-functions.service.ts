@@ -396,6 +396,7 @@ export class MapFunctionsService {
 
   }
 
+  corridorPath : any;
   addTruckRouteShapeToMap(lineWidth?) {
     let pathWidth = this.corridorWidthKm * 10;
 
@@ -405,7 +406,7 @@ export class MapFunctionsService {
         let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
 
         // Create a corridor width to display the route:
-        let corridorPath = new H.map.Polyline(linestring, {
+        this.corridorPath = new H.map.Polyline(linestring, {
           style: {
             lineWidth: pathWidth,
             strokeColor: 'rgba(181, 199, 239, 0.6)'
@@ -421,7 +422,7 @@ export class MapFunctionsService {
 
 
         // Add the polyline to the map
-        this.mapGroup.addObjects([this.startMarker, corridorPath, polylinePath, this.endMarker]);
+        this.mapGroup.addObjects([this.startMarker, this.corridorPath, polylinePath, this.endMarker]);
         if (this.viaMarker) {
           this.mapGroup.addObject(this.viaMarker);
         }
@@ -462,8 +463,18 @@ export class MapFunctionsService {
 
   updateWidth(_width){
     this.corridorWidthKm = _width;
-    this.addTruckRouteShapeToMap();
+    let setWidth = _width*10;
+   // this.addTruckRouteShapeToMap();
     //let geoLineString = this.corridorPath.getGeometry();
+    if(this.corridorPath){
+      this.corridorPath.setStyle({
+        lineWidth: setWidth,
+        strokeColor: 'rgba(181, 199, 239, 0.6)'
+      });
+    }
+    
+    
+    //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
     //console.log(geoLineString)
     //this.corridorPath.setGeometry(geoLineString);
   }

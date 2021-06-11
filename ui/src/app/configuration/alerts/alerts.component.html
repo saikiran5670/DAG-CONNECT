@@ -104,15 +104,12 @@
                   (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
                   {{ row.vehicleGroupName }}</span>
                 </span> -->
-                  <ng-template [ngIf]="row.vehicleGroupName!=''" [ngIfElse]="vehicleVIN">
+                  <ng-template [ngIf]="row.vehicleGroupName!=''">
                     <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
                     (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
                     {{ row.vehicleGroupName }}</span>
-                  </ng-template>   
-                  <ng-template #vehicleVIN>
-                    <span>{{ row.vin }}</span>
-                  </ng-template>           
-                  <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span>
+                  </ng-template>             
+                  <!--- <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span> -->
                 </mat-cell>
              </ng-container> 
             <ng-container matColumnDef="state">

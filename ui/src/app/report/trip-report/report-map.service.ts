@@ -187,9 +187,12 @@ export class ReportMapService {
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
+      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
+      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
-      element.convertedDrivingTime = this.getHhMmTime(element.idleDuration);
-      element.convertedIdleDuration = this.getHhMmTime(element.drivingTime);
+      element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
+      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
     });
     return gridData;
   }
@@ -212,19 +215,76 @@ export class ReportMapService {
 
   getDistance(distance: any, unitFormat: any){
     // distance in meter
-    let _distance = 0;
+    let _distance: any = 0;
     switch(unitFormat){
-      case 'metric': { 
-        _distance = distance/1000; //-- km
+      case 'Metric': { 
+        _distance = (distance/1000).toFixed(2); //-- km
         break;
       }
-      case 'imperial':
-      case 'US imperial': {
-        _distance = distance/1,609.344; //-- mile
+      case 'Imperial':
+      case 'US Imperial': {
+        _distance = (distance/1609.344).toFixed(2); //-- mile
         break;
       }
     }
     return _distance;    
+  }
+
+  getAvrgWeight(avgWeight: any, unitFormat: any ){
+    let _avgWeight: any = 0;
+    switch(unitFormat){
+      case 'Metric': { 
+        _avgWeight = avgWeight.toFixed(2); //-- kg/count
+        break;
+      }
+      case 'Imperial':{
+        _avgWeight =(avgWeight * 2.2).toFixed(2); //pounds/count
+        break;
+      }
+      case 'US Imperial': {
+        _avgWeight = (avgWeight * 2.2 * 1.009).toFixed(2); //-- imperial * 1.009
+        break;
+      }
+    }
+    return _avgWeight;    
+  }
+
+  getAvergSpeed(avgSpeed: any, unitFormat: any){
+    let _avgSpeed : any = 0;
+    switch(unitFormat){
+      case 'Metric': { 
+        _avgSpeed = (avgSpeed * 360).toFixed(2); //-- km/h(converted from m/ms)
+        break;
+      }
+      case 'Imperial':{
+        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //miles/h
+        break;
+      }
+      case 'US Imperial': {
+        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //-- miles/h
+        break;
+      }
+    }
+    return _avgSpeed;    
+  }
+
+  getFuelConsumed(fuelConsumed : number, unitFormat: any){
+    let _fuelConsumed: any = 0;
+    switch(unitFormat){
+      case 'Metric': { 
+        _fuelConsumed = (fuelConsumed / 100).toFixed(2); //-- ltr/km(converted from ml/m)
+        break;
+      }
+      case 'Imperial':{
+        _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(2); //gallons/miles
+        break;
+      }
+      case 'US Imperial': {
+        _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(2); //-- imperial * 1.2
+        break;
+      }
+    }
+    return _fuelConsumed; 
   }
 
   getHhMmTime(totalSeconds: any){
@@ -233,7 +293,7 @@ export class ReportMapService {
     totalSeconds %= 3600;
     let minutes = Math.floor(totalSeconds / 60);
     let seconds = totalSeconds % 60;
-    data = `${(hours.toString().length >= 10) ? hours : ('0'+hours)}:${(minutes.toString().length >= 10) ? minutes : ('0'+minutes)}`;
+    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
     return data;
   }
 

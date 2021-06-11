@@ -25,7 +25,7 @@ public class LiveFleetPosition implements Serializable {
 		public boolean insert(LiveFleetPojo currentPosition)
 			throws TechnicalException, SQLException {
 		PreparedStatement stmt_insert_livefleet_position;
-
+		System.out.println("Inside insert of Trip");
 		boolean result = false;
 	
 		try {
@@ -41,7 +41,7 @@ public class LiveFleetPosition implements Serializable {
 		} catch (SQLException e) {
 						e.printStackTrace();
 		}
-
+		System.out.println("Inside insert of Trip End");
 		return result;
 	}
 
@@ -89,6 +89,8 @@ public class LiveFleetPosition implements Serializable {
 
 	private PreparedStatement fillStatement(PreparedStatement stmt_insert_livefleet_position,
 			LiveFleetPojo currentPosition) throws SQLException {
+		
+		System.out.println("Inside fillstatement");
 
 		if (currentPosition.getTripId() != null)
 			stmt_insert_livefleet_position.setString(1, currentPosition.getTripId());
@@ -159,7 +161,7 @@ public class LiveFleetPosition implements Serializable {
 			stmt_insert_livefleet_position.setDouble(14, currentPosition.getCreated_at_dm());
 		else
 			stmt_insert_livefleet_position.setDouble(14, 0);
-
+		System.out.println("Inside fillstatement End");
 		return stmt_insert_livefleet_position;
 	}
 
