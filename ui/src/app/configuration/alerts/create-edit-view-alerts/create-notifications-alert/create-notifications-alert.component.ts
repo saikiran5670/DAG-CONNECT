@@ -438,7 +438,7 @@ else if(this.actionType == 'edit'){
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
       "notificationLimits": notificationLimits,
-      "notificationAvailabilityPeriods": alertTimingRefNotifications
+      "alertTimingDetails": alertTimingRefNotifications
     }
   ]
 }

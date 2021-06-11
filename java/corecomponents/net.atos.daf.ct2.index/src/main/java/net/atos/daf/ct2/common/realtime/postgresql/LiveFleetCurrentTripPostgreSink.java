@@ -163,10 +163,13 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 																		// message
 																		// POJO
 
-						Integer[] tacho = row.getDocument().getTotalTachoMileage(); // 15
+					
+						//timebeing dummy value set
+						//Integer[] tacho = row.getDocument().getTotalTachoMileage(); // 15
+						currentTripPojo.setLast_odometer_val(0);
 						// odometer_value
 
-						if (tacho == null || tacho.length == 0) {
+						/*if (tacho == null || tacho.length == 0) {
 							currentTripPojo.setLast_odometer_val(0);
 						} else {
 							System.out.println("tacho.length-->" + tacho.length);
@@ -179,7 +182,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 								currentTripPojo.setLast_odometer_val(0);
 							}
 
-						}
+						}*/
 
 						currentTripPojo.setLast_processed_message_timestamp(
 								TimeFormatter.getInstance().getCurrentUTCTimeInSec());

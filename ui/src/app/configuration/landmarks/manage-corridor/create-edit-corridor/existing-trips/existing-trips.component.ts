@@ -145,12 +145,14 @@ export class ExistingTripsComponent implements OnInit {
   searchEndStrError : boolean = false;
   strPresentStart: boolean = false;
   strPresentEnd: boolean = false;
-
+  startAddressGroup: any = [];
+  endAddressGroup: any = [];
   createFlag : boolean = true;
-
+  showMapSection : boolean = false;
 
   //Integrating Time date component
   searchExpandPanel: boolean = true;
+  mapExpandPanel: boolean = true;
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
@@ -382,24 +384,23 @@ export class ExistingTripsComponent implements OnInit {
 
   
   onSearch(){
-    
-    //       ----------This is only test data-----
-    //     VIN: 5A65654
-    // start date: 1616961846000
-    // end date: 1616963318000
+    // https://api.dev1.ct2.atos.net/poi/getalltripdetails?vin=XLR0998HGFFT76657&startdatetime=1604336137000&enddatetime=1604337449000
 
-    //     VIN: NBVGF1254KLJ55
-    // start date: 1604327461000
-    // end date: 1604336647000
+    //     VIN: "5A39727"
+    // _startTime = 1604336137000
+    //_endTime = 1604337449000
     // StartDateTime=1078724200000&EndDateTime=2078724200000&VIN=XLR0998HGFFT76657
     
     let _startTime = this.startDateValue.getTime();
     let _endTime = this.endDateValue.getTime();
-    // //For testing data
-    // _startTime = 1078724200000;
-    // _endTime = 2078724200000;
+    //For testing data
+    // _startTime = 1604336137000;
+    // _endTime = 1604337449000;
     // this.vinListSelectedValue= "XLR0998HGFFT76657";
    
+    // this.vinListSelectedValue = "5A39727"
+    // _startTime = 1604336137000
+    // _endTime = 1604337449000
       this.poiService.getalltripdetails(_startTime, _endTime, this.vinListSelectedValue).subscribe((existingTripDetails: any) => {
       console.log("--existingTripData----", existingTripDetails)
       this.showLoadingIndicator = true;
@@ -804,41 +805,98 @@ export class ExistingTripsComponent implements OnInit {
 
  createCorridorClicked(){
   
-   var corridorObj = {
-     "id": this.corridorId ? this.corridorId : 0,
-     "organizationId": this.organizationId,
-     "corridorType": "R",
-     "corridorLabel":this.existingTripForm.controls.label.value,
-     "startAddress": this.searchStr,
-     "startLatitude": this.startAddressPositionLat,
-     "startLongitude": this.startAddressPositionLong,
-     "endAddress": this.searchEndStr,
-     "endLatitude": this.endAddressPositionLat,
-     "endLongitude": this.endAddressPositionLong,
-     "width": this.corridorWidth,
-     "viaAddressDetails": this.viaRoutePlottedObject,
-     "transportData": this.transportDataChecked,
-     "trafficFlow": this.trafficFlowChecked,
-     "state": "A",
-     "created_At": 0,
-     "created_By": this.organizationId,
-     "modified_At": 0,
-     "modified_By": this.organizationId,
-     "attribute": {
-       "trailer": this.selectedTrailerId,
-     },
-     "exclusion": {
-     },
-     "vehicleSize": {
-       "vehicleSizeHeight":this.existingTripForm.controls.vehicleHeight.value ? this.existingTripForm.controls.vehicleHeight.value : 0,
-       "vehicleSizeWidth": this.existingTripForm.controls.vehicleWidth.value ? this.existingTripForm.controls.vehicleWidth.value : 0,
-       "vehicleSizeLength": this.existingTripForm.controls.vehicleLength.value ? this.existingTripForm.controls.vehicleLength.value : 0,
-       "vehicleSizeLimitedWeight": this.existingTripForm.controls.limitedWeight.value ? this.existingTripForm.controls.limitedWeight.value : 0,
-       "vehicleSizeWeightPerAxle": this.existingTripForm.controls.weightPerAxle.value ? this.existingTripForm.controls.weightPerAxle.value : 0,
-     }
-   }
-   console.log(corridorObj)
-   this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
+var existingTripObj = {
+    "id": this.corridorId ? this.corridorId : 0,
+    "organizationId": this.organizationId,
+    "corridorType": "E",
+    "corridorLabel": this.existingTripForm.controls.label.value,
+    "width": this.corridorWidth,
+    "createdAt": 0,
+    "createdBy": this.organizationId,
+    "modifiedAt": 0,
+    "modifiedBy": this.organizationId,
+    "description": "string",
+    "address": "string",
+    "city": "string",
+    "country": "string",
+    "zipcode": "string",
+    "startLatitude": 0,
+    "startLongitude": 0,
+    "distance": 0,
+    "state": "string",
+    "existingTrips": [
+      {
+        "id": 0,
+        "landmarkId": 0,
+        "tripId": "string",
+        "startDate": 0,
+        "endDate": 0,
+        "driverId1": "string",
+        "driverId2": "string",
+        "startLatitude": this.startAddressPositionLat,
+        "startLongitude": this.startAddressPositionLong,
+        "startPosition": "string",
+        "endLatitude": this.endAddressPositionLat,
+        "endLongitude": this.endAddressPositionLong,
+        "endPosition": "string",
+        "distance": 0,
+        "nodePoints": [
+          {
+            "id": 0,
+            "landmarkId": 0,
+            "tripId": "string",
+            "sequenceNumber": 0,
+            "latitude": 0,
+            "longitude": 0,
+            "state": "string",
+            "address": "string",
+            "createdAt": 0,
+            "createdBy": 0,
+            "modifiedAt": 0,
+            "modifiedBy": 0
+          }
+        ]
+      }
+    ]
+  }
+
+
+
+  //  var corridorObj = {
+  //    "id": this.corridorId ? this.corridorId : 0,
+  //    "organizationId": this.organizationId,
+  //    "corridorType": "E",
+  //    "corridorLabel":this.existingTripForm.controls.label.value,
+  //    "startAddress": this.searchStr,
+  //    "startLatitude": this.startAddressPositionLat,
+  //    "startLongitude": this.startAddressPositionLong,
+  //    "endAddress": this.searchEndStr,
+  //    "endLatitude": this.endAddressPositionLat,
+  //    "endLongitude": this.endAddressPositionLong,
+  //    "width": this.corridorWidth,
+  //    "viaAddressDetails": this.viaRoutePlottedObject,
+  //    "transportData": this.transportDataChecked,
+  //    "trafficFlow": this.trafficFlowChecked,
+  //    "state": "A",
+  //    "created_At": 0,
+  //    "created_By": this.organizationId,
+  //    "modified_At": 0,
+  //    "modified_By": this.organizationId,
+  //    "attribute": {
+  //      "trailer": this.selectedTrailerId,
+  //    },
+  //    "exclusion": {
+  //    },
+  //    "vehicleSize": {
+  //      "vehicleSizeHeight":this.existingTripForm.controls.vehicleHeight.value ? this.existingTripForm.controls.vehicleHeight.value : 0,
+  //      "vehicleSizeWidth": this.existingTripForm.controls.vehicleWidth.value ? this.existingTripForm.controls.vehicleWidth.value : 0,
+  //      "vehicleSizeLength": this.existingTripForm.controls.vehicleLength.value ? this.existingTripForm.controls.vehicleLength.value : 0,
+  //      "vehicleSizeLimitedWeight": this.existingTripForm.controls.limitedWeight.value ? this.existingTripForm.controls.limitedWeight.value : 0,
+  //      "vehicleSizeWeightPerAxle": this.existingTripForm.controls.weightPerAxle.value ? this.existingTripForm.controls.weightPerAxle.value : 0,
+  //    }
+  //  }
+  //  console.log(corridorObj)
+   this.corridorService.createExistingCorridor(existingTripObj).subscribe((responseData)=>{
      if(responseData.code === 200){
          let emitObj = {
            booleanFlag: false,
@@ -870,6 +928,13 @@ export class ExistingTripsComponent implements OnInit {
    }  
    this.backToPage.emit(emitObj);
  }
+
+ resetToEditData(){
+  this.searchStrError = false;
+  this.searchEndStrError = false;
+  this.setCorridorData();
+}
+
 
  resetValues(){
    if(this.actionType === 'create'){
@@ -981,24 +1046,25 @@ export class ExistingTripsComponent implements OnInit {
       return `${this.isAllSelectedForCorridor() ? 'select' : 'deselect'} all`;
     else
       return `${this.selectedCorridors.isSelected(row) ? 'deselect' : 'select'
-        } row`;
+    } row`;
   }
-
+  
   checkboxClicked(event: any, row: any) {
-    
+    this.showMapSection = true;
     let startAddress =  row.startPositionlattitude + "," + row.startPositionLongitude;
-    let endAddress =   row.endPositionlattitude + "," + row.endPositionLongitude;
+    let endAddress =   row.endPositionLattitude + "," + row.endPositionLongitude;
     // this.position = row.startPositionlattitude + "," + row.startPositionLongitude;
 
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
       
     this.mapFunctions.viewSelectedRoutes(this.markerArray);
-    }else{ //-- remove existing marker
-      //It will filter out checked points only
+  }else{ //-- remove existing marker
+    //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
       this.mapFunctions.clearRoutesFromMap();
+      this.mapFunctions.viewSelectedRoutes(this.markerArray);
 
       }
     // this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
@@ -1007,10 +1073,14 @@ export class ExistingTripsComponent implements OnInit {
     this.here.getAddressFromLatLng(startAddress).then(result => {
       this.locations = <Array<any>>result;
       
-      console.log("---location--",this.locations)
+      // console.log("---location--",this.locations)
       this.setStartAddress = this.locations[0].Location.Address.Label;
-      console.log("--hey Chckbox clicked startAddress---",this.setStartAddress)
-      
+      if(!this.startAddressGroup.includes(this.setStartAddress)){
+      this.startAddressGroup.push(this.setStartAddress)
+      // console.log("--hey Chckbox clicked startAddress---",this.setStartAddress)
+    }
+      // console.log("--here all addressess--",this.startAddressGroup)
+      this.getAllSelectedStartAddress(this.startAddressGroup);
       this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
     }, error => {
     });
@@ -1018,9 +1088,14 @@ export class ExistingTripsComponent implements OnInit {
     this.here.getAddressFromLatLng(endAddress).then(result => {
       this.locations = <Array<any>>result;
       
-      console.log("---location--",this.locations)
+      // console.log("---location--",this.locations)
       this.setEndAddress = this.locations[0].Location.Address.Label;
-      console.log("--hey Chckbox clicked endAddress---",this.setEndAddress)
+      // console.log("--hey Chckbox clicked endAddress---",this.setEndAddress)
+      if(!this.endAddressGroup.includes(this.setEndAddress)){
+        this.endAddressGroup.push(this.setEndAddress)
+        // console.log("--hey Chckbox clicked startAddress---",this.setStartAddress)
+      }
+      this.getAllSelectedEndAddress(this.endAddressGroup);
       this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
 
     }, error => {
@@ -1040,6 +1115,13 @@ export class ExistingTripsComponent implements OnInit {
     }
     // this.addPolylineToMap();
   }
+
+  getAllSelectedStartAddress(selectedStartAddresses:any) {
+console.log("--from getAllSelectedStartAddress()---",selectedStartAddresses)
+}
+getAllSelectedEndAddress(selectedStartAddresses:any) {
+console.log("--from getAllSelectedEndAddress()---",selectedStartAddresses)
+}
 
   updatedTableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
@@ -1127,4 +1209,6 @@ export class ExistingTripsComponent implements OnInit {
      return dateValue;
     }
 }
+
+
 }

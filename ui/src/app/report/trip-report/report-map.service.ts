@@ -183,10 +183,10 @@ export class ReportMapService {
     });
   }
 
-  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any){
+  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat);
-      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat);
+      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.idleDuration);
       element.convertedIdleDuration = this.getHhMmTime(element.drivingTime);
@@ -194,18 +194,18 @@ export class ReportMapService {
     return gridData;
   }
 
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any){
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime), dateFormat, timeFormat);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat);
     }
     return sTime;
   }
 
-  getEndTime(endTime: any, dateFormat: any, timeFormat: any){
+  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any){
     let eTime: any = 0;
     if(endTime != 0){
-      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime), dateFormat, timeFormat);
+      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat);
     }
     return eTime;
   }
