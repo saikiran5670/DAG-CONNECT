@@ -191,8 +191,8 @@ export class ReportMapService {
       element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
-      element.convertedDrivingTime = this.getHhMmTime(element.idleDuration);
-      element.convertedIdleDuration = this.getHhMmTime(element.drivingTime);
+      element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
+      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
     });
     return gridData;
   }
@@ -290,7 +290,7 @@ export class ReportMapService {
     totalSeconds %= 3600;
     let minutes = Math.floor(totalSeconds / 60);
     let seconds = totalSeconds % 60;
-    data = `${(hours.toString().length >= 10) ? hours : ('0'+hours)}:${(minutes.toString().length >= 10) ? minutes : ('0'+minutes)}`;
+    data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
     return data;
   }
 

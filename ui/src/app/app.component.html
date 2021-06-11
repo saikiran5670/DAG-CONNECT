@@ -12,6 +12,7 @@
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
                     <div fxLayoutAlign="end" class='full-width'>
+                        <span *ngIf="orgContextType" style='font-size: 14px; display: flex; align-items: center;'>{{ translationData.lblContextSetting || 'Context Setting' }}</span>
                         <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
                         (selectionChange)="applyFilterOnOrganization($event.value)">
                         <mat-option *ngFor="let options of organizationList" [value]="options.id"  matTooltip="{{ options.name }}">
