@@ -24,6 +24,9 @@
             <mat-error *ngIf="corridorFormGroup.get('label').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
+            <mat-error *ngIf="duplicateError">
+                {{duplicateErrorMsg}}
+            </mat-error>
         </div>
         <div *ngIf="actionType === 'view'">
             <span style='font-weight: 500!important;'>{{corridorName}}</span>
