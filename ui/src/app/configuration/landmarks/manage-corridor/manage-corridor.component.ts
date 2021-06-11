@@ -31,6 +31,7 @@ export class ManageCorridorComponent implements OnInit {
   initData: any = [];
   dataSource: any;
   markerArray: any = [];
+  corridorNameList = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -64,6 +65,7 @@ export class ManageCorridorComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data;
+      this.corridorNameList = data.map(e=> e.corridoreName)
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
@@ -213,6 +215,13 @@ export class ManageCorridorComponent implements OnInit {
     });
   }
 
+  getcreatedMsg(name: any) {
+    if (this.translationData.lblCreatedSuccessfully)
+      return this.translationData.lblCreatedSuccessfully.replace('$', name);
+    else
+      return ("Corridor '$' was created successfully").replace('$', name);
+  }
+
   getDeletMsg(name: any) {
     if (this.translationData.lblCorridorwassuccessfullydeleted)
       return this.translationData.lblCorridorwassuccessfullydeleted.replace('$', name);
@@ -327,9 +336,13 @@ export class ManageCorridorComponent implements OnInit {
 
     this.tabVisibility.emit(true);
     if(_eventObj.successMsg=="create"){
-      var _msg = "Corridor created successfully!"
+      var _msg =  "Corridor created successfully!"
       this.successMsgBlink(_msg);
     }
+    else if(_eventObj.successMsg=="update"){
+      var _msg = "Corridor updated successfully!"
+      this.successMsgBlink(_msg);
+  }
     else if(_eventObj.successMsg=="reject"){
         var _msg = "Corridor label exists!"
         this.failureMsgBlink(_msg);

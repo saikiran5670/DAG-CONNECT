@@ -24,6 +24,9 @@
             <mat-error *ngIf="corridorFormGroup.get('label').hasError('specialCharsNotAllowed')">
                 {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
             </mat-error>
+            <mat-error *ngIf="duplicateError">
+                {{duplicateErrorMsg}}
+            </mat-error>
         </div>
         <div *ngIf="actionType === 'view'">
             <span style='font-weight: 500!important;'>{{corridorName}}</span>
@@ -357,9 +360,14 @@
         <span>Reset</span>
     </button>
 </span>
-<span *ngIf="actionType !== 'view'">
+<span *ngIf="actionType === 'create'">
     <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!corridorFormGroup.valid || !onSearchClicked"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
         <span>Create</span>
+    </button>
+</span>
+<span *ngIf="actionType === 'edit'">
+    <button mat-button  color="primary" (click)="createCorridorClicked()"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
+        <span>Save</span>
     </button>
 </span>
 </div>

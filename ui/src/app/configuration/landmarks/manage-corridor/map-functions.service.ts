@@ -108,9 +108,9 @@ export class MapFunctionsService {
     let startAddress = '';
     let endAddress = '';
 
-    var group = new H.map.Group();
-    group.removeAll();
-    this.hereMap.removeObjects(this.hereMap.getObjects())
+ // var group = new H.map.Group();
+ this.group.removeAll();
+ this.hereMap.removeObjects(this.hereMap.getObjects())
     // if(this.routeOutlineMarker){
     //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
     //   this.routeOutlineMarker = null;
@@ -134,10 +134,11 @@ export class MapFunctionsService {
           this.startAddressPositionLong = _selectedRoutes[i].startPositionLongitude;
           this.endAddressPositionLat = _selectedRoutes[i].endPositionLattitude;
           this.endAddressPositionLong = _selectedRoutes[i].endPositionLongitude;
-          // this.startAddressPositionLat =  52.51; //_selectedRoutes[i].startPositionlattitude;
-          // this.startAddressPositionLong = 13.37//_selectedRoutes[i].startPositionLongitude;
-          // this.endAddressPositionLat=  52.37 //_selectedRoutes[i].endPositionLattitude;
-          // this.endAddressPositionLong= 9.73 //_selectedRoutes[i].endPositionLongitude;
+
+          // this.startAddressPositionLat =  19.14045; 
+          // this.startAddressPositionLong = 72.88235;
+          // this.endAddressPositionLat=  18.50423;
+          // this.endAddressPositionLong= 73.85286;
           this.corridorWidth = 100;
           this.corridorWidthKm = this.corridorWidth / 1000;
         }
@@ -184,7 +185,7 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
-        this.addInfoBubble(group);
+        this.addInfoBubble(this.group);
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');

@@ -24,6 +24,8 @@ export class RouteCalculatingComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   @Output() backToCreate = new EventEmitter<any>();
   @Output() backToReject = new EventEmitter<any>();
+  @Output() backToUpdate = new EventEmitter<any>();
+
 
 
   breadcumMsg: any = '';
@@ -141,6 +143,8 @@ export class RouteCalculatingComponent implements OnInit {
 
   searchDisable : boolean = true;
   noRouteErr : boolean = false;
+  duplicateError : boolean = false;
+  duplicateErrorMsg : string = '';
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
@@ -198,6 +202,7 @@ export class RouteCalculatingComponent implements OnInit {
     //   this.strPresentEnd = true;
     // }
     this.subscribeWidthValue();
+    this.subscribeLabelValue();
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
@@ -216,6 +221,13 @@ export class RouteCalculatingComponent implements OnInit {
       // }
    });
 
+  }
+
+  subscribeLabelValue(){
+    this.corridorFormGroup.get("label").valueChanges.subscribe(x => {
+      this.duplicateError = false;
+      this.duplicateErrorMsg = '';
+   });
   }
 
   vehicleSizeFocusOut(){
@@ -622,25 +634,59 @@ export class RouteCalculatingComponent implements OnInit {
       }
     }
     console.log(corridorObj)
-    this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
-      if(responseData.code === 200){
-          let emitObj = {
-            booleanFlag: false,
-            successMsg: "create",
-            fromCreate:true,
-          }  
-          this.backToCreate.emit(emitObj);
-      }
-    },(error)=>{
-        if(error.status === 409){
-          let emitObj = {
-            booleanFlag: false,
-            successMsg: "duplicate",
-            fromCreate:true,
-          }  
-          this.backToReject.emit(emitObj);
+    if(this.actionType === 'create'){
+      this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
+        if(responseData.code === 200){
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "create",
+              fromCreate:true,
+            }  
+            this.backToCreate.emit(emitObj);
         }
-    })
+      },(error)=>{
+          if(error.status === 409){
+            this.duplicateError = true;
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "duplicate",
+              fromCreate:true,
+            }  
+           // this.backToReject.emit(emitObj);
+          }
+      })
+    }else{
+      this.corridorService.updateRouteCorridor(corridorObj).subscribe((responseData)=>{
+        if(responseData.code === 200){
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "update",
+              fromCreate:true,
+            }  
+            this.backToUpdate.emit(emitObj);
+        }
+      },(error)=>{
+          if(error.status === 409){
+            this.duplicateError = true;
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "duplicate",
+              fromCreate:true,
+            }  
+           // this.backToReject.emit(emitObj);
+          }
+      })
+    }
+   
+  }
+
+  getDuplicateMsg(name: any) {
+    if (this.translationData.lblDuplicateMsg)
+      return this.translationData.lblDuplicateMsg.replace('$', name);
+    else
+      return ("Corridor '$' already exists.").replace('$', name);
   }
 
   getSuggestion(_event){
@@ -706,8 +752,7 @@ export class RouteCalculatingComponent implements OnInit {
   clearMap(){
     if(this.hereMap.getObjects()){
       this.mapGroup.removeAll();
-
-      //this.hereMap.removeObject(this.mapGroup);
+      this.hereMap.removeObjects(this.hereMap.getObjects());
     }
   }
 
@@ -798,13 +843,13 @@ export class RouteCalculatingComponent implements OnInit {
       this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
         this.viaAddressPositionLat = data.position.lat;
         this.viaAddressPositionLong = data.position.lng;
-        if(this.actionType === 'create'){
+        //if(this.actionType === 'create'){
           this.viaRoutePlottedPoints.push({
             "viaRoutName": locationLabel,
             "latitude": data.position.lat,
             "longitude":  data.position.lng
           });
-        }
+        //}
         
       this.plotSeparateVia();
       })
@@ -1103,7 +1148,7 @@ export class RouteCalculatingComponent implements OnInit {
        let corridorPath = new H.map.Polyline(linestring, {
         style:  {
           lineWidth: pathWidth,
-          strokeColor: '#b5c7ef'
+          strokeColor: 'rgba(181, 199, 239, 0.6)'
         }
       });
       // Create a polyline to display the route:

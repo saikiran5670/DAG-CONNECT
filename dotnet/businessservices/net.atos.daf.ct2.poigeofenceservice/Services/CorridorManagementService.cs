@@ -535,7 +535,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     {
                         var trans = new poigeofence.entity.ViaRoute();
                         trans.ViaStopName = item.ViaName;
-                        trans.Latitude = item.Longitude;
+                        trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
                         obj.ViaRoutDetails.Add(trans);
                     }

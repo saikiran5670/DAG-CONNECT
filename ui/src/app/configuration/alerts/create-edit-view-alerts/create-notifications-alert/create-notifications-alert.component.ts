@@ -89,7 +89,10 @@ limitButton: any;
       ]
     });
     console.log(this.selectedRowData);
-    if(this.actionType == 'edit' || this.actionType == 'duplicate')
+   
+    if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
+       this.selectedRowData.notifications.lenght > 0 && 
+       this.selectedRowData.notifications[0].notificationRecipients.length > 0)
     {
       this.setDefaultValues();
     }
@@ -131,10 +134,10 @@ limitButton: any;
 
 
     setDefaultValues(){
-      
-this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
-  this.addMultipleItems(false,element);
-});
+             
+        this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
+          this.addMultipleItems(false,element);
+        });
     }
 
     addMultipleItems(isButtonClicked: boolean, data? :any) :void{
@@ -353,7 +356,7 @@ if(isButtonClicked){
     wsLogin: WsData.loginId.value,
     wsPassword: WsData.password.value,
     id: WsData.receipientId.value ? WsData.receipientId.value : 0,
-    notificationId: this.selectedRowData.notifications[0].id
+    notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
   }
   this.notificationReceipients.push(webPayload);
 });
@@ -403,7 +406,7 @@ else if(this.actionType == 'edit'){
           wsLogin: "",
           wsPassword: "",
           id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
-          notificationId: this.selectedRowData.notifications[0].id
+          notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
     }
     this.notificationReceipients.push(emailPayload);
   });
@@ -433,7 +436,7 @@ else if(this.actionType == 'edit'){
       "frequencyThreshholdValue": 0,
       "validityType": "A",
       "createdBy": this.selectedRowData.createdBy,
-      "id": this.selectedRowData.notifications[0].id,
+      "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
       "alertId": this.selectedRowData.id,
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
