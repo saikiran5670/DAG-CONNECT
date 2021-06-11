@@ -384,13 +384,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("ecoscoreprofile/getprofiles")]
-        public async Task<IActionResult> GetEcoScoreProfiles(int organizationId)
+        public async Task<IActionResult> GetEcoScoreProfiles(int? organizationId)
         {
             try
             {
-                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
                 //organizationId = GetUserSelectedOrgId();
-                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId });
+                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = Convert.ToInt32(organizationId) });
                 if (response?.Profiles?.Count > 0)
                 {
                     response.Message = ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
