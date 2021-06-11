@@ -25,11 +25,12 @@ export class ErrorComponent implements OnInit {
   }
 
   public close(value: any) {
-    // localStorage.clear();
-    // this._route.navigate(["/auth/login"]);
-    // this.mdDialogRef.close(value);
+    localStorage.clear();
     this.authService.signOut().subscribe(()=>{
-      localStorage.clear(); // clear all localstorage
+      //localStorage.clear(); // clear all localstorage
+      this._route.navigate(["/auth/login"]);
+      this.mdDialogRef.close(value);
+    }, (error) => {
       this._route.navigate(["/auth/login"]);
       this.mdDialogRef.close(value);
     });
