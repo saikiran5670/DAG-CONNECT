@@ -9,13 +9,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TripStatusAggregation implements Serializable {
-
+public class TripAggregatedData implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private String tripId;
 	private String vid;
 	private String vin;
@@ -24,6 +23,7 @@ public class TripStatusAggregation implements Serializable {
 	private Integer gpsTripDist;
 	private Long tripCalDist;
 	private Integer vIdleDuration;
+	private Double vGrossWeightCombination;
 	private Double tripCalAvgSpeed;
 	private Long gpsStartVehDist;
 	private Long gpsStopVehDist;
@@ -38,6 +38,8 @@ public class TripStatusAggregation implements Serializable {
 	private Long receivedTimestamp;
 	private Double tripCalC02Emission;
 	private Double tripCalFuelConsumption;
+	private Double vTachographSpeed;
+	private Double tripCalAvgGrossWtComb;
 	private Double tripCalPtoDuration;
 	private Double triCalHarshBrakeDuration;
 	private Double tripCalHeavyThrottleDuration;
@@ -52,17 +54,17 @@ public class TripStatusAggregation implements Serializable {
 	private Double tripCalfuelNonActiveCnsmpt;
 	private Double tripCalDpaScore;
 	private String driverId;
+	private String driver2Id;
 	private Long tripCalGpsVehTime;
-	//private Long hbaseInsertionTS;
+	// private Long hbaseInsertionTS;
 	private Long tripProcessingTS;
 	private Long etlProcessingTS;
 	private Long kafkaProcessingTS;
-	private Integer numberOfIndexMessage;
-	
-	//new fields
+	private Double vGrossWtSum;
+	private Long numberOfIndexMessage;
+
 	private Integer vTripDPABrakingCount;
 	private Integer vTripDPAAnticipationCount;
 	private Integer vSumTripDPABrakingScore;
 	private Integer vSumTripDPAAnticipationScore;
-	
 }

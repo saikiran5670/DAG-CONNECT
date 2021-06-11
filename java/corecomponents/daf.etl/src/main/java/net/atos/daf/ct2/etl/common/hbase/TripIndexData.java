@@ -45,6 +45,7 @@ public class TripIndexData
 	private List<Long> timeRangeLst = null;
 	private Map<String, List<String>> colFamMap = null;
 	private HbaseConnection conn = null;
+	private Integer vGrossWtThreshold = 0;
 
 	public TripIndexData(String tblNm, Map<String, List<String>> colFamMap, FilterList filterList) {
 		this.colFamMap = colFamMap;
@@ -64,6 +65,9 @@ public class TripIndexData
 				envParams.get(ETLConstants.ZOOKEEPER_ZNODE_PARENT), envParams.get(ETLConstants.HBASE_REGIONSERVER),
 				envParams.get(ETLConstants.HBASE_MASTER), envParams.get(ETLConstants.HBASE_REGIONSERVER_PORT),
 				tableName);
+		
+		if(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD) != null)
+			vGrossWtThreshold = Integer.valueOf(envParams.get(ETLConstants.VEHICLE_GROSS_WEIGHT_THRESHOLD));
 
 		try {
 			conn = connectionPool.getHbaseConnection();
@@ -85,10 +89,6 @@ public class TripIndexData
 			logger.error("Issue while establishing HBase connection in Trip streaming Job :: " + e);
 			throw e;
 		}
-
-		// table =
-		// HbaseUtility.getTable(HbaseUtility.getHbaseClientConnection(HbaseUtility.createConf(envParams)),
-		// tableName);
 
 		logger.info("Index tableName :: " + tableName);
 
@@ -126,7 +126,7 @@ public class TripIndexData
 		while (iterator.hasNext()) {
 
 			Result result = iterator.next();
-
+			
 			String driver2Id = null;
 			String tripId = null;
 			String vid = null;
@@ -136,16 +136,14 @@ public class TripIndexData
 			Long increment = 0L;
 			Long evtDateTime = 0L;
 			Long vDist = 0L;
-
+			logger.info("inside while loop key :: "+Bytes.toString(result.getRow()));
+			
 			for (Cell cell : result.listCells()) {
 				try {
 					String family = Bytes.toString(CellUtil.cloneFamily(cell));
 					String column = Bytes.toString(CellUtil.cloneQualifier(cell));
 					byte[] value = CellUtil.cloneValue(cell);
-
-					//logger.info(" Index family  :: " + family);
-					//logger.info(" Index column  :: " + column);
-
+					
 					if (ETLConstants.INDEX_MSG_COLUMNFAMILY_T.equals(family)
 							&& ETLConstants.INDEX_MSG_TRIP_ID.equals(column) && null != Bytes.toString(value)
 							&& !"null".equals(Bytes.toString(value)))
@@ -190,12 +188,17 @@ public class TripIndexData
 			}
 
 			logger.info(" Index tripId  :: " + tripId);
+			logger.info("increment: "+increment + " vGrossWeightCombination: "+vGrossWeightCombination + " vGrossWtThreshold : "+vGrossWtThreshold);
 			
-			Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple9 = new Tuple9<>();
-			tuple9.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime, vDist, increment);
+			if(vGrossWeightCombination < vGrossWtThreshold){
+				Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long> tuple9 = new Tuple9<>();
+				tuple9.setFields(tripId, vid, driver2Id, vTachographSpeed, vGrossWeightCombination, jobNm, evtDateTime, vDist, increment);
 
-			indexDataList.add(tuple9);
-		
+				logger.info("increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
+				indexDataList.add(tuple9);
+			}else{
+				logger.info("Ignored index record increment: "+increment + " vGrossWeightCombination : "+vGrossWeightCombination);
+			}
 		}
 		
 		Collections.sort(indexDataList,
