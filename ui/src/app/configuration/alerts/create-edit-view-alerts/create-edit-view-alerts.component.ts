@@ -172,8 +172,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.breadcumMsg = this.getBreadcum();
     }
 
-    this.selectedApplyOn= 'G';
+    // this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.selectedApplyOn = this.selectedRowData.applyOn;
       this.setDefaultValue();
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
@@ -1292,7 +1293,8 @@ PoiCheckboxClicked(event: any, row: any) {
           "periodType": "A",
           "urgencylevelStartDate": 0,
           "urgencylevelEndDate": 0,
-          "alertFilterRefs": alertFilterRefs
+          "alertFilterRefs": alertFilterRefs,
+          "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
       else if(this.actionType == 'edit'){
@@ -1308,7 +1310,8 @@ PoiCheckboxClicked(event: any, row: any) {
           "urgencylevelEndDate": 0,
           "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
           "alertId": this.selectedRowData.id,
-          "alertFilterRefs": alertFilterRefs
+          "alertFilterRefs": alertFilterRefs,
+          "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
       alertUrgencyLevelRefs.push(urgenyLevelObj);

@@ -633,7 +633,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (response.Code == AccountBusinessService.Responcecode.Success)
                     return Ok(response.MenuFeatures);
                 else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                    return NoContent();
+                    return Ok(new AccountBusinessService.MenuFeatureList());
                 else
                     return StatusCode(500, "Error occurred while fetching menu items and features.");
             }
@@ -1862,7 +1862,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     if (response.Code == AccountBusinessService.Responcecode.Success)
                         return Ok(response.MenuFeatures);
                     else if (response.Code == AccountBusinessService.Responcecode.NotFound)
-                        return NoContent();
+                        return Ok(new AccountBusinessService.MenuFeatureList());
                     else
                         return StatusCode(500, "Error occurred while fetching menu items and features for the context.");
                 }

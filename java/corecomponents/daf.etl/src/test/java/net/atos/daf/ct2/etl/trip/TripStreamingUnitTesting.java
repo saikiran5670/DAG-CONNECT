@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import junit.framework.Assert;
 import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.FlinkUtil;
-import net.atos.daf.postgre.bo.Trip;
 
 public class TripStreamingUnitTesting {
 
@@ -111,7 +111,7 @@ public class TripStreamingUnitTesting {
 		TripAggregations tripAggregations = new TripAggregations();
 		
 		//DataStream<Trip> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, env.fromElements(Tuple3.of(0.00082, 42.7, 74.3)), 5000L, tableEnv );
-		DataStream<Trip> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, 5000L, tableEnv );
+		DataStream<TripAggregatedData> finalTripData = tripAggregations.getConsolidatedTripData(tripStsData, indxData, 5000L, tableEnv );
 		
 		finalTripData.print();
 		
@@ -130,17 +130,17 @@ public class TripStreamingUnitTesting {
 
 	
 	 // create a testing sink
-    private static class CollectSink implements SinkFunction<Trip> {
+    private static class CollectSink implements SinkFunction<TripAggregatedData> {
 
         /**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		// must be static
-        public static final List<Trip> values = Collections.synchronizedList(new ArrayList<>());
+        public static final List<TripAggregatedData> values = Collections.synchronizedList(new ArrayList<>());
 
         @Override
-        public void invoke(Trip value) throws Exception {
+        public void invoke(TripAggregatedData value) throws Exception {
             values.add(value);
         }
     }
