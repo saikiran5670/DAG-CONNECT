@@ -126,6 +126,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     ProfileName = profile.Name ?? string.Empty,
                     ProfileDescription = profile.Description ?? string.Empty,
                     IsDeleteAllowed = profile.IsDeleteAllowed,
+                    OrganizationId = Convert.ToInt32(profile.OrganizationId),
                 });
             }
             return lstProfile;
