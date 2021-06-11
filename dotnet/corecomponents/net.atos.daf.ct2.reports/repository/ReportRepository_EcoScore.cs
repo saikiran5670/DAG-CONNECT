@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.reports.repository
             objProfile.Name = profile.profilename;
             objProfile.Description = profile.profiledescription;
             objProfile.IsDeleteAllowed = Convert.ToBoolean(profile.isdeleteallowed);
-            objProfile.OrganizationId = profile.orgnizationid;
+            objProfile.OrganizationId = profile.organizationid;
             return objProfile;
         }
 
