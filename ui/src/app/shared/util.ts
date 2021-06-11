@@ -14,8 +14,8 @@ export class Util {
         return date._d;
     }
 
-    public static convertUtcToDate(_utc: any){
-        let _date: any = moment.utc(_utc);
-        return _date._d;
+    public static convertUtcToDate(_utc: any, timeZone: any){
+        let _date: any = moment.utc(_utc).tz(timeZone).format();
+        return new Date(_date);
     }
 }
