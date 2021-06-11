@@ -15,8 +15,6 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple6;
-import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.api.java.tuple.Tuple8;
 import org.apache.flink.api.java.tuple.Tuple9;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -29,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
+import net.atos.daf.ct2.etl.common.bo.TripAggregatedData;
 import net.atos.daf.ct2.etl.common.bo.TripStatusAggregation;
 import net.atos.daf.ct2.etl.common.bo.TripStatusData;
 import net.atos.daf.ct2.etl.common.hbase.TripIndexData;
@@ -78,7 +77,7 @@ public class TripAggregations implements Serializable{
 		return tripIndxClmns;
 	}
 	
-	private DataStream<Tuple7<String, String, String, Integer, Double, Double, Double>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, Long timeInMilli)
+	private DataStream<Tuple8<String, String, String, Integer, Double, Double, Double, Long>> getTripIndexAggregatedData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, StreamTableEnvironment tableEnv, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, Long timeInMilli)
 	{
 
 		tableEnv.createTemporaryView("indexData", indxData);
@@ -95,28 +94,13 @@ public class TripAggregations implements Serializable{
 		tableEnv.createTemporaryView("grossWtCombData", grossWtCombData);
 		
 		Table indxTblAggrResult = tableEnv.sqlQuery(ETLQueries.TRIP_INDEX_AGGREGATION_QRY);
+		
 		return tableEnv.toRetractStream(indxTblAggrResult, Row.class).map(new MapRowToTuple());
 	}
-	
-	/*public DataStream<Trip> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> hbaseStsData, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, DataStream<Tuple3<Double, Double, Double>> vehDieselEmissionFactors, Long timeInMilli, StreamTableEnvironment tableEnv)
+		
+	public DataStream<TripAggregatedData> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
 	{
-		DataStream<Tuple6<String, String, String, Integer, Double, Double>> secondLevelAggrData = getTripIndexAggregatedData(hbaseStsData, tableEnv, indxData, timeInMilli);
-		
-		tableEnv.createTemporaryView("hbaseStsData", hbaseStsData);
-		tableEnv.createTemporaryView("vehDieselEmissionFactors", vehDieselEmissionFactors);
-		
-		Table stsTblData = tableEnv.sqlQuery(ETLQueries.TRIP_STATUS_AGGREGATION_QRY);
-		DataStream<TripStatusAggregation> stsAggregatedData = tableEnv.toRetractStream(stsTblData, TripStatusAggregation.class).map(rec -> rec.f1);
-		
-		tableEnv.createTemporaryView("secondLevelAggrData", secondLevelAggrData);
-		tableEnv.createTemporaryView("stsAggregatedData", stsAggregatedData);
-		Table tripTblData = tableEnv.sqlQuery(ETLQueries.CONSOLIDATED_TRIP_QRY);
-		return tableEnv.toRetractStream(tripTblData, Trip.class).map(rec -> rec.f1);
-	}*/
-	
-	public DataStream<Trip> getConsolidatedTripData(SingleOutputStreamOperator<TripStatusData> stsData, SingleOutputStreamOperator<Tuple9<String, String, String, Integer, Integer, String, Long, Long, Long>> indxData, Long timeInMilli, StreamTableEnvironment tableEnv)
-	{
-		DataStream<Tuple7<String, String, String, Integer, Double, Double, Double>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
+		DataStream<Tuple8<String, String, String, Integer, Double, Double, Double, Long>> secondLevelAggrData = getTripIndexAggregatedData(stsData, tableEnv, indxData, timeInMilli);
 		
 		tableEnv.createTemporaryView("tripStsData", stsData);
 		
@@ -126,8 +110,15 @@ public class TripAggregations implements Serializable{
 		tableEnv.createTemporaryView("secondLevelAggrData", secondLevelAggrData);
 		tableEnv.createTemporaryView("stsAggregatedData", stsAggregatedData);
 		Table tripTblData = tableEnv.sqlQuery(ETLQueries.CONSOLIDATED_TRIP_QRY);
-		//Todo Sunitha***********************************************
-		return tableEnv.toRetractStream(tripTblData, Trip.class).map(rec -> { rec.f1.setTripProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime()); return rec.f1;});
+		
+		return tableEnv.toRetractStream(tripTblData, TripAggregatedData.class).map(rec -> { rec.f1.setTripProcessingTS(TimeFormatter.getInstance().getCurrentUTCTime()); return rec.f1;});
+	}
+	
+	public DataStream<Trip> getTripStatisticData(DataStream<TripAggregatedData> tripAggrData, StreamTableEnvironment tableEnv)
+	{
+		tableEnv.createTemporaryView("tripAggrData", tripAggrData);
+		Table tripStatisticData =tableEnv.sqlQuery(ETLQueries.TRIP_QRY);
+		return tableEnv.toRetractStream(tripStatisticData, Trip.class).map(rec -> rec.f1);
 	}
 	
 	public SingleOutputStreamOperator<TripStatusData> getTripStsWithCo2Emission(
@@ -201,22 +192,20 @@ public class TripAggregations implements Serializable{
 						prevVDistState = getRuntimeContext().getState(descriptor);
 					}
 					});
-
-					
 	}
 		
 	private class MapRowToTuple
-			implements MapFunction<Tuple2<Boolean, Row>, Tuple7<String, String, String, Integer, Double, Double, Double>> {
+			implements MapFunction<Tuple2<Boolean, Row>, Tuple8<String, String, String, Integer, Double, Double, Double, Long>> {
 
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public Tuple7<String, String, String, Integer, Double, Double, Double> map(Tuple2<Boolean, Row> tuple2) throws Exception {
+		public Tuple8<String, String, String, Integer, Double, Double, Double, Long> map(Tuple2<Boolean, Row> tuple2) throws Exception {
 
 			Row row = tuple2.f1;
-			return new Tuple7<String, String, String, Integer, Double, Double, Double>((String) (row.getField(0)),
+			return new Tuple8<String, String, String, Integer, Double, Double, Double, Long>((String) (row.getField(0)),
 					(String) (row.getField(1)), (String) (row.getField(2)), (Integer) (row.getField(3)),
-					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)));
+					(Double) (row.getField(4)), (Double) (row.getField(5)), (Double) (row.getField(6)), (Long) (row.getField(7)));
 		}
 	}
 

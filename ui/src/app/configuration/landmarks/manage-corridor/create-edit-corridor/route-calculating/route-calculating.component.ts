@@ -24,6 +24,8 @@ export class RouteCalculatingComponent implements OnInit {
   @Output() backToPage = new EventEmitter<any>();
   @Output() backToCreate = new EventEmitter<any>();
   @Output() backToReject = new EventEmitter<any>();
+  @Output() backToUpdate = new EventEmitter<any>();
+
 
 
   breadcumMsg: any = '';
@@ -622,25 +624,48 @@ export class RouteCalculatingComponent implements OnInit {
       }
     }
     console.log(corridorObj)
-    this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
-      if(responseData.code === 200){
-          let emitObj = {
-            booleanFlag: false,
-            successMsg: "create",
-            fromCreate:true,
-          }  
-          this.backToCreate.emit(emitObj);
-      }
-    },(error)=>{
-        if(error.status === 409){
-          let emitObj = {
-            booleanFlag: false,
-            successMsg: "duplicate",
-            fromCreate:true,
-          }  
-          this.backToReject.emit(emitObj);
+    if(this.actionType === 'create'){
+      this.corridorService.createRouteCorridor(corridorObj).subscribe((responseData)=>{
+        if(responseData.code === 200){
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "create",
+              fromCreate:true,
+            }  
+            this.backToCreate.emit(emitObj);
         }
-    })
+      },(error)=>{
+          if(error.status === 409){
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "duplicate",
+              fromCreate:true,
+            }  
+            this.backToReject.emit(emitObj);
+          }
+      })
+    }else{
+      this.corridorService.updateRouteCorridor(corridorObj).subscribe((responseData)=>{
+        if(responseData.code === 200){
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "update",
+              fromCreate:true,
+            }  
+            this.backToUpdate.emit(emitObj);
+        }
+      },(error)=>{
+          if(error.status === 409){
+            let emitObj = {
+              booleanFlag: false,
+              successMsg: "duplicate",
+              fromCreate:true,
+            }  
+            this.backToReject.emit(emitObj);
+          }
+      })
+    }
+   
   }
 
   getSuggestion(_event){
@@ -706,8 +731,7 @@ export class RouteCalculatingComponent implements OnInit {
   clearMap(){
     if(this.hereMap.getObjects()){
       this.mapGroup.removeAll();
-
-      //this.hereMap.removeObject(this.mapGroup);
+      this.hereMap.removeObjects(this.hereMap.getObjects());
     }
   }
 
@@ -798,13 +822,13 @@ export class RouteCalculatingComponent implements OnInit {
       this.hereService.lookUpSuggestion(qParam).subscribe((data)=>{
         this.viaAddressPositionLat = data.position.lat;
         this.viaAddressPositionLong = data.position.lng;
-        if(this.actionType === 'create'){
+        //if(this.actionType === 'create'){
           this.viaRoutePlottedPoints.push({
             "viaRoutName": locationLabel,
             "latitude": data.position.lat,
             "longitude":  data.position.lng
           });
-        }
+        //}
         
       this.plotSeparateVia();
       })

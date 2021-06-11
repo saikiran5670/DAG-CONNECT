@@ -59,4 +59,10 @@ public class TripStatusAggregation implements Serializable {
 	private Long kafkaProcessingTS;
 	private Integer numberOfIndexMessage;
 	
+	//new fields
+	private Integer vTripDPABrakingCount;
+	private Integer vTripDPAAnticipationCount;
+	private Integer vSumTripDPABrakingScore;
+	private Integer vSumTripDPAAnticipationScore;
+	
 }
