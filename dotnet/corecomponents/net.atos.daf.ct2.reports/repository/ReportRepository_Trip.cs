@@ -48,8 +48,8 @@ namespace net.atos.daf.ct2.reports.repository
                 query = @"SELECT id
 	                        ,trip_id AS tripId
 	                        ,vin AS VIN
-	                        ,start_time_stamp AS StartDate
-	                        ,end_time_stamp AS EndDate
+	                        ,start_time_stamp AS StartTimeStamp
+	                        ,end_time_stamp AS EndTimeStamp
 	                        ,veh_message_distance AS Distance
 	                        ,idle_duration AS IdleDuration
 	                        ,average_speed AS AverageSpeed
