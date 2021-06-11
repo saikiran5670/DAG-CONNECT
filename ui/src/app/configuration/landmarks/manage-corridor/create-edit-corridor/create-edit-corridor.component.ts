@@ -13,6 +13,7 @@ export class CreateEditCorridorComponent implements OnInit {
   @Input() actionType: any;
   @Input() selectedElementData : any;
   @Input() corridorNameList : any;
+  @Input() selectedCorridorTypeId:number;
   @Output() backToPage = new EventEmitter<any>();
   typeForm: FormGroup;
   breadcumMsg: any = '';
@@ -20,7 +21,7 @@ export class CreateEditCorridorComponent implements OnInit {
   localStLanguage: any;
   accountId: any = 0;
   corridorTypeList = [{id:1,value:'Route Calculating'},{id:2,value:'Existing Trips'}];
-  selectedCorridorTypeId : any = 46;
+  //selectedCorridorTypeId : any = 46;
   exclusionList : any;
   vehicleGroupList : any;
 
@@ -33,6 +34,9 @@ export class CreateEditCorridorComponent implements OnInit {
     this.organizationId = parseInt(localStorage.getItem("accountOrganizationId"));
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.loadDropdownData();
+    if(this.actionType ==='create'){
+      this.selectedCorridorTypeId = 46;
+    }
     //console.log(this.selectedCorridorTypeId)
   }
 
