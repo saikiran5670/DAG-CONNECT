@@ -185,7 +185,7 @@ export class MapFunctionsService {
           this.calculateTruckRoute();
 
         }
-        this.addInfoBubble(group);
+        this.addInfoBubble(this.group);
 
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');
