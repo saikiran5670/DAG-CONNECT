@@ -1,4 +1,5 @@
-<div class="bgtrans">
+<!-- <div class="bgtrans"> -->
+<div>
 <form [formGroup]="existingTripForm">
 
 <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
@@ -6,7 +7,7 @@
     <mat-expansion-panel-header class="full-width">
       <mat-panel-title>
         <span>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblExistingTrips || 'ExistingTrips' }}</span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblExistingTrips || 'Existing Trips' }}</span>
           <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
         </span>
       </mat-panel-title>
@@ -131,24 +132,25 @@
 
 
 
-<mat-card class='mat-elevation-z'>
-  <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  
+  <mat-expansion-panel [(expanded)]="mapExpandPanel" class="full-width" fxLayoutGap="10px">
+    <mat-expansion-panel-header class="full-width">
+      <mat-panel-title>
+        <span>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Existing Trip Details</span>
+          <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
+        </span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+  <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Existing Trip Details</span>
     </div>
-    <!-- <div class="groupDetails margin-bottom-sm" fxLayout="row" fxLayoutAlign="space-between">
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <div fxLayout="row" class='areaWidth'>
-          <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-            <button mat-flat-button color="primary" (click)="onNewCorridor()">
-              <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblNewCorridor || 'New Corridor'
-            }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div> -->
-</div>
+
+</div> -->
+<!-- <div *ngIf="showMapSection"> -->
 <div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
 
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
@@ -246,7 +248,7 @@
   </div>
   
 </div>
-
+<!-- </div> -->
 
 <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -259,10 +261,12 @@
     </div>
   </div>
 
-  
+<!-- </div> -->
 
-
-  <div *ngIf='initData.length == 0'>No Record Found</div>
+<div *ngIf='initData.length == 0'>
+  <div >No Record Found</div>
+    <div>Search detail from top to view details</div>
+  </div>
   <div *ngIf='initData.length > 0'>
     <mat-table [dataSource]="dataSource" class="table-items" matSort>
       <ng-container matColumnDef="All">
@@ -334,6 +338,27 @@
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
   </div>
 
+  <div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
+    <span *ngIf="actionType !== 'view'">
+    <button mat-flat-button color="primary" (click)="backToCorridorList()">
+        <span>Cancel</span>
+    </button>
+    </span>
+
+    <span *ngIf="actionType === 'edit'">
+    <button mat-button color="primary" (click)="resetToEditData()" [disabled]="existingTripForm.pristine">
+        <span>Reset</span>
+    </button>
+</span>
+<span *ngIf="actionType !== 'view'">
+    <!-- <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!existingTripForm.valid || !strPresentStart || !strPresentEnd)"> -->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" >
+        <span>Create</span>
+    </button>
+</span>
+</div> 
+
+</mat-expansion-panel>
 </mat-card>
 </form>
 </div>

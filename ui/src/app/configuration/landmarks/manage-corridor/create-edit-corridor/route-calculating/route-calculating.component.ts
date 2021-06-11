@@ -413,12 +413,12 @@ export class RouteCalculatingComponent implements OnInit {
   }
 
   checkRoutePlot(){
-    this.onSearchClicked = false;
 
     if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0 && this.corridorWidth!=0){
       this.searchDisable = false;
     }
     else{
+      this.onSearchClicked = false;
       this.searchDisable = true;
     }
   }
@@ -820,7 +820,7 @@ export class RouteCalculatingComponent implements OnInit {
       let _arr = this.viaRouteObj;
       let _viaArr = this.viaRoutePlottedPoints;
       this.viaRouteObj = _arr.filter(obj => obj.label !== route);
-      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.label !== route);
+      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.corridorViaStopName !== route);
     }
    
     this.plotSeparateVia();

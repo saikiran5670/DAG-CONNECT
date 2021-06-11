@@ -88,10 +88,14 @@ export class MapFunctionsService {
     this.mapGroup = group;
   }
 
-  clearRoutesFromMap() {
-    var group = new H.map.Group();
-    group.removeAll();
-    this.hereMap.removeObjects(this.hereMap.getObjects())
+  // clearRoutesFromMap() {
+  //   var group = new H.map.Group();
+  //   group.removeAll();
+  //   this.hereMap.removeObjects(this.hereMap.getObjects())
+  //   this.startMarker = null; this.endMarker = null;
+  // }
+  clearRoutesFromMap() { 
+    this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
   }
 
@@ -162,7 +166,7 @@ export class MapFunctionsService {
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
-              console.log(data)
+              //console.log(data)
               if (data[0]["corridorProperties"]) {
                 this.additionalData = data[0]["corridorProperties"];
                 this.setAdditionalData();
