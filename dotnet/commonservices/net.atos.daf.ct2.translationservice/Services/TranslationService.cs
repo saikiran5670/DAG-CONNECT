@@ -266,9 +266,9 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in obj.GetType().GetProperties())
                 {
                     _logger.LogInformation("Drop down method get" + item.Name + request.Languagecode);
-                    var Translations = await _translationManager.GetTranslationsForDropDowns(item.Name, request.Languagecode);
+                    var Translations = await _translationManager.GetTranslationsForDropDowns(item.Name.ToLower(), request.Languagecode);
 
-                    switch (item.Name)
+                    switch (item.Name.ToLower())
                     {
                         case "language":
 

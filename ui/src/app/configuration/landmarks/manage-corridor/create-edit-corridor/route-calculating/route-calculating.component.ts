@@ -214,6 +214,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorWidthKm = Number(x);
       this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
+      this.updateWidth();
       //this.calculateAB();
       let drawWidth = this.corridorWidthKm*10;
       // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
@@ -414,7 +415,7 @@ export class RouteCalculatingComponent implements OnInit {
       //   this.addTruckRouteShapeToMap(drawWidth);
       // }
       this.checkRoutePlot();
-     // this.updateWidth()
+      this.updateWidth();
     //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
     //  // this.calculateAB();
     //  this.updateWidth()
@@ -1052,14 +1053,6 @@ export class RouteCalculatingComponent implements OnInit {
     // }
   }
 
-
-  updateWidth(){
-    let drawWidth = this.corridorWidthKm * 10;
-    let allObj = this.mapGroup.getObjects()
-    console.log(allObj)
-    
-  }
-
   /////////////////////////// v8 calculate ////////////////////
   routePoints:any;
 
@@ -1135,6 +1128,7 @@ export class RouteCalculatingComponent implements OnInit {
 
   }
 
+  corridorPath;
   addTruckRouteShapeToMap(lineWidth?){
     let pathWidth= this.corridorWidthKm * 10;
     this.routeDistance = 0;
@@ -1145,7 +1139,7 @@ export class RouteCalculatingComponent implements OnInit {
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
   
        // Create a corridor width to display the route:
-       let corridorPath = new H.map.Polyline(linestring, {
+        this.corridorPath = new H.map.Polyline(linestring, {
         style:  {
           lineWidth: pathWidth,
           strokeColor: 'rgba(181, 199, 239, 0.6)'
@@ -1160,7 +1154,7 @@ export class RouteCalculatingComponent implements OnInit {
       });
   
       // Add the polyline to the map
-      this.mapGroup.addObjects([corridorPath,polylinePath]);
+      this.mapGroup.addObjects([this.corridorPath,polylinePath]);
       this.hereMap.addObject(this.mapGroup);
       // And zoom to its bounding rectangle
       this.hereMap.getViewModel().setLookAtData({
@@ -1170,7 +1164,22 @@ export class RouteCalculatingComponent implements OnInit {
   }
   }
 
+  updateWidth(){
+    let setWidth = this.corridorWidthKm * 10;
+    // this.addTruckRouteShapeToMap();
+    //let geoLineString = this.corridorPath.getGeometry();
+    if (this.corridorPath) {
 
+      this.corridorPath.setStyle({
+        lineWidth: setWidth,
+        strokeColor: 'rgba(181, 199, 239, 0.6)'
+      });
+
+    }
+    //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
+    //console.log(geoLineString)
+    //this.corridorPath.setGeometry(geoLineString);
+  }
 
 
 
