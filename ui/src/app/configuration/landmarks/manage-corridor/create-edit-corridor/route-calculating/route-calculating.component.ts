@@ -1148,7 +1148,7 @@ export class RouteCalculatingComponent implements OnInit {
        let corridorPath = new H.map.Polyline(linestring, {
         style:  {
           lineWidth: pathWidth,
-          strokeColor: '#b5c7ef'
+          strokeColor: 'rgba(181, 199, 239, 0.6)'
         }
       });
       // Create a polyline to display the route:
