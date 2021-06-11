@@ -762,6 +762,7 @@ export class ExistingTripsComponent implements OnInit {
     // this.corridorWidth = _event.value;
      this.corridorWidthKm = this.corridorWidth / 1000;
      this.existingTripForm.controls.widthInput.setValue(this.corridorWidthKm);
+     this.mapFunctions.updateWidth(this.corridorWidthKm);
      this.checkRoutePlot();
      //this.calculateRouteFromAtoB();
  }

@@ -91,7 +91,7 @@ limitButton: any;
     console.log(this.selectedRowData);
    
     if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
-       this.selectedRowData.notifications.lenght > 0 && 
+       this.selectedRowData.notifications.length > 0 && 
        this.selectedRowData.notifications[0].notificationRecipients.length > 0)
     {
       this.setDefaultValues();

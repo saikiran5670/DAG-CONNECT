@@ -50,11 +50,15 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-        public async Task<IEnumerable<string>> GetRecipientsEmail()
+        public async Task<IEnumerable<string>> GetRecipientsEmail(int organizationid)
         {
             try
-            {               
-                var queryStatement = @"SELECT distinct acc.email from master.account acc ; ";              
+            {
+                var parameterType = new DynamicParameters();
+                var queryStatement = @"SELECT distinct 
+                                        acc.email from master.account acc
+                                        Where organization_id= @organization_id;";
+                parameterType.Add("@organization_id", organizationid);
                 IEnumerable<string> reporttype = await _dataAccess.QueryAsync<string>(queryStatement, null);
                 return reporttype;
             }
@@ -64,15 +68,18 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
-        public async Task<IEnumerable<DriverDetail>> GetDriverDetails()
+        public async Task<IEnumerable<DriverDetail>> GetDriverDetails(int organizationid)
         {
             try
             {
+                var parameterType = new DynamicParameters();
                 var queryStatement = @"SELECT
                                        dr.first_name || ' ' || dr.last_name AS DriverName                                         		  
                                       ,dr.driver_id as Id                                        		                                 		                                    		  
                                        FROM 
-                                       master.driver dr;";
+                                       master.driver dr
+                                       Where dr.organization_id= @organization_id;";
+                parameterType.Add("@organization_id", organizationid);
                 IEnumerable<DriverDetail> driverdetails = await _dataAccess.QueryAsync<DriverDetail>(queryStatement, null);
                 return driverdetails;
             }
