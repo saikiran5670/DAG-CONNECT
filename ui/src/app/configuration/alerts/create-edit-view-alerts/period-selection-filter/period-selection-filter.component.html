@@ -34,15 +34,15 @@
                 <!-- <div formArrayName="FormArrayCustomItems">
                  <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index">
                   <div [formGroupName]="customIndex"> -->
-                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;"  class="areaWidth min-width-25-per" fxLayout="column" fxLayoutAlign="left">
+                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;border-radius: 7px;margin-right: 10px;"  class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
                       <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm"  fxLayoutGap="5px">
-                        <div class="max-width-40-per" fxLayout="column">
+                        <div class="max-width-35-per" fxLayout="column">
                           <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
                           <mat-form-field appearance="outline" class="full-width">
                               <input type="time" matInput formControlName="fromTime" >
                           </mat-form-field>
                         </div>
-                        <div class="max-width-40-per" fxLayout="column">
+                        <div class="max-width-35-per" fxLayout="column">
                           <mat-label>{{ translationData.lblTo || 'To' }}</mat-label>
                           <mat-form-field appearance="outline" class="full-width">
                               <input type="time" matInput formControlName="toTime" >

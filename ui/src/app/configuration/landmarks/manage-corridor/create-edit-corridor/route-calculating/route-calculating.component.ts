@@ -143,6 +143,8 @@ export class RouteCalculatingComponent implements OnInit {
 
   searchDisable : boolean = true;
   noRouteErr : boolean = false;
+  duplicateError : boolean = false;
+  duplicateErrorMsg : string = '';
 
   constructor(private hereService: HereService,private formBuilder: FormBuilder, private corridorService : CorridorService,
     private completerService: CompleterService, private config: ConfigService) {
@@ -200,6 +202,7 @@ export class RouteCalculatingComponent implements OnInit {
     //   this.strPresentEnd = true;
     // }
     this.subscribeWidthValue();
+    this.subscribeLabelValue();
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
@@ -218,6 +221,13 @@ export class RouteCalculatingComponent implements OnInit {
       // }
    });
 
+  }
+
+  subscribeLabelValue(){
+    this.corridorFormGroup.get("label").valueChanges.subscribe(x => {
+      this.duplicateError = false;
+      this.duplicateErrorMsg = '';
+   });
   }
 
   vehicleSizeFocusOut(){
@@ -636,12 +646,14 @@ export class RouteCalculatingComponent implements OnInit {
         }
       },(error)=>{
           if(error.status === 409){
+            this.duplicateError = true;
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
               fromCreate:true,
             }  
-            this.backToReject.emit(emitObj);
+           // this.backToReject.emit(emitObj);
           }
       })
     }else{
@@ -656,16 +668,25 @@ export class RouteCalculatingComponent implements OnInit {
         }
       },(error)=>{
           if(error.status === 409){
+            this.duplicateError = true;
+            this.duplicateErrorMsg = this.getDuplicateMsg(this.corridorFormGroup.controls.label.value);
             let emitObj = {
               booleanFlag: false,
               successMsg: "duplicate",
               fromCreate:true,
             }  
-            this.backToReject.emit(emitObj);
+           // this.backToReject.emit(emitObj);
           }
       })
     }
    
+  }
+
+  getDuplicateMsg(name: any) {
+    if (this.translationData.lblDuplicateMsg)
+      return this.translationData.lblDuplicateMsg.replace('$', name);
+    else
+      return ("Corridor '$' already exists.").replace('$', name);
   }
 
   getSuggestion(_event){

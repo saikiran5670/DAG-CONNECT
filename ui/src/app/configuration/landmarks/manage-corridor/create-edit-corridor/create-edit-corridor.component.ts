@@ -12,6 +12,7 @@ export class CreateEditCorridorComponent implements OnInit {
   @Input() translationData: any;
   @Input() actionType: any;
   @Input() selectedElementData : any;
+  @Input() corridorNameList : any;
   @Output() backToPage = new EventEmitter<any>();
   typeForm: FormGroup;
   breadcumMsg: any = '';
