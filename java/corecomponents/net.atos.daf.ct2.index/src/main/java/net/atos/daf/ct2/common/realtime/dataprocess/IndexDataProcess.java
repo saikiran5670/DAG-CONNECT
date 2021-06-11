@@ -74,7 +74,7 @@ public class IndexDataProcess {
 			// consumerStream.addSink(new LiveFleetDriverActivityPostgreSink());
 			// // Writing into Driver Activity PostgreSQL Table
 
-			consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
+			//consumerStream.addSink(new LiveFleetCurrentTripPostgreSink()); // Writing
 																			// into
 																			// Current
 																			// Trip
