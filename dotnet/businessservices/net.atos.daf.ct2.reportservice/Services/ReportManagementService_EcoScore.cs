@@ -23,11 +23,27 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var profileRequest = MapCreateProfileRequestToDto(request);
-                await _reportManager.CreateEcoScoreProfile(profileRequest);
 
-                response.Code = Responsecode.Success;
-                response.Message = "Eco-Score profile is created successfully.";
+                if(profileRequest.OrganizationId.HasValue)
+                {
+                    var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
+                    var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
 
+                    if(countByOrg < maxLimit)
+                    {
+                        response = await CallCreateEcoScoreProfile(profileRequest);
+                    }
+                    else
+                    {
+                        response.Code = Responsecode.Forbidden;
+                        response.Message = "Max limit has reached for the creation of Eco-Score profile of requested organization. New profile cannot be created.";
+                    }
+                }
+                else
+                {
+                    response = await CallCreateEcoScoreProfile(profileRequest);
+                }
+                
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -39,6 +55,16 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Message = $"{nameof(CreateEcoScoreProfile)} failed due to - " + ex.Message
                 });
             }
+        }
+
+        private async Task<CreateEcoScoreProfileResponse> CallCreateEcoScoreProfile(EcoScoreProfileDto profileRequest)
+        {
+            await _reportManager.CreateEcoScoreProfile(profileRequest);
+            return new CreateEcoScoreProfileResponse()
+            {
+                Code = Responsecode.Success,
+                Message = "Eco-Score profile is created successfully."
+            };            
         }
 
         /// <summary>

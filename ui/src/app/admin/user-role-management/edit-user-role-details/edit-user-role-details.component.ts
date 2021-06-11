@@ -369,6 +369,16 @@ export class EditUserRoleDetailsComponent implements OnInit {
         console.log("--allChildrenElements Id's--",this.allChildrenIds)
       }
     }
+    var selectName = row.name;
+    var selectId = row.id;
+    if(!selectName.includes('.')){
+      this.dataSource.data.forEach( row => {
+        if(row.name.startsWith(selectName)){
+          if(!event.checked)
+            this.selectionForFeatures.deselect(row);
+        }
+      });
+    }
   }
 
 

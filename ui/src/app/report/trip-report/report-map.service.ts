@@ -215,15 +215,15 @@ export class ReportMapService {
 
   getDistance(distance: any, unitFormat: any){
     // distance in meter
-    let _distance = 0;
+    let _distance: any = 0;
     switch(unitFormat){
-      case 'metric': { 
-        _distance = distance/1000; //-- km
+      case 'Metric': { 
+        _distance = (distance/1000).toFixed(2); //-- km
         break;
       }
-      case 'imperial':
-      case 'US imperial': {
-        _distance = distance/1,609.344; //-- mile
+      case 'Imperial':
+      case 'US Imperial': {
+        _distance = (distance/1609.344).toFixed(2); //-- mile
         break;
       }
     }
@@ -233,15 +233,16 @@ export class ReportMapService {
   getAvrgWeight(avgWeight: any, unitFormat: any ){
     let _avgWeight: any = 0;
     switch(unitFormat){
-      case 'metric': { 
-        _avgWeight = avgWeight.toFixed(4); //-- kg/count
+      case 'Metric': { 
+        _avgWeight = avgWeight.toFixed(2); //-- kg/count
         break;
       }
-      case 'imperial':{
-        _avgWeight =(avgWeight * 2.2).toFixed(4); //pounds/count
+      case 'Imperial':{
+        _avgWeight =(avgWeight * 2.2).toFixed(2); //pounds/count
+        break;
       }
-      case 'US imperial': {
-        _avgWeight = (avgWeight * 2.2 * 1.009).toFixed(4); //-- imperial * 1.009
+      case 'US Imperial': {
+        _avgWeight = (avgWeight * 2.2 * 1.009).toFixed(2); //-- imperial * 1.009
         break;
       }
     }
@@ -251,15 +252,16 @@ export class ReportMapService {
   getAvergSpeed(avgSpeed: any, unitFormat: any){
     let _avgSpeed : any = 0;
     switch(unitFormat){
-      case 'metric': { 
-        _avgSpeed = (avgSpeed * 360).toFixed(4); //-- km/h(converted from m/ms)
+      case 'Metric': { 
+        _avgSpeed = (avgSpeed * 360).toFixed(2); //-- km/h(converted from m/ms)
         break;
       }
-      case 'imperial':{
-        _avgSpeed = (avgSpeed * 360/1.6).toFixed(4); //miles/h
+      case 'Imperial':{
+        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //miles/h
+        break;
       }
-      case 'US imperial': {
-        _avgSpeed = (avgSpeed * 360/1.6).toFixed(4); //-- miles/h
+      case 'US Imperial': {
+        _avgSpeed = (avgSpeed * 360/1.6).toFixed(2); //-- miles/h
         break;
       }
     }
@@ -269,15 +271,16 @@ export class ReportMapService {
   getFuelConsumed(fuelConsumed : number, unitFormat: any){
     let _fuelConsumed: any = 0;
     switch(unitFormat){
-      case 'metric': { 
-        _fuelConsumed = (fuelConsumed / 100).toFixed(4); //-- ltr/km(converted from ml/m)
+      case 'Metric': { 
+        _fuelConsumed = (fuelConsumed / 100).toFixed(2); //-- ltr/km(converted from ml/m)
         break;
       }
-      case 'imperial':{
-        _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(4); //gallons/miles
+      case 'Imperial':{
+        _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(2); //gallons/miles
+        break;
       }
-      case 'US imperial': {
-        _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(4); //-- imperial * 1.2
+      case 'US Imperial': {
+        _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(2); //-- imperial * 1.2
         break;
       }
     }

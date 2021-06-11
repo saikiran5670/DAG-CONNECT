@@ -24,6 +24,7 @@ enum Responsecode{
   None = 0;
   Success = 200;
   Failed = 400;
+  Forbidden = 403;
   Conflict = 409;
   NotFound = 404;
   InternalServerError = 500;

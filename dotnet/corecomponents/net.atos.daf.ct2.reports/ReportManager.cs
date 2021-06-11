@@ -106,6 +106,11 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.CreateEcoScoreProfile(dto);
         }
 
+        public async Task<int> GetEcoScoreProfilesCount(int orgId)
+        {
+            return await _reportRepository.GetEcoScoreProfilesCount(orgId);
+        }
+
         #endregion
 
         #region Eco Score Report - Get Profile and KPI Details
