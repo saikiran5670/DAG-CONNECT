@@ -206,6 +206,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
+    if(this.actionType === 'edit'){
+      this.corridorFormGroup.controls.label.disable();
+    }
     //this.configureAutoCompleteForLocationSearch();
   }
 
