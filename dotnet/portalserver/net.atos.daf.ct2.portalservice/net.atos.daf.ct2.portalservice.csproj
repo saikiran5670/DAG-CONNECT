@@ -10,6 +10,7 @@
     <None Remove="Protos\group.proto" />
     <None Remove="Protos\package.proto" />
     <None Remove="Protos\report.proto" />
+    <None Remove="Protos\reportscheduler.proto" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.14.0" />
@@ -34,6 +35,7 @@
     <Protobuf Include="Protos\group.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\package.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\feature.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\subscribe.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\vehicle.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\translation.proto" GrpcServices="Client" />
@@ -48,7 +50,7 @@
     <Protobuf Include="Protos\alert.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\corridor.proto" GrpcServices="Client" />
     <Protobuf Include="Protos\map.proto" GrpcServices="Client" />
-
+    <Protobuf Include="Protos\reportscheduler.proto" GrpcServices="Client" />
 
   </ItemGroup>
   <ItemGroup>
