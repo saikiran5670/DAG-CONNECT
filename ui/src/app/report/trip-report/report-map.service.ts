@@ -187,6 +187,9 @@ export class ReportMapService {
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
+      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
+      element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.idleDuration);
       element.convertedIdleDuration = this.getHhMmTime(element.drivingTime);
@@ -225,6 +228,60 @@ export class ReportMapService {
       }
     }
     return _distance;    
+  }
+
+  getAvrgWeight(avgWeight: any, unitFormat: any ){
+    let _avgWeight: any = 0;
+    switch(unitFormat){
+      case 'metric': { 
+        _avgWeight = avgWeight.toFixed(4); //-- kg/count
+        break;
+      }
+      case 'imperial':{
+        _avgWeight =(avgWeight * 2.2).toFixed(4); //pounds/count
+      }
+      case 'US imperial': {
+        _avgWeight = (avgWeight * 2.2 * 1.009).toFixed(4); //-- imperial * 1.009
+        break;
+      }
+    }
+    return _avgWeight;    
+  }
+
+  getAvergSpeed(avgSpeed: any, unitFormat: any){
+    let _avgSpeed : any = 0;
+    switch(unitFormat){
+      case 'metric': { 
+        _avgSpeed = (avgSpeed * 360).toFixed(4); //-- km/h(converted from m/ms)
+        break;
+      }
+      case 'imperial':{
+        _avgSpeed = (avgSpeed * 360/1.6).toFixed(4); //miles/h
+      }
+      case 'US imperial': {
+        _avgSpeed = (avgSpeed * 360/1.6).toFixed(4); //-- miles/h
+        break;
+      }
+    }
+    return _avgSpeed;    
+  }
+
+  getFuelConsumed(fuelConsumed : number, unitFormat: any){
+    let _fuelConsumed: any = 0;
+    switch(unitFormat){
+      case 'metric': { 
+        _fuelConsumed = (fuelConsumed / 100).toFixed(4); //-- ltr/km(converted from ml/m)
+        break;
+      }
+      case 'imperial':{
+        _fuelConsumed = (fuelConsumed * (1.6/370)).toFixed(4); //gallons/miles
+      }
+      case 'US imperial': {
+        _fuelConsumed = (fuelConsumed * (1.6/370) * 1.2).toFixed(4); //-- imperial * 1.2
+        break;
+      }
+    }
+    return _fuelConsumed; 
   }
 
   getHhMmTime(totalSeconds: any){
