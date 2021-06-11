@@ -31,6 +31,7 @@ export class ManageCorridorComponent implements OnInit {
   initData: any = [];
   dataSource: any;
   markerArray: any = [];
+  corridorNameList = [];
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -64,6 +65,7 @@ export class ManageCorridorComponent implements OnInit {
     this.showLoadingIndicator = true;
     this.corridorService.getCorridorList(this.accountOrganizationId).subscribe((data : any) => {
       this.initData = data;
+      this.corridorNameList = data.map(e=> e.corridoreName)
       this.hideloader();
       this.updatedTableData(this.initData);
     }, (error) => {
