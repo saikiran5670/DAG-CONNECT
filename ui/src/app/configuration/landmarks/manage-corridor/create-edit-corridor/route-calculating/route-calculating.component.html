@@ -343,7 +343,7 @@
                 </mat-accordion>
        
                 <div class="example-button-row pt-2" fxLayoutAlign="right" *ngIf="actionType !== 'view'">
-                    <button mat-button color="primary" (click)="resetValues()"  [disabled]="corridorFormGroup.pristine">
+                    <button mat-button color="primary" (click)="resetValues()">
                         <span>Reset</span>
                     </button>
                 </div>
@@ -359,7 +359,7 @@
     </span>
 
     <span *ngIf="actionType === 'edit'">
-    <button mat-button color="primary" (click)="resetToEditData()" [disabled]="corridorFormGroup.pristine">
+   <button mat-button color="primary" (click)="resetToEditData()">  <!-- [disabled]="corridorFormGroup.pristine" -->
         <span>Reset</span>
     </button>
 </span>
