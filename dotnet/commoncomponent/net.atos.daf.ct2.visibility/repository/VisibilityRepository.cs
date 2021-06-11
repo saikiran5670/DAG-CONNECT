@@ -2,66 +2,66 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.visibility.entity;
-using net.atos.daf.ct2.data;
-using Dapper;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.visibility.entity;
 //using NpgsqlTypes;
 
 namespace net.atos.daf.ct2.visibility.repository
 {
-	public class VisibilityRepository : IVisibilityRepository
-	{
-		private readonly IDataAccess _dataAccess;
-		private static readonly log4net.ILog _log =
-		  log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    public class VisibilityRepository : IVisibilityRepository
+    {
+        private readonly IDataAccess _dataAccess;
+        private static readonly log4net.ILog _log =
+          log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-		public VisibilityRepository(IDataAccess dataAccess)
-		{
-			this._dataAccess = dataAccess;
-		}
-		public IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid)
-		{
-			var featureSet = new List<FeatureSet>();
-			var func = "dafconnectmaster.getuserrolefeatures";
-			var result = _dataAccess.Query<Feature>(
-							sql: func,
-							param: new { useridinput = userid, orgidinput = orgid },
-							commandType: CommandType.StoredProcedure,
-							commandTimeout: 900) as List<Feature>;
+        public VisibilityRepository(IDataAccess dataAccess)
+        {
+            this._dataAccess = dataAccess;
+        }
 
-			var parentFeature = result.Where(fe => fe.ParentFeatureId == 0).ToList();
-			foreach (var feature in parentFeature)
-			{
-				if (feature != null)
-				{
-					var _featureSet = new FeatureSet();
-					_featureSet.FeatureSetID = feature.RoleFeatureId;
-					_featureSet.FeatureSetName = feature.FeatureDescription;
-					// get child features
-					var childFeatures = result.Where(fe => fe.ParentFeatureId == _featureSet.FeatureSetID).ToList();
-					if (childFeatures != null)
-					{
-						_featureSet.Features = new List<Feature>();
-						_featureSet.Features.AddRange(childFeatures);
-					}
-					featureSet.Add(_featureSet);
-				}
-			}
-			return featureSet;
-		}
+        public IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid)
+        {
+            var featureSet = new List<FeatureSet>();
+            var func = "dafconnectmaster.getuserrolefeatures";
+            var result = _dataAccess.Query<Feature>(
+                            sql: func,
+                            param: new { useridinput = userid, orgidinput = orgid },
+                            commandType: CommandType.StoredProcedure,
+                            commandTimeout: 900) as List<Feature>;
 
-		public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
-																							   int OrganizationId)
-		{
-			try
-			{
-				var parameter = new DynamicParameters();
-				parameter.Add("@account_id", accountId);
-				parameter.Add("@organization_id", OrganizationId);
-				#region Query Select Vehicle By Account Visibility
-				var query = @"WITH cte_account_visibility_for_vehicle
+            var parentFeature = result.Where(fe => fe.ParentFeatureId == 0).ToList();
+            foreach (var feature in parentFeature)
+            {
+                if (feature != null)
+                {
+                    var _featureSet = new FeatureSet();
+                    _featureSet.FeatureSetID = feature.RoleFeatureId;
+                    _featureSet.FeatureSetName = feature.FeatureDescription;
+                    // get child features
+                    var childFeatures = result.Where(fe => fe.ParentFeatureId == _featureSet.FeatureSetID).ToList();
+                    if (childFeatures != null)
+                    {
+                        _featureSet.Features = new List<Feature>();
+                        _featureSet.Features.AddRange(childFeatures);
+                    }
+                    featureSet.Add(_featureSet);
+                }
+            }
+            return featureSet;
+        }
+
+        public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,
+                                                                                               int OrganizationId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_id", OrganizationId);
+                #region Query Select Vehicle By Account Visibility
+                var query = @"WITH cte_account_visibility_for_vehicle
 							AS (
 							select distinct ass.vehicle_group_id as vehiclegroupid,ass.access_type,
 							case when vgrpref.ref_id is null then  @account_id else vgrpref.ref_id end ref_id
@@ -315,14 +315,129 @@ namespace net.atos.daf.ct2.visibility.repository
 									,case when VehicleName is null  then '' else VehicleName end as VehicleName
 									,case when Vin is null  then '' else Vin end as Vin
 									,case when RegistrationNo is null then '' else RegistrationNo end as RegistrationNo 
-						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) order by 1;";
-				#endregion
-				return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-	}
+						 from cte_account_vehicle_CompleteList where ((@organization_id > 0 and organization_id=@organization_id) or ( @organization_id = 0 and 1=1)) AND VehicleId>0 order by 1;";
+                #endregion
+                return _dataAccess.QueryAsync<VehicleDetailsAccountVisibilty>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId,int roleId,
+                                                                                                    string featureName = "Alert")
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@role_id", roleId);
+                parameter.Add("@feature_name", featureName + "%");
+                #region Query Get Vehicle By Feature And Subsction
+                var query = @"
+                             with org_veh_subscriptions
+as (
+select distinct fea.id as featureid
+       ,fea.name
+       ,fea.key
+       ,fea.level
+       ,fea.type as featuretype
+       ,pac.id as packageid
+       ,pac.packagecode
+       ,sub.id as subscriptionid
+       ,sub.organization_id as organizationid
+       ,sub.type as subscriptiontype
+       ,sub.subscription_end_date as subscriptionenddate
+       ,sub.subscription_start_date as subscriptionstartdate
+       ,sub.is_zuora_package
+       ,sub.vehicle_id as vehicleid 
+	   ,feasetfea.feature_set_id as featuresetid 
+from master.subscription sub
+inner join master.package pac
+on sub.package_id=pac.id and sub.state='A' and pac.state='A' and sub.organization_id in(@organization_id) 
+inner join master.featuresetfeature feasetfea
+on pac.feature_set_id=feasetfea.feature_set_id
+inner join master.feature fea
+on feasetfea.feature_id=fea.id and fea.state='A' and fea.type='F'
+where sub.organization_id in(@organization_id)
+and 
+fea.name like @feature_name
+and case when COALESCE(subscription_end_date,0) !=0 then to_timestamp(COALESCE(subscription_end_date)/1000)::date>=now()::date
+    else COALESCE(subscription_end_date,0) =0 end
+order by 1
+)
+--select * from org_veh_subscriptions
+,
+ org_subscriptions
+ as (
+     select * from  org_veh_subscriptions where subscriptiontype='O'
+ )
+ -- select * from org_subscriptions
+ ,
+ veh_subscriptions
+ as (
+     select * from  org_veh_subscriptions where subscriptiontype='V'
+ )
+-- select * from veh_subscriptions
+,
+matching_org_veh_features
+as
+(
+	select featureid,key,name,organizationid,featuresetid from org_subscriptions
+	intersect
+	select featureid,key,name,organizationid,featuresetid from veh_subscriptions 
+)
+--select * from matching_org_veh_features
+,
+veh_features_not_in_org
+as
+(
+	select *  
+	from veh_subscriptions 
+	where featureid not in ( select featureid from matching_org_veh_features) 	
+)
+--select * from veh_features_not_in_org
+,
+org_veh_subscribe_features
+as
+(
+	select distinct  movf.featureid,movf.key,movf.name,0 as vehicleid, movf.organizationid , 'O' as subscriptiontype,
+	case when featuresetid is null then '0' else featuresetid end as featuresetid 
+	from matching_org_veh_features movf
+	union
+	select distinct  featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid , organizationid , subscriptiontype,
+	case when featuresetid is null then 0 else featuresetid end as featuresetid 
+	from  veh_features_not_in_org
+	union
+	select distinct featureid,key,name, case when vehicleid is null then 0 else vehicleid end  as vehicleid, organizationid , subscriptiontype,case when featuresetid is null then 0 else featuresetid end as featuresetid  from  org_subscriptions
+)
+
+--select distinct ovsf.featureid, ovsf.key as featurekey,ovsf.name,ovsf.vehicleid,ovsf.organizationid,ovsf.subscriptiontype,enutra.key as enumkey,ovsf.featuresetid
+select ovsf.featureid as FeatureId, 
+case when ovsf.key is null  then '' else ovsf.key end as key,
+case when ovsf.name is null then '' else ovsf.name end as Name,ovsf.vehicleid as VehicleId,ovsf.organizationid as OrganizationId,
+case when ovsf.subscriptiontype is null then '' else subscriptiontype end as SubscriptionType,
+case when enutra.key is null then '' else enutra.key end as FeatureEnum  
+FROM master.Account acc
+INNER JOIN master.AccountRole accrol ON acc.id = accrol.account_id AND acc.id = @account_id  AND accrol.organization_id = @organization_id AND accrol.role_id = @role_id AND acc.state = 'A'
+INNER JOIN master.Role rol ON accrol.role_id = rol.id AND rol.state = 'A'
+inner join org_veh_subscribe_features ovsf ON rol.feature_set_id=ovsf.featuresetid
+left join translation.enumtranslation enutra
+on   ovsf.featureid = enutra.feature_id
+and enutra.type='T' 
+order by 1 desc
+";
+                #endregion
+                
+                var list = _dataAccess.QueryAsync<VehicleDetailsFeatureAndSubsction>(query, parameter);
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+    }
 }

@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Sockets;
+using System.Reflection;
 using System.Threading.Tasks;
-using Google.Protobuf;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using net.atos.daf.ct2.featureservice;
 using net.atos.daf.ct2.portalservice.Account;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Feature;
-using FeatuseBusinessService = net.atos.daf.ct2.featureservice;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using log4net;
-using System.Reflection;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using FeatuseBusinessService = net.atos.daf.ct2.featureservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -28,15 +24,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class FeatureController : BaseController
     {
-
         #region Private Variable
-        //private readonly ILogger<AccountController> _logger;
         private readonly AuditHelper _auditHelper;
         private ILog _logger;
-        private readonly FeatuseBusinessService.FeatureService.FeatureServiceClient _featureclient;
-        private readonly Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";
-        private IMemoryCacheProvider _cache;       
+        private readonly FeatureService.FeatureServiceClient _featureclient;
+        private string _fk_Constraint = "violates foreign key constraint";
+        private IMemoryCacheProvider _cache;
         private readonly PortalCacheConfiguration _cachesettings;
         private readonly Common.AccountPrivilegeChecker _privilegeChecker;
         #endregion
@@ -46,14 +39,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
              AuditHelper auditHelper, Common.AccountPrivilegeChecker privilegeChecker, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _featureclient = Featureclient;
-            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType); ;
-            _mapper = new Mapper();
+            _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _cache = cache;
             _cachesettings = cachesettings.Value;
             _privilegeChecker = privilegeChecker;
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
-            //headers = GetHeaders(Request.Headers);
         }
         #endregion
 
@@ -72,7 +62,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("createfeatureset")]
         public async Task<IActionResult> CreateFeatureSet(FeatureSet featureSetRequest)
         {
-           
+
             try
             {
                 _logger.Info("Create method in FeatureSet API called.");
@@ -82,7 +72,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(401, "invalid featureSet Name: The featureSet Name is Empty.");
                 }
-                if (string.IsNullOrEmpty(featureSetRequest.description))
+                if (string.IsNullOrEmpty(featureSetRequest.Description))
                 {
                     return StatusCode(401, "invalid FeatureSet Description : Feature Description is Empty.");
                 }
@@ -90,7 +80,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FetureSetRequest featureset = new FetureSetRequest();
                 featureset.Name = featureSetRequest.Name; // "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds()
                 //featureset. = featureSetRequest.description;
-                featureset.CreatedBy = featureSetRequest.created_by;
+                featureset.CreatedBy = featureSetRequest.Created_by;
                 foreach (var item in featureSetRequest.Features)
                 {
                     featureset.Features.Add(item.Id);
@@ -100,22 +90,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 featureset.FeatureSetID = ObjResponse.FeatureSetID;
                 _logger.Info("Feature Set created with id." + ObjResponse.FeatureSetID);
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                     "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "CreateFeatureSet method in Feature manager", 0, ObjResponse.FeatureSetID, JsonConvert.SerializeObject(featureSetRequest),
-                     Request);
+                     _userDetails);
                 return Ok(featureSetRequest);
             }
             catch (Exception ex)
             {
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                    "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                   "CreateFeatureSet method in Feature manager",0,0, JsonConvert.SerializeObject(featureSetRequest),
-                    Request);
+                   "CreateFeatureSet method in Feature manager", 0, 0, JsonConvert.SerializeObject(featureSetRequest),
+                    _userDetails);
                 _logger.Error(null, ex);
 
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(400, "The foreign key violation in one of dependant data.");
                 }
@@ -127,7 +117,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         [Route("createfeature")]
         public async Task<IActionResult> CreateFeature(Features featureRequest)
         {
-         
+
             try
             {
                 _logger.Info("Create method in FeatureSet API called.");
@@ -149,8 +139,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //{
                 //    return StatusCode(401, "invalid FeatureSet Description : Feature Key is Empty.");
                 //}
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
-                
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
+
                 FeatureRequest FeatureObj = new FeatureRequest();
                 FeatureObj.Name = featureRequest.Name;
                 FeatureObj.Level = level;
@@ -160,7 +150,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.Name;
                 FeatureObj.DataAttribute.Description = featureRequest.Description;
-                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
+                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.Is_Exclusive;
                 //FeatureObj.DataAttribute. = (DataAttributeSetType)Enum.Parse(typeof(DataAttributeSetType), featureRequest.DataAttribute.AttributeType.ToString().ToUpper());
 
                 foreach (var item in featureRequest.DataAttributeIds.Distinct())
@@ -171,11 +161,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var responce = await _featureclient.CreateAsync(FeatureObj);
                 if (responce.Code == Responcecode.Success)
                 {
-                  
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now,  "Feature Component",
+
+                    await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                                "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                                "CreateFeature method in Feature controller", 0, responce.FeatureID, JsonConvert.SerializeObject(featureRequest),
-                                                Request);
+                                                _userDetails);
 
 
                     if (responce.Message == "Feature name allready exists")
@@ -195,10 +185,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 //throw;
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                              "Feature service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                              "CreateFeature method in Feature controller", 0, 0, JsonConvert.SerializeObject(featureRequest),
-                                              Request);
+                                              _userDetails);
 
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
@@ -209,8 +199,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpPost]
         [Route("update")]
-        public async Task<IActionResult> update(Features featureRequest)
-        {            
+        public async Task<IActionResult> Update(Features featureRequest)
+        {
             try
             {
                 _logger.Info("Update method in FeatureSet API called.");
@@ -228,7 +218,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 FeatureObj.DataAttribute = new DataAttributeSetRequest();
                 FeatureObj.DataAttribute.Name = featureRequest.Name;
                 FeatureObj.DataAttribute.Description = featureRequest.Description;
-                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.is_Exclusive;
+                FeatureObj.DataAttribute.IsExclusive = featureRequest.DataattributeSet.Is_Exclusive;
                 FeatureObj.DataAttribute.DataAttributeSetId = featureRequest.DataattributeSet.ID;
 
                 foreach (var item in featureRequest.DataAttributeIds)
@@ -239,10 +229,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var responce = await _featureclient.UpdateAsync(FeatureObj);
                 if (responce.Code == Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                             "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                             "Update Feature method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(featureRequest),
-                                             Request);
+                                             _userDetails);
 
                     if (responce.Message == "Feature name allready exists")
                     {
@@ -260,10 +250,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 //throw;
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                             "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                             "Update Feature method in Feature controller", featureRequest.Id, featureRequest.Id, JsonConvert.SerializeObject(featureRequest),
-                                             Request);
+                                             _userDetails);
                 _logger.Error(featureRequest, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
@@ -290,7 +280,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _cache.SetCache(request.LangaugeCode, responce.Responce, cacheEntryOptions);
 
-                if (responce.Code== Responcecode.Failed)
+                if (responce.Code == Responcecode.Failed)
                 {
                     return StatusCode(500, "Internal Server Error");
                 }
@@ -317,13 +307,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 //if (cachedfeature != null) return Ok(cachedfeature);
 
                 request.LangaugeCode = (request.LangaugeCode == null || request.LangaugeCode == "") ? "EN-GB" : request.LangaugeCode;
-                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.orgId, _userDetails.roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(_userDetails.OrgId, _userDetails.RoleId);
                 request.Level = level;
                 if (request.OrganizationID != 0)
                 {
                     request.OrganizationID = GetContextOrgId();
                 }
-                
+
                 var feature = await _featureclient.GetFeaturesAsync(request);
 
                 //List<FeatureResponce> featureList = new List<FeatureResponce>();
@@ -362,42 +352,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             FeatureRequest FeatureObj = new FeatureRequest();
             try
             {
-
-
-               
-
                 FeatureObj.Id = FeatureId;
                 var feature = await _featureclient.DeleteAsync(FeatureObj);
                 if (feature.Code == Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                                "Feature service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                                "DeleteFeatures method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
-                                                Request);
+                                                _userDetails);
                 }
-
-                //List<FeatureResponce> featureList = new List<FeatureResponce>();
-                //foreach (var featureitem in feature.Features)
-                //{
-                //    FeatureResponce obj = new FeatureResponce();
-                //    obj.I = featureitem.Id;
-                //    obj.CreatedBy = featureitem.Createdby;
-                //    obj.FeatureName = featureitem.Name;
-                //    obj.Description = featureitem.Description;
-                //    obj.RoleId = featureitem.RoleId;
-                //    obj.OrganizationId = featureitem.Organization_Id;
-                //    obj.FeatureType = featureitem.Type;
-                //    featureList.Add(obj);
-                //}
 
                 return Ok(feature);
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                           "Feature service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                           "DeleteFeatures method in Feature controller", FeatureObj.Id, FeatureObj.Id, JsonConvert.SerializeObject(FeatureObj),
-                                           Request);
+                                           _userDetails);
                 _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }
@@ -411,42 +383,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             FeatureStateRequest FeatureObj = new FeatureStateRequest();
             try
             {
-
-
-               
-
                 FeatureObj.Featureid = FeatureId;
                 FeatureObj.FeatureState = featurestate == FeatureState.Active ? "A" : "I";
                 var feature = await _featureclient.ChangeFeatureStateAsync(FeatureObj);
 
-
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                           "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                           "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
-                                           Request);
-
-                //List<FeatureResponce> featureList = new List<FeatureResponce>();
-                //foreach (var featureitem in feature.Features)
-                //{
-                //    FeatureResponce obj = new FeatureResponce();
-                //    obj.I = featureitem.Id;
-                //    obj.CreatedBy = featureitem.Createdby;
-                //    obj.FeatureName = featureitem.Name;
-                //    obj.Description = featureitem.Description;
-                //    obj.RoleId = featureitem.RoleId;
-                //    obj.OrganizationId = featureitem.Organization_Id;
-                //    obj.FeatureType = featureitem.Type;
-                //    featureList.Add(obj);
-                //}
-
+                                           _userDetails);
+                
                 return Ok(feature);
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Feature Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Feature Component",
                                 "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                                 "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
-                                 Request);
+                                 _userDetails);
                 _logger.Error(ex.Message + " " + ex.StackTrace);
                 return StatusCode(500, "Internal Server Error.");
             }

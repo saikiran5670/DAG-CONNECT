@@ -68,12 +68,7 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		readtrip = envParams.get(DafConstants.QUERY_LIVEFLEET_TRIP_READ);
 		readposition = envParams.get(DafConstants.QUERY_LIVEFLEET_POSITION_READ);
 
-		System.out.println("livefleettrip --> " + livefleettrip);
-		System.out.println("livefleettripread --> " + readtrip);
-		System.out.println("livefleetposition --> " + readposition);
-
 		try {
-			System.out.println("in LiveFleet Current TRip Statstics open try");
 
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
 					envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
@@ -85,17 +80,15 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 			positionDAO.setConnection(connection);
 
 			/*
-			 * connection2 =
-			 * PostgreDataSourceConnection.getInstance().getDataSourceConnection(
+			 * connection2 = PostgreDataSourceConnection.getInstance().
+			 * getDataSourceConnection(
 			 * envParams.get(DafConstants.DATAMART_POSTGRE_SERVER_NAME),
-			 * Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT)),
-			 * envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
+			 * Integer.parseInt(envParams.get(DafConstants.DATAMART_POSTGRE_PORT
+			 * )), envParams.get(DafConstants.DATAMART_POSTGRE_DATABASE_NAME),
 			 * envParams.get(DafConstants.DATAMART_POSTGRE_USER),
 			 * envParams.get(DafConstants.DATAMART_POSTGRE_PASSWORD));
 			 * positionDAO.setConnection(connection2);
 			 */
-			System.out.println("After Connection of LiveFleet Current TRip Statstics");
-
 		} catch (Exception e) {
 			log.error("Error in LiveFleet Current TRip Statstics" + e.getMessage());
 			e.printStackTrace();
@@ -111,17 +104,13 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 		Index row = index.getValue();
 		currentTripPojo = new TripStatisticsPojo();
 
-		System.out.println("in current trip Invoke above try");
-
 		try {
 			queue.add(row);
 			if (queue.size() >= 1) {
-				System.out.println("inside current trip syncronized");
 				synchronized (synchronizedCopy) {
 					synchronizedCopy = new ArrayList<Index>(queue);
 					queue.clear();
 
-					System.out.println("In current trip INVOKE");
 					for (Index indexValue : synchronizedCopy) {
 
 						currentTripPojo.setTripId(indexValue.getDocument().getTripID());
@@ -137,10 +126,11 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						currentTripPojo.setLast_recieved_position_longitude(indexValue.getGpsLongitude());
 						currentTripPojo.setLast_known_position("");
 
-						Integer[] ttvalue = row.getDocument().getTt_ListValue(); // 12// vehicle status
-
-						if (ttvalue.length == 0) {
-							System.out.println("ttvalue is empty");
+						Integer[] ttvalue = row.getDocument().getTt_ListValue(); // 12//
+																					// vehicle
+																					// status
+						currentTripPojo.setVehicle_status(0);
+						/*if (ttvalue.length == 0) {
 							currentTripPojo.setVehicle_status(0);
 
 						} else {
@@ -161,26 +151,41 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							if (status == 7) {
 								currentTripPojo.setVehicle_status(4);
 							}
-						}
+						}*/
 
 						// currentTripPojo.setVehicle_status(null); //Look after
 						currentTripPojo.setDriver1_status(indexValue.getDocument().getDriver1WorkingState());
-						currentTripPojo.setVehicle_health_status(null); // it is not present in index message POJO
+						currentTripPojo.setVehicle_health_status(null); // it is
+																		// not
+																		// present
+																		// in
+																		// index
+																		// message
+																		// POJO
 
-						Integer[] tacho = row.getDocument().getTotalTachoMileage(); // 15
+					
+						//timebeing dummy value set
+						//Integer[] tacho = row.getDocument().getTotalTachoMileage(); // 15
+						currentTripPojo.setLast_odometer_val(0);
 						// odometer_value
 
-						if (tacho.length == 0) {
-							System.out.println("odometer is empty");
+						/*if (tacho == null || tacho.length == 0) {
 							currentTripPojo.setLast_odometer_val(0);
 						} else {
-							int odometer_val = tacho[tacho.length - 1];
+							System.out.println("tacho.length-->" + tacho.length);
+							System.out.println("tacho.length -1-->" + (tacho.length - 1));
+							System.out.println("odometer_val-->" + tacho[tacho.length - 1]);
+							if (null != tacho[tacho.length - 1]) {
+								int odometer_val = tacho[tacho.length - 1];
+								currentTripPojo.setLast_odometer_val(odometer_val);
+							} else {
+								currentTripPojo.setLast_odometer_val(0);
+							}
 
-							currentTripPojo.setLast_odometer_val(odometer_val);
-						}
+						}*/
 
-						
-						currentTripPojo.setLast_processed_message_timestamp(TimeFormatter.getInstance().getCurrentUTCTimeInSec());
+						currentTripPojo.setLast_processed_message_timestamp(
+								TimeFormatter.getInstance().getCurrentUTCTimeInSec());
 						currentTripPojo.setDriver2ID(indexValue.getDocument().getDriver2ID());
 						currentTripPojo.setDriver2_status(indexValue.getDocument().getDriver2WorkingState());
 						currentTripPojo.setCreated_at_m2m(indexValue.getReceivedTimestamp());
@@ -195,21 +200,18 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 							CurrentTrip current_trip_start_var = currentTripDAO.read(
 									index.getValue().getDocument().getTripID(), DafConstants.CURRENT_TRIP_INDICATOR);
 
-							// indexValue.setReceivedTimestamp(current_trip_start_var.getStart_time_stamp());
 							currentTripPojo.setStart_time_stamp(current_trip_start_var.getStart_time_stamp());
 
-							// indexValue.setGpsLongitude(current_trip_start_var.getStart_position_longitude());
 							currentTripPojo
 									.setStart_position_longitude(current_trip_start_var.getStart_position_longitude());
 
-							// indexValue.setGpsLatitude(current_trip_start_var.getStart_position_lattitude());
 							currentTripPojo
 									.setStart_position_lattitude(current_trip_start_var.getStart_position_lattitude());
 
 						} else {
 
-							currentTripPojo.setStart_time_stamp(TimeFormatter.getInstance()
-									.convertUTCToEpochMilli(row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
+							currentTripPojo.setStart_time_stamp(TimeFormatter.getInstance().convertUTCToEpochMilli(
+									row.getEvtDateTime().toString(), DafConstants.DTM_TS_FORMAT));
 							currentTripPojo.setStart_position_lattitude(indexValue.getGpsLatitude());
 							currentTripPojo.setStart_position_longitude(indexValue.getGpsLongitude());
 
@@ -220,10 +222,6 @@ public class LiveFleetCurrentTripPostgreSink extends RichSinkFunction<KafkaRecor
 						currentTripPojo.setDistance_until_next_service(distance_until_next_service);
 
 						currentTripDAO.insert(currentTripPojo, distance_until_next_service);
-						// jPAPostgreDao.saveTripDetails(synchronizedCopy);
-						System.out.println(" current trip save done");
-						// System.out.println("anshu1");
-
 					}
 
 				}

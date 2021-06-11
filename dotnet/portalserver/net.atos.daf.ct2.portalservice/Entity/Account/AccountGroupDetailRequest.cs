@@ -1,5 +1,3 @@
-using System;
-
 namespace net.atos.daf.ct2.portalservice.Account
 {
     public class AccountGroupDetailRequest
@@ -8,7 +6,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public int OrganizationId { get; set; }
         public string Name { get; set; }
         public int VehicleCount { get; set; }
-        public int AccountCount{ get; set; }
-        
+        public int AccountCount { get; set; }
+
     }
 }

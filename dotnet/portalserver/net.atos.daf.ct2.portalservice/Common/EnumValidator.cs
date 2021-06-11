@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AccountBusinessService = net.atos.daf.ct2.accountservice;
-
-namespace net.atos.daf.ct2.portalservice.Common
+﻿namespace net.atos.daf.ct2.portalservice.Common
 {
     public class EnumValidator
     {

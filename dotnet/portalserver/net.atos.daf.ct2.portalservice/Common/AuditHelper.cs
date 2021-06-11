@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using net.atos.daf.ct2.auditservice;
-using net.atos.daf.ct2.portalservice.Entity.Audit;
-using Newtonsoft.Json;
 using Google.Protobuf.WellKnownTypes;
 using log4net;
-using System.Reflection;
+using net.atos.daf.ct2.auditservice;
+using net.atos.daf.ct2.portalservice.Entity.Audit;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
@@ -22,46 +19,14 @@ namespace net.atos.daf.ct2.portalservice.Common
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
-        public HeaderObj GetHeaderData(HttpRequest request)
-        {
-            var headerObj = new HeaderObj();
-            try
-            {
-                if (request != null)
-                {
-                    var Headers = request.Headers;
-                    var settings = new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        MissingMemberHandling = MissingMemberHandling.Ignore
-                    };
-
-                    if (Headers.Any(item => item.Key == "headerObj"))
-                    {
-                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["headerObj"], settings);
-                    }
-                    else if (Headers.Any(item => item.Key == "Headerobj"))
-                    {
-                        headerObj = JsonConvert.DeserializeObject<HeaderObj>(Headers["Headerobj"], settings);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error occurred while fetching request header object.", ex);
-            }
-            return headerObj;
-        }
-
-        public async Task<int> AddLogs(DateTime Created_at, DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HttpRequest request)
+        public async Task<int> AddLogs(DateTime Performed_at, string Component_name, string Service_name, AuditTrailEnum.Event_type Event_type, AuditTrailEnum.Event_status Event_status, string Message, int Sourceobject_id, int Targetobject_id, string Updated_data, HeaderObj userDetails)
         {
             AuditRecord logs = new AuditRecord();
             try
             {
-                var headerData = GetHeaderData(request);
-                int roleid = headerData.roleId;
-                int organizationid = headerData.orgId;
-                int Accountid = headerData.accountId;
+                int roleid = userDetails.RoleId;
+                int organizationid = userDetails.OrgId;
+                int Accountid = userDetails.AccountId;
 
                 logs.PerformedAt = Timestamp.FromDateTime(Performed_at.ToUniversalTime());
                 logs.PerformedBy = Accountid;
@@ -69,8 +34,6 @@ namespace net.atos.daf.ct2.portalservice.Common
                 logs.ServiceName = Service_name;
                 logs.Type = MapType(Event_type);
                 logs.Status = MapStatus(Event_status);
-                // logs.Event_type=  AuditTrailEnum.Event_type.CREATE; // (AuditTrailEnum.Event_type)Enum.Parse(typeof(AuditTrailEnum.Event_type), request.Type.ToString().ToUpper());
-                // logs.Event_status =  AuditTrailEnum.Event_status.SUCCESS; 
                 logs.Message = Message;
                 logs.SourceobjectId = Sourceobject_id;
                 logs.TargetobjectId = Targetobject_id;
@@ -86,14 +49,13 @@ namespace net.atos.daf.ct2.portalservice.Common
                 _logger.Error("Error occurred while adding audit logs.", ex);
                 return 1;
             }
-
         }
 
         public static int ToInt32(string value)
         {
             if (value == null)
                 return 0;
-            return int.Parse(value, (IFormatProvider)CultureInfo.CurrentCulture);
+            return int.Parse(value, CultureInfo.CurrentCulture);
         }
 
         private static Event_type MapType(AuditTrailEnum.Event_type type)

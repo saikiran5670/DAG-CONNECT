@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using net.atos.daf.ct2.identitysession.ENUM;
 
 namespace net.atos.daf.ct2.singlesignonservice.Entity

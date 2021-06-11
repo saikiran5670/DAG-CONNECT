@@ -1,24 +1,19 @@
 using System;
-
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
-using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.termsandconditions;
+using net.atos.daf.ct2.termsandconditions.entity;
 using net.atos.daf.ct2.translation;
-using net.atos.daf.ct2.translation.Enum;
 //using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.audit.Enum;
 using net.atos.daf.ct2.translation.entity;
+using net.atos.daf.ct2.translation.Enum;
 using net.atos.daf.ct2.translationservice.Entity;
 using static net.atos.daf.ct2.translationservice.Entity.Mapper;
-using System.Collections;
-using net.atos.daf.ct2.termsandconditions.entity;
-using net.atos.daf.ct2.termsandconditions;
-using Google.Protobuf;
 
 namespace net.atos.daf.ct2.translationservice
 {
@@ -26,19 +21,18 @@ namespace net.atos.daf.ct2.translationservice
     {
         private readonly ILogger _logger;
         //private readonly IAuditTraillib auditlog;
-        private readonly ITranslationManager translationmanager;
+        private readonly ITranslationManager _translationManager;
         private readonly Mapper _mapper;
-        private readonly ITermsAndConditionsManager termsandconditionsmanager;
-        private readonly IIconManager iconmanager;
+        private readonly ITermsAndConditionsManager _termsAndConditionsManager;
+        private readonly IIconManager _iconManager;
 
-        public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager _TranslationManager, ITermsAndConditionsManager _termsandconditionsmanager , IIconManager _iconmanager)
+        public TranslationManagementService(ILogger<TranslationManagementService> logger, ITranslationManager translationManager, ITermsAndConditionsManager termsAndConditionsManager, IIconManager iconManager)
         {
             _logger = logger;
-            translationmanager = _TranslationManager;
-            // auditlog = _auditlog;
-            termsandconditionsmanager = _termsandconditionsmanager;
+            _translationManager = translationManager;
+            _termsAndConditionsManager = termsAndConditionsManager;
             _mapper = new Mapper();
-            iconmanager = _iconmanager;
+            _iconManager = iconManager;
         }
 
         // Translation
@@ -49,7 +43,7 @@ namespace net.atos.daf.ct2.translationservice
             {
                 Translations trans = new Translations();
 
-                var translations = await translationmanager.GetTranslationsByMenu(request.MenuId, (translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString()), request.Code);
+                var translations = await _translationManager.GetTranslationsByMenu(request.MenuId, (Translationenum.MenuType)Enum.Parse(typeof(Translationenum.MenuType), request.Type.ToString()), request.Code);
                 // await auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Translation Component", "Translation Service", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Translation GetTranslations", 1, 2, trans.Name);
 
                 // response 
@@ -62,7 +56,7 @@ namespace net.atos.daf.ct2.translationservice
                     gettranslation.Type = item.Type;
                     gettranslation.Name = item.Name;
                     gettranslation.Value = item.Value;
-                    gettranslation.Filter = item.Filter == null ? "" : item.Filter;
+                    gettranslation.Filter = item.Filter ?? "";
                     gettranslation.MenuId = item.MenuId;
                     gettranslationList.TranslationsList.Add(gettranslation);
                 }
@@ -84,7 +78,7 @@ namespace net.atos.daf.ct2.translationservice
             {
                 List<Translations> translist = new List<Translations>();
 
-                var translations = await translationmanager.GetTranslationsByMenu(0, translationenum.MenuType.Menu, request.Languagecode);
+                var translations = await _translationManager.GetTranslationsByMenu(0, Translationenum.MenuType.Menu, request.Languagecode);
 
                 CodeResponce commontranslationList = new CodeResponce();
                 foreach (var item in translations)
@@ -118,7 +112,7 @@ namespace net.atos.daf.ct2.translationservice
         {
             try
             {
-                var translation = await translationmanager.GetLangagugeTranslationByKey(request.Key);
+                var translation = await _translationManager.GetLangagugeTranslationByKey(request.Key);
                 KeyResponce langtranslationList = new KeyResponce();
                 foreach (var item in translation)
                 {
@@ -128,7 +122,7 @@ namespace net.atos.daf.ct2.translationservice
                     langtranslation.Type = item.Type;
                     langtranslation.Name = item.Name;
                     langtranslation.Value = item.Value;
-                    langtranslation.Filter = item.Filter == null ? "" : item.Filter;
+                    langtranslation.Filter = item.Filter ?? "";
                     langtranslation.MenuId = item.MenuId;
                     langtranslationList.KeyTranslationsList.Add(langtranslation);
                 }
@@ -151,7 +145,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
 
-                var translation = await translationmanager.GetKeyTranslationByLanguageCode(request.Languagecode.Trim(), request.Key.Trim());
+                var translation = await _translationManager.GetKeyTranslationByLanguageCode(request.Languagecode.Trim(), request.Key.Trim());
 
 
                 KeyCodeResponce keytranslationList = new KeyCodeResponce();
@@ -163,7 +157,7 @@ namespace net.atos.daf.ct2.translationservice
                     keytranslation.Type = item.Type;
                     keytranslation.Name = item.Name;
                     keytranslation.Value = item.Value;
-                    keytranslation.Filter = item.Filter == null ? "" : item.Filter;
+                    keytranslation.Filter = item.Filter ?? "";
                     keytranslation.MenuId = item.MenuId;
                     keytranslationList.KeyCodeTranslationsList.Add(keytranslation);
                 }
@@ -184,7 +178,7 @@ namespace net.atos.daf.ct2.translationservice
         {
             try
             {
-                var translation = await translationmanager.GetTranslationsForDropDowns(request.Dropdownname, request.Languagecode);
+                var translation = await _translationManager.GetTranslationsForDropDowns(request.Dropdownname, request.Languagecode);
 
                 dropdownnameResponce translationfordropdownList = new dropdownnameResponce();
                 foreach (var item in translation)
@@ -195,7 +189,7 @@ namespace net.atos.daf.ct2.translationservice
                     translationfordropdown.Type = item.Type;
                     translationfordropdown.Name = item.Name;
                     translationfordropdown.Value = item.Value;
-                    translationfordropdown.Filter = item.Filter == null ? "" : item.Filter;
+                    translationfordropdown.Filter = item.Filter ?? "";
                     translationfordropdown.MenuId = item.MenuId;
                     translationfordropdownList.DropdownnameTranslationsList.Add(translationfordropdown);
                 }
@@ -224,7 +218,7 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in request.Dropdownname)
                 {
                     _logger.LogInformation("Drop down method get" + item + request.Languagecode);
-                    Dropdowns.AddRange(await translationmanager.GetTranslationsForDropDowns(item.Dropdownname, request.Languagecode));
+                    Dropdowns.AddRange(await _translationManager.GetTranslationsForDropDowns(item.Dropdownname, request.Languagecode));
 
                     foreach (var Ditem in Dropdowns)
                     {
@@ -234,7 +228,7 @@ namespace net.atos.daf.ct2.translationservice
                         translationfordropdown.Type = Ditem.Type;
                         translationfordropdown.Name = Ditem.Name;
                         translationfordropdown.Value = Ditem.Value;
-                        translationfordropdown.Filter = Ditem.Filter == null ? "" : Ditem.Filter;
+                        translationfordropdown.Filter = Ditem.Filter ?? "";
                         translationfordropdown.MenuId = Ditem.MenuId;
 
                         responce.DropdownnamearrayList.Add(translationfordropdown);
@@ -272,7 +266,7 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in obj.GetType().GetProperties())
                 {
                     _logger.LogInformation("Drop down method get" + item.Name + request.Languagecode);
-                    var Translations = await translationmanager.GetTranslationsForDropDowns(item.Name, request.Languagecode);
+                    var Translations = await _translationManager.GetTranslationsForDropDowns(item.Name, request.Languagecode);
 
                     switch (item.Name)
                     {
@@ -287,7 +281,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tlang.Type = lang.Type;
                                 tlang.Name = lang.Name;
                                 tlang.Value = lang.Value;
-                                tlang.Filter = lang.Filter == null ? "" : lang.Filter;
+                                tlang.Filter = lang.Filter ?? "";
                                 tlang.MenuId = lang.MenuId;
                                 Dropdowns.Language.Add(tlang);
                             }
@@ -304,7 +298,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tTime.Type = itemt.Type;
                                 tTime.Name = itemt.Name;
                                 tTime.Value = itemt.Value;
-                                tTime.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                tTime.Filter = itemt.Filter ?? "";
                                 tTime.MenuId = itemt.MenuId;
                                 Dropdowns.Timezone.Add(tTime);
                             }
@@ -323,7 +317,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tunit.Type = itemt.Type;
                                 tunit.Name = itemt.Name;
                                 tunit.Value = itemt.Value;
-                                tunit.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                tunit.Filter = itemt.Filter ?? "";
                                 tunit.MenuId = itemt.MenuId;
                                 Dropdowns.Unit.Add(tunit);
                             }
@@ -340,7 +334,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tcurrency.Type = itemt.Type;
                                 tcurrency.Name = itemt.Name;
                                 tcurrency.Value = itemt.Value;
-                                tcurrency.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                tcurrency.Filter = itemt.Filter ?? "";
                                 tcurrency.MenuId = itemt.MenuId;
                                 Dropdowns.Currency.Add(tcurrency);
                             }
@@ -358,7 +352,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tlandingpagedisplay.Type = itemt.Type;
                                 tlandingpagedisplay.Name = itemt.Name;
                                 tlandingpagedisplay.Value = itemt.Value;
-                                tlandingpagedisplay.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                tlandingpagedisplay.Filter = itemt.Filter ?? "";
                                 tlandingpagedisplay.MenuId = itemt.MenuId;
                                 Dropdowns.Landingpagedisplay.Add(tlandingpagedisplay);
                             }
@@ -373,7 +367,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tdateformat.Type = itemt.Type;
                                 tdateformat.Name = itemt.Name;
                                 tdateformat.Value = itemt.Value;
-                                tdateformat.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                tdateformat.Filter = itemt.Filter ?? "";
                                 tdateformat.MenuId = itemt.MenuId;
                                 Dropdowns.Dateformat.Add(tdateformat);
                             }
@@ -388,7 +382,7 @@ namespace net.atos.daf.ct2.translationservice
                                 ttimeformat.Type = itemt.Type;
                                 ttimeformat.Name = itemt.Name;
                                 ttimeformat.Value = itemt.Value;
-                                ttimeformat.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                ttimeformat.Filter = itemt.Filter ?? "";
                                 ttimeformat.MenuId = itemt.MenuId;
                                 Dropdowns.Timeformat.Add(ttimeformat);
                             }
@@ -403,7 +397,7 @@ namespace net.atos.daf.ct2.translationservice
                                 tvehicledisplay.Type = itemt.Type;
                                 tvehicledisplay.Name = itemt.Name;
                                 tvehicledisplay.Value = itemt.Value;
-                                tvehicledisplay.Filter = itemt.Filter == null ? "" : itemt.Filter;
+                                tvehicledisplay.Filter = itemt.Filter ?? "";
                                 tvehicledisplay.MenuId = itemt.MenuId;
                                 Dropdowns.Vehicledisplay.Add(tvehicledisplay);
                             }
@@ -433,7 +427,7 @@ namespace net.atos.daf.ct2.translationservice
             {
                 _logger.LogInformation("All langauges method get");
                 // var translations =  translationmanager.GetTranslationsByMenu(request.ID,(translationenum.MenuType)Enum.Parse(typeof(translationenum.MenuType), request.Type.ToString().ToUpper())).Result;
-                var translations = await translationmanager.GetAllLanguageCode();
+                var translations = await _translationManager.GetAllLanguageCode();
 
                 TranslationListResponce allLanguageCodeResponse = new TranslationListResponce();
                 foreach (var item in translations)
@@ -443,7 +437,7 @@ namespace net.atos.daf.ct2.translationservice
                     tranlang.Name = item.Name;
                     tranlang.Code = item.Code;
                     tranlang.Key = item.Key;
-                    tranlang.Description = item.Description == null ? "" : item.Description;
+                    tranlang.Description = item.Description ?? "";
                     allLanguageCodeResponse.Languagelist.Add(tranlang);
                 }
 
@@ -470,7 +464,7 @@ namespace net.atos.daf.ct2.translationservice
 
                 Objtranslationupload = _mapper.ToTranslationUploadEntity(request);
 
-                var result = await translationmanager.InsertTranslationFileDetails(Objtranslationupload);
+                var result = await _translationManager.InsertTranslationFileDetails(Objtranslationupload);
                 _logger.LogInformation("InsertTranslationFileDetails service called.");
                 TranslationRecordResponce objresponce = new TranslationRecordResponce();
                 objresponce.Added = result.AddCount;
@@ -504,7 +498,7 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("GetFileUploadDetails Method");
                 // Translationupload Objtranslationupload = new Translationupload();
                 var fileID = _mapper.ToTranslationEntity(request);
-                IEnumerable<Translationupload> ObjRetrieveFileUploadList = await translationmanager.GetFileUploadDetails(fileID);
+                IEnumerable<Translationupload> ObjRetrieveFileUploadList = await _translationManager.GetFileUploadDetails(fileID);
                 FileUploadDetailsResponse response = new FileUploadDetailsResponse();
                 foreach (var item in ObjRetrieveFileUploadList)
                 {
@@ -548,24 +542,24 @@ namespace net.atos.daf.ct2.translationservice
 
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
-                    code = x.Code,
-                    type = x.Type,
-                    veh_type = x.VehType,
-                    warning_class = x.WarningClass,
-                    number = x.Number,
-                    description = x.Description,
-                    advice = x.Advice,
-                    icon_id = x.IconId,
-                    expires_at = x.ExpiresAt
+                    Code = x.Code,
+                    Type = x.Type,
+                    VehType = x.VehType,
+                    WarningClass = x.WarningClass,
+                    Number = x.Number,
+                    Description = x.Description,
+                    Advice = x.Advice,
+                    IconId = x.IconId,
+                    ExpiresAt = x.ExpiresAt
 
                 }).ToList());
 
-                var DTCData = await translationmanager.ImportDTCWarningData(dtcWarning);
+                var DTCData = await _translationManager.ImportDTCWarningData(dtcWarning);
 
                 foreach (var item in DTCData)
                 {
-                    if (item.message == "violates foreign key constraint for Icon_ID")
-                    foreignkeymessage = item.message;
+                    if (item.Message == "violates foreign key constraint for Icon_ID")
+                        foreignkeymessage = item.Message;
                 }
 
                 if (foreignkeymessage == "violates foreign key constraint for Icon_ID")
@@ -579,17 +573,17 @@ namespace net.atos.daf.ct2.translationservice
                     response.DtcDataResponse.AddRange(DTCData
                                   .Select(x => new dtcwarning()
                                   {
-                                      Id = x.id,
-                                      Code = x.code,
-                                      Type = x.type,
-                                      VehType = x.veh_type,
-                                      WarningClass = x.warning_class,
-                                      Number = x.number,
-                                      Description = x.description,
-                                      Advice = x.advice,
-                                      IconId = x.icon_id,
-                                      ExpiresAt = x.expires_at,
-                                      CreatedBy = x.created_by
+                                      Id = x.Id,
+                                      Code = x.Code,
+                                      Type = x.Type,
+                                      VehType = x.VehType,
+                                      WarningClass = x.WarningClass,
+                                      Number = x.Number,
+                                      Description = x.Description,
+                                      Advice = x.Advice,
+                                      IconId = x.IconId,
+                                      ExpiresAt = x.ExpiresAt,
+                                      CreatedBy = x.CreatedBy
                                   }).ToList());
 
                     response.Code = Responcecode.Success;
@@ -614,23 +608,23 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
 
-                var dtcData = await translationmanager.GetDTCWarningData(request.LanguageCode);
+                var dtcData = await _translationManager.GetDTCWarningData(request.LanguageCode);
 
                 WarningGetResponse getResponseList = new WarningGetResponse();
                 foreach (var item in dtcData)
                 {
                     var WarnData = new dtcwarning();
-                    WarnData.Id = item.id;
-                    WarnData.Code = item.code;
-                    WarnData.Type = item.Warning_type;
-                    WarnData.VehType = item.veh_type;
-                    WarnData.WarningClass = item.warning_class;
-                    WarnData.Number = item.number;
-                    WarnData.Description = item.description;
-                    WarnData.Advice = item.advice;
-                    WarnData.IconId = item.icon_id;
-                    WarnData.ExpiresAt = item.expires_at;
-                    WarnData.CreatedBy = item.created_by;
+                    WarnData.Id = item.Id;
+                    WarnData.Code = item.Code;
+                    WarnData.Type = item.WarningType;
+                    WarnData.VehType = item.VehType;
+                    WarnData.WarningClass = item.WarningClass;
+                    WarnData.Number = item.Number;
+                    WarnData.Description = item.Description;
+                    WarnData.Advice = item.Advice;
+                    WarnData.IconId = item.IconId;
+                    WarnData.ExpiresAt = item.ExpiresAt;
+                    WarnData.CreatedBy = item.CreatedBy;
                     getResponseList.DtcGetDataResponse.Add(WarnData);
                 }
                 return await Task.FromResult(getResponseList);
@@ -658,35 +652,35 @@ namespace net.atos.daf.ct2.translationservice
 
                 dtcWarning.AddRange(request.DtcData.Select(x => new DTCwarning()
                 {
-                    code = x.Code,
-                    type = x.Type,
-                    veh_type = x.VehType,
-                    warning_class = x.WarningClass,
-                    number = x.Number,
-                    description = x.Description,
-                    advice = x.Advice,
-                    icon_id = x.IconId,
-                    expires_at = x.ExpiresAt
+                    Code = x.Code,
+                    Type = x.Type,
+                    VehType = x.VehType,
+                    WarningClass = x.WarningClass,
+                    Number = x.Number,
+                    Description = x.Description,
+                    Advice = x.Advice,
+                    IconId = x.IconId,
+                    ExpiresAt = x.ExpiresAt
 
                 }).ToList());
 
-                var DTCData = await translationmanager.UpdateDTCWarningData(dtcWarning);
+                var DTCData = await _translationManager.UpdateDTCWarningData(dtcWarning);
 
 
                 response.DtcDataResponse.AddRange(DTCData
                                    .Select(x => new dtcwarning()
                                    {
-                                       Id = x.id,
-                                       Code = x.code,
-                                       Type = x.type,
-                                       VehType = x.veh_type,
-                                       WarningClass = x.warning_class,
-                                       Number = x.number,
-                                       Description = x.description,
-                                       Advice = x.advice,
-                                       IconId = x.icon_id,
-                                       ExpiresAt = x.expires_at,
-                                       CreatedBy = x.created_by
+                                       Id = x.Id,
+                                       Code = x.Code,
+                                       Type = x.Type,
+                                       VehType = x.VehType,
+                                       WarningClass = x.WarningClass,
+                                       Number = x.Number,
+                                       Description = x.Description,
+                                       Advice = x.Advice,
+                                       IconId = x.IconId,
+                                       ExpiresAt = x.ExpiresAt,
+                                       CreatedBy = x.CreatedBy
                                    }).ToList());
 
                 response.Code = Responcecode.Success;
@@ -717,7 +711,7 @@ namespace net.atos.daf.ct2.translationservice
 
                 ObjAccountTermsCondition = _mapper.ToAcceptedTermConditionEntity(request);
 
-                var result = await termsandconditionsmanager.AddUserAcceptedTermCondition(ObjAccountTermsCondition);
+                var result = await _termsAndConditionsManager.AddUserAcceptedTermCondition(ObjAccountTermsCondition);
                 _logger.LogInformation("AddUserAcceptedTermCondition service called.");
                 return await Task.FromResult(new AcceptedTermConditionResponse
                 {
@@ -743,10 +737,10 @@ namespace net.atos.daf.ct2.translationservice
             {
                 _logger.LogInformation("GetAllVersionNo method ");
                 net.atos.daf.ct2.termsandconditions.entity.VersionByID objVersionByID = new VersionByID();
-                objVersionByID.orgId = request.OrgId;
-                objVersionByID.accountId = request.AccountId;
-                objVersionByID.levelCode = request.LevelCode;
-                var result = await termsandconditionsmanager.GetAllVersionNo(objVersionByID);
+                objVersionByID.OrgId = request.OrgId;
+                objVersionByID.AccountId = request.AccountId;
+                objVersionByID.LevelCode = request.LevelCode;
+                var result = await _termsAndConditionsManager.GetAllVersionNo(objVersionByID);
                 _logger.LogInformation("GetAllVersionNo service called.");
                 VersionNoResponse response = new VersionNoResponse();
                 foreach (var item in result.Distinct())
@@ -773,7 +767,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
                 _logger.LogInformation("GetTermConditionForVersionNo method ");
-                var result = await termsandconditionsmanager.GetTermConditionForVersionNo(request.VersionNo, request.Languagecode);
+                var result = await _termsAndConditionsManager.GetTermConditionForVersionNo(request.VersionNo, request.Languagecode);
                 _logger.LogInformation("GetTermConditionForVersionNo service called.");
 
                 TermCondDetailsReponse Response = new TermCondDetailsReponse();
@@ -782,7 +776,7 @@ namespace net.atos.daf.ct2.translationservice
                     var tramcond = new TermConditionReponse();
                     tramcond.Id = item.Id;
                     tramcond.Code = item.Code;
-                    tramcond.Versionno = item.version_no;
+                    tramcond.Versionno = item.Version_no;
                     if (item.Description != null)
                     {
                         tramcond.Description = ByteString.CopyFrom(item.Description);
@@ -810,7 +804,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
                 _logger.LogInformation("GetAcceptedTermConditionByUser method ");
-                var result = await termsandconditionsmanager.GetAcceptedTermConditionByUser(request.AccountId, request.OrganizationId);
+                var result = await _termsAndConditionsManager.GetAcceptedTermConditionByUser(request.AccountId, request.OrganizationId);
                 _logger.LogInformation("GetAcceptedTermConditionByUser service called.");
 
                 TermCondDetailsReponse Response = new TermCondDetailsReponse();
@@ -819,7 +813,7 @@ namespace net.atos.daf.ct2.translationservice
                     var tramcond = new TermConditionReponse();
                     tramcond.Id = item.Id;
                     tramcond.Code = item.Code;
-                    tramcond.Versionno = item.version_no;
+                    tramcond.Versionno = item.Version_no;
                     if (item.Description != null)
                     {
                         tramcond.Description = ByteString.CopyFrom(item.Description);
@@ -828,8 +822,8 @@ namespace net.atos.daf.ct2.translationservice
                     tramcond.StartDate = item.StartDate.ToString();
                     tramcond.AcceptedDate = item.Accepted_Date.ToString();
                     tramcond.CreatedAt = item.Created_At.ToString();
-                    tramcond.FirstName = item.FirstName == null ? "" : item.FirstName;
-                    tramcond.Lastname = item.Lastname == null ? "" : item.Lastname;
+                    tramcond.FirstName = item.FirstName ?? "";
+                    tramcond.Lastname = item.Lastname ?? "";
                     Response.TermCondition.Add(tramcond);
                 }
                 Response.Code = Responcecode.Success;
@@ -856,30 +850,35 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("UpdateDTCTranslationIcon method ");
 
                 var icons = new List<Icon>();
-                
-                icons.AddRange(request.IconData.Select(x=> new Icon()
+
+                icons.AddRange(request.IconData.Select(x => new Icon()
                 {
-                     name=x.Name,                     
-                     icon=x.Icon.ToArray(),
-                     modified_at=x.ModifiedAt,
-                     modified_by=x.ModifiedBy
+                    Name = x.Name,
+                    Iconn = x.Icon.ToArray(),
+                    ModifiedAt = x.ModifiedAt,
+                    ModifiedBy = x.ModifiedBy
 
                 }).ToList());
-               
-                 bool result = await iconmanager.UpdateIcons(icons);
+
+                string result = await _iconManager.UpdateIcons(icons);
                 _logger.LogInformation("UpdateDTCTranslationIcon service called.");
 
                 IconUpdateResponse Response = new IconUpdateResponse();
-                if(result)
-                {
-                    Response.Code = Responcecode.Success;
-                    Response.Message = "Update Icon in DTC translation.";
-                }
-                else
+                var count = icons.Count;
+                var Text = "File Name not exist";
+                
+                var NotFoundcount = result.ToLowerInvariant().Split(new string[] { Text.ToLowerInvariant() }, StringSplitOptions.None).Count() - 1;
+                if (count == NotFoundcount )
                 {
                     Response.Code = Responcecode.Failed;
                     Response.Message = "File Name not exist .";
                 }
+                else if (result != "")
+                {
+                    Response.Code = Responcecode.Success;
+                    Response.Message = "Update Icon in DTC translation for :" + result;
+                }
+                
                 return await Task.FromResult(Response);
             }
             catch (Exception ex)
@@ -899,31 +898,31 @@ namespace net.atos.daf.ct2.translationservice
             {
                 _logger.LogInformation("GetDTCTranslationIcon method ");
 
-                var icons = new List<Icon>();              
-                
-                 IconGetResponse Response = new IconGetResponse();   
-                 icons = await iconmanager.GetIcons(request.Id);
-                 foreach(var itemicon in icons)
-                 {
+                var icons = new List<Icon>();
+
+                IconGetResponse Response = new IconGetResponse();
+                icons = await _iconManager.GetIcons(request.Id);
+                foreach (var itemicon in icons)
+                {
                     var icon = new dtcIcon();
-                    icon.Id = itemicon.id;
-                    icon.Name =itemicon.name; 
-                    if (itemicon.icon != null)
+                    icon.Id = itemicon.Id;
+                    icon.Name = itemicon.Name;
+                    if (itemicon.Iconn != null)
                     {
-                        icon.Icon = ByteString.CopyFrom(itemicon.icon);
+                        icon.Icon = ByteString.CopyFrom(itemicon.Iconn);
                     }
-                    icon.ModifiedAt = itemicon.modified_at == null ? 0 : (long)itemicon.modified_at;
-                    icon.ModifiedBy = itemicon.modified_by == null ? 0 :(int)itemicon.modified_by;
-                    icon.Type =itemicon.type.ToString();
-                    icon.WarningClass =itemicon.warning_class; 
-                    icon.WarningNumber =itemicon.warning_number;        
-                    icon.ColorName =itemicon.color_name.ToString();
-                    icon.State =itemicon.state.ToString();                        
+                    icon.ModifiedAt = itemicon.ModifiedAt == null ? 0 : (long)itemicon.ModifiedAt;
+                    icon.ModifiedBy = itemicon.ModifiedBy == null ? 0 : (int)itemicon.ModifiedBy;
+                    icon.Type = itemicon.Type.ToString();
+                    icon.WarningClass = itemicon.WarningClass;
+                    icon.WarningNumber = itemicon.WarningNumber;
+                    icon.ColorName = itemicon.ColorName.ToString();
+                    icon.State = itemicon.State.ToString();
                     Response.IconData.Add(icon);
-                 }
+                }
                 _logger.LogInformation("GetDTCTranslationIcon service called.");
-                
-                if(icons.Count()>0)
+
+                if (icons.Count() > 0)
                 {
                     Response.Code = Responcecode.Success;
                     Response.Message = "Get Icon in DTC translation.";
@@ -933,7 +932,7 @@ namespace net.atos.daf.ct2.translationservice
                     Response.Code = Responcecode.Failed;
                     Response.Message = "Resource Not Found ";
                 }
-                 return await Task.FromResult(Response);
+                return await Task.FromResult(Response);
             }
             catch (Exception ex)
             {
@@ -952,10 +951,10 @@ namespace net.atos.daf.ct2.translationservice
                 _logger.LogInformation("UploadTermsAndCondition method ");
                 UploadTermandConditionResponseList objUploadTermandConditionResponseList = new UploadTermandConditionResponseList();
                 net.atos.daf.ct2.termsandconditions.entity.TermsandConFileDataList objTermsandConFileDataList = new ct2.termsandconditions.entity.TermsandConFileDataList();
-                objTermsandConFileDataList._data = new List<TermsandConFileData>();
-                objTermsandConFileDataList.start_date = request.StartDate;
-                objTermsandConFileDataList.end_date = request.EndDate;
-                objTermsandConFileDataList.created_by = request.CreatedBy;
+                objTermsandConFileDataList.Data = new List<TermsandConFileData>();
+                objTermsandConFileDataList.Start_date = request.StartDate;
+                objTermsandConFileDataList.End_date = request.EndDate;
+                objTermsandConFileDataList.Created_by = request.CreatedBy;
                 if (request == null)
                 {
                     return objUploadTermandConditionResponseList;
@@ -963,29 +962,29 @@ namespace net.atos.daf.ct2.translationservice
                 foreach (var item in request.Data)
                 {
                     net.atos.daf.ct2.termsandconditions.entity.TermsandConFileData objTermsandConFileData = new ct2.termsandconditions.entity.TermsandConFileData();
-                    objTermsandConFileData.fileName = item.FileName;
-                    objTermsandConFileData.version_no = item.Versionno;
-                    objTermsandConFileData.code = item.Code;
-                    objTermsandConFileData.description = item.Description.ToByteArray() ;
-                   
-                    objTermsandConFileDataList._data.Add(objTermsandConFileData);
+                    objTermsandConFileData.FileName = item.FileName;
+                    objTermsandConFileData.Version_no = item.Versionno;
+                    objTermsandConFileData.Code = item.Code;
+                    objTermsandConFileData.Description = item.Description.ToByteArray();
+
+                    objTermsandConFileDataList.Data.Add(objTermsandConFileData);
                 }
 
-                var data = await termsandconditionsmanager.UploadTermsAndCondition(objTermsandConFileDataList);
+                var data = await _termsAndConditionsManager.UploadTermsAndCondition(objTermsandConFileDataList);
                 _logger.LogInformation("UploadTermsAndCondition service called ");
-                
+
                 if (data == null)
                 {
                     return objUploadTermandConditionResponseList;
                 }
                 _logger.LogInformation("UploadTermsAndCondition service called.");
                 //objUploadTermandConditionResponseList.Uploadedfilesaction = new Google.Protobuf.Collections.RepeatedField<UploadTermandConditionResponse>();
-                foreach (var items in data.termsAndConditionDetails)
+                foreach (var items in data.TermsAndConditionDetails)
                 {
                     var objUploadTermandConditionResponse = new UploadTermandConditionResponse();
-                    objUploadTermandConditionResponse.FileName = items.fileName;
-                    objUploadTermandConditionResponse.Id = items.id;
-                    objUploadTermandConditionResponse.Action = items.action;
+                    objUploadTermandConditionResponse.FileName = items.FileName;
+                    objUploadTermandConditionResponse.Id = items.Id;
+                    objUploadTermandConditionResponse.Action = items.Action;
                     objUploadTermandConditionResponseList.Uploadedfilesaction.Add(objUploadTermandConditionResponse);
                 }
                 objUploadTermandConditionResponseList.Code = Responcecode.Success;
@@ -1002,22 +1001,22 @@ namespace net.atos.daf.ct2.translationservice
                 });
             }
         }
-        
+
 
         public override async Task<TermCondDetailsReponse> GetLatestTermCondition(UserAcceptedTermConditionRequest request, ServerCallContext context)
         {
             try
             {
                 _logger.LogInformation("GetAcceptedTermConditionByUser method ");
-                var result = await termsandconditionsmanager.GetLatestTermCondition(request.AccountId, request.OrganizationId);
+                var result = await _termsAndConditionsManager.GetLatestTermCondition(request.AccountId, request.OrganizationId);
                 _logger.LogInformation("GetAcceptedTermConditionByUser service called.");
                 TermCondDetailsReponse Response = new TermCondDetailsReponse();
                 if (result.Id > 0)
                 {
                     TermConditionReponse tramcond = new TermConditionReponse();
                     tramcond.Id = result.Id;
-                    tramcond.Code = result.Code == null ? "" : result.Code;
-                    tramcond.Versionno = result.version_no == null ? "" : result.version_no;
+                    tramcond.Code = result.Code ?? "";
+                    tramcond.Versionno = result.Version_no ?? "";
                     if (result.Description != null)
                     {
                         tramcond.Description = ByteString.CopyFrom(result.Description);
@@ -1046,7 +1045,7 @@ namespace net.atos.daf.ct2.translationservice
             try
             {
                 _logger.LogInformation("CheckUserAcceptedTermCondition method ");
-                var result = await termsandconditionsmanager.CheckUserAcceptedTermCondition(request.AccountId, request.OrganizationId);
+                var result = await _termsAndConditionsManager.CheckUserAcceptedTermCondition(request.AccountId, request.OrganizationId);
                 _logger.LogInformation("CheckUserAcceptedTermCondition service called.");
                 UserAcceptedTermConditionResponse Response = new UserAcceptedTermConditionResponse();
                 Response.IsUserAcceptedTC = result;

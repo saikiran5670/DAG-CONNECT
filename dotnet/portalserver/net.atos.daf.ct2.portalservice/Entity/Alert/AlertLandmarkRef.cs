@@ -1,8 +1,5 @@
-﻿using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
+using net.atos.daf.ct2.portalservice.CustomValidators.Alert;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
@@ -13,6 +10,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Landmark type should be 1 character")]
         public string LandmarkType { get; set; }
         public int RefId { get; set; }
+        [AlertLandmarkDistanceCheck("LandmarkType", ErrorMessage = "Distance is required for POI.")]
         public double Distance { get; set; }
         [StringLength(1, MinimumLength = 0, ErrorMessage = "Unit type should be 1 character")]
         //[AlertUnitTypeCheck(ErrorMessage = "Unit Type is invalid")]

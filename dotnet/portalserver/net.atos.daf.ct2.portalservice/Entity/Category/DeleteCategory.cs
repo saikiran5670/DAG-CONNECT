@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Category
 {
     public class DeleteCategory
     {
         // public int[] Ids { get; set; }
-        public List<Category_SubCategory_ID> category_SubCategory_s { get; set; }
+        public List<Category_SubCategory_ID> Category_SubCategory { get; set; }
 
     }
 

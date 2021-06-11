@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
@@ -9,9 +6,9 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     {
         //public int Id { get; set; }
         //public int NotificationId { get; set; }
-        [StringLength(1, MinimumLength = 1,ErrorMessage = "Availability period type should be 1 character")]
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Availability period type should be 1 character")]
         public string AvailabilityPeriodType { get; set; }
-        [StringLength(1, MinimumLength = 1,ErrorMessage = "Period type should be 1 character")]
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Period type should be 1 character")]
         public string PeriodType { get; set; }
         public int StartTime { get; set; }
         public int EndTime { get; set; }
@@ -19,7 +16,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long CreatedAt { get; set; }
         //public long ModifiedAt { get; set; }
     }
-    public class NotificationAvailabilityPeriodEdit: NotificationAvailabilityPeriod
+    public class NotificationAvailabilityPeriodEdit : NotificationAvailabilityPeriod
     {
         public int Id { get; set; }
         public int NotificationId { get; set; }

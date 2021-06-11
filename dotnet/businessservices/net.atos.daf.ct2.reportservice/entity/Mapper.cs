@@ -1,10 +1,7 @@
-﻿using Google.Protobuf.Collections;
-using net.atos.daf.ct2.reports.ENUM;
-using net.atos.daf.ct2.reports.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.ENUM;
 
 namespace net.atos.daf.ct2.reportservice.entity
 {
@@ -31,12 +28,14 @@ namespace net.atos.daf.ct2.reportservice.entity
         internal net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest MapCreateUserPrefences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest obj
-                   = new net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest();
-            obj.AtributesShowNoShow = new List<reports.entity.Atribute>();
+                   = new net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest
+                   {
+                       AtributesShowNoShow = new List<reports.entity.Atribute>(),
 
-            obj.OrganizationId = objUserPreferenceCreateRequest.OrganizationId;
-            obj.ReportId = objUserPreferenceCreateRequest.ReportId;
-            obj.AccountId = objUserPreferenceCreateRequest.AccountId;
+                       OrganizationId = objUserPreferenceCreateRequest.OrganizationId,
+                       ReportId = objUserPreferenceCreateRequest.ReportId,
+                       AccountId = objUserPreferenceCreateRequest.AccountId
+                   };
             obj.ReportId = objUserPreferenceCreateRequest.ReportId;
             obj.Type = Convert.ToChar(objUserPreferenceCreateRequest.Type);
             obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
@@ -57,7 +56,7 @@ namespace net.atos.daf.ct2.reportservice.entity
         internal IEnumerable<string> MapVinList(IEnumerable<string> vinList)
         {
             var vinListResult = new List<string>();
-            foreach (var vin in vinList)
+            foreach (string vin in vinList)
             {
                 vinListResult.Add(vin);
             }

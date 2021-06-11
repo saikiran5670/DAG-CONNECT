@@ -1,6 +1,6 @@
-﻿using net.atos.daf.ct2.poigeofence.entity;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.poigeofence.entity;
 
 namespace net.atos.daf.ct2.poigeofence
 {
@@ -14,5 +14,7 @@ namespace net.atos.daf.ct2.poigeofence
         Task<bool> DeletePOI(List<int> poiIds);
         Task<UploadPOIExcel> UploadPOI(UploadPOIExcel uploadPOIExcel);
         Task<List<TripEntityResponce>> GetAllTripDetails(TripEntityRequest tripEntityRequest);
+        Task<TripAddressDetails> UpdateTripArddress(TripAddressDetails tripAddressDetails);
+
     }
 }

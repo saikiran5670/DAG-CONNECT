@@ -1,9 +1,8 @@
-﻿using net.atos.daf.ct2.reports.entity;
-using net.atos.daf.ct2.reports.repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reports.repository;
+using System.Linq;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -17,6 +16,12 @@ namespace net.atos.daf.ct2.reports
         }
 
         #region Select User Preferences
+
+        public Task<IEnumerable<ReportDetails>> GetReportDetails()
+        {
+            return _reportRepository.GetReportDetails();
+        }
+
         public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
                                                                                                   int accountId,
                                                                                                   int organizationId)
@@ -48,11 +53,83 @@ namespace net.atos.daf.ct2.reports
 
         #region Trip Report Table Details
 
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter)
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter) => await _reportRepository.GetFilteredTripDetails(tripFilter);
+
+        #endregion
+
+        #region Driver Time management Report
+        /// <summary>
+        /// Fetch Multiple Drivers activity data and group by name with all type duraion aggregate
+        /// </summary>
+        /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
+        /// <returns></returns>
+        public async Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter DriverActivityFilter)
         {
-            return await _reportRepository.GetFilteredTripDetails(tripFilter);
+            List<DriversActivities> driverActivities = await _reportRepository.GetDriversActivity(DriverActivityFilter);
+            List<DriversActivities> combineDriverActivities = new List<DriversActivities>();
+            combineDriverActivities = driverActivities.GroupBy(activityGroup => activityGroup.DriverId)
+                                                      .Select(activityItem => new DriversActivities
+                                                      {
+                                                          DriverName = activityItem.FirstOrDefault().DriverName,
+                                                          DriverId = activityItem.FirstOrDefault().DriverId,
+                                                          ActivityDate = activityItem.FirstOrDefault().ActivityDate,
+                                                          Code = activityItem.FirstOrDefault().Code,
+                                                          VIN = activityItem.FirstOrDefault().VIN,
+                                                          AvailableTime = activityItem.Sum(c => c.AvailableTime),
+                                                          DriveTime = activityItem.Sum(c => c.DriveTime),
+                                                          RestTime = activityItem.Sum(c => c.RestTime),
+                                                          WorkTime = activityItem.Sum(c => c.WorkTime),
+                                                          ServiceTime = activityItem.Sum(c => c.ServiceTime),
+                                                      }).ToList();
+            return combineDriverActivities;
+
         }
 
+        /// <summary>
+        /// Fetch Single driver activities data by Day group
+        /// </summary>
+        /// <param name="DriverActivityFilter">Filters for driver activity with VIN and Driver ID </param>
+        /// <returns></returns>
+        public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter) => await _reportRepository.GetDriversActivity(DriverActivityFilter);
+
+        public async Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN)
+        {
+            return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
+        }
+
+        #endregion
+
+        #region Eco Score Report - Create Profile
+
+        public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
+        {            
+            return await _reportRepository.CreateEcoScoreProfile(dto);
+        }
+
+        #endregion
+
+        #region Eco Score Report - Get Profile and KPI Details
+        public async Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId)
+        {
+            return await _reportRepository.GetEcoScoreProfiles(orgId);
+        }
+
+        public async Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId)
+        {
+            return await _reportRepository.GetEcoScoreProfileKPIDetails(profileId);
+        }
+        #endregion
+        #region  Eco Score Report - Update Profile
+        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
+        {
+            var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
+            if (await isExist)
+            {
+                 return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+            }
+            else
+                return -1 ;
+        }
         #endregion
     }
 }

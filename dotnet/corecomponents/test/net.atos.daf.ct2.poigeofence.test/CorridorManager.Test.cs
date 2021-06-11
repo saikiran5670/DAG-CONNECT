@@ -1,10 +1,9 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.poigeofence.repository;
-using net.atos.daf.ct2.poigeofence.entity;
-using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 
 namespace net.atos.daf.ct2.poigeofence.test
 {
@@ -13,7 +12,7 @@ namespace net.atos.daf.ct2.poigeofence.test
     {
         private readonly IConfiguration _config;
         private readonly IDataAccess _dataAccess;
-        private readonly CorridorRepository _CorridorRepository;
+        private readonly CorridorRepository _corridorRepository;
         private readonly ICorridorManger _iCorridorManger;
 
         public CorridorManagerTest()
@@ -22,8 +21,8 @@ namespace net.atos.daf.ct2.poigeofence.test
                                                 .Build();
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-            _CorridorRepository = new CorridorRepository(_dataAccess);
-            _iCorridorManger = new CorridorManger(_CorridorRepository);
+            _corridorRepository = new CorridorRepository(_dataAccess);
+            _iCorridorManger = new CorridorManger(_corridorRepository);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -151,7 +150,7 @@ namespace net.atos.daf.ct2.poigeofence.test
         {
             var existingTripCorridor = new ExistingTripCorridor()
             {
-                Id=199,
+                Id = 199,
                 Address = "Pune",
                 //  CategoryId = 10,
                 City = "Pune",
@@ -189,7 +188,7 @@ namespace net.atos.daf.ct2.poigeofence.test
                                         StartLatitude=43.34, StartLongitude=12.34, TripId="trip11",
                                         NodePoints=new List<Nodepoint>()
                                                        { new Nodepoint()
-                                                             { 
+                                                             {
                                                            Id=100,
                                                            Latitude=12.34, TripId="trip11", Address="Node address11",
                                                                CreatedBy=1,Longitude =33.23, SequenceNumber=1, State="A"

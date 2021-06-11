@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace TCUSend
 {
     public class TCURegistrationEvents
     {
-        private List<TCURegistrationEvent> tCURegistrationEvent;
-
         public TCURegistrationEvents(List<TCURegistrationEvent> tcuRegistrationEvent)
         {
-            this.tCURegistrationEvent = tcuRegistrationEvent;
+            TCURegistrationEvent = tcuRegistrationEvent;
         }
 
-        public List<TCURegistrationEvent> TCURegistrationEvent { get => tCURegistrationEvent; set => tCURegistrationEvent = value; }
+        public List<TCURegistrationEvent> TCURegistrationEvent { get; }
     }
 }

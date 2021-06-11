@@ -1,6 +1,6 @@
 
 syntax = "proto3";
-//import "google/protobuf/wrappers.proto";
+import "google/protobuf/wrappers.proto";
 option csharp_namespace = "net.atos.daf.ct2.reportservice";
 
 package report;
@@ -9,7 +9,15 @@ service ReportService{
 rpc GetUserPreferenceReportDataColumn (IdRequest) returns (UserPreferenceDataColumnResponse);
 rpc CreateUserPreference (UserPreferenceCreateRequest) returns (UserPreferenceCreateResponse);
 rpc GetVinsFromTripStatisticsWithVehicleDetails (VehicleListRequest) returns (VehicleListAndDetailsResponse);
-rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponce);
+rpc GetFilteredTripDetails (TripFilterRequest) returns (TripResponse);
+rpc GetDriversActivity (ActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetDriverActivity (SingleDriverActivityFilterRequest) returns (DriverActivityResponse);
+rpc GetReportDetails (TempPara) returns (ReportDetailsResponse);
+rpc GetDriverActivityParameters (IdRequestForDriverActivity) returns (DriverListAndVehicleDetailsResponse);
+rpc CreateEcoScoreProfile (CreateEcoScoreProfileRequest) returns (CreateEcoScoreProfileResponse);
+rpc GetEcoScoreProfiles (GetEcoScoreProfileRequest) returns (GetEcoScoreProfileResponse);
+rpc GetEcoScoreProfileKPIDetails (GetEcoScoreProfileKPIRequest) returns (GetEcoScoreProfileKPIResponse);
+rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
 }
 
 enum Responsecode{
@@ -20,6 +28,23 @@ enum Responsecode{
   NotFound = 404;
   InternalServerError = 500;
 }
+message TempPara {
+  int32 TempID = 1;
+}
+message ReportDetailsResponse {
+    repeated ReportDetails ReportDetails = 1;
+    Responsecode Code = 2;
+    string message = 3; 
+}
+
+message ReportDetails {
+    int32 Id = 1;
+    string Name = 2;
+    string Key = 3;
+}
+
+
+
 
 message IdRequest {
   int32 ReportId = 1;
@@ -78,12 +103,12 @@ message TripFilterRequest{
 
 }
 
-message TripResponce {
-    repeated TripDetils TripData=1;   
+message TripResponse {
+    repeated TripDetails TripData=1;   
     Responsecode code = 2;
     string message = 3;
 }
-message TripDetils {
+message TripDetails {
     int32 Id =1;
     string TripId=2;
     string VIN=3;
@@ -111,10 +136,10 @@ message TripDetils {
     double EndPositionLongitude=22;
 }
 message LiveFleetPosition {
-    int64 GpsAltitude=1;
-    int64 GpsHeading=2; 
-    int64 GpsLatitude=3;
-    int64 GpsLongitude=4; 
+    double GpsAltitude=1;
+    double GpsHeading=2; 
+    double GpsLatitude=3;
+    double GpsLongitude=4; 
     int32 Id=5;
 }
 // End Trip Report Table
@@ -154,3 +179,161 @@ int32 AccountId = 3;
 int32 OrganizationId = 4;
 }
 //End Vehicle Visibility and Trip filtered records
+
+// Start Driver Time Managment Report
+message SingleDriverActivityFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    string VIN = 3;
+    string DriverId = 4;
+}
+message ActivityFilterRequest {
+    int64 StartDateTime = 1;
+    int64 EndDateTime = 2;
+    repeated string VINs = 3;
+    repeated string DriverIds = 4;
+}
+//message VinsRepeated {
+//    string VIN=1;
+//}
+//message DriverIdRepeated {
+//    string DriverId=1;
+//}
+message DriverActivityResponse {
+    repeated DriverActivity DriverActivities = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+message DriverActivity {
+    string DriverId = 1;
+    string DriverName = 2;
+    string VIN = 3;
+    int64 ActivityDate = 4;
+    int64 StartTime = 5;
+    int64 EndTime = 6;
+    int32 Code = 7; 
+    int64 RestTime = 8;
+    int64 AvailableTime = 9;
+    int64 WorkTime = 10;
+    int64 DriveTime = 11;
+    int64 ServiceTime = 12;
+}
+
+
+message DriverListAndVehicleDetailsResponse{
+Responsecode Code = 1;
+string Message = 2;
+repeated VehicleFromDriverTimeDetails DriverList = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+message VehicleFromDriverTimeDetails {
+google.protobuf.StringValue Vin = 1;
+google.protobuf.StringValue DriverID=2;
+google.protobuf.StringValue FirstName=3;
+google.protobuf.StringValue LastName=4;
+int64 ActivityDateTime=5;
+}
+
+message IdRequestForDriverActivity {
+  int32 ReportId = 1;
+  int32 AccountId=2;
+  int32 OrganizationId=3;
+  int64 StartDateTime = 4;
+  int64 EndDateTime = 5; 
+  }
+// End   Driver Time Managment Report
+
+message CreateEcoScoreProfileRequest {
+  string Name = 1;
+  string Description = 2;
+  bool IsDAFStandard = 3;
+  int32 OrgId = 4;
+  int32 AccountId = 5;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
+}
+
+message CreateEcoScoreProfileKPI {
+  int32 KPIId = 1;
+  double LimitValue = 2;
+  double TargetValue = 3;
+  double LowerValue = 4;
+  double UpperValue = 5;
+}
+
+message CreateEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+}
+
+// START : Get EcoScore Profile Details
+message GetEcoScoreProfileRequest {
+  int32 OrgId = 1;
+}
+
+message GetEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+ repeated EcoScoreProfiles Profiles = 3;
+}
+
+message EcoScoreProfiles {
+ int32 ProfileId = 1; 
+ string ProfileName = 2;
+ string ProfileDescription = 3;
+ bool IsDeleteAllowed = 4;
+}
+
+message GetEcoScoreProfileKPIRequest {
+  int32 ProfileId = 1;
+}
+
+message GetEcoScoreProfileKPIResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreProfileDetails Profile = 3;
+}
+
+message EcoScoreProfileDetails {
+ int32 ProfileId = 1; 
+ string ProfileName = 2;
+ string ProfileDescription = 3;
+ string LastUpdate = 4; 
+ string UpdatedBy = 5;
+ repeated EcoScoreProfileKPIs ProfileSection = 6;
+}
+
+message EcoScoreProfileKPIs {
+int32 SectionId = 1;
+string SectionName = 2;
+string SectionDescription = 3;
+repeated EcoScoreKPI ProfileKPIDetails = 4;
+}
+
+message EcoScoreKPI {
+int32 EcoScoreKPIId = 1; 
+string KPIName = 2; 
+string LimitType = 3; 
+double LimitValue = 4; 
+double TargetValue = 5; 
+double LowerValue = 6; 
+double UpperValue = 7; 
+string RangeValueType = 8; 
+double MaxUpperValue = 9; 
+int32 SequenceNo = 10; 
+}
+
+// END : Get EcoScore Profile Details
+
+message UpdateEcoScoreProfileRequest {
+  int32 ProfileId = 1;
+  string Name = 2;
+  string Description = 3;
+    int32 OrgId = 4;
+  int32 AccountId = 5;
+  repeated CreateEcoScoreProfileKPI ProfileKPIs = 6;
+}
+message UpdateEcoScoreProfileResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+}

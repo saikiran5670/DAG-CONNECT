@@ -231,6 +231,9 @@ public class ETLConstants {
 	public static final String DIESEL_HEATING_VALUE = "diesel.heating.value";
 	public static final String DIESEL_CO2_EMISSION_FACTOR = "diesel.co2.emission.factor";
 	public static final String DIESEL_WEIGHT_KG = "diesel.weight.kg";
+	
+	//Gross Weight Threshold Parameters
+	public static final String VEHICLE_GROSS_WEIGHT_THRESHOLD = "vehicle.gross.weight.threshold";
 
 	
 }

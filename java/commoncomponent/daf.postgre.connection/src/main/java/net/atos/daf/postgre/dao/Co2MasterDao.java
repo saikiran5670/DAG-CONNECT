@@ -41,11 +41,11 @@ public class Co2MasterDao implements Serializable {
 		Co2Master cm= new Co2Master();
 
 		try {
-
+			
 			stmt_read_co2_coefficient = connection.prepareStatement(READ_CO2_COEFFICIENT);
 			stmt_read_co2_coefficient.setString(1,vid);
 			rs_position = stmt_read_co2_coefficient.executeQuery();
-			System.out.println("in CorMaster DAO");
+			
 			while (rs_position.next()) {
 
 				/*
@@ -60,7 +60,7 @@ public class Co2MasterDao implements Serializable {
 				 */
 				
 				cm.setCoefficient(rs_position.getDouble("coefficient"));
-
+								
 			}
 
 		} catch (SQLException e) {

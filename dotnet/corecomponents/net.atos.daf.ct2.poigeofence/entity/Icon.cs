@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.poigeofence.entity
+﻿namespace net.atos.daf.ct2.poigeofence.entity
 {
     public class Icon
     {
-        public int id { get; set; }
-        public byte[] icon { get; set; }
-        public string type { get; set; }
-        public int warning_class { get; set; }
-        public int warning_number { get; set; }
-        public string name { get; set; }
-        public string color_name { get; set; }
-        public string state { get; set; }
-        public long? created_at { get; set; }
-        public int? created_by { get; set; }
-        public long? modified_at { get; set; }
-        public int? modified_by { get; set; }
+        public int Id { get; set; }
+        public byte[] IconData { get; set; }
+        public string Type { get; set; }
+        public int Warning_class { get; set; }
+        public int Warning_number { get; set; }
+        public string Name { get; set; }
+        public string Color_name { get; set; }
+        public string State { get; set; }
+        public long? Created_at { get; set; }
+        public int? Created_by { get; set; }
+        public long? Modified_at { get; set; }
+        public int? Modified_by { get; set; }
 
     }
 }

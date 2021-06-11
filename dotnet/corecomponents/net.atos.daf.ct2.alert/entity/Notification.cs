@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.alert.entity
 {
@@ -19,6 +17,6 @@ namespace net.atos.daf.ct2.alert.entity
         public int ModifiedBy { get; set; }
         public List<NotificationRecipient> NotificationRecipients { get; set; }
         public List<NotificationLimit> NotificationLimits { get; set; }
-        public List<NotificationAvailabilityPeriod> NotificationAvailabilityPeriods { get; set; }
+        public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
     }
 }

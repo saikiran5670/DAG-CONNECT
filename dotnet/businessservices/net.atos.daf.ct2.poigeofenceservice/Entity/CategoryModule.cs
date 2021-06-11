@@ -1,11 +1,11 @@
-﻿using Google.Protobuf.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace net.atos.daf.ct2.poigeofenceservice.Entity
+﻿namespace net.atos.daf.ct2.poigeofenceservice.entity
 {
+    public static class POIGeoFenceServiceConstants
+    {
+        public const string GET_POI_DETAILS__NORESULTFOUND_MSG = "No Result Found";
+        public const string GET_POI_DETAILS_SUCCESS_MSG = "Category wise POI details fetched successfully.";
+        public const string GET_POI_DETAILS_FAILURE_MSG = "Category wise POI details fetched failed. With Error : {0}";
+    }
     public class CategoryModule
     {
         //public class Category
@@ -21,11 +21,6 @@ namespace net.atos.daf.ct2.poigeofenceservice.Entity
         //    public int Created_By { get; set; }
         //    public long Modified_At { get; set; }
         //    public int Modified_By { get; set; }
-
         //}
-
-
-
     }
-   
 }

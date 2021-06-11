@@ -1,53 +1,52 @@
-﻿using net.atos.daf.ct2.alert.entity;
-using net.atos.daf.ct2.alert.repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.alert.entity;
+using net.atos.daf.ct2.alert.repository;
 
 namespace net.atos.daf.ct2.alert
 {
     public class AlertManager : IAlertManager
     {
-        IAlertRepository alertRepository;
-        public AlertManager(IAlertRepository _alertRepository)
+        IAlertRepository _alertRepository;
+        public AlertManager(IAlertRepository alertRepository)
         {
-            alertRepository = _alertRepository;
+            _alertRepository = alertRepository;
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
         public async Task<int> ActivateAlert(int alertId, char state, char checkState)
         {
-            return await alertRepository.UpdateAlertState(alertId,state, checkState);
+            return await _alertRepository.UpdateAlertState(alertId, state, checkState);
         }
 
         public async Task<int> SuspendAlert(int alertId, char state, char checkState)
         {
-            return await alertRepository.UpdateAlertState(alertId, state, checkState);
+            return await _alertRepository.UpdateAlertState(alertId, state, checkState);
         }
 
         public async Task<int> DeleteAlert(int alertId, char state)
         {
-            return await alertRepository.AlertStateToDelete(alertId, state);
+            return await _alertRepository.AlertStateToDelete(alertId, state);
         }
 
         public async Task<bool> CheckIsNotificationExitForAlert(int alertId)
         {
-            return await alertRepository.CheckIsNotificationExitForAlert(alertId);
+            return await _alertRepository.CheckIsNotificationExitForAlert(alertId);
         }
 
         #endregion
         public async Task<Alert> CreateAlert(Alert alert)
         {
-            return await alertRepository.CreateAlert(alert);
+            return await _alertRepository.CreateAlert(alert);
         }
         public async Task<Alert> UpdateAlert(Alert alert)
         {
-            return await alertRepository.UpdateAlert(alert);
+            return await _alertRepository.UpdateAlert(alert);
         }
         public async Task<IEnumerable<Alert>> GetAlertList(int accountid, int organizationid)
         {
-            return await alertRepository.GetAlertList(accountid, organizationid);
+            return await _alertRepository.GetAlertList(accountid, organizationid);
         }
 
         #region Alert Category
@@ -55,9 +54,9 @@ namespace net.atos.daf.ct2.alert
         {
             try
             {
-                return await alertRepository.GetAlertCategory();
+                return await _alertRepository.GetAlertCategory();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -66,21 +65,21 @@ namespace net.atos.daf.ct2.alert
         #region Duplicate Alert Type
         public Task<DuplicateAlertType> DuplicateAlertType(int alertId)
         {
-            return alertRepository.DuplicateAlertType(alertId);
+            return _alertRepository.DuplicateAlertType(alertId);
         }
         #endregion
 
-        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId)
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId, string Landmarktype)
         {
-            return await alertRepository.IsLandmarkActiveInAlert(landmarkId);
+            return await _alertRepository.IsLandmarkActiveInAlert(landmarkId, Landmarktype);
         }
         public async Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate()
         {
             try
             {
-                return await alertRepository.GetAlertNotificationTemplate();
+                return await _alertRepository.GetAlertNotificationTemplate();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -89,9 +88,9 @@ namespace net.atos.daf.ct2.alert
         {
             try
             {
-                return await alertRepository.GetRecipientLabelList(organizationId);
+                return await _alertRepository.GetRecipientLabelList(organizationId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

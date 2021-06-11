@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.reports.entity
 {
@@ -9,18 +7,18 @@ namespace net.atos.daf.ct2.reports.entity
         public int Id { get; set; }
         public string TripId { get; set; }
         public string VIN { get; set; }
-        
+
         public long StartTimeStamp { get; set; }
         public long EndTimeStamp { get; set; }
-        
+
         public int Distance { get; set; }
         public int IdleDuration { get; set; }
-        
+
         public int AverageSpeed { get; set; }
         public int AverageWeight { get; set; }
-        
+
         public long Odometer { get; set; }
-        
+
         public string StartPosition { get; set; }
         public string EndPosition { get; set; }
 

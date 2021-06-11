@@ -1,0 +1,38 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+parameters:
+- name: all
+  displayName: All
+  type: boolean
+  default: false
+- name: accountService
+  displayName: Account Service
+  type: boolean
+  default: false
+- name: reportService
+  displayName: Report Service
+  type: boolean
+  default: false
+  
+pool: dafct-dta-privateagent
+
+steps:
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo 'Running Account Service Pipeline'
+  condition: or(eq('${{ parameters.accountService }}', True), eq('${{ parameters.all }}', True))
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo 'Running Report Service Pipeline'
+  condition: or(eq('${{ parameters.reportService }}', True), eq('${{ parameters.all }}', True))
+
+

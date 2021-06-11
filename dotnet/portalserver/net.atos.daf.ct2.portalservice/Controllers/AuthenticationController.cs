@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using AccountBusinessService = net.atos.daf.ct2.accountservice;
-using net.atos.daf.ct2.portalservice.Identity;
+using System.Reflection;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Text.Json;
-using Newtonsoft.Json;
-using log4net;
+using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.portalservice.Common;
-using System.Reflection;
+using net.atos.daf.ct2.portalservice.Identity;
+using Newtonsoft.Json;
+using AccountBusinessService = net.atos.daf.ct2.accountservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -106,7 +104,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                     HttpContext.Session.SetString(SessionConstants.TokenKey, response.TokenIdentifier);
 
                                 HttpContext.Session.SetInt32(SessionConstants.AccountKey, accIdentity.AccountInfo.Id);
-                                _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id }");
+                                _logger.Info($"Value set in Session - { accIdentity.AccountInfo.Id } & SessionId - { HttpContext.Session.Id }");
                             }
                             catch (Exception ex)
                             {
@@ -122,10 +120,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                            await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
+                            await _auditHelper.AddLogs(DateTime.Now, "Authentication Component",
                                     "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                                    "RemoveRoles  method in Authentication controller", 0, response.AccountInfo.Id, JsonConvert.SerializeObject(identityRequest),
-                                     Request);
+                                    "Login method in Authentication controller", 0, response.AccountInfo.Id, JsonConvert.SerializeObject(identityRequest.UserName),
+                                     new HeaderObj() { AccountId = accIdentity.AccountInfo.Id });
 
 
                             return Ok(accIdentity);
@@ -165,10 +163,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 _logger.Error(null, ex);
 
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Authentication Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Authentication Component",
                 "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                "RemoveRoles  method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest),
-                 Request);
+                "Login method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest.UserName),
+                 new HeaderObj());
                 return StatusCode(500, "Please contact system administrator. " + ex.Message);
             }
         }

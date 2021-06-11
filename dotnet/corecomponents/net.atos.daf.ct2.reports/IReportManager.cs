@@ -1,8 +1,6 @@
-﻿using net.atos.daf.ct2.reports.entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.reports.entity;
 
 namespace net.atos.daf.ct2.reports
 {
@@ -13,5 +11,13 @@ namespace net.atos.daf.ct2.reports
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList);
         Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter);
+        Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
+        Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
+        Task<IEnumerable<ReportDetails>> GetReportDetails();
+        Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN);
+        Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto);
+        Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
+        Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId);
+        Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto);
     }
 }

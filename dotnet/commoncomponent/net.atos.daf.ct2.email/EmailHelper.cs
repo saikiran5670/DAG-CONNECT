@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.email
     public class EmailHelper
     {
         private static async Task<bool> SendEmail(MessageRequest messageRequest)
-        {            
+        {
             var apiKey = messageRequest.Configuration.ApiKey;
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage();
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.email
             msg.SetSubject(messageRequest.Subject);
             msg.SetFrom(new EmailAddress(messageRequest.Configuration.FromAddress, messageRequest.Configuration.FromName));
 
-            if(messageRequest.Configuration.IsReplyAllowed)
+            if (messageRequest.Configuration.IsReplyAllowed)
                 msg.SetReplyTo(new EmailAddress(messageRequest.Configuration.ReplyToAddress, messageRequest.Configuration.ReplyToAddress));
 
             SetSendToList(msg, messageRequest.ToAddressList);
@@ -71,34 +71,34 @@ namespace net.atos.daf.ct2.email
                     case EmailEventType.CreateAccount:
                         Uri setUrl = new Uri(baseUrl, $"#/auth/createpassword/{ messageRequest.TokenSecret }");
 
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, messageRequest.accountInfo.OrganizationName, setUrl.AbsoluteUri);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, messageRequest.AccountInfo.OrganizationName, setUrl.AbsoluteUri);
                         break;
                     case EmailEventType.ResetPassword:
                         Uri resetUrl = new Uri(baseUrl, $"#/auth/resetpassword/{ messageRequest.TokenSecret }");
                         Uri resetInvalidateUrl = new Uri(baseUrl, $"#/auth/resetpasswordinvalidate/{ messageRequest.TokenSecret }");
 
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, resetUrl.AbsoluteUri, resetInvalidateUrl.AbsoluteUri);
                         break;
                     case EmailEventType.ChangeResetPasswordSuccess:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri);
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri);
                         break;
                     case EmailEventType.PasswordExpiryNotification:
-                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.accountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key,DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
+                        emailContent = string.Format(emailTemplateContent, logoUrl.AbsoluteUri, messageRequest.AccountInfo.FullName, baseUrl.AbsoluteUri, messageRequest.ToAddressList.First().Key, DateTime.Now.AddDays(messageRequest.RemainingDaysToExpire).ToString("dd-MMM-yyyy"));
                         break;
                 }
-                
+
                 if (emailTemplate.TemplateLabels.Count() > 0)
                 {
                     var translationLabel = emailTemplate.TemplateLabels.Where(x => x.LabelKey.EndsWith("_Subject")).FirstOrDefault();
                     messageRequest.Subject = translationLabel == null ? " " : translationLabel.TranslatedValue;
                 }
-                                    
+
                 messageRequest.Content = emailContent;
                 messageRequest.ContentMimeType = emailTemplate.ContentType == (char)EmailContentType.Html ? MimeType.Html : MimeType.Text;
-                
+
                 return await SendEmail(messageRequest);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -113,7 +113,7 @@ namespace net.atos.daf.ct2.email
 
             foreach (Match match in regex.Matches(emailTemplate.Description))
             {
-                if(dictLabels.ContainsKey(match.Groups[1].Value))
+                if (dictLabels.ContainsKey(match.Groups[1].Value))
                     replacedContent = replacedContent.Replace(match.Value, dictLabels[match.Groups[1].Value]);
             }
             return replacedContent;

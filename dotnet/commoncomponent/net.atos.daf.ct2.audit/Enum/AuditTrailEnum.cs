@@ -1,5 +1,3 @@
-using System;
-
 namespace net.atos.daf.ct2.audit.Enum
 {
     public class AuditTrailEnum
@@ -14,7 +12,7 @@ namespace net.atos.daf.ct2.audit.Enum
             Mail = 'M'
         }
 
-       public enum Event_status
+        public enum Event_status
         {
             SUCCESS = 'S',
             PARTIAL = 'P',

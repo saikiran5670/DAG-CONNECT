@@ -1,20 +1,20 @@
 using System;
-using System.Transactions;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Dapper;
 using System.Threading.Tasks;
+using System.Transactions;
+using Dapper;
 using net.atos.daf.ct2.data;
 
 namespace net.atos.daf.ct2.group
 {
     public class GroupRepository : IGroupRepository
     {
-        private readonly IDataAccess dataAccess;
-        public GroupRepository(IDataAccess _dataAccess)
+        private readonly IDataAccess _dataAccess;
+        public GroupRepository(IDataAccess dataAccess)
         {
-            dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
         #region public methods
         public async Task<Group> Create(Group group)
@@ -27,7 +27,7 @@ namespace net.atos.daf.ct2.group
                 // group type single
                 if (group.GroupType == GroupType.Single)
                 {
-                    group = await CheckSingleGroup(group); 
+                    group = await CheckSingleGroup(group);
                 }
                 else
                 {
@@ -54,11 +54,11 @@ namespace net.atos.daf.ct2.group
                 string query = "insert into master.group(object_type, group_type, argument, function_enum, organization_id, ref_id, name, description,created_at) " +
                               "values(@object_type, @group_type, @argument, @function_enum, @organization_id, @ref_id, @name, @description,@created_at) RETURNING id";
 
-                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var groupid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                 group.Id = groupid;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -92,9 +92,9 @@ namespace net.atos.daf.ct2.group
                                      name = @name,description = @description
 	                                 WHERE id = @id
                                      RETURNING id;";
-                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var groupid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -115,22 +115,22 @@ namespace net.atos.daf.ct2.group
                     if (objectType == ObjectType.AccountGroup)
                         query = @"delete from master.accessrelationship where account_group_id = @id";
                     else query = @"delete from master.accessrelationship where vehicle_group_id = @id";
-                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
 
                     // delete group ref
                     query = @"delete from master.groupref where group_id = @id";
-                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                     // delete group 
                     query = @"delete from master.group where id = @id";
-                    await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                     transactionScope.Complete();
                     return true;
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.group
                         query = query + " and id=ANY(@groupids)";
                     }
                 }
-                IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                IEnumerable<dynamic> groups = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
 
                 foreach (dynamic record in groups)
@@ -233,13 +233,13 @@ namespace net.atos.daf.ct2.group
 
                 return groupList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
         }
 
-       
+
 
         public async Task<bool> AddRefToGroups(List<GroupRef> groupRef)
         {
@@ -258,14 +258,14 @@ namespace net.atos.daf.ct2.group
                             parameter.Add("@group_id", gref.Group_Id);
                             parameter.Add("@ref_id", gref.Ref_Id);
                             query = @"insert into master.groupref (group_id,ref_id) values (@group_id,@ref_id)";
-                            await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                            await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         }
                     }
                     result = true;
                 }
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -293,14 +293,14 @@ namespace net.atos.daf.ct2.group
                         if (!string.IsNullOrEmpty(query))
                         {
                             query = query.TrimEnd(',');
-                            await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                            await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                         }
                         result = true;
                     }
                 }
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -345,7 +345,7 @@ namespace net.atos.daf.ct2.group
                         query = query + " and object_type=@object_type ";
                     }
                 }
-                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var groupid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (groupid > 0)
                 {
                     groupRequest.Exists = true;
@@ -353,7 +353,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return groupRequest;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -389,7 +389,7 @@ namespace net.atos.daf.ct2.group
 
                     }
                 }
-                var groupid = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var groupid = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 if (groupid > 0)
                 {
                     groupRequest.Exists = true;
@@ -397,7 +397,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return groupRequest;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -422,7 +422,7 @@ namespace net.atos.daf.ct2.group
 
             entity.OrganizationId = record.organization_id;
             entity.RefId = record.ref_id;
-            if ((object)record.created_at != null)
+            if (record.created_at is object)
             {
                 entity.CreatedAt = record.created_at;
             }
@@ -470,7 +470,7 @@ namespace net.atos.daf.ct2.group
                     query = query + " and g.object_type=@object_type ";
                 }
 
-                IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                IEnumerable<dynamic> groups = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
 
                 foreach (dynamic record in groups)
@@ -493,7 +493,7 @@ namespace net.atos.daf.ct2.group
                 }
                 return groupList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -505,10 +505,10 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 var query = @"select group_id,ref_id from master.groupref where group_id = @group_id";
                 parameter.Add("@group_id", groupid);
-                var groupref = await dataAccess.QueryAsync<GroupRef>(query, parameter);
+                var groupref = await _dataAccess.QueryAsync<GroupRef>(query, parameter);
                 return groupref.ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -520,10 +520,10 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 var query = @"select count(ref_id) as refcount from master.groupref where group_id = @group_id";
                 parameter.Add("@group_id", groupid);
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -538,10 +538,10 @@ namespace net.atos.daf.ct2.group
                 query = @"select count(1) from master.account a join master.accountorg ag on a.id = ag.account_id and a.state='A' 
                 and ag.state='A' where lower(a.type)='p' and ag.organization_id=@organization_id";
                 parameter.Add("@organization_id", organization_id);
-                count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -553,10 +553,10 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", groupid);
                 var query = @"delete from master.groupref where group_id = @id";
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -569,10 +569,10 @@ namespace net.atos.daf.ct2.group
                 var parameter = new DynamicParameters();
                 parameter.Add("@ref_id", refId);
                 var query = @"delete from master.groupref where ref_id=@ref_id";
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -645,7 +645,7 @@ namespace net.atos.daf.ct2.group
                     //    query = query + " and id=ANY(@groupids)";
                     //}
                 }
-                IEnumerable<dynamic> groups = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                IEnumerable<dynamic> groups = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 Group group = new Group();
 
                 foreach (dynamic record in groups)
@@ -665,19 +665,19 @@ namespace net.atos.daf.ct2.group
                         //if (groupFilter.GroupRefCount)
                         //{
 
-                            // group ref filter 
-                            //if (groupFilter.GroupRefCount)
-                            //{
-                                group.GroupRefCount = GetRefCount(group.Id).Result;
-                            //}
+                        // group ref filter 
+                        //if (groupFilter.GroupRefCount)
+                        //{
+                        group.GroupRefCount = GetRefCount(group.Id).Result;
+                        //}
                         //}
                     }
-                    if (group.GroupType == GroupType.Dynamic && group.FunctionEnum==FunctionEnum.All)
+                    if (group.GroupType == GroupType.Dynamic && group.FunctionEnum == FunctionEnum.All)
                     {
                         group.GroupRefCount = GetDynamicAllRefCount(group.OrganizationId).Result;
-                        
+
                     }
-                    else if (group.GroupType == GroupType.Dynamic && group.FunctionEnum==FunctionEnum.OwnedVehicles)
+                    else if (group.GroupType == GroupType.Dynamic && group.FunctionEnum == FunctionEnum.OwnedVehicles)
                     {
                         group.GroupRefCount = GetDynamicOwnedRefCount(group.OrganizationId).Result;
                     }
@@ -691,7 +691,7 @@ namespace net.atos.daf.ct2.group
 
                 return groupList;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -714,10 +714,10 @@ namespace net.atos.daf.ct2.group
                             else COALESCE(end_date,0) =0 end
 							and (orm.created_org_id=@organization_id or orm.owner_org_id=@organization_id or orm.target_org_id=@organization_id)";
                 parameter.Add("@organization_id", orgId);
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -739,10 +739,10 @@ namespace net.atos.daf.ct2.group
                                 else COALESCE(end_date,0) =0 end
 							    and (orm.created_org_id=@organization_id or veh.organization_id=@organization_id)";
                 parameter.Add("@organization_id", orgId);
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -764,10 +764,10 @@ namespace net.atos.daf.ct2.group
                             else COALESCE(end_date,0) =0 end
 							and orm.target_org_id=@organization_id";
                 parameter.Add("@organization_id", orgId);
-                var count = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

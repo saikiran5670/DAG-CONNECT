@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using AccountComponent = net.atos.daf.ct2.account;
-using Preference = net.atos.daf.ct2.accountpreference;
-using Group = net.atos.daf.ct2.group;
-using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.utilities;
+using AccountComponent = net.atos.daf.ct2.account;
+using Group = net.atos.daf.ct2.group;
+using Preference = net.atos.daf.ct2.accountpreference;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -14,9 +14,9 @@ namespace net.atos.daf.ct2.accountservice
         {
             AccountRequest request = new AccountRequest();
 
-            request.Id = account.Id;            
-            request.EmailId = account.EmailId;            
-            request.Salutation = account.Salutation;            
+            request.Id = account.Id;
+            request.EmailId = account.EmailId;
+            request.Salutation = account.Salutation;
             request.FirstName = account.FirstName;
             request.LastName = account.LastName ?? string.Empty;
             request.OrganizationId = account.Organization_Id.Value;
@@ -33,8 +33,8 @@ namespace net.atos.daf.ct2.accountservice
             {
                 request.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
             }
-            if(account.CreatedAt.HasValue)
-            request.CreatedAt = (long)account.CreatedAt.Value;
+            if (account.CreatedAt.HasValue)
+                request.CreatedAt = (long)account.CreatedAt.Value;
             return request;
         }
         public AccountComponent.entity.Account ToAccountEntity(AccountRequest request)
@@ -65,17 +65,17 @@ namespace net.atos.daf.ct2.accountservice
             account.Organization_Id = request.OrganizationId;
             account.DriverId = request.DriverId;
             if (request.StartDate > 0) account.StartDate = request.StartDate;
-            if (request.EndDate > 0) account.EndDate = request.EndDate;            
+            if (request.EndDate > 0) account.EndDate = request.EndDate;
             account.PreferenceId = request.PreferenceId;
             account.BlobId = request.BlobId;
-            if(request.CreatedAt > 0)
+            if (request.CreatedAt > 0)
             {
-                account.CreatedAt = (long) request.CreatedAt;
+                account.CreatedAt = (long)request.CreatedAt;
             }
             else
             {
                 account.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-            }            
+            }
             return account;
         }
         public AccountComponent.entity.AccountBlob AccountBlob(AccountBlobRequest request)
@@ -123,9 +123,9 @@ namespace net.atos.daf.ct2.accountservice
             {
                 response.Type = Convert.ToString((char)AccountComponent.ENUM.AccountType.SystemAccount);
             }
-            if(account.CreatedAt.HasValue)
-            response.CreatedAt = (long)account.CreatedAt.Value;
-            
+            if (account.CreatedAt.HasValue)
+                response.CreatedAt = (long)account.CreatedAt.Value;
+
             return response;
         }
         public accountpreference.AccountPreference ToPreference(AccountPreference request)
@@ -139,7 +139,7 @@ namespace net.atos.daf.ct2.accountservice
             preference.CurrencyId = request.CurrencyId;
             preference.UnitId = request.UnitId;
             preference.VehicleDisplayId = request.VehicleDisplayId;
-            preference.DateFormatTypeId = request.DateFormatId;            
+            preference.DateFormatTypeId = request.DateFormatId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
             return preference;
@@ -147,14 +147,14 @@ namespace net.atos.daf.ct2.accountservice
         public AccountPreference ToPreferenceEntity(Preference.AccountPreference entity)
         {
             AccountPreference request = new AccountPreference();
-            request.Id = entity.Id.HasValue ? entity.Id.Value : 0;
+            request.Id = entity.Id ?? 0;
             request.RefId = entity.RefId;
             request.LanguageId = entity.LanguageId;
             request.TimezoneId = entity.TimezoneId;
             request.CurrencyId = entity.CurrencyId;
             request.UnitId = entity.UnitId;
             request.VehicleDisplayId = entity.VehicleDisplayId;
-            request.DateFormatId = entity.DateFormatTypeId;            
+            request.DateFormatId = entity.DateFormatTypeId;
             request.TimeFormatId = entity.TimeFormatId;
             request.LandingPageDisplayId = entity.LandingPageDisplayId;
             return request;
@@ -164,14 +164,14 @@ namespace net.atos.daf.ct2.accountservice
         {
             Group.Group entity = new Group.Group();
             entity.Id = request.Id;
-            entity.Name = request.Name;            
+            entity.Name = request.Name;
             entity.Description = request.Description;
             entity.Argument = "";//request.Argument;
-            entity.FunctionEnum = ToFunctionMethod(request.FunctionEnum);            
+            entity.FunctionEnum = ToFunctionMethod(request.FunctionEnum);
             entity.RefId = null;
-            if (request.RefId >0) entity.RefId = request.RefId;
+            if (request.RefId > 0) entity.RefId = request.RefId;
             entity.GroupType = ToGroupType(request.GroupType);
-                      
+
             entity.ObjectType = group.ObjectType.AccountGroup;
             entity.OrganizationId = request.OrganizationId;
             if (request.CreatedAt > 0)
@@ -182,11 +182,11 @@ namespace net.atos.daf.ct2.accountservice
             {
                 entity.CreatedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             }
-            entity.GroupRef = new List<Group.GroupRef>();            
+            entity.GroupRef = new List<Group.GroupRef>();
             return entity;
         }
         #region AccessRelationship
-       
+
         public List<AccountVehicles> ToAccountVehicles(List<AccountComponent.entity.AccountVehicleEntity> entity)
         {
             List<AccountVehicles> response = new List<AccountVehicles>();
@@ -194,11 +194,11 @@ namespace net.atos.daf.ct2.accountservice
             foreach (var record in entity)
             {
                 AccountVehicles accountVehicle = new AccountVehicles();
-                accountVehicle.Id = record.id;
-                if (!string.IsNullOrEmpty(record.name)) accountVehicle.Name = record.name;
+                accountVehicle.Id = record.Id;
+                if (!string.IsNullOrEmpty(record.Name)) accountVehicle.Name = record.Name;
                 else accountVehicle.Name = string.Empty;
-                accountVehicle.IsGroup = record.is_group;
-                accountVehicle.Count = record.count;
+                accountVehicle.IsGroup = record.Is_group;
+                accountVehicle.Count = record.Count;
                 if (!string.IsNullOrEmpty(record.VIN)) accountVehicle.VIN = record.VIN;
                 else accountVehicle.VIN = string.Empty;
                 if (!string.IsNullOrEmpty(record.RegistrationNo)) accountVehicle.RegistrationNo = record.RegistrationNo;
@@ -210,20 +210,20 @@ namespace net.atos.daf.ct2.accountservice
         public List<VehicleAccountAccessData> ToVehicleAccessRelationShip(List<AccountComponent.entity.AccountVehicleAccessRelationship> entity)
         {
             List<VehicleAccountAccessData> response = new List<VehicleAccountAccessData>();
-            
+
             foreach (var group in entity)
             {
                 response.Add(ToAccessRelationShipData(group));
             }
             return response;
         }
-        
+
         public VehicleAccountAccessData ToAccessRelationShipData(AccountComponent.entity.AccountVehicleAccessRelationship entity)
         {
             VehicleAccountAccessData response = new VehicleAccountAccessData();
             response.Id = entity.Id;
             response.Name = entity.Name ?? string.Empty;
-            response.AccessType = Convert.ToString((char) entity.AccessType);
+            response.AccessType = Convert.ToString((char)entity.AccessType);
             response.IsGroup = entity.IsGroup;
             response.Count = entity.Count;
             foreach (var account in entity.RelationshipData)
@@ -246,7 +246,7 @@ namespace net.atos.daf.ct2.accountservice
         //    }
         //    return response;
         //}
-       
+
         //public VehicleAccessData ToAccessRelationShipData(AccountComponent.entity.AccountAccessRelationship entity)
         //{
         //    VehicleAccessData response = new VehicleAccessData();
@@ -276,7 +276,7 @@ namespace net.atos.daf.ct2.accountservice
             //request.Argument = entity.Argument;
             //request.FunctionEnum = (FunctionEnum)Enum.Parse(typeof(FunctionEnum), entity.FunctionEnum.ToString());
             //request.FunctionEnum = entity.FunctionEnum.ToString();
-            request.GroupType = Convert.ToString((char)entity.GroupType); 
+            request.GroupType = Convert.ToString((char)entity.GroupType);
             //request.ObjectType = (ObjectType)Enum.Parse(typeof(ObjectType), entity.ObjectType.ToString());            
             request.OrganizationId = entity.OrganizationId;
             request.GroupRefCount = entity.GroupRefCount;
@@ -294,19 +294,19 @@ namespace net.atos.daf.ct2.accountservice
         {
             FunctionEnum functionMethod = FunctionEnum.None;
             if (string.IsNullOrEmpty(methodName)) return functionMethod;
-            if(methodName.Length > 1) return functionMethod;
+            if (methodName.Length > 1) return functionMethod;
             functionMethod = (FunctionEnum)Convert.ToChar(methodName);
             return functionMethod;
         }
         private GroupType ToGroupType(string groupType)
         {
             GroupType groupTypeEnum = GroupType.None;
-            if (string.IsNullOrEmpty(groupType)) return groupTypeEnum;            
-            groupTypeEnum = (GroupType)Convert.ToChar(groupType);            
+            if (string.IsNullOrEmpty(groupType)) return groupTypeEnum;
+            groupTypeEnum = (GroupType)Convert.ToChar(groupType);
             return groupTypeEnum;
         }
 
-        public Group.Group ToGroupObject(Group.GroupType groupType, Group.ObjectType objectType, string Argument, 
+        public Group.Group ToGroupObject(Group.GroupType groupType, Group.ObjectType objectType, string Argument,
             Group.FunctionEnum functionEnum, int RefId, string groupName, string description, long createAt)
         {
             // create vehicle group with vehicle
@@ -317,7 +317,7 @@ namespace net.atos.daf.ct2.accountservice
             group.FunctionEnum = functionEnum;
             group.RefId = RefId;
             group.Description = description;
-            group.CreatedAt = createAt;            
+            group.CreatedAt = createAt;
             group.Name = groupName;
             return group;
         }

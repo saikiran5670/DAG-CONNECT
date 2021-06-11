@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.identity.entity
 {
-   public class AccountIDPClaim
+    public class AccountIDPClaim
     {
         public double ValidTo { get; set; }
         public double IssuedAt { get; set; }
@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.identity.entity
         public int TokenExpiresIn { get; set; }
         public string Email { get; set; }
         public List<AccountAssertion> Assertions { get; set; }
-        
+
         // validto:/*exp*/
         // IssuedAt:/*iat*/
         // id=/*jti*/

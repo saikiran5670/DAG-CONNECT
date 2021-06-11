@@ -1,11 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.poigeofence.repository;
 using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.poigeofence.test
@@ -42,7 +40,7 @@ namespace net.atos.daf.ct2.poigeofence.test
             objCategory.Type = "C";
             objCategory.IconName = "Test";
             objCategory.State = "D";
-            objCategory.Parent_Id =0;
+            objCategory.Parent_Id = 0;
             objCategory.Created_At = UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString());
             objCategory.Created_By = 1;
 
@@ -94,7 +92,7 @@ namespace net.atos.daf.ct2.poigeofence.test
             int OrganizationId = 10;
             var result = _categoryManager.GetCategory(Type, OrganizationId).Result;
             Assert.IsNotNull(result);
-            
+
 
         }
 
@@ -106,6 +104,17 @@ namespace net.atos.daf.ct2.poigeofence.test
         {
             var result = _categoryManager.GetCategoryDetails().Result;
             Assert.IsNotNull(result);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for Get Category Wise POI")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public void GetCategoryWisePOI()
+        {
+            int OrganizationId = 100;
+            var result =  _categoryManager.GetCategoryWisePOI(OrganizationId).Result;
+            Assert.IsTrue(result.Count > 0);
         }
 
 

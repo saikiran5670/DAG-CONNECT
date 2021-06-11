@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.alert.entity
 {
@@ -28,7 +26,7 @@ namespace net.atos.daf.ct2.alert.entity
 
         public long CreatedAt { get; set; }
 
-        public int CreatedBy{ get; set; }
+        public int CreatedBy { get; set; }
 
         public long ModifiedAt { get; set; }
 
@@ -68,4 +66,4 @@ namespace net.atos.daf.ct2.alert.entity
 
         public string State { get; set; }
     }
-    }
+}

@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
 
-    public class MemoryCacheExtensions: IMemoryCacheExtensions
+    public class MemoryCacheExtensions : IMemoryCacheExtensions
     {
         public IDistributedCache _cache;
         public BinaryFormatter binaryFormatter;
@@ -18,11 +18,11 @@ namespace net.atos.daf.ct2.portalservice.Common
             this._cache = _cache;
         }
 
-        public async Task<T> getCacheAsync<T>(string key) where T : class
+        public async Task<T> GetCacheAsync<T>(string key) where T : class
         {
             try
             {
-                byte[] values =await _cache.GetAsync(key);
+                byte[] values = await _cache.GetAsync(key);
 
                 if (values == null) return null;
 
@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public async Task setCacheAsync<T>(T values, string key)
+        public async Task SetCacheAsync<T>(T values, string key)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     SlidingExpiration = TimeSpan.FromSeconds(30)
                 };
 
-               await _cache.SetAsync(key, mStream.ToArray());
+                await _cache.SetAsync(key, mStream.ToArray());
 
                 mStream.Close();
             }
@@ -64,11 +64,11 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public async Task removeCacheAsync(string key)
+        public async Task RemoveCacheAsync(string key)
         {
             try
             {
-               await _cache.RemoveAsync(key);
+                await _cache.RemoveAsync(key);
             }
             catch (Exception)
             {
@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public T getCache<T>(string key) where T : class
+        public T GetCache<T>(string key) where T : class
         {
             try
             {
@@ -96,7 +96,7 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public void setCache<T>(T values, string key)
+        public void SetCache<T>(T values, string key)
         {
             try
             {
@@ -122,11 +122,11 @@ namespace net.atos.daf.ct2.portalservice.Common
             }
         }
 
-        public void removeCache(string key)
+        public void RemoveCache(string key)
         {
             try
             {
-               _cache.Remove(key);
+                _cache.Remove(key);
             }
             catch (Exception)
             {

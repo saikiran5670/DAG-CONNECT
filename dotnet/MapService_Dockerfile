@@ -1,0 +1,26 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+WORKDIR /src
+COPY ["commonservices/net.atos.daf.ct2.mapservice/net.atos.daf.ct2.mapservice.csproj", "commonservices/net.atos.daf.ct2.mapservice/"]
+COPY ["commoncomponent/net.atos.daf.ct2.data/net.atos.daf.ct2.data.csproj", "commoncomponent/net.atos.daf.ct2.data/"]
+COPY ["commoncomponent/net.atos.daf.ct2.audit/net.atos.daf.ct2.audit.csproj", "commoncomponent/net.atos.daf.ct2.audit/"]
+COPY ["commoncomponent/net.atos.daf.ct2.utilities/net.atos.daf.ct2.utilities.csproj", "commoncomponent/net.atos.daf.ct2.utilities/"]
+COPY ["commoncomponent/net.atos.daf.ct2.map/net.atos.daf.ct2.map.csproj", "commoncomponent/net.atos.daf.ct2.map/"]
+RUN dotnet restore "commonservices/net.atos.daf.ct2.mapservice/net.atos.daf.ct2.mapservice.csproj"
+COPY . .
+WORKDIR "/src/commonservices/net.atos.daf.ct2.mapservice"
+RUN dotnet build "net.atos.daf.ct2.mapservice.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "net.atos.daf.ct2.mapservice.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "net.atos.daf.ct2.mapservice.dll"]

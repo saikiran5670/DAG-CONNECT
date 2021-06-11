@@ -21,8 +21,8 @@ message CorridorRequest{
 
 message ViaAddressDetail{
     int32 CorridorViaStopId = 1;
-    int32 Latitude = 2;
-    int32 Longitude = 3;
+    double Latitude = 2;
+    double Longitude = 3;
     string CorridorViaStopName = 4;
 }
 

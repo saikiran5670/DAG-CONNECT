@@ -33,16 +33,16 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Info("Add Group.");
                 LandmarkGroup obj = new LandmarkGroup();
-                obj.organization_id = request.OrganizationId;
-                obj.name = request.Name;
-                obj.description = request.Description;
+                obj.Organization_id = request.OrganizationId;
+                obj.Name = request.Name;
+                obj.Description = request.Description;
 
-                obj.created_by = request.CreatedBy;
-                obj.state = request.State;
-                obj.created_by = request.CreatedBy;
+                obj.Created_by = request.CreatedBy;
+                obj.State = request.State;
+                obj.Created_by = request.CreatedBy;
                 obj.PoiList = new List<POI>();
                 foreach (var item in request.PoiIds)
-                {                    
+                {
                     POI pOI = new POI();
                     pOI.Id = item.Poiid;
                     pOI.Type = item.Type;
@@ -60,7 +60,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                     var result = await _landmarkGroupManager.CreateGroup(obj);
                     if (result != null)
                     {
-                        response.Message = "Group Added : " + result.id.ToString();
+                        response.Message = "Group Added : " + result.Id.ToString();
                         response.Code = Responcecodes.Success;
                     }
                     else
@@ -69,7 +69,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         response.Code = Responcecodes.Failed;
                     }
                 }
-                
+
 
             }
             catch (Exception ex)
@@ -89,10 +89,10 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Info("Update Group.");
                 LandmarkGroup obj = new LandmarkGroup();
-                obj.id = request.Id;
-                obj.name = request.Name;
-                obj.description = request.Description;
-                obj.modified_by = request.ModifiedBy;
+                obj.Id = request.Id;
+                obj.Name = request.Name;
+                obj.Description = request.Description;
+                obj.Modified_by = request.ModifiedBy;
                 obj.PoiList = new List<POI>();
                 foreach (var item in request.PoiIds)
                 {
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                     var result = await _landmarkGroupManager.UpdateGroup(obj);
                     if (result != null)
                     {
-                        response.Message = "Updated successfully : " + result.id.ToString();
+                        response.Message = "Updated successfully : " + result.Id.ToString();
                         response.Code = Responcecodes.Success;
                     }
                     else
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                         response.Code = Responcecodes.Failed;
                     }
                 }
-                
+
 
             }
             catch (Exception ex)
@@ -143,10 +143,10 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
             {
                 _logger.Info("Delete Group.");
                 LandmarkGroup obj = new LandmarkGroup();
-                var result = await _landmarkGroupManager.DeleteGroup(request.Id,request.Modifiedby);
+                var result = await _landmarkGroupManager.DeleteGroup(request.Id, request.Modifiedby);
                 if (result > 0)
                 {
-                    response.Message = "Deleted successfully : " + result.ToString(); 
+                    response.Message = "Deleted successfully : " + result.ToString();
                     response.Code = Responcecodes.Success;
                 }
                 else
@@ -175,19 +175,19 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                 var result = await _landmarkGroupManager.GetlandmarkGroup(request.OrganizationsId, request.GroupId);
                 if (result != null)
                 {
-                    
+
                     foreach (var item in result)
                     {
                         Group obj = new Group();
-                        obj.Id = item.id;
-                        obj.OrganizationId = item.organization_id;
-                        obj.Name = item.name;
-                        obj.Name = item.name;
-                        obj.Description = item.description == null ? "" : item.description;
-                        obj.CreatedAt = item.created_at;
-                        obj.ModifiedAt = item.modified_at;                        
-                        obj.PoiCount = item.poiCount;
-                        obj.GeofenceCount = item.geofenceCount;
+                        obj.Id = item.Id;
+                        obj.OrganizationId = item.Organization_id;
+                        obj.Name = item.Name;
+                        obj.Name = item.Name;
+                        obj.Description = item.Description ?? "";
+                        obj.CreatedAt = item.Created_at;
+                        obj.ModifiedAt = item.Modified_at;
+                        obj.PoiCount = item.PoiCount;
+                        obj.GeofenceCount = item.GeofenceCount;
                         if (request.GroupId > 0)
                         {
                             foreach (var grp in item.PoiList)
@@ -198,7 +198,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
                                 objlandmarkdetails.Categoryname = grp.CategoryName;
                                 objlandmarkdetails.Subcategoryname = grp.SubCategoryName;
                                 objlandmarkdetails.Address = grp.Address;
-                                objlandmarkdetails.Icon = ByteString.CopyFrom(grp.icon);
+                                objlandmarkdetails.Icon = ByteString.CopyFrom(grp.Icon);
                                 objlandmarkdetails.Type = grp.Type.ToString();
                                 obj.Landmarks.Add(objlandmarkdetails);
                             }

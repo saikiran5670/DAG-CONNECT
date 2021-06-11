@@ -1,15 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Google.Protobuf;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using net.atos.daf.ct2.portalservice.Entity.Account;
 using net.atos.daf.ct2.utilities;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
-using net.atos.daf.ct2.portalservice.Entity.Account;
 
 namespace net.atos.daf.ct2.portalservice.Account
 {
@@ -32,10 +25,10 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.EndDate = 0;
             return account;
         }
-        public  AccountResponse ToAccount(AccountBusinessService.AccountRequest response)
+        public AccountResponse ToAccount(AccountBusinessService.AccountRequest response)
         {
             var account = new AccountResponse();
-            if (response == null) return account;            
+            if (response == null) return account;
             account.Id = response.Id;
             account.EmailId = response.EmailId;
             if (!string.IsNullOrEmpty(response.Type)) account.Type = response.Type;
@@ -48,27 +41,27 @@ namespace net.atos.daf.ct2.portalservice.Account
             account.BlobId = response.BlobId;
             account.CreatedAt = response.CreatedAt;
             return account;
-        }        
+        }
         public List<AccountResponse> ToAccounts(AccountBusinessService.AccountDataList response)
         {
             var accounts = new List<AccountResponse>();
             if (response == null || response.Accounts == null) return accounts;
-            foreach(var account in response.Accounts)
+            foreach (var account in response.Accounts)
             {
                 accounts.Add(ToAccount(account));
-            }            
+            }
             return accounts;
-        }        
+        }
         public AccountBusinessService.AccountFilter ToAccountFilter(AccountFilterRequest request)
         {
             AccountBusinessService.AccountFilter response = new AccountBusinessService.AccountFilter();
 
             response.Id = request.Id;
             response.Email = request.Email;
-            response.Name = request.Name ?? string.Empty; 
+            response.Name = request.Name ?? string.Empty;
             response.OrganizationId = request.OrganizationId;
             response.AccountIds = request.AccountIds;
-            response.AccountGroupId= request.AccountGroupId;
+            response.AccountGroupId = request.AccountGroupId;
             return response;
         }
         public AccountBusinessService.AccountGroupDetailsRequest ToAccountDetailsFilter(AccountDetailRequest request)
@@ -80,15 +73,15 @@ namespace net.atos.daf.ct2.portalservice.Account
             response.AccountGroupId = request.AccountGroupId;
             response.VehicleGroupId = request.VehicleGroupId;
             response.RoleId = request.RoleId;
-            response.Name = request.Name ?? string.Empty; 
+            response.Name = request.Name ?? string.Empty;
             return response;
         }
         public List<AccountDetailsResponse> ToAccountDetailsResponse(AccountBusinessService.AccountDetailsResponse request)
         {
             List<AccountDetailsResponse> response = new List<AccountDetailsResponse>();
-            AccountDetailsResponse accountDetails = new AccountDetailsResponse();
+            AccountDetailsResponse accountDetails;
             if (request == null) return response;
-            foreach(var accountDetail in request.AccountDetails)
+            foreach (var accountDetail in request.AccountDetails)
             {
                 var account = accountDetail.Account;
                 accountDetails = new AccountDetailsResponse();
@@ -105,7 +98,7 @@ namespace net.atos.daf.ct2.portalservice.Account
                 accountDetails.CreatedAt = account.CreatedAt;
                 // roles
                 accountDetails.Roles = new List<KeyValue>();
-                if (accountDetail.Roles!= null )
+                if (accountDetail.Roles != null)
                 {
                     foreach (var role in accountDetail.Roles)
                     {
@@ -150,7 +143,7 @@ namespace net.atos.daf.ct2.portalservice.Account
         public AccountPreferenceResponse ToAccountPreference(AccountBusinessService.AccountPreference request)
         {
             AccountPreferenceResponse preference = new AccountPreferenceResponse();
-            preference.Id = request.Id;            
+            preference.Id = request.Id;
             preference.LanguageId = request.LanguageId;
             preference.TimezoneId = request.TimezoneId;
             preference.CurrencyId = request.CurrencyId;
@@ -171,9 +164,9 @@ namespace net.atos.daf.ct2.portalservice.Account
 
             group.Id = request.Id;
             group.Name = request.Name ?? string.Empty;
-            group.Description = request.Description ?? string.Empty;            
+            group.Description = request.Description ?? string.Empty;
             group.OrganizationId = request.OrganizationId;
-            group.RefId = request.RefId;            
+            group.RefId = request.RefId;
             if (!string.IsNullOrEmpty(request.GroupType))
             {
                 group.GroupType = request.GroupType.ToUpper();
@@ -183,12 +176,12 @@ namespace net.atos.daf.ct2.portalservice.Account
             {
                 group.FunctionEnum = "A";
             }
-            if (group.GroupType.ToUpper() == "G" &&  request.Accounts != null)
+            if (group.GroupType.ToUpper() == "G" && request.Accounts != null)
             {
                 foreach (var groupref in request.Accounts)
                 {
-                    if(groupref.AccountId>0)
-                    group.GroupRef.Add(new AccountBusinessService.AccountGroupRef() { GroupId = groupref.AccountGroupId, RefId= groupref.AccountId });
+                    if (groupref.AccountId > 0)
+                        group.GroupRef.Add(new AccountBusinessService.AccountGroupRef() { GroupId = groupref.AccountGroupId, RefId = groupref.AccountId });
                 }
             }
             return group;
@@ -200,7 +193,7 @@ namespace net.atos.daf.ct2.portalservice.Account
 
             group.Id = request.AccountGroup.Id;
             group.Name = request.AccountGroup.Name ?? string.Empty;
-            group.Description = request.AccountGroup.Description ?? string.Empty; 
+            group.Description = request.AccountGroup.Description ?? string.Empty;
             group.RefId = request.AccountGroup.RefId;
             group.OrganizationId = request.AccountGroup.OrganizationId;
             // group typec
@@ -219,12 +212,12 @@ namespace net.atos.daf.ct2.portalservice.Account
                 group.GroupRef = new List<GroupRef>();
                 foreach (var groupref in request.AccountGroup.GroupRef)
                 {
-                    group.GroupRef.Add(new GroupRef() { AccountGroupId = request.AccountGroup.Id,  AccountId = groupref.RefId });
+                    group.GroupRef.Add(new GroupRef() { AccountGroupId = request.AccountGroup.Id, AccountId = groupref.RefId });
                 }
             }
             return group;
         }
-        public AccountBusinessService.AccountGroupDetailsRequest ToAccountGroupFilter(AccountGroupFilterRequest request )
+        public AccountBusinessService.AccountGroupDetailsRequest ToAccountGroupFilter(AccountGroupFilterRequest request)
         {
             AccountBusinessService.AccountGroupDetailsRequest filter = new AccountBusinessService.AccountGroupDetailsRequest();
             if (request == null) return filter;
@@ -242,7 +235,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request == null) return response;
             response.AccountId = request.AccountId;
             response.OrganizationId = request.OrganizationId;
-            if (request != null && request.Roles!=null && Convert.ToInt16(request.Roles.Count) > 0)
+            if (request != null && request.Roles != null && Convert.ToInt16(request.Roles.Count) > 0)
             {
                 foreach (var role in request.Roles)
                 {
@@ -268,14 +261,14 @@ namespace net.atos.daf.ct2.portalservice.Account
                 {
                     vehicleAccessRelationship.AccountsAccountGroup.Add(ToAccessRelationshipData(account));
                 }
-                
+
             }
             return vehicleAccessRelationship;
         }
 
         public AccountBusinessService.AccountAccessRelationship ToAccountAccessRelationship(AccessRelationshipRequest request)
         {
-            AccountBusinessService.AccountAccessRelationship accountAccessRelationship  = new AccountBusinessService.AccountAccessRelationship();
+            AccountBusinessService.AccountAccessRelationship accountAccessRelationship = new AccountBusinessService.AccountAccessRelationship();
 
             accountAccessRelationship.Id = request.Id;
             accountAccessRelationship.AccessType = request.AccessType;
@@ -350,7 +343,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             {
                 accessRelationship.Id = request.Id;
                 accessRelationship.Name = request.Name ?? string.Empty;
-                accessRelationship.IsGroup = request.IsGroup;                
+                accessRelationship.IsGroup = request.IsGroup;
             }
             return accessRelationship;
         }
@@ -360,7 +353,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             if (request != null)
             {
                 accessRelationship.Id = request.Id;
-                accessRelationship.Name = request.Name ?? string.Empty; 
+                accessRelationship.Name = request.Name ?? string.Empty;
                 accessRelationship.IsGroup = request.IsGroup;
                 accessRelationship.Count = request.Count;
             }
@@ -389,7 +382,7 @@ namespace net.atos.daf.ct2.portalservice.Account
             }
             return response;
         }
-        
+
         //private VehicleAccount ToAccessRelationship(AccountBusinessService.VehicleAccountAccessData request)
         //{
         //    var accessRelationship = new VehicleAccount();
@@ -417,22 +410,22 @@ namespace net.atos.daf.ct2.portalservice.Account
 
             return accessRelationship;
         }
-            private VehicleAccount ToAccessRelationshipData(AccountBusinessService.AccountVehicles request)
+        private VehicleAccount ToAccessRelationshipData(AccountBusinessService.AccountVehicles request)
+        {
+            var accessRelationship = new VehicleAccount();
+            if (request != null)
             {
-                var accessRelationship = new VehicleAccount();
-                if (request != null)
-                {
-                    accessRelationship.Id = request.Id;
-                    accessRelationship.Name = request.Name ?? string.Empty;
-                    accessRelationship.IsGroup = request.IsGroup;
-                    accessRelationship.Count = request.Count;
-                }
-
-                return accessRelationship;
+                accessRelationship.Id = request.Id;
+                accessRelationship.Name = request.Name ?? string.Empty;
+                accessRelationship.IsGroup = request.IsGroup;
+                accessRelationship.Count = request.Count;
             }
 
-
-            #endregion
-
+            return accessRelationship;
         }
+
+
+        #endregion
+
+    }
 }

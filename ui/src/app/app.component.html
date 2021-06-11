@@ -12,6 +12,12 @@
                     <div fxLayoutAlign="start center" class='half-width titleText'>{{ currentTitle }}
                     </div>
                     <div fxLayoutAlign="end" class='full-width'>
+                        <mat-select *ngIf="orgContextType" formControlName="contextOrgSelection" class="matSelect" placeholder="{{ orgName }}"
+                        (selectionChange)="applyFilterOnOrganization($event.value)">
+                        <mat-option *ngFor="let options of organizationList" [value]="options.id"  matTooltip="{{ options.name }}">
+                            {{options.name}}
+                          </mat-option>
+                        </mat-select>
                         <a class="navIcon fullScreen">
                             <mat-icon aria-hidden="false" aria-label="fullscreen"
                                 (click)="isFullScreen ? exitFullScreen() : fullScreen()"
@@ -33,7 +39,7 @@
                         <div class='logoutbtnContainer' fxLayout="row" fxLayoutAlign="end">
                             <div class="logoutButton" fxLayout="column">
                                 <button mat-icon-button (click)="logOut()" class="menuToggler display-flex align-items-center padding-item">
-                                    <mat-icon matTooltip="Logout" class='logoutIcon'>exit_to_app</mat-icon>
+                                    <mat-icon matTooltip="Logout" class='logoutIcon' style="color: #e90606;font-weight: 600;font-size: 22px;">power_settings_new</mat-icon>
                                 </button>
                             </div>
                         </div>                        

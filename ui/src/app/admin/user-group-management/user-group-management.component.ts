@@ -11,6 +11,7 @@ import { UserDetailTableComponent } from '../user-management/new-user-step/user-
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-group-management',
@@ -47,6 +48,7 @@ export class UserGroupManagementComponent implements OnInit {
   showLoadingIndicator: any = false;
   createViewEditStatus: boolean = false;
   actionType: any = '';
+  userDetailsType: any = '';
   adminAccessType: any = JSON.parse(localStorage.getItem("accessType"));
   userType: any = localStorage.getItem("userType");
 
@@ -55,9 +57,14 @@ export class UserGroupManagementComponent implements OnInit {
     private translationService: TranslationService,
     private accountService: AccountService,
     private vehicleService: VehicleService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.defaultTranslation();
+    this.route.queryParams.subscribe(params => {
+      this.userDetailsType = params['UserDetails']; 
+   });
   }
 
   defaultTranslation() {
@@ -138,7 +145,15 @@ export class UserGroupManagementComponent implements OnInit {
     }
     this.translationService.getMenuTranslations(translationObj).subscribe((data) => {
       this.processTranslation(data);
-      this.loadUserGroupData();
+    
+      if(this.userDetailsType != undefined){       
+        let sessionVal = JSON.parse(sessionStorage.getItem('selectedRowItems'));
+        this.editViewGroup(sessionVal, this.userDetailsType)
+      }
+      else{
+        this.router.navigate([]);       
+      }   
+      this.loadUserGroupData();  
     });
   }
 
@@ -177,12 +192,21 @@ export class UserGroupManagementComponent implements OnInit {
       organizationId: this.OrgId,
       accountId: 0
     }
-    this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
-      this.selectedRowData = usrlist[0];
-      this.actionType = type;
-      this.createViewEditStatus = true;
-    });
-  }
+    if(this.userDetailsType == undefined){
+      this.accountService.getAccountDesc(getAccGrpObj).subscribe((usrlist) => {
+        this.selectedRowData = usrlist[0];     
+        this.actionType = type;
+        this.createViewEditStatus = true;  
+        sessionStorage.removeItem('selectedRowItems');
+        sessionStorage.setItem('selectedRowItems', JSON.stringify(this.selectedRowData))  
+      });
+    }
+    else{
+        this.actionType = type;
+        this.createViewEditStatus = true;      
+        this.selectedRowData = element;   
+     }    
+    }
 
   onClose() {
     this.grpTitleVisible = false;
@@ -259,6 +283,8 @@ export class UserGroupManagementComponent implements OnInit {
       this.initData = objData.gridData;
     }
     this.onUpdateDataSource(this.initData);
+    this.router.navigate([]);
+    sessionStorage.clear();
   }
 
   showSuccessMessage(msg: any){

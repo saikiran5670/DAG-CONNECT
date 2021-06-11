@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
   loginClicks = 0;
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   translationData: any;
+  showLoadingIndicator: any;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
     this.loginForm = this.fb.group({
@@ -60,6 +61,7 @@ export class LoginComponent implements OnInit {
 
 
   public onLogin(values: Object) {
+    this.showLoadingIndicator=true;
     this.errorMsg= '';
     this.invalidUserMsg = false;
     if (this.loginForm.valid) {
@@ -70,7 +72,7 @@ export class LoginComponent implements OnInit {
         
          //console.log("data:: ", data)
          if(data.status === 200){
-            //this.cookiesFlag = true;
+           
             if(data.body.accountInfo){
               localStorage.setItem('accountId', data.body.accountInfo.id ? data.body.accountInfo.id : 0);
             }
@@ -160,6 +162,15 @@ export class LoginComponent implements OnInit {
                 this.loginClicks = 0;
                 this.invalidUserMsg= true;
               });
+
+               //this.cookiesFlag = true;
+            let sessionObject: any = {
+              accountId: data.body.accountInfo.id,
+              orgId:  data.body.accountOrganization[0].id,
+              roleId: data.body.accountRole[0].id
+            }
+            this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+            });
          }
          else if(data.status === 401){
           this.invalidUserMsg = true;

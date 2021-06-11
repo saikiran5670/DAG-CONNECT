@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.data
 {
     public interface IDataAccess : IDisposable
     {
-        IDbConnection connection { get; set; }
+        IDbConnection Connection { get; set; }
 
         #region Sync Methods
 
@@ -433,8 +433,8 @@ namespace net.atos.daf.ct2.data
         #endregion Async Methods
     }
 
-    public interface IDataMartDataAccess:IDataAccess
+    public interface IDataMartDataAccess : IDataAccess
     {
-        
+
     }
 }

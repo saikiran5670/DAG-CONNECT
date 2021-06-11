@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace net.atos.daf.ct2.reportservice.entity
+﻿namespace net.atos.daf.ct2.reportservice.entity
 {
     public static class ReportConstants
     {
@@ -18,5 +13,14 @@ namespace net.atos.daf.ct2.reportservice.entity
         public const string GET_VIN_FAILURE_MSG = "VIN fetched for given date range of 90 days";
         public const string GET_VIN_VISIBILITY_FAILURE_MSG = "No vehicle found for Account Id {0} and Organization Id {1}";
         public const string GET_VIN_TRIP_NOTFOUND_MSG = "No trip for vehicle found for Account Id {0} and Organization Id {1}. for last 90 days.";
+        public const string GET_VIN_TRIP_NORESULTFOUND_MSG = "No Result Found";
+
+        public const string GET_REPORT_DETAILS_SUCCESS_MSG = "Report details fetched successfully.";
+        public const string GET_REPORT_DETAILS_FAILURE_MSG = "Report details fetched failed. With Error : {0}";
+
+        #region Eco-Score Report
+        public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
+        public const string GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile KPI details fetched successfully for given profile.";
+        #endregion
     }
 }

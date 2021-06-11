@@ -1,0 +1,328 @@
+<div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+      <span>{{ breadcumMsg }}</span>
+    </div>
+    <div *ngIf="actionType == 'view'" fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="onCancel()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+</div>
+<form [formGroup]="reportSchedulerForm">
+  <mat-card class='mat-elevation-z'>
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
+        <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ actionType == 'create' ? (translationData.lblCreateScheduleDetails || 'Create Schedule Details') : actionType == 'edit' ? (translationData.lblEditScheduleDetails || 'Edit Schedule Details') : (translationData.lblViewScheduleDetails || 'View Schedule Details') }}</span>
+        </div>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px"  *ngIf="actionType != 'view'">
+        <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                <div class="bgtrans tabs">
+                    <mat-tab-group [ngClass]="[ tabVisibilityStatus ? '' : 'hideTabHeader']" [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+                      <mat-tab label="{{ translationData.lblDaily || 'Daily' }}">
+                        <div *ngIf="selectedIndex == 0" (tabVisibility)="tabVisibilityHandler($event)" >
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblEverydayStartTime || 'Everyday Start Time' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input type="time"  matInput formControlName="dailyStartTime">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblEverydayEndTime || 'Everyday End Time' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input type="time"  matInput formControlName="dailyEndTime">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            
+                        </div>
+                      </mat-tab>
+                      <mat-tab label="{{ translationData.lblWeekly || 'Weekly' }}">
+                        <div *ngIf="selectedIndex == 1" (tabVisibility)="tabVisibilityHandler($event)">
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblStartDay || 'Start Day' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input matInput formControlName="weeklyStartDay">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                                    <mat-label>
+                                        {{ translationData.lblEndDay || 'End Day' }}
+                                    </mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <input matInput formControlName="weeklyEndDay">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            
+                        </div>
+                      </mat-tab>
+                      <mat-tab label="{{ translationData.lblBiweekly || 'Biweekly' }}">
+                        <div *ngIf="selectedIndex == 2" (tabVisibility)="tabVisibilityHandler($event)"></div>
+                      </mat-tab>
+                      <mat-tab label="{{ translationData.lblMonthly || 'Monthly' }}">
+                        <div *ngIf="selectedIndex == 3" (tabVisibility)="tabVisibilityHandler($event)"></div>
+                      </mat-tab>
+                      <mat-tab label="{{ translationData.lblQuarterly || 'Quarterly' }}">
+                        <div *ngIf="selectedIndex == 4" (tabVisibility)="tabVisibilityHandler($event)"></div>
+                      </mat-tab>
+                    </mat-tab-group>
+                    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+                        <div class="areaWidth max-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>
+                                {{ translationData.lblReportDispatchTime || 'Report Dispatch Time' }}
+                            </mat-label>
+                            <mat-form-field appearance="outline">
+                                <input type="time"  matInput formControlName="dailyReportDispatchTime">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm" fxLayoutGap="10px">
+            <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+              
+            </div>
+          </div>
+            
+        </div>
+        <div class="areaWidth min-width-50-per" fxLayout="column" fxLayoutAlign="left">
+          <div class='full-width' fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                  <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                      <mat-label>{{ translationData.lblReportType || 'Report Type' }}<span class='mandatoryColor'>*</span></mat-label>
+                      <mat-form-field appearance="outline">
+                        <mat-select placeholder="{{ translationData.lblSelectReportType || 'Select Report Type' }}" formControlName="reportType">
+                            <mat-option *ngFor="let rer of ReportTypeList" [value]="rer.enum">
+                                {{rer.value}}
+                            </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                          {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                      </mat-error>
+                      <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                          The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                          | byteFormat}}).
+                      </mat-error>
+                      <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                          {{ translationData.lblEmptyFile || 'Empty File' }}
+                      </mat-error>
+                      <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                        {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                      </mat-error> -->
+                  </div>
+                  <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-form-field appearance="outline">
+                        <mat-select placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" formControlName="vehicleGroup">
+                            <mat-option *ngFor="let rer of VehicleGroupList" [value]="rer.enum">
+                                {{rer.value}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                        {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                    </mat-error>
+                    <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                        The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                        | byteFormat}}).
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                        {{ translationData.lblEmptyFile || 'Empty File' }}
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                      {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                    </mat-error> -->
+                  </div>
+            </div>
+
+            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblLanguageForRecipient || 'Language (For Recipient`)' }}<span class='mandatoryColor'>*</span></mat-label>
+                    <mat-form-field appearance="outline">
+                        <mat-select placeholder="{{ translationData.lblSelectLanguage || 'Select Language' }}" formControlName="language">
+                            <mat-option *ngFor="let rer of LanguageCodeList" [value]="rer.id">
+                                {{rer.value}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                        {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                    </mat-error>
+                    <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                        The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                        | byteFormat}}).
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                        {{ translationData.lblEmptyFile || 'Empty File' }}
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                      {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                    </mat-error> -->
+                </div>
+                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblVehicle || 'Vehicle' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-form-field appearance="outline">
+                    <mat-select placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                        <mat-option *ngFor="let rer of VehicleList" [value]="rer.enum">
+                            {{rer.value}}
+                        </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                      {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                  </mat-error>
+                  <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                      The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                      | byteFormat}}).
+                  </mat-error>
+                  <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                      {{ translationData.lblEmptyFile || 'Empty File' }}
+                  </mat-error>
+                  <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                    {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                  </mat-error> -->
+                </div>
+              </div>
+
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        {{ translationData.lblRecipientsEmail || 'Recipients Email' }}<span class='mandatoryColor'>*</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl10EmailMax || '10 email max' }}</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                        <input placeholder="{{ translationData.lblEnterRecipientEmail || 'Enter Recipient Email' }}"  matInput formControlName="recipientEmail">
+                    </mat-form-field>
+                    <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                        {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                    </mat-error>
+                    <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                        The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                        | byteFormat}}).
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                        {{ translationData.lblEmptyFile || 'Empty File' }}
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                      {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                    </mat-error> -->
+                </div>
+                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblDriver || 'Driver' }}<span class='mandatoryColor'>*</span></mat-label>
+                  <mat-form-field appearance="outline">
+                    <mat-select placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
+                        <mat-option *ngFor="let rer of DriverList" [value]="rer.enum">
+                            {{rer.value}}
+                        </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                      {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                  </mat-error>
+                  <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                      The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                      | byteFormat}}).
+                  </mat-error>
+                  <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                      {{ translationData.lblEmptyFile || 'Empty File' }}
+                  </mat-error>
+                  <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                    {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                  </mat-error> -->
+                </div>
+              </div>
+
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        {{ translationData.lblMailSubject || 'Mail Subject' }}<span class='mandatoryColor'>*</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl120CharMax || '120 characters max' }}</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                        <input placeholder="{{ translationData.lblEnterMailSubject || 'Enter Mail Subject' }}"  matInput formControlName="mailSubject" maxlength="50">
+                    </mat-form-field>
+                    <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                        {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                    </mat-error>
+                    <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                        The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                        | byteFormat}}).
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                        {{ translationData.lblEmptyFile || 'Empty File' }}
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                      {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                    </mat-error> -->
+                </div>
+                <div class='areaWidth half-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left"></div>
+              </div>
+
+              <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start" *ngIf="actionType != 'view'">
+                <div class='areaWidth full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <mat-label style='display: flex; place-content: space-between;'>
+                        {{ translationData.lblMailDescription || 'Mail Description' }}<span class='mandatoryColor'>*</span>
+                        <span *ngIf="actionType != 'view'">{{ translationData.lbl250CharMax || '250 characters max' }}</span>
+                    </mat-label>
+                    <mat-form-field appearance="outline">
+                        <textarea matInput maxlength="250" placeholder="{{ translationData.lblEnterMailDescription || 'Enter mail description' }}"
+                                    formControlName="mailDescription"></textarea>
+                    </mat-form-field>
+                    <!-- <mat-error *ngIf="categoryForm.get('uploadFile').hasError('required')">
+                        {{ translationData.lblPleaseselectafile || 'Please select a file' }}
+                    </mat-error>
+                    <mat-error *ngIf="categoryForm.get('uploadFile').hasError('maxContentSize')">
+                        The total size must not exceed {{categoryForm.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{categoryForm.get('uploadFile')?.getError('maxContentSize').actualSize
+                        | byteFormat}}).
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageEmptyMsg">
+                        {{ translationData.lblEmptyFile || 'Empty File' }}
+                    </mat-error>
+                    <mat-error *ngIf="!categoryForm.get('uploadFile').hasError('required') && imageMaxMsg">
+                      {{ translationData.lblSelectIconMaxSize || 'Please Select Icon with 32*32 in size' }}
+                    </mat-error> -->
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="actionType == 'view'">
+
+      </div>
+      
+    </mat-card-content>
+    <mat-card-actions class='no-margin no-padding' *ngIf="actionType != 'view'">
+      <div fxLayout="row" fxLayoutAlign="flex-end center">
+        <div fxLayout="column" fxLayoutAlign="end">
+          <div fxLayout="row" class='areaWidth'>
+            <button class='resetCancelBtnColor margin-right-10' mat-raised-button color="primary" (click)='onCancel()'>{{ translationData.lblCancel || 'Cancel' }}</button>
+            <button *ngIf="actionType == 'edit'" class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+              (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+            <button class='no-margin' [disabled]="!reportSchedulerForm.valid" mat-raised-button color="primary"
+              (click)='onCreateUpdate()'>{{ actionType == 'create' ? (translationData.lblSchedule || 'Schedule') :
+              (translationData.lblConfirm || 'Confirm') }}</button>
+          </div>
+        </div>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</form>

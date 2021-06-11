@@ -1,14 +1,11 @@
 ﻿using net.atos.daf.ct2.translation.Enum;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.translation.entity
 {
     public class IconCoreMapper
     {
 
-       
+
 
         public WarningType MapCharToDTCType(string type)
         {

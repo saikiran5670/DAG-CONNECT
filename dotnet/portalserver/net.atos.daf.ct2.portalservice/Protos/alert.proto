@@ -14,8 +14,9 @@ service AlertService {
   rpc GetAlertList (AlertListRequest) returns (AlertListResponse);
   rpc DuplicateAlertType (IdRequest) returns (DuplicateAlertResponse);
   rpc IsLandmarkActiveInAlert (LandmarkIdRequest) returns (LandmarkIdExistResponse);
-  rpc GetNotificationTemplate(AccountIdRequest) returns (NotificationTemplateResponse);
-  rpc GetRecipientLabelList(OrgIdRequest) returns (NotificationRecipientResponse);
+  rpc GetNotificationTemplate (AccountIdRequest) returns (NotificationTemplateResponse);
+  rpc GetRecipientLabelList (OrgIdRequest) returns (NotificationRecipientResponse);
+  rpc GetAlertCategoryFilter (AlertCategoryFilterIdRequest) returns (AlertCategoryFilterResponse);
 }
 
 enum ResponseCode{
@@ -124,6 +125,7 @@ message AlertFilterRefRequest
 	string State=14;
 	int64 CreatedAt=15;
 	int64 ModifiedAt=16;
+	repeated AlertTimingDetailRequest AlertTimingDetail=17;
 }
 
 message AlertLandmarkRefRequest
@@ -154,6 +156,7 @@ message AlertUrgencyLevelRefRequest
 	int64 CreatedAt=11;
 	int64 ModifiedAt=12;
 	repeated AlertFilterRefRequest AlertFilterRefs=13;
+	repeated AlertTimingDetailRequest AlertTimingDetail=14;
 }
 
 message NotificationRequest
@@ -171,7 +174,7 @@ message NotificationRequest
 	int32 ModifiedBy=11;
 	repeated NotificationRecipientRequest NotificationRecipients=12;
 	repeated NotificationLimitRequest NotificationLimits=13;
-	repeated NotificationAvailabilityPeriodRequest NotificationAvailabilityPeriods=14;
+	repeated AlertTimingDetailRequest AlertTimingDetail=14;
 }
 
 message NotificationAvailabilityPeriodRequest
@@ -224,6 +227,7 @@ message NotificationRecipientRequest
 
 message LandmarkIdRequest {
   repeated int32 LandmarkId = 1;
+  string LandmarkType=2;
 }
 
 message LandmarkIdExistResponse{   
@@ -247,6 +251,7 @@ message NotificationTemplateResponse
 	ResponseCode Code=2;
     string Message = 3;
 }
+
 message OrgIdRequest {
   int32 OrganizationId = 1;
 }
@@ -256,4 +261,51 @@ message NotificationRecipientResponse
 	repeated NotificationRecipientRequest NotificationRecipient=1;
 	ResponseCode Code=2;
     string Message = 3;
+}
+
+message AlertTimingDetailRequest
+{
+	int32 Id = 1;
+	string Type=2;
+	int32 RefId = 3;
+	repeated bool DayType=4;
+	string PeriodType=5;
+	int64 StartDate=6;
+	int64 EndDate=7;
+	string State=8;
+	int64 CreatedAt=9;
+	int64 ModifiedAt=10;
+
+}
+
+message AlertCategoryFilterIdRequest {
+  int32 AccountId = 1;
+  int32 OrganizationId = 2;
+  int32 RoleId = 3;
+}
+
+message AssociatedVehicleRequest {
+		 int32 VehicleGroupId =  1;
+         string VehicleGroupName =  2;
+         int32 VehicleId =  3;
+         string VehicleName =  4;
+         string Vin =  5;
+         string RegistrationNo =  6;
+}
+
+message AlertCategoryFilterRequest {
+		 int32 VehicleGroupId =  1;
+         int32 VehicleId =  2;
+         string FeatureName =  3;
+         string FeatureKey =  4;
+         bool Subscribe =  5;
+}
+
+message AlertCategoryFilterResponse{
+    ResponseCode Code = 1;
+    string message = 2;
+    repeated EnumTranslation EnumTranslation = 3;
+	repeated AlertCategoryFilterRequest AlertCategoryFilterRequest = 4;
+	repeated AssociatedVehicleRequest AssociatedVehicleRequest =5;
+	repeated NotificationTemplate NotificationTemplate=6;
 }

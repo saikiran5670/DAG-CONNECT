@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.utilities;
 namespace net.atos.daf.ct2.utility.test
 {
-     [TestClass]
+    [TestClass]
     public class UTCHandlingTest
     {
 
@@ -20,29 +20,29 @@ namespace net.atos.daf.ct2.utility.test
 
         [TestMethod]
         public void GetConvertedDateTimeTest()
-        {   
-            long utctime=1608706686000;
-            string sTimezone="New Zealand Standard Time";
-            string targetdateformat= "MM/DD/YYYY";
-            string converteddatetime= UTCHandling.GetConvertedDateTimeFromUTC(utctime, sTimezone, targetdateformat);
-            Assert.IsNotNull(converteddatetime); 
+        {
+            long utctime = 1608706686000;
+            string sTimezone = "New Zealand Standard Time";
+            string targetdateformat = "MM/DD/YYYY";
+            string converteddatetime = UTCHandling.GetConvertedDateTimeFromUTC(utctime, sTimezone, targetdateformat);
+            Assert.IsNotNull(converteddatetime);
         }
 
-         [TestMethod]
+        [TestMethod]
         public void GetUTCFromDateTimestringTest()
-        {        
-            string sourcedatetime="12/23/2020";           
-            long utctime= UTCHandling.GetUTCFromDateTime(sourcedatetime);
-            Assert.IsNotNull(utctime); 
+        {
+            string sourcedatetime = "12/23/2020";
+            long utctime = UTCHandling.GetUTCFromDateTime(sourcedatetime);
+            Assert.IsNotNull(utctime);
         }
 
-         [TestMethod]
+        [TestMethod]
         public void GetConvertedDateTimeobjectTest()
-        {           
-            DateTime sourcedatetime=Convert.ToDateTime("12/23/2020");           
-            long utctime= UTCHandling.GetUTCFromDateTime(sourcedatetime);
-            Assert.IsNotNull(utctime); 
+        {
+            DateTime sourcedatetime = Convert.ToDateTime("12/23/2020");
+            long utctime = UTCHandling.GetUTCFromDateTime(sourcedatetime);
+            Assert.IsNotNull(utctime);
         }
     }
-    
+
 }

@@ -4,7 +4,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
 {
     public class ImportPackage
     {
-       
         public int Id { get; set; }
         [Required]
         [StringLength(20)]
@@ -28,9 +27,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Package
         public string Status { get; set; }
         public long CreatedAt { get; set; }
     }
+
     public class PackageImportRequest
     {
         [Required]
-        public List<ImportPackage> packagesToImport { get; set; }
+        public List<ImportPackage> PackagesToImport { get; set; }
     }
 }

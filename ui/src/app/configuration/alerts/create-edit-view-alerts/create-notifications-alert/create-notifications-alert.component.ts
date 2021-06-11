@@ -65,6 +65,7 @@ emailCount : number = 0;
 wsCount : number = 0;
 emailLabel : any;
 wsLabel: any;
+limitButton: any;
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -88,7 +89,10 @@ wsLabel: any;
       ]
     });
     console.log(this.selectedRowData);
-    if(this.actionType == 'edit' || this.actionType == 'duplicate')
+   
+    if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
+       this.selectedRowData.notifications.length > 0 && 
+       this.selectedRowData.notifications[0].notificationRecipients.length > 0)
     {
       this.setDefaultValues();
     }
@@ -103,7 +107,10 @@ wsLabel: any;
         notifyPeriod: ['A'],
         emailRecipientLabel: [''],
         emailContactModes: [''],
-        receipientId: []
+        receipientId: [],
+        retrictTo: ['1'],
+        emailEach: ['1'],
+        minutes: ['1']
       });
 
     }
@@ -119,17 +126,18 @@ wsLabel: any;
         notifyPeriodweb: ['A'],        
         webRecipientLabel: [''],
         webContactModes: [''],
-        receipientId: []
+        receipientId: [],
+        widthInput: ['']
       });
 
     }
 
 
     setDefaultValues(){
-      
-this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
-  this.addMultipleItems(false,element);
-});
+             
+        this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
+          this.addMultipleItems(false,element);
+        });
     }
 
     addMultipleItems(isButtonClicked: boolean, data? :any) :void{
@@ -144,6 +152,8 @@ if(isButtonClicked){
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
         else {
           this.emailIndex = this.emailIndex+1;
@@ -151,6 +161,8 @@ if(isButtonClicked){
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
       }
       //this is for web service
@@ -162,6 +174,8 @@ if(isButtonClicked){
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
         else {
           this.wsIndex = this.wsIndex+1;
@@ -169,6 +183,8 @@ if(isButtonClicked){
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+          this.notificationForm.get("recipientLabel").reset();
+          this.notificationForm.get("contactMode").reset();
         }
      }
     }
@@ -270,6 +286,10 @@ if(isButtonClicked){
     this.radioButtonVal = event.value;
   }
 
+  onLimitationButtonChange(event: any){
+    this.limitButton = event.value;
+  }
+
   onClickAdvancedFilter(){
     this.openAdvancedFilter = !this.openAdvancedFilter;
   }
@@ -288,6 +308,8 @@ if(isButtonClicked){
 
   getNotificationDetails() : any{
    this.notificationReceipients= [];
+   let notificationLimits= [];
+   let alertTimingRefNotifications= [];
 
   let WsData;
     let EmailData;
@@ -334,7 +356,7 @@ if(isButtonClicked){
     wsLogin: WsData.loginId.value,
     wsPassword: WsData.password.value,
     id: WsData.receipientId.value ? WsData.receipientId.value : 0,
-    notificationId: this.selectedRowData.notifications[0].id
+    notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
   }
   this.notificationReceipients.push(webPayload);
 });
@@ -384,7 +406,7 @@ else if(this.actionType == 'edit'){
           wsLogin: "",
           wsPassword: "",
           id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
-          notificationId: this.selectedRowData.notifications[0].id
+          notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
     }
     this.notificationReceipients.push(emailPayload);
   });
@@ -401,8 +423,8 @@ if(this.actionType == 'create' || this.actionType == 'duplicate'){
       "validityType": "A",
       "createdBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "notificationLimits": [],
-      "notificationAvailabilityPeriods": []
+      "notificationLimits": notificationLimits,
+      "alertTimingDetails": alertTimingRefNotifications
     }
   ]
 }
@@ -414,12 +436,12 @@ else if(this.actionType == 'edit'){
       "frequencyThreshholdValue": 0,
       "validityType": "A",
       "createdBy": this.selectedRowData.createdBy,
-      "id": this.selectedRowData.notifications[0].id,
+      "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
       "alertId": this.selectedRowData.id,
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "notificationLimits": [],
-      "notificationAvailabilityPeriods": []
+      "notificationLimits": notificationLimits,
+      "alertTimingDetails": alertTimingRefNotifications
     }
   ]
 }

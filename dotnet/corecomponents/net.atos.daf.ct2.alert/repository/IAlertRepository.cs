@@ -1,8 +1,6 @@
-﻿using net.atos.daf.ct2.alert.entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.alert.entity;
 
 namespace net.atos.daf.ct2.alert.repository
 {
@@ -20,7 +18,8 @@ namespace net.atos.daf.ct2.alert.repository
         Task<DuplicateAlertType> DuplicateAlertType(int alertId);
         #endregion
 
-        Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
+        Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId, string Landmarktype);
+        //Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
         Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate();
         Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId);
     }

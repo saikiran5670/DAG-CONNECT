@@ -1,5 +1,6 @@
 import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { HereService } from '../../services/here.service';
+import { Util } from '../../shared/util';
 
 declare var H: any;
 
@@ -9,6 +10,7 @@ declare var H: any;
 export class ReportMapService {
   platform: any;
   map: any;
+  ui: any
   hereMap: any;
   public mapElement: ElementRef;
   mapGroup: any;
@@ -41,7 +43,7 @@ export class ReportMapService {
     });
     window.addEventListener('resize', () => this.hereMap.getViewPort().resize());
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.hereMap));
-    var ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
   }
@@ -53,7 +55,11 @@ export class ReportMapService {
     this.endMarker = null;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any){
+  getUI(){
+    return this.ui;
+  }
+
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any){
     this.clearRoutesFromMap();
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
@@ -71,6 +77,44 @@ export class ReportMapService {
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.endMarker = new H.map.Marker({lat:this.endAddressPositionLat, lng:this.endAddressPositionLong},{icon:iconEnd});
         this.group.addObjects([this.startMarker,this.endMarker]);
+        var startBubble;
+        this.startMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          startBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div>
+            <b>Start Location:</b> ${_selectedRoutes[i].startPosition}<br>
+            <b>Start Date:</b> ${_selectedRoutes[i].convertedStartTime}<br>
+            <b>Total Alerts:</b> ${_selectedRoutes[i].alert}
+            </div>`
+          });
+          // show info bubble
+          _ui.addBubble(startBubble);
+        }, false);
+        this.startMarker.addEventListener('pointerleave', function(evt) {
+          startBubble.close();
+        }, false);
+
+        var endBubble;
+        this.endMarker.addEventListener('pointerenter', function (evt) {
+          // event target is the marker itself, group is a parent event target
+          // for all objects that it contains
+          endBubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
+            // read custom data
+            content:`<div>
+            <b>End Location:</b> ${_selectedRoutes[i].endPosition}<br>
+            <b>End Date:</b> ${_selectedRoutes[i].convertedEndTime}<br>
+            <b>Total Alerts:</b> ${_selectedRoutes[i].alert}
+            </div>`
+          });
+          // show info bubble
+          _ui.addBubble(endBubble);
+        }, false);
+        this.endMarker.addEventListener('pointerleave', function(evt) {
+          endBubble.close();
+        }, false);
+
         this.calculateAtoB();
       }
     }
@@ -138,5 +182,105 @@ export class ReportMapService {
         // this.hereMap.getViewModel().setLookAtData({ bounds: this.routeCorridorMarker.getBoundingBox() });
     });
   }
-  
+
+  getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    gridData.forEach(element => {
+      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedDrivingTime = this.getHhMmTime(element.idleDuration);
+      element.convertedIdleDuration = this.getHhMmTime(element.drivingTime);
+    });
+    return gridData;
+  }
+
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any){
+    let sTime: any = 0;
+    if(startTime != 0){
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat);
+    }
+    return sTime;
+  }
+
+  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any){
+    let eTime: any = 0;
+    if(endTime != 0){
+      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat);
+    }
+    return eTime;
+  }
+
+  getDistance(distance: any, unitFormat: any){
+    // distance in meter
+    let _distance = 0;
+    switch(unitFormat){
+      case 'metric': { 
+        _distance = distance/1000; //-- km
+        break;
+      }
+      case 'imperial':
+      case 'US imperial': {
+        _distance = distance/1,609.344; //-- mile
+        break;
+      }
+    }
+    return _distance;    
+  }
+
+  getHhMmTime(totalSeconds: any){
+    let data: any = "00:00";
+    let hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    data = `${(hours.toString().length >= 10) ? hours : ('0'+hours)}:${(minutes.toString().length >= 10) ? minutes : ('0'+minutes)}`;
+    return data;
+  }
+
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any){
+    // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    // let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    // let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    // let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let date1 = date.split(" ")[0];
+    let time1 = date.split(" ")[1];
+    let h = time1.split(":")[0];
+    let m = time1.split(":")[1];
+    let s = time1.split(":")[2];
+    let _d = date1.split("/")[2];
+    let _m = date1.split("/")[1];
+    let _y = date1.split("/")[0];
+    let _date: any;
+    let _time: any;
+    if(timeFormat == 12){
+      _time = (h > 12 || (h == 12 && m > 0)) ? `${h == 12 ? 12 : h-12}:${m} PM` : `${(h == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    switch(dateFormat){
+      case 'dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+   
 }

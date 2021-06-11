@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.features.repository;
-using net.atos.daf.ct2.features.entity;
 using net.atos.daf.ct2.features;
+using net.atos.daf.ct2.features.entity;
+using net.atos.daf.ct2.features.repository;
 using net.atos.daf.ct2.utilities;
-using System.Threading.Tasks;
-using System.Linq;
 
 
 
 namespace net.atos.daf.ct2.feature.test
 {
     [TestClass]
-    public class featurerepositorytest
+    public class Featurerepositorytest
     {
-        private readonly IFeatureManager _FeatureManager;
+        private readonly IFeatureManager _featureManager;
         private readonly IDataAccess _dataAccess;
         private readonly IConfiguration _config;
         private readonly FeatureRepository _featureRepository;
-        public featurerepositorytest()
+        public Featurerepositorytest()
         {
             // string connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
-            
+
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
 
             //Get connection string
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
             _featureRepository = new FeatureRepository(_dataAccess);
-            _FeatureManager = new FeatureManager(_featureRepository);
+            _featureManager = new FeatureManager(_featureRepository);
 
         }
 
@@ -44,13 +42,13 @@ namespace net.atos.daf.ct2.feature.test
             long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
             long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
             FeatureSet feature = new FeatureSet();
-            feature.Name = "FeatureSet_"+ iSessionStartedAt;
-            feature.description = null;
+            feature.Name = "FeatureSet_" + iSessionStartedAt;
+            feature.Description = null;
             feature.State = 'A';
-            feature.created_at = iSessionStartedAt;
-            feature.created_by = 1;
-            feature.modified_at = iSessionExpireddAt;
-            feature.modified_by = 1;
+            feature.Created_at = iSessionStartedAt;
+            feature.Created_by = 1;
+            feature.Modified_at = iSessionExpireddAt;
+            feature.Modified_by = 1;
 
             feature.Features = new List<features.entity.Feature>();
             features.entity.Feature objfeature = new features.entity.Feature();
@@ -59,12 +57,12 @@ namespace net.atos.daf.ct2.feature.test
             objfeature1.Id = 2;
             features.entity.Feature objfeature2 = new features.entity.Feature();
             objfeature2.Id = 3;
-            
+
             feature.Features.Add(objfeature);
             feature.Features.Add(objfeature1);
             feature.Features.Add(objfeature2);
 
-            var result = await _FeatureManager.CreateFeatureSet(feature);
+            var result = await _featureManager.CreateFeatureSet(feature);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
@@ -82,13 +80,13 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
             //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
-            dataAttributeSet.created_at = iSessionStartedAt;
-            dataAttributeSet.created_by = 1;
-            dataAttributeSet.modified_at = iSessionExpireddAt;
-            dataAttributeSet.modified_by = 1;
+            dataAttributeSet.Created_at = iSessionStartedAt;
+            dataAttributeSet.Created_by = 1;
+            dataAttributeSet.Modified_at = iSessionExpireddAt;
+            dataAttributeSet.Modified_by = 1;
 
             dataAttributeSet.DataAttributes = new List<features.entity.DataAttribute>();
-            
+
             features.entity.DataAttribute objattribute = new features.entity.DataAttribute();
             objattribute.ID = 3;
             features.entity.DataAttribute objattribute1 = new features.entity.DataAttribute();
@@ -100,7 +98,7 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.DataAttributes.Add(objattribute1);
             dataAttributeSet.DataAttributes.Add(objattribute2);
 
-            var result = await _FeatureManager.CreateDataattributeSet(dataAttributeSet);
+            var result = await _featureManager.CreateDataattributeSet(dataAttributeSet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
@@ -118,10 +116,10 @@ namespace net.atos.daf.ct2.feature.test
             dataAttributeSet.State = 'A';
             dataAttributeSet.Description = "Testdescription";
             //dataAttributeSet.Is_exlusive = DataAttributeSetType.Exclusive;
-            dataAttributeSet.created_at = iSessionStartedAt;
-            dataAttributeSet.created_by = 1;
-            dataAttributeSet.modified_at = iSessionExpireddAt;
-            dataAttributeSet.modified_by = 1;
+            dataAttributeSet.Created_at = iSessionStartedAt;
+            dataAttributeSet.Created_by = 1;
+            dataAttributeSet.Modified_at = iSessionExpireddAt;
+            dataAttributeSet.Modified_by = 1;
 
             dataAttributeSet.DataAttributes = new List<features.entity.DataAttribute>();
 
@@ -134,9 +132,9 @@ namespace net.atos.daf.ct2.feature.test
 
             dataAttributeSet.DataAttributes.Add(objattribute);
             dataAttributeSet.DataAttributes.Add(objattribute1);
-           // dataAttributeSet.DataAttributes.Add(objattribute2);
+            // dataAttributeSet.DataAttributes.Add(objattribute2);
 
-            var result = await _FeatureManager.UpdatedataattributeSet(dataAttributeSet);
+            var result = await _featureManager.UpdatedataattributeSet(dataAttributeSet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 
@@ -147,7 +145,7 @@ namespace net.atos.daf.ct2.feature.test
         public async Task UnT_features_FeatureManager_DeleteFeatureSet()
         {
             int FeatureSetid = 135;
-            bool result = await _FeatureManager.DeleteFeatureSet(FeatureSetid);
+            bool result = await _featureManager.DeleteFeatureSet(FeatureSetid);
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
@@ -157,7 +155,7 @@ namespace net.atos.daf.ct2.feature.test
         public async Task UnT_features_FeatureManager_DeleteDataAttribute()
         {
             int dataAttributeSetID = 10;
-            bool result = await _FeatureManager.DeleteDataAttribute(dataAttributeSetID);
+            bool result = await _featureManager.DeleteDataAttribute(dataAttributeSetID);
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
         }
@@ -167,11 +165,11 @@ namespace net.atos.daf.ct2.feature.test
         public async Task UnT_features_FeatureManager_GetDataAttributeSetDetails()
         {
             int DataAttributeSetId = 4;
-            var result = await _FeatureManager.GetDataAttributeSetDetails(DataAttributeSetId);
+            var result = await _featureManager.GetDataAttributeSetDetails(DataAttributeSetId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
-       
+
         [TestCategory("Unit-Test-Case")]
         [Description("Test for Update Feature set ")]
         [TestMethod]
@@ -182,12 +180,12 @@ namespace net.atos.daf.ct2.feature.test
             FeatureSet featureSet = new FeatureSet();
             featureSet.FeatureSetID = 131;
             featureSet.Name = "FeatureSet_" + iSessionStartedAt;
-            featureSet.description = "Test_Description";
+            featureSet.Description = "Test_Description";
             featureSet.State = 'A';
-            featureSet.created_at = iSessionStartedAt;
-            featureSet.created_by = 1;
-            featureSet.modified_at = iSessionExpireddAt;
-            featureSet.modified_by = 1;
+            featureSet.Created_at = iSessionStartedAt;
+            featureSet.Created_by = 1;
+            featureSet.Modified_at = iSessionExpireddAt;
+            featureSet.Modified_by = 1;
 
             featureSet.Features = new List<features.entity.Feature>();
 
@@ -202,7 +200,7 @@ namespace net.atos.daf.ct2.feature.test
             featureSet.Features.Add(objattribute1);
             //featureSet.Features.Add(objattribute2);
 
-            var result = await _FeatureManager.UpdateFeatureSet(featureSet);
+            var result = await _featureManager.UpdateFeatureSet(featureSet);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
 

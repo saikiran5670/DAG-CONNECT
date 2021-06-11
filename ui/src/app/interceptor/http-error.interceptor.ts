@@ -43,7 +43,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
               const options = {
                 title: 'Session Time Out',
                 message:
-                  'Your sessoin has been expired. kindly login again to continue.',
+                  'Your sessoin has been expired. Kindly login again to continue.',
                 confirmText: 'Ok',
               };
               localStorage.setItem("sessionFlag", "false");
@@ -76,10 +76,8 @@ export class SessionDialogService {
     dialogConfig.data = {
       title: options.title,
       message: options.message,
-      confirmText: options.confirmText,
-
+      confirmText: options.confirmText
     };
     this.dialogRefSession = this.dialog.open(ErrorComponent, dialogConfig);
-
   }
 }

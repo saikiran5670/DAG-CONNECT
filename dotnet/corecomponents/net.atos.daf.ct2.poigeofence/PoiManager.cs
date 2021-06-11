@@ -1,7 +1,7 @@
-﻿using net.atos.daf.ct2.poigeofence.entity;
-using net.atos.daf.ct2.poigeofence.repository;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.poigeofence.entity;
+using net.atos.daf.ct2.poigeofence.repository;
 
 namespace net.atos.daf.ct2.poigeofence
 {
@@ -38,15 +38,20 @@ namespace net.atos.daf.ct2.poigeofence
         {
             return await _poiRepository.DeletePOI(poiIds);
         }
-      
+
         public async Task<UploadPOIExcel> UploadPOI(UploadPOIExcel uploadPOIExcel)
         {
             return await _poiRepository.UploadPOI(uploadPOIExcel);
         }
-        
+
         public async Task<List<TripEntityResponce>> GetAllTripDetails(TripEntityRequest tripEntityRequest)
         {
             return await _poiRepository.GetAllTripDetails(tripEntityRequest);
+        }
+
+        public async Task<TripAddressDetails> UpdateTripArddress(TripAddressDetails tripAddressDetails) {
+
+            return await _poiRepository.UpdateTripArddress(tripAddressDetails);
         }
     }
 }

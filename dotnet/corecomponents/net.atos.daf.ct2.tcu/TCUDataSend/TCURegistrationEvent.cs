@@ -1,26 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TCUSend
 {
     public class TCURegistrationEvent
     {
-        private String vin;
-        private TCU tcu;
-        private DateTime referenceDate;
-
         public TCURegistrationEvent(string vin, TCU tcu, DateTime referenceDate)
         {
-            this.vin = vin;
-            this.tcu = tcu;
-            this.referenceDate = referenceDate;
+            VIN = vin;
+            TCU = tcu;
+            ReferenceDate = referenceDate;
         }
 
-        public string VIN { get => vin; set => vin = value; }
+        public string VIN { get;  }
 
-        public TCU TCU { get => tcu; set => tcu = value; }
+        public TCU TCU { get;  }
 
-        public DateTime ReferenceDate { get => referenceDate; set => referenceDate = value; }
+        public DateTime ReferenceDate { get;  }
     }
 }

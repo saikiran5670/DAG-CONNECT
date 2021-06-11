@@ -1,13 +1,13 @@
-﻿using Grpc.Core;
-using log4net;
-using net.atos.daf.ct2.corridorservice;
-using net.atos.daf.ct2.poigeofence;
-using net.atos.daf.ct2.poigeofenceservice.entity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
+using log4net;
+using net.atos.daf.ct2.corridorservice;
+using net.atos.daf.ct2.poigeofence;
+using net.atos.daf.ct2.poigeofenceservice.entity;
 
 namespace net.atos.daf.ct2.poigeofenceservice
 {
@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
             _corridorMapper = new CorridorMapper();
 
         }
-      
+
         public override async Task<CorridorResponseList> GetCorridorList(CorridorRequest request, ServerCallContext context)
         {
             try
@@ -57,7 +57,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     objCorridorEditViewResponse.CreatedBy = item.CreatedBy;
                     objCorridorEditViewResponse.ModifiedAt = item.ModifiedAt;
                     objCorridorEditViewResponse.ModifiedBy = item.ModifiedBy;
-                    
+
 
                     if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor)
                     {
@@ -78,7 +78,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                             existingTrip.EndLatitude = trip.EndLatitude;
                             existingTrip.EndLongitude = trip.EndLongitude;
                             existingTrip.EndPosition = trip.EndPosition;
-                           
+
                             foreach (var node in trip.NodePoints)
                             {
                                 TripNodes nodes = new TripNodes();
@@ -174,7 +174,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                         objCorridorGridViewResponse.ModifiedBy = item.ModifiedBy;
                         if ((LandmarkType)item.CorridorType.ToArray()[0] == LandmarkType.ExistingTripCorridor && item.CorridoreTrips != null)
                         {
-                            
+
                             foreach (var trip in item.CorridoreTrips)
                             {
                                 ExistingTrip existingTrip = new ExistingTrip();
@@ -191,7 +191,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                                 existingTrip.EndLatitude = trip.EndLatitude;
                                 existingTrip.EndLongitude = trip.EndLongitude;
                                 existingTrip.EndPosition = trip.EndPosition;
-                                
+
                                 foreach (var node in trip.NodePoints)
                                 {
                                     TripNodes nodes = new TripNodes();
@@ -273,8 +273,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.Gas = request.IsGas;
                 obj.Flammable = request.IsFlammable;
                 obj.Combustible = request.IsCombustible;
-                obj.organic = request.Isorganic;
-                obj.poision = request.Ispoision;
+                obj.Organic = request.Isorganic;
+                obj.Poision = request.Ispoision;
                 obj.RadioActive = request.IsRadioActive;
                 obj.Corrosive = request.IsCorrosive;
                 obj.PoisonousInhalation = request.IsPoisonousInhalation;
@@ -282,12 +282,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
                 obj.WaterHarm = request.IsWaterHarm;
                 obj.Other = request.IsOther;
-                obj.TollRoad = Convert.ToChar(request.TollRoad);
-                obj.Mortorway = Convert.ToChar(request.Mortorway);
-                obj.BoatFerries = Convert.ToChar(request.BoatFerries);
-                obj.RailFerries = Convert.ToChar(request.RailFerries);
-                obj.Tunnels = Convert.ToChar(request.Tunnels);
-                obj.DirtRoad = Convert.ToChar(request.DirtRoad);
+                obj.TollRoad = request.TollRoad == "" ? null : request.TollRoad;
+                obj.Mortorway = request.Mortorway == "" ? null : request.Mortorway;
+                obj.BoatFerries = request.BoatFerries == "" ? null : request.BoatFerries;
+                obj.RailFerries = request.RailFerries == "" ? null : request.RailFerries;
+                obj.Tunnels = request.Tunnels == "" ? null : request.Tunnels;
+                obj.DirtRoad = request.DirtRoad == "" ? null : request.DirtRoad;
                 obj.VehicleSizeHeight = request.VehicleSizeHeight;
 
 
@@ -303,7 +303,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     {
                         var trans = new poigeofence.entity.ViaRoute();
                         trans.ViaStopName = item.ViaName;
-                        trans.Latitude = item.Longitude;
+                        trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
                         obj.ViaRoutDetails.Add(trans);
 
@@ -475,7 +475,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
         public override async Task<UpdateRouteCorridorResponse> UpdateRouteCorridor(UpdateRouteCorridorRequest objRequest, ServerCallContext context)
         {
-            
+
             try
             {
                 _logger.Info("UpdateRouteCorridor method in CorridorManagement service called.");
@@ -490,7 +490,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.EndAddress = objRequest.Request.EndAddress;
                 obj.EndLatitude = objRequest.Request.EndLatitude;
                 obj.EndLongitude = objRequest.Request.EndLongitude;
-               
+
                 obj.Width = objRequest.Request.Width;
                 obj.Distance = objRequest.Request.Distance;
                 obj.Trailer = Convert.ToChar(objRequest.Request.Trailer);
@@ -502,8 +502,8 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 obj.Gas = objRequest.Request.IsGas;
                 obj.Flammable = objRequest.Request.IsFlammable;
                 obj.Combustible = objRequest.Request.IsCombustible;
-                obj.organic = objRequest.Request.Isorganic;
-                obj.poision = objRequest.Request.Ispoision;
+                obj.Organic = objRequest.Request.Isorganic;
+                obj.Poision = objRequest.Request.Ispoision;
                 obj.RadioActive = objRequest.Request.IsRadioActive;
                 obj.Corrosive = objRequest.Request.IsCorrosive;
                 obj.PoisonousInhalation = objRequest.Request.IsPoisonousInhalation;
@@ -511,12 +511,12 @@ namespace net.atos.daf.ct2.poigeofenceservice
 
                 obj.WaterHarm = objRequest.Request.IsWaterHarm;
                 obj.Other = objRequest.Request.IsOther;
-                obj.TollRoad = Convert.ToChar(objRequest.Request.TollRoad);
-                obj.Mortorway = Convert.ToChar(objRequest.Request.Mortorway);
-                obj.BoatFerries = Convert.ToChar(objRequest.Request.BoatFerries);
-                obj.RailFerries = Convert.ToChar(objRequest.Request.RailFerries);
-                obj.Tunnels = Convert.ToChar(objRequest.Request.Tunnels);
-                obj.DirtRoad = Convert.ToChar(objRequest.Request.DirtRoad);
+                obj.TollRoad = objRequest.Request.TollRoad == "" ? null : objRequest.Request.TollRoad;
+                obj.Mortorway = objRequest.Request.Mortorway == "" ? null : objRequest.Request.Mortorway;
+                obj.BoatFerries = objRequest.Request.BoatFerries == "" ? null : objRequest.Request.BoatFerries;
+                obj.RailFerries = objRequest.Request.RailFerries == "" ? null : objRequest.Request.RailFerries;
+                obj.Tunnels = objRequest.Request.Tunnels == "" ? null : objRequest.Request.Tunnels;
+                obj.DirtRoad = objRequest.Request.DirtRoad == "" ? null : objRequest.Request.DirtRoad;
                 obj.VehicleSizeHeight = objRequest.Request.VehicleSizeHeight;
 
 
@@ -535,7 +535,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                     {
                         var trans = new poigeofence.entity.ViaRoute();
                         trans.ViaStopName = item.ViaName;
-                        trans.Latitude = item.Longitude;
+                        trans.Latitude = item.Latitude;
                         trans.Longitude = item.Longitude;
                         obj.ViaRoutDetails.Add(trans);
                     }

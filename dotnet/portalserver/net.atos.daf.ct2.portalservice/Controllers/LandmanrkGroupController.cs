@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.portalservice.Common;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.portalservice.Entity.POI;
-using System;
-using net.atos.daf.ct2.poiservice;
-using Newtonsoft.Json;
-using log4net;
+﻿using System;
 using System.Reflection;
-using net.atos.daf.ct2.geofenceservice;
+using System.Threading.Tasks;
+using log4net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.geofenceservice;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.POI;
+using Newtonsoft.Json;
+using net.atos.daf.ct2.alertservice;
 
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -22,24 +20,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly GroupService.GroupServiceClient _groupServiceclient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
-        private string FK_Constraint = "violates foreign key constraint";        
-      
-        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
+        private string _fK_Constraint = "violates foreign key constraint";
+        private readonly AlertService.AlertServiceClient _alertServiceClient;
+        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _groupServiceclient = groupService;
             _auditHelper = auditHelper;
-            _mapper = new Entity.POI.Mapper();
+            _mapper = new Mapper();
+            _alertServiceClient = alertServiceClient;
             
-            _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
+           
         }
 
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create(LandmarkGroup request)
         {
-            //GroupAddRequest objgroup = new GroupAddRequest();
             try
             {
                 _logger.Info("Add Group.");
@@ -78,25 +75,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Create method in Group controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(result);
                 }
                 else
                 {
-                    if (result.Message.Contains(FK_Constraint))
+                    if (result.Message.Contains(_fK_Constraint))
                     {
                         _logger.Error(result);
-                        return StatusCode(500, FK_Constraint);
-                        
+                        return StatusCode(500, _fK_Constraint);
+
                     }
                     else
                     {
                         _logger.Error(result);
                         return StatusCode(500, "Error in group create");
-                        
+
                     }
                 }
 
@@ -150,21 +147,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(409, result.Message);
                 }
-                
+
                 if (result != null && result.Code == Responcecodes.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Update method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
-                    Request);
+                    _userDetails);
                     return Ok(result);
                 }
                 else
                 {
-                    if (result.Message.Contains(FK_Constraint))
+                    if (result.Message.Contains(_fK_Constraint))
                     {
                         _logger.Error(result);
-                        return StatusCode(500, FK_Constraint);
+                        return StatusCode(500, _fK_Constraint);
                     }
                     else
                     {
@@ -193,7 +190,18 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     return StatusCode(400, "Group ID is required");
                 }
-                _logger.Info("Add Group.");
+                _logger.Info("Delete Group.");
+
+                LandmarkIdRequest landmarkIdRequest = new LandmarkIdRequest();
+                landmarkIdRequest.LandmarkId.Add(GroupId);
+                landmarkIdRequest.LandmarkType = "G";
+
+                LandmarkIdExistResponse isLandmarkavalible = await _alertServiceClient.IsLandmarkActiveInAlertAsync(landmarkIdRequest);
+
+                if (isLandmarkavalible.IsLandmarkActive)
+                {
+                    return StatusCode(409, "Corridor is used in alert.");
+                }
 
                 GroupDeleteRequest objgroup = new GroupDeleteRequest();
                 objgroup.Id = GroupId;
@@ -208,10 +216,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     "LandmarkGroup service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     "Delete method in POI controller", GroupId, GroupId, JsonConvert.SerializeObject(GroupId),
-                    Request);
+                    _userDetails);
                     return Ok(result);
                 }
                 else
@@ -253,7 +261,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (result != null && result.Code == Responcecodes.Success)
                 {
-                    //await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "POI Component",
+                    //await _auditHelper.AddLogs(DateTime.Now, "POI Component",
                     //"POI service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                     //"Create method in POI controller", request.Id, request.Id, JsonConvert.SerializeObject(request),
                     //Request);

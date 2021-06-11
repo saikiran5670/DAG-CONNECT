@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using net.atos.daf.ct2.visibility.entity;
-using net.atos.daf.ct2.data;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.visibility.entity;
 
 namespace net.atos.daf.ct2.visibility.repository
 {
@@ -10,5 +8,9 @@ namespace net.atos.daf.ct2.visibility.repository
     {
         //IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid );
         Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId, int OrganizationId);
+
+        Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId, int roleId, string featureName);
+
+        
     }
 }

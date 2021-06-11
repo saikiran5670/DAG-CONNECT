@@ -1,19 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
-using net.atos.daf.ct2.portalservice.Entity.Vehicle;
-using System.Text;
-using net.atos.daf.ct2.portalservice.Common;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using log4net;
-using Newtonsoft.Json;
 using System.Reflection;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.portalservice.Entity.Vehicle;
+using Newtonsoft.Json;
+using VehicleBusinessService = net.atos.daf.ct2.vehicleservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [ApiController]
@@ -21,84 +18,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class VehicleController : BaseController
     {
-        //private readonly ILogger<VehicleController> _logger;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly Mapper _mapper;
 
         private ILog _logger;
-        private string FK_Constraint = "violates foreign key constraint";
-        private string SocketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private string _fk_Constraint = "violates foreign key constraint";
+        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly AuditHelper _auditHelper;
-        
+
         public VehicleController(VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleClient = vehicleClient;
-            _mapper = new Mapper();  
+            _mapper = new Mapper();
             _auditHelper = auditHelper;
-            _userDetails = _auditHelper.GetHeaderData(_httpContextAccessor.HttpContext.Request);
         }
-
-
-        //[HttpPost]
-        //[Route("create")]
-        //public async Task<IActionResult> Create(VehicleCreateRequest request)
-        //{
-        //    try
-        //    {
-        //        _logger.LogInformation("Create method in vehicle API called.");
-
-
-        //        if (string.IsNullOrEmpty(request.Name))
-        //        {
-        //            return StatusCode(401, "invalid Vehicle Name: The Vehicle Name is Empty.");
-        //        }
-        //        if (string.IsNullOrEmpty(request.License_Plate_Number))
-        //        {
-        //            return StatusCode(401, "invalid Vehicle License Plate Number: The Vehicle License Plate Number is Empty.");
-        //        }
-        //        if (string.IsNullOrEmpty(request.VIN))
-        //        {
-        //            return StatusCode(401, "invalid Vehicle VIN: The Vehicle VIN is Empty.");
-        //        }
-
-        //        var vehicleRequest = _mapper.ToVehicleCreate(request);
-        //        VehicleBusinessService.VehicleCreateResponce vehicleResponse = await _vehicleClient.CreateAsync(vehicleRequest);
-        //        var response = _mapper.ToVehicleCreate(vehicleResponse.Vehicle);
-
-        //        if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Failed
-        //           && vehicleResponse.Message == "There is an error creating account.")
-        //        {
-        //            return StatusCode(500, "There is an error creating account.");
-        //        }
-        //        else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
-        //        {
-        //            return Ok(response);
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "accountResponse is null");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("Account Service:Create : " + ex.Message + " " + ex.StackTrace);
-        //        // check for fk violation
-        //        if (ex.Message.Contains(FK_Constraint))
-        //        {
-        //            return StatusCode(500, "Internal Server Error.(01)");
-        //        }
-        //        // check for fk violation
-        //        if (ex.Message.Contains(SocketException))
-        //        {
-        //            return StatusCode(500, "Internal Server Error.(02)");
-        //        }
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
-
-
-
 
         [HttpPut]
         [Route("update")]
@@ -106,7 +40,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                _logger.Info("Update method in vehicle API called.");               
+                _logger.Info("Update method in vehicle API called.");
 
                 // Validation 
                 if (request.ID <= 0)
@@ -136,10 +70,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                   "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
-                   Request);
+                   _userDetails);
 
                     var response = _mapper.ToVehicle(vehicleResponse.Vehicle);
                     return Ok(response);
@@ -152,25 +86,24 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                  "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  "Update  method in Vehicle controller", request.ID, request.ID, JsonConvert.SerializeObject(request),
-                  Request);
+                  _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
                 }
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
 
         [HttpGet]
         [Route("get")]
@@ -218,23 +151,23 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Create Group method in vehicle API called.");
-               
+
 
                 if (string.IsNullOrEmpty(group.Name) || group.Name == "string")
                 {
-                    return StatusCode(401, PortalConstants.VehicleValidation.CreateRequired);
+                    return StatusCode(401, PortalConstants.VehicleValidation.CREATE_REQUIRED);
                 }
 
                 // Length validation
                 if ((group.Name.Length > 50) || (group.Description.Length > 100))
                 {
-                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidData);
+                    return StatusCode(400, PortalConstants.VehicleValidation.INVALID_DATA);
                 }
 
                 char groupType = Convert.ToChar(group.GroupType);
                 if (!EnumValidator.ValidateGroupType(groupType))
                 {
-                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidGroupType);
+                    return StatusCode(400, PortalConstants.VehicleValidation.INVALID_GROUP_TYPE);
                 }
 
                 //Assign context orgId
@@ -247,10 +180,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(accountGroupRequest);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                    "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                    "CreateGroup  method in Vehicle controller", 0, response.VehicleGroup.Id, JsonConvert.SerializeObject(group),
-                    Request);
+                    _userDetails);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -265,14 +198,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                       "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                      "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(group), Request);
+                      "CreateGroup  method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(group), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
 
         [HttpPut]
         [Route("group/update")]
@@ -281,7 +213,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Update Group method in vehicle API called.");
-               
+
                 if (group.Id == 0)
                 {
                     return StatusCode(401, "invalid Vehicle Group Id: The Vehicle group id is Empty.");
@@ -289,13 +221,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (string.IsNullOrEmpty(group.Name) || group.Name == "string")
                 {
-                    return StatusCode(401, PortalConstants.VehicleValidation.CreateRequired);
+                    return StatusCode(401, PortalConstants.VehicleValidation.CREATE_REQUIRED);
                 }
 
                 // Length validation
                 if ((group.Name.Length > 50) || (group.Description.Length > 100))
                 {
-                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidData);
+                    return StatusCode(400, PortalConstants.VehicleValidation.INVALID_DATA);
                 }
 
                 //Assign context orgId
@@ -304,7 +236,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 char groupType = Convert.ToChar(group.GroupType);
                 if (!EnumValidator.ValidateGroupType(groupType))
                 {
-                    return StatusCode(400, PortalConstants.VehicleValidation.InvalidGroupType);
+                    return StatusCode(400, PortalConstants.VehicleValidation.INVALID_GROUP_TYPE);
                 }
 
 
@@ -313,9 +245,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VehicleBusinessService.VehicleGroupResponce response = await _vehicleClient.UpdateGroupAsync(vehicleGroupRequest);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                      "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                     "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), Request);
+                     "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), _userDetails);
                     return Ok(_mapper.ToVehicleGroup(response));
                 }
                 else if (response != null && response.Code == VehicleBusinessService.Responcecode.Conflict)
@@ -330,9 +262,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                     "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                    "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), Request);
+                    "UpdateGroup  method in Vehicle controller", group.Id, group.Id, JsonConvert.SerializeObject(group), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -356,9 +288,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 VehicleBusinessService.VehicleGroupDeleteResponce response = await _vehicleClient.DeleteGroupAsync(request);
                 if (response != null && response.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                   "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                  "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), Request);
+                  "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(response.Result);
                 }
                 else
@@ -369,14 +301,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), Request);
+                "DeleteGroup  method in Vehicle controller", Convert.ToInt32(GroupId), Convert.ToInt32(GroupId), JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, "Internal Server Error.");
             }
         }
-
 
         [HttpPost]
         [Route("group/getgroupdetails")]
@@ -431,8 +362,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
 
                 VehicleBusinessService.VehicleGroupIdRequest VehicleGroupIdRequest = new VehicleBusinessService.VehicleGroupIdRequest();
-                VehicleGroupIdRequest.GroupId = GroupId;                
-               
+                VehicleGroupIdRequest.GroupId = GroupId;
+
                 VehicleBusinessService.VehicleGroupRefResponce response = await _vehicleClient.GetVehiclesByVehicleGroupAsync(VehicleGroupIdRequest);
 
 
@@ -468,7 +399,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
-               
+
                 if (Convert.ToInt32(OrganizationId) <= 0)
                 {
                     return StatusCode(401, "invalid organization ID: The organization Id is Empty.");
@@ -513,7 +444,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 _logger.Info("Get vehicle group list by orgnization & vehicle id method in vehicle API called.");
-               
+
                 if (Convert.ToInt32(OrganizationId) <= 0)
                 {
                     return StatusCode(401, "invalid organization ID: The organization Id is Empty.");
@@ -558,12 +489,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("group/getvehicles")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It has to be fixed while clean up of Organization Id related code")]
         public async Task<IActionResult> GetVehiclesByAccountGroup([FromQuery] int AccountGroupId, int Organization_Id)
         {
             try
             {
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
-                
+
                 if (AccountGroupId == 0)
                 {
                     return StatusCode(401, "invalid Account Group Id: The Account group id is Empty.");
@@ -624,9 +556,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-                "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+                "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
 
                     return Ok(vehicleResponse.Result);
                 }
@@ -638,17 +570,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
               "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-              "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+              "SetOptInStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
                 }
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -679,9 +611,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 }
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
             "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-            "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+            "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -692,17 +624,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
           "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-          "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+          "SetOTAStatus  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
                 }
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -734,9 +666,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 else if (vehicleResponse != null && vehicleResponse.Code == VehicleBusinessService.Responcecode.Success)
                 {
 
-                    await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                    await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
        "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
-       "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+       "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                     return Ok(vehicleResponse.Result);
                 }
                 else
@@ -747,17 +679,17 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
             catch (Exception ex)
             {
-                await _auditHelper.AddLogs(DateTime.Now, DateTime.Now, "Vehicle Component",
+                await _auditHelper.AddLogs(DateTime.Now, "Vehicle Component",
    "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-   "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), Request);
+   "Terminate  method in Vehicle controller", request.VehicleId, request.VehicleId, JsonConvert.SerializeObject(request), _userDetails);
                 _logger.Error(null, ex);
                 // check for fk violation
-                if (ex.Message.Contains(FK_Constraint))
+                if (ex.Message.Contains(_fk_Constraint))
                 {
                     return StatusCode(500, "Internal Server Error.(01)");
                 }
                 // check for fk violation
-                if (ex.Message.Contains(SocketException))
+                if (ex.Message.Contains(_socketException))
                 {
                     return StatusCode(500, "Internal Server Error.(02)");
                 }
@@ -802,10 +734,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-
-
         [HttpGet]
         [Route("group/getvehiclegrouplist")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It has to be fixed while clean up of Organization Id related code")]
         public async Task<IActionResult> GetGroupDetailsWithVehicleCount([FromQuery] int OrganizationId)
         {
             try
@@ -853,14 +784,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("Get vehicle list by group id method in vehicle API called.");
 
                 //Assign context orgId
-                dynamicVehicleGroupRequest.OrganizationId = GetContextOrgId();                
+                dynamicVehicleGroupRequest.OrganizationId = GetContextOrgId();
 
                 if (dynamicVehicleGroupRequest.GroupType != null ? EnumValidator.ValidateGroupType(Convert.ToChar(dynamicVehicleGroupRequest.GroupType)) : false)
                 {
 
                     if (Convert.ToInt32(dynamicVehicleGroupRequest.GroupId) <= 0 && Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'g')
                     {
-                        return StatusCode(401, PortalConstants.VehicleValidation.GroupIdRequired);
+                        return StatusCode(401, PortalConstants.VehicleValidation.GROUP_ID_REQUIRED);
                     }
                     else
                     {
@@ -891,7 +822,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                     if (Convert.ToInt32(dynamicVehicleGroupRequest.OrganizationId) <= 0 && Convert.ToChar(dynamicVehicleGroupRequest.GroupType.ToLower().Trim()) == 'd')
                     {
-                        return StatusCode(401, PortalConstants.VehicleValidation.OrganizationIdRequired);
+                        return StatusCode(401, PortalConstants.VehicleValidation.ORGANIZATION_ID_REQUIRED);
                     }
                     else
                     {
@@ -902,7 +833,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else
                         {
-                            return StatusCode(401, PortalConstants.VehicleValidation.FunctionTypeRequired);
+                            return StatusCode(401, PortalConstants.VehicleValidation.FUNCTION_TYPE_REQUIRED);
                         }
 
                         if (EnumValidator.ValidateFunctionEnumType(functionenumType))
@@ -955,13 +886,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else
                         {
-                            return StatusCode(401, PortalConstants.VehicleValidation.InvalidFunctionEnumType);
+                            return StatusCode(401, PortalConstants.VehicleValidation.INVALID_FUNCTION_ENUM_TYPE);
                         }
                     }
                 }
                 else
                 {
-                    return StatusCode(401, PortalConstants.VehicleValidation.InvalidGroupType);
+                    return StatusCode(401, PortalConstants.VehicleValidation.INVALID_GROUP_TYPE);
                 }
 
             }
@@ -972,10 +903,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
-
-
         [HttpGet]
         [Route("GetRelationshipVehicles")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "It has to be fixed while clean up of Organization Id related code")]
         public async Task<IActionResult> GetRelationshipVehicles([FromQuery] int OrganizationId, int VehicleId)
         {
             try
@@ -1050,8 +980,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
-
-
     }
 
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace net.atos.daf.ct2.poigeofence.entity
+﻿namespace net.atos.daf.ct2.poigeofence.entity
 {
     public class TripDetails
     {
@@ -43,7 +39,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public decimal HeavyThrottleDuration { get; set; }
         public decimal CruiseControlDistance3050 { get; set; }
         public decimal CruiseControlDistance5075 { get; set; }
-        public decimal CruiseControlDistanceMoreThan75 { get; set; }        
+        public decimal CruiseControlDistanceMoreThan75 { get; set; }
         public string AverageTrafficClassification { get; set; }
         public decimal CcFuelConsumption { get; set; }
         public int VCruiseControlFuelConsumedForCcfuelConsumption { get; set; }
@@ -51,7 +47,7 @@ namespace net.atos.daf.ct2.poigeofence.entity
         public decimal FuelConsumptionCcNonActive { get; set; }
         public int IdlingConsumption { get; set; }
         public decimal DpaScore { get; set; }
-        public decimal enduranceBrake { get; set; }
+        public decimal EnduranceBrake { get; set; }
         public decimal Coasting { get; set; }
         public decimal EcoRolling { get; set; }
         public string Driver1Id { get; set; }

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "net.atos.daf.ct2.reportschedulerservice";
+
+package reportscheduler;
+
+// The greeting service definition.
+service ReportSchedulerService{
+  
+}
+
+enum Responsecode{
+  None = 0;
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500;
+}
+
+message IdRequest {
+  int32 ReportScheulerId = 1;  
+}
+
+

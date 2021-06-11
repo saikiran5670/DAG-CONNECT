@@ -1,8 +1,6 @@
-﻿using net.atos.daf.ct2.alert.entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.alert.entity;
 
 namespace net.atos.daf.ct2.alert
 {
@@ -19,8 +17,9 @@ namespace net.atos.daf.ct2.alert
         #region Alert Category
         Task<IEnumerable<EnumTranslation>> GetAlertCategory();
         #endregion
-        Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
+        //Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId);
         Task<IEnumerable<NotificationTemplate>> GetAlertNotificationTemplate();
         Task<IEnumerable<NotificationRecipient>> GetRecipientLabelList(int organizationId);
+        Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId, string Landmarktype);
     }
 }

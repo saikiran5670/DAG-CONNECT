@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.alert.entity;
 using net.atos.daf.ct2.alert.ENUM;
 using net.atos.daf.ct2.alert.repository;
 using net.atos.daf.ct2.data;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.alert.test
 {
@@ -122,7 +120,7 @@ namespace net.atos.daf.ct2.alert.test
                 //ModifiedBy =,
                 NotificationRecipients = new List<NotificationRecipient>(),
                 NotificationLimits = new List<NotificationLimit>(),
-                NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
+                //NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
             {
@@ -209,17 +207,17 @@ namespace net.atos.daf.ct2.alert.test
                 LandmarkType = "P",
                 RefId = 170,
                 PositionType = "X",
-                DayType = new bool[7] { true, true, true, true, true, true, true },
-                PeriodType = "D",
-                FilterStartDate = 1620272821,
-                FilterEndDate = 1620272821,
+                //DayType = new bool[7] { true, true, true, true, true, true, true },
+                //PeriodType = "D",
+                //FilterStartDate = 1620272821,
+                //FilterEndDate = 1620272821,
                 State = "A",
                 CreatedAt = 1620272821,
                 //ModifiedAt =,
             };
             #endregion
 
-            notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
+            //notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
             notification.NotificationLimits.Add(notificationLimit);
             notification.NotificationRecipients.Add(notificationRecipient);
 
@@ -257,7 +255,7 @@ namespace net.atos.daf.ct2.alert.test
                 Notifications = new List<Notification>(),
                 AlertLandmarkRefs = new List<AlertLandmarkRef>(),
             };
-            var result = _ialertManager.GetAlertList(alert.CreatedBy,alert.OrganizationId).Result;
+            var result = _ialertManager.GetAlertList(alert.CreatedBy, alert.OrganizationId).Result;
             Assert.IsNotNull(result);
         }
 
@@ -314,7 +312,7 @@ namespace net.atos.daf.ct2.alert.test
                 ModifiedBy = 10,
                 NotificationRecipients = new List<NotificationRecipient>(),
                 NotificationLimits = new List<NotificationLimit>(),
-                NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
+               // NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
             {
@@ -401,17 +399,17 @@ namespace net.atos.daf.ct2.alert.test
                 LandmarkType = "G",
                 RefId = 171,
                 PositionType = "E",
-                DayType = new bool[7] { true, true, true, true, true, true, true },
-                PeriodType = "D",
-                FilterStartDate = 1620272821,
-                FilterEndDate = 1620272821,
+                //DayType = new bool[7] { true, true, true, true, true, true, true },
+                //PeriodType = "D",
+                //FilterStartDate = 1620272821,
+                //FilterEndDate = 1620272821,
                 State = "A",
                 //CreatedAt = 1620272821,
                 ModifiedAt = 1620272821
             };
             #endregion
 
-            notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
+            //notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
             notification.NotificationLimits.Add(notificationLimit);
             notification.NotificationRecipients.Add(notificationRecipient);
 

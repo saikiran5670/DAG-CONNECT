@@ -1,16 +1,16 @@
-﻿using Grpc.Core;
-using log4net;
-using net.atos.daf.ct2.alert;
-using net.atos.daf.ct2.alert.ENUM;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.alertservice.Entity;
+using Grpc.Core;
+using log4net;
+using net.atos.daf.ct2.alert;
 using net.atos.daf.ct2.alert.entity;
+using net.atos.daf.ct2.alert.ENUM;
+using net.atos.daf.ct2.alertservice.Entity;
+using net.atos.daf.ct2.visibility;
+using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.alertservice.Services
 {
@@ -19,11 +19,14 @@ namespace net.atos.daf.ct2.alertservice.Services
         private ILog _logger;
         private readonly IAlertManager _alertManager;
         private readonly Mapper _mapper;
-        public AlertManagementService(IAlertManager alertManager)
+        private readonly IVisibilityManager _visibilityManager;
+
+        public AlertManagementService(IAlertManager alertManager, IVisibilityManager visibilityManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _alertManager = alertManager;
             _mapper = new Mapper();
+            _visibilityManager = visibilityManager;
         }
 
         #region ActivateAlert,SuspendAlert and  DeleteAlert
@@ -149,12 +152,21 @@ namespace net.atos.daf.ct2.alertservice.Services
                 Alert alert = new Alert();
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.UpdateAlert(alert);
-                // check for exists
+                // check for alert name exists
                 response.AlertRequest.Exists = false;
                 if (alert.Exists)
                 {
                     response.AlertRequest.Exists = true;
                     response.Message = "Duplicate alert name";
+                    response.Code = ResponseCode.Conflict;
+                    return response;
+                }
+                // check for notification recipient label exists
+                var duplicateNotificationRecipients = alert.Notifications.SelectMany(a => a.NotificationRecipients).Where(y => y.Exists == true).ToList();
+                if (duplicateNotificationRecipients.Count() > 0)
+                {
+                    response.AlertRequest.Exists = true;
+                    response.Message = "Duplicate notification recipient label";
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }
@@ -190,10 +202,20 @@ namespace net.atos.daf.ct2.alertservice.Services
                 alert = _mapper.ToAlertEntity(request);
                 alert = await _alertManager.CreateAlert(alert);
                 response.AlertRequest.Exists = false;
+                // check for alert name exists
                 if (alert.Exists)
                 {
                     response.AlertRequest.Exists = true;
                     response.Message = "Duplicate alert name";
+                    response.Code = ResponseCode.Conflict;
+                    return response;
+                }
+                // check for notification recipient label exists
+                var duplicateNotificationRecipients = alert.Notifications.SelectMany(a => a.NotificationRecipients).Where(y => y.Exists == true).ToList();
+                if (duplicateNotificationRecipients.Count() > 0)
+                {
+                    response.AlertRequest.Exists = true;
+                    response.Message = "Duplicate notification recipient label";
                     response.Code = ResponseCode.Conflict;
                     return response;
                 }
@@ -282,7 +304,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                 {
                     landmarkIds.Add(item);
                 }
-                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds);
+                var IsLandmarkIdActive = await _alertManager.IsLandmarkActiveInAlert(landmarkIds, request.LandmarkType);
                 landmarkResponse.IsLandmarkActive = IsLandmarkIdActive != false ? true : false;
             }
             catch (Exception ex)
@@ -306,16 +328,16 @@ namespace net.atos.daf.ct2.alertservice.Services
                 NotificationTemplateResponse response = new NotificationTemplateResponse();
                 foreach (var item in notificationTemplateList)
                 {
-                    response.NotificationTemplatelist.Add(new NotificationTemplate 
-                            { 
-                                Id=item.Id,
-                                AlertCategoryType=item.AlertCategoryType,
-                                AlertType=item.AlertType,
-                                Text=item.Text,
-                                Subject=item.Subject,
-                                CreatedAt=item.CreatedAt,
-                                ModifiedAt=item.ModifiedAt
-                            });
+                    response.NotificationTemplatelist.Add(new NotificationTemplate
+                    {
+                        Id = item.Id,
+                        AlertCategoryType = item.AlertCategoryType,
+                        AlertType = item.AlertType,
+                        Text = item.Text,
+                        Subject = item.Subject,
+                        CreatedAt = item.CreatedAt,
+                        ModifiedAt = item.ModifiedAt
+                    });
                 }
                 response.Message = "Alert notification template data is retrieved";
                 response.Code = ResponseCode.Success;
@@ -365,6 +387,66 @@ namespace net.atos.daf.ct2.alertservice.Services
 
         #endregion
 
+        #region Alert Category Filter
+        public override async Task<AlertCategoryFilterResponse> GetAlertCategoryFilter(AlertCategoryFilterIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new AlertCategoryFilterResponse();
+                var enumTranslationList = await _alertManager.GetAlertCategory();
+                var notificationTemplate = await GetNotificationTemplate(new AccountIdRequest { AccountId = request.AccountId },context);
+                foreach (var item in enumTranslationList)
+                {
+                    response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
+                }
+
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+
+                if (vehicleDetailsAccountVisibilty.Any())
+                {
+
+                    var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
+                    response.AssociatedVehicleRequest.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
+                        );
+
+                    var vehicleByVisibilityAndFeature
+                                                = await _visibilityManager
+                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                                                                                       request.RoleId,vehicleDetailsAccountVisibilty,
+                                                                                       AlertConstants.ALERT_FEATURE_NAME);
+
+                    res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
+                    response.AlertCategoryFilterRequest.AddRange(
+                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AlertCategoryFilterRequest>>(res)
+                        );
+
+                }
+                if (notificationTemplate.NotificationTemplatelist!=null)
+                {
+                    foreach (var item in notificationTemplate.NotificationTemplatelist)
+                    {
+                        response.NotificationTemplate.Add(_mapper.MapNotificationTemplate(item));
+                    }
+                }
+                response.Message = AlertConstants.ALERT_FILTER_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info("Get method in alert service called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new AlertCategoryFilterResponse
+                {
+                    Code = ResponseCode.InternalServerError,
+                    Message = ex.Message
+                });
+            }
+        }
+        #endregion
     }
 }
 

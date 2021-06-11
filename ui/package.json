@@ -40,6 +40,7 @@
     "less": "^3.12.2",
     "mat-table-exporter": "^9.1.2",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
     "ng2-charts": "^2.3.2",
     "ng2-completer": "^9.0.1",
     "ngx-cookie-service": "^11.0.2",

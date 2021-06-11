@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.alert.entity
 {
@@ -32,5 +29,7 @@ namespace net.atos.daf.ct2.alert.entity
         public long ModifiedAt { get; set; }
 
         public List<AlertFilterRef> AlertFilterRefs { get; set; } = new List<AlertFilterRef>();
+        public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
+
     }
 }

@@ -1,39 +1,32 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using AccountComponent = net.atos.daf.ct2.account;
-using AccountEntity = net.atos.daf.ct2.account.entity;
-using IdentityComponent = net.atos.daf.ct2.identity;
-using IdentityEntity = net.atos.daf.ct2.identity.entity;
-using AccountPreferenceComponent = net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.authenticationservicerest.Entity;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using AccountComponent = net.atos.daf.ct2.account;
+using IdentityEntity = net.atos.daf.ct2.identity.entity;
 
 namespace net.atos.daf.ct2.authenticationservicerest.Controllers
 {
     [ApiController]
     // [Route("[controller]")]
-    public class AuthenticationController: ControllerBase
+    public class AuthenticationController : ControllerBase
     {
-        private readonly ILogger logger;
-        AccountComponent.IAccountIdentityManager accountIdentityManager;
-        private readonly AccountComponent.IAccountManager accountManager;
-        public AuthenticationController(AccountComponent.IAccountIdentityManager _accountIdentityManager, AccountComponent.IAccountManager _accountManager, ILogger<AuthenticationController> _logger)
+        private readonly ILogger _logger;
+        private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
+        private readonly AccountComponent.IAccountManager _accountManager;
+        public AuthenticationController(AccountComponent.IAccountIdentityManager accountIdentityManager, AccountComponent.IAccountManager accountManager, ILogger<AuthenticationController> logger)
         {
-            accountIdentityManager = _accountIdentityManager;
-            accountManager = _accountManager;
-            logger =_logger;
+            this._accountIdentityManager = accountIdentityManager;
+            this._accountManager = accountManager;
+            this._logger = logger;
         }
         [HttpPost]
         [Route("auth")]
         //In case, to generate only account token 
         public async Task<IActionResult> GenerateToken()
         {
-            string identity = string.Empty;
+            string identity;
             try
             {
                 if (!string.IsNullOrEmpty(Request.Headers["Authorization"]))
@@ -47,11 +40,11 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                     {
                         return StatusCode(400, string.Empty);
                     }
-                    
+
                     var arrUsernamePassword = identity.Split(':');
                     if (string.IsNullOrEmpty(arrUsernamePassword[0].Trim()))
                     {
-                        return StatusCode(401,string.Empty);
+                        return StatusCode(401, string.Empty);
                     }
                     else if (string.IsNullOrEmpty(arrUsernamePassword[1]))
                     {
@@ -63,69 +56,42 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                         user.UserName = arrUsernamePassword[0].Trim();
                         user.Password = arrUsernamePassword[1];
 
-                        IdentityEntity.AccountToken response = await accountIdentityManager.GenerateTokenGUID(user);
-                        if (response != null && response.statusCode==System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
+                        IdentityEntity.AccountToken response = await _accountIdentityManager.GenerateTokenGUID(user);
+                        if (response != null && response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response.AccessToken))
                         {
                             //Check for feature access
-                            var isExists = await accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.MainPolicy);
+                            var isExists = await _accountManager.CheckForFeatureAccessByEmailId(user.UserName, Constants.MainPolicy);
                             if (!isExists)
                                 return StatusCode(403, string.Empty);
 
                             AuthToken authToken = new AuthToken();
-                            authToken.access_token = response.AccessToken;
-                            authToken.expires_in = response.ExpiresIn;
-                            authToken.token_type = response.TokenType;
+                            authToken.Access_token = response.AccessToken;
+                            authToken.Expires_in = response.ExpiresIn;
+                            authToken.Token_type = response.TokenType;
                             return Ok(authToken);
                         }
                         else
                         {
-                            return StatusCode(401,string.Empty);
+                            return StatusCode(401, string.Empty);
                         }
                     }
                 }
                 else
                 {
-                    return StatusCode(401,string.Empty);
+                    return StatusCode(401, string.Empty);
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message + " " + ex.StackTrace);
-                return StatusCode(500,string.Empty);
+                _logger.LogError(ex.Message + " " + ex.StackTrace);
+                return StatusCode(500, string.Empty);
             }
         }
 
-        //[HttpPost]        
-        //[Route("validate")]
-        //public async Task<IActionResult> Validate([FromBody] string token)
-        //{
-        //    bool valid=false;
-        //    try 
-        //    {
-        //        if(string.IsNullOrEmpty(token))
-        //        {
-        //            return StatusCode(401);
-        //        }
-        //        else
-        //        {
-        //            AccountEntity.ValidTokenResponse response = await accountIdentityManager.ValidatTokeneGuid(token);
-        //            valid = (response!=null) && (response.Valid==true) ? true : false;
-        //        }
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        valid = false;
-        //        logger.LogError(ex.Message +" " +ex.StackTrace);
-        //        return StatusCode(500);
-        //    }           
-        //    return Ok(valid); 
-        //}
-        
         [HttpPost]
         [Route("signout")]
-        public async Task<IActionResult> signout([FromBody] string token)
+        public async Task<IActionResult> SignOut([FromBody] string token)
         {
-            bool valid = false;
             try
             {
                 if (string.IsNullOrEmpty(token))
@@ -134,12 +100,12 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
                 }
                 else
                 {
-                    valid = await accountIdentityManager.LogoutByJwtToken(token);
+                    var valid = await _accountIdentityManager.LogoutByJwtToken(token);
                     if (valid)
                     {
                         return StatusCode(200);
                     }
-                    else 
+                    else
                     {
                         return StatusCode(401);
                     }
@@ -147,8 +113,7 @@ namespace net.atos.daf.ct2.authenticationservicerest.Controllers
             }
             catch (Exception ex)
             {
-                valid = false;
-                logger.LogError(ex.ToString());
+                _logger.LogError(ex.ToString());
                 return StatusCode(500);
             }
         }

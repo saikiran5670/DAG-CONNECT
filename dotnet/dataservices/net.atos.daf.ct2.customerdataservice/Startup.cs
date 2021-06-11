@@ -1,43 +1,38 @@
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit;
-using net.atos.daf.ct2.organization.repository;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.organization;
-using net.atos.daf.ct2.audit.repository;
+using Microsoft.OpenApi.Models;
 using net.atos.daf.ct2.accountpreference;
+using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.audit.repository;
+using net.atos.daf.ct2.customerdataservice.Common;
+using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
+using net.atos.daf.ct2.organization;
+using net.atos.daf.ct2.organization.repository;
+using net.atos.daf.ct2.subscription.repository;
+using net.atos.daf.ct2.translation;
+using net.atos.daf.ct2.translation.repository;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.repository;
-using Microsoft.AspNetCore.Http;
-using net.atos.daf.ct2.group;
 using AccountComponent = net.atos.daf.ct2.account;
-using Identity = net.atos.daf.ct2.identity;
 using AccountPreference = net.atos.daf.ct2.accountpreference;
-using Subscription = net.atos.daf.ct2.subscription;
-using net.atos.daf.ct2.subscription.repository;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
-using net.atos.daf.ct2.customerdataservice.CustomAttributes;
+using Identity = net.atos.daf.ct2.identity;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using System;
-using net.atos.daf.ct2.translation.repository;
-using net.atos.daf.ct2.translation;
-using net.atos.daf.ct2.customerdataservice.Common;
+using Subscription = net.atos.daf.ct2.subscription;
 
 namespace net.atos.daf.ct2.customerdataservice
 {
     public class Startup
     {
-        private readonly string swaggerBasePath = "customer-data";
+        private readonly string _swaggerBasePath = "customer-data";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -49,10 +44,12 @@ namespace net.atos.daf.ct2.customerdataservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                  .ConfigureApiBehaviorOptions(options => {                   
-                      options.InvalidModelStateResponseFactory = actionContext => {
-                       return CustomErrorResponse(actionContext);
+            services.AddMvc()
+                  .ConfigureApiBehaviorOptions(options =>
+                  {
+                      options.InvalidModelStateResponseFactory = actionContext =>
+                      {
+                          return CustomErrorResponse(actionContext);
                       };
                   });
             //var connectionString = Configuration.GetConnectionString("ConnectionString");
@@ -70,28 +67,28 @@ namespace net.atos.daf.ct2.customerdataservice
                 return new PgSQLDataMartDataAccess(DataMartconnectionString);
             });
 
-            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration")); 
-           
-            services.AddTransient<IAuditTraillib,AuditTraillib>(); 
-            services.AddTransient<IAuditLogRepository, AuditLogRepository>(); 
-            services.AddTransient<IOrganizationManager,OrganizationManager>();
+            services.Configure<Identity.IdentityJsonConfiguration>(Configuration.GetSection("IdentityConfiguration"));
+
+            services.AddTransient<IAuditTraillib, AuditTraillib>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+            services.AddTransient<IOrganizationManager, OrganizationManager>();
             services.AddTransient<IOrganizationRepository, OrganizationRepository>();
-            services.AddTransient<IPreferenceManager,PreferenceManager>();
+            services.AddTransient<IPreferenceManager, PreferenceManager>();
             services.AddTransient<IAccountPreferenceRepository, AccountPreferenceRepository>();
             services.AddTransient<IVehicleRepository, VehicleRepository>();
-            services.AddTransient<IVehicleManager,VehicleManager>();
-            services.AddTransient<Identity.IAccountManager,Identity.AccountManager>();
-            services.AddTransient<Identity.ITokenManager,Identity.TokenManager>();
-            services.AddTransient<Identity.IAccountAuthenticator,Identity.AccountAuthenticator>();            
-            services.AddTransient<AccountComponent.IAccountIdentityManager,AccountComponent.AccountIdentityManager>();            
-            services.AddTransient<AccountPreference.IPreferenceManager,AccountPreference.PreferenceManager>();
+            services.AddTransient<IVehicleManager, VehicleManager>();
+            services.AddTransient<Identity.IAccountManager, Identity.AccountManager>();
+            services.AddTransient<Identity.ITokenManager, Identity.TokenManager>();
+            services.AddTransient<Identity.IAccountAuthenticator, Identity.AccountAuthenticator>();
+            services.AddTransient<AccountComponent.IAccountIdentityManager, AccountComponent.AccountIdentityManager>();
+            services.AddTransient<AccountPreference.IPreferenceManager, AccountPreference.PreferenceManager>();
             services.AddTransient<AccountPreference.IAccountPreferenceRepository, AccountPreference.AccountPreferenceRepository>();
-            services.AddTransient<AccountComponent.IAccountRepository,AccountComponent.AccountRepository>();
-            services.AddTransient<AccountComponent.IAccountManager,AccountComponent.AccountManager>();   
-            services.AddTransient<Subscription.ISubscriptionManager,Subscription.SubscriptionManager>(); 
-            services.AddTransient<ISubscriptionRepository,SubscriptionRepository>();  
-            services.AddTransient<IGroupManager,GroupManager>();
-            services.AddTransient<IGroupRepository, GroupRepository>();          
+            services.AddTransient<AccountComponent.IAccountRepository, AccountComponent.AccountRepository>();
+            services.AddTransient<AccountComponent.IAccountManager, AccountComponent.AccountManager>();
+            services.AddTransient<Subscription.ISubscriptionManager, Subscription.SubscriptionManager>();
+            services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddTransient<IGroupManager, GroupManager>();
+            services.AddTransient<IGroupRepository, GroupRepository>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IdentitySessionComponent.IAccountSessionManager, IdentitySessionComponent.AccountSessionManager>();
             services.AddTransient<IdentitySessionComponent.IAccountTokenManager, IdentitySessionComponent.AccountTokenManager>();
@@ -100,7 +97,7 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddTransient<ITranslationRepository, TranslationRepository>();
             services.AddTransient<ITranslationManager, TranslationManager>();
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(BasicAuthenticationDefaults.AUTHENTICATION_SCHEME)
             .AddBasic<BasicAuthenticationService>(options =>
             {
                 options.ApplicationName = "DAFCT2.0";
@@ -109,9 +106,9 @@ namespace net.atos.daf.ct2.customerdataservice
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(
-                    AccessPolicies.MainAccessPolicy,
+                    AccessPolicies.MAIN_ACCESS_POLICY,
                     policy => policy.RequireAuthenticatedUser()
-                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MainAccessPolicy)));
+                                    .Requirements.Add(new AuthorizeRequirement(AccessPolicies.MAIN_ACCESS_POLICY)));
             });
 
             services.AddSingleton<IAuthorizationHandler, AuthorizeHandler>();
@@ -119,7 +116,7 @@ namespace net.atos.daf.ct2.customerdataservice
             //services.AddMvc(options => { options.Filters.Add(new ProducesAttribute("application/json")); });
             services.AddSwaggerGen(c =>
             {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Customer Data Service", Version = "v1" });
             });
         }
 
@@ -146,20 +143,20 @@ namespace net.atos.daf.ct2.customerdataservice
 
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = swaggerBasePath+"/swagger/{documentName}/swagger.json";
+                c.RouteTemplate = _swaggerBasePath + "/swagger/{documentName}/swagger.json";
             });
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint($"/{swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
-                c.RoutePrefix = $"{swaggerBasePath}/swagger";
+                c.SwaggerEndpoint($"/{_swaggerBasePath}/swagger/v1/swagger.json", $"APP API - v1");
+                c.RoutePrefix = $"{_swaggerBasePath}/swagger";
             });
         }
         private BadRequestObjectResult CustomErrorResponse(ActionContext actionContext)
-        {           
+        {
             return new BadRequestObjectResult(actionContext.ModelState
              .Where(modelError => modelError.Value.Errors.Count > 0)
-             .Select(modelError =>string.Empty).FirstOrDefault());
+             .Select(modelError => string.Empty).FirstOrDefault());
         }
-    }   
+    }
 }

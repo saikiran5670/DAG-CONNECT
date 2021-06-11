@@ -1,8 +1,5 @@
-﻿using Google.Protobuf.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Google.Protobuf.Collections;
 
 namespace net.atos.daf.ct2.accountservice.Entity
 {
@@ -12,7 +9,7 @@ namespace net.atos.daf.ct2.accountservice.Entity
 
         public AccountMenuModel()
         {
-            Menus = new List<MainMenu>();            
+            Menus = new List<MainMenu>();
         }
     }
 
@@ -20,7 +17,7 @@ namespace net.atos.daf.ct2.accountservice.Entity
     {
         public int MenuId { get; set; }
         public string Name { get; set; }
-        public string TranslatedMenuName { get; set; }        
+        public string TranslatedMenuName { get; set; }
         public string Url { get; set; }
         public string Key { get; set; }
         public int FeatureId { get; set; }

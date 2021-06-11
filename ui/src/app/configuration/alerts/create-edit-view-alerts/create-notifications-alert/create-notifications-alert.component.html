@@ -152,7 +152,7 @@
                     </mat-form-field>
                 </div> -->
             </div>
-            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: grey" class="areaWidth">
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" style="background: #dedddd;padding: 0.5em" class="areaWidth">
                 <!-- <div class="full-width orgGrayDefault" fxLayout="column" fxLayoutAlign="left" style="background: grey"> -->
                 <span style='font: 500 Roboto, "Helvetica Neue", sans-serif;font-weight: bold;padding-left: 10px;padding-top: 10px;'>{{
                     translationData.lblSetLimitations || 'Set Limitations' }}</span>
@@ -163,11 +163,41 @@
                 <!-- <mat-radio-button formControlName="notifyPeriod" checked style='margin-right: 20px;' [value]="'A'">{{
                     translationData.lblAlways || 'Always' }}
                 </mat-radio-button> -->
-                <mat-radio-group formControlName="notifyPeriod" style='margin-right: 20px;'>
+                <mat-radio-group (change)="onLimitationButtonChange($event)" formControlName="notifyPeriod" style='margin-right: 20px;'>
                     <mat-radio-button style='margin-right: 20px;' value="A">
                         {{ translationData.lblAlways || 'Always' }}
                     </mat-radio-button>
+                    <mat-radio-button style='margin-right: 20px;' value="C">
+                        {{ translationData.lblCustom || 'Custom' }}
+                    </mat-radio-button>
                 </mat-radio-group>
+                <div *ngIf="limitButton == 'C'" fxLayout="row" class="full-width">
+                    <div fxLayout="column" fxLayoutAlign="left" class="limitation">
+                        <mat-label>{{translationData.lblRestrictTo || 'RestrictTo'}}</mat-label>
+                        <!-- <mat-form-field appearance="outline" class="full-width"> -->
+                            <input type="number" min="0" max="24" formControlName="retrictTo" class="textField">
+                        <!-- </mat-form-field> -->
+                    </div>
+                    <div fxLayout="column" fxLayoutAlign="left" class="limitation">
+                        <mat-label>{{translationData.lblEmailEach || 'Email Each'}}</mat-label>
+                        <!-- <mat-form-field appearance="outline" class="full-width"> -->
+                            <div fxLayout="row" fxLayoutGap = "6px">
+                            <input type="number" min="0" max="60" matInput formControlName="emailEach" class="textField">
+                            <mat-form-field appearance="outline" class="areawidth">
+                            <mat-select placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="minutes">
+                                <mat-option>
+                                    Minutes
+                                </mat-option>
+                                <mat-option>
+                                    Hours
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        </div>
+                        <!-- </mat-form-field> -->
+                    </div>
+
+                </div>
                 <!-- </div> -->
             </div>
         </div>

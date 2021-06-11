@@ -79,9 +79,7 @@
             </ng-container>
             <ng-container matColumnDef="name">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblName || 'Name' }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.name }}
-              </mat-cell>
+              <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.name}}">{{row.name}} </mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblCategory || 'Category' }}</mat-header-cell>
@@ -106,11 +104,14 @@
                   (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
                   {{ row.vehicleGroupName }}</span>
                 </span> -->
-                  <span *ngIf="row.vehicleGroupName!=''">
-                  <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
-                  (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
-                  {{ row.vehicleGroupName }}</span>
-                  </span>              
+                  <ng-template [ngIf]="row.vehicleGroupName!=''" [ngIfElse]="vehicleVIN">
+                    <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
+                    (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                    {{ row.vehicleGroupName }}</span>
+                  </ng-template>   
+                  <ng-template #vehicleVIN>
+                    <span>{{ row.vin }}</span>
+                  </ng-template>           
                   <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span>
                 </mat-cell>
              </ng-container> 

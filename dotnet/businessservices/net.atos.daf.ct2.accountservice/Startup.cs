@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.accountpreference;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
-using Identity = net.atos.daf.ct2.identity;
-using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
-using net.atos.daf.ct2.vehicle;
-using net.atos.daf.ct2.vehicle.repository;
+using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
+using net.atos.daf.ct2.vehicle;
+using net.atos.daf.ct2.vehicle.repository;
+using Identity = net.atos.daf.ct2.identity;
+using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
 
 namespace net.atos.daf.ct2.accountservice
 {
@@ -46,7 +42,7 @@ namespace net.atos.daf.ct2.accountservice
             }));
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");
-            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");            
+            var DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
@@ -76,7 +72,7 @@ namespace net.atos.daf.ct2.accountservice
             services.AddTransient<IdentitySessionComponent.repository.IAccountSessionRepository, IdentitySessionComponent.repository.AccountSessionRepository>();
             services.AddTransient<IdentitySessionComponent.repository.IAccountTokenRepository, IdentitySessionComponent.repository.AccountTokenRepository>();
             services.AddTransient<ITranslationRepository, TranslationRepository>();
-            services.AddTransient<ITranslationManager, TranslationManager>();            
+            services.AddTransient<ITranslationManager, TranslationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,14 +89,10 @@ namespace net.atos.daf.ct2.accountservice
 
             app.UseEndpoints(endpoints =>
             {
-                
-                
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb()
-                                                  .RequireCors("AllowAll");
                 endpoints.MapGrpcService<AccountManagementService>().EnableGrpcWeb()
                                                   .RequireCors("AllowAll");
 
-                
+
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

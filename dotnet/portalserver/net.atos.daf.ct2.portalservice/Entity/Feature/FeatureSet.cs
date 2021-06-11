@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Feature
 {
@@ -9,15 +6,15 @@ namespace net.atos.daf.ct2.portalservice.Entity.Feature
     {
         public int FeatureSetID { get; set; }
         public string Name { get; set; }
-        public string description { get; set; }
+        public string Description { get; set; }
         public bool Is_Active { get; set; }
-        public bool is_custom_feature_set { get; set; }
+        public bool Is_custom_feature_set { get; set; }
         public List<Features> Features { get; set; }
-        public long created_at { get; set; }
-        public int created_by { get; set; }
-        public long modified_at { get; set; }
-        public int modified_by { get; set; }
-        public StatusType status { get; set; }
+        public long Created_at { get; set; }
+        public int Created_by { get; set; }
+        public long Modified_at { get; set; }
+        public int Modified_by { get; set; }
+        public StatusType Status { get; set; }
 
 
     }

@@ -1,53 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace net.atos.daf.ct2.tcucore
 {
     public class TCUDataReceive
     {
-        private String vin;
-        private String deviceIdentifier;
-        private String deviceSerialNumber;
-        private Correlations correlations;
-        private DateTime referenceDate;
-
         public TCUDataReceive(string _vin
             , string _deviceIdentifier
             , string _deviceSerialNumber
             , Correlations _correlations
             , DateTime _referenceDate)
         {
-            this.vin = _vin;
-            this.deviceIdentifier = _deviceIdentifier;
-            this.deviceSerialNumber = _deviceSerialNumber;
-            this.correlations = _correlations;
-            this.referenceDate = _referenceDate;
+            this.Vin = _vin;
+            this.DeviceIdentifier = _deviceIdentifier;
+            this.DeviceSerialNumber = _deviceSerialNumber;
+            this.Correlations = _correlations;
+            this.ReferenceDate = _referenceDate;
         }
 
-        public string Vin { 
-            get => vin; 
-            set => vin = value;
-        }
+        public string Vin { get;  }
 
-        public string DeviceIdentifier { 
-            get => deviceIdentifier; 
-            set => deviceIdentifier = value; 
-        }
+        public string DeviceIdentifier { get;  }
 
-        public string DeviceSerialNumber { 
-            get => deviceSerialNumber; 
-            set => deviceSerialNumber = value; 
-        }
+        public string DeviceSerialNumber { get;  }
 
-        public Correlations Correlations { 
-            get => correlations; 
-            set => correlations = value; 
-        }
+        public Correlations Correlations { get;  }
 
-        public DateTime ReferenceDate { 
-            get => referenceDate; 
-            set => referenceDate = value; 
-        }
+        public DateTime ReferenceDate { get;}
     }
 }

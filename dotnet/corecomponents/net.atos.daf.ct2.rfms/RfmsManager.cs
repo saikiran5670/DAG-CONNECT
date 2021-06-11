@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using net.atos.daf.ct2.audit;
+﻿using System.Threading.Tasks;
 using net.atos.daf.ct2.rfms.entity;
 using net.atos.daf.ct2.rfms.repository;
 using net.atos.daf.ct2.rfms.responce;
@@ -12,25 +8,21 @@ namespace net.atos.daf.ct2.rfms
 {
     public class RfmsManager : IRfmsManager
     {
-        IRfmsRepository rfmsRepository;
-        IAuditTraillib auditlog;
+        IRfmsRepository _rfmsRepository;
 
-        public RfmsManager(IRfmsRepository _rfmsRepository, IAuditTraillib _auditlog)
+        public RfmsManager(IRfmsRepository rfmsRepository)
         {
-            rfmsRepository = _rfmsRepository;
-            auditlog = _auditlog;
+            _rfmsRepository = rfmsRepository;
         }
 
-         public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
+        public async Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest)
         {
-            return await rfmsRepository.GetVehicles(rfmsVehicleRequest);
+            return await _rfmsRepository.GetVehicles(rfmsVehicleRequest);
         }
 
-         public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
+        public async Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest)
         {
-
-            return await rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
+            return await _rfmsRepository.GetVehiclePosition(rfmsVehiclePositionRequest);
         }
-
     }
 }

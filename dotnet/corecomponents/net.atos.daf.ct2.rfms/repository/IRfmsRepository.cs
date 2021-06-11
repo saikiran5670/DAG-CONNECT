@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.rfms.repository
     {
         Task<RfmsVehicles> GetVehicles(RfmsVehicleRequest rfmsVehicleRequest);
 
-         Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest);
-           
+        Task<RfmsVehiclePosition> GetVehiclePosition(RfmsVehiclePositionRequest rfmsVehiclePositionRequest);
+
     }
 }

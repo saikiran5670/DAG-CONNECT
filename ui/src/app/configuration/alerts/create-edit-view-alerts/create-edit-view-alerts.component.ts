@@ -15,6 +15,8 @@ import { CommonTableComponent } from 'src/app/shared/common-table/common-table.c
 import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dialog.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
+import { Options } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
 
 declare var H: any;
 
@@ -32,6 +34,10 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() alertTypeList: any;
   @Input() vehicleGroupList: any;
   @Input() vehicleList: any;
+  options: Options = {
+    floor: 0,
+    ceil: 10000
+  };
   displayedColumnsVehicles: string[] = ['vin', 'vehicleName', 'vehicleGroupName', 'subcriptionStatus']
   displayedColumnsPOI: string[] = ['select', 'icon', 'name', 'categoryName', 'subCategoryName', 'address'];
   displayedColumnsGeofence: string[] = ['select', 'name', 'categoryName', 'subCategoryName'];
@@ -93,8 +99,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
   notifications: any= [];
   unitTypes: any= [];
   isUnsubscribedVehicle: boolean= false;
+  poiWidth : number = 100;
+  poiWidthKm : number = 0.1;
+  sliderValue : number = 0;
+  alertFeatures: any= [];
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
+
+  @ViewChild(PeriodSelectionFilterComponent)
+  periodSelectionComponent: PeriodSelectionFilterComponent;
 
   typesOfLevel: any= [
                       {
@@ -147,16 +160,21 @@ export class CreateEditViewAlertsComponent implements OnInit {
       warningLevelThreshold: [''],
       advisoryLevelThreshold: [''],
       mondayPeriod: [''],
-      unitType: ['']
+      unitType: [''],
+      widthInput: ['']
     },
     {
       validator: [
         CustomValidators.specialCharValidationForName('alertName')  
       ]
     });
+    if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
+      this.breadcumMsg = this.getBreadcum();
+    }
 
-    this.selectedApplyOn= 'G';
+    // this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.selectedApplyOn = this.selectedRowData.applyOn;
       this.setDefaultValue();
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
@@ -168,24 +186,30 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
     }
-    if(this.actionType == 'view' || this.actionType == 'edit'){
-      this.breadcumMsg = this.getBreadcum();
-    }
-
+      
+    this.alertFeatures = JSON.parse(localStorage.getItem('accountFeatures'));  
     // this.alertTypeByCategoryList= this.alertTypeList;
     this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
     this.vehicleGroupList= this.vehicleGroupList.filter(item=> item.vehicleGroupId != 0);
     this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
-
+    
     if(this.vehicleList.length > 0){
       this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
     }
-    
+   
     if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
-      this.loadFiltersData();
+      this.alertForm.controls.widthInput.setValue(0.1);
+      this.loadFiltersData();   
+}
   
-  }
 
+  toBack() {
+    let emitObj = {
+      stepFlag: false,
+      msg: ""
+    }
+    this.backToPage.emit(emitObj);
+  }
   getUnique(arr, comp) {
 
     // store the comparison  values in array
@@ -208,13 +232,51 @@ export class CreateEditViewAlertsComponent implements OnInit {
       });
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
+      let newAlertFeatures= this.alertFeatures.features;
+            
+      let featAlertFeatures = [];
+      let alertActiveFeatures = [];
+      let alertActiveCategory = [];
+
+      newAlertFeatures.forEach((item) => {
+        if(item.key.includes("feat_alert")){        
+          featAlertFeatures.push(item);
+        }        
+      });     
+
+      featAlertFeatures.forEach((element) => {
+        let fetureNames = element.key.split('feat_alert_');
+        this.alertTypeList.forEach((item) => {
+          let newAlertType = item.key.split('enumtype_');           
+          if(newAlertType[1].includes(fetureNames[1])){
+            alertActiveFeatures.push(item);            
+          }
+       });           
+      });     
+      this.alertTypeList=alertActiveFeatures;
+
+      this.alertTypeList.forEach((element) => {
+        this.alertCategoryList.forEach((item) => {
+        if(element.parentEnum.includes(item.enum)){
+          alertActiveCategory.push(item);  
+          alertActiveCategory = alertActiveCategory.filter((test, index, array) =>
+          index === array.findIndex((findTest) =>
+          findTest.value === test.value
+          )    
+          );     
+        }       
+       });
+      });  
+      this.alertCategoryList = alertActiveCategory;  
+      console.log(alertActiveFeatures); console.log(alertActiveCategory);
+     
       this.vehicleList= data["vehicleGroup"];
       if(this.vehicleList.length > 0){
         this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
       }
       this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
       this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
-    }, (error) => {
+      }, (error) => {
 
     })
   }
@@ -480,6 +542,7 @@ PoiCheckboxClicked(event: any, row: any) {
       let marker = new H.map.Marker({ lat: element.latitude, lng: element.longitude }, { icon: this.getSVGIcon() });
       this.map.addObject(marker);
       // this.createResizableCircle(this.circularGeofenceFormGroup.controls.radius.value ? parseInt(this.circularGeofenceFormGroup.controls.radius.value) : 0, element);
+      this.createResizableCircle(this.alertForm.controls.widthInput.value * 1000,element);
     });
     this.geoMarkerArray.forEach(element => {
       if(element.type == "C"){
@@ -704,13 +767,7 @@ PoiCheckboxClicked(event: any, row: any) {
       ));
     }
   
-    // toBack() {
-    //   let emitObj = {
-    //     stepFlag: false,
-    //     msg: ""
-    //   }
-    //   this.backToPage.emit(emitObj);
-    // }
+
 
   getSVGIcon(){
     let markup = '<svg xmlns="http://www.w3.org/2000/svg" width="28px" height="36px" >' +
@@ -759,7 +816,7 @@ PoiCheckboxClicked(event: any, row: any) {
     return `${this.translationData.lblHome ? this.translationData.lblHome : 'Home'} / 
     ${this.translationData.lblConfiguration ? this.translationData.lblConfiguration : 'Configuration'} / 
     ${this.translationData.lblLandmarks ? this.translationData.lblAlerts : "Alerts"} / 
-    ${(this.actionType == 'edit') ? (this.translationData.lblEditAlertDetails ? this.translationData.lblEditAlertDetails : 'Edit Alert Details') : (this.translationData.lblViewAlertDetails ? this.translationData.lblViewAlertDetails : 'View Alert Details')}`;
+    ${(this.actionType == 'edit') ? (this.translationData.lblEditAlertDetails ? this.translationData.lblEditAlertDetails : 'Edit Alert Details') : (this.translationData.lblViewAlertDetails ? this.translationData.lblViewAlertDetails : ' Create New Alert')}`;
   }
 
   loadPOIData() {
@@ -1216,7 +1273,9 @@ PoiCheckboxClicked(event: any, row: any) {
     this.isDuplicateAlert= false;
     let alertUrgencyLevelRefs= [];
     let alertLandmarkRefs= [];
+    let alertTimingRefHoursOfService= [];
     let alertFilterRefs: any= [];
+    let alertTimingRefAdvancedAlert= [];
     let urgenyLevelObj= {};
 
     if((this.alert_category_selected == 'L' && 
@@ -1234,7 +1293,8 @@ PoiCheckboxClicked(event: any, row: any) {
           "periodType": "A",
           "urgencylevelStartDate": 0,
           "urgencylevelEndDate": 0,
-          "alertFilterRefs": alertFilterRefs
+          "alertFilterRefs": alertFilterRefs,
+          "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
       else if(this.actionType == 'edit'){
@@ -1250,7 +1310,8 @@ PoiCheckboxClicked(event: any, row: any) {
           "urgencylevelEndDate": 0,
           "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
           "alertId": this.selectedRowData.id,
-          "alertFilterRefs": alertFilterRefs
+          "alertFilterRefs": alertFilterRefs,
+          "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
       alertUrgencyLevelRefs.push(urgenyLevelObj);
@@ -1373,6 +1434,9 @@ PoiCheckboxClicked(event: any, row: any) {
           }
         }
       }
+      else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours if Service
+        alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
+      }
     }
     else{
       if(this.isCriticalLevelSelected){
@@ -1388,7 +1452,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService 
           }
         }
         else if(this.actionType == 'edit'){
@@ -1405,7 +1470,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(criticalUrgenyLevelObj);
@@ -1423,7 +1489,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         else if(this.actionType == 'edit'){
@@ -1440,7 +1507,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(warningUrgenyLevelObj);
@@ -1458,7 +1526,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "periodType": "A",
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         else if(this.actionType == 'edit'){
@@ -1475,7 +1544,8 @@ PoiCheckboxClicked(event: any, row: any) {
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
-            "alertFilterRefs": alertFilterRefs
+            "alertFilterRefs": alertFilterRefs,
+            "alertTimingDetails" : alertTimingRefHoursOfService
           }
         }
         alertUrgencyLevelRefs.push(advisoryUrgenyLevelObj);
@@ -1714,4 +1784,18 @@ PoiCheckboxClicked(event: any, row: any) {
     }
    });
   }
+
+  sliderChanged(){
+     this.poiWidthKm = this.poiWidth / 1000;
+     this.alertForm.controls.widthInput.setValue(this.poiWidthKm);
+     if(this.markerArray.length > 0){
+     this.addMarkerOnMap();
+     }
+ }
+
+ changeSliderInput(){
+  this.poiWidthKm = this.alertForm.controls.widthInput.value;
+  this.poiWidth = this.poiWidthKm * 1000;
+}
+
 }

@@ -1,61 +1,52 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
-using Dapper;
 using System.Threading.Tasks;
+using Dapper;
+using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.data;
-using net.atos.daf.ct2.audit;
+using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.organization.entity;
-using net.atos.daf.ct2.audit.Enum;
-using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle;
 using net.atos.daf.ct2.vehicle.entity;
-using net.atos.daf.ct2.vehiclerepository;
-using net.atos.daf.ct2.subscription;
-using net.atos.daf.ct2.group;
-using net.atos.daf.ct2.account;
-using net.atos.daf.ct2.account.entity;
-using AccountComponent = net.atos.daf.ct2.account;
-using SubscriptionComponent = net.atos.daf.ct2.subscription;
 using IdentitySessionComponent = net.atos.daf.ct2.identitysession;
+using SubscriptionComponent = net.atos.daf.ct2.subscription;
 
 namespace net.atos.daf.ct2.organization.repository
 {
     public class OrganizationRepository : IOrganizationRepository
     {
-        private readonly IDataAccess dataAccess;
-        private readonly IVehicleManager vehicelManager;
-        private readonly IGroupManager groupManager;
-        private readonly IAccountManager accountManager;
-        SubscriptionComponent.ISubscriptionManager subscriptionManager;
-        IdentitySessionComponent.IAccountSessionManager accountSessionManager;
-        IdentitySessionComponent.IAccountTokenManager accountTokenManager;
+        private readonly IDataAccess _dataAccess;
+        private readonly IVehicleManager _vehicelManager;
+        private readonly IGroupManager _groupManager;
+        private readonly IAccountManager _accountManager;
+        SubscriptionComponent.ISubscriptionManager _subscriptionManager;
+        IdentitySessionComponent.IAccountSessionManager _accountSessionManager;
+        IdentitySessionComponent.IAccountTokenManager _accountTokenManager;
 
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public OrganizationRepository(IDataAccess _dataAccess, IVehicleManager _vehicleManager, IGroupManager _groupManager, IAccountManager _accountManager, SubscriptionComponent.ISubscriptionManager _subscriptionManager, IdentitySessionComponent.IAccountSessionManager _accountSessionManager, IdentitySessionComponent.IAccountTokenManager _accountTokenManager)
+        public OrganizationRepository(IDataAccess dataAccess, IVehicleManager vehicleManager, IGroupManager groupManager, IAccountManager accountManager, SubscriptionComponent.ISubscriptionManager subscriptionManager, IdentitySessionComponent.IAccountSessionManager accountSessionManager, IdentitySessionComponent.IAccountTokenManager accountTokenManager)
         {
-            dataAccess = _dataAccess;
-            vehicelManager = _vehicleManager;
-            groupManager = _groupManager;
-            accountManager = _accountManager;
-            subscriptionManager = _subscriptionManager;
-            accountSessionManager = _accountSessionManager;
-            accountTokenManager = _accountTokenManager;
+            _dataAccess =dataAccess;
+            _vehicelManager = vehicleManager;
+            _groupManager = groupManager;
+            _accountManager = accountManager;
+            _subscriptionManager = subscriptionManager;
+            _accountSessionManager = accountSessionManager;
+            _accountTokenManager = accountTokenManager;
         }
         public async Task<Organization> Create(Organization organization)
         {
-            log.Info("Create Organization method called in repository");
+            _log.Info("Create Organization method called in repository");
             try
             {
 
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@org_id", organization.OrganizationId);
                 var query = @"SELECT id FROM master.organization where org_id=@org_id";
-                int orgexist = await dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+                int orgexist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
 
                 if (orgexist > 0)
                 {
@@ -75,13 +66,13 @@ namespace net.atos.daf.ct2.organization.repository
                     parameter.Add("@PostalCode", organization.PostalCode);
                     parameter.Add("@City", organization.City);
                     parameter.Add("@CountryCode", organization.CountryCode);
-                    parameter.Add("@ReferencedDate", organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long?)null);
+                    parameter.Add("@ReferencedDate", organization.ReferenceDate != null ? UTCHandling.GetUTCFromDateTime(organization.ReferenceDate.ToString()) : (long?)null);
                     parameter.Add("@vehicle_default_opt_in", "I");
                     parameter.Add("@driver_default_opt_in", "I");
                     string queryInsert = "insert into master.organization(org_id, type, name, address_type, street, street_number, postal_code, city,country_code,reference_date,preference_id,vehicle_default_opt_in,driver_default_opt_in) " +
                                   "values(@OrganizationId, @OrganizationType, @Name, @AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@ReferencedDate,null,@vehicle_default_opt_in,@driver_default_opt_in) RETURNING id";
 
-                    var orgid = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
+                    var orgid = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameter);
                     organization.Id = orgid;
 
                     // Create dynamic account group
@@ -95,7 +86,7 @@ namespace net.atos.daf.ct2.organization.repository
                     groupAccount.Name = "DefaultAccountGroup";
                     groupAccount.Description = "DefaultAccountGroup";
                     groupAccount.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                    groupAccount = await groupManager.Create(groupAccount);
+                    groupAccount = await _groupManager.Create(groupAccount);
 
                     // Create dynamic vehicle group
                     Group groupVehicle = new Group();
@@ -108,7 +99,7 @@ namespace net.atos.daf.ct2.organization.repository
                     groupVehicle.Name = "DefaultVehicleGroup";
                     groupVehicle.Description = "DefaultVehicleGroup";
                     groupVehicle.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                    groupVehicle = await groupManager.Create(groupVehicle);
+                    groupVehicle = await _groupManager.Create(groupVehicle);
 
                     //// Create access relationship
                     //AccessRelationship accessRelationship = new AccessRelationship();
@@ -122,7 +113,7 @@ namespace net.atos.daf.ct2.organization.repository
             catch (Exception ex)
             {
                 // log.Info("Create Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organization));
-                log.Error(ex.ToString());
+                _log.Error(ex.ToString());
                 throw;
             }
             return organization;
@@ -130,32 +121,32 @@ namespace net.atos.daf.ct2.organization.repository
 
         public async Task<bool> Delete(int organizationId)
         {
-            log.Info("Delete Organization method called in repository");
+            _log.Info("Delete Organization method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", organizationId);
                 var query = @"update master.organization set state='D' where id=@id";
-                int isdelete = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                int isdelete = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return true;
             }
             catch (Exception ex)
             {
-                log.Info("Delete Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("Delete Organization method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
         public async Task<Organization> Update(Organization organization)
         {
-            log.Info("Update Organization method called in repository");
+            _log.Info("Update Organization method called in repository");
             try
             {
                 var parameterduplicate = new DynamicParameters();
                 parameterduplicate.Add("@org_id", organization.OrganizationId);
                 var query = @"SELECT id FROM master.organization where org_id=@org_id and state='A'";
-                int orgexist = await dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
+                int orgexist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterduplicate);
                 if (orgexist > 0)
                 {
                     organization.Id = -1;
@@ -175,8 +166,8 @@ namespace net.atos.daf.ct2.organization.repository
                     //parameter.Add("@City", organization.City);
                     //parameter.Add("@CountryCode", organization.CountryCode);
                     //parameter.Add("@ReferencedDate", organization.reference_date != null ? UTCHandling.GetUTCFromDateTime(organization.reference_date.ToString()) : (long?)null);
-                    parameter.Add("@vehicleoptin", organization.vehicle_default_opt_in);
-                    parameter.Add("@driveroptin", organization.driver_default_opt_in);
+                    parameter.Add("@vehicleoptin", organization.VehicleDefaultOptIn);
+                    parameter.Add("@driveroptin", organization.DriverDefaultOptIn);
                     //parameter.Add("@IsActive", organization.IsActive); 
 
                     //   var queryUpdate = @"update master.organization set org_id=@OrganizationId, type=@OrganizationType, name=@Name,
@@ -186,7 +177,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                     var queryUpdate = @"update master.organization set vehicle_default_opt_in=@vehicleoptin,driver_default_opt_in=@driveroptin              
 	                                 WHERE id = @Id RETURNING id;";
-                    var orgid = await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
+                    var orgid = await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameter);
                     if (orgid < 1)
                     {
                         organization.Id = 0;
@@ -195,8 +186,8 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Update Organization method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("Update Organization method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
             return organization;
@@ -204,31 +195,44 @@ namespace net.atos.daf.ct2.organization.repository
 
         public async Task<OrganizationResponse> Get(int organizationId)
         {
-            log.Info("Get Organization method called in repository");
+            _log.Info("Get Organization method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT id, org_id, type,coalesce(name, '(' || org_id || ')') as name, address_type, street, street_number, postal_code, city, country_code, reference_date, state,vehicle_default_opt_in,driver_default_opt_in 
+                var query = @"SELECT id Id, 
+                    org_id OrgId,
+                    type as Type,
+                    coalesce(name, '(' || org_id || ')') as Name, 
+                    address_type as AddressType, 
+                    street as Street,
+                    street_number as StreetNumber, 
+                    postal_code as PostalCode,
+                    city as City, 
+                    country_code as CountryCode, 
+                    reference_date as ReferenceDate, 
+                    state as State,
+                    vehicle_default_opt_in as VehicleDefaultOptIn ,
+                    driver_default_opt_in as DriverDefaultOptIn 
                 FROM master.organization where id=@Id and state='A'";
                 parameter.Add("@Id", organizationId);
-                IEnumerable<OrganizationResponse> OrganizationDetails = await dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
+                IEnumerable<OrganizationResponse> OrganizationDetails = await _dataAccess.QueryAsync<OrganizationResponse>(query, parameter);
                 OrganizationResponse objOrganization = new OrganizationResponse();
                 foreach (var item in OrganizationDetails)
                 {
                     objOrganization.Id = item.Id;
-                    objOrganization.org_id = item.org_id;
-                    objOrganization.type = item.type;
-                    objOrganization.name = item.name;
-                    objOrganization.address_type = item.address_type;
-                    objOrganization.street = item.street;
-                    objOrganization.street_number = item.street_number;
-                    objOrganization.postal_code = item.postal_code;
-                    objOrganization.city = item.city;
-                    objOrganization.country_code = item.country_code;
-                    objOrganization.state = item.state;
-                    objOrganization.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
-                    objOrganization.vehicle_default_opt_in = item.vehicle_default_opt_in;
-                    objOrganization.driver_default_opt_in = item.driver_default_opt_in;
+                    objOrganization.OrgId = item.OrgId;
+                    objOrganization.Type = item.Type;
+                    objOrganization.Name = item.Name;
+                    objOrganization.AddressType = item.AddressType;
+                    objOrganization.Street = item.Street;
+                    objOrganization.StreetNumber = item.StreetNumber;
+                    objOrganization.PostalCode = item.PostalCode;
+                    objOrganization.City = item.City;
+                    objOrganization.CountryCode= item.CountryCode;
+                    objOrganization.State = item.State;
+                    objOrganization.ReferenceDate = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.ReferenceDate), "UTC", "yyyy-MM-ddTHH:mm:ss");
+                    objOrganization.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
+                    objOrganization.DriverDefaultOptIn= item.DriverDefaultOptIn;
                 }
                 if (objOrganization.Id < 1)
                 {
@@ -239,35 +243,35 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
         public async Task<OrganizationDetailsResponse> GetOrganizationDetails(int organizationId)
         {
-            log.Info("Get Organization details method called in repository");
+            _log.Info("Get Organization details method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
                 var query = @"SELECT
-                              a.id preferenceId,
-                              o.id ,
-                              o.org_id ,
-                              coalesce(o.name, '') as name,                             
-                              o.city ,                             
-                              o.street ,
-                              o.street_number ,
-                              o.postal_code ,
-                              o.country_code,
-                              o.vehicle_default_opt_in ,
-                              o.driver_default_opt_in ,
-                              c.name currency,
-                              t.name timezone ,
-                              tf.name timeformat,
+                              a.id PreferenceId,
+                              o.id Id,
+                              o.org_id OrgId,
+                              coalesce(o.name, '') as Name,                             
+                              o.city City,                             
+                              o.street Street,
+                              o.street_number StreetNumber,
+                              o.postal_code PostalCode,
+                              o.country_code CountryCode,
+                              o.vehicle_default_opt_in VehicleDefaultOptIn,
+                              o.driver_default_opt_in DriverDefaultOptIn,
+                              c.name Currency,
+                              t.name Timezone,
+                              tf.name TimeFormat,
                               df.name DateFormatType,
                               l.name LanguageName,
-                              u.name unit
+                              u.name Unit
                             FROM master.organization o
                             left join  master.accountpreference a on o.preference_id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -278,21 +282,21 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  translation.language l on l.id=a.language_id                                                      
                             where o.id=@Id and o.state='A'";
                 parameter.Add("@Id", organizationId);
-                IEnumerable<OrganizationDetailsResponse> OrgDetails = await dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
+                IEnumerable<OrganizationDetailsResponse> OrgDetails = await _dataAccess.QueryAsync<OrganizationDetailsResponse>(query, parameter);
                 OrganizationDetailsResponse OrgDetailsResponse = new OrganizationDetailsResponse();
                 foreach (var item in OrgDetails)
                 {
-                    OrgDetailsResponse.id = item.id;
-                    OrgDetailsResponse.preferenceId = item.preferenceId;
-                    OrgDetailsResponse.org_id = item.org_id;
-                    OrgDetailsResponse.name = item.name;
-                    OrgDetailsResponse.city = item.city;
-                    OrgDetailsResponse.country_code = item.country_code;
-                    OrgDetailsResponse.street = item.street;
-                    OrgDetailsResponse.street_number = item.street_number;
-                    OrgDetailsResponse.postal_code = item.postal_code;
-                    OrgDetailsResponse.vehicle_default_opt_in = item.vehicle_default_opt_in;
-                    OrgDetailsResponse.driver_default_opt_in = item.driver_default_opt_in;
+                    OrgDetailsResponse.Id = item.Id;
+                    OrgDetailsResponse.PreferenceId = item.PreferenceId;
+                    OrgDetailsResponse.OrgId = item.OrgId;
+                    OrgDetailsResponse.Name = item.Name;
+                    OrgDetailsResponse.City = item.City;
+                    OrgDetailsResponse.CountryCode = item.CountryCode;
+                    OrgDetailsResponse.Street = item.Street;
+                    OrgDetailsResponse.StreetNumber= item.StreetNumber;
+                    OrgDetailsResponse.PostalCode = item.PostalCode;
+                    OrgDetailsResponse.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
+                    OrgDetailsResponse.DriverDefaultOptIn= item.DriverDefaultOptIn;
 
                     OrgDetailsResponse.LanguageName = item.LanguageName;
                     OrgDetailsResponse.Timezone = item.Timezone;
@@ -305,20 +309,27 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
         public async Task<PreferenceResponse> GetPreference(int organizationId)
         {
-            log.Info("Get Organization preference method called in repository");
+            _log.Info("Get Organization preference method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"SELECT o.id OrganizatioId,a.id PreferenceId, c.id currency,t.id timezone ,tf.id timeformat,vd.id vehicledisplay,
-                            df.id DateFormatType,l.id LanguageName, u.id unit
+                var query = @"SELECT o.id OrganizationId,
+                            a.id PreferenceId,
+                            c.id Currency,
+                            t.id Timezone,
+                            tf.id TimeFormat,
+                            vd.id VehicleDisplay,
+                            df.id DateFormatType,
+                            l.id LanguageName,
+                            u.id Unit
                             FROM master.organization o
                             left join  master.accountpreference a on o.id=a.id
                             left join  master.currency c on c.id=a.currency_id
@@ -330,12 +341,12 @@ namespace net.atos.daf.ct2.organization.repository
                             left join  translation.language l on l.id=a.language_id
                             where o.id=@Id";
                 parameter.Add("@Id", organizationId);
-                IEnumerable<PreferenceResponse> PreferenceDetails = await dataAccess.QueryAsync<PreferenceResponse>(query, parameter);
+                IEnumerable<PreferenceResponse> PreferenceDetails = await _dataAccess.QueryAsync<PreferenceResponse>(query, parameter);
                 PreferenceResponse preferenceResponse = new PreferenceResponse();
                 foreach (var item in PreferenceDetails)
                 {
                     preferenceResponse.PreferenceId = item.PreferenceId;
-                    preferenceResponse.OrganizatioId = item.OrganizatioId;
+                    preferenceResponse.OrganizationId = item.OrganizationId;
                     preferenceResponse.LanguageName = item.LanguageName;
                     preferenceResponse.Timezone = item.Timezone;
                     preferenceResponse.TimeFormat = item.TimeFormat;
@@ -348,8 +359,8 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("Get Organization preference method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -357,13 +368,13 @@ namespace net.atos.daf.ct2.organization.repository
 
         public async Task<CustomerRequest> UpdateCustomer(CustomerRequest customer)
         {
-            log.Info("Update Customer method called in repository");
+            _log.Info("Update Customer method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@org_id", customer.CustomerID);
                 var query = @"SELECT id FROM master.organization where org_id=@org_id and state='A'";
-                int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                int iscustomerexist = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
                 if (iscustomerexist > 0)
                 {
@@ -405,7 +416,7 @@ namespace net.atos.daf.ct2.organization.repository
                     }
                     if ((customer.ReferenceDateTime != null) && (DateTime.Compare(DateTime.MinValue, customer.ReferenceDateTime) < 0))
                     {
-                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime.ToString());
+                        referenceDateTime = UTCHandling.GetUTCFromDateTime(customer.ReferenceDateTime, "UTC");
                     }
                     else
                     {
@@ -454,10 +465,10 @@ namespace net.atos.daf.ct2.organization.repository
                     }
                     queryUpdate = queryUpdate + @" WHERE org_id = @org_id RETURNING id;";
 
-                    await dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
+                    await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, parameterUpdate);
 
                     // Assign base package at ORG lavel if not exist                   
-                    await subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
+                    await _subscriptionManager.Create(iscustomerexist, Convert.ToInt32(customer.OrgCreationPackage));
 
                 }
                 else
@@ -491,19 +502,19 @@ namespace net.atos.daf.ct2.organization.repository
                     string queryInsert = "insert into master.organization(org_id, name,type ,address_type, street, street_number, postal_code, city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in,state) " +
                                   "values(@org_id, @Name,@Type ,@AddressType, @AddressStreet,@AddressStreetNumber ,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in,@state) RETURNING id";
 
-                    int organizationId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
+                    int organizationId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, parameterInsert);
 
                     // CraeteOrganizationRelationship
                     // need to discuss here
 
                     // Assign base package at ORG lavel
-                    await subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
+                    await _subscriptionManager.Create(organizationId, Convert.ToInt32(customer.OrgCreationPackage));
                 }
             }
             catch (Exception ex)
             {
-                log.Info("Update Customer method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("Update Customer method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
             return customer;
@@ -543,12 +554,17 @@ namespace net.atos.daf.ct2.organization.repository
                 {
                     parameterOrgUpdate.Add("@CountryCode", keyHandOver.CountryCode);
                 }
-                // var queryOrgUpdate = @"update master.organization set org_id=@org_id,name=@Name,
-                //address_type=@AddressType,street=@AddressStreet,street_number=@AddressStreetNumber,
-                //postal_code=@PostalCode,city=@City,country_code=@CountryCode                 
-                //              WHERE org_id=@org_id RETURNING id;";
 
-                var queryOrgUpdate = @"update master.organization set org_id=@org_id";
+                if (keyHandOver.ReferenceDateTime != null)
+                {
+                    parameterOrgUpdate.Add("@reference_date", UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime, "UTC"));
+                }
+                else
+                {
+                    parameterOrgUpdate.Add("@reference_date", 0);
+                }
+
+                var queryOrgUpdate = @"update master.organization set org_id=@org_id, reference_date=@reference_date";
                 if ((keyHandOver.CustomerName != null) && (keyHandOver.CustomerName.Trim().Length > 0))
                 {
                     queryOrgUpdate = queryOrgUpdate + @", name=@Name";
@@ -580,12 +596,12 @@ namespace net.atos.daf.ct2.organization.repository
 
                 queryOrgUpdate = queryOrgUpdate + @" WHERE org_id = @org_id RETURNING id;";
 
-                return await dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate);
+                return await _dataAccess.ExecuteScalarAsync<int>(queryOrgUpdate, parameterOrgUpdate);
             }
             catch (Exception ex)
             {
-                log.Info("UpdateCompany method called in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("UpdateCompany method called in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -609,7 +625,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                 if (keyHandOver.ReferenceDateTime != null)
                 {
-                    parameterOrgInsert.Add("@reference_date", UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime));
+                    parameterOrgInsert.Add("@reference_date", UTCHandling.GetUTCFromDateTime(keyHandOver.ReferenceDateTime, "UTC"));
                 }
                 else
                 {
@@ -619,12 +635,12 @@ namespace net.atos.daf.ct2.organization.repository
                 string queryOrgInsert = "insert into master.organization(org_id,name,address_type,street,street_number,postal_code,city,country_code,reference_date,vehicle_default_opt_in,driver_default_opt_in,state) " +
                               "values(@org_id,@Name,@AddressType,@AddressStreet,@AddressStreetNumber,@PostalCode,@City,@CountryCode,@reference_date,@vehicle_default_opt_in,@driver_default_opt_in,@state) RETURNING id";
 
-                return await dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
+                return await _dataAccess.ExecuteScalarAsync<int>(queryOrgInsert, parameterOrgInsert);
             }
             catch (Exception ex)
             {
-                log.Info("InsertCompany method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("InsertCompany method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -670,13 +686,13 @@ namespace net.atos.daf.ct2.organization.repository
                 objvehicle.Opt_In = VehicleStatusType.Inherit;
                 objvehicle.Is_Ota = false;
 
-                await vehicelManager.Create(objvehicle);
+                await _vehicelManager.Create(objvehicle);
                 return 1;
             }
             catch (Exception ex)
             {
-                log.Info("InsertVehicle method called in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("InsertVehicle method called in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -706,12 +722,12 @@ namespace net.atos.daf.ct2.organization.repository
                 objvehicle.Tcu_Serial_Number = null;
                 objvehicle.Tcu_Version = null;
                 objvehicle.Organization_Id = OrganizationId;
-                await vehicelManager.UpdateOrgVehicleDetails(objvehicle);
+                await _vehicelManager.UpdateOrgVehicleDetails(objvehicle);
             }
             catch (Exception ex)
             {
-                log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("UpdatetVehicle method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
             return 1;
@@ -722,22 +738,22 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 RelationshipMapping relationshipMapping = new RelationshipMapping();
-                relationshipMapping.relationship_id = Convert.ToInt32(keyHandOver.OwnerRelationship);
-                relationshipMapping.owner_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
-                relationshipMapping.target_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
-                relationshipMapping.created_org_id = Convert.ToInt32(keyHandOver.OEMRelationship);
-                relationshipMapping.vehicle_id = VehicleID;
-                relationshipMapping.start_date = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                relationshipMapping.created_at = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                relationshipMapping.allow_chain = true;
+                relationshipMapping.RelationshipId = Convert.ToInt32(keyHandOver.OwnerRelationship);
+                relationshipMapping.OwnerOrgId = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.TargetOrgId = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.CreatedOrgId = Convert.ToInt32(keyHandOver.OEMRelationship);
+                relationshipMapping.VehicleId = VehicleID;
+                relationshipMapping.StartDate = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                relationshipMapping.CreatedAt= UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                relationshipMapping.AllowChain = true;
                 //relationshipMapping.isFirstRelation=true;  
-                relationshipMapping.isFirstRelation = true;
+                relationshipMapping.IsFirstRelation = true;
                 await CreateOwnerRelationship(relationshipMapping);
             }
             catch (Exception ex)
             {
-                log.Info("UpdatetVehicle method called in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("UpdatetVehicle method called in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
             return 1;
@@ -758,14 +774,14 @@ namespace net.atos.daf.ct2.organization.repository
             //10. when owner changed, then update org_id in vehicle table.
             //11. Call vehicleOptOutOptin history method-   await VehicleOptInOptOutHistory(vehicle.ID);
 
-            log.Info("KeyHandOverEvent method is called in repository :");
+            _log.Info("KeyHandOverEvent method is called in repository :");
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@org_id", keyHandOver.CustomerID);
                 var query = @"select coalesce((Select id from master.organization where org_id=@org_id), 0)";
-                int iscustomerexist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
-                int isVINExist = await vehicelManager.IsVINExists(keyHandOver.VIN);
+                int iscustomerexist = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                int isVINExist = await _vehicelManager.IsVINExists(keyHandOver.VIN);
 
                 if (iscustomerexist > 0 && isVINExist > 0)  // Update organization and vehicle
                 {
@@ -774,7 +790,7 @@ namespace net.atos.daf.ct2.organization.repository
 
                     // Owner Relationship Management
 
-                    keyHandOver.OEMRelationship = OrganizationId.ToString();  
+                    keyHandOver.OEMRelationship = OrganizationId.ToString();
                     await OwnerRelationship(keyHandOver, isVINExist);
 
                     return keyHandOver;
@@ -789,7 +805,7 @@ namespace net.atos.daf.ct2.organization.repository
                     await InsertVehicle(keyHandOver, organizationID);
 
                     // Owner Relationship Management    
-                    int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
+                    int vehicleID = await _vehicelManager.IsVINExists(keyHandOver.VIN);
 
                     keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
@@ -806,7 +822,7 @@ namespace net.atos.daf.ct2.organization.repository
                     await InsertVehicle(keyHandOver, organizationID);
 
                     // Owner Relationship Management   
-                    int vehicleID = await vehicelManager.IsVINExists(keyHandOver.VIN);
+                    int vehicleID = await _vehicelManager.IsVINExists(keyHandOver.VIN);
 
                     keyHandOver.OEMRelationship = organizationID.ToString();
                     await OwnerRelationship(keyHandOver, vehicleID);
@@ -826,8 +842,8 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("KeyHandOverEvent method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("KeyHandOverEvent method called in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
             return keyHandOver;
@@ -859,87 +875,87 @@ namespace net.atos.daf.ct2.organization.repository
                 //var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id";
                 //int isRelationshipExist = await dataAccess.ExecuteScalarAsync<int>(query, parameter);
 
-                int isRelationshipExist = await IsOwnerRelationshipExist(relationshipMapping.vehicle_id);
+                int isRelationshipExist = await IsOwnerRelationshipExist(relationshipMapping.VehicleId);
 
-                if (isRelationshipExist < 1 && relationshipMapping.isFirstRelation) // relationship not exist
+                if (isRelationshipExist < 1 && relationshipMapping.IsFirstRelation) // relationship not exist
                                                                                     // if (iscustomerexist< 1)
                 {
                     var Inputparameter = new DynamicParameters();
-                    Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);  // from property file
-                    Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                    if (relationshipMapping.vehicle_group_id == 0)
+                    Inputparameter.Add("@relationship_id", relationshipMapping.RelationshipId);  // from property file
+                    Inputparameter.Add("@vehicle_id", relationshipMapping.VehicleId);
+                    if (relationshipMapping.VehicleGroupId == 0)
                     {
                         Inputparameter.Add("@vehicle_group_id", null);
                     }
                     else
                     {
-                        Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
+                        Inputparameter.Add("@vehicle_group_id", relationshipMapping.VehicleGroupId);
                     }
-                    Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);    // from property file 
-                    Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id); // from property file --- first time it will same as owner_org_id
-                    Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);  // from property file -- first time it will same as owner_org_id
+                    Inputparameter.Add("@owner_org_id", relationshipMapping.OwnerOrgId);    // from property file 
+                    Inputparameter.Add("@created_org_id", relationshipMapping.CreatedOrgId); // from property file --- first time it will same as owner_org_id
+                    Inputparameter.Add("@target_org_id", relationshipMapping.TargetOrgId);  // from property file -- first time it will same as owner_org_id
                     Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                     Inputparameter.Add("@end_date", null);   // First time -- NULL
-                    Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);   // Alway true
+                    Inputparameter.Add("@allow_chain", relationshipMapping.AllowChain);   // Alway true
                     Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));   // Alway true
 
                     var queryInsert = @"insert into master.orgrelationshipmapping(relationship_id,vehicle_id,vehicle_group_id,
                      owner_org_id,created_org_id,target_org_id,start_date,end_date,allow_chain,created_at)                     
                      values(@relationship_id,@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
 
-                    OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
+                    OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
                     return OwnerRelationshipId;
                 }
 
-                else if (isRelationshipExist > 1 && (relationshipMapping.isFirstRelation)) // relationship exist          
+                else if (isRelationshipExist > 1 && relationshipMapping.IsFirstRelation) // relationship exist          
                 {
                     // Check organization relationship with vehicle
                     //int orgRelExist = await IsOrganizationRelationshipExist(relationshipMapping);
                     //if (orgRelExist < 0)
                     //{
-                        // update previuse relationship end date and insert new relationship              
-                        var Updateparameter = new DynamicParameters();
-                        Updateparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                        // Updateparameter.Add("@relationship_id", isRelationshipExist);
-                        Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        Updateparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                        var queryUpdate = @"update master.orgrelationshipmapping 
+                    // update previuse relationship end date and insert new relationship              
+                    var Updateparameter = new DynamicParameters();
+                    Updateparameter.Add("@relationship_id", relationshipMapping.RelationshipId);
+                    // Updateparameter.Add("@relationship_id", isRelationshipExist);
+                    Updateparameter.Add("@end_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Updateparameter.Add("@vehicle_id", relationshipMapping.VehicleId);
+                    var queryUpdate = @"update master.orgrelationshipmapping 
                     set end_date=@end_date where relationship_id=@relationship_id and vehicle_id=@vehicle_id";
-                        await dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
+                    await _dataAccess.ExecuteScalarAsync<int>(queryUpdate, Updateparameter);
 
-                        // Insert new relationship              
-                        var Inputparameter = new DynamicParameters();
-                        Inputparameter.Add("@relationship_id", relationshipMapping.relationship_id);
-                        Inputparameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                        if (relationshipMapping.vehicle_group_id == 0)
-                        {
-                            Inputparameter.Add("@vehicle_group_id", null);
-                        }
-                        else
-                        {
-                            Inputparameter.Add("@vehicle_group_id", relationshipMapping.vehicle_group_id);
-                        }
+                    // Insert new relationship              
+                    var Inputparameter = new DynamicParameters();
+                    Inputparameter.Add("@relationship_id", relationshipMapping.RelationshipId);
+                    Inputparameter.Add("@vehicle_id", relationshipMapping.VehicleId);
+                    if (relationshipMapping.VehicleGroupId == 0)
+                    {
+                        Inputparameter.Add("@vehicle_group_id", null);
+                    }
+                    else
+                    {
+                        Inputparameter.Add("@vehicle_group_id", relationshipMapping.VehicleGroupId);
+                    }
 
-                        Inputparameter.Add("@owner_org_id", relationshipMapping.owner_org_id);
-                        Inputparameter.Add("@created_org_id", relationshipMapping.created_org_id);
-                        Inputparameter.Add("@target_org_id", relationshipMapping.target_org_id);
-                        Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                        Inputparameter.Add("@end_date", null);
-                        Inputparameter.Add("@allow_chain", relationshipMapping.allow_chain);
-                        Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Inputparameter.Add("@owner_org_id", relationshipMapping.OwnerOrgId);
+                    Inputparameter.Add("@created_org_id", relationshipMapping.CreatedOrgId);
+                    Inputparameter.Add("@target_org_id", relationshipMapping.TargetOrgId);
+                    Inputparameter.Add("@start_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                    Inputparameter.Add("@end_date", null);
+                    Inputparameter.Add("@allow_chain", relationshipMapping.AllowChain);
+                    Inputparameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
-                        var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
+                    var queryInsert = @"insert into master.orgrelationshipmapping (relationship_id,vehicle_id,vehicle_group_id,owner_org_id,created_org_id,
                     target_org_id,start_date,end_date,allow_chain,created_at)
                     values(@relationship_id,@vehicle_id,@vehicle_group_id,@owner_org_id,@created_org_id,@target_org_id,@start_date,@end_date,@allow_chain,@created_at)";
-                        OwnerRelationshipId = await dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
-                        return OwnerRelationshipId;
-                    }
+                    OwnerRelationshipId = await _dataAccess.ExecuteScalarAsync<int>(queryInsert, Inputparameter);
+                    return OwnerRelationshipId;
+                }
                 //}
             }
             catch (Exception ex)
             {
-                log.Info("CreateOwnerRelationship method called in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("CreateOwnerRelationship method called in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
             return 0;
@@ -947,7 +963,7 @@ namespace net.atos.daf.ct2.organization.repository
 
         public async Task<List<OrganizationResponse>> GetAll(int organizationId)
         {
-            log.Info("Get Organization method called in repository");
+            _log.Info("Get Organization method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
@@ -959,7 +975,7 @@ namespace net.atos.daf.ct2.organization.repository
                     query = query + " and org.id=@id ";
                 }
 
-                var OrganizationDetails = await dataAccess.QueryAsync<dynamic>(query, parameter);
+                var OrganizationDetails = await _dataAccess.QueryAsync<dynamic>(query, parameter);
                 var objOrganization = new OrganizationResponse();
                 objOrganization.OrganizationList = new List<OrganizationResponse>();
                 foreach (dynamic record in OrganizationDetails)
@@ -972,8 +988,23 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("Get Organization method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<OrganizationContextListResponse>> GetAllOrganizationsForContext()
+        {
+            try
+            {
+                var query = @"SELECT id,coalesce(name, '(' || org_id || ')') as name
+	                        FROM master.organization org where org.state='A'";
+
+                return await _dataAccess.QueryAsync<OrganizationContextListResponse>(query, null);
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }
@@ -982,19 +1013,19 @@ namespace net.atos.daf.ct2.organization.repository
         {
             var orgResponse = new OrganizationResponse();
             orgResponse.Id = record.id;
-            orgResponse.type = record.type;
-            orgResponse.name = record.name;
-            orgResponse.street = record.street;
-            orgResponse.address_type = record.address_type;
-            orgResponse.street_number = record.street_number;
-            orgResponse.postal_code = record.postal_code;
-            orgResponse.city = record.city;
-            orgResponse.country_code = record.country_code;
-            orgResponse.org_id = record.org_id;
-            orgResponse.state = Convert.ToChar(record.state);
-            orgResponse.reference_date = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "America/New_York", "yyyy-MM-ddTHH:mm:ss");
-            orgResponse.vehicle_default_opt_in = record.vehicle_default_opt_in;
-            orgResponse.driver_default_opt_in = record.driver_default_opt_in;
+            orgResponse.Type = record.type;
+            orgResponse.Name = record.name;
+            orgResponse.Street= record.street;
+            orgResponse.AddressType = record.address_type;
+            orgResponse.StreetNumber = record.street_number;
+            orgResponse.PostalCode = record.postal_code;
+            orgResponse.City = record.city;
+            orgResponse.CountryCode= record.country_code;
+            orgResponse.OrgId= record.org_id;
+            orgResponse.State = Convert.ToChar(record.state);
+            orgResponse.ReferenceDate= UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "UTC", "yyyy-MM-ddTHH:mm:ss");
+            orgResponse.VehicleDefaultOptIn = record.vehicle_default_opt_in;
+            orgResponse.DriverDefaultOptIn = record.driver_default_opt_in;
             return orgResponse;
         }
 
@@ -1058,10 +1089,10 @@ namespace net.atos.daf.ct2.organization.repository
 
         public async Task<List<OrganizationNameandID>> Get(OrganizationByID objOrganizationByID)
         {
-            log.Info("Get Organization method called in repository");
+            _log.Info("Get Organization method called in repository");
             try
             {
-                int level = await GetLevelByRoleId(objOrganizationByID.id, objOrganizationByID.roleId);
+                int level = await GetLevelByRoleId(objOrganizationByID.Id, objOrganizationByID.RoleId);
                 string strquery = string.Empty;
                 List<OrganizationNameandID> objOrganizationNameandID = new List<OrganizationNameandID>();
                 var parameter = new DynamicParameters();
@@ -1074,17 +1105,17 @@ namespace net.atos.daf.ct2.organization.repository
                         break;
                     case 30:
                     case 40:
-                        parameter.Add("@id", objOrganizationByID.id);
+                        parameter.Add("@id", objOrganizationByID.Id);
                         strquery = $"{strquery} and id=@id";
                         break;
                     default:
-                        parameter.Add("@id", objOrganizationByID.id);
+                        parameter.Add("@id", objOrganizationByID.Id);
                         strquery = $"{strquery} and id=@id";
                         break;
                         //return objOrganizationNameandID;
                 }
 
-                var data = await dataAccess.QueryAsync<OrganizationNameandID>(strquery, parameter);
+                var data = await _dataAccess.QueryAsync<OrganizationNameandID>(strquery, parameter);
                 if (data == null)
                 {
                     return objOrganizationNameandID;
@@ -1093,18 +1124,18 @@ namespace net.atos.daf.ct2.organization.repository
             }
             catch (Exception ex)
             {
-                log.Info("Get Organization method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("Get Organization method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
-     public async Task<int> GetLevelByRoleId(int orgId, int roleId)
+        public async Task<int> GetLevelByRoleId(int orgId, int roleId)
         {
             var parameter = new DynamicParameters();
             parameter.Add("@id", roleId);
             parameter.Add("@organization_id", orgId);
-            var data = await dataAccess.ExecuteScalarAsync
+            var data = await _dataAccess.ExecuteScalarAsync
                              (@"select level from master.Role where id=@id and (organization_id=@organization_id or organization_id  is null)",
                             parameter);
             int level = data != null ? Convert.ToInt32(data) : 0;
@@ -1118,12 +1149,12 @@ namespace net.atos.daf.ct2.organization.repository
                 var parameter = new DynamicParameters();
                 parameter.Add("@vehicle_id", VehicleID);
                 var query = @"Select id from master.orgrelationshipmapping where vehicle_id=@vehicle_id and end_date is null";
-                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
             {
-                log.Info("IsOwnerRelationshipExist method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("IsOwnerRelationshipExist method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
@@ -1132,23 +1163,23 @@ namespace net.atos.daf.ct2.organization.repository
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@vehicle_id", relationshipMapping.vehicle_id);
-                parameter.Add("@created_org_id", relationshipMapping.created_org_id);
-                parameter.Add("@relationship_id", relationshipMapping.relationship_id);
+                parameter.Add("@vehicle_id", relationshipMapping.VehicleId);
+                parameter.Add("@created_org_id", relationshipMapping.CreatedOrgId);
+                parameter.Add("@relationship_id", relationshipMapping.RelationshipId);
                 var query = @"select id from master.orgrelationshipmapping where end_date is null and vehicle_id=@vehicle_id and created_org_id=@created_org_id and relationship_id=@relationship_id";
-                return await dataAccess.ExecuteScalarAsync<int>(query, parameter);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
             }
             catch (Exception ex)
             {
-                log.Info("IsOrganizationRelationshipExist method in repository failed :");
-                log.Error(ex.ToString());
+                _log.Info("IsOrganizationRelationshipExist method in repository failed :");
+                _log.Error(ex.ToString());
                 throw;
             }
         }
 
         public async Task<IEnumerable<Organization>> GetAllOrganizations(int OrganizationID)
         {
-            log.Info("GetAllOrganizations method called in repository");
+            _log.Info("GetAllOrganizations method called in repository");
             try
             {
                 var parameter = new DynamicParameters();
@@ -1158,12 +1189,12 @@ namespace net.atos.daf.ct2.organization.repository
                                 from master.organization o
                                left join master.orgrelationshipmapping om on om.target_org_id=o.id
                                 where o.id=@id and o.state='A'";
-                return await dataAccess.QueryAsync<Organization>(query, parameter);
+                return await _dataAccess.QueryAsync<Organization>(query, parameter);
             }
             catch (Exception ex)
             {
-                log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
-                log.Error(ex.ToString());
+                _log.Info("GetAllOrganizations method in repository failed :");// + Newtonsoft.Json.JsonConvert.SerializeObject(organizationId));
+                _log.Error(ex.ToString());
                 throw;
             }
         }
