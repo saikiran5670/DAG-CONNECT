@@ -241,7 +241,7 @@ export class ManageCorridorComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
       this.showMap = true;
     }
-    console.log(this.markerArray);
+  //  console.log(this.markerArray);
     
     //this.addPolylineToMap();
   }

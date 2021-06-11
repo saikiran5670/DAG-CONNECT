@@ -6,27 +6,25 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
 {
-    public class AlertLandmarkDistanceCheckAttribute : ValidationAttribute
+    public class NotificationFreqThreshholdValueCheckAttribute : ValidationAttribute
     {
         private readonly string _comparisonProperty;
-        public AlertLandmarkDistanceCheckAttribute(string comparisonProperty)
+        public NotificationFreqThreshholdValueCheckAttribute(string comparisonProperty)
         {
             _comparisonProperty = comparisonProperty;
         }
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            int currentValue = Convert.ToInt32(value);
+            int currentValue = (int)value;
             var property = validationContext.ObjectType.GetProperty(_comparisonProperty);
             if (property == null)
                 throw new ArgumentException("Property with this name not found");
             string comparisonValue = (string)property.GetValue(validationContext.ObjectInstance);
-            if (comparisonValue.ToUpper() == "P" && currentValue > 0)
+            if (comparisonValue.ToUpper() == "E" && currentValue > 0)
             {
                 return ValidationResult.Success;
             }
-            else if (comparisonValue.ToUpper() == "G" || comparisonValue.ToUpper()=="R" 
-                        || comparisonValue.ToUpper() == "C" || comparisonValue.ToUpper() == "O" || comparisonValue.ToUpper() == "E")
+            else if (comparisonValue.ToUpper() == "T" || comparisonValue.ToUpper() == "O")
             {
                 return ValidationResult.Success;
             }

@@ -57,6 +57,7 @@ export class AppComponent {
   public userPreferencesFlag : boolean = false;
   appForm: FormGroup;
   selectedRoles: any = [];
+  userContextType: boolean = false;
   private pagetTitles = {
     dashboard: 'Dashboard',
     livefleet: 'Live Fleet',
@@ -380,7 +381,8 @@ export class AppComponent {
   
   }
 
-  getMenu(data: any){
+  getMenu(data: any, from?: any){
+    this.userContextType = false;
     this.menuPages = data;
         //-- This will handle externalLink and Icons for Navigation Menu --//
         let landingPageMenus: any = [];
@@ -433,7 +435,20 @@ export class AppComponent {
          }else if(accessNameList.includes("Admin#Account")){
            this.userType = "Admin#Account";
          }
-         localStorage.setItem("userType", this.userType);
+
+        if(accessNameList.includes("Admin#Organization-Scope") && this.userType != 'Admin#Organisation' && this.userType != 'Admin#Account'){
+          this.userContextType = true;
+        }
+        localStorage.setItem("userType", this.userType);
+        if(from && from == 'orgContextSwitch'){
+          let _menu = this.menuPages.menus;
+          if(_menu.length > 0){
+            let _routerLink = _menu[0].subMenus.length > 0 ? `/${_menu[0].url}/${_menu[0].subMenus[0].url}` : `/${_menu[0].url}`;
+            this.router.navigate([_routerLink]);
+          }else{
+            this.router.navigate(['/dashboard']);
+          }
+        }
   }
 
   getAccountInfo(){
@@ -821,7 +836,9 @@ private setPageTitle() {
       languageCode : this.localStLanguage.code
     } 
     this.accountService.switchOrgContext(switchObj).subscribe((data: any) => {
-      this.getMenu(data);
+      this.getMenu(data, 'orgContextSwitch');
+    }, (error) => {
+      console.log(error)
     });
  }
   

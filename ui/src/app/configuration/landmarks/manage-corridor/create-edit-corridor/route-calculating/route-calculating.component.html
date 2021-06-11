@@ -80,7 +80,10 @@
 </div>
 <div fxLayout="row" class="margin-bottom-sm">
     <div class="col-sm-4 areaWidth">
-        <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+        <span>{{ translationData.lblWidth|| 'Width' }}
+        ({{ translationData.lblKm|| 'km' }}):</span>
+        <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+        <span>
             <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
         <div *ngIf="actionType == 'view'">
@@ -104,7 +107,7 @@
         <div  *ngIf="actionType != 'view'">
             <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
             [datasource]="dataService" [minSearchLength]="0" [(ngModel)] = "searchViaStr" [ngModelOptions]="{standalone: true}"
-            [minSearchLength]="0" (selected)="onViaSelected($event)" [selectOnClick]="true"></ng2-completer>
+            [minSearchLength]="0" (selected)="onViaSelected($event)" [selectOnClick]="true" [disableInput]="viaRoutesList.length>4"></ng2-completer>
            
             <!-- <mat-form-field appearance="outline" class='full-width'>
                 <input maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
@@ -355,7 +358,7 @@
     </button>
 </span>
 <span *ngIf="actionType !== 'view'">
-    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!onSearchClicked && searchDisable"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
+    <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="!corridorFormGroup.valid || !onSearchClicked"><!--(!corridorFormGroup.valid || !strPresentStart || !strPresentEnd)-->
         <span>Create</span>
     </button>
 </span>

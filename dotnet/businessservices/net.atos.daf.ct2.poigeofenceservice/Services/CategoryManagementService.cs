@@ -292,6 +292,7 @@ namespace net.atos.daf.ct2.poigeofenservice
                     {
                         net.atos.daf.ct2.poigeofences.CategoryWisePOI objCategoryWisePOI = new net.atos.daf.ct2.poigeofences.CategoryWisePOI();
                         objCategoryWisePOI.CategoryId = data[i].CategoryId;
+                        objCategoryWisePOI.POIId = data[i].POIId;
                         objCategoryWisePOI.CategoryName = data[i].CategoryName ?? null;
                         objCategoryWisePOI.POIName = data[i].POIName ?? null;
                         objCategoryWisePOI.POIAddress = data[i].POIAddress ?? null;
