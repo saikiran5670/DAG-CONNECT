@@ -191,11 +191,11 @@
           <!-- <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
           [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
           (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer> -->
-          <mat-form-field appearance="outline" class='full-width'>
-             <input maxlength="50"  style='cursor: none;' placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+          <mat-form-field  style="background-color: lightgray;" appearance="outline" class='full-width'>
+             <input  matTooltip="{{setStartAddress}}" maxlength="50"  style='cursor: copy;' placeholder="{{ translationData.lblStartAddress|| 'Start Address' }}"
                   matInput formControlName="startaddress" readonly required> 
               </mat-form-field> 
-
+            <!-- <div>All Selected Start Address :- {{setStartAddress}} </div> -->
           <mat-error
               *ngIf="searchStrError">
               {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
@@ -216,10 +216,11 @@
           [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
           [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer> -->
          
-          <mat-form-field appearance="outline" class='full-width'>
-              <input style='cursor: none;' maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'Search Place' }}"
+          <mat-form-field style="background-color: lightgray;" appearance="outline" class='full-width'>
+              <input matTooltip="{{setEndAddress}}" style='cursor: copy;' maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'End Address' }}"
                   matInput formControlName="endaddress" readonly required>
           </mat-form-field>
+          <!-- <div>All Selected End Address :- {{setEndAddress}} </div> -->
           <mat-error
               *ngIf="searchEndStrError">
               {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
