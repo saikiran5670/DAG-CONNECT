@@ -319,16 +319,14 @@
       <ng-container matColumnDef="startPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'StartPoint' }}
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell>
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setStartAddress}}</mat-cell> -->
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfds</mat-cell> -->
+        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell> -->
+        <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.startAddress }}" class="max-width-8-per text-truncate">{{row.startAddress}}</mat-cell>
       </ng-container>
       <ng-container matColumnDef="endPoint">
         <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'EndPoint' }}
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell>
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{this.setEndAddress}}</mat-cell> -->
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfdsfdsfd</mat-cell> -->
+        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell> -->
+        <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.endAddress }}" class="max-width-8-per text-truncate">{{ row.endAddress }}</mat-cell>
       </ng-container>
      
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
