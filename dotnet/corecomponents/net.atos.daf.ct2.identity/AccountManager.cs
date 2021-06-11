@@ -80,7 +80,7 @@ namespace net.atos.daf.ct2.identity
         }
         public async Task<Response> ChangeUserPassword(Identity user)
         {
-            if (!IdentityUtilities.ValidationByRegex(new Regex(@"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{10,256})"), user.Password))
+            if (!IdentityUtilities.ValidationByRegex(new Regex(@"((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[""''!*@#$%^&+=~`^()\\/-_;:<>|{}\[\]]).{10,256})"), user.Password))
             {
                 return new Response()
                 {

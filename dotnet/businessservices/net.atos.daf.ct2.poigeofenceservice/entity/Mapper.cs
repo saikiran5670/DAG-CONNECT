@@ -335,6 +335,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.entity
                 {
                     response.StartAddress = entity.StartAddress;
                 }
+                response.TripId = entity.TripId;
                 response.StartPositionlattitude = entity.StartPositionlattitude;
                 response.StartPositionLongitude = entity.StartPositionLongitude;
                 response.EndPositionLattitude = entity.EndPositionLattitude;
