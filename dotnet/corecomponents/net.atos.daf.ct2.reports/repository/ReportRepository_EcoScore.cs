@@ -86,7 +86,7 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 string query = @"SELECT COUNT(1) 
                                 FROM master.ecoscoreprofile
-                                WHERE organization_id = @organization_id";
+                                WHERE organization_id = @organization_id and state = 'A'";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@organization_id", orgId);
