@@ -65,9 +65,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.StartDateTime))
-                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime));
+                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime), "UTC");
                         else
-                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
                     }
                     catch (Exception)
                     {
@@ -119,9 +119,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.EndDateTime))
-                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime));
+                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime), "UTC");
                         else
-                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
                     }
                     catch (Exception)
                     {
