@@ -795,18 +795,9 @@ export class AppComponent {
         }
       }
     }
-
+    //-- TODO: call API to get navigation menu data ---//
     if (this.selectedRoles.length > 0) { //-- When role available
-      let sessionObject: any = {
-        accountId: parseInt(localStorage.getItem('accountId')),
-        orgId: parseInt(localStorage.getItem('accountOrganizationId')),
-        roleId: parseInt(localStorage.getItem('accountRoleId')),
-      }
-      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
-        this.getNavigationMenu();
-      }, (error) => {
-        console.log(error)
-      });
+      this.getNavigationMenu();
     }
   }
 
