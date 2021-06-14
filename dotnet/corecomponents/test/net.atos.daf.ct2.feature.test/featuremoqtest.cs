@@ -4,7 +4,9 @@ using Moq;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.features.entity;
 //using Xunit;
+using net.atos.daf.ct2.features;
 using net.atos.daf.ct2.features.repository;
+using System.Threading.Tasks;
 //using NUnit.Framework;
 
 namespace net.atos.daf.ct2.feature.test
@@ -13,189 +15,117 @@ namespace net.atos.daf.ct2.feature.test
     public class FeatureTestMoq
     {
 
-        private readonly FeatureRepository _featureRepository;
-        private readonly Mock<IDataAccess> _dataAccessRepoMock = new Mock<IDataAccess>();
-
+        Mock<IFeatureRepository> _iFeatuteRepository;
+        FeatureManager _featureManager;
         public FeatureTestMoq()
         {
-            _featureRepository = new FeatureRepository(_dataAccessRepoMock.Object);
+            _iFeatuteRepository = new Mock<IFeatureRepository>();
+            _featureManager = new FeatureManager(_iFeatuteRepository.Object);
+        }   
+
+         [TestCategory("Unit-Test-Case")]
+        [Description("Test for CreateFeatureSet")]
+        [TestMethod]
+        public async Task CreateFeatureSetTest()
+        {            
+            FeatureSet featureSet = new FeatureSet();
+           featureSet.Description = null;
+            featureSet.State = 'A';
+            //featureSet.Created_at = iSessionStartedAt;
+            featureSet.Created_by = 1;
+           // featureSet.Modified_at = iSessionExpireddAt;
+            featureSet.Modified_by = 1;
+            FeatureSet actual =new FeatureSet();
+            _iFeatuteRepository.Setup(s=>s.CreateFeatureSet(It.IsAny<FeatureSet>())).ReturnsAsync(actual);
+            var result = await _featureManager.CreateFeatureSet(featureSet);
+            Assert.AreEqual(result, actual);
+        }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for CreateDataattributeSet")]
+        [TestMethod] 
+        public async Task CreateDataattributeSettTest()
+        {            
+            DataAttributeSet dataAttributeSet = new DataAttributeSet();
+           dataAttributeSet.Description = null;
+            dataAttributeSet.State = 'A';
+            //featureSet.Created_at = iSessionStartedAt;
+            dataAttributeSet.Created_by = 1;
+           // featureSet.Modified_at = iSessionExpireddAt;
+            dataAttributeSet.Modified_by = 1;
+            DataAttributeSet actual =new DataAttributeSet();
+            _iFeatuteRepository.Setup(s=>s.CreateDataattributeSet(It.IsAny<DataAttributeSet>())).ReturnsAsync(actual);
+            var result = await _featureManager.CreateDataattributeSet(dataAttributeSet);
+            Assert.AreEqual(result, actual);
         }
 
-        //[TestMethod]
-        //public async Task CreateFeatureSet()
-        //{
-        //    // Arrange
-        //    var mock = new Mock<FeatureRepository>();
-        //    FeatureSet obj = new FeatureSet();
-        //    var expectedFeatureSetID = 1;
-        //    long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-        //    long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
-        //    //obj.FeatureSetID = 1;
-        //    obj.Name = "Test_FeatureName";
-        //    obj.description = "Test_description";
-        //    obj.State = Convert.ToChar("A");
-        //    obj.created_at = iSessionStartedAt;
-        //    obj.created_by = 1;
-        //    obj.modified_at = iSessionExpireddAt;
-        //    obj.modified_by = 1;
-        //    // _dataAccessRepoMock.Setup(db => db.ExecuteScalarAsync<int>(It.IsAny<string>(), It.IsAny<DynamicParameters>())).ReturnsAsync(expectedFeatureSetID);
-        //    _dataAccessRepoMock.Setup(x => x.ExecuteScalarAsync<int>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(expectedFeatureSetID);
-        //    //mock.Setup(m => m.CreateFeatureSet(obj)).ReturnsAsync(expectedFeatureSetID);
-
-
-        //    // Act
-        //    var featureSet = await _featureRepository.CreateFeatureSet(obj);
-
-        //    // Assert
-
-        //    Assert.AreEqual(featureSet.FeatureSetID, expectedFeatureSetID);
-
-        //    _dataAccessRepoMock.Verify(x => x.ExecuteScalarAsync<int>(It.IsAny<string>(), It.IsAny<object>()), Times.Once());
-
-        //}
-
-        //[TestMethod]
-        //public async Task CreateFeatureSet_CreateFeatureSetMapping()
-        //{
-        //    // Arrange
-        //    var mock = new Mock<FeatureRepository>();
-        //    FeatureSet obj = new FeatureSet();
-
-        //    var expectedFeatureSetID = 1;
-        //    var expectedFeatureID = 3;
-        //    long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-        //    long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
-        //    //obj.FeatureSetID = 1;
-        //    obj.Name = "Test_FeatureName";
-        //    obj.description = "Test_description";
-        //    obj.State = Convert.ToChar("A");
-        //    obj.created_at = iSessionStartedAt;
-        //    obj.created_by = 1;
-        //    obj.modified_at = iSessionExpireddAt;
-        //    obj.modified_by = 1;
-
-        //    obj.Features = new List<features.entity.Feature>();
-        //    features.entity.Feature objfeature = new features.entity.Feature();
-        //    objfeature.Id = 4;
-        //    features.entity.Feature objfeature1 = new features.entity.Feature();
-        //    objfeature1.Id = 2;
-        //    features.entity.Feature objfeature2 = new features.entity.Feature();
-        //    objfeature2.Id = 3;
-
-        //    obj.Features.Add(objfeature);
-        //    obj.Features.Add(objfeature1);
-        //    obj.Features.Add(objfeature2);
-
-        //    _dataAccessRepoMock.Setup(x => x.ExecuteScalarAsync<int>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(expectedFeatureSetID);
-        //    _dataAccessRepoMock.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<object>())).Returns(expectedFeatureID);
-
-        //    // Act
-        //    var featureSet = await _featureRepository.CreateFeatureSet(obj);
-
-        //    // Assert
-
-        //    //Assert.AreEqual(featureSet.FeatureSetID, expectedFeatureSetID);
-
-        //    _dataAccessRepoMock.Verify(x => x.Execute(It.IsAny<string>(), It.IsAny<object>()), Times.Exactly(3));
-
-        //}
-
-        //[TestMethod]
-        //public async Task GetDataAttributeSetDetails()
-        //{
-        //    try
-        //    {
-        //        // Arrange
-        //        int expected = 1;
-        //        int DataAttributeSetId = 1;
-        //        long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-        //        long iSessionModifydAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
-        //        var mock = new Mock<FeatureRepository>();
-        //        DataAttributeSet obj = new DataAttributeSet();
-
-        //        List<DataAttributeSetM> objlist = new List<DataAttributeSetM>();
-        //        DataAttributeSetM ob = new DataAttributeSetM();
-        //        ob.Id = 4;
-        //        ob.Name = "AttributeSet_1614240653811";
-        //        ob.Description = "Testdescription";
-        //        ob.Is_exlusive = true;
-        //        ob.Created_at = iSessionStartedAt;
-        //        ob.Created_by = 1;
-        //        ob.Modified_at = iSessionModifydAt;
-        //        ob.Modified_by = 1;
-        //        objlist.Add(ob);
-
-        //        //ob = new DataAttributeSet();
-        //        //ob.ID = 2;
-        //        //ob.Name = "DataAttribute_2";
-        //        //ob.Description = "Test_2";
-        //        //ob.Is_exlusive = true;
-        //        //ob.created_at = iSessionStartedAt;
-        //        //ob.created_by = 1;
-        //        //ob.modified_at = iSessionModifydAt;
-        //        //ob.modified_by = 1;
-        //        //objlist.Add(ob);
-
-        //        _dataAccessRepoMock.Setup(x => x.QueryAsync<dynamic>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(objlist);
-        //        // Act
-        //        dynamic result = await _featureRepository.GetDataAttributeSetDetails(DataAttributeSetId);  //Task<IEnumerable<T>>
-        //        // Assert
-        //        Assert.AreEqual(result.Count, expected);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-
-        //[TestMethod]
-        //public async Task CreateDataattributeSet()
-        //{
-        //    // Arrange
-        //    var mock = new Mock<FeatureRepository>();
-        //    DataAttributeSet obj = new DataAttributeSet();
-        //    var expectedFeatureSetID = 1;
-        //    long iSessionStartedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
-        //    long iSessionExpireddAt = UTCHandling.GetUTCFromDateTime(DateTime.Now.AddMinutes(30));
-
-        //    obj.Name = "Test_FeatureName";
-        //    obj.Description = "Test_description";
-        //    obj.State = Convert.ToChar("A");
-        //    obj.created_at = iSessionStartedAt;
-        //    obj.created_by = 1;
-        //    obj.modified_at = iSessionExpireddAt;
-        //    obj.modified_by = 1;
-
-
-        //    _dataAccessRepoMock.Setup(x => x.ExecuteScalarAsync<int>(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(expectedFeatureSetID);
-
-        //    // Act
-        //    var UpdatedDataAttributeSetId = await _featureRepository.UpdatedataattributeSet(obj);
-        //    var dataAttributeSetID = await _featureRepository.CreateDataattributeSet(obj);
-
-        //    // Assert
-
-        //    Assert.AreEqual(dataAttributeSetID.ID, expectedFeatureSetID);
-
-        //    _dataAccessRepoMock.Verify(x => x.ExecuteScalarAsync<int>(It.IsAny<string>(), It.IsAny<object>()), Times.Once());
-
-        //}
-
-        public class DataAttributeSetM
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public bool IsActive { get; set; }
-            public string Description { get; set; }
-            //public string Is_exlusive { get; set; }
-            public long Created_at { get; set; }
-            public int Created_by { get; set; }
-            public long Modified_at { get; set; }
-            public int Modified_by { get; set; }
-            public List<DataAttribute> DataAttributes { get; set; }
-            public bool Is_exlusive { get; set; }
-
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for UpdatedataattributeSet")]
+        [TestMethod] 
+        public async Task UpdatedataattributeSettTest()
+        {            
+            DataAttributeSet dataAttributeSet = new DataAttributeSet();
+           dataAttributeSet.Description = null;
+            dataAttributeSet.State = 'A';
+            //featureSet.Created_at = iSessionStartedAt;
+            dataAttributeSet.Created_by = 1;
+           // featureSet.Modified_at = iSessionExpireddAt;
+            dataAttributeSet.Modified_by = 1;
+            DataAttributeSet actual =new DataAttributeSet();
+            _iFeatuteRepository.Setup(s=>s.UpdatedataattributeSet(It.IsAny<DataAttributeSet>())).ReturnsAsync(actual);
+            var result = await _featureManager.UpdatedataattributeSet(dataAttributeSet);
+            Assert.AreEqual(result, actual);
+        }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for DeleteFeatureSet")]
+        [TestMethod] 
+        public async Task DeleteFeatureSettTest()
+        {            
+           int FeatureSetId = 32;
+           // DataAttributeSet actual =new DataAttributeSet();
+            _iFeatuteRepository.Setup(s=>s.DeleteFeatureSet(It.IsAny<int>())).ReturnsAsync(true);
+            var result = await _featureManager.DeleteFeatureSet(FeatureSetId);
+            Assert.AreEqual(result, true);
+        }
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for DeleteDataAttribute")]
+        [TestMethod] 
+        public async Task DeleteDataAttributetTest()
+        {            
+           int dataAttributeSetID = 32;
+           // DataAttributeSet actual =new DataAttributeSet();
+            _iFeatuteRepository.Setup(s=>s.DeleteDataAttribute(It.IsAny<int>())).ReturnsAsync(true);
+            var result = await _featureManager.DeleteDataAttribute(dataAttributeSetID);
+            Assert.AreEqual(result, true);
         }
 
+         [TestCategory("Unit-Test-Case")]
+        [Description("Test for GetDataAttributeSetDetails")]
+        [TestMethod] 
+        public async Task GetDataAttributeSetDetailsTest()
+        {            
+           int dataAttributeSetID = 32;
+           List<DataAttributeSet> actual =new List<DataAttributeSet>();
+            _iFeatuteRepository.Setup(s=>s.GetDataAttributeSetDetails(It.IsAny<int>())).ReturnsAsync(actual);
+            var result = await _featureManager.GetDataAttributeSetDetails(dataAttributeSetID);
+            Assert.AreEqual(result, actual);
+        }
+
+         [TestCategory("Unit-Test-Case")]
+        [Description("Test for UpdateFeatureSet")]
+        [TestMethod]
+        public async Task UpdateFeatureSetTest()
+        {            
+            FeatureSet featureSet = new FeatureSet();
+           featureSet.Description = null;
+            featureSet.State = 'A';
+            //featureSet.Created_at = iSessionStartedAt;
+            featureSet.Created_by = 1;
+           // featureSet.Modified_at = iSessionExpireddAt;
+            featureSet.Modified_by = 1;
+            FeatureSet actual =new FeatureSet();
+            _iFeatuteRepository.Setup(s=>s.UpdateFeatureSet(It.IsAny<FeatureSet>())).ReturnsAsync(actual);
+            var result = await _featureManager.UpdateFeatureSet(featureSet);
+            Assert.AreEqual(result, actual);
+        }
     }
 }

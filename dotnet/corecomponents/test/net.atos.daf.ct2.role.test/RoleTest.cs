@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.role.test
     public class RoleTest
     {
         private readonly IDataAccess _dataAccess;
-        private readonly IConfiguration _config;
+        //private readonly IConfiguration _config;
         private readonly IRoleRepository _roleRepository;
 
         private readonly IRoleManagement _roleManagement;
@@ -123,7 +123,7 @@ namespace net.atos.daf.ct2.role.test
         public void GetFeatureSet()
         {
             int featuresetid = 0;
-            var result = _featureRepository.GetFeatureSet(featuresetid, 'Á').Result;
+            var result = _featureRepository.GetFeatureSet(featuresetid, 'ï¿½').Result;
             Assert.IsNotNull(result);
             // Assert.IsTrue(result.da > 0);
         }
