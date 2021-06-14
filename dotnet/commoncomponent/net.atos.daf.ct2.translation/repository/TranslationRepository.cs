@@ -331,7 +331,7 @@ namespace net.atos.daf.ct2.translation.repository
 
                     translations.Add(Map(record));
                 }
-                
+
                 return translations;
             }
             catch (Exception)

@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.applications
                     services.AddSingleton(dataAccess);
                     services.AddSingleton<IAuditTraillib, AuditTraillib>();
                     services.AddSingleton<ITranslationRepository, TranslationRepository>();
-                    services.AddSingleton<ITranslationManager, TranslationManager>(); 
+                    services.AddSingleton<ITranslationManager, TranslationManager>();
                     services.AddSingleton<Identity.IAccountManager, Identity.AccountManager>();
                     services.AddSingleton<IAuditLogRepository, AuditLogRepository>();
                     services.AddSingleton<IAccountManager, AccountManager>();

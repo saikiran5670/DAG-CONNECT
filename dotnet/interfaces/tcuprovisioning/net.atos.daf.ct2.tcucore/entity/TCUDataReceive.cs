@@ -17,14 +17,14 @@ namespace net.atos.daf.ct2.tcucore
             this.ReferenceDate = _referenceDate;
         }
 
-        public string Vin { get;  }
+        public string Vin { get; }
 
-        public string DeviceIdentifier { get;  }
+        public string DeviceIdentifier { get; }
 
-        public string DeviceSerialNumber { get;  }
+        public string DeviceSerialNumber { get; }
 
-        public Correlations Correlations { get;  }
+        public Correlations Correlations { get; }
 
-        public DateTime ReferenceDate { get;}
+        public DateTime ReferenceDate { get; }
     }
 }

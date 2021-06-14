@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string Email { get; set; }
     }
     public class ReportParameter
-    { 
+    {
         public IEnumerable<ReportType> ReportType { get; set; }
         public IEnumerable<DriverDetail> DriverDetail { get; set; }
         public IEnumerable<ReceiptEmails> ReceiptEmails { get; set; }

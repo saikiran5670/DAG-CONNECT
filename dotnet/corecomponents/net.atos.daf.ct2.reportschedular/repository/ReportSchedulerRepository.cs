@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public class ReportSchedulerRepository : IReportSchedulerRepository
     {
-        private readonly IDataAccess _dataAccess;       
+        private readonly IDataAccess _dataAccess;
 
         public ReportSchedulerRepository(IDataAccess dataAccess)
         {

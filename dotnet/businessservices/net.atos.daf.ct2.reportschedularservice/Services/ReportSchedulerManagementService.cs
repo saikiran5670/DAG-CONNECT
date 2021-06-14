@@ -31,9 +31,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-               
                 ReportParameter reportparameter = await _reportSchedulerManager.GetReportParameter(request.AccountId, request.OrganizationId);
-               
                 var vehicleDetailsAccountVisibilty
                                               = await _visibilityManager
                                                  .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
@@ -70,7 +68,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                     var res = JsonConvert.SerializeObject(vehicleDetailsAccountVisibilty);
                     response.AssociatedVehicle.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
-                        );                    
+                        );
                 }
 
                 response.Message = "Report Parameter retrieved";
