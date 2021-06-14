@@ -11,10 +11,10 @@ namespace net.atos.daf.ct2.tcucore
             ReferenceDate = _referenceDate;
         }
 
-        public string VIN { get;  }
+        public string VIN { get; }
 
-        public TCU TCU { get;  }
+        public TCU TCU { get; }
 
-        public DateTime ReferenceDate { get;  }
+        public DateTime ReferenceDate { get; }
     }
 }

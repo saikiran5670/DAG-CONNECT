@@ -183,6 +183,6 @@ namespace net.atos.daf.ct2.translation
             var result = await _translationRepository.UpdateDTCWarningData(dtcwarningList);
             return result;
         }
-       
+
     }
 }

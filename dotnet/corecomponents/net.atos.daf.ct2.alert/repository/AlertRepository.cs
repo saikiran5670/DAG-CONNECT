@@ -851,7 +851,7 @@ namespace net.atos.daf.ct2.alert.repository
                 await _dataAccess.ExecuteAsync("UPDATE master.alerttimingdetail SET state = @state , modified_at = @modified_at WHERE type=@type and ref_id in (select id from master.alerturgencylevelref where alert_id = @alert_id and state=@activeState) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState, type = Convert.ToChar(AlertTimingDetailType.UrgencyLevelBasicFilter).ToString() });
                 await _dataAccess.ExecuteAsync("UPDATE master.alerturgencylevelref SET state = @state , modified_at = @modified_at WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
                 await _dataAccess.ExecuteAsync("UPDATE master.alerttimingdetail SET state = @state , modified_at = @modified_at WHERE type=@type and ref_id in (select id from master.notification where alert_id = @alert_id and state=@activeState) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState, type = Convert.ToChar(AlertTimingDetailType.NotificationAdvanceFilter).ToString() });
-                await _dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at, modified_by=@modified_by WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, modified_by = ModifiedBy, alert_id = alertId, activeState = activeState });   
+                await _dataAccess.ExecuteAsync("UPDATE master.notification SET state = @state , modified_at = @modified_at, modified_by=@modified_by WHERE alert_id = @alert_id and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, modified_by = ModifiedBy, alert_id = alertId, activeState = activeState });
                 await _dataAccess.ExecuteAsync("UPDATE master.notificationlimit SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
                 await _dataAccess.ExecuteAsync("UPDATE master.notificationrecipient SET state = @state , modified_at = @modified_at WHERE notification_id in (select id from master.notification where alert_id = @alert_id) and state=@activeState", new { state = deleteChar, modified_at = modifiedAt, alert_id = alertId, activeState = activeState });
                 return true;
@@ -990,7 +990,7 @@ namespace net.atos.daf.ct2.alert.repository
 
         #region Landmark Delete Validation
         //landmark type is added only for grouo table as landmark group refers to other table.
-        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId,string Landmarktype)
+        public async Task<bool> IsLandmarkActiveInAlert(List<int> landmarkId, string Landmarktype)
         {
             try
             {
@@ -1039,7 +1039,7 @@ namespace net.atos.daf.ct2.alert.repository
                     else
                         return true;
                 }
-                
+
             }
             catch (Exception)
             {

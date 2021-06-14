@@ -22,7 +22,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         private readonly ILogger<FeatureActivationController> _logger;
         private readonly ISubscriptionManager _subscriptionManager;
 
-        public FeatureActivationController(ILogger<FeatureActivationController> logger,  ISubscriptionManager subscriptionManager)
+        public FeatureActivationController(ILogger<FeatureActivationController> logger, ISubscriptionManager subscriptionManager)
         {
             this._logger = logger;
             this._subscriptionManager = subscriptionManager;
@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> Subscription([FromBody] SubsCriptionEntity objsubscriptionActivation)
-        {            
+        {
             try
             {
                 if (!ModelState.IsValid)

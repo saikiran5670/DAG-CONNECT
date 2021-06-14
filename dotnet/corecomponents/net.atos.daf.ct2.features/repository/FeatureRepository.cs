@@ -177,7 +177,7 @@ namespace net.atos.daf.ct2.features.repository
 
                 throw;
             }
-           
+
 
         }
 

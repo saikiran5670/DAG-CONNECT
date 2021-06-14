@@ -45,10 +45,11 @@ namespace net.atos.daf.ct2.map.test
         [TestMethod]
         public void GetMapAddress()
         {
-            var _hereMapConfiguration = new HereMapConfiguration() {  
+            var _hereMapConfiguration = new HereMapConfiguration()
+            {
                 AppId = "LRJH9LmTMNbwteXRz03L",
-            AppCode = "o9LPYEnoFvNtmkYUhCb1Tg"
-           }; 
+                AppCode = "o9LPYEnoFvNtmkYUhCb1Tg"
+            };
             _mapManager.InitializeMapGeocoder(_hereMapConfiguration);
             LookupAddress address = new LookupAddress() { Latitude = 29.50249, Longitude = 94.85703 };
             LookupAddress result = _mapManager.GetMapAddress(address).Result;
@@ -58,5 +59,5 @@ namespace net.atos.daf.ct2.map.test
 
 
 
-    }     
+    }
 }

@@ -1779,7 +1779,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Session org context switching
-        
+
         [HttpPost]
         [Route("setuserselection")]
         public async Task<IActionResult> SetUserSelection([FromBody] AccountInfoRequest request)
@@ -1892,6 +1892,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
-        }
+    }
 
 }

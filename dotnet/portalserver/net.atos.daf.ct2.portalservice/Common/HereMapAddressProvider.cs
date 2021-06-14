@@ -8,7 +8,7 @@ using static net.atos.daf.ct2.mapservice.MapService;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
-    public class HereMapAddressProvider 
+    public class HereMapAddressProvider
     {
         private readonly MapServiceClient _mapServiceClient;
         private POIService.POIServiceClient _poiServiceClient;
@@ -23,17 +23,17 @@ namespace net.atos.daf.ct2.portalservice.Common
 
         public string GetAddress(double lat, double lng)
         {
-           
-                var mapRequest = new GetMapRequest() { Latitude = lat, Longitude = lng };
-                var lookupAddress = _mapServiceClient.GetMapAddressAsync(mapRequest).GetAwaiter().GetResult();
-                return lookupAddress.LookupAddresses.Address ?? string.Empty;
+
+            var mapRequest = new GetMapRequest() { Latitude = lat, Longitude = lng };
+            var lookupAddress = _mapServiceClient.GetMapAddressAsync(mapRequest).GetAwaiter().GetResult();
+            return lookupAddress.LookupAddresses.Address ?? string.Empty;
 
 
         }
-        
+
         public TripData UpdateTripAddress(TripData tripData)
         {
-            
+
 
             if (string.IsNullOrEmpty(tripData.StartAddress) && string.IsNullOrEmpty(tripData.EndAddress))
             {
@@ -45,7 +45,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                     var updtetrip = new AddTripAddressRequest() { Id = tripData.Id, StartAddress = tripData.StartAddress, EndAddress = tripData.EndAddress };
                     var result = _poiServiceClient.UpdateTripAddress(updtetrip);
                 }
-            }        
+            }
 
             return tripData;
         }

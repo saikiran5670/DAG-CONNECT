@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.map.entity
         }
 
 
-        public MapLatLngRange GetLatLonRange(double lat,double lan)
+        public MapLatLngRange GetLatLonRange(double lat, double lan)
         {
             var mapLatLngRange = new MapLatLngRange()
             {

@@ -49,25 +49,25 @@ namespace net.atos.daf.ct2.alert.entity
                         if (!alertFilterRefLookup.TryGetValue(Convert.ToInt32(alertItem.Alefil_id), out AlertFilterRef alertFilterRef))
                         {
                             //var alertFilterRefDetails = ToAlertFilterRefModel(alertItem);                           
-                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef= ToAlertFilterRefModel(alertItem));
+                            alertFilterRefLookup.Add(Convert.ToInt32(alertItem.Alefil_id), alertFilterRef = ToAlertFilterRefModel(alertItem));
                             alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
                         }
                         if (alertItem.Aletimefil_id > 0 && alertItem.Aletimefil_ref_id == alertItem.Alefil_id)
                         {
                             if (!alertTimingFilterLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimefil_id), out _))
                             {
-                                var alertTimingalertFilter = ToAlertTimingDetailModel(alertItem,'F');
+                                var alertTimingalertFilter = ToAlertTimingDetailModel(alertItem, 'F');
                                 alertTimingFilterLookup.Add(Convert.ToInt32(alertItem.Aletimefil_id), alertTimingalertFilter);
                                 alertFilterRef.AlertTimingDetails.Add(alertTimingalertFilter);
                             }
                         }
                     }
-                    
+
                     if (alertItem.Aletimeurg_id > 0 && alertItem.Aletimeurg_ref_id == alertItem.Alefil_alert_urgency_level_id)
                     {
                         if (!alertTimingUrgencyLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimeurg_id), out _))
                         {
-                            var alertTimingUrgencyFilter = ToAlertTimingDetailModel(alertItem,'U');
+                            var alertTimingUrgencyFilter = ToAlertTimingDetailModel(alertItem, 'U');
                             alertTimingUrgencyLookup.Add(Convert.ToInt32(alertItem.Aletimeurg_id), alertTimingUrgencyFilter);
                             alertUrgencyLevelRef.AlertTimingDetails.Add(alertTimingUrgencyFilter);
                         }
@@ -93,7 +93,7 @@ namespace net.atos.daf.ct2.alert.entity
                     {
                         if (!alertTimingNotificationLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimenoti_id), out _))
                         {
-                            var alertTimingNotificationFilter = ToAlertTimingDetailModel(alertItem,'N');
+                            var alertTimingNotificationFilter = ToAlertTimingDetailModel(alertItem, 'N');
                             alertTimingNotificationLookup.Add(Convert.ToInt32(alertItem.Aletimenoti_id), alertTimingNotificationFilter);
                             notification.AlertTimingDetails.Add(alertTimingNotificationFilter);
                         }
@@ -282,7 +282,7 @@ namespace net.atos.daf.ct2.alert.entity
             {
                 alerttimingdetail.Id = request.Aletimeurg_id;
                 alerttimingdetail.Type = request.Aletimeurg_type;
-                alerttimingdetail.RefId = request.Aletimeurg_ref_id;               
+                alerttimingdetail.RefId = request.Aletimeurg_ref_id;
                 if (request.Aletimeurg_day_type != null)
                 {
                     for (int i = 0; i < request.Aletimeurg_day_type.Length; i++)
@@ -301,7 +301,7 @@ namespace net.atos.daf.ct2.alert.entity
             {
                 alerttimingdetail.Id = request.Aletimefil_id;
                 alerttimingdetail.Type = request.Aletimefil_type;
-                alerttimingdetail.RefId = request.Aletimefil_ref_id;               
+                alerttimingdetail.RefId = request.Aletimefil_ref_id;
                 if (request.Aletimefil_day_type != null)
                 {
                     for (int i = 0; i < request.Aletimefil_day_type.Length; i++)
@@ -320,7 +320,7 @@ namespace net.atos.daf.ct2.alert.entity
             {
                 alerttimingdetail.Id = request.Aletimenoti_id;
                 alerttimingdetail.Type = request.Aletimenoti_type;
-                alerttimingdetail.RefId = request.Aletimenoti_ref_id;               
+                alerttimingdetail.RefId = request.Aletimenoti_ref_id;
                 if (request.Aletimenoti_day_type != null)
                 {
                     for (int i = 0; i < request.Aletimenoti_day_type.Length; i++)
