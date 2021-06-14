@@ -314,24 +314,28 @@ namespace net.atos.daf.ct2.reportservice.Services
             DeleteEcoScoreProfileResponse response = new DeleteEcoScoreProfileResponse();
             try
             {
+                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 _logger.Info("Delete Eco Score Profile .");
-                var profileName = await _reportManager.GetProfileName(request.ProfileId);
-                var result = await _reportManager.DeleteEcoScoreProfile(request.ProfileId);
-
+                var result = await _reportManager.DeleteEcoScoreProfile(request.ProfileId, isAdminRights);
                 if (result > 0)
                 {
-                    response.Message = profileName + " Delete successfully";
+                    response.Message = " Delete successfully";
                     response.Code = Responsecode.Success;
-                }
-                else if (profileName == null && result == 0)
-                {
-                    response.Message = profileName + " does not exist to delete ";
-                    response.Code = Responsecode.NotFound;
                 }
                 else if (result == 0)
                 {
-                    response.Message = profileName + " Is a default profile, Can't delete ";
+                    response.Message = " does not exist to delete ";
+                    response.Code = Responsecode.NotFound;
+                }
+                else if (result == -1)
+                {
+                    response.Message = " Is a default profile, Can't delete ";
                     response.Code = Responsecode.Failed;
+                }
+                else if (result == -2)
+                {
+                    response.Message = " Is a global profile, Can't delete ";
+                    response.Code = Responsecode.NotFound;
                 }
                 else
                 {
@@ -347,7 +351,6 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return await Task.FromResult(response);
         }
-
         #endregion
     }
 }

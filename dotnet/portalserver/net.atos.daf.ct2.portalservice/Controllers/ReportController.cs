@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -447,10 +448,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                //bool hasRights = await HasAdminPrivilege();
+                bool hasRights = await HasAdminPrivilege();
                 var grpcRequest = new reportservice.DeleteEcoScoreProfileRequest();
                 grpcRequest.ProfileId = request.ProfileId;
-                var response = await _reportServiceClient.DeleteEcoScoreProfileAsync(grpcRequest);
+                Metadata headers = new Metadata();
+                headers.Add("hasRights", Convert.ToString(hasRights));
+                var response = await _reportServiceClient.DeleteEcoScoreProfileAsync(grpcRequest, headers);
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
