@@ -135,19 +135,19 @@ namespace net.atos.daf.ct2.reports
             else
                 return -1;
         }
-        public async Task<int> DeleteEcoScoreProfile(int ProfileId)
+        public async Task<int> DeleteEcoScoreProfile(int profileId)
         {
             int ecoScoreProfileId = 0;
-            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(ProfileId);
+            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
             if (versionType == "" || versionType == null)
             {
-                ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(ProfileId);
+                ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
             }
             return ecoScoreProfileId;
         }
-        public async Task<string> GetProfileName(int ProfileId)
+        public async Task<string> GetProfileName(int profileId)
         {
-            return await _reportRepository.GetProfileName(ProfileId);
+            return await _reportRepository.GetProfileName(profileId);
         }
         #endregion
     }
