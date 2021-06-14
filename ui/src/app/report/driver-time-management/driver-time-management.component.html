@@ -6,11 +6,10 @@
             <mat-panel-title>
               <span>
                 <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
-                <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
               </span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div>
+          <!-- <div>
             <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
               <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
@@ -85,8 +84,7 @@
                 <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
-                    <!-- <mat-option value="0">--All--</mat-option> -->
-                    <mat-option *ngFor="let rer of vehicleListData" [value]="rer.vehicleId">
+                  <mat-option *ngFor="let rer of vehicleListData" [value]="rer.vehicleId">
                         {{ rer.vehicleName }}
                     </mat-option>
                   </mat-select>
@@ -101,7 +99,6 @@
                 <mat-label>{{ translationData.lblDriver || 'Driver' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
                   <mat-select [disabled]="driverListData.length == 0" (selectionChange)="onDriverChange($event)" placeholder="{{ translationData.lblSelectDriver || 'Select Driver' }}" formControlName="driver">
-                    <!-- <mat-option value="0">--All--</mat-option> -->
                     <mat-option *ngFor="let rer of driverListData" [value]="rer.driverId">
                         {{ rer.driverName }}
                     </mat-option>
@@ -118,8 +115,9 @@
               <button [disabled]="!driverTimeForm.valid" class='no-margin' mat-raised-button color="primary"
                 (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
             </div>
-          </div>
+          </div> -->
         </mat-expansion-panel>
       </mat-card>
+      
     </form>
 </div>

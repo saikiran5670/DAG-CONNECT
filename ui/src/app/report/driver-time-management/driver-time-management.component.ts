@@ -35,6 +35,8 @@ export class DriverTimeManagementComponent implements OnInit {
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
   driverListData: any = [];
+  searchExpandPanel: boolean = true;
+  tableExpandPanel: boolean = true;
 
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
