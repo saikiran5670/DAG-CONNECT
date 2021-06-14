@@ -78,9 +78,50 @@ days: any= [];
     return this.weekDays().at(periodIndex).get("FormArrayCustomItems") as FormArray
   }
 
-  getAlertTimingPayload(){
-    let alertTimingRef= [{id : 1}];
-    return alertTimingRef;
-  }
+getAlertTimingPayload(){
+  let alertTimingRef= [];
+  let weekDay : any;
+  let customTime : any;
+  let tempObj: any;
+  this.weekDays().controls.forEach((element, index) => {
+    weekDay = element['controls'];
+    if(weekDay.daySelection.value){
+      if(weekDay.fulldayCustom.value == 'C'){
+        this.customPeriods(index).controls.forEach(item =>{
+          customTime = item['controls'];
+          tempObj = {
+            "type": 'U',
+            "refId": 0,
+            "dayType": [
+              true, false, false, false, false, false, false
+            ],
+            "periodType": 'C',
+            "startDate": customTime.fromTime.value,
+            "endDate": customTime.toTime.value,
+            "state": "A"
+          }
+          alertTimingRef.push(tempObj);
+        })
+      }
+      else{
+        tempObj = {
+          "type": 'U',
+          "refId": 0,
+          "dayType": [
+            true, false, false, false, false, false, false
+          ],
+          "periodType": 'A',
+          "startDate": 0,
+          "endDate": 0,
+          "state": "A"
+        }
+        alertTimingRef.push(tempObj);
+      }
+    }
+  })
+  
+  return alertTimingRef;
+}
+
 
 }
