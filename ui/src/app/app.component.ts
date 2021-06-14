@@ -112,7 +112,7 @@ export class AppComponent {
     },
     fleetoverview: {
       open: false,
-      icon: "info",
+      icon: "map",
       externalLink: false,
       pageTitles: {
         livefleet: 'Live Fleet',
@@ -172,7 +172,7 @@ export class AppComponent {
     },
     tachograph: {
       open: false,
-      icon: "info",
+      icon: "graphic_eq",
       externalLink: false,
       pageTitles: {
         tachograph: 'Tachograph'
@@ -180,7 +180,7 @@ export class AppComponent {
     },
     mobileportal: {
       open: false,
-      icon: "info",
+      icon: "mobile_screen_share",
       externalLink: false,
       pageTitles: {
         mobileportal: 'Mobile Portal'
@@ -188,7 +188,7 @@ export class AppComponent {
     },
     shop: {
       open: false,
-      icon: "info",
+      icon: "shop",
       externalLink: false,
       pageTitles: {
         shop: 'Shop'
