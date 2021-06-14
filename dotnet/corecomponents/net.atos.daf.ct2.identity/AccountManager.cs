@@ -11,6 +11,7 @@ using net.atos.daf.ct2.identity.Common;
 using net.atos.daf.ct2.identity.entity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace net.atos.daf.ct2.identity
 {
@@ -227,7 +228,8 @@ namespace net.atos.daf.ct2.identity
                     modelCreate.LastName = user.LastName;
                     modelCreate.Enabled = true;
 
-                    stringData = JsonConvert.SerializeObject(modelCreate, Formatting.Indented);
+                    stringData = JsonConvert.SerializeObject(modelCreate, Formatting.Indented,
+                        new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     break;
                 case "UPDATE":
                     KeycloakUpdateUserModel modelUpdate = new KeycloakUpdateUserModel();
@@ -236,7 +238,8 @@ namespace net.atos.daf.ct2.identity
                     modelUpdate.FirstName = user.FirstName;
                     modelUpdate.LastName = user.LastName;
                     modelUpdate.Enabled = true;
-                    stringData = JsonConvert.SerializeObject(modelUpdate, Formatting.Indented);
+                    stringData = JsonConvert.SerializeObject(modelUpdate, Formatting.Indented,
+                        new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     break;
                 case "DELETE":
                     KeycloakDeleteUserModel modelDelete = new KeycloakDeleteUserModel();
@@ -245,14 +248,16 @@ namespace net.atos.daf.ct2.identity
                     // modelCreate.EmailId=user.EmailId;
                     // modelUpdate.FirstName=user.FirstName;
                     // modelUpdate.LastName=user.LastName;
-                    stringData = JsonConvert.SerializeObject(modelDelete, Formatting.Indented);
+                    stringData = JsonConvert.SerializeObject(modelDelete, Formatting.Indented,
+                        new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     break;
                 case "CHANGEPASSWORD":
                     KeycloakPwdChangeModel modelUserChangePwd = new KeycloakPwdChangeModel();
                     modelUserChangePwd.Type = "password";
                     modelUserChangePwd.Value = user.Password;
                     modelUserChangePwd.Temporary = false;
-                    stringData = JsonConvert.SerializeObject(modelUserChangePwd, Formatting.Indented);
+                    stringData = JsonConvert.SerializeObject(modelUserChangePwd, Formatting.Indented,
+                        new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     break;
                 case "LOGOUT":
                     stringData = "";
