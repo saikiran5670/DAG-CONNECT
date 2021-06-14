@@ -24,7 +24,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _reportschedulerClient = reportschedulerClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-           
         }
     }
 }

@@ -32,23 +32,23 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     }
     public class ScheduledReport
     {
-        public int Id { get; set; }       
+        public int Id { get; set; }
         public int ScheduleReportId { get; set; }
         public byte Report { get; set; }
-        public string Token { get; set; }       
+        public string Token { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public long DownloadedAt { get; set; }
-        public long ValidTill { get; set; }        
-        public long CreatedAt { get; set; }        
+        public long ValidTill { get; set; }
+        public long CreatedAt { get; set; }
     }
     public class ScheduledReportRecipient
     {
-        public int Id { get; set; }      
+        public int Id { get; set; }
         public int ScheduleReportId { get; set; }
         public string Email { get; set; }
-        public char State { get; set; }      
-        public long CreatedAt { get; set; }       
+        public char State { get; set; }
+        public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
     }
 }
