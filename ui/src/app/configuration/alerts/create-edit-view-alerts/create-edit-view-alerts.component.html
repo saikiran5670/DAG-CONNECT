@@ -732,7 +732,7 @@
           ((alertForm.controls.vehicleGroup.value == '' || 
             alertForm.controls.vehicleGroup.value == 'ALL') ? true : false) : 
             ((alertForm.controls.vehicle.value == '' || isUnsubscribedVehicle) ? true : false)) ||
-            (alert_category_selected != 'R' &&
+            (alert_category_selected != 'R' && alert_type_selected != 'S' &&
             (selectedPOI.selected.length == 0 && selectedGeofence.selected.length == 0 && selectedGroup.selected.length == 0) &&
             (selectedCorridor.selected.length == 0)) && 
             (!isCriticalLevelSelected && !isWarningLevelSelected && !isAdvisoryLevelSelected) ||

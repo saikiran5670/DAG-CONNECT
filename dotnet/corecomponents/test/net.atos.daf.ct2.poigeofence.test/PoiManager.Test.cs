@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.poigeofence.test
 
             var connectionString = _config.GetConnectionString("DevAzure");
             _dataAccess = new PgSQLDataAccess(connectionString);
-             _poiRepository = new PoiRepository(_dataAccess,_dataMartDataAccess);
+            _poiRepository = new PoiRepository(_dataAccess, _dataMartDataAccess);
             _iPoiManager = new PoiManager(_poiRepository);
         }
 
@@ -148,12 +148,15 @@ namespace net.atos.daf.ct2.poigeofence.test
         }
 
         [TestMethod]
-        public void UpdateTripArddress( )
+        public void UpdateTripArddress()
         {
 
-            var tripAddressDetails = new TripAddressDetails() {Id= 215015,
-                                                               StartAddress= "87160 Saint-Sulpice-les-Feuilles, France",
-                                                               EndAddress= "Impasse de la Poste, 41700 Le Controis-en-Sologne, France" };
+            var tripAddressDetails = new TripAddressDetails()
+            {
+                Id = 215015,
+                StartAddress = "87160 Saint-Sulpice-les-Feuilles, France",
+                EndAddress = "Impasse de la Poste, 41700 Le Controis-en-Sologne, France"
+            };
             var result = _iPoiManager.UpdateTripArddress(tripAddressDetails).Result;
             Console.WriteLine(result);
         }

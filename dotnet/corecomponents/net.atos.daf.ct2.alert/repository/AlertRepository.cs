@@ -1039,6 +1039,7 @@ namespace net.atos.daf.ct2.alert.repository
                     else
                         return true;
                 }
+
             }
             catch (Exception)
             {

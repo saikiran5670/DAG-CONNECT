@@ -92,6 +92,9 @@
         <span>
             <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
+        <mat-error *ngIf="corridorFormGroup.get('widthInput').hasError('cannotExceedMaxValue')">
+        {{ translationData.lblMax10km || 'Width cannot be greater than 10km' }}
+        </mat-error>
         <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
         </div>
@@ -145,7 +148,7 @@
         </span> 
     </div>
     <div *ngIf="actionType !== 'view'" class="col-sm-4 areaWidth">
-        <button mat-flat-button color="primary" (click)="addViaRoute()" [disabled]='viaRouteCount'>
+        <button mat-flat-button color="primary" class="viaRouteBtn" (click)="addViaRoute()" [disabled]='viaRouteCount'>
             <mat-icon>add_circle_outline</mat-icon> {{ translationData.lblViaRoute || 'Via Route'}}
         </button>
     </div> 

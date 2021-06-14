@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.tcudataservice
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         static async System.Threading.Tasks.Task Main()
         {
-             
+
 
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));

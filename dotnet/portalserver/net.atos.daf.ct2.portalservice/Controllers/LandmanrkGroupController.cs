@@ -29,8 +29,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _auditHelper = auditHelper;
             _mapper = new Mapper();
             _alertServiceClient = alertServiceClient;
-            
-           
+
+
         }
 
         [HttpPost]
