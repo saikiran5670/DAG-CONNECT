@@ -102,7 +102,7 @@ namespace net.atos.daf.ct2.reports
         #region Eco Score Report - Create Profile
 
         public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
-        {            
+        {
             return await _reportRepository.CreateEcoScoreProfile(dto);
         }
 

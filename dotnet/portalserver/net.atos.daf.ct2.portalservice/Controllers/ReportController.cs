@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.mapservice; 
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;

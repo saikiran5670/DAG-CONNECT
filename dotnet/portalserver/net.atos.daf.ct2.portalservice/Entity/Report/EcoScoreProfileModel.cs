@@ -84,22 +84,21 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
     {
         public int ProfileId { get; set; }
     }
-  
 }
 
 
 
-    public enum LimitType
-    {
-        Min = 'N',
-        Max = 'X',
-        None = 'O'
-    }
+public enum LimitType
+{
+    Min = 'N',
+    Max = 'X',
+    None = 'O'
+}
 
-    public enum RangeValueType
-    {
-        Decimal = 'D',
-        Time = 'T'
-    }
+public enum RangeValueType
+{
+    Decimal = 'D',
+    Time = 'T'
+}
 
-  
+

@@ -24,12 +24,12 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 var profileRequest = MapCreateProfileRequestToDto(request);
 
-                if(profileRequest.OrganizationId.HasValue)
+                if (profileRequest.OrganizationId.HasValue)
                 {
                     var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
                     var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
 
-                    if(countByOrg < maxLimit)
+                    if (countByOrg < maxLimit)
                     {
                         response = await CallCreateEcoScoreProfile(profileRequest);
                     }
@@ -43,7 +43,6 @@ namespace net.atos.daf.ct2.reportservice.Services
                 {
                     response = await CallCreateEcoScoreProfile(profileRequest);
                 }
-                
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -64,7 +63,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             {
                 Code = Responsecode.Success,
                 Message = "Eco-Score profile is created successfully."
-            };            
+            };
         }
 
         /// <summary>

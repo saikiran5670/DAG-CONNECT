@@ -90,8 +90,7 @@ namespace net.atos.daf.ct2.reports.repository
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@organization_id", orgId);
-              
-                return await _dataAccess.ExecuteScalarAsync<int>(query, parameters);               
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
             }
             catch (Exception)
             {
@@ -291,29 +290,29 @@ namespace net.atos.daf.ct2.reports.repository
 
                 var Updateparameter = new DynamicParameters();
 
-            StringBuilder queryForUpdateEcoScoreProfile = new StringBuilder();
+                StringBuilder queryForUpdateEcoScoreProfile = new StringBuilder();
 
-            queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at");
+                queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at");
 
-            if (!string.IsNullOrEmpty(ecoScoreProfileDto.Name))
-            {
-                Updateparameter.Add("@name", ecoScoreProfileDto.Name);
-                queryForUpdateEcoScoreProfile.Append(", name=@name");
-            }
-            if (!string.IsNullOrEmpty(ecoScoreProfileDto.Description))
-            {
-                Updateparameter.Add("@description", ecoScoreProfileDto.Description);
-                queryForUpdateEcoScoreProfile.Append(", description=@description");
-            }
-            Updateparameter.Add("@modified_by", Convert.ToInt32( ecoScoreProfileDto.ActionedBy));
-            queryForUpdateEcoScoreProfile.Append(", modified_by= @modified_by");
-            Updateparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            Updateparameter.Add("@id", ecoScoreProfileDto.Id);
-            queryForUpdateEcoScoreProfile.Append(" where id=@id RETURNING id");
+                if (!string.IsNullOrEmpty(ecoScoreProfileDto.Name))
+                {
+                    Updateparameter.Add("@name", ecoScoreProfileDto.Name);
+                    queryForUpdateEcoScoreProfile.Append(", name=@name");
+                }
+                if (!string.IsNullOrEmpty(ecoScoreProfileDto.Description))
+                {
+                    Updateparameter.Add("@description", ecoScoreProfileDto.Description);
+                    queryForUpdateEcoScoreProfile.Append(", description=@description");
+                }
+                Updateparameter.Add("@modified_by", Convert.ToInt32(ecoScoreProfileDto.ActionedBy));
+                queryForUpdateEcoScoreProfile.Append(", modified_by= @modified_by");
+                Updateparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                Updateparameter.Add("@id", ecoScoreProfileDto.Id);
+                queryForUpdateEcoScoreProfile.Append(" where id=@id RETURNING id");
 
-            
 
-            var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), Updateparameter);
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), Updateparameter);
 
                 var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, Convert.ToInt32(ecoScoreProfileDto.ActionedBy), id);
                 if (id <= 0 && tripDetails == false)
@@ -321,7 +320,7 @@ namespace net.atos.daf.ct2.reports.repository
                     id = -1;
                 }
                 txnScope.Commit();
-               
+
                 return id;
             }
             catch (Exception)
@@ -404,8 +403,8 @@ namespace net.atos.daf.ct2.reports.repository
 
             return ReportNameExist == 0 ? false : true;
         }
-        
-        
+
+
         #region - Delete Eco Score Profile
         public async Task<int> DeleteEcoScoreProfile(int ProfileId)
         {
