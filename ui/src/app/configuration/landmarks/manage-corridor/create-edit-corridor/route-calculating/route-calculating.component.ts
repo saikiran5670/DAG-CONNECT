@@ -156,7 +156,6 @@ export class RouteCalculatingComponent implements OnInit {
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-    //this.configureAutoCompleteForLocationSearch();
     this.configureAutoSuggest()
    }
 
@@ -166,7 +165,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup = this.formBuilder.group({
       corridorType:['Regular'],
       label: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
-      widthInput : ['', [Validators.required]],
+      widthInput : [''],
       viaroute1: [''],
       viaroute2: [''],
       trailer:["Regular"],
@@ -209,12 +208,18 @@ export class RouteCalculatingComponent implements OnInit {
     if(this.actionType === 'edit'){
       this.corridorFormGroup.controls.label.disable();
     }
-    //this.configureAutoCompleteForLocationSearch();
   }
 
   subscribeWidthValue(){
     this.corridorFormGroup.get("widthInput").valueChanges.subscribe(x => {
+     
       this.corridorWidthKm = Number(x);
+      if(Number(x) > 10)
+      {
+        this.corridorWidthKm =10;
+        this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
+
+      }
       this.corridorWidth = this.corridorWidthKm  * 1000;
       this.checkRoutePlot();
       this.updateWidth();
@@ -411,21 +416,15 @@ export class RouteCalculatingComponent implements OnInit {
   onSearchClicked : boolean = false;
   sliderChanged(){
      // this.corridorWidth = _event.value;
+     
       this.corridorWidthKm = this.corridorWidth / 1000;
+      if(this.corridorWidthKm > 10)
+      {
+        this.corridorWidthKm=10;
+      }
       this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
-      //let drawWidth = this.corridorWidthKm*10;
-      // if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-      //   this.addTruckRouteShapeToMap(drawWidth);
-      // }
       this.checkRoutePlot();
       this.updateWidth();
-    //   if(this.startAddressPositionLat != 0 && this.endAddressPositionLat != 0){
-    //  // this.calculateAB();
-    //  this.updateWidth()
-
-    // }
-
-      //this.calculateRouteFromAtoB();
   }
 
   checkRoutePlot(){
@@ -691,13 +690,6 @@ export class RouteCalculatingComponent implements OnInit {
       return this.translationData.lblDuplicateMsg.replace('$', name);
     else
       return ("Corridor '$' already exists.").replace('$', name);
-  }
-
-  getSuggestion(_event){
-    let startValue = _event.target.value;
-    
-   
-    console.log(_event)
   }
 
   backToCorridorList(){
@@ -974,68 +966,8 @@ export class RouteCalculatingComponent implements OnInit {
     }
   }
 
-  plotViaPoint(_viaRouteList){
-    if(this.viaMarker){
-      this.mapGroup.removeObject(this.viaMarker);
-    }
-   // 
-    if(_viaRouteList.length >0){
-      for(var i in _viaRouteList){
-
-        let geocodingParameters = {
-          searchText: _viaRouteList[i],
-        };
-        this.hereService.getLocationDetails(geocodingParameters).then((result) => {
-          this.viaAddressPositionLat  = result[0]["Location"]["DisplayPosition"]["Latitude"];
-          this.viaAddressPositionLong = result[0]["Location"]["DisplayPosition"]["Longitude"];
-          let viaMarker = this.createViaMarker();
-          let markerSize = { w: 26, h: 32 };
-          const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-      
-          this.viaMarker = new H.map.Marker({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong},{icon:icon});
-          this.mapGroup.addObject(this.viaMarker);
-         // this.hereMap.getViewModel().setLookAtData({bounds: this.endMarker.getBoundingBox()});
-          //this.hereMap.setZoom(8);
-        //  this.hereMap.setCenter({lat:this.viaAddressPositionLat, lng:this.viaAddressPositionLong}, 'default');
-          if(this.actionType === 'create'){
-            this.viaRoutePlottedPoints.push({
-              "viaRoutName": _viaRouteList[i],
-              "latitude": this.viaAddressPositionLat,
-              "longitude": this.viaAddressPositionLat
-            });
-          }
-        this.checkRoutePlot();
-    
-        });
-      }  
-      
-    }
-    else{
-      this.checkRoutePlot();
-
-    }
-    
-
-    
-  }
-
   suggestionData :  any;
   dataService : any;
-  private configureAutoCompleteForLocationSearch() {
-    let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
-    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
-    '&maxresults=5' +  // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
-    '&app_id=' + this.map_id + // TODO: Store this configuration in Config File.
-    '&app_code=' + this.map_code +  // TODO: Store this configuration in Config File.
-    '&query='+searchParam; 
-    this.suggestionData = this.completerService.remote(
-      AUTOCOMPLETION_URL,
-      "label",
-      "label");
-    this.suggestionData.dataField("suggestions");
-    this.dataService = this.suggestionData;
-    console.log(this.dataService);
-  }
 
   private configureAutoSuggest(){
     let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
@@ -1044,16 +976,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.suggestionData = this.completerService.remote(
     URL,'title','title');
     this.suggestionData.dataField("items");
-      this.dataService = this.suggestionData;
-    // let queryParams= 'apiKey='+this.map_key +'&limit=5'+'&q='+searchParam ;
-    // if(searchParam != ''){
-      
-    // this.hereService.getSuggestions(queryParams).subscribe((data)=>{
-      
-    //   this.dataService = data.item;
-    //   console.log(this.dataService);
-    //   })
-    // }
+    this.dataService = this.suggestionData;
   }
 
   /////////////////////////// v8 calculate ////////////////////
@@ -1169,8 +1092,6 @@ export class RouteCalculatingComponent implements OnInit {
 
   updateWidth(){
     let setWidth = this.corridorWidthKm * 10;
-    // this.addTruckRouteShapeToMap();
-    //let geoLineString = this.corridorPath.getGeometry();
     if (this.corridorPath) {
 
       this.corridorPath.setStyle({
@@ -1179,9 +1100,6 @@ export class RouteCalculatingComponent implements OnInit {
       });
 
     }
-    //this.corridorPath.setStyle( this.corridorPath.getStyle().getCopy({linewidth:_width}));
-    //console.log(geoLineString)
-    //this.corridorPath.setGeometry(geoLineString);
   }
 
 
