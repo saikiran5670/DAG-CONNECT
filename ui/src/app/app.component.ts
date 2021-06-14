@@ -122,7 +122,7 @@ export class AppComponent {
     report: {
       open: false,
       externalLink: false,
-      icon: "info",
+      icon: "bar_chart",
       pageTitles: {
         tripreport: 'Trip Report',
         triptracing: 'Trip Tracing',
