@@ -70,6 +70,42 @@ export class ReportService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  getMultipleDriverDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/getdriverstimedetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getSelectedDriverDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/getsingledrivertimedetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+  
+  getDefaultDriverParameter(data: any): Observable<any[]> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+        .post<any[]>(
+          `${this.reportServiceUrl}/getdriveractivityparameters`, data, headers
+        )
+        .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
