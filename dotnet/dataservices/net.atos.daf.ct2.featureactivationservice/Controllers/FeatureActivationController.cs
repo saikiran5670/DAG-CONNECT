@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.featureactivationservice.CustomAttributes;
 using net.atos.daf.ct2.featureactivationservice.Entity;
 using net.atos.daf.ct2.subscription;
 using net.atos.daf.ct2.subscription.entity;
 using net.atos.daf.ct2.utilities;
-using AccountComponent = net.atos.daf.ct2.account;
 
 namespace net.atos.daf.ct2.featureactivationservice.Controllers
 {
@@ -33,9 +31,15 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
         [HttpPost]
         [Route("update")]
         public async Task<IActionResult> Subscription([FromBody] SubsCriptionEntity objsubscriptionActivation)
-        {
+        {            
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var key = ModelState.Keys.First();
+                    return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: key.Substring(key.LastIndexOf(".") + 1));
+                }
+
                 if (objsubscriptionActivation.SubscribeEvent != null)
                 {
                     if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.OrganizationId))
@@ -61,9 +65,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.StartDateTime))
-                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime));
+                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime), "UTC");
                         else
-                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
                     }
                     catch (Exception)
                     {
@@ -115,9 +119,9 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.EndDateTime))
-                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime));
+                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime), "UTC");
                         else
-                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now);
+                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
                     }
                     catch (Exception)
                     {

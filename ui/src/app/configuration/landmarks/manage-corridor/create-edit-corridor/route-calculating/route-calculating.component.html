@@ -1,5 +1,8 @@
 <form [formGroup]="corridorFormGroup">
 <mat-card  class='mat-elevation-z'>
+    <div style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="margin-bottom-xlg">
+        <span>{{ translationData.lblRouteCalculating || 'Route Calculating' }}</span>
+    </div>
 <div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
     <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
@@ -340,7 +343,7 @@
                 </mat-accordion>
        
                 <div class="example-button-row pt-2" fxLayoutAlign="right" *ngIf="actionType !== 'view'">
-                    <button mat-button color="primary" (click)="resetValues()"  [disabled]="corridorFormGroup.pristine">
+                    <button mat-button color="primary" (click)="resetValues()">
                         <span>Reset</span>
                     </button>
                 </div>
@@ -356,7 +359,7 @@
     </span>
 
     <span *ngIf="actionType === 'edit'">
-    <button mat-button color="primary" (click)="resetToEditData()" [disabled]="corridorFormGroup.pristine">
+   <button mat-button color="primary" (click)="resetToEditData()">  <!-- [disabled]="corridorFormGroup.pristine" -->
         <span>Reset</span>
     </button>
 </span>

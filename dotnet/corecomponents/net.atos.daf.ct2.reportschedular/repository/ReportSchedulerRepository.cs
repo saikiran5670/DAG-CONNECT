@@ -50,16 +50,17 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-        public async Task<IEnumerable<string>> GetRecipientsEmail(int organizationid)
+        public async Task<IEnumerable<ReceiptEmails>> GetRecipientsEmails(int organizationid)
         {
             try
             {
                 var parameterType = new DynamicParameters();
                 var queryStatement = @"SELECT distinct 
-                                        acc.email from master.account acc
-                                        Where organization_id= @organization_id;";
+                                        acc.email as Email from master.account acc
+                                        Where organization_id= @organization_id
+                                        AND state='A' AND email is not null;";
                 parameterType.Add("@organization_id", organizationid);
-                IEnumerable<string> reporttype = await _dataAccess.QueryAsync<string>(queryStatement, null);
+                IEnumerable<ReceiptEmails> reporttype = await _dataAccess.QueryAsync<ReceiptEmails>(queryStatement, null);
                 return reporttype;
             }
             catch (Exception)
@@ -74,8 +75,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             {
                 var parameterType = new DynamicParameters();
                 var queryStatement = @"SELECT
-                                       dr.first_name || ' ' || dr.last_name AS DriverName                                         		  
-                                      ,dr.driver_id as Id                                        		                                 		                                    		  
+                                       id as Id
+                                      ,dr.first_name || ' ' || dr.last_name AS DriverName                                         		  
+                                      ,dr.driver_id as DriverId                                        		                                 		                                    		  
                                        FROM 
                                        master.driver dr
                                        Where dr.organization_id= @organization_id;";

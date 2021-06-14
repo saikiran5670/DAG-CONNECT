@@ -102,8 +102,13 @@ namespace net.atos.daf.ct2.reports
         #region Eco Score Report - Create Profile
 
         public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
-        {            
+        {
             return await _reportRepository.CreateEcoScoreProfile(dto);
+        }
+
+        public async Task<int> GetEcoScoreProfilesCount(int orgId)
+        {
+            return await _reportRepository.GetEcoScoreProfilesCount(orgId);
         }
 
         #endregion
@@ -119,16 +124,30 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetEcoScoreProfileKPIDetails(profileId);
         }
         #endregion
-        #region  Eco Score Report - Update Profile
+        #region  Eco Score Report - Update/Delete Profile
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
             if (await isExist)
             {
-                 return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
             }
             else
-                return -1 ;
+                return -1;
+        }
+        public async Task<int> DeleteEcoScoreProfile(int profileId)
+        {
+            int ecoScoreProfileId = 0;
+            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
+            if (versionType == "" || versionType == null)
+            {
+                ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+            }
+            return ecoScoreProfileId;
+        }
+        public async Task<string> GetProfileName(int profileId)
+        {
+            return await _reportRepository.GetProfileName(profileId);
         }
         #endregion
     }

@@ -206,6 +206,9 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.widthInput.setValue(this.corridorWidthKm);
     this.noRouteErr = false;
 
+    if(this.actionType === 'edit'){
+      this.corridorFormGroup.controls.label.disable();
+    }
     //this.configureAutoCompleteForLocationSearch();
   }
 
@@ -739,7 +742,7 @@ export class RouteCalculatingComponent implements OnInit {
     this.corridorFormGroup.controls.vehicleWidth.setValue("");
     this.corridorFormGroup.controls.limitedWeight.setValue("");
     this.corridorFormGroup.controls.weightPerAxle.setValue("");
-    this.clearMap();
+    //this.clearMap();
     this.resetMapLayers();
 
     this.noRouteErr = false;

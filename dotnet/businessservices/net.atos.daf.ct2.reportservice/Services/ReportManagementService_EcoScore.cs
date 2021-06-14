@@ -23,11 +23,26 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 var profileRequest = MapCreateProfileRequestToDto(request);
-                await _reportManager.CreateEcoScoreProfile(profileRequest);
 
-                response.Code = Responsecode.Success;
-                response.Message = "Eco-Score profile is created successfully.";
+                if (profileRequest.OrganizationId.HasValue)
+                {
+                    var countByOrg = await _reportManager.GetEcoScoreProfilesCount(request.OrgId);
+                    var maxLimit = Convert.ToInt32(_configuration["MaxAllowedEcoScoreProfiles"]);
 
+                    if (countByOrg < maxLimit)
+                    {
+                        response = await CallCreateEcoScoreProfile(profileRequest);
+                    }
+                    else
+                    {
+                        response.Code = Responsecode.Forbidden;
+                        response.Message = "Max limit has reached for the creation of Eco-Score profile of requested organization. New profile cannot be created.";
+                    }
+                }
+                else
+                {
+                    response = await CallCreateEcoScoreProfile(profileRequest);
+                }
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -39,6 +54,16 @@ namespace net.atos.daf.ct2.reportservice.Services
                     Message = $"{nameof(CreateEcoScoreProfile)} failed due to - " + ex.Message
                 });
             }
+        }
+
+        private async Task<CreateEcoScoreProfileResponse> CallCreateEcoScoreProfile(EcoScoreProfileDto profileRequest)
+        {
+            await _reportManager.CreateEcoScoreProfile(profileRequest);
+            return new CreateEcoScoreProfileResponse()
+            {
+                Code = Responsecode.Success,
+                Message = "Eco-Score profile is created successfully."
+            };
         }
 
         /// <summary>
@@ -256,9 +281,14 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.Code = Responsecode.Success;
 
                 }
+                else if (result == -1)
+                {
+                    response.Message = obj.Name + " does not exist to update";
+                    response.Code = Responsecode.NotFound;
+                }
                 else
                 {
-                    response.Message = obj.Name + " Update failed";
+                    response.Message = obj.Name + " Update Eco Score Profile Fail";
                     response.Code = Responsecode.Failed;
 
                 }
@@ -276,7 +306,48 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-       
+
+        #endregion
+        #region - Delete Profile
+        public override async Task<DeleteEcoScoreProfileResponse> DeleteEcoScoreProfile(DeleteEcoScoreProfileRequest request, ServerCallContext context)
+        {
+            DeleteEcoScoreProfileResponse response = new DeleteEcoScoreProfileResponse();
+            try
+            {
+                _logger.Info("Delete Eco Score Profile .");
+                var profileName = await _reportManager.GetProfileName(request.ProfileId);
+                var result = await _reportManager.DeleteEcoScoreProfile(request.ProfileId);
+
+                if (result > 0)
+                {
+                    response.Message = profileName + " Delete successfully";
+                    response.Code = Responsecode.Success;
+                }
+                else if (profileName == null && result == 0)
+                {
+                    response.Message = profileName + " does not exist to delete ";
+                    response.Code = Responsecode.NotFound;
+                }
+                else if (result == 0)
+                {
+                    response.Message = profileName + " Is a default profile, Can't delete ";
+                    response.Code = Responsecode.Failed;
+                }
+                else
+                {
+                    response.Message = " Delete Eco Score Profile Fail ";
+                    response.Code = Responsecode.Failed;
+                }
+                return await Task.FromResult(response);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+            }
+            return await Task.FromResult(response);
+        }
+
         #endregion
     }
 }

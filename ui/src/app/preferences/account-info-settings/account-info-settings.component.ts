@@ -399,10 +399,16 @@ export class AccountInfoSettingsComponent implements OnInit {
     else if(type.toLocaleLowerCase() == 'generalsettings'){
       if(accountInfo.accountPreference.languageId != data.languageId){
           this.dataInterchangeService.getUserGeneralSettings(data);
+      }else{
+        this.reloadCurrentComponent();
       }
       accountInfo.accountPreference = data;
     }
     localStorage.setItem("accountInfo", JSON.stringify(accountInfo));
+  }
+
+  reloadCurrentComponent(){
+    window.location.reload(); //-- reload screen
   }
 
   onchangePictureClick(){
