@@ -126,6 +126,6 @@
             <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
         </div>
     </mat-card>
-    <app-create-edit-corridor *ngIf='createEditStatus'  [selectedElementData]='selectedElementData' [translationData]='translationData' [corridorNameList]='corridorNameList' [actionType]='actionType' (backToPage)='onBackToPage($event)'></app-create-edit-corridor>
+    <app-create-edit-corridor *ngIf='createEditStatus'  [selectedElementData]='selectedElementData' [translationData]='translationData' [corridorNameList]='corridorNameList' [actionType]='actionType' [selectedCorridorTypeId]='corridorTypeId' (backToPage)='onBackToPage($event)'></app-create-edit-corridor>
 
 </div>

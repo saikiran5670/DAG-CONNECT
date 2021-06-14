@@ -302,7 +302,7 @@
               <mat-cell *matCellDef="let row">{{ row.convertedEndTime != '' ? row.convertedEndTime : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="distance">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell>
             </ng-container>
@@ -312,12 +312,12 @@
               <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="averageSpeed">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h')  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h')  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="averageWeight">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'metric') ? (translationData.lblkg || 'kg') : (prefUnitFormat == 'imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
             </ng-container>
@@ -332,7 +332,7 @@
               <mat-cell *matCellDef="let row">{{ row.endPosition != '' ? row.endPosition : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fuelConsumed100Km">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'metric') ? (translationData.lblltr100km || 'ltr/100km') : (prefUnitFormat == 'imperial') ? (translationData.lblgallonmile || 'gallon/100mile') : (translationData.lblgallonmile || 'gallon/100mile')  }})</span>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblFuelConsumption || 'Fuel Consumption' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || 'ltr/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gallon/100mile') : (translationData.lblgallonmile || 'gallon/100mile')  }})</span>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">{{ row.convertedFuelConsumed100Km != '' ? row.convertedFuelConsumed100Km : '-' }}</mat-cell>
             </ng-container>

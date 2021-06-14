@@ -27,6 +27,7 @@ using net.atos.daf.ct2.packageservice;
 using net.atos.daf.ct2.poigeofences;
 using net.atos.daf.ct2.poiservice;
 using net.atos.daf.ct2.portalservice.Common;
+using net.atos.daf.ct2.reportschedulerservice;
 using net.atos.daf.ct2.reportservice;
 using net.atos.daf.ct2.roleservice;
 using net.atos.daf.ct2.subscriptionservice;
@@ -63,6 +64,7 @@ namespace net.atos.daf.ct2.portalservice
             var alertservice = Configuration["ServiceConfiguration:alertservice"];
             var reportservice = Configuration["ServiceConfiguration:reportservice"];
             var mapservice = Configuration["ServiceConfiguration:mapservice"];
+            var reportschedulerservice = Configuration["ServiceConfiguration:reportschedulerservice"];
 
             //Web Server Configuration
             var isdevelopmentenv = Configuration["WebServerConfiguration:isdevelopmentenv"];
@@ -233,6 +235,10 @@ namespace net.atos.daf.ct2.portalservice
             {
                 o.Address = new Uri(mapservice);
             });
+            services.AddGrpcClient<ReportSchedulerService.ReportSchedulerServiceClient>(o =>
+            {
+                o.Address = new Uri(reportschedulerservice);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Portal Service", Version = "v1" });
@@ -291,7 +297,7 @@ namespace net.atos.daf.ct2.portalservice
                 context.Response.Headers.Remove("X-AspNetMvc-Version");
                 await next();
             });
-            app.UseRouting();                      
+            app.UseRouting();
             //This need to be change to orgin specific on UAT and prod
             app.UseCors(builder =>
             {

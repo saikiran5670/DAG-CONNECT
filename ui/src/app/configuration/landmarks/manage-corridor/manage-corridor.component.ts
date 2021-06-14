@@ -32,6 +32,8 @@ export class ManageCorridorComponent implements OnInit {
   dataSource: any;
   markerArray: any = [];
   corridorNameList = [];
+  routeType = 'R';
+  corridorTypeId = 46;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -152,6 +154,12 @@ export class ManageCorridorComponent implements OnInit {
   editViewCorridor(rowData: any, type: any){
     this.actionType = type;
     this.selectedElementData = rowData;
+    if(this.selectedElementData.corridorType === 'R'){
+      this.corridorTypeId = 46;
+    }
+    else{
+      this.corridorTypeId = 45;
+    }
     this.createEditStatus = true;
   }
 

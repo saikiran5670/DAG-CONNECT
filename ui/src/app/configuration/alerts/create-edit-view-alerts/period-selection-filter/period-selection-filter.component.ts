@@ -47,8 +47,8 @@ days: any= [];
 
   initCustomPeriodItems(): FormGroup{
     return this._formBuilder.group({
-      fromTime : new FormControl({value: '00:00'}),
-      toTime:  new FormControl({value: '00:00'})
+      fromTime : new FormControl('00:00'),
+      toTime:  new FormControl('23:59')
     });
   }
 

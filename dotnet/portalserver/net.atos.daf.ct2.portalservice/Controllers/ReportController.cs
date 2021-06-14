@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using net.atos.daf.ct2.mapservice; 
+using net.atos.daf.ct2.mapservice;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.Report;
 using net.atos.daf.ct2.reportservice;
@@ -366,6 +366,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
                 var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest);
                 return StatusCode((int)response.Code, response.Message);
             }
@@ -384,13 +386,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("ecoscoreprofile/getprofiles")]
-        public async Task<IActionResult> GetEcoScoreProfiles(int organizationId)
+        public async Task<IActionResult> GetEcoScoreProfiles(int? organizationId)
         {
             try
             {
-                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
                 //organizationId = GetUserSelectedOrgId();
-                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId });
+                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = Convert.ToInt32(organizationId) });
                 if (response?.Profiles?.Count > 0)
                 {
                     response.Message = ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
@@ -430,6 +431,32 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG, 0, 0, Convert.ToString(profileId),
+                                 _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
+        #region - Delete Profile
+
+        [HttpDelete]
+        [Route("ecoscoreprofile/delete")]
+
+        public async Task<IActionResult> DeleteEcoScoreProfile([FromQuery] EcoScoreProfileDeleteRequest request)
+        {
+            try
+            {
+                //bool hasRights = await HasAdminPrivilege();
+                var grpcRequest = new reportservice.DeleteEcoScoreProfileRequest();
+                grpcRequest.ProfileId = request.ProfileId;
+                var response = await _reportServiceClient.DeleteEcoScoreProfileAsync(grpcRequest);
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.DELETE_ECOSCORE_PROFILE_KPI_SUCCESS_MSG, 0, 0, Convert.ToString(request.ProfileId),
                                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);

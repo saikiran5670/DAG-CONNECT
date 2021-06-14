@@ -33,7 +33,9 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@description", dto.Description);
                 parameters.Add("@state", 'A');
                 parameters.Add("@created_at", now);
-                parameters.Add("@created_by", dto.ActionedBy);
+                parameters.Add("@created_by", Convert.ToInt32(dto.ActionedBy));
+                parameters.Add("@modified_at", now);
+                parameters.Add("@modified_by", Convert.ToInt32(dto.ActionedBy));
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 dto.Id = id;
@@ -54,7 +56,9 @@ namespace net.atos.daf.ct2.reports.repository
                     parameters.Add("@lower_val", profileKPI.LowerValue);
                     parameters.Add("@upper_val", profileKPI.UpperValue);
                     parameters.Add("@created_at", now);
-                    parameters.Add("@created_by", dto.ActionedBy);
+                    parameters.Add("@created_by", Convert.ToInt32(dto.ActionedBy));
+                    parameters.Add("@modified_at", now);
+                    parameters.Add("@modified_by", Convert.ToInt32(dto.ActionedBy));
 
                     await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
                 }
@@ -76,6 +80,24 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
+        public async Task<int> GetEcoScoreProfilesCount(int orgId)
+        {
+            try
+            {
+                string query = @"SELECT COUNT(1) 
+                                FROM master.ecoscoreprofile
+                                WHERE organization_id = @organization_id and state = 'A'";
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@organization_id", orgId);
+                return await _dataAccess.ExecuteScalarAsync<int>(query, parameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         #endregion
 
         #region Eco Score Report - Get Profile and KPI Details
@@ -94,7 +116,8 @@ namespace net.atos.daf.ct2.reports.repository
                 string query = @"select id as ProfileId, organization_id as OrganizationID, name as ProfileName, description as ProfileDescription,
                                  case when default_es_version_type is null then 'TRUE' ELSE 'FALSE' end as IsDeleteAllowed
                                  from master.ecoscoreprofile
-                                 where state='A' and (organization_id is null or organization_id = @organization_id)";
+                                 where state='A' and (organization_id is null or organization_id = @organization_id)
+                                 order by default_es_version_type asc, organization_id desc, name";
 
                 var parameter = new DynamicParameters();
                 parameter.Add("@organization_id", orgId);
@@ -127,6 +150,7 @@ namespace net.atos.daf.ct2.reports.repository
             objProfile.Name = profile.profilename;
             objProfile.Description = profile.profiledescription;
             objProfile.IsDeleteAllowed = Convert.ToBoolean(profile.isdeleteallowed);
+            objProfile.OrganizationId = profile.organizationid;
             return objProfile;
         }
 
@@ -264,39 +288,39 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
 
-                var Updateparameter = new DynamicParameters();
+                var updateParameter = new DynamicParameters();
 
-            StringBuilder queryForUpdateEcoScoreProfile = new StringBuilder();
+                StringBuilder queryForUpdateEcoScoreProfile = new StringBuilder();
 
-            queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at");
+                queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at");
 
-            if (!string.IsNullOrEmpty(ecoScoreProfileDto.Name))
-            {
-                Updateparameter.Add("@name", ecoScoreProfileDto.Name);
-                queryForUpdateEcoScoreProfile.Append(", name=@name");
-            }
-            if (!string.IsNullOrEmpty(ecoScoreProfileDto.Description))
-            {
-                Updateparameter.Add("@description", ecoScoreProfileDto.Description);
-                queryForUpdateEcoScoreProfile.Append(", description=@description");
-            }
-            Updateparameter.Add("@modified_by", ecoScoreProfileDto.ActionedBy);
-            queryForUpdateEcoScoreProfile.Append(", modified_by=@modified_by");
-            Updateparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            Updateparameter.Add("@id", ecoScoreProfileDto.Id);
-            queryForUpdateEcoScoreProfile.Append(" where id=@id RETURNING id");
+                if (!string.IsNullOrEmpty(ecoScoreProfileDto.Name))
+                {
+                    updateParameter.Add("@name", ecoScoreProfileDto.Name);
+                    queryForUpdateEcoScoreProfile.Append(", name=@name");
+                }
+                if (!string.IsNullOrEmpty(ecoScoreProfileDto.Description))
+                {
+                    updateParameter.Add("@description", ecoScoreProfileDto.Description);
+                    queryForUpdateEcoScoreProfile.Append(", description=@description");
+                }
+                updateParameter.Add("@modified_by", Convert.ToInt32(ecoScoreProfileDto.ActionedBy));
+                queryForUpdateEcoScoreProfile.Append(", modified_by= @modified_by");
+                updateParameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                updateParameter.Add("@id", ecoScoreProfileDto.Id);
+                queryForUpdateEcoScoreProfile.Append(" where id=@id RETURNING id");
 
-            
 
-            var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), Updateparameter);
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), updateParameter);
 
                 var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, Convert.ToInt32(ecoScoreProfileDto.ActionedBy), id);
-                if (id <= 0 || tripDetails == false)
+                if (id <= 0 && tripDetails == false)
                 {
                     id = -1;
                 }
                 txnScope.Commit();
-               
+
                 return id;
             }
             catch (Exception)
@@ -315,9 +339,10 @@ namespace net.atos.daf.ct2.reports.repository
 
 
         }
-        private async Task<bool> UpdateEcoscoreProfileKpi(List<EcoScoreProfileKPI> ecoScoreProfileKPI, int ActionedBy, int id)
+        private async Task<bool> UpdateEcoscoreProfileKpi(List<EcoScoreProfileKPI> ecoScoreProfileKPI, int actionedBy, int id)
         {
-            var Updateparameter = new DynamicParameters();
+            var updateParameter = new DynamicParameters();
+            StringBuilder query = new StringBuilder();
             foreach (var item in ecoScoreProfileKPI)
             {
 
@@ -328,56 +353,115 @@ namespace net.atos.daf.ct2.reports.repository
                 temp.TargetValue = item.TargetValue;
                 temp.UpperValue = item.UpperValue;
 
-                Updateparameter.Add("@LimitValue", temp.LimitValue);
-                Updateparameter.Add("@LowerValue", temp.LowerValue);
-                Updateparameter.Add("@TargetValue", temp.TargetValue);
-                Updateparameter.Add("@UpperValue", temp.UpperValue);
-                Updateparameter.Add("@KPIId", temp.KPIId);
-                Updateparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-                Updateparameter.Add("@modified_by", ActionedBy);
-                Updateparameter.Add("@Id", id);
+                updateParameter.Add("@LimitValue", temp.LimitValue);
+                updateParameter.Add("@LowerValue", temp.LowerValue);
+                updateParameter.Add("@TargetValue", temp.TargetValue);
+                updateParameter.Add("@UpperValue", temp.UpperValue);
+                updateParameter.Add("@KPIId", temp.KPIId);
+                updateParameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                updateParameter.Add("@modified_by", actionedBy);
+                updateParameter.Add("@Id", id);
 
-                var updateEcoscoreProfileKpiTable = @"UPDATE master.ecoscoreprofilekpi
-                                          SET   limit_val=@LimitValue,
-                                                target_val=@TargetValue, 
-                                                lower_val=@LowerValue, 
-                                                upper_val=@UpperValue, 
-                                                modified_at=@modified_at, 
-                                                modified_by=@modified_by
-                                                where profile_id = @Id 
-                                                       and ecoscore_kpi_id = @KPIId RETURNING id";
+                query.Append("UPDATE master.ecoscoreprofilekpi Set modified_at =@modified_at");
 
-                id = await _dataAccess.ExecuteScalarAsync<int>(updateEcoscoreProfileKpiTable, Updateparameter);
+                query.Append(", limit_val=@LimitValue");
+                query.Append(", target_val=@TargetValue");
+                query.Append(", lower_val=@LowerValue");
+                query.Append(", upper_val=@UpperValue");
+                query.Append(", modified_by=@modified_by");
+                query.Append(" where profile_id=@Id and ecoscore_kpi_id = @KPIId RETURNING id");
+
+                id = await _dataAccess.ExecuteScalarAsync<int>(query.ToString(), updateParameter);
             }
             return id > 0 ? true : false;
         }
 
-        public async Task<bool> CheckEcoScoreProfileIsexist(int? OrganizationId, string Name)
+        public async Task<bool> CheckEcoScoreProfileIsexist(int? organizationId, string name)
         {
-            var parameterduplicate = new DynamicParameters();
+            var parameterDuplicate = new DynamicParameters();
 
             StringBuilder queryForProfileIsexist = new StringBuilder();
 
             queryForProfileIsexist.Append("SELECT id FROM master.ecoscoreprofile where state in ('A','I')");
 
-            if (!string.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(name))
             {
-                parameterduplicate.Add("@name", Name);
+                parameterDuplicate.Add("@name", name);
                 queryForProfileIsexist.Append("and name=@name");
             }
 
-            if (OrganizationId != 0)
+            if (organizationId != 0)
             {
-                parameterduplicate.Add("@organization_id", OrganizationId);
+                parameterDuplicate.Add("@organization_id", organizationId);
                 queryForProfileIsexist.Append(" and organization_id = @organization_id");
             }
             else
             {
                 queryForProfileIsexist.Append(" and organization_id is null ");
             }
-            int ReportNameExist = await _dataAccess.ExecuteScalarAsync<int>(queryForProfileIsexist.ToString(), parameterduplicate);
+            int ReportNameExist = await _dataAccess.ExecuteScalarAsync<int>(queryForProfileIsexist.ToString(), parameterDuplicate);
 
             return ReportNameExist == 0 ? false : true;
         }
+
+
+        #region - Delete Eco Score Profile
+        public async Task<int> DeleteEcoScoreProfile(int profileId)
+        {
+            _dataAccess.Connection.Open();
+            IDbTransaction txn = _dataAccess.Connection.BeginTransaction();
+            _log.Info("Delete Eco Score Profile method called in repository");
+            try
+            {
+                var parameter = new DynamicParameters();
+
+                var deleteProfile = @"UPDATE master.ecoscoreprofile
+                                            SET  state=@State 
+                                   WHERE id = @ProfileId  RETURNING id";
+
+                parameter.Add("@ProfileId", profileId);
+                parameter.Add("@State", "D");
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(deleteProfile, parameter);
+                txn.Commit();
+                return id;
+            }
+            catch (Exception)
+            {
+                txn.Rollback();
+                throw;
+            }
+            finally
+            {
+                if (txn != null)
+                {
+                    _dataAccess.Connection.Close();
+                    txn.Dispose();
+                }
+            }
+        }
+        public async Task<string> GetProfileName(int profileId)
+        {
+            var parameter = new DynamicParameters();
+
+            StringBuilder query = new StringBuilder();
+
+            query.Append("select name from master.ecoscoreprofile where id= @ProfileId ");
+            parameter.Add("@ProfileId", profileId);
+
+            string ProfileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+
+            return ProfileName;
+        }
+        public async Task<string> IsEcoScoreProfileBasicOrAdvance(int profileId)
+        {
+            var parameter = new DynamicParameters();
+            StringBuilder query = new StringBuilder();
+            query.Append("SELECT  default_es_version_type FROM master.ecoscoreprofile where id =@ProfileId and state in ('A','I')");
+            parameter.Add("@ProfileId", profileId);
+            var versionType = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+            return versionType;
+        }
+        #endregion
     }
 }
