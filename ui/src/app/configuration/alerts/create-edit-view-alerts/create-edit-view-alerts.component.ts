@@ -186,7 +186,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
     }
-      
+    console.log(JSON.parse(localStorage.getItem('accountFeatures')));
     this.alertFeatures = JSON.parse(localStorage.getItem('accountFeatures'));  
     // this.alertTypeByCategoryList= this.alertTypeList;
     this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
@@ -239,13 +239,13 @@ export class CreateEditViewAlertsComponent implements OnInit {
       let alertActiveCategory = [];
 
       newAlertFeatures.forEach((item) => {
-        if(item.key.includes("feat_alert")){        
+        if(item.key.includes("feat_alerts_")){        
           featAlertFeatures.push(item);
         }        
       });     
 
       featAlertFeatures.forEach((element) => {
-        let fetureNames = element.key.split('feat_alert_');
+        let fetureNames = element.key.split('feat_alerts_');
         this.alertTypeList.forEach((item) => {
           let newAlertType = item.key.split('enumtype_');           
           if(newAlertType[1].includes(fetureNames[1])){
