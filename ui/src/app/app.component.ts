@@ -112,7 +112,7 @@ export class AppComponent {
     },
     fleetoverview: {
       open: false,
-      icon: "info",
+      icon: "map",
       externalLink: false,
       pageTitles: {
         livefleet: 'Live Fleet',
@@ -122,7 +122,7 @@ export class AppComponent {
     report: {
       open: false,
       externalLink: false,
-      icon: "info",
+      icon: "bar_chart",
       pageTitles: {
         tripreport: 'Trip Report',
         triptracing: 'Trip Tracing',
@@ -172,7 +172,7 @@ export class AppComponent {
     },
     tachograph: {
       open: false,
-      icon: "info",
+      icon: "graphic_eq",
       externalLink: false,
       pageTitles: {
         tachograph: 'Tachograph'
@@ -180,7 +180,7 @@ export class AppComponent {
     },
     mobileportal: {
       open: false,
-      icon: "info",
+      icon: "mobile_screen_share",
       externalLink: false,
       pageTitles: {
         mobileportal: 'Mobile Portal'
@@ -188,7 +188,7 @@ export class AppComponent {
     },
     shop: {
       open: false,
-      icon: "info",
+      icon: "shop",
       externalLink: false,
       pageTitles: {
         shop: 'Shop'
@@ -795,9 +795,18 @@ export class AppComponent {
         }
       }
     }
-    //-- TODO: call API to get navigation menu data ---//
+
     if (this.selectedRoles.length > 0) { //-- When role available
-      this.getNavigationMenu();
+      let sessionObject: any = {
+        accountId: parseInt(localStorage.getItem('accountId')),
+        orgId: parseInt(localStorage.getItem('accountOrganizationId')),
+        roleId: parseInt(localStorage.getItem('accountRoleId')),
+      }
+      this.accountService.setUserSelection(sessionObject).subscribe((data) =>{
+        this.getNavigationMenu();
+      }, (error) => {
+        console.log(error)
+      });
     }
   }
 
