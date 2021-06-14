@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
     {
         private readonly string _limitValueProperty;
         private readonly string _lowerValueProperty;
-        private readonly string _upperValueProperty;        
+        private readonly string _upperValueProperty;
         private readonly string _limitTypeProperty;
 
         public CompareProfileTargetValueAttribute(string limitValueProperty, string lowerValueProperty, string upperValueProperty, string limitTypeProperty)

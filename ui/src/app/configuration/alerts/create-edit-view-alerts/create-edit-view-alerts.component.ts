@@ -247,8 +247,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
       featAlertFeatures.forEach((element) => {
         let fetureNames = element.key.split('feat_alerts_');
         this.alertTypeList.forEach((item) => {
-          let newAlertType = item.key.split('enumtype_');           
-          if(newAlertType[1].includes(fetureNames[1])){
+          let newAlertType = item.key.split('enumtype_');  
+          let newEnumType= newAlertType[1];                  
+          if(newEnumType.includes(fetureNames[1])){
             alertActiveFeatures.push(item);            
           }
        });           

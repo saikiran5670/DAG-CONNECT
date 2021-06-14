@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Alert Type should be 1 character")]
         public string Type { get; set; }
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Alert Validity Period Type should be 1 character")]
-        [AlertValidityPeriodCheck(ErrorMessage ="Validity Period is invalid.")]
+        [AlertValidityPeriodCheck(ErrorMessage = "Validity Period is invalid.")]
         public string ValidityPeriodType { get; set; }
 
         public long ValidityStartDate { get; set; }

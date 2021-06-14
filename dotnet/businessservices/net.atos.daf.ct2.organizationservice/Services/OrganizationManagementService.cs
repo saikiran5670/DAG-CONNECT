@@ -560,14 +560,14 @@ namespace net.atos.daf.ct2.organizationservice
                 var contextOrgs = await _organizationtmanager.GetAllOrganizationsForContext();
 
                 var response = new GetAllContextOrgsResponse();
-                foreach(var item in contextOrgs)
+                foreach (var item in contextOrgs)
                 {
                     var listItem = new ContextOrgsList();
                     listItem.Id = item.Id;
                     listItem.Name = item.Name;
                     response.ContextOrgs.Add(listItem);
                 }
-                response.Code = contextOrgs.Count() > 0 ? Responcecode.Success : Responcecode.NotFound;                
+                response.Code = contextOrgs.Count() > 0 ? Responcecode.Success : Responcecode.NotFound;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -578,7 +578,7 @@ namespace net.atos.daf.ct2.organizationservice
                     Code = Responcecode.Failed,
                     Message = "Get all context orgs failed due to - " + ex.Message
                 });
-            }            
+            }
         }
 
         public override async Task<AccountPreferenceResponse> CreatePreference(AccountPreference request, ServerCallContext context)

@@ -281,6 +281,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #endregion
+        #region Eco Score Report -Update Profile
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             _dataAccess.Connection.Open();
@@ -403,13 +404,12 @@ namespace net.atos.daf.ct2.reports.repository
 
             return ReportNameExist == 0 ? false : true;
         }
+        #endregion
 
 
         #region - Delete Eco Score Profile
         public async Task<int> DeleteEcoScoreProfile(int profileId)
         {
-            _dataAccess.Connection.Open();
-            IDbTransaction txn = _dataAccess.Connection.BeginTransaction();
             _log.Info("Delete Eco Score Profile method called in repository");
             try
             {
@@ -423,21 +423,11 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@State", "D");
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(deleteProfile, parameter);
-                txn.Commit();
                 return id;
             }
             catch (Exception)
             {
-                txn.Rollback();
                 throw;
-            }
-            finally
-            {
-                if (txn != null)
-                {
-                    _dataAccess.Connection.Close();
-                    txn.Dispose();
-                }
             }
         }
         public async Task<string> GetProfileName(int profileId)
@@ -461,6 +451,20 @@ namespace net.atos.daf.ct2.reports.repository
             parameter.Add("@ProfileId", profileId);
             var versionType = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
             return versionType;
+        }
+
+        public async Task<bool> GetGlobalProfile(int profileId)
+        {
+            var parameter = new DynamicParameters();
+
+            StringBuilder query = new StringBuilder();
+
+            query.Append("select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null");
+            parameter.Add("@ProfileId", profileId);
+
+            string ProfileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+
+            return ProfileName != "" ? true : false;
         }
         #endregion
     }

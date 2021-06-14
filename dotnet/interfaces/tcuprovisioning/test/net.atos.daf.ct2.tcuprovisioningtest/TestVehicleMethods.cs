@@ -94,7 +94,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
         private async Task<Vehicle> UpdateVehicle(Vehicle receivedVehicle, VehicleManager vehicleManager)
         {
 
-            Vehicle veh ;
+            Vehicle veh;
             try
             {
                 veh = await vehicleManager.Update(receivedVehicle);

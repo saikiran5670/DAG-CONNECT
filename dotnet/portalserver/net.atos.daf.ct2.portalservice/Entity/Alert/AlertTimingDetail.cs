@@ -11,7 +11,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
     public class AlertTimingDetail
     {
         //public int Id { get; set; }
-        [AlertTimingDetailTypeCheck(ErrorMessage ="Alert timing detail type is invalid.")]
+        [AlertTimingDetailTypeCheck(ErrorMessage = "Alert timing detail type is invalid.")]
         public string Type { get; set; }
         public int RefId { get; set; }
         public bool[] DayType { get; set; } = new bool[7];

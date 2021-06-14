@@ -394,7 +394,7 @@ namespace net.atos.daf.ct2.alertservice.Services
             {
                 var response = new AlertCategoryFilterResponse();
                 var enumTranslationList = await _alertManager.GetAlertCategory();
-                var notificationTemplate = await GetNotificationTemplate(new AccountIdRequest { AccountId = request.AccountId },context);
+                var notificationTemplate = await GetNotificationTemplate(new AccountIdRequest { AccountId = request.AccountId }, context);
                 foreach (var item in enumTranslationList)
                 {
                     response.EnumTranslation.Add(_mapper.MapEnumTranslation(item));
@@ -415,7 +415,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                     var vehicleByVisibilityAndFeature
                                                 = await _visibilityManager
                                                     .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                       request.RoleId,vehicleDetailsAccountVisibilty,
+                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
                                                                                        AlertConstants.ALERT_FEATURE_NAME);
 
                     res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
@@ -424,7 +424,7 @@ namespace net.atos.daf.ct2.alertservice.Services
                         );
 
                 }
-                if (notificationTemplate.NotificationTemplatelist!=null)
+                if (notificationTemplate.NotificationTemplatelist != null)
                 {
                     foreach (var item in notificationTemplate.NotificationTemplatelist)
                     {

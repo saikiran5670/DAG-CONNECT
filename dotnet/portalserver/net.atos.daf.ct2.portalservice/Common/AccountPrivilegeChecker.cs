@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                 }
             }
             catch (Exception)
-            {                
+            {
             }
             return -1;
         }

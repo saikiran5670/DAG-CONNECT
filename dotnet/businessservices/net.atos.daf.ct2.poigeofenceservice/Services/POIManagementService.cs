@@ -304,7 +304,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
                 });
             }
         }
-        
+
         public override async Task<TripResponce> GetAllTripDetails(TripRequest request, ServerCallContext context)
         {
             try

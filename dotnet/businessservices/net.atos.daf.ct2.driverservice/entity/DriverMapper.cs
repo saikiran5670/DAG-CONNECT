@@ -33,7 +33,7 @@ namespace net.atos.daf.ct2.driverservice.entity
             {
                 driver.DriverIdExt = request.Driver_id_ext;
             }
-            
+
             if (!(string.IsNullOrEmpty(request.CreatedAt.ToString())))
             {
                 driver.CreatedAt = Convert.ToString(request.CreatedAt);
