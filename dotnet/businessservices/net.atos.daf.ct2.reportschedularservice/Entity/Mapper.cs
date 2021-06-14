@@ -18,7 +18,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             DriverDetailRequest objdriverdetail = new DriverDetailRequest();
             objdriverdetail.Id = driverDetail.Id;
             objdriverdetail.DriverId = driverDetail.DriverId;
-            objdriverdetail.DriverName = string.IsNullOrEmpty(driverDetail.DriverName) ? string.Empty : driverDetail.DriverName;           
+            objdriverdetail.DriverName = string.IsNullOrEmpty(driverDetail.DriverName) ? string.Empty : driverDetail.DriverName;
             return objdriverdetail;
         }
 

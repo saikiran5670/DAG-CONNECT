@@ -26,7 +26,7 @@ namespace net.atos.daf.ct2.translation
                 {
                     result = await _iconRepository.UpdateIcons(icon);
 
-                    if (result != "" )
+                    if (result != "")
                     {
                         if (count > 0 || count1 > 0)
                         {
@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.translation
                         is_Result += " File Name not exist : " + icon.Name;
                         count1++;
                     }
-                
+
                 }
                 return is_Result;
             }

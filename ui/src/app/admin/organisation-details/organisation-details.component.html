@@ -15,9 +15,8 @@
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Organisation Details
                     </span>
                 </div>
-                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
-                <mat-form-field appearance="fill">
-                    <mat-label>Organisation</mat-label>
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start" class='areaWidth'>
+                 <mat-form-field appearance="outline">
                     <mat-select [(value)]="selectedOrganisationId" [disabled]="organisationList.length == 1" (selectionChange)="selectionChanged($event.value)">
                       <mat-option *ngFor="let data of organisationList" [value]="data.id">
                         {{data.name}}
@@ -104,7 +103,7 @@
                     <div fxLayout="row" fxLayoutAlign="space-between center" class='margin-bottom-sm'>
                         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="start">
                             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Preferences Settings
-                                <mat-icon (click)="onPreferenceEdit()" style="cursor: pointer;">edit</mat-icon>
+                                <mat-icon *ngIf='!editPrefereneceFlag' (click)="onPreferenceEdit()" style="cursor: pointer;">edit</mat-icon>
                             </span>
                         </div>
                     </div>

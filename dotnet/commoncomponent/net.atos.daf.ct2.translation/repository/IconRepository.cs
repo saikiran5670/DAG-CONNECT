@@ -30,25 +30,24 @@ namespace net.atos.daf.ct2.translation.repository
                                     WHERE name=@name                                                                 
                                     RETURNING id;";
                 int iconId = 0;
-                
-                    //If name is exist then update
-                    int name_cnt = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(*) FROM master.icon where name=@name), 0)", new { name = iconlist.Name });
 
-                    if (name_cnt > 0)
-                    {
-                        var parameter = new DynamicParameters();
-                        parameter.Add("@icon", iconlist.Iconn);
-                        parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                        parameter.Add("@modified_by", iconlist.ModifiedBy);
-                        parameter.Add("@name", iconlist.Name);
+                //If name is exist then update
+                int name_cnt = await _dataAccess.QuerySingleAsync<int>("select coalesce((SELECT count(*) FROM master.icon where name=@name), 0)", new { name = iconlist.Name });
 
-                        iconId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-                    }
-                    if (iconId > 0)
-                    {
-                        is_Result = iconlist.Name;
-                    }
-                
+                if (name_cnt > 0)
+                {
+                    var parameter = new DynamicParameters();
+                    parameter.Add("@icon", iconlist.Iconn);
+                    parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                    parameter.Add("@modified_by", iconlist.ModifiedBy);
+                    parameter.Add("@name", iconlist.Name);
+
+                    iconId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                }
+                if (iconId > 0)
+                {
+                    is_Result = iconlist.Name;
+                }
 
                 return is_Result;
             }

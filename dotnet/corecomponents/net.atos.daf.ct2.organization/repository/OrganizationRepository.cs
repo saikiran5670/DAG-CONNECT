@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.organization.repository
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public OrganizationRepository(IDataAccess dataAccess, IVehicleManager vehicleManager, IGroupManager groupManager, IAccountManager accountManager, SubscriptionComponent.ISubscriptionManager subscriptionManager, IdentitySessionComponent.IAccountSessionManager accountSessionManager, IdentitySessionComponent.IAccountTokenManager accountTokenManager)
         {
-            _dataAccess =dataAccess;
+            _dataAccess = dataAccess;
             _vehicelManager = vehicleManager;
             _groupManager = groupManager;
             _accountManager = accountManager;
@@ -228,11 +228,11 @@ namespace net.atos.daf.ct2.organization.repository
                     objOrganization.StreetNumber = item.StreetNumber;
                     objOrganization.PostalCode = item.PostalCode;
                     objOrganization.City = item.City;
-                    objOrganization.CountryCode= item.CountryCode;
+                    objOrganization.CountryCode = item.CountryCode;
                     objOrganization.State = item.State;
                     objOrganization.ReferenceDate = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(item.ReferenceDate), "UTC", "yyyy-MM-ddTHH:mm:ss");
                     objOrganization.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
-                    objOrganization.DriverDefaultOptIn= item.DriverDefaultOptIn;
+                    objOrganization.DriverDefaultOptIn = item.DriverDefaultOptIn;
                 }
                 if (objOrganization.Id < 1)
                 {
@@ -293,10 +293,10 @@ namespace net.atos.daf.ct2.organization.repository
                     OrgDetailsResponse.City = item.City;
                     OrgDetailsResponse.CountryCode = item.CountryCode;
                     OrgDetailsResponse.Street = item.Street;
-                    OrgDetailsResponse.StreetNumber= item.StreetNumber;
+                    OrgDetailsResponse.StreetNumber = item.StreetNumber;
                     OrgDetailsResponse.PostalCode = item.PostalCode;
                     OrgDetailsResponse.VehicleDefaultOptIn = item.VehicleDefaultOptIn;
-                    OrgDetailsResponse.DriverDefaultOptIn= item.DriverDefaultOptIn;
+                    OrgDetailsResponse.DriverDefaultOptIn = item.DriverDefaultOptIn;
 
                     OrgDetailsResponse.LanguageName = item.LanguageName;
                     OrgDetailsResponse.Timezone = item.Timezone;
@@ -744,7 +744,7 @@ namespace net.atos.daf.ct2.organization.repository
                 relationshipMapping.CreatedOrgId = Convert.ToInt32(keyHandOver.OEMRelationship);
                 relationshipMapping.VehicleId = VehicleID;
                 relationshipMapping.StartDate = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
-                relationshipMapping.CreatedAt= UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
+                relationshipMapping.CreatedAt = UTCHandling.GetUTCFromDateTime(System.DateTime.Now);
                 relationshipMapping.AllowChain = true;
                 //relationshipMapping.isFirstRelation=true;  
                 relationshipMapping.IsFirstRelation = true;
@@ -1015,15 +1015,15 @@ namespace net.atos.daf.ct2.organization.repository
             orgResponse.Id = record.id;
             orgResponse.Type = record.type;
             orgResponse.Name = record.name;
-            orgResponse.Street= record.street;
+            orgResponse.Street = record.street;
             orgResponse.AddressType = record.address_type;
             orgResponse.StreetNumber = record.street_number;
             orgResponse.PostalCode = record.postal_code;
             orgResponse.City = record.city;
-            orgResponse.CountryCode= record.country_code;
-            orgResponse.OrgId= record.org_id;
+            orgResponse.CountryCode = record.country_code;
+            orgResponse.OrgId = record.org_id;
             orgResponse.State = Convert.ToChar(record.state);
-            orgResponse.ReferenceDate= UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "UTC", "yyyy-MM-ddTHH:mm:ss");
+            orgResponse.ReferenceDate = UTCHandling.GetConvertedDateTimeFromUTC(Convert.ToInt64(record.reference_date), "UTC", "yyyy-MM-ddTHH:mm:ss");
             orgResponse.VehicleDefaultOptIn = record.vehicle_default_opt_in;
             orgResponse.DriverDefaultOptIn = record.driver_default_opt_in;
             return orgResponse;

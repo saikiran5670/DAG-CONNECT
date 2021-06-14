@@ -102,12 +102,13 @@ namespace net.atos.daf.ct2.reports.test
             }; List<string> _vin = new List<string>
             {
                 "RERAE75PC0E261011"
-            }; var result = await _reportManager.GetDriversActivity(new entity.DriverActivityFilter() {
-                                                                        DriverId = _driverID,
-                                                                        StartDateTime = 1604337628000,
-                                                                        EndDateTime = 1604338846000,
-                                                                        VIN = _vin
-                                                                    });
+            }; var result = await _reportManager.GetDriversActivity(new entity.DriverActivityFilter()
+            {
+                DriverId = _driverID,
+                StartDateTime = 1604337628000,
+                EndDateTime = 1604338846000,
+                VIN = _vin
+            });
             Assert.IsTrue(result.Count() > 0);
         }
         #endregion

@@ -4,11 +4,11 @@ namespace net.atos.daf.ct2.tcucore
 {
     public class TCU
     {
-        public string ID { get;}
+        public string ID { get; }
 
-        public string Brand { get;}
+        public string Brand { get; }
 
-        public string Version { get;}
+        public string Version { get; }
         public TCU()
         {
         }
@@ -20,6 +20,6 @@ namespace net.atos.daf.ct2.tcucore
             this.Version = _version;
         }
 
-        
+
     }
 }

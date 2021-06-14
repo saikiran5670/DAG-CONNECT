@@ -391,7 +391,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                           "Feature service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                                           "ChangeFeatureState  method in Feature controller", FeatureId, FeatureId, JsonConvert.SerializeObject(FeatureObj),
                                            _userDetails);
-                
+
                 return Ok(feature);
             }
             catch (Exception ex)

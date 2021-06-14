@@ -472,7 +472,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 OrganizationBusinessService.IdRequest idRequest = new OrganizationBusinessService.IdRequest();
-                
+
                 _logger.Info("Organization get details function called ");
 
                 if (organizationId < 1)
@@ -523,7 +523,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             try
             {
                 var orgResponse = await _organizationClient.GetAllOrganizationsForContextAsync(new Google.Protobuf.WellKnownTypes.Empty());
-                if(orgResponse.Code == OrganizationBusinessService.Responcecode.Success)
+                if (orgResponse.Code == OrganizationBusinessService.Responcecode.Success)
                     return Ok(orgResponse.ContextOrgs);
                 else if (orgResponse.Code == OrganizationBusinessService.Responcecode.NotFound)
                     return NotFound("Organizations detail not found.");
