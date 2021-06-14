@@ -15,8 +15,8 @@ namespace net.atos.daf.ct2.map
             _mapRepository = mapRepository;
             _geocoder = new Geocoder();
 
-        }      
-        public void InitializeMapGeocoder(HereMapConfiguration  hereMapConfiguration) => _geocoder.InitializeMapGeocoder(hereMapConfiguration.AppId, hereMapConfiguration.AppCode);
+        }
+        public void InitializeMapGeocoder(HereMapConfiguration hereMapConfiguration) => _geocoder.InitializeMapGeocoder(hereMapConfiguration.AppId, hereMapConfiguration.AppCode);
 
 
         public async Task<LookupAddress> GetMapAddress(LookupAddress lookupAddress)

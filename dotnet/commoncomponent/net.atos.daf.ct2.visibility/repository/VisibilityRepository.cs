@@ -325,7 +325,7 @@ namespace net.atos.daf.ct2.visibility.repository
             }
         }
 
-        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId,int roleId,
+        public Task<IEnumerable<VehicleDetailsFeatureAndSubsction>> GetVehicleByFeatureAndSubscription(int accountId, int organizationId, int roleId,
                                                                                                     string featureName = "Alert")
         {
             try
@@ -430,7 +430,7 @@ and enutra.type='T'
 order by 1 desc
 ";
                 #endregion
-                
+
                 var list = _dataAccess.QueryAsync<VehicleDetailsFeatureAndSubsction>(query, parameter);
                 return list;
             }

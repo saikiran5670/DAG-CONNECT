@@ -111,7 +111,7 @@ export class MapFunctionsService {
     let endAddress = '';
 
  // var group = new H.map.Group();
- this.group.removeAll();
+ this.mapGroup.removeAll();
  this.hereMap.removeObjects(this.hereMap.getObjects())
     // if(this.routeOutlineMarker){
     //   this.hereMap.removeObjects([this.routeOutlineMarker, this.routeCorridorMarker]);
@@ -145,15 +145,16 @@ export class MapFunctionsService {
           this.corridorWidthKm = this.corridorWidth / 1000;
         }
 
-
+        //create and add start marker
         let houseMarker = this.createHomeMarker();
         let markerSize = { w: 26, h: 32 };
         const icon = new H.map.Icon(houseMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
         this.startMarker = new H.map.Marker({ lat: this.startAddressPositionLat, lng: this.startAddressPositionLong }, { icon: icon });
+        this.mapGroup.addObject(this.startMarker);
 
+        //create and add end marker
         let endMarker = this.createEndMarker();
         const iconEnd = new H.map.Icon(endMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
-
         this.endMarker = new H.map.Marker({ lat: this.endAddressPositionLat, lng: this.endAddressPositionLong }, { icon: iconEnd });
         let endMarkerHtml = `<div style="font-size:11px;font-family:Times New Roman">
         <table>
@@ -164,8 +165,10 @@ export class MapFunctionsService {
         </table>
         </div>`
         this.endMarker.setData(endMarkerHtml);
-        let bubble;
+        this.mapGroup.addObject(this.endMarker);
 
+        // add end tooltip
+        let bubble;
         this.endMarker.addEventListener('pointerenter',  (evt)=> {
           // event target is the marker itself, group is a parent event target
           // for all objects that it contains
@@ -186,7 +189,7 @@ export class MapFunctionsService {
         this.endMarker.addEventListener('pointerleave', function(evt) {
           bubble.close();
         }, false);
-        this.group.addObjects([this.startMarker, this.endMarker]);
+        //this.group.addObjects([this.startMarker, this.endMarker]);
         if (accountOrganizationId) {
           if (_selectedRoutes[i].id) {
             this.corridorService.getCorridorFullList(accountOrganizationId, _selectedRoutes[i].id).subscribe((data) => {
@@ -221,15 +224,16 @@ export class MapFunctionsService {
   viaMarker: any;
 
   plotViaStopPoints() {
-    for (var i in this.viaRoutePlottedPoints)
+    for (var i in this.viaRoutePlottedPoints){
       this.viaAddressPositionLat = this.viaRoutePlottedPoints[i]["latitude"];
-    this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]["longitude"];
-    let viaMarker = this.createViaMarker();
-    let markerSize = { w: 26, h: 32 };
-    const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
+      this.viaAddressPositionLong = this.viaRoutePlottedPoints[i]["longitude"];
+      let viaMarker = this.createViaMarker();
+      let markerSize = { w: 26, h: 32 };
+      const icon = new H.map.Icon(viaMarker, { size: markerSize, anchor: { x: Math.round(markerSize.w / 2), y: Math.round(markerSize.h / 2) } });
 
-    this.viaMarker = new H.map.Marker({ lat: this.viaAddressPositionLat, lng: this.viaAddressPositionLong }, { icon: icon });
-    this.mapGroup.addObject(this.viaMarker);
+      this.viaMarker = new H.map.Marker({ lat: this.viaAddressPositionLat, lng: this.viaAddressPositionLong }, { icon: icon });
+      this.mapGroup.addObject(this.viaMarker);
+    }
 
   }
   setAdditionalData() {
@@ -445,10 +449,10 @@ export class MapFunctionsService {
 
 
         // Add the polyline to the map
-        this.mapGroup.addObjects([this.startMarker, this.corridorPath, polylinePath, this.endMarker]);
-        if (this.viaMarker) {
-          this.mapGroup.addObject(this.viaMarker);
-        }
+        this.mapGroup.addObjects([this.corridorPath, polylinePath]);
+        // if (this.viaMarker) {
+        //   this.mapGroup.addObject(this.viaMarker);
+        // }
         this.hereMap.addObject(this.mapGroup);
         this.hereMap.getViewModel().setLookAtData({
           bounds: this.mapGroup.getBoundingBox()

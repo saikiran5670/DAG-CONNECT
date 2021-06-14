@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         [UrgencyLevelCheck(ErrorMessage = "Urgency level type is invalid.")]
         public string AlertUrgencyLevelType { get; set; }
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Frequency type should be 1 character")]
-        [FrequencyTypeCheck(ErrorMessage ="Frequence type is invalid.")]
+        [FrequencyTypeCheck(ErrorMessage = "Frequence type is invalid.")]
         public string FrequencyType { get; set; }
         [NotificationFreqThreshholdValueCheck("FrequencyType", ErrorMessage = "Threshhold value required for number of occurrence frequency type.")]
         public int FrequencyThreshholdValue { get; set; }

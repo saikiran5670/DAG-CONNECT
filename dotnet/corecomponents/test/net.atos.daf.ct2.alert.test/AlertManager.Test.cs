@@ -312,7 +312,7 @@ namespace net.atos.daf.ct2.alert.test
                 ModifiedBy = 10,
                 NotificationRecipients = new List<NotificationRecipient>(),
                 NotificationLimits = new List<NotificationLimit>(),
-               // NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
+                // NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
             {
