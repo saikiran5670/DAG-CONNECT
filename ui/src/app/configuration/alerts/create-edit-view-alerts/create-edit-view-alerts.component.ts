@@ -103,6 +103,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
   alertFeatures: any= [];
+  periodForm: any;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -1318,7 +1319,7 @@ PoiCheckboxClicked(event: any, row: any) {
           "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
-      alertUrgencyLevelRefs.push(urgenyLevelObj);
+      // alertUrgencyLevelRefs.push(urgenyLevelObj);
 
       // Entering Zone, Exiting Zone
       if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
@@ -1440,7 +1441,11 @@ PoiCheckboxClicked(event: any, row: any) {
       }
       else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours if Service
         alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
+        urgenyLevelObj["alertTimingDetails"] = alertTimingRefHoursOfService;
+        // this.periodForm = this.periodSelectionComponent.periodSelectionForm;
       }
+
+      alertUrgencyLevelRefs.push(urgenyLevelObj);
     }
     else{
       if(this.isCriticalLevelSelected){
