@@ -25,7 +25,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Alert
             {
                 return ValidationResult.Success;
             }
-            else if (comparisonValue.ToUpper() == "G" || comparisonValue.ToUpper()=="R" 
+            else if (comparisonValue.ToUpper() == "G" || comparisonValue.ToUpper() == "R"
                         || comparisonValue.ToUpper() == "C" || comparisonValue.ToUpper() == "O" || comparisonValue.ToUpper() == "E")
             {
                 return ValidationResult.Success;

@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
         public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {
-            
+
             try
             {
                 string query = string.Empty;
@@ -682,12 +682,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 parameter.Add("@id", tripAddressDetails.Id);
                 parameter.Add("@startAddress", tripAddressDetails.StartAddress);
                 parameter.Add("@endAddress", tripAddressDetails.EndAddress);
-              
+
                 string query = @"update tripdetail.trip_statistics set start_position=@startAddress, 
                                                            end_position=@endAddress                                                                                                                                                                                                                     
                                                            where id = @Id RETURNING id";
-                tripAddressDetails.Id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);             
-                
+                tripAddressDetails.Id = await _dataMartdataAccess.ExecuteScalarAsync<int>(query, parameter);
+
             }
             catch (Exception ex)
             {

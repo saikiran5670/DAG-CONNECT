@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
   loginClicks = 0;
   dialogRefTerms: MatDialogRef<TermsConditionsPopupComponent>;
   translationData: any;
-  showLoadingIndicator: any;
+  showLoadingIndicator: any = false;
 
   constructor(private cookieService: CookieService, public fb: FormBuilder, public router: Router, public authService: AuthService, private dialogService: ConfirmDialogService, private dialog: MatDialog, private accountService: AccountService, private dataInterchangeService: DataInterchangeService, private translationService: TranslationService) {
     this.loginForm = this.fb.group({
@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
 
 
   public onLogin(values: Object) {
-    this.showLoadingIndicator=true;
+    this.showLoadingIndicator = true;
     this.errorMsg= '';
     this.invalidUserMsg = false;
     if (this.loginForm.valid) {
@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
       if(this.loginClicks == 0){
         this.loginClicks = 1;
        this.authService.signIn(this.loginForm.value).subscribe((data:any) => {
-        
+        this.hideLoader();
          //console.log("data:: ", data)
          if(data.status === 200){
            
@@ -181,21 +181,18 @@ export class LoginComponent implements OnInit {
         }
        },
        (error)=> {
+         this.hideLoader();
          this.loginClicks = 0;
           console.log("Error: " + error);
-          if(error.status == 404  || error.status == 403){
-            this.errorMsg= error.error;
-          }
-          else if(error.status === 401){
+          if(error.status === 401){
             this.invalidUserMsg = true;
-            this.loginClicks = 0;
+          }
+          else if(error.status == 404  || error.status == 403 || error.status == 500){
+            this.errorMsg = error.error;
           }
           else if(error.status == 302){
             this.router.navigate(['/auth/resetpassword/'+error.error.processToken]);
           }
-          else if(error.status == 500)
-            this.invalidUserMsg = true;
-          //this.cookiesFlag = false;
         })
       }
 
@@ -360,6 +357,10 @@ export class LoginComponent implements OnInit {
 
   onCancel(){
     this.maintenancePopupFlag = false;
+  }
+
+  hideLoader(){
+    this.showLoadingIndicator = false;
   }
 
 }

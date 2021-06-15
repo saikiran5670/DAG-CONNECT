@@ -29,10 +29,10 @@ namespace net.atos.daf.ct2.portalservice.Common
                                   .Select(x => x.CustomAttributes.Where(y => y.AttributeType == typeof(RouteAttribute)))
                                   .Select(x => x.First().ConstructorArguments.First().Value.ToString().Replace("~", "").Replace("/", "").ToLower())
                                   .ToList();
-                var requestedPath = context.Request.Path.Value.Substring(context.Request.Path.Value.LastIndexOf("/") + 1).Replace("~","").Replace("/", "").ToLower();
+                var requestedPath = context.Request.Path.Value.Substring(context.Request.Path.Value.LastIndexOf("/") + 1).Replace("~", "").Replace("/", "").ToLower();
                 if (!serviceCalls.Any(x => requestedPath.Contains(x)))
                 {
-                    if(context.Request.Path.Value.Contains("setuserselection"))
+                    if (context.Request.Path.Value.Contains("setuserselection"))
                     {
                         if (!context.Session.Keys.Any(x => x.Equals(SessionConstants.AccountKey)))
                         {
@@ -50,7 +50,7 @@ namespace net.atos.daf.ct2.portalservice.Common
                             await context.Response.WriteAsync("Session not found. Please login first to perform the operation.");
                             return;
                         }
-                    }                    
+                    }
                 }
             }
             await _next(context);

@@ -20,12 +20,12 @@ namespace net.atos.daf.ct2.roleservice
 
         private ILog _logger;
         private readonly IRoleManagement _roleManagement;
-        
+
         public RoleManagementService(IRoleManagement RoleManagement)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _roleManagement = RoleManagement;
-            
+
 
         }
 

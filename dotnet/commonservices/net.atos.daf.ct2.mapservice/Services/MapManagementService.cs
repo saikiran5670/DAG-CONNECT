@@ -44,7 +44,7 @@ namespace net.atos.daf.ct2.mapservice
 
                 else
                 {
-                    response.Code = MapResponsecode.Success;                   
+                    response.Code = MapResponsecode.Success;
                     response.Message = "Success";
                 }
                 response.LookupAddresses = new GetMapRequest()

@@ -96,7 +96,10 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
         }
-
+        public async Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN)
+        {
+            return await _reportRepository.GetReportSearchParameterByVIN(ReportID, StartDateTime, EndDateTime, VIN);
+        }
         #endregion
 
         #region Eco Score Report - Create Profile
@@ -135,13 +138,40 @@ namespace net.atos.daf.ct2.reports
             else
                 return -1;
         }
-        public async Task<int> DeleteEcoScoreProfile(int profileId)
+        public async Task<int> DeleteEcoScoreProfile(int profileId, bool isAdminRights)
         {
-            int ecoScoreProfileId = 0;
-            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
-            if (versionType == "" || versionType == null)
+            int ecoScoreProfileId;
+            bool isGlobalProfile = await _reportRepository.GetGlobalProfile(profileId);
+            if (isGlobalProfile)
             {
-                ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                if (isAdminRights)
+                {
+                    string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
+                    if (versionType == "" || versionType == null)
+                    {
+                        ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                    }
+                    else
+                    {
+                        ecoScoreProfileId = -1;
+                    }
+                }
+                else
+                {
+                    return -2;
+                }
+            }
+            else
+            {
+                string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
+                if (versionType == "" || versionType == null)
+                {
+                    ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                }
+                else
+                {
+                    ecoScoreProfileId = -1;
+                }
             }
             return ecoScoreProfileId;
         }
@@ -150,5 +180,6 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetProfileName(profileId);
         }
         #endregion
+
     }
 }

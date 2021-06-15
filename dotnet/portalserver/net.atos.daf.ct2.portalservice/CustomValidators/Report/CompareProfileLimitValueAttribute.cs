@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
     {
         private readonly string _targetValueProperty;
         private readonly string _lowerValueProperty;
-        private readonly string _upperValueProperty;        
+        private readonly string _upperValueProperty;
         private readonly string _limitTypeProperty;
 
         public CompareProfileLimitValueAttribute(string targetValueProperty, string lowerValueProperty, string upperValueProperty, string limitTypeProperty)
@@ -38,7 +38,7 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Report
             var upper = (double)upperProperty.GetValue(validationContext.ObjectInstance);
             var limitType = (char)limitTypeProperty.GetValue(validationContext.ObjectInstance);
 
-            if(limit < lower || limit > upper)
+            if (limit < lower || limit > upper)
                 return new ValidationResult(ErrorMessage);
 
             if (limitType == (char)LimitType.Min)

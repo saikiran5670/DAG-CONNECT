@@ -153,7 +153,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 //Creating chunk of 1000 trip ids because IN clause support till 1000 paramters only
-               var combineTrips = CreateChunks(TripIds);
+                var combineTrips = CreateChunks(TripIds);
 
                 List<LiveFleetPosition> lstLiveFleetPosition = new List<LiveFleetPosition>();
                 if (combineTrips.Count > 0)
@@ -182,7 +182,7 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameterPosition = new DynamicParameters();
-                parameterPosition.Add("@trip_id", CommaSparatedTripIDs );
+                parameterPosition.Add("@trip_id", CommaSparatedTripIDs);
                 string queryPosition = @"select id, 
                                          vin,
                                     	 trip_id as Tripid,
@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 throw;
             }
-            
+
         }
 
         #region Generic code to Prepare In query String
@@ -221,7 +221,7 @@ namespace net.atos.daf.ct2.reports.repository
         {
             // Creating batch of 1000 ids as IN clause support only 1000 parameters
             var TripChunks = Common.CommonExtention.Split<string>(ArrayForChuk, 1000).ToList();
-           
+
 
             return TripChunks;
         }

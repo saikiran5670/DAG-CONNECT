@@ -20,7 +20,8 @@ namespace net.atos.daf.ct2.reports
         Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
         Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId);
         Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto);
-        Task<int> DeleteEcoScoreProfile(int ProfileId);
-        Task<string> GetProfileName(int ProfileId);
+        Task<int> DeleteEcoScoreProfile(int profileId, bool isAdminRights);
+        Task<string> GetProfileName(int profileId);
+        Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using net.atos.daf.ct2.reports.entity;
 
@@ -22,6 +23,10 @@ namespace net.atos.daf.ct2.reports.repository
         Task<bool> CheckEcoScoreProfileIsexist(int? OrganizationId, string Name);
         Task<int> DeleteEcoScoreProfile(int ProfileId);
         Task<string> IsEcoScoreProfileBasicOrAdvance(int ProfileId);
-        Task<string> GetProfileName(int ProfileId);
+        Task<string> GetProfileName(int profileId);
+        Task<bool> GetGlobalProfile(int profileId);
+        Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN, [Optional] string ReportView);
+
+
     }
 }

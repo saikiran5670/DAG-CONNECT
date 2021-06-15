@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -155,6 +156,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+        #region Create User Preference
         [HttpPost]
         [Route("createuserpreference")]
         public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
@@ -191,6 +193,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
+        #endregion
 
         #region Select User Preferences
         [HttpGet]
@@ -330,6 +333,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        [HttpPost]
+        [Route("getreportsearchparameters")]
+        public async Task<IActionResult> GetReportSearchParameter([FromBody] IdRequestForDriverActivity request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (!(request.OrganizationId > 0)) { return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG); }
+                if (!(request.AccountId > 0)) { return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG); }
+
+                _logger.Info("GetReportSearchParameter method in Report API called.");
+                var data = await _reportServiceClient.GetReportSearchParameterAsync(request);
+                if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
 
         #region Eco Score Report - Create
@@ -447,10 +480,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                //bool hasRights = await HasAdminPrivilege();
+                bool hasRights = await HasAdminPrivilege();
                 var grpcRequest = new reportservice.DeleteEcoScoreProfileRequest();
                 grpcRequest.ProfileId = request.ProfileId;
-                var response = await _reportServiceClient.DeleteEcoScoreProfileAsync(grpcRequest);
+                Metadata headers = new Metadata();
+                headers.Add("hasRights", Convert.ToString(hasRights));
+                var response = await _reportServiceClient.DeleteEcoScoreProfileAsync(grpcRequest, headers);
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)

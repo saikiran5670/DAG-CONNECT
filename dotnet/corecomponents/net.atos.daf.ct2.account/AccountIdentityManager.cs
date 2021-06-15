@@ -87,7 +87,7 @@ namespace net.atos.daf.ct2.account
                 IdentityEntity.AccountToken accToken = await PrepareSaveToken(user, account, roleId);
                 if (accToken != null && accToken.StatusCode == HttpStatusCode.OK)
                 {
-                   var _passwordPolicyAccount = await CaptureUserLastLogin(account);
+                    var _passwordPolicyAccount = await CaptureUserLastLogin(account);
 
                     IdentityEntity.AccountIDPClaim accIDPclaims = _tokenManager.DecodeToken(accToken.AccessToken);
 

@@ -172,7 +172,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.breadcumMsg = this.getBreadcum();
     }
 
-    // this.selectedApplyOn= 'G';
+    this.selectedApplyOn= 'G';
     if(this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.selectedApplyOn = this.selectedRowData.applyOn;
       this.setDefaultValue();
@@ -186,6 +186,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
       if(this.selectedRowData.notifications.length != 0)
         this.panelOpenState= true;
     }
+   
     console.log(JSON.parse(localStorage.getItem('accountFeatures')));
     this.alertFeatures = JSON.parse(localStorage.getItem('accountFeatures'));  
     // this.alertTypeByCategoryList= this.alertTypeList;
@@ -232,43 +233,44 @@ export class CreateEditViewAlertsComponent implements OnInit {
       });
       this.alertCategoryList= filterData.filter(item => item.type == 'C');
       this.alertTypeList= filterData.filter(item => item.type == 'T');
-      let newAlertFeatures= this.alertFeatures.features;
+      // let newAlertFeatures= this.alertFeatures.features;
             
-      let featAlertFeatures = [];
-      let alertActiveFeatures = [];
-      let alertActiveCategory = [];
+      // let featAlertFeatures = [];
+      // let alertActiveFeatures = [];
+      // let alertActiveCategory = [];
 
-      newAlertFeatures.forEach((item) => {
-        if(item.key.includes("feat_alerts_")){        
-          featAlertFeatures.push(item);
-        }        
-      });     
+      // newAlertFeatures.forEach((item) => {
+      //   if(item.key.includes("feat_alerts_")){        
+      //     featAlertFeatures.push(item);
+      //   }        
+      // });     
 
-      featAlertFeatures.forEach((element) => {
-        let fetureNames = element.key.split('feat_alerts_');
-        this.alertTypeList.forEach((item) => {
-          let newAlertType = item.key.split('enumtype_');           
-          if(newAlertType[1].includes(fetureNames[1])){
-            alertActiveFeatures.push(item);            
-          }
-       });           
-      });     
-      this.alertTypeList=alertActiveFeatures;
+      // featAlertFeatures.forEach((element) => {
+      //   let fetureNames = element.key.split('feat_alerts_');
+      //   this.alertTypeList.forEach((item) => {
+      //     let newAlertType = item.key.split('enumtype_');  
+      //     let newEnumType= newAlertType[1];                  
+      //     if(newEnumType.includes(fetureNames[1])){
+      //       alertActiveFeatures.push(item);            
+      //     }
+      //  });           
+      // });     
+      // this.alertTypeList=alertActiveFeatures;
 
-      this.alertTypeList.forEach((element) => {
-        this.alertCategoryList.forEach((item) => {
-        if(element.parentEnum.includes(item.enum)){
-          alertActiveCategory.push(item);  
-          alertActiveCategory = alertActiveCategory.filter((test, index, array) =>
-          index === array.findIndex((findTest) =>
-          findTest.value === test.value
-          )    
-          );     
-        }       
-       });
-      });  
-      this.alertCategoryList = alertActiveCategory;  
-      console.log(alertActiveFeatures); console.log(alertActiveCategory);
+      // this.alertTypeList.forEach((element) => {
+      //   this.alertCategoryList.forEach((item) => {
+      //   if(element.parentEnum.includes(item.enum)){
+      //     alertActiveCategory.push(item);  
+      //     alertActiveCategory = alertActiveCategory.filter((test, index, array) =>
+      //     index === array.findIndex((findTest) =>
+      //     findTest.value === test.value
+      //     )    
+      //     );     
+      //   }       
+      //  });
+      // });  
+      // this.alertCategoryList = alertActiveCategory;  
+      // console.log(alertActiveFeatures); console.log(alertActiveCategory);
      
       this.vehicleList= data["vehicleGroup"];
       if(this.vehicleList.length > 0){

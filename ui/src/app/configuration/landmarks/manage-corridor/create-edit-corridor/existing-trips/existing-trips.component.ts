@@ -73,6 +73,7 @@ export class ExistingTripsComponent implements OnInit {
   initData: any = [];
   // dataSource: any;
   markerArray: any = [];
+  tripsSelection :any = [];
   showLoadingIndicator: boolean;
   selectedCorridors = new SelectionModel(true, []);
   public position: string;
@@ -83,8 +84,11 @@ export class ExistingTripsComponent implements OnInit {
   vinListSelectedValue: any = [];
   vehicleGroupIdsSet: any = [];
   localStLanguage: any;
-
-
+  // createExistingTripObj :any = {
+    // id : 1,
+    // sequence :"first"
+  // }
+  selectedTrips : any = [];
   getAttributeData: any;
   getExclusionList: any;
   getVehicleSize: any;
@@ -152,7 +156,7 @@ export class ExistingTripsComponent implements OnInit {
 
   //Integrating Time date component
   searchExpandPanel: boolean = true;
-  mapExpandPanel: boolean = true;
+  mapExpandPanel: boolean = false;
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
@@ -795,6 +799,49 @@ export class ExistingTripsComponent implements OnInit {
 
   createCorridorClicked() {
 
+    this.tripsSelection.map((items) => {
+
+      console.log("-------all slected Values--",items)
+            
+      let createExistingTripObj = {
+        "id": 0,  // make it 0
+        "landmarkId": 0, //similar to above ID
+        "tripId": items.tripId, //"tripId" from Object
+        "startDate": items.startTimeStamp, //from Obj
+        "endDate": items.endTimeStamp, //from Obj
+        "driverId1": items.driverId1, //from Obj
+        "driverId2": "", //from Obj
+        "startLatitude": items.startPositionlattitude,
+        "startLongitude": items.startPositionLongitude,
+        "startPosition": items.startAddress,
+        "endLatitude":  items.endPositionLattitude,
+        "endLongitude": items.endPositionLongitude,
+        "endPosition": items.endAddress,
+        "distance": items.distance,
+        "nodePoints": [
+          {
+            "id": 95,
+            "landmarkId": 197,
+            "tripId": "trip13",
+            "sequenceNumber": 1,
+            "latitude": 12.34,
+            "longitude": 33.23,
+            "state": "A",
+            "address": "Node address",
+            "createdAt": 0,
+            "createdBy": 0,
+            "modifiedAt": 0,
+            "modifiedBy": 0
+          }
+        ]
+      }
+      this.selectedTrips.push(createExistingTripObj)
+    })
+
+
+    console.log("---dynamic obj Value--",this.selectedTrips )
+
+
     // var existingTripObj = {
     //     "id": this.corridorId ? this.corridorId : 0,
     //     "organizationId": this.organizationId,
@@ -878,184 +925,9 @@ export class ExistingTripsComponent implements OnInit {
 
 
 
-      "existingTrips": [
-        {
-          "id": 12,
-          "landmarkId": 197,
-          "tripId": "trip13",
-          "startDate": 11313,
-          "endDate": 121323,
-          "driverId1": "d1",
-          "driverId2": "",
-          "startLatitude": 43.34,
-          "startLongitude": 12.34,
-          "startPosition": "start address",
-          "endLatitude": 51.07,
-          "endLongitude": 51.07,
-          "endPosition": "End address",
-          "distance": 10,
-          "nodePoints": [
-            {
-              "id": 95,
-              "landmarkId": 197,
-              "tripId": "trip13",
-              "sequenceNumber": 1,
-              "latitude": 12.34,
-              "longitude": 33.23,
-              "state": "A",
-              "address": "Node address",
-              "createdAt": 0,
-              "createdBy": 0,
-              "modifiedAt": 0,
-              "modifiedBy": 0
-            }
-          ]
-        },
-        {
-          "id": 13,
-          "landmarkId": 197,
-          "tripId": "trip11",
-          "startDate": 11313,
-          "endDate": 121323,
-          "driverId1": "d2",
-          "driverId2": "",
-          "startLatitude": 43.34,
-          "startLongitude": 12.34,
-          "startPosition": "start address",
-          "endLatitude": 51.07,
-          "endLongitude": 51.07,
-          "endPosition": "End address",
-          "distance": 16,
-          "nodePoints": [
-            {
-              "id": 96,
-              "landmarkId": 197,
-              "tripId": "trip11",
-              "sequenceNumber": 1,
-              "latitude": 12.34,
-              "longitude": 33.23,
-              "state": "A",
-              "address": "Node address11",
-              "createdAt": 0,
-              "createdBy": 0,
-              "modifiedAt": 0,
-              "modifiedBy": 0
-            },
-            {
-              "id": 97,
-              "landmarkId": 197,
-              "tripId": "trip11",
-              "sequenceNumber": 1,
-              "latitude": 12.34,
-              "longitude": 33.23,
-              "state": "A",
-              "address": "Node address11",
-              "createdAt": 0,
-              "createdBy": 0,
-              "modifiedAt": 0,
-              "modifiedBy": 0
-            }
-          ]
-        },
-        {
-          "id": 14,
-          "landmarkId": 197,
-          "tripId": "trip12",
-          "startDate": 11313,
-          "endDate": 121323,
-          "driverId1": "d3",
-          "driverId2": "",
-          "startLatitude": 43.34,
-          "startLongitude": 12.34,
-          "startPosition": "start address",
-          "endLatitude": 51.07,
-          "endLongitude": 51.07,
-          "endPosition": "End address",
-          "distance": 13,
-          "nodePoints": [
-            {
-              "id": 98,
-              "landmarkId": 197,
-              "tripId": "trip12",
-              "sequenceNumber": 1,
-              "latitude": 12.34,
-              "longitude": 33.23,
-              "state": "A",
-              "address": "Node address12",
-              "createdAt": 0,
-              "createdBy": 0,
-              "modifiedAt": 0,
-              "modifiedBy": 0
-            },
-            {
-              "id": 99,
-              "landmarkId": 197,
-              "tripId": "trip12",
-              "sequenceNumber": 1,
-              "latitude": 12.34,
-              "longitude": 33.23,
-              "state": "A",
-              "address": "Node address122",
-              "createdAt": 0,
-              "createdBy": 0,
-              "modifiedAt": 0,
-              "modifiedBy": 0
-            },
-            {
-              "id": 100,
-              "landmarkId": 197,
-              "tripId": "trip12",
-              "sequenceNumber": 1,
-              "latitude": 12.34,
-              "longitude": 33.23,
-              "state": "A",
-              "address": "Node address123",
-              "createdAt": 0,
-              "createdBy": 0,
-              "modifiedAt": 0,
-              "modifiedBy": 0
-            }
-          ]
-        }
-      ]
+      "existingTrips": [...this.selectedTrips]
     }
 
-
-
-    //  var corridorObj = {
-    //    "id": this.corridorId ? this.corridorId : 0,
-    //    "organizationId": this.organizationId,
-    //    "corridorType": "E",
-    //    "corridorLabel":this.existingTripForm.controls.label.value,
-    //    "startAddress": this.searchStr,
-    //    "startLatitude": this.startAddressPositionLat,
-    //    "startLongitude": this.startAddressPositionLong,
-    //    "endAddress": this.searchEndStr,
-    //    "endLatitude": this.endAddressPositionLat,
-    //    "endLongitude": this.endAddressPositionLong,
-    //    "width": this.corridorWidth,
-    //    "viaAddressDetails": this.viaRoutePlottedObject,
-    //    "transportData": this.transportDataChecked,
-    //    "trafficFlow": this.trafficFlowChecked,
-    //    "state": "A",
-    //    "created_At": 0,
-    //    "created_By": this.organizationId,
-    //    "modified_At": 0,
-    //    "modified_By": this.organizationId,
-    //    "attribute": {
-    //      "trailer": this.selectedTrailerId,
-    //    },
-    //    "exclusion": {
-    //    },
-    //    "vehicleSize": {
-    //      "vehicleSizeHeight":this.existingTripForm.controls.vehicleHeight.value ? this.existingTripForm.controls.vehicleHeight.value : 0,
-    //      "vehicleSizeWidth": this.existingTripForm.controls.vehicleWidth.value ? this.existingTripForm.controls.vehicleWidth.value : 0,
-    //      "vehicleSizeLength": this.existingTripForm.controls.vehicleLength.value ? this.existingTripForm.controls.vehicleLength.value : 0,
-    //      "vehicleSizeLimitedWeight": this.existingTripForm.controls.limitedWeight.value ? this.existingTripForm.controls.limitedWeight.value : 0,
-    //      "vehicleSizeWeightPerAxle": this.existingTripForm.controls.weightPerAxle.value ? this.existingTripForm.controls.weightPerAxle.value : 0,
-    //    }
-    //  }
-    //  console.log(corridorObj)
     this.corridorService.createExistingCorridor(existingTripObj).subscribe((responseData) => {
       if (responseData.code === 200) {
         let emitObj = {
@@ -1186,12 +1058,12 @@ export class ExistingTripsComponent implements OnInit {
         this.selectedCorridors.select(row);
         this.markerArray.push(row);
       });
-      this.mapFunctions.viewSelectedRoutes(this.markerArray, this.accountOrganizationId);
+      this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.showMap = true;
     }
-    console.log(this.markerArray);
+    console.log("---markerArray---",this.markerArray);
+    this.setAllAddressValues(this.markerArray);
 
-    //this.addPolylineToMap();
   }
 
   isAllSelectedForCorridor() {
@@ -1209,7 +1081,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   checkboxClicked(event: any, row: any) {
-    this.showMapSection = true;
+    // this.showMapSection = true;
     let startAddress = row.startPositionlattitude + "," + row.startPositionLongitude;
     let endAddress = row.endPositionLattitude + "," + row.endPositionLongitude;
     // this.position = row.startPositionlattitude + "," + row.startPositionLongitude;
@@ -1217,30 +1089,22 @@ export class ExistingTripsComponent implements OnInit {
     if (event.checked) { //-- add new marker
       this.markerArray.push(row);
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
+      this.tripsSelection.push(row);
+      console.log("----this.tripsSelection.push(row);------",this.tripsSelection);
+
     } else { //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
+      this.tripsSelection= this.markerArray.filter(item => item.id !== row.id);
+      console.log("----this.tripsSelection.push(row);------",this.tripsSelection);
       this.mapFunctions.clearRoutesFromMap();
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
     }
+    console.log("---markerArray--",this.markerArray)
 
-    let allStartAddress = [];
-    let allEndAddress = [];
-    this.markerArray.forEach(getAllAddrress => {
-      getAllAddrress.startAddress
-      allStartAddress.push(getAllAddrress.startAddress);
-      allStartAddress = [...new Set(allStartAddress)];
+    this.setAllAddressValues(this.markerArray);
 
-      allEndAddress.push(getAllAddrress.endAddress);
-      allEndAddress = [...new Set(allEndAddress)];
-
-    });
-    // console.log("---this.setStartAddress---", this.setStartAddress)
-    this.setStartAddress = allStartAddress.toString();
-    this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
-    this.setEndAddress = allEndAddress.toString();
-    this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
 
 
     // this.here.getAddressFromLatLng(startAddress).then(result => {
@@ -1274,14 +1138,14 @@ export class ExistingTripsComponent implements OnInit {
 
 
 
-    this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
-    if (event.checked) { //-- add new marker
-      this.markerArray.push(row);
-    } else { //-- remove existing marker
-      //It will filter out checked points only
-      let arr = this.markerArray.filter(item => item.id != row.id);
-      this.markerArray = arr;
-    }
+    // this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
+    // if (event.checked) { //-- add new marker
+    //   this.markerArray.push(row);
+    // } else { //-- remove existing marker
+    //   //It will filter out checked points only
+    //   let arr = this.markerArray.filter(item => item.id != row.id);
+    //   this.markerArray = arr;
+    // }
     // this.addPolylineToMap();
   }
 
@@ -1300,6 +1164,31 @@ export class ExistingTripsComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  setAllAddressValues(markerArray:any){
+    if(this.markerArray.length > 0){
+      this.mapExpandPanel = true;
+    }else {
+      this.mapExpandPanel = false;
+
+    }
+    let allStartAddress = [];
+    let allEndAddress = [];
+    markerArray.forEach(getAllAddrress => {
+      getAllAddrress.startAddress
+      allStartAddress.push(getAllAddrress.startAddress);
+      allStartAddress = [...new Set(allStartAddress)];
+
+      allEndAddress.push(getAllAddrress.endAddress);
+      allEndAddress = [...new Set(allEndAddress)];
+
+    });
+    this.setStartAddress = allStartAddress.toString();
+    this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
+    this.setEndAddress = allEndAddress.toString();
+    this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
+
   }
 
   getNewTagData(data: any) {
