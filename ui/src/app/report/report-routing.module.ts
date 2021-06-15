@@ -4,7 +4,7 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
 import { ReportComponent } from './report.component';
 import { TripReportComponent } from './trip-report/trip-report.component';
 import { TripTracingComponent } from './trip-tracing/trip-tracing.component';
-
+import { DriverTimeManagementComponent } from './driver-time-management/driver-time-management.component'
 
 const routes: Routes = [
   {
@@ -17,7 +17,7 @@ const routes: Routes = [
       { path: "fuelbenchmarking", component: DashboardComponent},
       { path: "fueldeviationreport", component: DashboardComponent},
       { path: "vehicleperformancereport", component: DashboardComponent},
-      { path: "drivetimemanagement", component: DashboardComponent},
+      { path: "drivetimemanagement", component: DriverTimeManagementComponent},
       { path: "ecoscorereport", component: DashboardComponent}
   ]
   }];
