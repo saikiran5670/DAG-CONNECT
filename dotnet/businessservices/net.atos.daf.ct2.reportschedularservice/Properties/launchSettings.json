@@ -3,7 +3,7 @@
     "net.atos.daf.ct2.reportschedularservice": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5094",
+      "applicationUrl": "http://localhost:5095",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

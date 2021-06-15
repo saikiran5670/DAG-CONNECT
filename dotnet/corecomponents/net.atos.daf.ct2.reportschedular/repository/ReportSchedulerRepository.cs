@@ -66,7 +66,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 IEnumerable<ReceiptEmails> reporttype = await _dataAccess.QueryAsync<ReceiptEmails>(queryStatement, null);
                 return reporttype;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -88,7 +88,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 IEnumerable<DriverDetail> driverdetails = await _dataMartdataAccess.QueryAsync<DriverDetail>(queryStatement, null);
                 return driverdetails;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
