@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using net.atos.daf.ct2.utilities;
 using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehicle.repository
@@ -57,11 +58,28 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicles.Add(Map(record));
             }
             return vehicles.AsEnumerable();
-
-
-
-
-
+        }
+        public async Task<VehicleConnect> UpdateVehicleConnection(VehicleConnect vehicleConnect)
+        {
+            var vehicleSetting = new VehicleConnect();
+            await VehicleOptInOptOutHistory(vehicleConnect.Id);
+            var parameter = new DynamicParameters();
+            if (vehicleConnect.Opt_In == (char)VehicleStatusType.OptIn && !vehicleConnect.IsConnected)
+            {
+                vehicleConnect.Status = (char)VehicleCalculatedStatus.Connected;
+            }
+            var QueryStatement = @" UPDATE master.vehicle
+                                        SET 
+                                        status= @status                                        
+        	                           ,modified_by= @modified_by
+                                       ,status_changed_date= @status_changed_date
+                                        WHERE id = @id
+                                        RETURNING id;";
+            parameter.Add("@id", vehicleConnect.Id);
+            parameter.Add("@status", vehicleConnect.Status);
+            parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+            return vehicleSetting;
         }
     }
 }
