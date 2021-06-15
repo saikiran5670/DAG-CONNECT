@@ -53,7 +53,7 @@ message ReportTypeRequest
 message DriverDetailRequest
 {
     int32 Id = 1;
-    int32 DriverId = 2;
+    string DriverId = 2;
     string DriverName = 3;
 }
 message ReceiptEmailsRequest
