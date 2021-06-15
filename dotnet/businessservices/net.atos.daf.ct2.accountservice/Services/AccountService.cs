@@ -9,6 +9,7 @@ using Grpc.Core;
 using log4net;
 using net.atos.daf.ct2.account.entity;
 using net.atos.daf.ct2.accountservice.Entity;
+using net.atos.daf.ct2.group;
 using net.atos.daf.ct2.identity.entity;
 using net.atos.daf.ct2.vehicle;
 using Newtonsoft.Json;
@@ -1668,6 +1669,7 @@ namespace net.atos.daf.ct2.accountservice
 
                 foreach (Group.Group group in accountGroups)
                 {
+                    List<GroupRef> Associatedvehicle = new List<GroupRef>();
                     accountDetail = new AccountGroupDetail();
                     accountDetail.GroupId = group.Id;
                     accountDetail.AccountGroupName = group.Name;
@@ -1686,22 +1688,26 @@ namespace net.atos.daf.ct2.accountservice
                         groupId.AddRange(accessList.Select(c => c.VehicleGroupId).ToList());
                         groupFilter = new Group.GroupFilter();
                         groupFilter.GroupIds = groupId;
-                        groupFilter.GroupRefCount = true;
+                        groupFilter.GroupRefCount = false;
+                        groupFilter.GroupRef = true;
                         groupFilter.ObjectType = Group.ObjectType.None;
                         groupFilter.GroupType = Group.GroupType.None;
                         groupFilter.FunctionEnum = Group.FunctionEnum.None;
                         var vehicleGroups = await _groupmanager.Get(groupFilter);
-                        Int32 count = 0;
+                        //Int32 count = 0;
                         // Get vehicles count
                         foreach (Group.Group vGroup in vehicleGroups)
                         {
-                            count = count + vGroup.GroupRefCount;
+                            Associatedvehicle.AddRange(vGroup.GroupRef);
+                            // count = count + vGroup.GroupRefCount;
                         }
-                        accountDetail.VehicleCount = count;
+                        //accountDetail.VehicleCount = count;
                     }
+                    accountDetail.VehicleCount = Associatedvehicle.Select(I => I.Ref_Id).Distinct().Count();
                     response.AccountGroupDetail.Add(accountDetail);
                     _logger.Info("Get account group details.");
                 }
+
                 response.Message = "Get AccountGroup";
                 response.Code = Responcecode.Success;
                 return await Task.FromResult(response);
