@@ -9,5 +9,7 @@ namespace net.atos.daf.ct2.reportscheduler
     public interface IReportSchedulerManager
     {
         Task<ReportParameter> GetReportParameter(int accountid, int organizationid);
+        Task<ReportScheduler> CreateReportSchedular(ReportScheduler report);
+        Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report);
     }
 }

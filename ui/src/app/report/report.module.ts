@@ -12,6 +12,7 @@ import { MatTableExporterModule } from 'mat-table-exporter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core'
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DriverTimeManagementComponent } from './driver-time-management/driver-time-management.component';
+import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation.component';
 
 export const MY_DATE_FORMAT = {
   display: {
@@ -23,7 +24,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, TripTracingComponent, DriverTimeManagementComponent],
+  declarations: [ReportComponent, TripReportComponent, TripTracingComponent, DriverTimeManagementComponent, FleetUtilisationComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,
