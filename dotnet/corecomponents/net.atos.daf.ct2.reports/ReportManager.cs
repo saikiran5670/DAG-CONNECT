@@ -96,7 +96,10 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
         }
-
+        public async Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN)
+        {
+            return await _reportRepository.GetReportSearchParameterByVIN(ReportID, StartDateTime, EndDateTime, VIN);
+        }
         #endregion
 
         #region Eco Score Report - Create Profile

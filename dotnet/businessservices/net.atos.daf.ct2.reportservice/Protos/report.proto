@@ -19,6 +19,8 @@ rpc GetEcoScoreProfiles (GetEcoScoreProfileRequest) returns (GetEcoScoreProfileR
 rpc GetEcoScoreProfileKPIDetails (GetEcoScoreProfileKPIRequest) returns (GetEcoScoreProfileKPIResponse);
 rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScoreProfileResponse);
 rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScoreProfileResponse);
+rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
+
 }
 
 enum Responsecode{
@@ -193,12 +195,6 @@ message ActivityFilterRequest {
     repeated string DriverIds = 4;
 }
 
-//message VinsRepeated {
-//    string VIN=1;
-//}
-//message DriverIdRepeated {
-//    string DriverId=1;
-//}
 message DriverActivityResponse {
     repeated DriverActivity DriverActivities = 1;   
     Responsecode code = 2;
@@ -242,6 +238,22 @@ message IdRequestForDriverActivity {
   int64 StartDateTime = 4;
   int64 EndDateTime = 5; 
   }
+
+message ReportSearchParameterResponse {
+Responsecode Code = 1;
+string Message = 2;
+repeated SearchParameter AdditionalSearchParameter  = 3;
+repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyList = 4;
+}
+
+
+message SearchParameter {
+string DriverId = 1;
+string VIN = 2;
+string PerformanceType = 3;
+}
+
+
 // End   Driver Time Managment Report
 
 message CreateEcoScoreProfileRequest {
