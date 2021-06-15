@@ -44,17 +44,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     var authHeader = Request.Headers["Authorization"].ToString().Replace("Basic ", "");
                     var identity = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(authHeader));
                     var arrUsernamePassword = identity.Split(':');
-                    if (string.IsNullOrEmpty(arrUsernamePassword[0]))
+                    if (string.IsNullOrEmpty(arrUsernamePassword[0]) || string.IsNullOrEmpty(arrUsernamePassword[1]))
                     {
-                        return StatusCode(401, "invalid_grant: The username is Empty.");
-                    }
-                    else if (string.IsNullOrEmpty(arrUsernamePassword[1]))
-                    {
-                        return StatusCode(401, "invalid_grant: The password is Empty.");
+                        return StatusCode(401, "Incorrect username or password. Please try again.");
                     }
                     else
                     {
-
                         identityRequest.UserName = arrUsernamePassword[0];
                         identityRequest.Password = arrUsernamePassword[1];
                         AccountBusinessService.AccountIdentityResponse response = new AccountBusinessService.AccountIdentityResponse();
@@ -134,29 +129,29 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         }
                         else if (response != null && (response.Code == AccountBusinessService.Responcecode.Unauthorized))
                         {
-                            return StatusCode((int)response.Code, response.Message);
+                            return StatusCode((int)response.Code, "Incorrect username or password. Please try again.");
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Forbidden)
                         {
-                            return StatusCode(403, response.Message);
+                            return StatusCode(403, "Unable to process the request.");
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.NotFound)
                         {
-                            return StatusCode(404, response.Message);
+                            return StatusCode(404, "Unable to process the request.");
                         }
                         else if (response != null && response.Code == AccountBusinessService.Responcecode.Failed)
                         {
-                            return StatusCode(500, response.Message);
+                            return StatusCode(500, "Error occurred while processing the request.");
                         }
                         else
                         {
-                            return StatusCode(500, "Unknown :- Please contact system administrator.");
+                            return StatusCode(500, "Error occurred while processing the request.");
                         }
                     }
                 }
                 else
                 {
-                    return StatusCode(401, "The authorization header is either empty or isn't Basic.");
+                    return StatusCode(400, "Invalid request.");
                 }
             }
             catch (Exception ex)
@@ -167,7 +162,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Authentication service", Entity.Audit.AuditTrailEnum.Event_type.LOGIN, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                 "Login method in Authentication controller", 0, 0, JsonConvert.SerializeObject(identityRequest.UserName),
                  new HeaderObj());
-                return StatusCode(500, "Please contact system administrator. " + ex.Message);
+                return StatusCode(500, "Error occurred while processing the reqeust.");
             }
         }
 

@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     public class DriverDetail
     {
         public int Id { get; set; }
-        public int DriverId { get; set; }
+        public string DriverId { get; set; }
         public string DriverName { get; set; }
     }
     public class ReceiptEmails

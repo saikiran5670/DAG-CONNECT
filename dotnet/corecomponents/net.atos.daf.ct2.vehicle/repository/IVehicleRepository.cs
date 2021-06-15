@@ -4,7 +4,7 @@ using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehicle.repository
 {
-    public interface IVehicleRepository
+    public partial interface IVehicleRepository
     {
         //    Task<int> AddVehicle(Vehicle vehicle);
         //    Task<int> AddVehicleGroup(VehicleGroup vehicleGroup);

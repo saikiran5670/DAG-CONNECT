@@ -518,7 +518,7 @@ namespace net.atos.daf.ct2.group
             try
             {
                 var parameter = new DynamicParameters();
-                var query = @"select count(ref_id) as refcount from master.groupref where group_id = @group_id";
+                var query = @"select  count(distinct ref_id) as refcount from master.groupref where group_id = @group_id";
                 parameter.Add("@group_id", groupid);
                 var count = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 return count;

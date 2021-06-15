@@ -156,6 +156,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
+        #region Create User Preference
         [HttpPost]
         [Route("createuserpreference")]
         public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
@@ -192,6 +193,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
+        #endregion
 
         #region Select User Preferences
         [HttpGet]
@@ -315,6 +317,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _logger.Info("GetDriverActivityParameters method in Report API called.");
                 var data = await _reportServiceClient.GetDriverActivityParametersAsync(request);
+                if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("getreportsearchparameters")]
+        public async Task<IActionResult> GetReportSearchParameter([FromBody] IdRequestForDriverActivity request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_ENDDATE_MSG); }
+                if (!(request.OrganizationId > 0)) { return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG); }
+                if (!(request.AccountId > 0)) { return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG); }
+
+                _logger.Info("GetReportSearchParameter method in Report API called.");
+                var data = await _reportServiceClient.GetReportSearchParameterAsync(request);
                 if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;

@@ -85,21 +85,26 @@ getAlertTimingPayload(){
   let tempObj: any;
   this.weekDays().controls.forEach((element, index) => {
     weekDay = element['controls'];
-    if(weekDay.daySelection.value){
-      if(weekDay.fulldayCustom.value == 'C'){
-        this.customPeriods(index).controls.forEach(item =>{
+    if (weekDay.daySelection.value) {
+      if (weekDay.fulldayCustom.value == 'C') {
+        this.customPeriods(index).controls.forEach(item => {
           customTime = item['controls'];
+          let startTime = customTime.fromTime.value;
+          let endTime = customTime.toTime.value;
+          let startTimeSeconds = this.convertTimeToSeconds(startTime);
+          let endTimeSeconds = this.convertTimeToSeconds(endTime);
           tempObj = {
             "type": 'U',
             "refId": 0,
             "dayType": [
-              true, false, false, false, false, false, false
+              false, false, false, false, false, false, false
             ],
             "periodType": 'C',
-            "startDate": customTime.fromTime.value,
-            "endDate": customTime.toTime.value,
+            "startDate": startTimeSeconds,
+            "endDate": endTimeSeconds,
             "state": "A"
           }
+          tempObj["dayType"][index] = true;
           alertTimingRef.push(tempObj);
         })
       }
@@ -108,13 +113,14 @@ getAlertTimingPayload(){
           "type": 'U',
           "refId": 0,
           "dayType": [
-            true, false, false, false, false, false, false
+            false, false, false, false, false, false, false
           ],
           "periodType": 'A',
           "startDate": 0,
           "endDate": 0,
           "state": "A"
         }
+        tempObj["dayType"][index] = true;
         alertTimingRef.push(tempObj);
       }
     }
@@ -123,5 +129,10 @@ getAlertTimingPayload(){
   return alertTimingRef;
 }
 
+convertTimeToSeconds(time:any){
+  let newstartTime= time.split(":");
+  return (newstartTime[0] * 60 * 60) + (newstartTime[1] * 60);
+  
+}
 
 }
