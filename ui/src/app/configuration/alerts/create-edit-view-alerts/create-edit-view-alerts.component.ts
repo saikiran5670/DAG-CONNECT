@@ -30,10 +30,11 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() actionType: any;
   @Input() translationData: any = [];
   @Input() selectedRowData: any;
-  @Input() alertCategoryList: any;
-  @Input() alertTypeList: any;
-  @Input() vehicleGroupList: any;
-  @Input() vehicleList: any;
+  alertCategoryList: any = [];
+  alertTypeList: any = [];
+  @Input() vehicleGroupList: any = [];
+  @Input() vehicleList: any = [];
+ 
   options: Options = {
     floor: 0,
     ceil: 10000
@@ -60,6 +61,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertForm: FormGroup;
   accountOrganizationId: number;
   accountId: number;
+  accountRoleId: number;
   userType: string;
   selectedApplyOn: string;
   openAdvancedFilter: boolean= false;
@@ -147,6 +149,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   ngOnInit(): void {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.userType= localStorage.getItem("userType");
     this.alertForm = this._formBuilder.group({
       alertName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
@@ -199,9 +202,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
     }
    
-    if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
-      this.alertForm.controls.widthInput.setValue(0.1);
-      this.loadFiltersData();   
+    // if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0){
+       this.alertForm.controls.widthInput.setValue(0.1);
+    //   this.loadFiltersData();   
+    // }
+
+    this.loadFilterDataBasedOnPrivileges();
 }
   
 
@@ -281,6 +287,38 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
       }, (error) => {
 
+    })
+  }
+
+  loadFilterDataBasedOnPrivileges(){
+    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+      let alertCategoryTypeMasterData = data["enumTranslation"];
+      let alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
+      let alertTypeMap = new Map();
+      alertCategoryTypeFilterData.forEach(element => {
+        alertTypeMap.set(element.featureKey, element.featureKey);
+      });
+
+      if(alertTypeMap != undefined){
+        alertCategoryTypeMasterData.forEach(element => {
+          if(alertTypeMap.get(element.key)){
+            element["value"]= this.translationData[element["key"]];
+            this.alertTypeList.push(element);
+          }
+        });
+      }
+      
+      if(this.alertTypeList.length != 0){
+        alertCategoryTypeMasterData.forEach(element => {
+          this.alertTypeList.forEach(item => {
+            if(item.parentEnum == element.enum && element.parentEnum == ""){
+              element["value"]= this.translationData[element["key"]];
+              this.alertCategoryList.push(element);
+            }
+          });
+        });
+        this.alertCategoryList = this.getUnique(this.alertCategoryList, "enum")
+      }
     })
   }
 

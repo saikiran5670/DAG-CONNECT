@@ -87,5 +87,39 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
         }
         #endregion
+
+        #region Create Report Scheduler
+        public override async Task<ReportSchedulerResponse> CreateReportScheduler(ReportSchedulerRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                ReportSchedulerResponse response = new ReportSchedulerResponse();
+                ReportScheduler reportscheduler = await _reportSchedulerManager.CreateReportSchedular(_mapper.ToReportSchedulerEntity(request));
+                if (reportscheduler.Id > 0)
+                {
+                    response.Message = "Report Parameter Created";
+                    response.Code = ResponseCode.Success;
+                    response.ReportSchedulerId = reportscheduler.Id;
+                }
+                else
+                {
+                    response.Message = "Report Parameter Creation is fail";
+                    response.Code = ResponseCode.Failed;
+                }
+                _logger.Info("Create method in report scheduler called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportSchedulerResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Create method in report scheduler fail : " + ex.Message
+                });
+            }
+        }
+        #endregion
     }
 }
