@@ -156,7 +156,7 @@ export class ExistingTripsComponent implements OnInit {
 
   //Integrating Time date component
   searchExpandPanel: boolean = true;
-  mapExpandPanel: boolean = true;
+  mapExpandPanel: boolean = false;
   startDateValue: any;
   endDateValue: any;
   last3MonthDate: any;
@@ -1061,9 +1061,9 @@ export class ExistingTripsComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.showMap = true;
     }
-    console.log(this.markerArray);
+    console.log("---markerArray---",this.markerArray);
+    this.setAllAddressValues(this.markerArray);
 
-    //this.addPolylineToMap();
   }
 
   isAllSelectedForCorridor() {
@@ -1081,7 +1081,7 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   checkboxClicked(event: any, row: any) {
-    this.showMapSection = true;
+    // this.showMapSection = true;
     let startAddress = row.startPositionlattitude + "," + row.startPositionLongitude;
     let endAddress = row.endPositionLattitude + "," + row.endPositionLongitude;
     // this.position = row.startPositionlattitude + "," + row.startPositionLongitude;
@@ -1101,23 +1101,10 @@ export class ExistingTripsComponent implements OnInit {
       this.mapFunctions.clearRoutesFromMap();
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
     }
+    console.log("---markerArray--",this.markerArray)
 
-    let allStartAddress = [];
-    let allEndAddress = [];
-    this.markerArray.forEach(getAllAddrress => {
-      getAllAddrress.startAddress
-      allStartAddress.push(getAllAddrress.startAddress);
-      allStartAddress = [...new Set(allStartAddress)];
+    this.setAllAddressValues(this.markerArray);
 
-      allEndAddress.push(getAllAddrress.endAddress);
-      allEndAddress = [...new Set(allEndAddress)];
-
-    });
-    // console.log("---this.setStartAddress---", this.setStartAddress)
-    this.setStartAddress = allStartAddress.toString();
-    this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
-    this.setEndAddress = allEndAddress.toString();
-    this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
 
 
     // this.here.getAddressFromLatLng(startAddress).then(result => {
@@ -1151,14 +1138,14 @@ export class ExistingTripsComponent implements OnInit {
 
 
 
-    this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
-    if (event.checked) { //-- add new marker
-      this.markerArray.push(row);
-    } else { //-- remove existing marker
-      //It will filter out checked points only
-      let arr = this.markerArray.filter(item => item.id != row.id);
-      this.markerArray = arr;
-    }
+    // this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
+    // if (event.checked) { //-- add new marker
+    //   this.markerArray.push(row);
+    // } else { //-- remove existing marker
+    //   //It will filter out checked points only
+    //   let arr = this.markerArray.filter(item => item.id != row.id);
+    //   this.markerArray = arr;
+    // }
     // this.addPolylineToMap();
   }
 
@@ -1177,6 +1164,31 @@ export class ExistingTripsComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+  }
+
+  setAllAddressValues(markerArray:any){
+    if(this.markerArray.length > 0){
+      this.mapExpandPanel = true;
+    }else {
+      this.mapExpandPanel = false;
+
+    }
+    let allStartAddress = [];
+    let allEndAddress = [];
+    markerArray.forEach(getAllAddrress => {
+      getAllAddrress.startAddress
+      allStartAddress.push(getAllAddrress.startAddress);
+      allStartAddress = [...new Set(allStartAddress)];
+
+      allEndAddress.push(getAllAddrress.endAddress);
+      allEndAddress = [...new Set(allEndAddress)];
+
+    });
+    this.setStartAddress = allStartAddress.toString();
+    this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
+    this.setEndAddress = allEndAddress.toString();
+    this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
+
   }
 
   getNewTagData(data: any) {
