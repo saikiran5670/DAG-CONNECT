@@ -18,6 +18,7 @@ organizationId: number;
 accountId: number;
 FormArrayItems:  FormArray;
 days: any= [];
+weekDaySelected: boolean = false;
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -55,9 +56,11 @@ days: any= [];
   onChangeDaySelection(event, periodIndex){
     if(event.checked){
       this.weekDays().at(periodIndex).get("fulldayCustom").setValue('A');
+      this.weekDaySelected = true;
     }
     else{
       this.weekDays().at(periodIndex).get("fulldayCustom").setValue('');
+      this.weekDaySelected = false;
     }
   }
   
