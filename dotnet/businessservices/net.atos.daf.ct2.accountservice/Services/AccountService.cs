@@ -1698,7 +1698,7 @@ namespace net.atos.daf.ct2.accountservice
                         // Get vehicles count
                         foreach (Group.Group vGroup in vehicleGroups)
                         {
-                            Associatedvehicle.AddRange(vGroup.GroupRef);
+                            if (vGroup.GroupRef != null) Associatedvehicle.AddRange(vGroup.GroupRef);
                             // count = count + vGroup.GroupRefCount;
                         }
                         //accountDetail.VehicleCount = count;
