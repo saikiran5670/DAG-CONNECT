@@ -28,5 +28,12 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             objreceiptemail.Email = receiptEmail.Email;
             return objreceiptemail;
         }
+
+        public ReportScheduler ToReportSchedulerEntity(ReportSchedulerRequest request)
+        {
+            ReportScheduler reportscheduler = new ReportScheduler();
+            reportscheduler.Id = request.Id;
+            return reportscheduler;
+        }
     }
 }
