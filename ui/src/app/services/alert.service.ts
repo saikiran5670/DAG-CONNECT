@@ -48,6 +48,16 @@ export class AlertService {
        .get<any[]>(`${this.alertServiceUrl}/GetAlertCategory?accountId=${id}&orgnizationid=${orgId}`,headers)
        .pipe(catchError(this.handleError));
    }
+
+   getAlertFilterDataBasedOnPrivileges(id, roleId): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+     headers: new HttpHeaders({ headerObj }),
+   };
+     return this.httpClient
+       .get<any[]>(`${this.alertServiceUrl}/getalertcategoryfilter?accountId=${id}&roleid=${roleId}`,headers)
+       .pipe(catchError(this.handleError));
+   }
    
   getAlertData(id, orgId): Observable<any[]> {
     let headerObj = this.generateHeader();
