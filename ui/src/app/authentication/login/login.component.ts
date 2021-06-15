@@ -184,19 +184,12 @@ export class LoginComponent implements OnInit {
          this.hideLoader();
          this.loginClicks = 0;
           console.log("Error: " + error);
-          if(error.status == 404  || error.status == 403){
-            this.errorMsg= error.error;
-          }
-          else if(error.status === 401){
+          if(error.status === 401 || error.status == 404  || error.status == 403 || error.status == 500){
             this.invalidUserMsg = true;
-            this.loginClicks = 0;
           }
           else if(error.status == 302){
             this.router.navigate(['/auth/resetpassword/'+error.error.processToken]);
           }
-          else if(error.status == 500)
-            this.invalidUserMsg = true;
-          //this.cookiesFlag = false;
         })
       }
 
