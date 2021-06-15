@@ -126,10 +126,144 @@
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngIf='initData.length == 0'>
+          <div *ngIf='onSearchData.length == 0'>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
           </div>
+          <div *ngIf='onSearchData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+            <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div *ngIf='showField.driverName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblDriverName || 'Driver Name' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driverName }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.driverId' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblDriverId || 'Driver Id' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driverId }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.startTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblStartTime || 'Start Time' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.startTime }}</span>
+                  </span>
+                </div>
+                <div *ngIf='!showField.endTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblEndTime || 'End Time' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endTime }}</span>
+                  </span>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div *ngIf='showField.driveTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblDriveTime || 'driveTime' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driveTime }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.workTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblWorkTime || 'Work Time' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.workTime }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.restTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblRestTime || 'Rest Time' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.restTime }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.availableTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblAvailableTime|| 'Available Time' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.availableTime }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.serviceTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblServiceTime|| 'Service Time' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.serviceTime }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field appearance="outline">
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <span matPrefix><mat-icon>search</mat-icon></span>
+                </mat-form-field>
+              </div>
+              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <button mat-button [matMenuTriggerFor]="menu">
+                  <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
+                  <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
+                </mat-menu>
+              </div>
+            </div>
+            <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
+                matSort #exporter="matTableExporter">
+               
+                <ng-container matColumnDef="driverName">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.driverName != '' ? row.driverName : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="driverId">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.driverId != '' ? row.driverId : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="startTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime || 'Start Time' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="endTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime || 'End Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.endTime != '' ? row.endTime : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="driveTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h')  }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="workTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="serviceTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblltr100km || 'ltr/100km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblgallonmile || 'gallon/100mile') : (translationData.lblgallonmile || 'gallon/100mile')  }})</span>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="restTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="availableTime">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }}
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>
+                </ng-container>
+               
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;">
+                </mat-row>
+              </mat-table>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+          </div>
+          <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
           </mat-expansion-panel>
           </mat-card>
 

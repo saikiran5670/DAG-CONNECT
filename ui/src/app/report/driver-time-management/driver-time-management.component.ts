@@ -12,6 +12,7 @@ import { filter } from 'rxjs/operators';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import { Util } from '../../shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { ReportMapService } from '../report-map.service';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -42,7 +43,7 @@ export class DriverTimeManagementComponent implements OnInit {
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  tripData: any = [];
+  onSearchData: any = [];
   showLoadingIndicator: boolean = false;
   defaultStartValue: any;
   defaultEndValue: any;
@@ -60,8 +61,22 @@ export class DriverTimeManagementComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
+  displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService) { 
+  showField: any = {
+        driverName: true,
+        driverId: true,
+        startTime: true,
+        endTime: true,
+        driveTime: true,
+        workTime: true,
+        serviceTime: true,
+        restTime: true,
+        availableTime: true
+  };
+  
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
+  private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) { 
     this.defaultTranslation()
   }
 
@@ -119,12 +134,6 @@ export class DriverTimeManagementComponent implements OnInit {
     ////console.log("process translationData:: ", this.translationData)
   }
 
-  
-  resetdriverTimeFormControlValue(){
-    this.driverTimeForm.get('vehicle').setValue('');
-    this.driverTimeForm.get('vehicleGroup').setValue(0);
-  }
-
   onVehicleGroupChange(event: any){
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
@@ -146,39 +155,81 @@ export class DriverTimeManagementComponent implements OnInit {
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value));
+     let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data=>data.vin);
+     let _driverData = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
+
+   // let _driverData = this.driverListData.map(data=>data.driverID);
+    let searchDataParam = {
+      "StartDateTime":_startTime,
+      "EndDateTime":_endTime,
+      "VINs": _vinData,
+      "DriverIds":_driverData
+    }
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
-      this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
+      //this.reportService.getMultipleDriverDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
-        //_tripData = [{"id":11903,"tripId":"ae6e42d3-4ba1-49eb-8fe1-704a2271bc49","vin":"XLR0998HGFFT5566","startTimeStamp":1587143959831,"endTimeStamp":1587143959831,"distance":139,"idleDuration":53,"averageSpeed":2663,"averageWeight":655350,"odometer":298850780,"startPosition":"NA","endPosition":"NA","fuelConsumed":166.896551724138,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.66896551724138,"liveFleetPosition":[],"startPositionLattitude":50.96831131,"startPositionLongitude":-1.388581276,"endPositionLattitude":50.9678421,"endPositionLongitude":-1.388695598},{"id":12576,"tripId":"11c2c2c1-c56f-42ce-9e62-31685ed5d2ae","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":22,"idleDuration":3,"averageSpeed":6545,"averageWeight":655350,"odometer":298981400,"startPosition":"NA","endPosition":"NA","fuelConsumed":50,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":0.5,"liveFleetPosition":[],"startPositionLattitude":50.81643677,"startPositionLongitude":-0.7481001616,"endPositionLattitude":50.81661987,"endPositionLongitude":-0.74804914},{"id":13407,"tripId":"ce3c49fb-2291-4052-9d1b-3b2ee343ab33","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":213,"idleDuration":39,"averageSpeed":3461,"averageWeight":655350,"odometer":74677630,"startPosition":"NA","endPosition":"NA","fuelConsumed":91,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":0.91,"liveFleetPosition":[],"startPositionLattitude":51.39526367,"startPositionLongitude":-1.229614377,"endPositionLattitude":51.39541626,"endPositionLongitude":-1.231176734},{"id":12582,"tripId":"6adb296a-549e-4d50-af9d-3bfbc6fc3e4b","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":4,"idleDuration":14,"averageSpeed":3130,"averageWeight":655350,"odometer":10327065,"startPosition":"NA","endPosition":"NA","fuelConsumed":175,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.75,"liveFleetPosition":[],"startPositionLattitude":41.71875763,"startPositionLongitude":26.35817528,"endPositionLattitude":41.71875,"endPositionLongitude":26.35810089},{"id":12587,"tripId":"cc5b9533-1d94-4af8-8cc8-903b0dcd5514","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":65,"idleDuration":10,"averageSpeed":8000,"averageWeight":655350,"odometer":14747690,"startPosition":"NA","endPosition":"NA","fuelConsumed":105,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.05,"liveFleetPosition":[],"startPositionLattitude":43.00225067,"startPositionLongitude":22.80965805,"endPositionLattitude":43.00209045,"endPositionLongitude":22.8104248}];
-       // this.tripData = this.reportMapService.getConvertedDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-        //this.setTableInfo();
-        //this.updateDataSource(this.tripData);
-      }, (error)=>{
-        //console.log(error);
-        this.hideloader();
-        this.tripData = [];
-        this.tableInfoObj = {};
-       // this.updateDataSource(this.tripData);
-      });
+        let tripData = {
+          "driverActivities": [
+            {
+              "driverId": "UK DB08176162022802",
+              "driverName": "Helloupdated Helloupdated",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 3,
+              "restTime": 0,
+              "availableTime": 0,
+              "workTime": 0,
+              "driveTime": -1218000,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "D2",
+              "driverName": "Ayrton Senna",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 1,
+              "restTime": 0,
+              "availableTime": -1218000,
+              "workTime": 0,
+              "driveTime": 0,
+              "serviceTime": -1218000
+            }
+          ],
+          "code": 200,
+          "message": "Trip fetched successfully for requested Filters"
+        }
+        this.onSearchData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+        this.setTableInfo();
+        this.updateDataSource(this.onSearchData);
+      // }, (error)=>{
+      //   //console.log(error);
+      //   this.hideloader();
+      //   this.onSearchData = [];
+      //   this.tableInfoObj = {};
+      //  // this.updateDataSource(this.tripData);
+      // });
     }
   }
 
   onReset(){
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
-    this.tripData = [];
+    this.onSearchData = [];
     this.vehicleGroupListData = this.vehicleGroupListData;
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     //this.updateDataSource(this.tripData);
-    this.resetTripFormControlValue();
+    this.resetdriverTimeFormControlValue();
     this.tableInfoObj = {};
     //this.advanceFilterOpen = false;
    // this.selectedPOI.clear();
   }
 
-  resetTripFormControlValue(){
+  resetdriverTimeFormControlValue(){
     this.driverTimeForm.get('vehicle').setValue(0);
     this.driverTimeForm.get('vehicleGroup').setValue(0);
     this.driverTimeForm.get('driver').setValue(0);
@@ -275,11 +326,87 @@ export class DriverTimeManagementComponent implements OnInit {
       }
 
     }
-    this.resetTripFormControlValue();
+    this.resetdriverTimeFormControlValue();
 
    
   }
 
+  setTableInfo(){
+    let vehName: any = '';
+    let vehGrpName: any = '';
+    let vin: any = '';
+    let plateNo: any = '';
+    this.onSearchData.forEach(element => {
+      this.tableInfoObj= {
+        driverName: element.driverName,
+        driverId: element.driverId,
+        startTime: element.startTime,
+        endTime: element.endTime,
+        driveTime: element.driveTime,
+        workTime: element.workTime,
+        restTime: element.restTime,
+        availableTime: element.availableTime,
+        serviceTime:element.serviceTime
+      }
+    });
+  }
+
+  updateDataSource(tableData: any) {
+    this.initData = tableData;
+    this.dataSource = new MatTableDataSource(tableData);
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+  }
+
+  formStartDate(date: any){
+    let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
+    let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
+    let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
+    let _d = (date.getDate() < 10) ? ('0'+date.getDate()): date.getDate();
+    let _m = ((date.getMonth()+1) < 10) ? ('0'+(date.getMonth()+1)): (date.getMonth()+1);
+    let _y = (date.getFullYear() < 10) ? ('0'+date.getFullYear()): date.getFullYear();
+    let _date: any;
+    let _time: any;
+    if(this.prefTimeFormat == 12){
+      _time = (date.getHours() > 12 || (date.getHours() == 12 && date.getMinutes() > 0)) ? `${date.getHours() == 12 ? 12 : date.getHours()-12}:${m} PM` : `${(date.getHours() == 0) ? 12 : h}:${m} AM`;
+    }else{
+      _time = `${h}:${m}:${s}`;
+    }
+    switch(this.prefDateFormat){
+      case 'ddateformat_dd/mm/yyyy': {
+        _date = `${_d}/${_m}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm/dd/yyyy': {
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_dd-mm-yyyy': {
+        _date = `${_d}-${_m}-${_y} ${_time}`;
+        break;
+      }
+      case 'ddateformat_mm-dd-yyyy': {
+        _date = `${_m}-${_d}-${_y} ${_time}`;
+        break;
+      }
+      default:{
+        _date = `${_m}/${_d}/${_y} ${_time}`;
+      }
+    }
+    return _date;
+  }
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // dataSource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+  }
+
+  exportAsExcelFile(){
+    this.matTableExporter.exportTable('xlsx', {fileName:'Driver_Time_Report', sheet: 'sheet_name'});
+  }
 
   //********************************** Date Time Functions *******************************************//
   setPrefFormatDate(){
