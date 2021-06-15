@@ -33,6 +33,24 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
         {
             ReportScheduler reportscheduler = new ReportScheduler();
             reportscheduler.Id = request.Id;
+            reportscheduler.OrganizationId = request.OrganizationId;
+            reportscheduler.ReportId = request.ReportId;
+            reportscheduler.FrequencyType = System.Convert.ToChar(request.FrequencyType);
+            reportscheduler.Status = System.Convert.ToChar(request.Status);
+            reportscheduler.Type = System.Convert.ToChar(request.Type);
+            reportscheduler.FileName = request.FileName;
+            reportscheduler.StartDate = request.StartDate;
+            reportscheduler.EndDate = request.EndDate;
+            reportscheduler.Code = request.Code;
+            reportscheduler.LastScheduleRunDate = request.LastScheduleRunDate;
+            reportscheduler.NextScheduleRunDate = request.NextScheduleRunDate;
+            reportscheduler.CreatedAt = request.CreatedAt;
+            reportscheduler.CreatedBy = request.CreatedBy;
+            reportscheduler.ModifiedAt = request.ModifiedAt;
+            reportscheduler.ModifiedBy = request.ModifiedBy;
+            reportscheduler.MailDescription = request.MailDescription;
+            reportscheduler.MailSubject = request.MailSubject;
+            reportscheduler.ReportDispatchTime = request.ReportDispatchTime;
             return reportscheduler;
         }
     }
