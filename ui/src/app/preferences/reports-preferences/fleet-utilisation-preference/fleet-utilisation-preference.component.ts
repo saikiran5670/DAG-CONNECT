@@ -48,6 +48,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     id: 2,
     name: 'Pie Chart'
   }];
+
+  upperLowerDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Upper'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Lower'
+  }];
   
   constructor(private reportService: ReportService) { }
 
@@ -216,6 +227,10 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   onDonutPieDDChange(event: any){
+
+  }
+
+  onUpperLowerDDChange(event: any){
 
   }
 
