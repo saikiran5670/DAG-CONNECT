@@ -106,7 +106,7 @@
                 </span> -->
                   <ng-template [ngIf]="row.vehicleGroupName!=''">
                     <span [ngClass]="row.vehicleGroupName != '' ? 'row-hover' : ''"
-                    (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" style="text-decoration: underline;cursor: pointer;">
+                    (click)="row.vehicleGroupName != '' ? onVehicleGroupClick(row) : ''" [ngStyle]="row.vehicleName=='' ? {'text-decoration': 'underline','cursor': 'pointer'} : ''">
                     {{ row.vehicleGroupName }}</span>
                   </ng-template>             
                   <!--- <span *ngIf="row.vehicleName!=''">{{ row.vehicleName }}</span> -->
