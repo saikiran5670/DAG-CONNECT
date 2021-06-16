@@ -188,6 +188,12 @@ namespace net.atos.daf.ct2.reports
             return lstFleetUtilizationDetails;
         }
 
+        public async Task<List<Calender_Fleetutilization>> GetCalenderData(TripFilterRequest TripFilters)
+        {
+            List<Calender_Fleetutilization> lstFleetUtilizationDetails = await _reportRepository.GetCalenderData(TripFilters);
+            return lstFleetUtilizationDetails;
+        }
+
         #endregion
     }
 }

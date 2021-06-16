@@ -56,5 +56,43 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
+
+        public override async Task<FleetUtilizationCalenderResponse> GetFleetCalenderDetails(TripFilterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                _logger.Info("Get GetFleetUtilizationDetails report per Vehicle");
+                ReportComponent.entity.TripFilterRequest objFleetFilter = new ReportComponent.entity.TripFilterRequest
+                {
+                    VIN = request.VIN,
+                    StartDateTime = request.StartDateTime,
+                    EndDateTime = request.EndDateTime
+                };
+                var result = await _reportManager.GetCalenderData(objFleetFilter);
+                FleetUtilizationCalenderResponse response = new FleetUtilizationCalenderResponse();
+                if (result?.Count > 0)
+                {
+                    string res = JsonConvert.SerializeObject(result);
+                    response.CalenderDetails.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<FleetUtilizationcalender>>(res));
+                    response.Code = Responsecode.Success;
+                    response.Message = Responsecode.Success.ToString();
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = "No Result Found";
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new FleetUtilizationCalenderResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetFleetUtilizationDetails get failed due to - " + ex.Message
+                });
+            }
+        }
     }
 }
