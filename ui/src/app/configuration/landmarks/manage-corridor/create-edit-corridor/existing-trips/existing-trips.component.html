@@ -1,118 +1,150 @@
 <!-- <div class="bgtrans"> -->
 <div>
-<form [formGroup]="existingTripForm">
+  <form [formGroup]="existingTripForm">
 
-<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-  <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
-    <mat-expansion-panel-header class="full-width">
-      <mat-panel-title>
-        <span>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblExistingTrips || 'Existing Trips' }}</span>
-          <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
-        </span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-        <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
-          <div style='margin-top: 5px;'>
-            <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
-            <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
-            <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
-            <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
-            <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+      <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                translationData.lblExistingTrips || 'Existing Trips' }}</span>
+              <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
+            </span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span>
+              </mat-label>
+              <div style='margin-top: 5px;'>
+                <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')"
+                  [ngClass]="{'selectedBtn': selectionTab == 'today'}"
+                  class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button
+                  color="primary">{{translationData.lblToday || 'Today' }}</button>
+                <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')"
+                  [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}"
+                  class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button
+                  color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+                <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')"
+                  [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}"
+                  class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button
+                  color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+                <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')"
+                  [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}"
+                  class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button
+                  color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')"
+                  [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm'
+                  mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+              </div>
+            </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span>
+              </mat-label>
+              <mat-form-field class="full-width" appearance="outline">
+                <mat-select (selectionChange)="vehicleGroupSelection($event)"
+                  placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"
+                  formControlName="vehicleGroup" required>
+                  <mat-option *ngFor="let vehicleGroupData of vehicleGroupIdsSet" [value]="vehicleGroupData">
+                    {{ vehicleGroupData}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-error
+                *ngIf="existingTripForm.get('vehicleGroup').hasError('required') && vehicleGroupIdsSet.length > 0">
+                {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
+              </mat-error>
+            </div>
           </div>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
-          <mat-form-field class="full-width" appearance="outline">
-            <mat-select (selectionChange)="vehicleGroupSelection($event)"
-            placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}" formControlName="vehicleGroup" required>
-              <mat-option *ngFor="let vehicleGroupData of vehicleGroupIdsSet" [value]="vehicleGroupData">
-                {{ vehicleGroupData}}
-              </mat-option>
-            </mat-select>
-            </mat-form-field>
-          <mat-error *ngIf="existingTripForm.get('vehicleGroup').hasError('required') && vehicleGroupIdsSet.length > 0">
-            {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
-          </mat-error>
-        </div>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
-        <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
-          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-            <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-form-field appearance="outline">
-                    <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
-                    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-                    <mat-datepicker #startPicker></mat-datepicker>
-                  </mat-form-field>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+            <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)"
+                          [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker"
+                          formControlName="startDate">
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+                        style='margin-top: 4px;'>
+                        <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span>
+                        <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox'
+                          [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true"
+                          formControlName="startTime" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker>
+                        </ngx-material-timepicker>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                  <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
-                    <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
-                    <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
-                    <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
-                    <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
+                <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                  <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                  <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                    <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                      <mat-form-field appearance="outline">
+                        <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)"
+                          [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker"
+                          formControlName="endDate">
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                    <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                      <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker"
+                        style='margin-top: 4px;'>
+                        <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
+                        <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime" class='inputBox'
+                          [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true"
+                          formControlName="endTime" readonly>
+                        <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker>
+                        </ngx-material-timepicker>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
-              <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
-              <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-                <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
-                  <mat-form-field appearance="outline">
-                    <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)" [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate">
-                    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                    <mat-datepicker #endPicker></mat-datepicker>
-                  </mat-form-field>
-                </div>
-                <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-                  <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
-                    <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
-                    <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
-                    <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
-                    <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
-                  </div>
-                </div>
-              </div>
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+
+              <mat-form-field appearance="outline">
+                <mat-select [disabled]="vinList.length == 0" (selectionChange)="vinSelection($event)"
+                  placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle"
+                  required>
+                  <mat-option *ngFor="let vinListData of vinList" [value]="vinListData">
+                    {{ vinListData }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-error *ngIf="existingTripForm.get('vehicle').hasError('required') && vinList.length > 0">
+                {{ translationData.lblPleasechoosevehicle || 'Please choose vehicle' }}
+              </mat-error>
             </div>
           </div>
+
+          <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'>
+            <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+              (click)="onReset()">{{translationData.lblReset || 'Reset'}}
+            </button>
+            <button class='no-margin' mat-flat-button color="primary" (click)="onSearch()">{{translationData.lblSearch
+              || 'Search'}}
+            </button>
+          </div>
+
         </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-          <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
-
-          <mat-form-field appearance="outline">
-            <mat-select [disabled]="vinList.length == 0" (selectionChange)="vinSelection($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}"
-              formControlName="vehicle" required>
-              <mat-option *ngFor="let vinListData of vinList" [value]="vinListData">
-                {{ vinListData }}
-              </mat-option>
-            </mat-select>
-            </mat-form-field>
-            <mat-error *ngIf="existingTripForm.get('vehicle').hasError('required') && vinList.length > 0">
-              {{ translationData.lblPleasechoosevehicle || 'Please choose vehicle' }}
-            </mat-error>
-        </div>
-      </div>
-
-      <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
-        <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
-         (click)="onReset()">{{translationData.lblReset || 'Reset'}}
-        </button>
-        <button  class='no-margin' mat-flat-button color="primary" 
-        (click)="onSearch()">{{translationData.lblSearch || 'Search'}}
-        </button>
-      </div>
-
-    </div>
-  </mat-expansion-panel>
-</mat-card>
+      </mat-expansion-panel>
+    </mat-card>
 
 
 
@@ -132,239 +164,244 @@
 
 
 
-<mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-  
-  <mat-expansion-panel  [(expanded)]="mapExpandPanel" class="full-width" fxLayoutGap="10px">
-    <mat-expansion-panel-header class="full-width">
-      <mat-panel-title>
-        <span>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Map View</span>
-          <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
-        </span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
 
-  <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+      <mat-expansion-panel [(expanded)]="mapExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+            <span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Map View</span>
+              <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
+            </span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <!-- <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
       <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Existing Trip Details</span>
     </div>
 
 </div> -->
-<!-- <div *ngIf="showMapSection"> -->
-<div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
+        <!-- <div *ngIf="showMapSection"> -->
+        <div #map class='mapDiv' style="width: 100%; height: 450px; margin-bottom: 25px"></div>
 
-<div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
-  <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-      <mat-label>
-          <span>{{ translationData.lblCorridorLabel || 'Corridor Label' }}</span>
-          <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
-      </mat-label>
-      <div *ngIf="actionType != 'view'">
-          <mat-form-field appearance="outline" class="full-width corridorLineHt">
-              <input maxlength="100" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-sm">
+          <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblCorridorLabel || 'Corridor Label' }}</span>
+              <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <mat-form-field appearance="outline" class="full-width corridorLineHt">
+                <input maxlength="100" placeholder="{{ translationData.lblEnterLabel|| 'Enter Label' }}" matInput
                   formControlName="label" required>
-          </mat-form-field>
-          <mat-error
-              *ngIf="existingTripForm.get('label').hasError('required') && existingTripForm.get('label').touched">
-              {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
-          </mat-error>
-          <mat-error
-              *ngIf="!existingTripForm.get('label').hasError('required')  && existingTripForm.get('label').hasError('whitespace')">
-              {{ translationData.lblNamecannotcontainonlywhitespace || 'Name cannot contain only whitespace'
-              }}
-          </mat-error>
-          <mat-error *ngIf="existingTripForm.get('label').hasError('specialCharsNotAllowed')">
-              {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
-          </mat-error>
-      </div>
-      <div *ngIf="actionType === 'view'">
-          <span style='font-weight: 500!important;'>{{corridorName}}</span>
-      </div>
-  </div>
-  <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-      <mat-label>
-          <span>{{ translationData.lblStartAddress || 'Start Address' }}</span>
-          <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+              </mat-form-field>
+              <mat-error
+                *ngIf="existingTripForm.get('label').hasError('required') && existingTripForm.get('label').touched">
+                {{translationData.lblPleaseEnterName || 'Please Enter Name' }}
+              </mat-error>
+              <mat-error
+                *ngIf="!existingTripForm.get('label').hasError('required')  && existingTripForm.get('label').hasError('whitespace')">
+                {{ translationData.lblNamecannotcontainonlywhitespace || 'Name cannot contain only whitespace'
+                }}
+              </mat-error>
+              <mat-error *ngIf="existingTripForm.get('label').hasError('specialCharsNotAllowed')">
+                {{ translationData.lblSpecialcharactersnotallowed || 'Special characters not allowed' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType === 'view'">
+              <span style='font-weight: 500!important;'>{{corridorName}}</span>
+            </div>
+          </div>
+          <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblStartAddress || 'Start Address' }}</span>
+              <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
-      </mat-label>
-      <div  *ngIf="actionType != 'view'">
-          <!-- <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <!-- <ng2-completer inputClass="form-control form-control-small" autocapitalize="off" autocomplete="off" autocorrect="off" 
           [datasource]="dataService" [minSearchLength]="0" (focus)="onStartFocus()"  [(ngModel)] = "searchStr" [ngModelOptions]="{standalone: true}"
           (selected)="onSelected($event)" [selectOnClick]="true"></ng2-completer> -->
-          <mat-form-field  style="background-color: lightgray;" appearance="outline" class='full-width'>
-             <input  matTooltip="{{setStartAddress}}" maxlength="50"  style='cursor: copy;' placeholder="{{ translationData.lblStartAddress|| 'Start Address' }}"
-                  matInput formControlName="startaddress" readonly required> 
-              </mat-form-field> 
-            <!-- <div>All Selected Start Address :- {{setStartAddress}} </div> -->
-          <mat-error
-              *ngIf="searchStrError">
-              {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
-          </mat-error>
-      </div>
-      <div *ngIf="actionType == 'view'">
-          <span style='font-weight: 500!important;'>{{searchStr}}</span>
-      </div>
-  </div>
-  <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
-      <mat-label>
-          <span>{{ translationData.lblEndAddress || 'End Address' }}</span>
-          <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
+              <mat-form-field style="background-color: lightgray;" appearance="outline" class='full-width'>
+                <input matTooltip="{{setStartAddress}}" maxlength="50" style='cursor: copy;'
+                  placeholder="{{ translationData.lblStartAddress|| 'Start Address' }}" matInput
+                  formControlName="startaddress" readonly required>
+              </mat-form-field>
+              <!-- <div>All Selected Start Address :- {{setStartAddress}} </div> -->
+              <mat-error *ngIf="searchStrError">
+                {{translationData.lblPleaseEnterName || 'Please Enter Start Address' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{searchStr}}</span>
+            </div>
+          </div>
+          <div class="col-sm-4 areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>
+              <span>{{ translationData.lblEndAddress || 'End Address' }}</span>
+              <span *ngIf="actionType != 'view'" class='mandatoryColor'>*</span>
 
-      </mat-label>
-      <div  *ngIf="actionType != 'view'">
-          <!-- <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
+            </mat-label>
+            <div *ngIf="actionType != 'view'">
+              <!-- <ng2-completer inputClass="form-control form-control-small"  autocapitalize="off" autocomplete="off" autocorrect="off" 
           [datasource]="dataService" [minSearchLength]="0" (focus)="onEndFocus()"  [(ngModel)] = "searchEndStr" [ngModelOptions]="{standalone: true}"
           [minSearchLength]="0" (selected)="onEndSelected($event)" [selectOnClick]="true"></ng2-completer> -->
-         
-          <mat-form-field style="background-color: lightgray;" appearance="outline" class='full-width'>
-              <input matTooltip="{{setEndAddress}}" style='cursor: copy;' maxlength="50" placeholder="{{ translationData.lblEnterAddress|| 'End Address' }}"
-                  matInput formControlName="endaddress" readonly required>
-          </mat-form-field>
-          <!-- <div>All Selected End Address :- {{setEndAddress}} </div> -->
-          <mat-error
-              *ngIf="searchEndStrError">
-              {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
-          </mat-error>
-      </div>
-      <div *ngIf="actionType == 'view'">
-          <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
-      </div>
-  </div>
-</div>
-<div class="col-sm-4 areaWidth">
-  <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
-      <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
-  </span>
-  <div *ngIf="actionType == 'view'">
-      <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
-  </div>
-  <div *ngIf="actionType != 'view'">
-      <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()" (mousemove)="sliderChanged()"></ngx-slider>
-      <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
-  <!-- <mat-label>{{min}}</mat-label>
+
+              <mat-form-field style="background-color: lightgray;" appearance="outline" class='full-width'>
+                <input matTooltip="{{setEndAddress}}" style='cursor: copy;' maxlength="50"
+                  placeholder="{{ translationData.lblEnterAddress|| 'End Address' }}" matInput
+                  formControlName="endaddress" readonly required>
+              </mat-form-field>
+              <!-- <div>All Selected End Address :- {{setEndAddress}} </div> -->
+              <mat-error *ngIf="searchEndStrError">
+                {{translationData.lblPleaseEnterName || 'Please Enter End Address' }}
+              </mat-error>
+            </div>
+            <div *ngIf="actionType == 'view'">
+              <span style='font-weight: 500!important;'>{{searchEndStr}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4 areaWidth">
+          <span>{{ translationData.lblWidth|| 'Width' }} ({{ translationData.lblKm|| 'km' }}):
+            <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput"
+              formControlName="widthInput" (focusout)="changeSliderInput()">
+          </span>
+          <div *ngIf="actionType == 'view'">
+            <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
+          </div>
+          <div *ngIf="actionType != 'view'">
+            <ngx-slider [(value)]="corridorWidth" [options]="options" (mouseup)="sliderChanged()"
+              (mousemove)="sliderChanged()"></ngx-slider>
+            <!-- <ngx-slider [(value)]="value" [options]="options"></ngx-slider> -->
+            <!-- <mat-label>{{min}}</mat-label>
       <mat-slider class='sliderStyle' [min]="0" [max]="1000000" [step]="1" (change)="sliderChanged($event)"
           thumbLabel [displayWith]="formatLabel"></mat-slider>
   <mat-label>{{max}}</mat-label> -->
 
-  </div>
-  
-</div>
-<!-- </div> -->
-</mat-expansion-panel>
+          </div>
 
-</mat-card>
+        </div>
+        <!-- </div> -->
+      </mat-expansion-panel>
 
-<!-- </div> -->
-<mat-card>
-<div>
-  <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Existing Trip Details</span>
-  <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
-</div>
-<div *ngIf='initData.length == 0'>
-  <div >No Record Found</div>
-    <div>Search detail from top to view details</div>
-  </div>
-  <div *ngIf='initData.length > 0'>
-    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <mat-form-field appearance="outline">
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search ">
-          <span matPrefix>
-            <mat-icon>search</mat-icon>
-          </span>
-        </mat-form-field>
+    </mat-card>
+
+    <!-- </div> -->
+    <mat-card>
+      <div>
+        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>Existing Trip Details</span>
+        <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
       </div>
-    </div>
+      <div *ngIf='initData.length == 0'>
+        <div>No Record Found</div>
+        <div>Search detail from top to view details</div>
+      </div>
+      <div *ngIf='initData.length > 0'>
+        <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
+          <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+            <mat-form-field appearance="outline">
+              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search ">
+              <span matPrefix>
+                <mat-icon>search</mat-icon>
+              </span>
+            </mat-form-field>
+          </div>
+        </div>
 
-    <mat-table [dataSource]="dataSource" class="table-items" matSort>
-      <ng-container matColumnDef="All">
-        <mat-header-cell *matHeaderCellDef class="max-width-10-per">
-          <mat-checkbox (change)='$event ? masterToggleForCorridor() : null'
-            [checked]='selectedCorridors.hasValue() && isAllSelectedForCorridor()'
-            [indeterminate]='selectedCorridors.hasValue() && !isAllSelectedForCorridor()'
-            [aria-label]='checkboxLabelForCorridor()'
-            matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
-          </mat-checkbox>
-          <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+        <mat-table [dataSource]="dataSource" class="table-items" matSort>
+          <ng-container matColumnDef="All">
+            <mat-header-cell *matHeaderCellDef class="max-width-10-per">
+              <mat-checkbox (change)='$event ? masterToggleForCorridor() : null'
+                [checked]='selectedCorridors.hasValue() && isAllSelectedForCorridor()'
+                [indeterminate]='selectedCorridors.hasValue() && !isAllSelectedForCorridor()'
+                [aria-label]='checkboxLabelForCorridor()'
+                matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view all on map; press DELETE button to delete all entities' }}">
+              </mat-checkbox>
+              <span style="margin: 5px 0px 0px 5px;">{{ translationData.lblAll || 'All' }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <!-- <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
         <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
         <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span> -->
-          <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
-          <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
-          <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
-          <mat-checkbox (click)='$event.stopPropagation()'
-            (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
-            [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)'
-            matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
-          </mat-checkbox>
-        </mat-cell>
-      </ng-container>
-      
-      <ng-container matColumnDef="DriverName">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.driverFirstName }} {{ row.driverLastName }}</mat-cell>
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">sadasd</mat-cell> -->
-      </ng-container>
-      <ng-container matColumnDef="distance">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance(km)' }}
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.distance }}</mat-cell>
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfd</mat-cell> -->
-      </ng-container>
-      <!-- <div *ngIf="covertedDateValue.length > 0" > -->
-      <ng-container  matColumnDef="date">
-        <mat-header-cell *matHeaderCellDef  mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
-        <mat-cell  *matCellDef="let row">
-          <!-- <div *ngFor="let dateValue of covertedDateValue;let i = index">{{dateValue[i]}}</div> -->
-          {{ setDate(row.startTimeStamp) }}
-        </mat-cell>
-        <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
-      </ng-container>
-    <!-- </div> -->
-      <ng-container matColumnDef="startPoint">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'StartPoint' }}
-        </mat-header-cell>
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell> -->
-        <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.startAddress }}" class="max-width-8-per text-truncate">{{row.startAddress}}</mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="endPoint">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'EndPoint' }}
-        </mat-header-cell>
-        <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell> -->
-        <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.endAddress }}" class="max-width-8-per text-truncate">{{ row.endAddress }}</mat-cell>
-      </ng-container>
-     
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;">
-      </mat-row>
-    </mat-table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
-    
-    <div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
-      <span *ngIf="actionType !== 'view'">
-        <button mat-flat-button color="primary" (click)="backToCorridorList()">
-          <span>Cancel</span>
-        </button>
-      </span>
-      
-      <span *ngIf="actionType === 'edit'">
-        <button mat-button color="primary" (click)="resetToEditData()" [disabled]="existingTripForm.pristine">
-          <span>Reset</span>
-        </button>
-      </span>
-      <span *ngIf="actionType !== 'view'">
-        <!-- <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!existingTripForm.valid || !strPresentStart || !strPresentEnd)"> -->
-          <button mat-button  color="primary" (click)="createCorridorClicked()" >
-            <span>Create</span>
-          </button>
-        </span>
-      </div> 
-    </div>
-      
-      
+              <span *ngIf="row.newTag" class='newTagIcon marginLeft-24'></span>
+              <span *ngIf="row.newTag" class='newTxtCss'>{{ translationData.lblNew || 'New' }}</span>
+              <span [ngClass]="{ 'marginLeft-14': row.newTag }"></span>
+              <mat-checkbox (click)='$event.stopPropagation()'
+                (change)='$event ? selectedCorridors.toggle(row) : null; checkboxClicked($event, row)'
+                [checked]='selectedCorridors.isSelected(row)' [aria-label]='checkboxLabelForCorridor(row)'
+                matTooltip="{{ translationData.lblcheckboxViewTooltipmsg || 'Select to view on map; press DELETE button to delete selected entity' }}">
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="DriverName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.driverFirstName }} {{ row.driverLastName }}
+            </mat-cell>
+            <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">sadasd</mat-cell> -->
+          </ng-container>
+          <ng-container matColumnDef="distance">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance(km)' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.distance }}</mat-cell>
+            <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">dfd</mat-cell> -->
+          </ng-container>
+          <!-- <div *ngIf="covertedDateValue.length > 0" > -->
+          <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }}</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <!-- <div *ngFor="let dateValue of covertedDateValue;let i = index">{{dateValue[i]}}</div> -->
+              {{ setDate(row.startTimeStamp) }}
+            </mat-cell>
+            <!-- <mat-cell *matCellDef="let row">sdsf</mat-cell> -->
+          </ng-container>
+          <!-- </div> -->
+          <ng-container matColumnDef="startPoint">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartPoint || 'StartPoint' }}
+            </mat-header-cell>
+            <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.startPositionlattitude }},{{ row.startPositionLongitude }}</mat-cell> -->
+            <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.startAddress }}"
+              class="max-width-8-per text-truncate">{{row.startAddress}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="endPoint">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndPoint || 'EndPoint' }}
+            </mat-header-cell>
+            <!-- <mat-cell *matCellDef="let row" class="max-width-8-per">{{ row.endPositionLattitude }},{{ row.endPositionLongitude }}</mat-cell> -->
+            <mat-cell *matCellDef="let row" style="margin-right: 10px;" matTooltip="{{row.endAddress }}"
+              class="max-width-8-per text-truncate">{{ row.endAddress }}</mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+
+        <div class="example-button-row pt-2" fxLayoutGap="20px" style="float:right;margin-top: 20px;">
+          <span *ngIf="actionType !== 'view'">
+            <button mat-flat-button color="primary" (click)="backToCorridorList()">
+              <span>Cancel</span>
+            </button>
+          </span>
+
+          <span *ngIf="actionType === 'edit'">
+            <button mat-button color="primary" (click)="resetToEditData()" [disabled]="existingTripForm.pristine">
+              <span>Reset</span>
+            </button>
+          </span>
+          <span *ngIf="actionType !== 'view'">
+            <!-- <button mat-button  color="primary" (click)="createCorridorClicked()" [disabled]="(!existingTripForm.valid || !strPresentStart || !strPresentEnd)"> -->
+            <button mat-button color="primary" (click)="createCorridorClicked()">
+              <span>Create</span>
+            </button>
+          </span>
+        </div>
+      </div>
+
+
     </mat-card>
-</form>
+  </form>
 </div>

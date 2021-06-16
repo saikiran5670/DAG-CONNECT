@@ -24,6 +24,41 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   calenderColumnData: any = [];
   detailColumnData: any = [];
   selectionForSummaryColumns = new SelectionModel(true, []);
+  selectionForDetailsColumns = new SelectionModel(true, []);
+  selectionForChartsColumns = new SelectionModel(true, []);
+  selectionForCalenderColumns = new SelectionModel(true, []);
+  lineBarDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Line Chart'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Bar Chart'
+  }];
+  
+  donutPieDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Donut Chart'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Pie Chart'
+  }];
+
+  upperLowerDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Upper'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Lower'
+  }];
   
   constructor(private reportService: ReportService) { }
 
@@ -52,9 +87,24 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   setColumnCheckbox(){
     this.selectionForSummaryColumns.clear();
+    this.selectionForDetailsColumns.clear();
+    this.selectionForChartsColumns.clear();
+    
     this.summaryColumnData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForSummaryColumns.select(element);
+      }
+    });
+    
+    this.detailColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForDetailsColumns.select(element);
+      }
+    });
+
+    this.chartsColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForChartsColumns.select(element);
       }
     });
   }
@@ -122,6 +172,42 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   }
 
+  masterToggleForDetailsColumns(){
+    if(this.isAllSelectedForDetailsColumns()){
+      this.selectionForDetailsColumns.clear();
+    }else{
+      this.detailColumnData.forEach(row => { this.selectionForDetailsColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForDetailsColumns(){
+    const numSelected = this.selectionForDetailsColumns.selected.length;
+    const numRows = this.detailColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForDetailsColumns(row?: any){
+
+  }
+
+  masterToggleForChartsColumns(){
+    if(this.isAllSelectedForChartsColumns()){
+      this.selectionForChartsColumns.clear();
+    }else{
+      this.chartsColumnData.forEach(row => { this.selectionForChartsColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForChartsColumns(){
+    const numSelected = this.selectionForChartsColumns.selected.length;
+    const numRows = this.chartsColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForChartsColumns(row?: any){
+
+  }
+
   onCancel(){
     this.setFleetUtilFlag.emit(false);
     this.setColumnCheckbox();
@@ -134,6 +220,18 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   onConfirm(){
     this.setFleetUtilFlag.emit(false);
     this.setColumnCheckbox();
+  }
+
+  onlineBarDDChange(event: any){
+
+  }
+
+  onDonutPieDDChange(event: any){
+
+  }
+
+  onUpperLowerDDChange(event: any){
+
   }
 
 }
