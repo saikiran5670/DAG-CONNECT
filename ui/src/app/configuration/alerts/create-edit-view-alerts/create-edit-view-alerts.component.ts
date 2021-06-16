@@ -30,10 +30,14 @@ export class CreateEditViewAlertsComponent implements OnInit {
   @Input() actionType: any;
   @Input() translationData: any = [];
   @Input() selectedRowData: any;
-  @Input() alertCategoryList: any;
-  @Input() alertTypeList: any;
-  @Input() vehicleGroupList: any;
-  @Input() vehicleList: any;
+  alertCategoryList: any = [];
+  alertTypeList: any = [];
+  @Input() vehicleGroupList: any = [];
+  @Input() vehicleList: any = [];
+ 
+  alertCategoryTypeMasterData: any= [];
+  alertCategoryTypeFilterData: any= [];
+  associatedVehicleData: any= [];
   options: Options = {
     floor: 0,
     ceil: 10000
@@ -60,6 +64,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   alertForm: FormGroup;
   accountOrganizationId: number;
   accountId: number;
+  accountRoleId: number;
   userType: string;
   selectedApplyOn: string;
   openAdvancedFilter: boolean= false;
@@ -85,13 +90,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
   isCriticalLevelSelected: boolean= false;
   isWarningLevelSelected: boolean= false;
   isAdvisoryLevelSelected: boolean= false;
-  isSundaySelected: boolean= false;
-  isMondaySelected: boolean= false;
-  isTuesdaySelected: boolean= false;
-  isWednesdaySelected: boolean= false;
-  isThursdaySelected: boolean= false;
-  isFridaySelected: boolean= false;
-  isSaturdaySelected: boolean= false;
   labelForThreshold: string= '';
   unitForThreshold: string= '';
   unitTypeEnum: string= '';
@@ -103,6 +101,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
   alertFeatures: any= [];
+  periodForm: any;
   @ViewChild(CreateNotificationsAlertComponent)
   notificationComponent: CreateNotificationsAlertComponent;
 
@@ -146,6 +145,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   ngOnInit(): void {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
+    this.accountRoleId = localStorage.getItem('accountRoleId') ? parseInt(localStorage.getItem('accountRoleId')) : 0;
     this.userType= localStorage.getItem("userType");
     this.alertForm = this._formBuilder.group({
       alertName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
@@ -168,24 +168,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
         CustomValidators.specialCharValidationForName('alertName')  
       ]
     });
+
+    this.loadFilterDataBasedOnPrivileges();
+
     if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
       this.breadcumMsg = this.getBreadcum();
     }
 
     this.selectedApplyOn= 'G';
-    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
-      this.selectedApplyOn = this.selectedRowData.applyOn;
-      this.setDefaultValue();
-      if(this.selectedRowData.notifications.length != 0)
-        this.panelOpenState= true;
-    }
-    else if(this.actionType == 'view'){
-      this.alert_category_selected = this.selectedRowData.category;
-      this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
-      this.onChangeAlertType(this.selectedRowData.type);
-      if(this.selectedRowData.notifications.length != 0)
-        this.panelOpenState= true;
-    }
+    
    
     console.log(JSON.parse(localStorage.getItem('accountFeatures')));
     this.alertFeatures = JSON.parse(localStorage.getItem('accountFeatures'));  
@@ -198,9 +189,12 @@ export class CreateEditViewAlertsComponent implements OnInit {
       this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
     }
    
-    if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0)
-      this.alertForm.controls.widthInput.setValue(0.1);
-      this.loadFiltersData();   
+    // if(this.alertCategoryList.length== 0 || this.alertTypeList.length == 0 || this.vehicleList.length == 0){
+       this.alertForm.controls.widthInput.setValue(0.1);
+    //   this.loadFiltersData();   
+    // }
+
+    
 }
   
 
@@ -272,14 +266,71 @@ export class CreateEditViewAlertsComponent implements OnInit {
       // this.alertCategoryList = alertActiveCategory;  
       // console.log(alertActiveFeatures); console.log(alertActiveCategory);
      
-      this.vehicleList= data["vehicleGroup"];
-      if(this.vehicleList.length > 0){
-        this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
-      }
-      this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
-      this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
+        // this.vehicleList= data["vehicleGroup"];
+        // if(this.vehicleList.length > 0){
+        //   this.updateVehiclesDataSource(this.vehicleList.filter(item => item.subcriptionStatus == false));
+        // }
+        // this.vehicleGroupList = this.getUnique(this.vehicleList, "vehicleGroupId");
+        // this.vehicleByVehGroupList= this.getUnique(this.vehicleList, "vehicleId");
       }, (error) => {
 
+    })
+  }
+
+  loadFilterDataBasedOnPrivileges(){
+    this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
+      this.alertCategoryTypeMasterData = data["enumTranslation"];
+      this.alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
+      this.associatedVehicleData = data["associatedVehicleRequest"];
+
+      let alertTypeMap = new Map();
+      this.alertCategoryTypeFilterData.forEach(element => {
+        alertTypeMap.set(element.featureKey, element.featureKey);
+      });
+
+      if(alertTypeMap != undefined){
+        this.alertCategoryTypeMasterData.forEach(element => {
+          if(alertTypeMap.get(element.key)){
+            element["value"]= this.translationData[element["key"]];
+            this.alertTypeList.push(element);
+          }
+        });
+      }
+      
+      if(this.alertTypeList.length != 0){
+        this.alertCategoryTypeMasterData.forEach(element => {
+          this.alertTypeList.forEach(item => {
+            if(item.parentEnum == element.enum && element.parentEnum == ""){
+              element["value"]= this.translationData[element["key"]];
+              this.alertCategoryList.push(element);
+            }
+          });
+        });
+        this.alertCategoryList = this.getUnique(this.alertCategoryList, "enum")
+      }
+
+      //this.vehicleList= associatedVehicleData;
+      if(this.associatedVehicleData.length > 0){
+        this.updateVehiclesDataSource(this.getUnique(this.associatedVehicleData, "vehicleId"));
+      }
+
+
+
+      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.selectedApplyOn = this.selectedRowData.applyOn;
+        this.setDefaultValue();
+        if(this.selectedRowData.notifications.length != 0)
+          this.panelOpenState= true;
+      }
+      else if(this.actionType == 'view'){
+        this.alert_category_selected = this.selectedRowData.category;
+        this.selectedApplyOn = this.selectedRowData.applyOn;
+        this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
+        this.onChangeAlertType(this.selectedRowData.type);
+        if(this.selectedRowData.notifications.length != 0)
+          this.panelOpenState= true;
+      }
+      
     })
   }
 
@@ -308,6 +359,17 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.unitTypes= [];
     this.alert_type_selected= value;
     this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
+    
+    let alertTypeObj = this.alertCategoryTypeMasterData.filter(item => item.enum == this.alert_type_selected && item.parentEnum == this.alert_category_selected)[0];
+    let vehicleGroups = this.getUnique(this.alertCategoryTypeFilterData.filter(item => item.featureKey == alertTypeObj.key), "vehicleGroupId");
+    vehicleGroups.forEach(element => {
+      let vehGrp = this.associatedVehicleData.filter(item => item.vehicleGroupId == element.vehicleGroupId);
+      if(vehGrp.length > 0){
+        this.vehicleGroupList.push(vehGrp[0]);
+      }
+    });
+    this.vehicleGroupList = this.getUnique(this.vehicleGroupList, "vehicleGroupId");
+
     if(this.alert_category_selected === 'L' && (this.alert_type_selected === 'N' || this.alert_type_selected === 'X' || this.alert_type_selected === 'C')){
       if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         this.alertForm.get('alertLevel').setValue(this.selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType);
@@ -1182,69 +1244,6 @@ PoiCheckboxClicked(event: any, row: any) {
     }
   }
 
-  onChangeSundaySelection(event){
-    if(event.checked){
-      this.isSundaySelected= true;
-    }
-    else{
-      this.isSundaySelected= false;
-    }
-  }
-
-  onChangeMondaySelection(event){
-    if(event.checked){
-      this.isMondaySelected= true;
-    }
-    else{
-      this.isMondaySelected= false;
-    }
-  }
-
-  onChangeTuesdaySelection(event){
-    if(event.checked){
-      this.isTuesdaySelected= true;
-    }
-    else{
-      this.isTuesdaySelected= false;
-    }
-  }
-
-  onChangeWednesdaySelection(event){
-    if(event.checked){
-      this.isWednesdaySelected= true;
-    }
-    else{
-      this.isWednesdaySelected= false;
-    }
-  }
-
-  onChangeThursdaySelection(event){
-    if(event.checked){
-      this.isThursdaySelected= true;
-    }
-    else{
-      this.isThursdaySelected= false;
-    }
-  }
-
-  onChangeFridaySelection(event){
-    if(event.checked){
-      this.isFridaySelected= true;
-    }
-    else{
-      this.isFridaySelected= false;
-    }
-  }
-
-  onChangeSaturdaySelection(event){
-    if(event.checked){
-      this.isSaturdaySelected= true;
-    }
-    else{
-      this.isSaturdaySelected= false;
-    }
-  }
-
   onReset(){ //-- Reset
     this.selectedPOI.clear();
     this.selectedGeofence.clear();
@@ -1318,7 +1317,7 @@ PoiCheckboxClicked(event: any, row: any) {
           "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
-      alertUrgencyLevelRefs.push(urgenyLevelObj);
+      // alertUrgencyLevelRefs.push(urgenyLevelObj);
 
       // Entering Zone, Exiting Zone
       if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
@@ -1440,7 +1439,11 @@ PoiCheckboxClicked(event: any, row: any) {
       }
       else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours if Service
         alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
+        urgenyLevelObj["alertTimingDetails"] = alertTimingRefHoursOfService;
+        // this.periodForm = this.periodSelectionComponent.periodSelectionForm;
       }
+
+      alertUrgencyLevelRefs.push(urgenyLevelObj);
     }
     else{
       if(this.isCriticalLevelSelected){

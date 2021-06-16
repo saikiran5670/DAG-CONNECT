@@ -1,0 +1,194 @@
+<div class="bgtrans">
+    <form [formGroup]="tripForm">
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSearchReportParameters || 'Search Report Parameters' }}</span>
+                <!-- <span> ({{ translationData.lblMaxrange3months || 'Max range 3 months' }})</span> -->
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+              <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblTimeRange || 'Time Range' }} <span class='mandatoryColor'>*</span></mat-label>
+                <div style='margin-top: 5px;'>
+                  <button [disabled]="selectionTab == 'today'" (click)="selectionTimeRange('today')" [ngClass]="{'selectedBtn': selectionTab == 'today'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblToday || 'Today' }}</button>
+                  <button [disabled]="selectionTab == 'yesterday'" (click)="selectionTimeRange('yesterday')" [ngClass]="{'selectedBtn': selectionTab == 'yesterday'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblYesterday || 'Yesterday' }}</button>
+                  <button [disabled]="selectionTab == 'lastweek'" (click)="selectionTimeRange('lastweek')" [ngClass]="{'selectedBtn': selectionTab == 'lastweek'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastWeek || 'Last Week' }}</button>
+                  <button [disabled]="selectionTab == 'lastmonth'" (click)="selectionTimeRange('lastmonth')" [ngClass]="{'selectedBtn': selectionTab == 'lastmonth'}" class='margin-right-10 no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLastMonth|| 'Last Month' }}</button>
+                  <button [disabled]="selectionTab == 'last3month'" (click)="selectionTimeRange('last3month')" [ngClass]="{'selectedBtn': selectionTab == 'last3month'}" class='no-margin margin-bottom-sm' mat-raised-button color="primary">{{translationData.lblLast3Months || 'Last 3 Months' }}</button>
+                </div>
+              </div>
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                    <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
+                        {{ rer.vehicleGroupName }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field> 
+                <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGroupListData.length > 0">
+                  {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
+                </mat-error>
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width margin-bottom-xlg" fxLayoutGap="10px">
+              <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                  <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblFrom || 'From' }} <span class='mandatoryColor'>*</span></mat-label>
+                    <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                      <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-form-field appearance="outline">
+                          <input matInput [(ngModel)]="startDateValue" (dateChange)="changeStartDateEvent($event)" [min]='last3MonthDate' [max]='endDateValue' [matDatepicker]="startPicker" formControlName="startDate">
+                          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                          <mat-datepicker #startPicker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+                          <span class='timeAdjustSpan'>{{ startTimeDisplay }}</span> 
+                          <input [max]='selectedEndTime' [(ngModel)]="selectedStartTime" class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleStartTimepicker" [disableClick]="true" formControlName="startTime" readonly>
+                          <ngx-material-timepicker-toggle [for]="toggleStartTimepicker"></ngx-material-timepicker-toggle>
+                          <ngx-material-timepicker (timeChanged)="startTimeChanged($event)" #toggleStartTimepicker></ngx-material-timepicker>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="areaWidth min-width-40-per" fxLayout="column" fxLayoutAlign="left">
+                    <mat-label>{{ translationData.lblTo || 'To' }} <span class='mandatoryColor'>*</span></mat-label>
+                    <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+                      <div class="areaWidth max-width-50-per" fxLayout="column" fxLayoutAlign="left">
+                        <mat-form-field appearance="outline">
+                          <input matInput [(ngModel)]="endDateValue" (dateChange)="changeEndDateEvent($event)" [min]='startDateValue' [max]='todayDate' [matDatepicker]="endPicker" formControlName="endDate">
+                          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                          <mat-datepicker #endPicker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+                        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+                          <span class='timeAdjustSpan'>{{ endTimeDisplay }}</span>
+                          <input [min]='selectedStartTime' [(ngModel)]="selectedEndTime"  class='inputBox' [format]="prefTimeFormat" [ngxTimepicker]="toggleEndTimepicker" [disableClick]="true" formControlName="endTime" readonly>
+                          <ngx-material-timepicker-toggle [for]="toggleEndTimepicker"></ngx-material-timepicker-toggle>
+                          <ngx-material-timepicker (timeChanged)="endTimeChanged($event)" #toggleEndTimepicker></ngx-material-timepicker>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
+                <mat-form-field appearance="outline">
+                  <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                    <!-- <mat-option value="0">--All--</mat-option> -->
+                    <mat-option *ngFor="let rer of vehicleListData" [value]="rer.vehicleId">
+                        {{ rer.vehicleName }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-error *ngIf="tripForm.get('vehicle').hasError('required') && vehicleListData.length > 0">
+                  {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
+                </mat-error>
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end" class='areaWidth'> 
+              <button class='resetCancelBtnColor margin-right-10 no-margin' mat-raised-button color="primary"
+                (click)='onReset()'>{{translationData.lblReset || 'Reset' }}</button>
+              <button [disabled]="!tripForm.valid" class='no-margin' mat-raised-button color="primary"
+                (click)='onSearch()'>{{ translationData.lblSearch || 'Search' }}</button>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-card>
+    </form>
+
+    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetUtilisationDetails || 'Fleet Utilisation Details' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div *ngIf='initData.length == 0'>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
+          </div>
+          <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+            <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleGroup || 'Vehicle Group' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehGroupName }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleVIN || 'Vehicle VIN' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vin }}</span>
+                  </span>
+                </div>
+                <div *ngIf='!showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblTo || 'To' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                  </span>
+                </div>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+                <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblTo || 'To' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.vehicleName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblVehicleName || 'Vehicle Name' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.vehicleName }}</span>
+                  </span>
+                </div>
+                <div *ngIf='showField.regNo' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <span>{{ translationData.lblRegPlateNumber || 'Reg. Plate Number' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.regNo }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                <mat-form-field appearance="outline">
+                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                    <span matPrefix><mat-icon>search</mat-icon></span>
+                </mat-form-field>
+              </div>
+              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+                <button mat-button [matMenuTriggerFor]="menu">
+                  <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
+                  <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
+                </mat-menu>
+              </div>
+            </div>
+            
+<!-- Fleet Table -->
+
+          </div>
+          <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+        </mat-expansion-panel>
+      </mat-card>
+  </div>

@@ -96,7 +96,10 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
         }
-
+        public async Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN)
+        {
+            return await _reportRepository.GetReportSearchParameterByVIN(ReportID, StartDateTime, EndDateTime, VIN);
+        }
         #endregion
 
         #region Eco Score Report - Create Profile
@@ -178,5 +181,19 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Fleet Utilizaiton Report
+        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter)
+        {
+            List<FleetUtilizationDetails> lstFleetUtilizationDetails = await _reportRepository.GetFleetUtilizationDetails(FleetFilter);
+            return lstFleetUtilizationDetails;
+        }
+
+        public async Task<List<Calender_Fleetutilization>> GetCalenderData(TripFilterRequest TripFilters)
+        {
+            List<Calender_Fleetutilization> lstFleetUtilizationDetails = await _reportRepository.GetCalenderData(TripFilters);
+            return lstFleetUtilizationDetails;
+        }
+
+        #endregion
     }
 }

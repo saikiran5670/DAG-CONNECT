@@ -11,6 +11,8 @@ import { Validators } from '@angular/forms';
 })
 export class PeriodSelectionFilterComponent implements OnInit {
 @Input() translationData : any = [];
+@Input() selectedRowData: any;
+@Input() actionType: any;
 isMondaySelected:  boolean= false;
 periodSelectionForm: FormGroup;
 localStLanguage: any;
@@ -18,6 +20,8 @@ organizationId: number;
 accountId: number;
 FormArrayItems:  FormArray;
 days: any= [];
+weekDaySelected: boolean = false;
+checkboxChecked: boolean = false;
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -32,9 +36,25 @@ days: any= [];
       FormArrayItems : this._formBuilder.array([this.initPeriodItems()]),
     });
 
-    for(let i = 1; i < 7; i++ )
-      this.weekDays().push(this.initPeriodItems());
-      
+    if(this.actionType == 'create'){
+    for(let i = 0; i < 6; i++ ){
+    this.weekDays().push(this.initPeriodItems());
+    }
+  }
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      for(let i = 0; i < 6; i++ ){
+        this.weekDays().push(this.initPeriodItems());
+        this.onDeleteCustomPeriod(i,0);
+        }
+    }
+
+    if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
+    this.selectedRowData.alertUrgencyLevelRefs.length > 0 && 
+    this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0)
+ {
+   this.setDefaultValues();
+ }
+ 
   }
 
   initPeriodItems(): FormGroup{
@@ -55,9 +75,11 @@ days: any= [];
   onChangeDaySelection(event, periodIndex){
     if(event.checked){
       this.weekDays().at(periodIndex).get("fulldayCustom").setValue('A');
+      this.weekDaySelected = true;
     }
     else{
       this.weekDays().at(periodIndex).get("fulldayCustom").setValue('');
+      this.weekDaySelected = false;
     }
   }
   
@@ -65,9 +87,28 @@ days: any= [];
      this.customPeriods(periodIndex).removeAt(customIndex);
   }
 
-  addCustomPeriod(periodIndex){
+  addCustomPeriod(periodIndex, totalTime? ,isButtonClicked?){
+    if(this.actionType == 'create'){
     if(this.customPeriods(periodIndex).length < 4)
       this.customPeriods(periodIndex).push(this.initCustomPeriodItems());
+    }
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      if(isButtonClicked){
+        if(this.customPeriods(periodIndex).length < 4){
+        this.customPeriods(periodIndex).push(this.initCustomPeriodItems());}
+      }
+      else{
+        this.customPeriods(periodIndex).push(this.setCustomPeriodItems(totalTime[0],totalTime[1]));
+      }
+    }
+      
+  }
+
+  setCustomPeriodItems(fromTime,toTime): FormGroup{
+    return this._formBuilder.group({
+      fromTime : new FormControl(fromTime),
+      toTime:  new FormControl(toTime)
+    });
   }
 
   weekDays(): FormArray {
@@ -78,6 +119,47 @@ days: any= [];
     return this.weekDays().at(periodIndex).get("FormArrayCustomItems") as FormArray
   }
 
+setDefaultValues(){
+  if(this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0){
+  this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
+    // this.addMultipleItems(false,element);
+  
+    element.dayType.forEach((item,index) =>{
+        if(item == true){
+          this.checkboxChecked = true;
+          this.setDayAndCustomDetails(index,element);
+        }
+      })  
+  });
+}
+}
+
+setDayAndCustomDetails(index,element){
+  this.weekDays().at(index).get("daySelection").setValue('true');
+  if(element.periodType == 'A'){
+    this.weekDays().at(index).get("fulldayCustom").setValue('A');
+  }
+  else if(element.periodType == 'C'){
+    this.weekDays().at(index).get("fulldayCustom").setValue('C');
+    let totalTime = this.convertTimeIntoHours(element.startDate,element.endDate);
+    this.addCustomPeriod(index, totalTime);
+  }
+}
+
+
+convertTimeIntoHours(startTime,EndTime){
+  let startdateObj = new Date(startTime * 1000);
+  let starthours = startdateObj.getUTCHours();
+  let startminutes = startdateObj.getUTCMinutes();
+  let newStartTime = starthours.toString().padStart(2, '0') + ':' + startminutes.toString().padStart(2, '0');
+  let endDateobj = new Date(EndTime * 1000);
+  let endhours = endDateobj.getUTCHours();
+  let endminutes = endDateobj.getUTCMinutes();
+  let newEndTime = endhours.toString().padStart(2, '0') + ':' + endminutes.toString().padStart(2, '0');
+
+return [newStartTime, newEndTime]
+}
+
 getAlertTimingPayload(){
   let alertTimingRef= [];
   let weekDay : any;
@@ -85,21 +167,26 @@ getAlertTimingPayload(){
   let tempObj: any;
   this.weekDays().controls.forEach((element, index) => {
     weekDay = element['controls'];
-    if(weekDay.daySelection.value){
-      if(weekDay.fulldayCustom.value == 'C'){
-        this.customPeriods(index).controls.forEach(item =>{
+    if (weekDay.daySelection.value) {
+      if (weekDay.fulldayCustom.value == 'C') {
+        this.customPeriods(index).controls.forEach(item => {
           customTime = item['controls'];
+          let startTime = customTime.fromTime.value;
+          let endTime = customTime.toTime.value;
+          let startTimeSeconds = this.convertTimeToSeconds(startTime);
+          let endTimeSeconds = this.convertTimeToSeconds(endTime);
           tempObj = {
             "type": 'U',
             "refId": 0,
             "dayType": [
-              true, false, false, false, false, false, false
+              false, false, false, false, false, false, false
             ],
             "periodType": 'C',
-            "startDate": customTime.fromTime.value,
-            "endDate": customTime.toTime.value,
+            "startDate": startTimeSeconds,
+            "endDate": endTimeSeconds,
             "state": "A"
           }
+          tempObj["dayType"][index] = true;
           alertTimingRef.push(tempObj);
         })
       }
@@ -108,13 +195,14 @@ getAlertTimingPayload(){
           "type": 'U',
           "refId": 0,
           "dayType": [
-            true, false, false, false, false, false, false
+            false, false, false, false, false, false, false
           ],
           "periodType": 'A',
           "startDate": 0,
           "endDate": 0,
           "state": "A"
         }
+        tempObj["dayType"][index] = true;
         alertTimingRef.push(tempObj);
       }
     }
@@ -123,5 +211,10 @@ getAlertTimingPayload(){
   return alertTimingRef;
 }
 
+convertTimeToSeconds(time:any){
+  let newstartTime= time.split(":");
+  return (newstartTime[0] * 60 * 60) + (newstartTime[1] * 60);
+  
+}
 
 }

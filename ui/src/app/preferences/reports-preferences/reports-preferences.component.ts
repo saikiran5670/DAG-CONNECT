@@ -25,10 +25,13 @@ export class ReportsPreferencesComponent implements OnInit {
   accountOrganizationId: number;
   roleID: number;
   selectionForColumns = new SelectionModel(true, []);
-  showReport: boolean = false;
-  editFlag: boolean = false;
-  tripReportId = 1; //- Trip report
+  showTripReport: boolean = false;
+  showFleetUtilisationReport: boolean = false;
+  editTripFlag: boolean = false;
+  editFleetUtilisationFlag: boolean = false;
+  tripReportId = 0; //- Trip report
   reqField: boolean = false;
+  reportListData: any = [];
 
   constructor(  private reportService: ReportService, private router: Router) { }
 
@@ -62,17 +65,24 @@ export class ReportsPreferencesComponent implements OnInit {
 
   loadReportData(){
     this.showLoadingIndicator = true;
-    this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
-      this.initData = data["userPreferences"];
-      this.initData = this.getTranslatedColumnName(this.initData);
-      this.setColumnCheckbox();
-      this.validateRequiredField();
-      this.hideloader();
-      this.updatedTableData(this.initData);
-    }, (error) => {
-      this.initData = [];
-      this.hideloader();
-      this.updatedTableData(this.initData);
+    this.reportService.getReportDetails().subscribe((reportList: any)=>{
+      this.reportListData = reportList.reportDetails;
+      this.tripReportId = this.reportListData.filter(i => i.name == 'Trip Report')[0].id;
+      this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+        this.initData = data["userPreferences"];
+        this.initData = this.getTranslatedColumnName(this.initData);
+        this.setColumnCheckbox();
+        this.validateRequiredField();
+        this.hideloader();
+        this.updatedTableData(this.initData);
+      }, (error) => {
+        this.initData = [];
+        this.hideloader();
+        this.updatedTableData(this.initData);
+      });
+    }, (err)=>{
+      console.log('Report not found...');
+      this.reportListData = [];
     });
   }
 
@@ -119,7 +129,7 @@ export class ReportsPreferencesComponent implements OnInit {
   }
 
   editTripReportPreferences(){
-    this.editFlag =  true;
+    this.editTripFlag = true;
   }
 
   isAllSelectedForColumns(){
@@ -163,7 +173,7 @@ export class ReportsPreferencesComponent implements OnInit {
   }
 
   onCancel(){
-    this.editFlag = false;
+    this.editTripFlag = false;
     this.setColumnCheckbox();
     this.validateRequiredField();
   }
@@ -197,7 +207,7 @@ export class ReportsPreferencesComponent implements OnInit {
     this.reportService.createTripReportPreference(objData).subscribe((tripPrefData: any) => {
       this.loadReportData();
       this.successMsgBlink(this.getSuccessMsg());
-      this.editFlag = false;
+      this.editTripFlag = false;
       if((this.router.url).includes("tripreport")){
         this.reloadCurrentComponent();
       }
@@ -227,6 +237,14 @@ export class ReportsPreferencesComponent implements OnInit {
 
   checkboxClicked(event: any, rowData: any){
     this.validateRequiredField();
+  }
+
+  editFleetUtilisationPreferences(){
+    this.editFleetUtilisationFlag = true;
+  }
+
+  updateEditFleetUtilFlag(flag: any){
+    this.editFleetUtilisationFlag = flag;
   }
 
 }

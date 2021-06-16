@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.alert.entity
                         }
                     }
 
-                    if (alertItem.Aletimeurg_id > 0 && alertItem.Aletimeurg_ref_id == alertItem.Alefil_alert_urgency_level_id)
+                    if (alertItem.Aletimeurg_id > 0 && alertItem.Aletimeurg_ref_id == alertItem.Aleurg_id)
                     {
                         if (!alertTimingUrgencyLookup.TryGetValue(Convert.ToInt32(alertItem.Aletimeurg_id), out _))
                         {

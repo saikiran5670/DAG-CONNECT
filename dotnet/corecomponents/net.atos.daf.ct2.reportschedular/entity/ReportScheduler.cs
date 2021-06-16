@@ -9,11 +9,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public int OrganizationId { get; set; }
         public int ReportId { get; set; }
-        public int VehicleGroupId { get; set; }
-        public int DriverId { get; set; }
-        public char FrequencyType { get; set; }
-        public char Status { get; set; }
-        public char Type { get; set; }
+        public string FrequencyType { get; set; }
+        public string Status { get; set; }
+        public string Type { get; set; }
         public string FileName { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
@@ -29,6 +27,8 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long ReportDispatchTime { get; set; }
         public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
         public List<ScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<ScheduledReportRecipient>();
+        public List<ScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<ScheduledReportVehicleRef>();
+        public ScheduledReportDriverRef ScheduledReportDriverRef { get; set; }
     }
     public class ScheduledReport
     {
@@ -47,8 +47,30 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public int ScheduleReportId { get; set; }
         public string Email { get; set; }
-        public char State { get; set; }
+        public string State { get; set; }
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
+    }
+
+    public class ScheduledReportDriverRef
+    {
+        public int ScheduleReportId { get; set; }
+        public int DriverId { get; set; }
+        public string State { get; set; }
+        public long CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public long ModifiedAt { get; set; }
+        public int ModifiedBy { get; set; }
+    }
+
+    public class ScheduledReportVehicleRef
+    {
+        public int ScheduleReportId { get; set; }
+        public int VehicleGroupId { get; set; }
+        public string State { get; set; }
+        public long CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public long ModifiedAt { get; set; }
+        public int ModifiedBy { get; set; }
     }
 }

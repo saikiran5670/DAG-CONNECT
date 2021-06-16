@@ -6,6 +6,7 @@
         class='mandatoryColor'>*</span>
       <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per
         day)'}}</mat-label>
+        <mat-label style="color: red;" *ngIf="weekDaySelected == false">{{ translationData.lblPleaseSelectAtLeastOneDay || 'Please select at least one day'}}</mat-label>
     </mat-label>
     <!-- calendar -->
     <div formArrayName="FormArrayItems">
@@ -62,7 +63,7 @@
               </div>
               </div>   
               <div  fxLayout="column" class="max-width-8-per"  fxLayoutAlign="left" fxLayoutGap="10px">
-                <button class='button1' mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex)'>
+                <button class='button1' mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex, [], true)'>
                   {{ translationData.lblAdd || 'Add' }}</button>
               </div>
             </div>

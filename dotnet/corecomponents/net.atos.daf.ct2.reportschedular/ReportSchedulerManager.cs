@@ -23,5 +23,16 @@ namespace net.atos.daf.ct2.reportscheduler
             reportparameter.ReceiptEmails = await _reportSchedulerRepository.GetRecipientsEmails(organizationid);
             return reportparameter;
         }
+
+        public async Task<ReportScheduler> CreateReportSchedular(ReportScheduler report)
+        {
+            return await _reportSchedulerRepository.CreateReportSchedular(report);
+        }
+
+        public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
+        {
+            return await _reportSchedulerRepository.CreateReportSchedular(report);
+        }
+
     }
 }

@@ -685,8 +685,10 @@
                     </mat-form-field>
                   </div>
                 </div> -->
-                <app-period-selection-filter 
-                [translationData] = 'translationData'></app-period-selection-filter>
+                <app-period-selection-filter  #periodComponent
+                [translationData] = 'translationData'
+                [selectedRowData] = 'selectedRowData'
+                [actionType]='actionType'></app-period-selection-filter>
              </div>
            </div>
           

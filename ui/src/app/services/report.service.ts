@@ -106,6 +106,16 @@ export class ReportService {
         )
         .pipe(catchError(this.handleError));
   }
+
+  getReportDetails(){
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      .pipe(catchError(this.handleError));
+  }
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);
