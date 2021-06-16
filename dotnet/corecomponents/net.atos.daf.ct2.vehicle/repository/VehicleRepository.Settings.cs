@@ -10,6 +10,28 @@ namespace net.atos.daf.ct2.vehicle.repository
 {
     public partial class VehicleRepository
     {
+        public async Task<List<VehicleConnect>> VehicleConnectAll(List<VehicleConnect> vehicleConnects)
+        {
+            var connectedVehicles = new List<VehicleConnect>();
+            try
+            {
+                foreach (var vehicle in vehicleConnects)
+                {
+                    bool result = await SetOptInStatus(vehicle.Opt_In, vehicle.ModifiedBy, vehicle.VehicleId);
+                    if (result)
+                    {
+                        connectedVehicles.Add(vehicle);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.ToString());
+            }
+            return connectedVehicles;
+        }
+
+
         public async Task<IEnumerable<Vehicle>> GetVehicleSetting(VehicleSettings vehicleSettings)
         {
 
@@ -58,28 +80,6 @@ namespace net.atos.daf.ct2.vehicle.repository
                 vehicles.Add(Map(record));
             }
             return vehicles.AsEnumerable();
-        }
-        public async Task<VehicleConnect> UpdateVehicleConnection(VehicleConnect vehicleConnect)
-        {
-            var vehicleSetting = new VehicleConnect();
-            await VehicleOptInOptOutHistory(vehicleConnect.Id);
-            var parameter = new DynamicParameters();
-            if (vehicleConnect.Opt_In == (char)VehicleStatusType.OptIn && !vehicleConnect.IsConnected)
-            {
-                vehicleConnect.Status = (char)VehicleCalculatedStatus.Connected;
-            }
-            var QueryStatement = @" UPDATE master.vehicle
-                                        SET 
-                                        status= @status                                        
-        	                           ,modified_by= @modified_by
-                                       ,status_changed_date= @status_changed_date
-                                        WHERE id = @id
-                                        RETURNING id;";
-            parameter.Add("@id", vehicleConnect.Id);
-            parameter.Add("@status", vehicleConnect.Status);
-            parameter.Add("@status_changed_date", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            int vehicleID = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
-            return vehicleSetting;
         }
     }
 }
