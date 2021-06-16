@@ -181,5 +181,13 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Fleet Utilizaiton Report
+        public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter)
+        {
+            List<FleetUtilizationDetails> lstFleetUtilizationDetails = await _reportRepository.GetFleetUtilizationDetails(FleetFilter);
+            return lstFleetUtilizationDetails;
+        }
+
+        #endregion
     }
 }
