@@ -21,6 +21,7 @@ rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScore
 rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScoreProfileResponse);
 rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
+rpc GetFleetCalenderDetails (TripFilterRequest) returns (FleetUtilizationCalenderResponse);
 }
 
 enum Responsecode{
@@ -373,6 +374,12 @@ message FleetUtilizationDetailsResponse {
     string message = 3;
 }
 
+message FleetUtilizationCalenderResponse {
+    repeated FleetUtilizationcalender CalenderDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
 message FleetUtilizationDetails {
     string VehicleName = 1;
     string VIN = 2;
@@ -387,6 +394,20 @@ message FleetUtilizationDetails {
     double AverageSpeed = 11;
     double AverageWeightPerTrip = 12;
     int64 Odometer = 13;
+
+}
+
+message FleetUtilizationcalender {
+    string VehicleName = 1;
+    string VIN = 2;
+    int64 CalenderDate = 3;
+    double Averagedistance = 4;
+    double Averagetriptime  = 5;
+    double Averagedrivingtime = 6;
+    double Averageidleduration = 7;
+    double Averagedistanceperday = 8;
+    double AverageSpeed = 9;
+   
 
 }
 
