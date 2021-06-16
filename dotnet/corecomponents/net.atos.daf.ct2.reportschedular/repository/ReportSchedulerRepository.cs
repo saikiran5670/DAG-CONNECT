@@ -11,10 +11,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     public class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
-
-        public ReportSchedulerRepository(IDataAccess dataAccess)
+        private readonly IDataMartDataAccess _dataMartdataAccess;
+        public ReportSchedulerRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
         }
 
         #region Activate Report Scheduler
@@ -57,7 +58,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterType = new DynamicParameters();
                 var queryStatement = @"SELECT distinct 
                                         acc.email as Email from master.account acc
-                                        Where organization_id= @organization_id
+										INNER JOIN master.accountrole accrole
+										ON acc.id = accrole.account_id
+                                        Where accrole.organization_id= @organization_id
                                         AND state='A' AND email is not null;";
                 parameterType.Add("@organization_id", organizationid);
                 IEnumerable<ReceiptEmails> reporttype = await _dataAccess.QueryAsync<ReceiptEmails>(queryStatement, null);
@@ -74,7 +77,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterType = new DynamicParameters();
-                var queryStatement = @"SELECT
+                var queryStatement = @"SELECT distinct
                                        id as Id
                                       ,dr.first_name || ' ' || dr.last_name AS DriverName                                         		  
                                       ,dr.driver_id as DriverId                                        		                                 		                                    		  
@@ -82,7 +85,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                        master.driver dr
                                        Where dr.organization_id= @organization_id;";
                 parameterType.Add("@organization_id", organizationid);
-                IEnumerable<DriverDetail> driverdetails = await _dataAccess.QueryAsync<DriverDetail>(queryStatement, null);
+                IEnumerable<DriverDetail> driverdetails = await _dataMartdataAccess.QueryAsync<DriverDetail>(queryStatement, null);
                 return driverdetails;
             }
             catch (Exception)
@@ -236,7 +239,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
-
 
         #endregion
 

@@ -1111,4 +1111,16 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
 }
 .padding-item{
     padding: revert;
+}
+
+.custom-checkbox{
+    .mat-checkbox-layout{
+        margin-bottom: 0px !important;
     }
+
+    &.mat-checkbox-disabled{
+        .mat-checkbox-label{
+            color: rgba(0,0,0,1) !important;
+        }
+    }
+}

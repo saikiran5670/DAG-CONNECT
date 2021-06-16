@@ -1,6 +1,6 @@
 import { Injectable,Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { HereService } from '../../services/here.service';
-import { Util } from '../../shared/util';
+import { HereService } from '../services/here.service';
+import { Util } from '../shared/util';
 
 declare var H: any;
 
@@ -193,6 +193,21 @@ export class ReportMapService {
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+    });
+    return gridData;
+  }
+
+  getDriverTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    gridData.forEach(element => {
+      element.driverName = element.driverName;
+      element.driverId = element.driverId;
+      element.startTime = this.getStartTime(element.startTime, dateFormat, timeFormat, timeZone);
+      element.endTime = this.getEndTime(element.endTime, dateFormat, timeFormat, timeZone);
+      element.driveTime = this.getHhMmTime(element.driveTime);
+      element.workTime = this.getHhMmTime(element.workTime);
+      element.serviceTime = this.getHhMmTime(element.serviceTime);
+      element.restTime = this.getHhMmTime(element.restTime);
+      element.availableTime = this.getHhMmTime(element.availableTime);
     });
     return gridData;
   }

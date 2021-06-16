@@ -8,7 +8,7 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from '../../services/report.service';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { ReportMapService } from '../trip-report/report-map.service';
+import { ReportMapService } from '../report-map.service';
 import { filter } from 'rxjs/operators';
 import { MatTableExporterDirective } from 'mat-table-exporter';
 import jsPDF from 'jspdf';
