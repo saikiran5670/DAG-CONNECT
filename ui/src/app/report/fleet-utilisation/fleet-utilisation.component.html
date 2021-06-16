@@ -111,13 +111,9 @@
         <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblFleetUtilisationDetails || 'Fleet Utilisation Details' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngIf='initData.length == 0'>
-            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
-          </div>
           <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
             <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
@@ -167,28 +163,101 @@
                 </div>
               </div>
             </div>
-            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
-              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-                <mat-form-field appearance="outline">
-                    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
-                    <span matPrefix><mat-icon>search</mat-icon></span>
-                </mat-form-field>
-              </div>
-              <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-                <button mat-button [matMenuTriggerFor]="menu">
-                  <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
-                  <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
-                </mat-menu>
-              </div>
+            <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="40px">
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+                        <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
+                    </div>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>3</span>
+                    </div>
+                </div>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+                        <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
+                    </div>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>402.2 km</span>
+                    </div>
+                </div>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+                        <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
+                    </div>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>12</span>
+                    </div>
+                </div>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+                        <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
+                    </div>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>57.47 km</span>
+                    </div>
+                </div>
+                <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+                        <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
+                    </div>
+                    <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>18:10 hh:mm</span>
+                    </div>
+                </div>
             </div>
-            
-<!-- Fleet Table -->
-
+           
           </div>
-          <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         </mat-expansion-panel>
       </mat-card>
+      <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel  [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalender || 'Calender' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <!-- <mwl-calendar-month-view [viewDate]="viewDate">
+          </mwl-calendar-month-view> -->
+      </mat-expansion-panel>
+      </mat-card>
+
+      <!-- Fleet Table -->
+      
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div *ngIf='initData.length == 0'>
+            <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
+            <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
+          </div>
+          <div *ngIf='initData.length > 0'>
+          <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+              <mat-form-field appearance="outline">
+                  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{ translationData.lblSearch || 'Search' }}">
+                  <span matPrefix><mat-icon>search</mat-icon></span>
+              </mat-form-field>
+            </div>
+            <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
+              <button mat-button [matMenuTriggerFor]="menu">
+                <mat-icon>file_upload</mat-icon>{{ translationData.lblExport || 'Export' }}<mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="exportAsExcelFile()">{{ translationData.lblExcel || 'Excel' }}</button>
+                <button mat-menu-item (click)="exportAsPDFFile()">{{ translationData.lblPDF || 'PDF' }}</button>
+              </mat-menu>
+            </div>
+          </div>
+          <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
+          matSort #exporter="matTableExporter">
+
+          </mat-table>
+          </div>
+        </mat-expansion-panel>
+      </mat-card>
+
   </div>
