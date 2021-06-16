@@ -1,6 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
+import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-fleet-utilisation-preference',
@@ -13,7 +15,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() reportListData: any;
   @Input() editFlag: any;
   @Output() setFleetUtilFlag = new EventEmitter<boolean>();
+  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   reportId: any;
+  slideState: any = false;
   localStLanguage: any;
   accountId: any;
   accountOrganizationId: any;
@@ -27,6 +31,8 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   selectionForDetailsColumns = new SelectionModel(true, []);
   selectionForChartsColumns = new SelectionModel(true, []);
   selectionForCalenderColumns = new SelectionModel(true, []);
+  timeDisplay: any = '00:00';
+  fleetUtilForm: FormGroup;
   lineBarDD: any = [{
     status: 'A',
     id: 1,
@@ -60,7 +66,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     name: 'Lower'
   }];
   
-  constructor(private reportService: ReportService) { }
+  constructor(private reportService: ReportService, private _formBuilder: FormBuilder) { }
 
   ngOnInit() { 
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -68,6 +74,20 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
     let repoId: any = this.reportListData.filter(i => i.name == 'Fleet Utilisation Report');
+    
+    this.fleetUtilForm = this._formBuilder.group({
+      distanceChart: [],
+      vehicleChart: [],
+      mileageChart: [],
+      timeChart: [],
+      mileageTarget: [],
+      timeTarget: [],
+      mileageThreshold: [],
+      timeThreshold: [],
+      calenderView: [],
+      calenderViewMode: []
+    });
+
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
     }else{
@@ -107,6 +127,8 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         this.selectionForChartsColumns.select(element);
       }
     });
+
+    this.setDefaultFormValues();
   }
 
   preparePrefData(prefData: any){
@@ -222,6 +244,21 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.setColumnCheckbox();
   }
 
+  setDefaultFormValues(){
+    this.timeDisplay = '00:00';
+    this.slideState = false;
+    this.fleetUtilForm.get('distanceChart').setValue(1);
+    this.fleetUtilForm.get('vehicleChart').setValue(1);
+    this.fleetUtilForm.get('mileageChart').setValue(1);
+    this.fleetUtilForm.get('timeChart').setValue(1);
+    this.fleetUtilForm.get('mileageTarget').setValue(0);
+    this.fleetUtilForm.get('timeTarget').setValue(this.timeDisplay);
+    this.fleetUtilForm.get('mileageThreshold').setValue(1);
+    this.fleetUtilForm.get('timeThreshold').setValue(1);
+    this.fleetUtilForm.get('calenderView').setValue(this.calenderColumnData[0].dataAtrributeId);
+    this.fleetUtilForm.get('calenderViewMode').setValue(this.slideState);
+  }
+
   onlineBarDDChange(event: any){
 
   }
@@ -232,6 +269,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   onUpperLowerDDChange(event: any){
 
+  }
+
+  onCalenderDetailDDChange(event: any){
+
+  }
+
+  timeChanged(selectedTime: any) {
+    this.timeDisplay = selectedTime;
   }
 
 }

@@ -11,6 +11,8 @@ import { Validators } from '@angular/forms';
 })
 export class PeriodSelectionFilterComponent implements OnInit {
 @Input() translationData : any = [];
+@Input() selectedRowData: any;
+@Input() actionType: any;
 isMondaySelected:  boolean= false;
 periodSelectionForm: FormGroup;
 localStLanguage: any;
@@ -19,6 +21,7 @@ accountId: number;
 FormArrayItems:  FormArray;
 days: any= [];
 weekDaySelected: boolean = false;
+checkboxChecked: boolean = false;
 
   constructor(private _formBuilder: FormBuilder) { }
 
@@ -33,9 +36,25 @@ weekDaySelected: boolean = false;
       FormArrayItems : this._formBuilder.array([this.initPeriodItems()]),
     });
 
-    for(let i = 1; i < 7; i++ )
-      this.weekDays().push(this.initPeriodItems());
-      
+    if(this.actionType == 'create'){
+    for(let i = 0; i < 6; i++ ){
+    this.weekDays().push(this.initPeriodItems());
+    }
+  }
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      for(let i = 0; i < 6; i++ ){
+        this.weekDays().push(this.initPeriodItems());
+        this.onDeleteCustomPeriod(i,0);
+        }
+    }
+
+    if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
+    this.selectedRowData.alertUrgencyLevelRefs.length > 0 && 
+    this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0)
+ {
+   this.setDefaultValues();
+ }
+ 
   }
 
   initPeriodItems(): FormGroup{
@@ -68,9 +87,28 @@ weekDaySelected: boolean = false;
      this.customPeriods(periodIndex).removeAt(customIndex);
   }
 
-  addCustomPeriod(periodIndex){
+  addCustomPeriod(periodIndex, totalTime? ,isButtonClicked?){
+    if(this.actionType == 'create'){
     if(this.customPeriods(periodIndex).length < 4)
       this.customPeriods(periodIndex).push(this.initCustomPeriodItems());
+    }
+    else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      if(isButtonClicked){
+        if(this.customPeriods(periodIndex).length < 4){
+        this.customPeriods(periodIndex).push(this.initCustomPeriodItems());}
+      }
+      else{
+        this.customPeriods(periodIndex).push(this.setCustomPeriodItems(totalTime[0],totalTime[1]));
+      }
+    }
+      
+  }
+
+  setCustomPeriodItems(fromTime,toTime): FormGroup{
+    return this._formBuilder.group({
+      fromTime : new FormControl(fromTime),
+      toTime:  new FormControl(toTime)
+    });
   }
 
   weekDays(): FormArray {
@@ -80,6 +118,47 @@ weekDaySelected: boolean = false;
   customPeriods(periodIndex: number) : FormArray {
     return this.weekDays().at(periodIndex).get("FormArrayCustomItems") as FormArray
   }
+
+setDefaultValues(){
+  if(this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0){
+  this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
+    // this.addMultipleItems(false,element);
+  
+    element.dayType.forEach((item,index) =>{
+        if(item == true){
+          this.checkboxChecked = true;
+          this.setDayAndCustomDetails(index,element);
+        }
+      })  
+  });
+}
+}
+
+setDayAndCustomDetails(index,element){
+  this.weekDays().at(index).get("daySelection").setValue('true');
+  if(element.periodType == 'A'){
+    this.weekDays().at(index).get("fulldayCustom").setValue('A');
+  }
+  else if(element.periodType == 'C'){
+    this.weekDays().at(index).get("fulldayCustom").setValue('C');
+    let totalTime = this.convertTimeIntoHours(element.startDate,element.endDate);
+    this.addCustomPeriod(index, totalTime);
+  }
+}
+
+
+convertTimeIntoHours(startTime,EndTime){
+  let startdateObj = new Date(startTime * 1000);
+  let starthours = startdateObj.getUTCHours();
+  let startminutes = startdateObj.getUTCMinutes();
+  let newStartTime = starthours.toString().padStart(2, '0') + ':' + startminutes.toString().padStart(2, '0');
+  let endDateobj = new Date(EndTime * 1000);
+  let endhours = endDateobj.getUTCHours();
+  let endminutes = endDateobj.getUTCMinutes();
+  let newEndTime = endhours.toString().padStart(2, '0') + ':' + endminutes.toString().padStart(2, '0');
+
+return [newStartTime, newEndTime]
+}
 
 getAlertTimingPayload(){
   let alertTimingRef= [];

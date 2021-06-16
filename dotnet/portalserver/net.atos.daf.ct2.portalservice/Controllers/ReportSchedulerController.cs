@@ -56,5 +56,29 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+
+        //#region Create Schedular Report
+        //[HttpPost]
+        //[Route("CreateReportSchedulerParameter")]
+        //public async Task<IActionResult> CreateReportSchedulerParameter(ReportSchedulerRequest request)
+        //{
+        //    try
+        //    {
+        //        ReportSchedulerService.ReportSchedulerServiceClient reportResponse = await _reportschedulerClient.CreateReportScheduler();
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+        //          ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+        //         string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetReportScheduleraParameter", ex.Message), 1, 2, Convert.ToString(accountId),
+        //           _userDetails);
+        //        _logger.Error(null, ex);
+        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
+        //    }
+        //}
+
+        //#endregion
     }
 }

@@ -1,3 +1,5 @@
+<form [formGroup]="fleetUtilForm">
+
 <!-- summary tab -->
 <div fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
@@ -89,7 +91,7 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
-            <mat-select (selectionChange)="onlineBarDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+            <mat-select [disabled]='!editFlag || lineBarDD.length == 0' (selectionChange)="onlineBarDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="distanceChart">
               <mat-option *ngFor="let rer of lineBarDD" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -110,7 +112,7 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
-            <mat-select (selectionChange)="onlineBarDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+            <mat-select [disabled]='!editFlag || lineBarDD.length == 0' (selectionChange)="onlineBarDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="vehicleChart">
               <mat-option *ngFor="let rer of lineBarDD" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -131,17 +133,22 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
-            <mat-select (selectionChange)="onDonutPieDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+            <mat-select [disabled]='!editFlag || donutPieDD.length == 0' (selectionChange)="onDonutPieDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="mileageChart">
               <mat-option *ngFor="let rer of donutPieDD" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per targetSpanIcon">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <input matInput type="number" placeholder="{{ translationData.lblSetTarget || 'Set Target' }}" formControlName="mileageTarget">
+            <span matSuffix>km</span>
+        </mat-form-field>
+    </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
-            <mat-select (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}">
+            <mat-select [disabled]='!editFlag || upperLowerDD.length == 0' (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}" formControlName="mileageThreshold">
               <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -160,17 +167,24 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
-            <mat-select (selectionChange)="onDonutPieDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+            <mat-select [disabled]='!editFlag || donutPieDD.length == 0' (selectionChange)="onDonutPieDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="timeChart">
               <mat-option *ngFor="let rer of donutPieDD" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <div style='width: 80%;' fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+            <span class='timeAdjustSpan'>{{ timeDisplay }}</span> 
+            <input [(ngModel)]="timeDisplay" class='inputBox' [ngxTimepicker]="toggleTimepicker" [format]="24" [disableClick]="true" readonly formControlName="timeTarget">
+            <ngx-material-timepicker-toggle [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
+            <ngx-material-timepicker (timeChanged)="timeChanged($event)" #toggleTimepicker></ngx-material-timepicker>
+          </div>
+    </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
-            <mat-select (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}">
+            <mat-select [disabled]='!editFlag || upperLowerDD.length == 0' (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}" formControlName="timeThreshold">
               <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.id">
                   {{ rer.name }}
               </mat-option>
@@ -181,8 +195,28 @@
 
 <!-- Calender tab -->
 <div fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
-    <div style='margin-left: 25px;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
+            <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <mat-label>{{ translationData.lblViewcalenderdetails || 'View calender details' }}</mat-label>
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select [disabled]='!editFlag || calenderColumnData.length == 0' (selectionChange)="onCalenderDetailDDChange($event)" placeholder="{{ translationData.lblViewcalenderdetails || 'View calender details' }}" formControlName="calenderView">
+              <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAtrributeId">
+                  {{ rer.translatedName }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <mat-label style="margin-bottom: 8px !important;">{{ translationData.lblViewcalenderviewmode || 'View calender view mode' }}</mat-label>
+        <span>
+            <mat-slide-toggle [disabled]='!editFlag' [checked]="slideState" formControlName="calenderViewMode">{{ translationData.lblExpand || 'Expand'}}</mat-slide-toggle>
+        </span>
     </div>
 </div>
 
@@ -327,3 +361,5 @@
     <button [disabled]='selectionForSummaryColumns.selected.length == 0 || selectionForDetailsColumns.selected.length == 0' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
 </div>
+
+</form>
