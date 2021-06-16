@@ -3,7 +3,7 @@
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSummaryColumns() : null'
             [checked]='selectionForSummaryColumns.hasValue() && isAllSelectedForSummaryColumns()'
             [indeterminate]='selectionForSummaryColumns.hasValue() && !isAllSelectedForSummaryColumns()'
-            [aria-label]='checkboxLabelForSummaryColumns()'><span>{{ translationData.lblSummary || 'Summary'
+            [aria-label]='checkboxLabelForSummaryColumns()' [disabled]='!editFlag'><span>{{ translationData.lblSummary || 'Summary'
                 }}</span>
         </mat-checkbox>
     </div>
@@ -11,7 +11,7 @@
 <div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
     <div fxLayout="column" class="areaWidth min-width-30-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
-            <mat-checkbox (click)='$event.stopPropagation()'
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[0]) : null;'
                 [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[0])"
                 [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[0])' class='custom-checkbox'><span>{{
@@ -19,7 +19,7 @@
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
-            <mat-checkbox (click)='$event.stopPropagation()'
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[1]) : null;'
                 [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[1])"
                 [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[1])' class='custom-checkbox'><span>{{
@@ -29,7 +29,7 @@
     </div>
     <div fxLayout="column" class="areaWidth min-width-30-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
-            <mat-checkbox (click)='$event.stopPropagation()'
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[2]) : null;'
                 [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[2])"
                 [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[2])' class='custom-checkbox'><span>{{
@@ -37,7 +37,7 @@
             </mat-checkbox>
         </div>
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
-            <mat-checkbox (click)='$event.stopPropagation()'
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[3]) : null;'
                 [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[3])"
                 [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[3])' class='custom-checkbox'><span>{{
@@ -47,7 +47,7 @@
     </div>
     <div fxLayout="column" class="areaWidth min-width-30-per" fxLayoutGap="0px" fxLayoutAlign="left">
         <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
-            <mat-checkbox (click)='$event.stopPropagation()'
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[4]) : null;'
                 [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[4])"
                 [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[4])' class='custom-checkbox'><span>{{
@@ -57,15 +57,15 @@
     </div>
 </div>
 
-<!-- <div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start">
+<div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start" *ngIf='editFlag && selectionForSummaryColumns.selected.length == 0'>
     <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
         Registration Number' }}</span>
 </div>
-<div fxLayout="row" class='areaWidth' fxLayoutAlign="end">
+<div fxLayout="row" class='areaWidth' fxLayoutAlign="end" *ngIf='editFlag'>
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
         translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
         translationData.lblReset || 'Reset' }}</button>
-    <button class='no-margin' mat-raised-button
+    <button [disabled]='selectionForSummaryColumns.selected.length == 0' class='no-margin' mat-raised-button
         color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
-</div> -->
+</div>

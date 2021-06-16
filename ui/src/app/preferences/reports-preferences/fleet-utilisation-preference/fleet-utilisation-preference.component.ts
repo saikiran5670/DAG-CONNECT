@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 
 @Component({
@@ -7,9 +7,12 @@ import { ReportService } from '../../../services/report.service';
   templateUrl: './fleet-utilisation-preference.component.html',
   styleUrls: ['./fleet-utilisation-preference.component.less']
 })
+
 export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() translationData: any;
   @Input() reportListData: any;
+  @Input() editFlag: any;
+  @Output() setFleetUtilFlag = new EventEmitter<boolean>();
   reportId: any;
   localStLanguage: any;
   accountId: any;
@@ -21,7 +24,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   calenderColumnData: any = [];
   detailColumnData: any = [];
   selectionForSummaryColumns = new SelectionModel(true, []);
-
+  
   constructor(private reportService: ReportService) { }
 
   ngOnInit() { 
@@ -44,6 +47,15 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       this.preparePrefData(this.initData);
     }, (error)=>{
       this.initData = [];
+    });
+  }
+
+  setColumnCheckbox(){
+    this.selectionForSummaryColumns.clear();
+    this.summaryColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForSummaryColumns.select(element);
+      }
     });
   }
 
@@ -84,6 +96,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         this.detailColumnData.push(_data);
       }
     });
+    this.setColumnCheckbox();
   }
 
   getName(name: any, index: any) {
@@ -110,15 +123,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   onCancel(){
-
+    this.setFleetUtilFlag.emit(false);
+    this.setColumnCheckbox();
   }
 
   onReset(){
-
+    this.setColumnCheckbox();
   }
 
   onConfirm(){
-
+    this.setFleetUtilFlag.emit(false);
+    this.setColumnCheckbox();
   }
 
 }
