@@ -118,79 +118,106 @@
           </div> 
         </mat-expansion-panel>
       </mat-card>
-      
-      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='onSearchData.length == 0'>
         <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
-          <mat-expansion-panel-header class="full-width">
-            <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }}</span>
+          <mat-expansion-panel-header class="full-width" >
+            <mat-panel-title >
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDriverTimeReportDetails || 'Driver Time Report Details' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngIf='onSearchData.length == 0'>
+          <div *ngIf='initData.length == 0'>
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
           </div>
+        </mat-expansion-panel>
+      </mat-card>
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='onSearchData.length > 0'>
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title >
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblGeneral || 'General' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
           <div *ngIf='onSearchData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
             <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-                <div *ngIf='showField.driverName' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblDriverName || 'Driver Name' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driverName }}</span>
+                    <span>{{ translationData.lblFrom || 'From' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ fromDisplayDate }}</span>
                   </span>
                 </div>
-                <div *ngIf='showField.driverId' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblDriverId || 'Driver Id' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driverId }}</span>
-                  </span>
-                </div>
-                <div *ngIf='showField.startTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblStartTime || 'Start Time' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.startTime }}</span>
-                  </span>
-                </div>
-                <div *ngIf='!showField.endTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblEndTime || 'End Time' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endTime }}</span>
+                    <span>{{ translationData.lblVehicleGroup|| 'Vehicle Group' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicleGroup }}</span>
                   </span>
                 </div>
               </div>
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
-                <div *ngIf='showField.driveTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblDriveTime || 'driveTime' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driveTime }}</span>
+                    <span>{{ translationData.lblTo|| 'To' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ toDisplayDate }}</span>
                   </span>
                 </div>
-                <div *ngIf='showField.workTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+                <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                   <span>
-                    <span>{{ translationData.lblWorkTime || 'Work Time' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.workTime }}</span>
-                  </span>
-                </div>
-                <div *ngIf='showField.restTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblRestTime || 'Rest Time' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.restTime }}</span>
-                  </span>
-                </div>
-                <div *ngIf='showField.availableTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblAvailableTime|| 'Available Time' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.availableTime }}</span>
-                  </span>
-                </div>
-                <div *ngIf='showField.serviceTime' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-                  <span>
-                    <span>{{ translationData.lblServiceTime|| 'Service Time' }}: </span>
-                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.serviceTime }}</span>
+                    <span>{{ translationData.lblVehicle || 'Vehicle' }}: </span>
+                    <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ selectedVehicle }}</span>
                   </span>
                 </div>
               </div>
             </div>
+            <div style='margin-bottom: 10px;' >
+              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+                <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <div>{{ translationData.lblDriversCount || 'Drivers Count' }}: </div>
+                    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{driverListData.length }}</div>
+                  </span>
+                </div>
+                <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                  <span>
+                    <div>{{ translationData.lblTotalDriveTime || 'Total Drive Time' }}: </div>
+                    <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endTime }}</div>
+                  </span>
+                </div>
+                  <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblTotalWorkTime || 'Total Work Time' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.driveTime }}</div>
+                    </span>
+                  </div>
+                  <div class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblTotalAvailableTime || 'Total Available Time' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.workTime }}</div>
+                    </span>
+                  </div>
+                  <div  class="areaWidth min-width-15-per divTile" fxLayout="column" fxLayoutAlign="left">
+                    <span>
+                      <div>{{ translationData.lblTotalRestTime || 'Total Rest Time' }}: </div>
+                      <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.restTime }}</div>
+                    </span>
+                  </div>
+                
+              </div>
+            </div>
+          </div>
+          </mat-expansion-panel>
+      </mat-card>
+
+      <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='onSearchData.length > 0'>
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title >
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div *ngIf='onSearchData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
               <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                 <mat-form-field appearance="outline">
@@ -222,12 +249,12 @@
                   <mat-cell *matCellDef="let row">{{ row.driverId != '' ? row.driverId : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="startTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime || 'Start Time' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime || 'Start Time' }} <span style="font-weight: normal;"></span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="endTime">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime || 'End Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime || 'End Time' }} <span style="font-weight: normal;"></span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.endTime != '' ? row.endTime : '-' }}</mat-cell>
                 </ng-container>
