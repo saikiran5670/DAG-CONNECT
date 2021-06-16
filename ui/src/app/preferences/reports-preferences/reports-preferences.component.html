@@ -79,7 +79,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div>
-      <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [reportListData]='reportListData' [translationData]='translationData'></app-fleet-utilisation-preference>
+      <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [editFlag]='editFleetUtilisationFlag' [reportListData]='reportListData' [translationData]='translationData' (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
     </div>
   </mat-expansion-panel>
 </mat-card>

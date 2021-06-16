@@ -243,4 +243,8 @@ export class ReportsPreferencesComponent implements OnInit {
     this.editFleetUtilisationFlag = true;
   }
 
+  updateEditFleetUtilFlag(flag: any){
+    this.editFleetUtilisationFlag = flag;
+  }
+
 }

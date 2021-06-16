@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 
 @Component({
@@ -7,9 +7,12 @@ import { ReportService } from '../../../services/report.service';
   templateUrl: './fleet-utilisation-preference.component.html',
   styleUrls: ['./fleet-utilisation-preference.component.less']
 })
+
 export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() translationData: any;
   @Input() reportListData: any;
+  @Input() editFlag: any;
+  @Output() setFleetUtilFlag = new EventEmitter<boolean>();
   reportId: any;
   localStLanguage: any;
   accountId: any;
@@ -21,7 +24,42 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   calenderColumnData: any = [];
   detailColumnData: any = [];
   selectionForSummaryColumns = new SelectionModel(true, []);
+  selectionForDetailsColumns = new SelectionModel(true, []);
+  selectionForChartsColumns = new SelectionModel(true, []);
+  selectionForCalenderColumns = new SelectionModel(true, []);
+  lineBarDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Line Chart'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Bar Chart'
+  }];
+  
+  donutPieDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Donut Chart'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Pie Chart'
+  }];
 
+  upperLowerDD: any = [{
+    status: 'A',
+    id: 1,
+    name: 'Upper'
+  },
+  {
+    status: 'I',
+    id: 2,
+    name: 'Lower'
+  }];
+  
   constructor(private reportService: ReportService) { }
 
   ngOnInit() { 
@@ -44,6 +82,30 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       this.preparePrefData(this.initData);
     }, (error)=>{
       this.initData = [];
+    });
+  }
+
+  setColumnCheckbox(){
+    this.selectionForSummaryColumns.clear();
+    this.selectionForDetailsColumns.clear();
+    this.selectionForChartsColumns.clear();
+    
+    this.summaryColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForSummaryColumns.select(element);
+      }
+    });
+    
+    this.detailColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForDetailsColumns.select(element);
+      }
+    });
+
+    this.chartsColumnData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForChartsColumns.select(element);
+      }
     });
   }
 
@@ -84,6 +146,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         this.detailColumnData.push(_data);
       }
     });
+    this.setColumnCheckbox();
   }
 
   getName(name: any, index: any) {
@@ -109,15 +172,65 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   }
 
-  onCancel(){
+  masterToggleForDetailsColumns(){
+    if(this.isAllSelectedForDetailsColumns()){
+      this.selectionForDetailsColumns.clear();
+    }else{
+      this.detailColumnData.forEach(row => { this.selectionForDetailsColumns.select(row) });
+    }
+  }
 
+  isAllSelectedForDetailsColumns(){
+    const numSelected = this.selectionForDetailsColumns.selected.length;
+    const numRows = this.detailColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForDetailsColumns(row?: any){
+
+  }
+
+  masterToggleForChartsColumns(){
+    if(this.isAllSelectedForChartsColumns()){
+      this.selectionForChartsColumns.clear();
+    }else{
+      this.chartsColumnData.forEach(row => { this.selectionForChartsColumns.select(row) });
+    }
+  }
+
+  isAllSelectedForChartsColumns(){
+    const numSelected = this.selectionForChartsColumns.selected.length;
+    const numRows = this.chartsColumnData.length;
+    return numSelected === numRows;
+  }
+
+  checkboxLabelForChartsColumns(row?: any){
+
+  }
+
+  onCancel(){
+    this.setFleetUtilFlag.emit(false);
+    this.setColumnCheckbox();
   }
 
   onReset(){
-
+    this.setColumnCheckbox();
   }
 
   onConfirm(){
+    this.setFleetUtilFlag.emit(false);
+    this.setColumnCheckbox();
+  }
+
+  onlineBarDDChange(event: any){
+
+  }
+
+  onDonutPieDDChange(event: any){
+
+  }
+
+  onUpperLowerDDChange(event: any){
 
   }
 
