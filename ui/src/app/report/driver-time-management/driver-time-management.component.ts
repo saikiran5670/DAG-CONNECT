@@ -352,7 +352,7 @@ export class DriverTimeManagementComponent implements OnInit {
         this.onSearchData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
         this.setGeneralDriverValue();
         
-        //this.setTableInfo();
+        this.setTableInfo();
         this.updateDataSource(this.onSearchData);
 
       // }, (error)=>{
