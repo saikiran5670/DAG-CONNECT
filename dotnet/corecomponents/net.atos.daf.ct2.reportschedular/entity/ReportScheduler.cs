@@ -9,9 +9,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public int OrganizationId { get; set; }
         public int ReportId { get; set; }
-        public char FrequencyType { get; set; }
-        public char Status { get; set; }
-        public char Type { get; set; }
+        public string FrequencyType { get; set; }
+        public string Status { get; set; }
+        public string Type { get; set; }
         public string FileName { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
@@ -47,7 +47,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Id { get; set; }
         public int ScheduleReportId { get; set; }
         public string Email { get; set; }
-        public char State { get; set; }
+        public string State { get; set; }
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
     }
@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public int ScheduleReportId { get; set; }
         public int DriverId { get; set; }
-        public char State { get; set; }
+        public string State { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
@@ -67,7 +67,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public int ScheduleReportId { get; set; }
         public int VehicleGroupId { get; set; }
-        public char State { get; set; }
+        public string State { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
