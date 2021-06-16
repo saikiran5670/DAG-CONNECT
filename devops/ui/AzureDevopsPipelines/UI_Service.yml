@@ -52,7 +52,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: |
-      cat ui/src/assets/config/default.json
+     cat ui/src/assets/config/default.json
 
 - task: Docker@0
   displayName: 'Build an image'

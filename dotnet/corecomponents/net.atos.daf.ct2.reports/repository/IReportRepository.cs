@@ -26,7 +26,8 @@ namespace net.atos.daf.ct2.reports.repository
         Task<string> GetProfileName(int profileId);
         Task<bool> GetGlobalProfile(int profileId);
         Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN, [Optional] string ReportView);
-
+        Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetUtilizationFilters);
+        Task<List<Calender_Fleetutilization>> GetCalenderData(TripFilterRequest TripFilters);
 
     }
 }

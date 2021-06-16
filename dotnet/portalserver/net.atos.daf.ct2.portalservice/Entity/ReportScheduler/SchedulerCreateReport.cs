@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
+{
+    public class CreateReportScheduler
+    {
+        public int Id { get; set; }
+        public int OrganizationId { get; set; }
+        public int ReportId { get; set; }
+        public string FrequencyType { get; set; }
+        public string Status { get; set; }
+        public string Type { get; set; }
+        public string FileName { get; set; }
+        public long StartDate { get; set; }
+        public long EndDate { get; set; }
+        public string Code { get; set; }
+        public long LastScheduleRunDate { get; set; }
+        public long NextScheduleRunDate { get; set; }
+        public long CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public long ModifiedAt { get; set; }
+        public int ModifiedBy { get; set; }
+        public string MailSubject { get; set; }
+        public string MailDescription { get; set; }
+        public long ReportDispatchTime { get; set; }
+        public List<CreateScheduledReport> ScheduledReport { get; set; } = new List<CreateScheduledReport>();
+        public List<CreateScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<CreateScheduledReportRecipient>();
+        public List<CreateScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<CreateScheduledReportVehicleRef>();
+        public CreateScheduledReportDriverRef ScheduledReportDriverRef { get; set; }
+    }
+    public class CreateScheduledReport
+    {
+        public int Id { get; set; }
+        public int ScheduleReportId { get; set; }
+        public byte Report { get; set; }
+        public string Token { get; set; }
+        public long StartDate { get; set; }
+        public long EndDate { get; set; }
+        public long DownloadedAt { get; set; }
+        public long ValidTill { get; set; }
+        public long CreatedAt { get; set; }
+    }
+    public class CreateScheduledReportRecipient
+    {
+        public int Id { get; set; }
+        public int ScheduleReportId { get; set; }
+        public string Email { get; set; }
+        public string State { get; set; }
+        public long CreatedAt { get; set; }
+        public long ModifiedAt { get; set; }
+    }
+
+    public class CreateScheduledReportDriverRef
+    {
+        public int ScheduleReportId { get; set; }
+        public int DriverId { get; set; }
+        public string State { get; set; }
+        public long CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public long ModifiedAt { get; set; }
+        public int ModifiedBy { get; set; }
+    }
+
+    public class CreateScheduledReportVehicleRef
+    {
+        public int ScheduleReportId { get; set; }
+        public int VehicleGroupId { get; set; }
+        public string State { get; set; }
+        public long CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public long ModifiedAt { get; set; }
+        public int ModifiedBy { get; set; }
+    }
+}
