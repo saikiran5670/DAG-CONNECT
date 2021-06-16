@@ -239,7 +239,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region - Driver Time Management Report Table Details
         [HttpPost]
-        [Route("getdriverstimedetails")]
+        [Route("drivetime/getdetails")]
         public async Task<IActionResult> GetDriversActivity([FromBody] Entity.Report.DriversTimeFilter request)
         {
             try
@@ -272,7 +272,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getsingledrivertimedetails")]
+        [Route("drivetime/getdetailssingle")]
         public async Task<IActionResult> GetDriverActivity([FromBody] Entity.Report.SingleDriverTimeFilter request)
         {
             try
@@ -305,7 +305,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getdriveractivityparameters")]
+        [Route("drivetime/getparameters")]
         public async Task<IActionResult> GetDriverActivityParameters([FromBody] IdRequestForDriverActivity request)
         {
             try
@@ -335,7 +335,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getreportsearchparameters")]
+        [Route("getsearchparameters")]
         public async Task<IActionResult> GetReportSearchParameter([FromBody] IdRequestForDriverActivity request)
         {
             try
@@ -502,7 +502,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Fleet utilization report details
         [HttpPost]
-        [Route("fleetutilization/getalldetails")]
+        [Route("fleetutilization/getdetails")]
         public async Task<IActionResult> GetFleetUtilizationDetails([FromBody] Entity.Report.FleetUtilizationFilter request)
         {
             try
