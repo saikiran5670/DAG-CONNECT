@@ -68,7 +68,8 @@ export class DriverTimeManagementComponent implements OnInit {
   toDisplayDate : any;
   selectedVehicleGroup : string;
   selectedVehicle : string;
-
+  driverSelected : boolean = false;
+  selectedDriverData = [];
   showField: any = {
         driverName: true,
         driverId: true,
@@ -609,6 +610,12 @@ export class DriverTimeManagementComponent implements OnInit {
 
   pageSizeUpdated(_evt){
 
+  }
+
+  onDriverSelected(_row){
+    this.driverSelected = true;
+    this.selectedDriverData = _row;
+    //console.log(_row)
   }
   //********************************** Date Time Functions *******************************************//
   setPrefFormatDate(){

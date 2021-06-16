@@ -118,6 +118,7 @@
           </div> 
         </mat-expansion-panel>
       </mat-card>
+      <div *ngIf="!driverSelected">
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='onSearchData.length == 0'>
         <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width" >
@@ -241,7 +242,7 @@
                 <ng-container matColumnDef="driverName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{ row.driverName != '' ? row.driverName : '-' }}</mat-cell>
+                  <mat-cell *matCellDef="let row" (click)="onDriverSelected(row)" class="driverClick">{{ row.driverName != '' ? row.driverName : '-' }}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="driverId">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}
@@ -292,7 +293,10 @@
           </div>
           <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
           </mat-expansion-panel>
-          </mat-card>
-
+      </mat-card>
+    </div>
+    <div *ngIf="driverSelected">
+      selected
+    </div>
     </form>
 </div>
