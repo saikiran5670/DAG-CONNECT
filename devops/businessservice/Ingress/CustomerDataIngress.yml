@@ -132,6 +132,10 @@ spec:
           serviceName: applicationservice
           servicePort: 80
         path: /  
+      - backend:
+          serviceName: portalservice
+          servicePort: 80
+        path: /reportscheduler
   tls:
   - hosts:
     - #{IngressURL}#

@@ -9,16 +9,19 @@ import { DirectivesModule } from '../directives/directives.module';
 import { DashboardPreferencesComponent } from './dashboard-preferences/dashboard-preferences.component';
 import { FleetOverviewPreferencesComponent } from './fleet-overview-preferences/fleet-overview-preferences.component';
 import { ReportsPreferencesComponent } from './reports-preferences/reports-preferences.component';
+import { FleetUtilisationPreferenceComponent } from './reports-preferences/fleet-utilisation-preference/fleet-utilisation-preference.component';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
-  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent ],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent ],
   imports: [
     CommonModule,
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
     ImageCropperModule,
-    DirectivesModule
+    DirectivesModule,
+    NgxMaterialTimepickerModule
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

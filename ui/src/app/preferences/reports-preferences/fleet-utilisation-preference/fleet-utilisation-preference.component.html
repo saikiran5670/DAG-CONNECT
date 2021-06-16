@@ -1,0 +1,361 @@
+<!-- summary tab -->
+<div fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSummaryColumns() : null'
+            [checked]='selectionForSummaryColumns.hasValue() && isAllSelectedForSummaryColumns()'
+            [indeterminate]='selectionForSummaryColumns.hasValue() && !isAllSelectedForSummaryColumns()'
+            [aria-label]='checkboxLabelForSummaryColumns()' [disabled]='!editFlag'><span class='headerFont'>{{ translationData.lblSummary || 'Summary'
+                }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[0]) : null;'
+                [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[0])"
+                [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[0])' class='custom-checkbox'><span>{{
+                    summaryColumnData.length > 0 ? summaryColumnData[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[1]) : null;'
+                [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[1])"
+                [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[1])' class='custom-checkbox'><span>{{
+                    summaryColumnData.length > 0 ? summaryColumnData[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[2]) : null;'
+                [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[2])"
+                [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[2])' class='custom-checkbox'><span>{{
+                    summaryColumnData.length > 0 ? summaryColumnData[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[3]) : null;'
+                [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[3])"
+                [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[3])' class='custom-checkbox'><span>{{
+                    summaryColumnData.length > 0 ? summaryColumnData[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForSummaryColumns.toggle(summaryColumnData[4]) : null;'
+                [checked]="selectionForSummaryColumns.isSelected(summaryColumnData[4])"
+                [aria-label]='checkboxLabelForSummaryColumns(summaryColumnData[4])' class='custom-checkbox'><span>{{
+                    summaryColumnData.length > 0 ? summaryColumnData[4].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' style='height: 44px;' fxLayoutAlign="left"></div>
+    </div>
+</div>
+
+<!-- Charts tab -->
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref margin-top-20' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForChartsColumns() : null'
+            [checked]='selectionForChartsColumns.hasValue() && isAllSelectedForChartsColumns()'
+            [indeterminate]='selectionForChartsColumns.hasValue() && !isAllSelectedForChartsColumns()'
+            [aria-label]='checkboxLabelForChartsColumns()' [disabled]='!editFlag'><span class='headerFont'>{{ translationData.lblChartsComponent || 'Charts-Component' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <span class='headerFont'>{{ translationData.lblChartType || 'Chart Type' }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <span class='headerFont'>{{ translationData.lblTargetPerDay || 'Target Per Day' }}</span>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <span class='headerFont'>{{ translationData.lblThresholdType || 'Threshold Type' }}</span>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[0]) : null;'
+            [checked]="selectionForChartsColumns.isSelected(chartsColumnData[0])"
+            [aria-label]='checkboxLabelForChartsColumns(chartsColumnData[0])' class='custom-checkbox'><span>{{
+                chartsColumnData.length > 0 ? chartsColumnData[0].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onlineBarDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+              <mat-option *ngFor="let rer of lineBarDD" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[1]) : null;'
+            [checked]="selectionForChartsColumns.isSelected(chartsColumnData[1])"
+            [aria-label]='checkboxLabelForChartsColumns(chartsColumnData[1])' class='custom-checkbox'><span>{{
+                chartsColumnData.length > 0 ? chartsColumnData[1].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onlineBarDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+              <mat-option *ngFor="let rer of lineBarDD" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[2]) : null;'
+            [checked]="selectionForChartsColumns.isSelected(chartsColumnData[2])"
+            [aria-label]='checkboxLabelForChartsColumns(chartsColumnData[2])' class='custom-checkbox'><span>{{
+                chartsColumnData.length > 0 ? chartsColumnData[2].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onDonutPieDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+              <mat-option *ngFor="let rer of donutPieDD" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per targetSpanIcon">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <input matInput type="number" placeholder="{{ translationData.lblSetTarget || 'Set Target' }}">
+            <span matSuffix>km</span>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}">
+              <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+            (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[3]) : null;'
+            [checked]="selectionForChartsColumns.isSelected(chartsColumnData[3])"
+            [aria-label]='checkboxLabelForChartsColumns(chartsColumnData[3])' class='custom-checkbox'><span>{{
+                chartsColumnData.length > 0 ? chartsColumnData[3].translatedName : '' }}</span>
+        </mat-checkbox>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onDonutPieDDChange($event)" placeholder="{{ translationData.lblChartType || 'Chart Type' }}">
+              <mat-option *ngFor="let rer of donutPieDD" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <div style='width: 80%;' fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+            <span class='timeAdjustSpan'>{{ timeDisplay }}</span> 
+            <input [(ngModel)]="timeDisplay" class='inputBox' [ngxTimepicker]="toggleTimepicker" [format]="24" [disableClick]="true" readonly>
+            <ngx-material-timepicker-toggle [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
+            <ngx-material-timepicker (timeChanged)="timeChanged($event)" #toggleTimepicker></ngx-material-timepicker>
+          </div>
+    </div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}">
+              <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.id">
+                  {{ rer.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</div>
+
+<!-- Calender tab -->
+<div fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
+            <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <mat-label>{{ translationData.lblViewcalenderdetails || 'View calender details' }}</mat-label>
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onCalenderDetailDDChange($event)" placeholder="{{ translationData.lblViewcalenderdetails || 'View calender details' }}">
+              <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAtrributeId">
+                  {{ rer.translatedName }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <mat-label style="margin-bottom: 8px !important;">{{ translationData.lblViewcalenderviewmode || 'View calender view mode' }}</mat-label>
+        <span>
+            <mat-slide-toggle>{{ translationData.lblExpand || 'Expand'}}</mat-slide-toggle>
+        </span>
+    </div>
+</div>
+
+<!-- Details tab -->
+<div fxLayout="row" class='areaWidth full-width padding-10 detailsPref margin-top-20' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForDetailsColumns() : null'
+            [checked]='selectionForDetailsColumns.hasValue() && isAllSelectedForDetailsColumns()'
+            [indeterminate]='selectionForDetailsColumns.hasValue() && !isAllSelectedForDetailsColumns()'
+            [aria-label]='checkboxLabelForDetailsColumns()' [disabled]='!editFlag'><span class='headerFont'>{{ translationData.lblDetails || 'Details'
+                }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width' fxLayoutAlign="left">
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[0]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[0])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[0])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[0].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[1]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[1])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[1])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[1].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[2]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[2])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[2])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[2].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[3]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[3])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[3])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[3].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[4]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[4])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[4])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[4].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[5]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[5])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[5])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[5].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[6]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[6])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[6])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[6].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[7]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[7])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[7])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[7].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[8]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[8])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[8])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[8].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[9]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[9])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[9])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[9].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+    </div>
+    <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[10]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[10])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[10])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[10].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[11]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[11])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[11])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[11].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+            <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
+                (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[12]) : null;'
+                [checked]="selectionForDetailsColumns.isSelected(detailColumnData[12])"
+                [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[12])' class='custom-checkbox'><span>{{
+                    detailColumnData.length > 0 ? detailColumnData[12].translatedName : '' }}</span>
+            </mat-checkbox>
+        </div>
+        <div style="height: 44px;" fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left"></div>
+        <div style="height: 44px;" fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left"></div>
+    </div>
+</div>
+
+<!-- Error msg -->
+<div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start" *ngIf='editFlag && selectionForSummaryColumns.selected.length == 0'>
+    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
+        Registration Number' }}</span>
+</div>
+
+<!-- Button -->
+<div fxLayout="row" class='areaWidth' fxLayoutAlign="end" *ngIf='editFlag'>
+    <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
+        translationData.lblCancel || 'Cancel' }}</button>
+    <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
+        translationData.lblReset || 'Reset' }}</button>
+    <button [disabled]='selectionForSummaryColumns.selected.length == 0 || selectionForDetailsColumns.selected.length == 0' class='no-margin' mat-raised-button
+        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
+</div>

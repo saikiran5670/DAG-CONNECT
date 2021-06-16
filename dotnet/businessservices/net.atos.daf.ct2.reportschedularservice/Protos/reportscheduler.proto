@@ -26,6 +26,7 @@ message ReportParameterRequest
 {
     int32 AccountId = 1;
     int32 OrganizationId = 2;
+    int32 RoleId=3;
 }
 message ReportParameterResponse
 {
@@ -35,7 +36,7 @@ message ReportParameterResponse
     repeated DriverDetailRequest DriverDetail = 4;
     repeated ReceiptEmailsRequest ReceiptEmails = 5;
     repeated AssociatedVehicleRequest AssociatedVehicle = 6;
-
+    repeated VehicleSubscribeandFeatureRequest VehicleSubscribeandFeature =7;
 }
 message AssociatedVehicleRequest {
 	int32 VehicleGroupId =  1;
@@ -90,7 +91,7 @@ message ReportSchedulerRequest
     int64 ReportDispatchTime =19;
     repeated ScheduledReportRequest ScheduledReport=20;
     repeated ScheduledReportRecipientRequest ScheduledReportRecipient=21;
-    repeated ScheduledReportDriverRefRequest ScheduledReportDriverRef=22;
+    ScheduledReportDriverRefRequest ScheduledReportDriverRef=22;
     repeated ScheduledReportVehicleRefRequest ScheduledReportVehicleRef=23;
 }
 message ScheduledReportRequest
@@ -133,4 +134,11 @@ message ScheduledReportVehicleRefRequest
     int32 CreatedBy =5;
     int64 ModifiedAt =6;
     int32 ModifiedBy =7;
+}
+message VehicleSubscribeandFeatureRequest {
+		 int32 VehicleGroupId =  1;
+         int32 VehicleId =  2;
+         string FeatureName =  3;
+         string FeatureKey =  4;
+         bool Subscribe =  5;
 }

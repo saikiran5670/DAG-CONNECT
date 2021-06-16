@@ -54,6 +54,10 @@ export class ExistingTripsComponent implements OnInit {
   selectionTab: any;
   timeValue: any;
   OrgId: any = 0;
+  startAddressLatitudePoints: any = [];
+  startAddressLongitudePoints: any = [];
+  endAddressLatitudePoints: any = [];
+  endAddressLongitudePoints: any = [];
   selectedAccounts = new SelectionModel(true, []);
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -73,7 +77,7 @@ export class ExistingTripsComponent implements OnInit {
   initData: any = [];
   // dataSource: any;
   markerArray: any = [];
-  tripsSelection :any = [];
+  tripsSelection: any = [];
   showLoadingIndicator: boolean;
   selectedCorridors = new SelectionModel(true, []);
   public position: string;
@@ -85,10 +89,11 @@ export class ExistingTripsComponent implements OnInit {
   vehicleGroupIdsSet: any = [];
   localStLanguage: any;
   // createExistingTripObj :any = {
-    // id : 1,
-    // sequence :"first"
+  // id : 1,
+  // sequence :"first"
   // }
-  selectedTrips : any = [];
+  selectedTrips: any = [];
+  internalNodePoints: any = [];
   getAttributeData: any;
   getExclusionList: any;
   getVehicleSize: any;
@@ -111,7 +116,7 @@ export class ExistingTripsComponent implements OnInit {
   organizationId: number;
   corridorId: number = 0;
   // localStLanguage: any;
-  accountId: any = 0;
+  accountId: any = JSON.parse(localStorage.getItem("accountId"));;
   hereMap: any;
   distanceinKM = 0;
   viaRouteCount: boolean = false;
@@ -181,7 +186,7 @@ export class ExistingTripsComponent implements OnInit {
     this.platform = new H.service.Platform({
       "apikey": this.map_key
     });
-    this.configureAutoCompleteForLocationSearch();
+    // this.configureAutoCompleteForLocationSearch();
 
   }
 
@@ -565,22 +570,22 @@ export class ExistingTripsComponent implements OnInit {
 
   // }
 
-  suggestionData: any;
-  dataService: any;
-  private configureAutoCompleteForLocationSearch() {
-    let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
-    let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
-      '&maxresults=5' +  // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
-      '&app_id=' + this.map_id + // TODO: Store this configuration in Config File.
-      '&app_code=' + this.map_code +  // TODO: Store this configuration in Config File.
-      '&query=' + searchParam;
-    this.suggestionData = this.completerService.remote(
-      AUTOCOMPLETION_URL,
-      "label",
-      "label");
-    this.suggestionData.dataField("suggestions");
-    this.dataService = this.suggestionData;
-  }
+  // suggestionData: any;
+  // dataService: any;
+  // private configureAutoCompleteForLocationSearch() {
+  //   let searchParam = this.searchEndStr !== null ? this.searchEndStr : this.searchStr != null ? this.searchStr : this.searchViaStr;
+  //   let AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.cit.api.here.com/6.2/suggest.json' + '?' +
+  //     '&maxresults=5' +  // The upper limit the for number of suggestions to be included in the response.  Default is set to 5.
+  //     '&app_id=' + this.map_id + // TODO: Store this configuration in Config File.
+  //     '&app_code=' + this.map_code +  // TODO: Store this configuration in Config File.
+  //     '&query=' + searchParam;
+  //   this.suggestionData = this.completerService.remote(
+  //     AUTOCOMPLETION_URL,
+  //     "label",
+  //     "label");
+  //   this.suggestionData.dataField("suggestions");
+  //   this.dataService = this.suggestionData;
+  // }
 
   hideloader() {
     this.showLoadingIndicator = false;
@@ -750,7 +755,6 @@ export class ExistingTripsComponent implements OnInit {
     });
   }
 
-
   sliderChanged() {
     // this.corridorWidth = _event.value;
     this.corridorWidthKm = this.corridorWidth / 1000;
@@ -801,116 +805,62 @@ export class ExistingTripsComponent implements OnInit {
 
     this.tripsSelection.map((items) => {
 
-      console.log("-------all slected Values--",items)
-            
-      let createExistingTripObj = {
-        "id": 0,  // make it 0
-        "landmarkId": 0, //similar to above ID
-        "tripId": items.tripId, //"tripId" from Object
-        "startDate": items.startTimeStamp, //from Obj
-        "endDate": items.endTimeStamp, //from Obj
-        "driverId1": items.driverId1, //from Obj
-        "driverId2": "", //from Obj
-        "startLatitude": items.startPositionlattitude,
-        "startLongitude": items.startPositionLongitude,
-        "startPosition": items.startAddress,
-        "endLatitude":  items.endPositionLattitude,
-        "endLongitude": items.endPositionLongitude,
-        "endPosition": items.endAddress,
-        "distance": items.distance,
-        "nodePoints": [
-          {
-            "id": 95,
-            "landmarkId": 197,
-            "tripId": "trip13",
-            "sequenceNumber": 1,
-            "latitude": 12.34,
-            "longitude": 33.23,
+      if (items.liveFleetPosition.length > 0) {
+        items.liveFleetPosition.forEach(element => {
+          let nodePointObj = {
+            "id": element.id,
+            "landmarkId": 0,
+            "tripId": items.tripId,
+            "sequenceNumber": element.id,
+            "latitude": element.gpsLatitude,
+            "longitude": element.gpsLongitude,
             "state": "A",
-            "address": "Node address",
+            "address": "",
             "createdAt": 0,
             "createdBy": 0,
             "modifiedAt": 0,
             "modifiedBy": 0
           }
-        ]
+          this.internalNodePoints.push(nodePointObj)
+        });
+
+
+      }
+
+      // console.log("------- Node points--",this.internalNodePoints)
+      // console.log("-------all slected Values--", items)
+      this.startAddressLatitudePoints.push(items.startPositionlattitude)
+      this.startAddressLongitudePoints.push(items.startPositionLongitude)
+      this.endAddressLatitudePoints.push(items.endPositionLattitude)
+      this.endAddressLongitudePoints.push(items.endPositionLongitude)
+      let createExistingTripObj = {
+        "id": items.id,
+        "landmarkId": 0,
+        "tripId": items.tripId,
+        "startDate": items.startTimeStamp,
+        "endDate": items.endTimeStamp,
+        "driverId1": items.driverId1,
+        "driverId2": items.driverId2,
+        "startLatitude": items.startPositionlattitude,
+        "startLongitude": items.startPositionLongitude,
+        "startPosition": items.startAddress,
+        "endLatitude": items.endPositionLattitude,
+        "endLongitude": items.endPositionLongitude,
+        "endPosition": items.endAddress,
+        "distance": items.distance,
+        "nodePoints": [...this.internalNodePoints],
       }
       this.selectedTrips.push(createExistingTripObj)
     })
 
-
-    console.log("---dynamic obj Value--",this.selectedTrips )
-
-
-    // var existingTripObj = {
-    //     "id": this.corridorId ? this.corridorId : 0,
-    //     "organizationId": this.organizationId,
-    //     "corridorType": "E",
-    //     "corridorLabel": this.existingTripForm.controls.label.value,
-    //     "width": this.corridorWidth,
-    //     "createdAt": 0,
-    //     "createdBy": this.organizationId,
-    //     "modifiedAt": 0,
-    //     "modifiedBy": this.organizationId,
-    //     "description": "string",
-    //     "address": "string",
-    //     "city": "string",
-    //     "country": "string",
-    //     "zipcode": "string",
-    //     "startLatitude": 0,
-    //     "startLongitude": 0,
-    //     "distance": 0,
-    //     "state": "string",
-    //     "existingTrips": [
-    //       {
-    //         "id": 0,
-    //         "landmarkId": 0,
-    //         "tripId": "string",
-    //         "startDate": 0,
-    //         "endDate": 0,
-    //         "driverId1": "string",
-    //         "driverId2": "string",
-    //         "startLatitude": this.startAddressPositionLat,
-    //         "startLongitude": this.startAddressPositionLong,
-    //         "startPosition": "string",
-    //         "endLatitude": this.endAddressPositionLat,
-    //         "endLongitude": this.endAddressPositionLong,
-    //         "endPosition": "string",
-    //         "distance": 0,
-    //         "nodePoints": [
-    //           {
-    //             "id": 0,
-    //             "landmarkId": 0,
-    //             "tripId": "string",
-    //             "sequenceNumber": 0,
-    //             "latitude": 0,
-    //             "longitude": 0,
-    //             "state": "string",
-    //             "address": "string",
-    //             "createdAt": 0,
-    //             "createdBy": 0,
-    //             "modifiedAt": 0,
-    //             "modifiedBy": 0
-    //           }
-    //         ]
-    //       }
-    //     ]
-    //   }
-
-
-    //     "id": this.corridorId ? this.corridorId : 0,
-    //     "organizationId": this.organizationId,
-    //     "corridorType": "E",
     var existingTripObj = {
-
-
       "id": this.corridorId ? this.corridorId : 0,
       "organizationId": this.accountOrganizationId,
       "corridorType": "E",
       "corridorLabel": this.existingTripForm.controls.label.value,
-      "width": 12,
+      "width": this.corridorWidth,
       "createdAt": 0,
-      "createdBy": 0,
+      "createdBy": this.accountId,
       "modifiedAt": 0,
       "modifiedBy": 0,
       "description": "",
@@ -918,16 +868,14 @@ export class ExistingTripsComponent implements OnInit {
       "city": "",
       "country": "",
       "zipcode": "",
-      "startLatitude": this.startAddressPositionLat,
-      "startLongitude": this.startAddressPositionLong,
+      "startLatitude": this.startAddressLatitudePoints[0],
+      "startLongitude": this.startAddressLongitudePoints[0],
       "distance": 0,
       "state": "",
-
-
-
       "existingTrips": [...this.selectedTrips]
     }
 
+    console.log("------existingTrip Create Obj--", existingTripObj)
     this.corridorService.createExistingCorridor(existingTripObj).subscribe((responseData) => {
       if (responseData.code === 200) {
         let emitObj = {
@@ -1033,7 +981,6 @@ export class ExistingTripsComponent implements OnInit {
   }
 
   onEndSelected(selectedAddress: CompleterItem) {
-
     if (this.searchEndStr) {
       this.searchEndStrError = false;
       this.strPresentEnd = true;
@@ -1044,7 +991,6 @@ export class ExistingTripsComponent implements OnInit {
     }
 
   }
-
 
   masterToggleForCorridor() {
     this.markerArray = [];
@@ -1061,7 +1007,7 @@ export class ExistingTripsComponent implements OnInit {
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.showMap = true;
     }
-    console.log("---markerArray---",this.markerArray);
+    // console.log("---markerArray---",this.markerArray);
     this.setAllAddressValues(this.markerArray);
 
   }
@@ -1090,71 +1036,21 @@ export class ExistingTripsComponent implements OnInit {
       this.markerArray.push(row);
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
       this.tripsSelection.push(row);
-      console.log("----this.tripsSelection.push(row);------",this.tripsSelection);
+      console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
 
     } else { //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
-      this.tripsSelection= this.markerArray.filter(item => item.id !== row.id);
-      console.log("----this.tripsSelection.push(row);------",this.tripsSelection);
+      this.tripsSelection = this.markerArray.filter(item => item.id !== row.id);
+      console.log("----this.tripsSelection.push(row);------", this.tripsSelection);
       this.mapFunctions.clearRoutesFromMap();
       this.mapFunctions.viewSelectedRoutes(this.markerArray);
     }
-    console.log("---markerArray--",this.markerArray)
+    console.log("---markerArray--", this.markerArray)
 
     this.setAllAddressValues(this.markerArray);
-
-
-
-    // this.here.getAddressFromLatLng(startAddress).then(result => {
-    //   this.locations = <Array<any>>result;
-
-    //   console.log("---allStartAddress--",allStartAddress)
-    //   console.log("---allEndAddress--",allEndAddress)
-    // this.setStartAddress = this.locations[0].Location.Address.Label;
-    //   if(!this.startAddressGroup.includes(this.setStartAddress)){
-    //   this.startAddressGroup.push(this.setStartAddress)
-
-    // }
-
-    // this.getAllSelectedStartAddress(this.startAddressGroup);
-    // this.existingTripForm.get('startaddress').setValue(this.setStartAddress);
-    // }, error => {
-    // });
-
-    // this.here.getAddressFromLatLng(endAddress).then(result => {
-    //   this.locations = <Array<any>>result;
-
-    // this.setEndAddress = this.locations[0].Location.Address.Label;
-    // if(!this.endAddressGroup.includes(this.setEndAddress)){
-    //   this.endAddressGroup.push(this.setEndAddress)
-    // }
-    // this.getAllSelectedEndAddress(this.endAddressGroup);
-    // this.existingTripForm.get('endaddress').setValue(this.setEndAddress);
-
-    // }, error => {
-    // });
-
-
-
-    // this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
-    // if (event.checked) { //-- add new marker
-    //   this.markerArray.push(row);
-    // } else { //-- remove existing marker
-    //   //It will filter out checked points only
-    //   let arr = this.markerArray.filter(item => item.id != row.id);
-    //   this.markerArray = arr;
-    // }
-    // this.addPolylineToMap();
   }
-
-  // getAllSelectedStartAddress(selectedStartAddresses: any) {
-  //   // console.log("--from getAllSelectedStartAddress()---",selectedStartAddresses)
-  // }
-  // getAllSelectedEndAddress(selectedEndAddresses: any) {
-  //   // console.log("--from getAllSelectedEndAddress()---",selectedEndAddresses)
-  // }
 
   updatedTableData(tableData: any) {
     tableData = this.getNewTagData(tableData);
@@ -1166,10 +1062,10 @@ export class ExistingTripsComponent implements OnInit {
     });
   }
 
-  setAllAddressValues(markerArray:any){
-    if(this.markerArray.length > 0){
+  setAllAddressValues(markerArray: any) {
+    if (this.markerArray.length > 0) {
       this.mapExpandPanel = true;
-    }else {
+    } else {
       this.mapExpandPanel = false;
 
     }
@@ -1214,38 +1110,10 @@ export class ExistingTripsComponent implements OnInit {
       return data;
     }
   }
-  // timeChanged(selectedTime: any) {
-  //   this.selectedStartTime = selectedTime;
-  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  // }
-  // endtimeChanged(endTime: any) {
-  //   this.selectedEndTime = endTime;
-  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-  // }
 
-  // selectedStartDate(startDate: any) {
-  //   console.log("---startDate--",startDate.target.value)
-  //   this.selectedStartDateStamp = moment(startDate.target.value).format('DD/MM/YYYY');
-  //   this.concateStartDateTimeInUTC(this.selectedStartDateStamp, this.selectedStartTime);
-  // }
-  // concateStartDateTimeInUTC(selectedDate: any, selectedTime: any) {
-  //   let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
-  //   this.startTimeUTC = moment.utc(dateTime).valueOf();
-  //   console.log("--startTimeUTC----UTC format", this.startTimeUTC)
-  // }
-  // selectedEndDate(endDate: any) {
-  //   this.selectedEndDateStamp = moment(endDate.target.value).format('DD/MM/YYYY');
-  //   this.concateEndDateTimeInUTC(this.selectedEndDateStamp, this.selectedEndTime);
-  // }
-  // concateEndDateTimeInUTC(selectedDate: any, selectedTime: any) {
-  //   let dateTime = moment(selectedDate + ' ' + selectedTime, 'DD/MM/YYYY HH:mm');
-  //   let concateDateAndTime = dateTime.format('DD-MM-YYYY HH:mm');
-  //   this.endTimeUTC = moment.utc(dateTime).valueOf();
-  //   console.log("--endTimeUTC----UTC format", this.endTimeUTC)
-  // }
   vinSelection(vinSelectedValue: any) {
     this.vinListSelectedValue = vinSelectedValue.value;
-    console.log("------vins selection--", this.vinListSelectedValue)
+    // console.log("------vins selection--", this.vinListSelectedValue)
   }
 
   applyFilter(filterValue: string) {

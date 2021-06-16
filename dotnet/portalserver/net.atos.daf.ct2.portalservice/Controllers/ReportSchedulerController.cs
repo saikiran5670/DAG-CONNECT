@@ -30,12 +30,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Get Report Scheduler Paramenter
         [HttpGet]
         [Route("getreportschedulerparameter")]
-        public async Task<IActionResult> GetReportScheduleraParameter(int accountId, int orgnizationid)
+        public async Task<IActionResult> GetReportScheduleraParameter(int accountId, int orgnizationid, int roleid)
         {
             try
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
-                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
+                ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
 
                 if (response == null)
                     return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
