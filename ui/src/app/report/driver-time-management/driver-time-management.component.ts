@@ -408,6 +408,13 @@ export class DriverTimeManagementComponent implements OnInit {
     this.matTableExporter.exportTable('xlsx', {fileName:'Driver_Time_Report', sheet: 'sheet_name'});
   }
 
+  exportAsPDFFile(){
+
+  }
+
+  pageSizeUpdated(_evt){
+    
+  }
   //********************************** Date Time Functions *******************************************//
   setPrefFormatDate(){
     switch(this.prefDateFormat){
