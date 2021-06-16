@@ -177,7 +177,7 @@
                         <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>402.2 km</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>40</span>
                     </div>
                 </div>
                 <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -210,7 +210,7 @@
         </mat-expansion-panel>
       </mat-card>
       <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel  [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel  class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalender || 'Calender' }}</span>
@@ -254,9 +254,74 @@
           </div>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
           matSort #exporter="matTableExporter">
-
+          <ng-container matColumnDef="vehicle_name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.vehicle_name != '' ? row.vehicle_name : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="vin">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="RegPlateNumber">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'RegPlateNumber' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.RegPlateNumber != '' ? row.RegPlateNumber : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="distance">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="NumberOfTrips">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.NumberOfTrips != '' ? row.NumberOfTrips : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="TripTime">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTripTime || 'TripTime' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedTripTime != '' ? row.convertedTripTime : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="drivingTime">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDrivingTime || 'Driving Time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedDrivingTime != '' ? row.convertedDrivingTime : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="idleDuration">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblIdleDuration || 'Idle Duration' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="averageSpeed">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h')  }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="AverageWeightPerTrip">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="AverageDistancePerDay">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="odometer">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblOdometer || 'Odometer' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.odometer != '' ? row.odometer : '-' }}</mat-cell>
+          </ng-container>
+          
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;">
+          </mat-row>
           </mat-table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div>
+          <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
         </mat-expansion-panel>
       </mat-card>
 

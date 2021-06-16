@@ -197,6 +197,20 @@ export class ReportMapService {
     return gridData;
   }
 
+  getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    gridData.forEach(element => {
+      element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone);
+      element.convertedAverageWeight = this.getAvrgWeight(element.AverageWeightPerTrip, unitFormat);
+      element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
+      element.convertedAverageDistance = this.getDistance(element.AverageDistancePerDay, unitFormat);
+      element.convertedDistance = this.getDistance(element.distance, unitFormat);
+      element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
+      element.convertedTripTime = this.getHhMmTime(element.TripTime);
+      element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
+    });
+    return gridData;
+  }
+
   getDriverTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.driverName = element.driverName;
