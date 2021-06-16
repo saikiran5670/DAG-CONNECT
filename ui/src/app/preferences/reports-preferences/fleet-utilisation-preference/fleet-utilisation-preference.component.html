@@ -176,10 +176,10 @@
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <div style='width: 80%;' fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
-            <span class='timeAdjustSpan'>{{ timeDisplay }}</span> 
-            <input [(ngModel)]="timeDisplay" class='inputBox' [ngxTimepicker]="toggleTimepicker" [format]="24" [disableClick]="true" readonly formControlName="timeTarget">
+            <span [ngStyle]="{'background': editFlag ? '#ffffff' : '#e7f2f9' }" class='timeAdjustSpan'>{{ timeDisplay }}</span> 
+            <input [disabled]='!editFlag' [(ngModel)]="timeDisplay" class='inputBox' [ngxTimepicker]="toggleTimepicker" [format]="24" [disableClick]="true" readonly formControlName="timeTarget">
             <ngx-material-timepicker-toggle [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
-            <ngx-material-timepicker (timeChanged)="timeChanged($event)" #toggleTimepicker></ngx-material-timepicker>
+            <ngx-material-timepicker [disabled]='!editFlag' (timeChanged)="timeChanged($event)" #toggleTimepicker></ngx-material-timepicker>
           </div>
     </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
