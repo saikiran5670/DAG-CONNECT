@@ -9,9 +9,10 @@ import { DirectivesModule } from '../directives/directives.module';
 import { DashboardPreferencesComponent } from './dashboard-preferences/dashboard-preferences.component';
 import { FleetOverviewPreferencesComponent } from './fleet-overview-preferences/fleet-overview-preferences.component';
 import { ReportsPreferencesComponent } from './reports-preferences/reports-preferences.component';
+import { FleetUtilisationPreferenceComponent } from './reports-preferences/fleet-utilisation-preference/fleet-utilisation-preference.component';
 
 @NgModule({
-  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent ],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent ],
   imports: [
     CommonModule,
     SharedModule,
