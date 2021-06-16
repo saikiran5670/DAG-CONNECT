@@ -115,7 +115,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-
         #region - Trip Report Table Details
         [HttpGet]
         [Route("gettripdetails")]
@@ -365,10 +364,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-        #region Eco Score Report - Create
+        #region Eco Score Report
+
+        #region Eco Score Report - Create Profile
 
         [HttpPost]
-        [Route("ecoscoreprofile/create")]
+        [Route("ecoscore/createprofile")]
         public async Task<IActionResult> Create([FromBody] EcoScoreProfileCreateRequest request)
         {
             try
@@ -390,10 +391,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
-        #region Eco score Report - Update
+
+        #region Eco score Report - Update Profile
 
         [HttpPut]
-        [Route("ecoscoreprofile/update")]
+        [Route("ecoscore/updateprofile")]
         public async Task<IActionResult> Update([FromBody] EcoScoreProfileUpdateRequest request)
         {
             try
@@ -418,7 +420,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Eco Score Report - Get Profile & KPI details
 
         [HttpGet]
-        [Route("ecoscoreprofile/getprofiles")]
+        [Route("ecoscore/getprofiles")]
         public async Task<IActionResult> GetEcoScoreProfiles(int? organizationId)
         {
             try
@@ -445,7 +447,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("ecoscoreprofile/getprofilekpis")]
+        [Route("ecoscore/getprofilekpis")]
         public async Task<IActionResult> GetEcoScoreProfileKPIs(int profileId)
         {
             try
@@ -471,10 +473,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
-        #region - Delete Profile
+
+        #region Eco Score Report - Delete Profile
 
         [HttpDelete]
-        [Route("ecoscoreprofile/delete")]
+        [Route("ecoscore/deleteprofile")]
 
         public async Task<IActionResult> DeleteEcoScoreProfile([FromQuery] EcoScoreProfileDeleteRequest request)
         {
@@ -497,6 +500,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
+        #endregion
 
         #endregion
 
