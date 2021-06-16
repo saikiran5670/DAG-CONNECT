@@ -172,24 +172,15 @@ export class CreateEditViewAlertsComponent implements OnInit {
         CustomValidators.specialCharValidationForName('alertName')  
       ]
     });
+
+    this.loadFilterDataBasedOnPrivileges();
+
     if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'create'){
       this.breadcumMsg = this.getBreadcum();
     }
 
     this.selectedApplyOn= 'G';
-    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
-      this.selectedApplyOn = this.selectedRowData.applyOn;
-      this.setDefaultValue();
-      if(this.selectedRowData.notifications.length != 0)
-        this.panelOpenState= true;
-    }
-    else if(this.actionType == 'view'){
-      this.alert_category_selected = this.selectedRowData.category;
-      this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
-      this.onChangeAlertType(this.selectedRowData.type);
-      if(this.selectedRowData.notifications.length != 0)
-        this.panelOpenState= true;
-    }
+    
    
     console.log(JSON.parse(localStorage.getItem('accountFeatures')));
     this.alertFeatures = JSON.parse(localStorage.getItem('accountFeatures'));  
@@ -207,7 +198,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     //   this.loadFiltersData();   
     // }
 
-    this.loadFilterDataBasedOnPrivileges();
+    
 }
   
 
@@ -294,6 +285,8 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.alertService.getAlertFilterDataBasedOnPrivileges(this.accountId, this.accountRoleId).subscribe((data) => {
       let alertCategoryTypeMasterData = data["enumTranslation"];
       let alertCategoryTypeFilterData = data["alertCategoryFilterRequest"];
+      let associatedVehicleData = data["associatedVehicleRequest"];
+
       let alertTypeMap = new Map();
       alertCategoryTypeFilterData.forEach(element => {
         alertTypeMap.set(element.featureKey, element.featureKey);
@@ -319,6 +312,24 @@ export class CreateEditViewAlertsComponent implements OnInit {
         });
         this.alertCategoryList = this.getUnique(this.alertCategoryList, "enum")
       }
+
+
+
+
+      if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        this.selectedApplyOn = this.selectedRowData.applyOn;
+        this.setDefaultValue();
+        if(this.selectedRowData.notifications.length != 0)
+          this.panelOpenState= true;
+      }
+      else if(this.actionType == 'view'){
+        this.alert_category_selected = this.selectedRowData.category;
+        this.alertCategoryName = this.alertCategoryList.filter(item => item.enum == this.alert_category_selected)[0].value
+        this.onChangeAlertType(this.selectedRowData.type);
+        if(this.selectedRowData.notifications.length != 0)
+          this.panelOpenState= true;
+      }
+      
     })
   }
 
