@@ -192,6 +192,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.reportsche
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.atos.daf.ct2.mapservice", "commonservices\net.atos.daf.ct2.mapservice\net.atos.daf.ct2.mapservice.csproj", "{EE00332D-C042-406C-A64B-5DA492595D45}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "atos.net.daf.ct2.reportscheduler.test", "corecomponents\test\atos.net.daf.ct2.reportscheduler.test\atos.net.daf.ct2.reportscheduler.test.csproj", "{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1116,6 +1118,18 @@ Global
 		{EE00332D-C042-406C-A64B-5DA492595D45}.Release|x64.Build.0 = Release|Any CPU
 		{EE00332D-C042-406C-A64B-5DA492595D45}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE00332D-C042-406C-A64B-5DA492595D45}.Release|x86.Build.0 = Release|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Debug|x64.Build.0 = Debug|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Debug|x86.Build.0 = Debug|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Release|x64.ActiveCfg = Release|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Release|x64.Build.0 = Release|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Release|x86.ActiveCfg = Release|Any CPU
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1204,6 +1218,7 @@ Global
 		{A0792B02-6034-4A2E-8DE7-84F04CD60512} = {2783CFF0-6071-4B9E-8414-18ACB95D1997}
 		{3CF8A506-28A8-437F-B0DD-D7918EF840BB} = {E42B6632-428F-4BDE-BB14-D8FA9DD42E87}
 		{EE00332D-C042-406C-A64B-5DA492595D45} = {05D9A3A5-02DB-44AC-8E17-030995037356}
+		{E5407D44-8CBE-4575-A8C9-AD234BBFEB4C} = {A8B3E117-26FF-4FC1-A381-ED115B3104D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD5CC07A-2F4F-48DF-AB1C-BE925A46D5B7}
