@@ -686,7 +686,9 @@
                   </div>
                 </div> -->
                 <app-period-selection-filter  #periodComponent
-                [translationData] = 'translationData'></app-period-selection-filter>
+                [translationData] = 'translationData'
+                [selectedRowData] = 'selectedRowData'
+                [actionType]='actionType'></app-period-selection-filter>
              </div>
            </div>
           
@@ -744,8 +746,7 @@
              (isWarningLevelSelected &&
                 this.alertForm.get('warningLevelThreshold').value == '' ||
                   (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value >= this.alertForm.get('warningLevelThreshold').value )) ||
-             (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value == ''))) || 
-             (alert_category_selected == 'L' && alert_type_selected == 'S' && periodSelectionComponent.weekDaySelected == false)" mat-raised-button color="primary"
+             (isAdvisoryLevelSelected && this.alertForm.get('advisoryLevelThreshold').value == '')))" mat-raised-button color="primary"
             (click)='onCreateUpdate()'>{{ actionType == 'create' || actionType == 'duplicate' ? (translationData.lblCreate || 'Create') :
             (translationData.lblConfirm || 'Confirm') }}</button>
         </div>

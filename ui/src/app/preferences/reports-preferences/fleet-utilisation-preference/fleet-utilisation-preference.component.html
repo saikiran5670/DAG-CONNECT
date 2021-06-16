@@ -138,7 +138,12 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per targetSpanIcon">
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <input matInput type="number" placeholder="{{ translationData.lblSetTarget || 'Set Target' }}">
+            <span matSuffix>km</span>
+        </mat-form-field>
+    </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}">
@@ -167,7 +172,14 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
+        <div style='width: 80%;' fxLayout="row" fxLayoutAlign="space-between" class="full-width" class="timepicker" style='margin-top: 4px;'>
+            <span class='timeAdjustSpan'>{{ timeDisplay }}</span> 
+            <input [(ngModel)]="timeDisplay" class='inputBox' [ngxTimepicker]="toggleTimepicker" [format]="24" [disableClick]="true" readonly>
+            <ngx-material-timepicker-toggle [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
+            <ngx-material-timepicker (timeChanged)="timeChanged($event)" #toggleTimepicker></ngx-material-timepicker>
+          </div>
+    </div>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
         <mat-form-field appearance="outline" style='width: 80%'>
             <mat-select (selectionChange)="onUpperLowerDDChange($event)" placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}">
@@ -181,8 +193,28 @@
 
 <!-- Calender tab -->
 <div fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
-    <div style='margin-left: 25px;' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+        <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
+            <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
+        </mat-checkbox>
+    </div>
+</div>
+<div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <mat-label>{{ translationData.lblViewcalenderdetails || 'View calender details' }}</mat-label>
+        <mat-form-field appearance="outline" style='width: 80%'>
+            <mat-select (selectionChange)="onCalenderDetailDDChange($event)" placeholder="{{ translationData.lblViewcalenderdetails || 'View calender details' }}">
+              <mat-option *ngFor="let rer of calenderColumnData" [value]="rer.dataAtrributeId">
+                  {{ rer.translatedName }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div fxLayout="column" fxLayoutAlign="left" class="areaWidth min-width-33-3-per">
+        <mat-label style="margin-bottom: 8px !important;">{{ translationData.lblViewcalenderviewmode || 'View calender view mode' }}</mat-label>
+        <span>
+            <mat-slide-toggle>{{ translationData.lblExpand || 'Expand'}}</mat-slide-toggle>
+        </span>
     </div>
 </div>
 

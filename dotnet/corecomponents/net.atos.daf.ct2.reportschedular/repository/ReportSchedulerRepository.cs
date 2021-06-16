@@ -202,11 +202,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportDriverRef.Add("@modified_at", sdriverref.ModifiedAt);
                 parameterScheduledReportDriverRef.Add("@modified_by", sdriverref.ModifiedBy);
 
-                string querySchedulerecipient = @"INSERT INTO master.scheduledreportrecipient(report_schedule_id, driver_id, state, 
+                string queryscheduledreportdriverref = @"INSERT INTO master.scheduledreportdriverref(report_schedule_id, driver_id, state, 
                                                      created_at, created_by, modified_at,modified_by)
                                                  VALUES (@schedule_report_id,@driver_id,  @state, @created_at,@created_by,@modified_at,@modified_by) RETURNING id";
 
-                var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterScheduledReportDriverRef);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(queryscheduledreportdriverref, parameterScheduledReportDriverRef);
                 return id;
             }
             catch (Exception)
@@ -227,11 +227,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportVehicleRef.Add("@modified_at", svehicleref.ModifiedAt);
                 parameterScheduledReportVehicleRef.Add("@modified_by", svehicleref.ModifiedBy);
 
-                string querySchedulerecipient = @"INSERT INTO master.scheduledreportvehicleref(report_schedule_id, vehicle_group_id,  state, 
+                string queryscheduledreportvehicleref = @"INSERT INTO master.scheduledreportvehicleref(report_schedule_id, vehicle_group_id,  state, 
                                                      created_at,created_by, modified_at,modified_by)
                                                  VALUES (@schedule_report_id,@vehicle_group_id, @state, @created_at,@created_by,@modified_at,@modified_by) RETURNING id";
 
-                var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterScheduledReportVehicleRef);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(queryscheduledreportvehicleref, parameterScheduledReportVehicleRef);
                 return id;
             }
             catch (Exception)

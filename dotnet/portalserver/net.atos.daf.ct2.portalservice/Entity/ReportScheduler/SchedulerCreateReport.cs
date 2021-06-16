@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace net.atos.daf.ct2.reportscheduler.entity
+namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
 {
-    public class ReportScheduler
+    public class CreateReportScheduler
     {
         public int Id { get; set; }
         public int OrganizationId { get; set; }
@@ -25,12 +26,12 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string MailSubject { get; set; }
         public string MailDescription { get; set; }
         public long ReportDispatchTime { get; set; }
-        public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
-        public List<ScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<ScheduledReportRecipient>();
-        public List<ScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<ScheduledReportVehicleRef>();
-        public ScheduledReportDriverRef ScheduledReportDriverRef { get; set; }
+        public List<CreateScheduledReport> ScheduledReport { get; set; } = new List<CreateScheduledReport>();
+        public List<CreateScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<CreateScheduledReportRecipient>();
+        public List<CreateScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<CreateScheduledReportVehicleRef>();
+        public CreateScheduledReportDriverRef ScheduledReportDriverRef { get; set; }
     }
-    public class ScheduledReport
+    public class CreateScheduledReport
     {
         public int Id { get; set; }
         public int ScheduleReportId { get; set; }
@@ -42,7 +43,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long ValidTill { get; set; }
         public long CreatedAt { get; set; }
     }
-    public class ScheduledReportRecipient
+    public class CreateScheduledReportRecipient
     {
         public int Id { get; set; }
         public int ScheduleReportId { get; set; }
@@ -52,7 +53,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long ModifiedAt { get; set; }
     }
 
-    public class ScheduledReportDriverRef
+    public class CreateScheduledReportDriverRef
     {
         public int ScheduleReportId { get; set; }
         public int DriverId { get; set; }
@@ -63,7 +64,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int ModifiedBy { get; set; }
     }
 
-    public class ScheduledReportVehicleRef
+    public class CreateScheduledReportVehicleRef
     {
         public int ScheduleReportId { get; set; }
         public int VehicleGroupId { get; set; }

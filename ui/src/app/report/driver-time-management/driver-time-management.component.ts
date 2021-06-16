@@ -13,6 +13,8 @@ import { MatTableExporterDirective } from 'mat-table-exporter';
 import { Util } from '../../shared/util';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportMapService } from '../report-map.service';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-driver-time-management',
@@ -62,7 +64,12 @@ export class DriverTimeManagementComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
-
+  fromDisplayDate: any;
+  toDisplayDate : any;
+  selectedVehicleGroup : string;
+  selectedVehicle : string;
+  driverSelected : boolean = false;
+  selectedDriverData = [];
   showField: any = {
         driverName: true,
         driverId: true,
@@ -145,7 +152,6 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   onVehicleChange(event: any){
-
   }
 
   onDriverChange(event: any){
@@ -155,9 +161,10 @@ export class DriverTimeManagementComponent implements OnInit {
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-     let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data=>data.vin);
-     let _driverData = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
-
+    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data=>data.vin);
+    let _driverData = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
+   
+ 
    // let _driverData = this.driverListData.map(data=>data.driverID);
     let searchDataParam = {
       "StartDateTime":_startTime,
@@ -198,14 +205,157 @@ export class DriverTimeManagementComponent implements OnInit {
               "workTime": 0,
               "driveTime": 0,
               "serviceTime": -1218000
+            },
+            {
+              "driverId": "UK DB08176162022802",
+              "driverName": "Helloupdated Helloupdated",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 3,
+              "restTime": 0,
+              "availableTime": 0,
+              "workTime": 0,
+              "driveTime": -1218000,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "D2",
+              "driverName": "Ayrton Senna",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 1,
+              "restTime": 0,
+              "availableTime": -1218000,
+              "workTime": 0,
+              "driveTime": 0,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "UK DB08176162022802",
+              "driverName": "Helloupdated Helloupdated",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 3,
+              "restTime": 0,
+              "availableTime": 0,
+              "workTime": 0,
+              "driveTime": -1218000,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "D2",
+              "driverName": "Ayrton Senna",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 1,
+              "restTime": 0,
+              "availableTime": -1218000,
+              "workTime": 0,
+              "driveTime": 0,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "UK DB08176162022802",
+              "driverName": "Helloupdated Helloupdated",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 3,
+              "restTime": 0,
+              "availableTime": 0,
+              "workTime": 0,
+              "driveTime": -1218000,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "D2",
+              "driverName": "Ayrton Senna",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 1,
+              "restTime": 0,
+              "availableTime": -1218000,
+              "workTime": 0,
+              "driveTime": 0,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "UK DB08176162022802",
+              "driverName": "Helloupdated Helloupdated",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 3,
+              "restTime": 0,
+              "availableTime": 0,
+              "workTime": 0,
+              "driveTime": -1218000,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "D2",
+              "driverName": "Ayrton Senna",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 1,
+              "restTime": 0,
+              "availableTime": -1218000,
+              "workTime": 0,
+              "driveTime": 0,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "UK DB08176162022802",
+              "driverName": "Helloupdated Helloupdated",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 3,
+              "restTime": 0,
+              "availableTime": 0,
+              "workTime": 0,
+              "driveTime": -1218000,
+              "serviceTime": -1218000
+            },
+            {
+              "driverId": "D2",
+              "driverName": "Ayrton Senna",
+              "vin": "RERAE75PC0E261011",
+              "activityDate": 1604338846000,
+              "startTime": 0,
+              "endTime": 0,
+              "code": 1,
+              "restTime": 0,
+              "availableTime": -1218000,
+              "workTime": 0,
+              "driveTime": 0,
+              "serviceTime": -1218000
             }
           ],
           "code": 200,
           "message": "Trip fetched successfully for requested Filters"
         }
         this.onSearchData = this.reportMapService.getDriverTimeDataBasedOnPref(tripData.driverActivities, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+        this.setGeneralDriverValue();
+        
         this.setTableInfo();
         this.updateDataSource(this.onSearchData);
+
       // }, (error)=>{
       //   //console.log(error);
       //   this.hideloader();
@@ -327,8 +477,18 @@ export class DriverTimeManagementComponent implements OnInit {
 
     }
     this.resetdriverTimeFormControlValue();
+    this.selectedVehicleGroup = this.vehicleGroupListData[0].vehicleGroupName;
+    this.selectedVehicle = this.vehicleListData[0].vehicleName;
 
    
+  }
+
+  setGeneralDriverValue(){
+    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.selectedVehicleGroup = this.vehicleGroupListData.filter(item => item.vehicleGroupId == parseInt(this.driverTimeForm.controls.vehicleGroup.value))[0]["vehicleGroupName"];
+    this.selectedVehicle = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value))[0]["vehicleName"];
+    
   }
 
   setTableInfo(){
@@ -409,11 +569,53 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   exportAsPDFFile(){
+   
+    var doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('Driver Details', 11, 8);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+
+   // let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+
+    let pdfColumns = [['Driver Name', 'Driver Id', 'Start Time', 'End Time', 'Drive Time', 'Work Time', 'Service Time', 'Rest Time', 'Available Time']]
+  let prepare = []
+    this.initData.forEach(e=>{
+      var tempObj =[];
+      tempObj.push(e.driverName);
+      tempObj.push(e.driverId);
+      tempObj.push(e.startTime);
+      tempObj.push(e.endTime);
+      tempObj.push(e.driveTime);
+      tempObj.push(e.workTime);
+      tempObj.push(e.serviceTime);
+      tempObj.push(e.restTime);
+      tempObj.push(e.availableTime);
+
+      prepare.push(tempObj);
+    });
+    (doc as any).autoTable({
+      head: pdfColumns,
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    })
+    // below line for Download PDF document  
+    doc.save('DriverTimeReport.pdf');
+  }
+
+
+  pageSizeUpdated(_evt){
 
   }
 
-  pageSizeUpdated(_evt){
-    
+  onDriverSelected(_row){
+    this.driverSelected = true;
+    this.selectedDriverData = _row;
+    //console.log(_row)
   }
   //********************************** Date Time Functions *******************************************//
   setPrefFormatDate(){

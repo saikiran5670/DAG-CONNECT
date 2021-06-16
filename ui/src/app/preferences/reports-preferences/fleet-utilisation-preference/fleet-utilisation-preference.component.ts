@@ -1,6 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
+import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @Component({
   selector: 'app-fleet-utilisation-preference',
@@ -13,6 +14,8 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() reportListData: any;
   @Input() editFlag: any;
   @Output() setFleetUtilFlag = new EventEmitter<boolean>();
+  @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
+  prefTimeFormat: any = 24; //-- coming from pref setting
   reportId: any;
   localStLanguage: any;
   accountId: any;
@@ -27,6 +30,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   selectionForDetailsColumns = new SelectionModel(true, []);
   selectionForChartsColumns = new SelectionModel(true, []);
   selectionForCalenderColumns = new SelectionModel(true, []);
+  timeDisplay: any = '00:00';
   lineBarDD: any = [{
     status: 'A',
     id: 1,
@@ -232,6 +236,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   onUpperLowerDDChange(event: any){
 
+  }
+
+  onCalenderDetailDDChange(event: any){
+
+  }
+
+  timeChanged(selectedTime: any) {
+    this.timeDisplay = selectedTime;
   }
 
 }

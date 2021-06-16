@@ -115,7 +115,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-
         #region - Trip Report Table Details
         [HttpGet]
         [Route("gettripdetails")]
@@ -239,7 +238,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region - Driver Time Management Report Table Details
         [HttpPost]
-        [Route("getdriverstimedetails")]
+        [Route("drivetime/getdetails")]
         public async Task<IActionResult> GetDriversActivity([FromBody] Entity.Report.DriversTimeFilter request)
         {
             try
@@ -272,7 +271,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getsingledrivertimedetails")]
+        [Route("drivetime/getdetailssingle")]
         public async Task<IActionResult> GetDriverActivity([FromBody] Entity.Report.SingleDriverTimeFilter request)
         {
             try
@@ -305,7 +304,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getdriveractivityparameters")]
+        [Route("drivetime/getparameters")]
         public async Task<IActionResult> GetDriverActivityParameters([FromBody] IdRequestForDriverActivity request)
         {
             try
@@ -335,7 +334,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getreportsearchparameters")]
+        [Route("getsearchparameters")]
         public async Task<IActionResult> GetReportSearchParameter([FromBody] IdRequestForDriverActivity request)
         {
             try
@@ -365,10 +364,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
         #endregion
 
-        #region Eco Score Report - Create
+        #region Eco Score Report
+
+        #region Eco Score Report - Create Profile
 
         [HttpPost]
-        [Route("ecoscoreprofile/create")]
+        [Route("ecoscore/createprofile")]
         public async Task<IActionResult> Create([FromBody] EcoScoreProfileCreateRequest request)
         {
             try
@@ -390,10 +391,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
-        #region Eco score Report - Update
+
+        #region Eco score Report - Update Profile
 
         [HttpPut]
-        [Route("ecoscoreprofile/update")]
+        [Route("ecoscore/updateprofile")]
         public async Task<IActionResult> Update([FromBody] EcoScoreProfileUpdateRequest request)
         {
             try
@@ -418,7 +420,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Eco Score Report - Get Profile & KPI details
 
         [HttpGet]
-        [Route("ecoscoreprofile/getprofiles")]
+        [Route("ecoscore/getprofiles")]
         public async Task<IActionResult> GetEcoScoreProfiles(int? organizationId)
         {
             try
@@ -445,7 +447,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpGet]
-        [Route("ecoscoreprofile/getprofilekpis")]
+        [Route("ecoscore/getprofilekpis")]
         public async Task<IActionResult> GetEcoScoreProfileKPIs(int profileId)
         {
             try
@@ -471,10 +473,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         #endregion
-        #region - Delete Profile
+
+        #region Eco Score Report - Delete Profile
 
         [HttpDelete]
-        [Route("ecoscoreprofile/delete")]
+        [Route("ecoscore/deleteprofile")]
 
         public async Task<IActionResult> DeleteEcoScoreProfile([FromQuery] EcoScoreProfileDeleteRequest request)
         {
@@ -498,6 +501,42 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
 
+        #endregion
+
+        #endregion
+
+        #region Fleet utilization report details
+        [HttpPost]
+        [Route("fleetutilization/getdetails")]
+        public async Task<IActionResult> GetFleetUtilizationDetails([FromBody] Entity.Report.FleetUtilizationFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_DATEMISMATCH_MSG); }
+
+                string _filters = JsonConvert.SerializeObject(request);
+                FleetUtilizationFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetUtilizationFilterRequest>(_filters);
+                _logger.Info("GetFleetUtilizationDetails method in Report (for Fleet Utilization details by vehicle) API called.");
+                var data = await _reportServiceClient.GetFleetUtilizationDetailsAsync(objFleetFilter);
+                if (data?.FleetDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
         #endregion
     }
 }
