@@ -53,6 +53,7 @@ steps:
   inputs:
     script: |
       cat ui/src/assets/config/default.json
+      export NODE_OPTIONS=--max-old-space-size=8192
 
 - task: Docker@0
   displayName: 'Build an image'
