@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
     {
         public int ReportId { get; set; }
         public int OrganizationId { get; set; }
-        public char Status { get; set; }
+        public string Status { get; set; }
     }
 
   

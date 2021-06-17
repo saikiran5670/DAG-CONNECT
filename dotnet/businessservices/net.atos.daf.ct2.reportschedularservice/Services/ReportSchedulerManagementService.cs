@@ -162,5 +162,81 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
         }
         #endregion
+
+        #region DeleteReportSchedule
+        public override async Task<ReportStatusUpdateDeleteResponse> DeleteReportSchedule(ReportStatusUpdateDeleteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel objRepoModel = new net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel();
+                objRepoModel.ReportId = request.ReportId;
+                objRepoModel.OrganizationId = request.OrganizationId;
+                objRepoModel.Status = "D";
+                int reportId = await _reportSchedulerManager.ManipulateReportSchedular(objRepoModel);
+                ReportStatusUpdateDeleteResponse response = new ReportStatusUpdateDeleteResponse();
+                if (reportId > 0)
+                {
+                    response.Message = $"ReportSchedule with Report Id:{reportId} Deleted Sucessfully";
+                    response.Code = ResponseCode.Success;
+                    response.ReportId = reportId;
+                }
+                else
+                {
+                    response.Message = "Deletion Failed.";
+                    response.Code = ResponseCode.Failed;
+                    response.ReportId = reportId;
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportStatusUpdateDeleteResponse
+                {
+                    Message = $"Exception While deleting ReportSchedule with Report Id: {request.ReportId}",
+                    Code = ResponseCode.InternalServerError,
+                    ReportId = request.ReportId
+                });
+            }
+        }
+        #endregion
+
+        #region EnableDisableReportSchedule
+        public override async Task<ReportStatusUpdateDeleteResponse> EnableDisableReportSchedule(ReportStatusUpdateDeleteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel objRepoModel = new net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel();
+                objRepoModel.ReportId = request.ReportId;
+                objRepoModel.OrganizationId = request.OrganizationId;
+                objRepoModel.Status = request.Status;
+                int reportId = await _reportSchedulerManager.ManipulateReportSchedular(objRepoModel);
+                ReportStatusUpdateDeleteResponse response = new ReportStatusUpdateDeleteResponse();
+                if (reportId > 0)
+                {
+                    response.Message = $"ReportSchedule with Report Id:{reportId}, Enable/Disable is Sucessfully";
+                    response.Code = ResponseCode.Success;
+                    response.ReportId = reportId;
+                }
+                else
+                {
+                    response.Message = "Enable/Disable Failed";
+                    response.Code = ResponseCode.Failed;
+                    response.ReportId = reportId;
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportStatusUpdateDeleteResponse
+                {
+                    Message = $"Exception While Enable/Disable ReportSchedule with Report Id: {request.ReportId}",
+                    Code = ResponseCode.InternalServerError,
+                    ReportId = request.ReportId
+                });
+            }
+        }
+        #endregion
     }
 }

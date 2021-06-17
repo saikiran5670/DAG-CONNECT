@@ -340,7 +340,15 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameter.Add("@id", objReportStatusUpdateDeleteModel.ReportId);
                 parameter.Add("@state", objReportStatusUpdateDeleteModel.Status);
                 parameter.Add("@organization_id", objReportStatusUpdateDeleteModel.OrganizationId);
-                return await _dataAccess.ExecuteAsync(query, parameter);
+                int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+                if (rowEffected > 0)
+                {
+                    return objReportStatusUpdateDeleteModel.ReportId;// to show reportid in gRPC message
+                }
+                else
+                {
+                    return 0;//to return Failed Message in grpc
+                }
             }
             catch
             {
