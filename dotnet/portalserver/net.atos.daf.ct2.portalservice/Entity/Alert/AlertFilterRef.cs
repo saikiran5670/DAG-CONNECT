@@ -37,7 +37,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long CreatedAt { get; set; }
 
         //public long ModifiedAt { get; set; }
-        [MaxLength(4, ErrorMessage = "Maximum 4 custom period user can add per day.")]
+        //[MaxLength(4, ErrorMessage = "Maximum 4 custom period user can add per day.")]
         public List<AlertTimingDetail> AlertTimingDetails { get; set; } = new List<AlertTimingDetail>();
     }
     public class AlertFilterRefEdit : AlertFilterRef

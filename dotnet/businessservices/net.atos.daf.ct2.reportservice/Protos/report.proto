@@ -21,7 +21,7 @@ rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScore
 rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScoreProfileResponse);
 rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
-rpc GetFleetCalenderDetails (TripFilterRequest) returns (FleetUtilizationCalenderResponse);
+rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
 }
 
 enum Responsecode{
