@@ -221,6 +221,7 @@ message VehicleGroupRefDetails{
   google.protobuf.Int32Value OrganizationId=9;
   string Description=10;
   int64 CreatedAt=11;
+  string AssociatedGroups=23;
 }
 
 message VehicleGroupRefResponce{

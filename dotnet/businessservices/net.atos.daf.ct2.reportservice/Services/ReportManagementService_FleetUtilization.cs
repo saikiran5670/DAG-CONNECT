@@ -56,15 +56,21 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
+        /// <summary>
+        /// Calender details get for fleet utilzation page
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns>List of vehicle details per day</returns>
 
-        public override async Task<FleetUtilizationCalenderResponse> GetFleetCalenderDetails(TripFilterRequest request, ServerCallContext context)
+        public override async Task<FleetUtilizationCalenderResponse> GetFleetCalenderDetails(FleetUtilizationFilterRequest request, ServerCallContext context)
         {
             try
             {
                 _logger.Info("Get GetFleetUtilizationDetails report per Vehicle");
-                ReportComponent.entity.TripFilterRequest objFleetFilter = new ReportComponent.entity.TripFilterRequest
+                ReportComponent.entity.FleetUtilizationFilter objFleetFilter = new ReportComponent.entity.FleetUtilizationFilter
                 {
-                    VIN = request.VIN,
+                    VIN = request.VINs.ToList<string>(),
                     StartDateTime = request.StartDateTime,
                     EndDateTime = request.EndDateTime
                 };

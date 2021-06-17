@@ -13,6 +13,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<DriverDetail>> GetDriverDetails(int organizationid);
         Task<ReportScheduler> CreateReportSchedular(ReportScheduler report);
         Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report);
+        Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid);
         #endregion
     }
 }
