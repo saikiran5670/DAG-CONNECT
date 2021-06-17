@@ -28,7 +28,7 @@ namespace net.atos.daf.ct2.vehicle
         Task<IEnumerable<VehicleGroupList>> GetVehicleGroupbyAccountId(int accountid, int orgnizationid);
         Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
         Task<IEnumerable<Vehicle>> GetVehicleSetting(VehicleSettings vehicleSettings);
-
+        Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId);
 
         #region Vehicle Mileage Data
         Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype, int accountId, int orgid);
