@@ -249,14 +249,14 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         #endregion
 
-        #region Eco Score Report - Update Profile
+        #region - Update Eco score
         public override async Task<UpdateEcoScoreProfileResponse> UpdateEcoScoreProfile(UpdateEcoScoreProfileRequest request, ServerCallContext context)
         {
             var response = new UpdateEcoScoreProfileResponse();
             try
             {
                 _logger.Info("Update Eco Score Profile Report .");
-
+                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 EcoScoreProfileDto obj = new EcoScoreProfileDto();
                 obj.Id = request.ProfileId;
                 obj.Name = request.Name;
@@ -275,22 +275,27 @@ namespace net.atos.daf.ct2.reportservice.Services
                     obj.ProfileKPIs.Add(data);
                 }
 
-                var result = await _reportManager.UpdateEcoScoreProfile(obj);
+                var result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
 
                 if (result > 0)
                 {
-                    response.Message = obj.Name + " Update successfully";
+                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_SUCCESS_MSG;
                     response.Code = Responsecode.Success;
 
                 }
                 else if (result == -1)
                 {
-                    response.Message = obj.Name + " does not exist to update";
+                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_NOT_EXIST_MSG;
                     response.Code = Responsecode.NotFound;
+                }
+                else if (result == -2)
+                {
+                    response.Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG;
+                    response.Code = Responsecode.Failed;
                 }
                 else
                 {
-                    response.Message = obj.Name + " Update Eco Score Profile Fail";
+                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_FAIL_MSG;
                     response.Code = Responsecode.Failed;
 
                 }
@@ -303,46 +308,45 @@ namespace net.atos.daf.ct2.reportservice.Services
                 return await Task.FromResult(new UpdateEcoScoreProfileResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "UpdateEcoScoreProfile get failed due to - " + ex.Message
+                    Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_FAIL_MSG + " due to - " + ex.Message
                 });
             }
         }
 
 
         #endregion
-
-        #region Eco Score Report - Delete Profile
+        #region - Delete Profile
         public override async Task<DeleteEcoScoreProfileResponse> DeleteEcoScoreProfile(DeleteEcoScoreProfileRequest request, ServerCallContext context)
         {
             DeleteEcoScoreProfileResponse response = new DeleteEcoScoreProfileResponse();
             try
             {
-                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 _logger.Info("Delete Eco Score Profile .");
+                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 var result = await _reportManager.DeleteEcoScoreProfile(request.ProfileId, isAdminRights);
                 if (result > 0)
                 {
-                    response.Message = " Delete successfully";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_SUCCESS_MSG;
                     response.Code = Responsecode.Success;
                 }
                 else if (result == 0)
                 {
-                    response.Message = " does not exist to delete ";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_NOT_EXIST_MSG;
                     response.Code = Responsecode.NotFound;
                 }
                 else if (result == -1)
                 {
-                    response.Message = " Is a default profile, Can't delete ";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_FAIL_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 else if (result == -2)
                 {
-                    response.Message = " Is a global profile, Can't delete ";
-                    response.Code = Responsecode.NotFound;
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG;
+                    response.Code = Responsecode.Failed;
                 }
                 else
                 {
-                    response.Message = " Delete Eco Score Profile Fail ";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 return await Task.FromResult(response);
