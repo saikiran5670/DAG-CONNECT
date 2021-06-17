@@ -31,6 +31,7 @@ namespace net.atos.daf.ct2.vehicle
 
         Task<List<VehicleConnect>> VehicleConnectAll(List<VehicleConnect> vehicleConnects);
 
+        Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId);
 
         #region Vehicle Mileage Data
         Task<VehicleMileage> GetVehicleMileage(string since, bool isnumeric, string contenttype, int accountId, int orgid);

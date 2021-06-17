@@ -1,5 +1,5 @@
 <form [formGroup]="periodSelectionForm">
-  <div fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
+  <div *ngIf="actionType != 'view'" fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
     <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectCalender || 'Select Calender' }}
     </mat-label>
     <mat-label class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
@@ -73,3 +73,41 @@
     </div>
   </div>
 </form>
+
+<div *ngIf="actionType == 'view'">
+  <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+    fxLayoutGap="10px">
+    <mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectedDays || 'Selected Days'}}
+    </mat-label>
+  </div>
+
+  <div *ngFor="let days of timings">
+    <div fxLayout="row" class="areaWidth filter-direction margin-bottom-sm" fxLayoutGap="10px">
+      <mat-label>Day:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
+      <mat-label>Period Type:
+        <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">Custom Period</span>
+        <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">Full Day</span>
+      </mat-label>
+    </div>
+
+    <div *ngIf="days.Type == 'C'" fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="5px">
+      <div *ngFor="let item of days.data" class="areaWidth min-width-20-per " fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-30-per" fxLayout="row" fxLayoutAlign="left">
+
+          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ item.startDate }}</span>
+          </div>
+          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <mat-label>{{ translationData.lblFrom || 'To' }}</mat-label>
+            <span style='font-weight: 500!important;'>{{ item.endDate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style='padding: 10px; position: relative;'>
+      <mat-divider></mat-divider>
+    </div>
+  </div>
+
+</div>

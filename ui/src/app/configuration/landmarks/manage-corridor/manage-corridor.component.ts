@@ -183,7 +183,7 @@ export class ManageCorridorComponent implements OnInit {
         }
       },
       (error)=>{
-        if(error.status === 500){
+        if(error.status === 500 || error.status === 409){
           const options = {
             title: this.translationData.lblDelete || "Delete",
             message: this.translationData.lblAreyousureyouwanttodelete || "Alert exists for corridor. You cannot deleted this corridor if there is an alert set for it. To remove this Corridor, first remove connected alerts.",

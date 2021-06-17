@@ -8,78 +8,43 @@
       <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
     </div>
   </div>
-  <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showTripReport" (opened)="showTripReport == true"
-    (closed)="showTripReport == false">
-    <mat-expansion-panel-header class="full-width">
-      <mat-panel-title>
-        <span>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-            translationData.lblTripReportComponent || 'Trip Report Component' }}</span>
-          <span style='margin-left: 10px; vertical-align: middle;'>
-            <mat-icon *ngIf='!editTripFlag' (click)="editTripReportPreferences()" style="cursor: pointer; font-size: 20px;">
-              edit</mat-icon>
+  <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
+  <div *ngIf='!showLoadingIndicator'>
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showTripReport" (opened)="showTripReport == true"
+      (closed)="showTripReport == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblTripReportComponent || 'Trip Report Component' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editTripFlag' (click)="editTripReportPreferences()" style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
           </span>
-        </span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div *ngIf='initData.length > 0'>
-      <mat-table [dataSource]="dataSource" class="table-items pref-table-checkbox">
-        <ng-container matColumnDef="All">
-          <mat-header-cell *matHeaderCellDef class="max-width-10-per">
-            <mat-checkbox (change)='$event ? masterToggleForColumns() : null'
-              [checked]='selectionForColumns.hasValue() && isAllSelectedForColumns()'
-              [indeterminate]='selectionForColumns.hasValue() && !isAllSelectedForColumns()'
-              [aria-label]='checkboxLabelForColumns()' [disabled]='!editTripFlag'>
-            </mat-checkbox>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let row" class="max-width-10-per">
-            <mat-checkbox (click)='$event.stopPropagation()'
-              (change)='$event ? selectionForColumns.toggle(row) : null; checkboxClicked($event, row)'
-              [checked]="selectionForColumns.isSelected(row)" [aria-label]='checkboxLabelForColumns(row)'
-              [disabled]='!editTripFlag'>
-            </mat-checkbox>
-          </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="translatedName">
-          <mat-header-cell *matHeaderCellDef>{{ translationData.lblTripReportDetails || 'Trip report Details' }} <span
-              style='font-size: 15px; font-weight: normal; margin-left: 5px;'>({{
-              translationData.lblTripcolumnviewsettings || 'Trip column view settings' }})</span></mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.translatedName }}</mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-      </mat-table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
-      <div fxLayout="row" class='areaWidth' fxLayoutAlign="start" *ngIf="editTripFlag && reqField">
-        <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN, Registration Number' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <app-trip-report-preference *ngIf='showTripReport' [editFlag]='editTripFlag' [reportListData]='reportListData' [translationData]='translationData' (setTripReportFlag)="updateEditTripReportFlag($event)"></app-trip-report-preference>
       </div>
-      <div fxLayout="row" class='areaWidth' fxLayoutAlign="end" *ngIf="editTripFlag">
-        <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-          translationData.lblCancel || 'Cancel' }}</button>
-        <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-          translationData.lblReset || 'Reset' }}</button>
-        <button [disabled]='reqField || selectionForColumns.selected.length == 0' class='no-margin' mat-raised-button
-          color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
-      </div>
-    </div>
-  </mat-expansion-panel>
-
-  <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showFleetUtilisationReport" (opened)="showFleetUtilisationReport == true"
-    (closed)="showFleetUtilisationReport == false">
-    <mat-expansion-panel-header class="full-width">
-      <mat-panel-title>
-        <span>
-          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-            translationData.lblFleetUtilisation || 'Fleet Utilisation' }}</span>
-          <span style='margin-left: 10px; vertical-align: middle;'>
-            <mat-icon *ngIf='!editFleetUtilisationFlag' (click)="editFleetUtilisationPreferences()" style="cursor: pointer; font-size: 20px;">
-              edit</mat-icon>
+    </mat-expansion-panel>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showFleetUtilisationReport" (opened)="showFleetUtilisationReport == true"
+      (closed)="showFleetUtilisationReport == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblFleetUtilisation || 'Fleet Utilisation' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editFleetUtilisationFlag' (click)="editFleetUtilisationPreferences()" style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
           </span>
-        </span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div>
-      <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [editFlag]='editFleetUtilisationFlag' [reportListData]='reportListData' [translationData]='translationData' (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
-    </div>
-  </mat-expansion-panel>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [editFlag]='editFleetUtilisationFlag' [reportListData]='reportListData' [translationData]='translationData' (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
+      </div>
+    </mat-expansion-panel>
+  </div>
 </mat-card>

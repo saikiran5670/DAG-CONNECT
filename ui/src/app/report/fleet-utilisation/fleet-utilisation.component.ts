@@ -78,6 +78,72 @@ export class FleetUtilisationComponent implements OnInit {
     vin: true,
     regNo: true
   };
+  prefMapData: any = [
+    {
+      key: 'da_report_details_vehiclename',
+      value: 'vehiclename'
+    },
+    {
+      key: 'da_report_details_averagespeed',
+      value: 'averageSpeed'
+    },
+    {
+      key: 'da_report_details_drivingtime',
+      value: 'drivingTime'
+    },
+    {
+      key: 'da_report_details_alerts',
+      value: 'alert'
+    },
+    {
+      key: 'da_report_details_averageweight',
+      value: 'averageWeight'
+    },
+    {
+      key: 'da_report_details_events',
+      value: 'events'
+    },
+    {
+      key: 'da_report_details_distance',
+      value: 'distance'
+    },
+    {
+      key: 'da_report_details_enddate',
+      value: 'endTimeStamp'
+    },
+    {
+      key: 'da_report_details_endposition',
+      value: 'endPosition'
+    },
+    {
+      key: 'da_report_details_fuelconsumed',
+      value: 'fuelConsumed100Km'
+    },
+    {
+      key: 'da_report_details_idleduration',
+      value: 'idleDuration'
+    },
+    {
+      key: 'da_report_details_odometer',
+      value: 'odometer'
+    },
+    {
+      key: 'da_report_details_registrationnumber',
+      value: 'registrationnumber'
+    },
+    {
+      key: 'da_report_details_startdate',
+      value: 'startTimeStamp'
+    },
+    {
+      key: 'da_report_details_vin',
+      value: 'vin'
+    },
+    {
+      key: 'da_report_details_startposition',
+      value: 'startPosition'
+    }
+  ];
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
     this.defaultTranslation();
@@ -122,44 +188,43 @@ export class FleetUtilisationComponent implements OnInit {
         this.setPrefFormatDate();
         this.setDefaultTodayDate();
         this.getFleetPreferences();
-        this.loadWholeTripData(); 
       });
     });
   }
 
   getFleetPreferences(){
-    // this.reportService.getUserPreferenceReport(this.tripReportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
-    //   this.reportPrefData = data["userPreferences"];
-    //   this.setDisplayColumnBaseOnPref();
-    //   this.loadWholeTripData();
-    // }, (error) => {
-    //   this.reportPrefData = [];
-    //   this.setDisplayColumnBaseOnPref();
-    //   this.loadWholeTripData();
-    // });
+    this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
+      this.reportPrefData = data["userPreferences"];
+      this.setDisplayColumnBaseOnPref();
+      this.loadWholeTripData();
+    }, (error) => {
+      this.reportPrefData = [];
+      this.setDisplayColumnBaseOnPref();
+      this.loadWholeTripData();
+    });
   }
 
   setDisplayColumnBaseOnPref(){
-    // let filterPref = this.reportPrefData.filter(i => i.state == 'I');
-    // if(filterPref.length > 0){
-    //   filterPref.forEach(element => {
-    //     let search = this.prefMapData.filter(i => i.key == element.key);
-    //     if(search.length > 0){
-    //       let index = this.displayedColumns.indexOf(search[0].value);
-    //       if (index > -1) {
-    //           this.displayedColumns.splice(index, 1);
-    //       }
-    //     }
+    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
+    if(filterPref.length > 0){
+      filterPref.forEach(element => {
+        let search = this.prefMapData.filter(i => i.key == element.key);
+        if(search.length > 0){
+          let index = this.displayedColumns.indexOf(search[0].value);
+          if (index > -1) {
+              this.displayedColumns.splice(index, 1);
+          }
+        }
 
-    //     if(element.key == 'da_report_details_vehiclename'){
-    //       this.showField.vehicleName = false;
-    //     }else if(element.key == 'da_report_details_vin'){
-    //       this.showField.vin = false;
-    //     }else if(element.key == 'da_report_details_registrationnumber'){
-    //       this.showField.regNo = false;
-    //     }
-    //   });
-    // }
+        if(element.key == 'da_report_details_vehiclename'){
+          this.showField.vehicleName = false;
+        }else if(element.key == 'da_report_details_vin'){
+          this.showField.vin = false;
+        }else if(element.key == 'da_report_details_registrationnumber'){
+          this.showField.regNo = false;
+        }
+      });
+    }
   }
 
 
@@ -230,7 +295,7 @@ export class FleetUtilisationComponent implements OnInit {
           "StopTime":1587143959831,
           "NumberOfTrips":15,
           "distance":139,
-          "idleDuration":53,
+          "idleDuration":353,
           "averageSpeed":2663,
           "odometer":298850780,
           "AverageDistancePerDay":50,
@@ -243,9 +308,9 @@ export class FleetUtilisationComponent implements OnInit {
           "vehicle_name":"Vehicle 2",
           "vin":"XLR0998HGFFT5566",
           "StopTime":1587143959831,
-          "NumberOfTrips":15,
-          "distance":139,
-          "idleDuration":53,
+          "NumberOfTrips":7,
+          "distance":144,
+          "idleDuration":253,
           "averageSpeed":2663,
           "odometer":298850780,
           "AverageDistancePerDay":50,
@@ -257,9 +322,9 @@ export class FleetUtilisationComponent implements OnInit {
           "vehicle_name":"Vehicle 3",
           "vin":"XLR0998HGFFT5566",
           "StopTime":1587143959831,
-          "NumberOfTrips":15,
-          "distance":139,
-          "idleDuration":53,
+          "NumberOfTrips":5,
+          "distance":133,
+          "idleDuration":258,
           "averageSpeed":2663,
           "odometer":298850780,
           "AverageDistancePerDay":50,
@@ -271,9 +336,9 @@ export class FleetUtilisationComponent implements OnInit {
           "vehicle_name":"Vehicle 4",
           "vin":"XLR0998HGFFT5566",
           "StopTime":1587143959831,
-          "NumberOfTrips":15,
-          "distance":139,
-          "idleDuration":53,
+          "NumberOfTrips":10,
+          "distance":130,
+          "idleDuration":255,
           "averageSpeed":2663,
           "odometer":298850780,
           "AverageDistancePerDay":50,
@@ -285,9 +350,9 @@ export class FleetUtilisationComponent implements OnInit {
           "vehicle_name":"Vehicle 5",
           "vin":"XLR0998HGFFT5566",
           "StopTime":1587143959831,
-          "NumberOfTrips":15,
-          "distance":139,
-          "idleDuration":53,
+          "NumberOfTrips":14,
+          "distance":150,
+          "idleDuration":553,
           "averageSpeed":2663,
           "odometer":298850780,
           "AverageDistancePerDay":50,
@@ -331,6 +396,46 @@ export class FleetUtilisationComponent implements OnInit {
     this.tableInfoObj = {};
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
+  }
+
+  sumOfColumns(columnName : any){
+    let sum: any = 0;
+    switch(columnName){
+      case 'distance': { 
+        let s = this.tripData.forEach(element => {
+         sum += parseFloat(element.convertedDistance);
+
+        });
+        break;
+      }case 'NumberOfVehicles': { 
+        sum = this.tripData.length + 1;
+        break;
+      } case 'NumberOfTrips': { 
+        let s = this.tripData.forEach(element => {
+          sum += element.NumberOfTrips;
+         });
+        break;
+      }  case 'AverageDistancePerDay': { 
+        let s = this.tripData.forEach(element => {
+         sum += parseFloat(element.convertedAverageDistance);
+        });
+        break;
+      } case 'idleDuration': { 
+        let s = this.tripData.forEach(element => {
+          let time: any = 0;
+          time += (element.idleDuration);
+          let data: any = "00:00";
+          let hours = Math.floor(time / 3600);
+          time %= 3600;
+          let minutes = Math.floor(time / 60);
+          let seconds = time % 60;
+          data = `${(hours >= 10) ? hours : ('0'+hours)}:${(minutes >= 10) ? minutes : ('0'+minutes)}`;
+          sum = data;
+        });
+        break;
+      }
+    }
+    return sum; 
   }
 
   resetTripFormControlValue(){
@@ -636,43 +741,43 @@ export class FleetUtilisationComponent implements OnInit {
 
   exportAsPDFFile(){
    
-  //   var doc = new jsPDF();
+    var doc = new jsPDF();
 
-  //   doc.setFontSize(18);
-  //   doc.text('Trip Fleet Utilisation Details', 11, 8);
-  //   doc.setFontSize(11);
-  //   doc.setTextColor(100);
+    doc.setFontSize(18);
+    doc.text('Trip Fleet Utilisation Details', 11, 8);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
 
-  //   let pdfColumns = [['Start Date', 'End Date', 'Distance', 'Idle Duration', 'Average Speed', 'Average Weight', 'Start Position', 'End Position', 'Fuel Consumed100Km', 'Driving Time', 'Alert', 'Events']];
+    let pdfColumns = [['Vehicle Name', 'VIN', 'RegPlateNumber', 'Distance', 'Number Of Trips', 'Trip Time', 'Driving Time', 'Idle Duration', 'Average Speed', 'Average Weight Per Trip', 'Average Distance Per Day', 'Odometer']];
 
-  // let prepare = []
-  //   this.initData.forEach(e=>{
-  //     var tempObj =[];
-  //     tempObj.push(e.convertedStartTime);
-  //     tempObj.push(e.convertedEndTime);
-  //     tempObj.push(e.convertedDistance);
-  //     tempObj.push(e.convertedIdleDuration);
-  //     tempObj.push(e.convertedAverageSpeed);
-  //     tempObj.push(e.convertedAverageWeight);
-  //     tempObj.push(e.startPosition);
-  //     tempObj.push(e.endPosition);
-  //     tempObj.push(e.convertedFuelConsumed100Km);
-  //     tempObj.push(e.convertedDrivingTime);
-  //     tempObj.push(e.alert);
-  //     tempObj.push(e.events);
+  let prepare = []
+    this.initData.forEach(e=>{
+      var tempObj =[];
+      tempObj.push(e.vehicle_name);
+      tempObj.push(e.vin);
+      tempObj.push(e.RegPlateNumber);
+      tempObj.push(e.convertedDistance);
+      tempObj.push(e.NumberOfTrips);
+      tempObj.push(e.convertedTripTime);
+      tempObj.push(e.convertedDrivingTime);
+      tempObj.push(e.convertedIdleDuration);
+      tempObj.push(e.convertedAverageSpeed);
+      tempObj.push(e.convertedAverageWeight);
+      tempObj.push(e.convertedAverageDistance);
+      tempObj.push(e.odometer);
 
-  //     prepare.push(tempObj);
-  //   });
-  //   (doc as any).autoTable({
-  //     head: pdfColumns,
-  //     body: prepare,
-  //     theme: 'striped',
-  //     didDrawCell: data => {
-  //       //console.log(data.column.index)
-  //     }
-  //   })
-  //   // below line for Download PDF document  
-  //   doc.save('tripFleetUtilisation.pdf');
+      prepare.push(tempObj);
+    });
+    (doc as any).autoTable({
+      head: pdfColumns,
+      body: prepare,
+      theme: 'striped',
+      didDrawCell: data => {
+        //console.log(data.column.index)
+      }
+    })
+    // below line for Download PDF document  
+    doc.save('tripFleetUtilisation.pdf');
   }
 
   pageSizeUpdated(_event) {

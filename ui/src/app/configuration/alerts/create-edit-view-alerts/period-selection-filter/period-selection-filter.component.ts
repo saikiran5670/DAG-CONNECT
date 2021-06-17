@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup,FormBuilder, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { Validators } from '@angular/forms';
+import { DateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-period-selection-filter',
@@ -20,6 +21,7 @@ organizationId: number;
 accountId: number;
 FormArrayItems:  FormArray;
 days: any= [];
+timings: any = [];
 weekDaySelected: boolean = false;
 checkboxChecked: boolean = false;
 
@@ -54,6 +56,62 @@ checkboxChecked: boolean = false;
  {
    this.setDefaultValues();
  }
+
+    else if (this.actionType == 'view') {
+      let PeriodType;
+      this.timings = [
+        {
+          "day": "Sunday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Monday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Tuesday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Wednesday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Thursday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Friday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Saturday",
+          "Type": PeriodType,
+          "data": []
+        }
+      ];
+      this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach((element, index) => {
+        element.dayType.forEach((item, index) => {
+          if (item == true) {
+            let totalTime = this.convertTimeIntoHours(element.startDate, element.endDate);
+            element.startDate = totalTime[0];
+            element.endDate = totalTime[1];
+            this.timings[index].data.push(element);
+            this.timings[index].Type = element.periodType;
+          }
+        });
+
+      })
+
+      this.timings = this.timings.filter(itm => itm.data.length > 0);
+      console.log(this.timings);
+    }
  
   }
 

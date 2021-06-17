@@ -692,7 +692,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         if (!response.GroupRefDetails.Any(a => a.Id == item.ID))
                         {
                             //You have your value.
-
                             VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                             ObjGroupRef.Id = item.ID;
                             ObjGroupRef.Name = item.Name ?? "";
@@ -700,6 +699,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             ObjGroupRef.VIN = item.VIN ?? "";
                             ObjGroupRef.ModelId = item.ModelId ?? "";
                             ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                            ObjGroupRef.AssociatedGroups = await _vehicleManager.GetVehicleAssociatedGroup(item.ID, item.Organization_Id ?? 0);
                             response.GroupRefDetails.Add(ObjGroupRef);
                         }
                     }

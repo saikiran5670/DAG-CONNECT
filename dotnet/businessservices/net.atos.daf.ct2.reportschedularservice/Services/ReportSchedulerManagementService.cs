@@ -131,5 +131,36 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             }
         }
         #endregion
+
+        #region Get Report Scheduler
+        public override async Task<ReportSchedulerListResponse> GetReportSchedulerList(ReportParameterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                IEnumerable<ReportScheduler> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                ReportSchedulerListResponse response = new ReportSchedulerListResponse();
+                if (reportSchedulerList.Any())
+                {
+                    foreach (var item in reportSchedulerList)
+                    {
+                        response.ReportSchedulerRequest.Add(_mapper.MapReportSchedulerEntity(item));
+                    }
+                }
+                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GET_CALLED_MSG);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportSchedulerListResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ex.Message
+                });
+            }
+        }
+        #endregion
     }
 }

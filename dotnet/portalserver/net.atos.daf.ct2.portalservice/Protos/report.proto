@@ -21,6 +21,8 @@ rpc UpdateEcoScoreProfile (UpdateEcoScoreProfileRequest) returns (UpdateEcoScore
 rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScoreProfileResponse);
 rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
+rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
+rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 }
 
 enum Responsecode{
@@ -46,9 +48,6 @@ message ReportDetails {
     string Name = 2;
     string Key = 3;
 }
-
-
-
 
 message IdRequest {
   int32 ReportId = 1;
@@ -252,9 +251,11 @@ repeated VehicleDetailsWithAccountVisibilty VehicleDetailsWithAccountVisibiltyLi
 
 message SearchParameter {
 string DriverId = 1;
-string VIN =2;
+string VIN = 2;
 string PerformanceType = 3;
 }
+
+
 // End   Driver Time Managment Report
 
 message CreateEcoScoreProfileRequest {
@@ -324,7 +325,7 @@ string SectionDescription = 3;
 repeated EcoScoreKPI ProfileKPIDetails = 4;
 }
 
-message EcoScoreKPI {
+message EcoScoreKPI{
 int32 EcoScoreKPIId = 1; 
 string KPIName = 2; 
 string LimitType = 3; 
@@ -374,6 +375,12 @@ message FleetUtilizationDetailsResponse {
     string message = 3;
 }
 
+message FleetUtilizationCalenderResponse {
+    repeated FleetUtilizationcalender CalenderDetails = 1;   
+    Responsecode code = 2;
+    string message = 3;
+}
+
 message FleetUtilizationDetails {
     string VehicleName = 1;
     string VIN = 2;
@@ -391,4 +398,46 @@ message FleetUtilizationDetails {
 
 }
 
+message FleetUtilizationcalender {
+    string VehicleName = 1;
+    string VIN = 2;
+    int64 CalenderDate = 3;
+    double Averagedistance = 4;
+    double Averagetriptime  = 5;
+    double Averagedrivingtime = 6;
+    double Averageidleduration = 7;
+    double Averagedistanceperday = 8;
+    double AverageSpeed = 9;
+   
+
+}
+
 // END Fleet Utilization Report
+// END Fleet Utilization Report
+
+/// START: Eco Score Report By All Drivers
+message GetEcoScoreReportByAllDriversRequest {
+  int64 StartDateTime = 1;
+  int64 EndDateTime = 2; 
+  repeated string VINs = 3;
+  double MinTripDistance = 4;
+  double MinDriverTotalDistance = 5;
+  int32 OrgId = 6;
+  int32 AccountId = 7;
+  int32 TargetProfileId = 8;
+  }
+
+ message EcoScoreReportDriversRanking {
+  int32 Ranking = 1;
+  string DriverName = 2; 
+  string DriverId = 3;
+  double EcoScoreRanking = 4;
+  string EcoScoreRankingColor = 5;
+  }
+  
+  message GetEcoScoreReportByAllDriversResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreReportDriversRanking DriverRanking = 3;
+  }
+  /// END: Eco Score Report By All Drivers
