@@ -34,6 +34,8 @@ service VehicleService {
   rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
+
+  rpc VehicleConnectAll(VehicleConnectRequest)returns(VehicleConnectResponse);
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -352,4 +354,22 @@ message VehicleGroupList{
 message VehicleGroupListRequest {
   int32 AccountId = 1;
   int32 OrganizationId = 2;
+}
+
+message VehicleConnectAllRequest {
+  int32 VehicleId = 1;
+  string Opt_In = 2;
+  int32 ModifiedBy = 3;
+  
+}
+
+message VehicleConnectRequest{
+    repeated VehicleConnectAllRequest Vehicles = 1;
+}
+
+message VehicleConnectResponse {
+
+  Responcecode Code = 1;
+  string Message = 2;
+  VehicleConnectRequest Vehicle = 3;
 }
