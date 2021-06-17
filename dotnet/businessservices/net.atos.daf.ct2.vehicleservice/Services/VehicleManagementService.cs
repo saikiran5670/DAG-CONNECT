@@ -692,7 +692,6 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                         if (!response.GroupRefDetails.Any(a => a.Id == item.ID))
                         {
                             //You have your value.
-
                             VehicleGroupRefDetails ObjGroupRef = new VehicleGroupRefDetails();
                             ObjGroupRef.Id = item.ID;
                             ObjGroupRef.Name = item.Name ?? "";
@@ -700,6 +699,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                             ObjGroupRef.VIN = item.VIN ?? "";
                             ObjGroupRef.ModelId = item.ModelId ?? "";
                             ObjGroupRef.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id;
+                            ObjGroupRef.AssociatedGroups = await _vehicleManager.GetVehicleAssociatedGroup(item.ID, item.Organization_Id ?? 0);
                             response.GroupRefDetails.Add(ObjGroupRef);
                         }
                     }
@@ -1048,5 +1048,39 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
+        public override async Task<VehicleConnectResponse> VehicleConnectAll(VehicleConnectRequest request, ServerCallContext context)
+        {
+            try
+            {
+                //var response = new VehicleConnectResponse();
+                var vehicleConnect = new List<VehicleConnect>();
+
+                vehicleConnect.AddRange(request.Vehicles.Select(x => new VehicleConnect()
+                {
+                    VehicleId = x.VehicleId,
+                    Opt_In = 'I',
+                    ModifiedBy = x.ModifiedBy
+                }).ToList());
+
+
+                var result = await _vehicleManager.VehicleConnectAll(vehicleConnect);
+                var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Vehicle Connect Status", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request)).Result;
+                return await Task.FromResult(new VehicleConnectResponse
+                {
+                    Message = "Vehicle Opt In Status updated.",
+                    Code = Responcecode.Success,
+                    // Vehicle = result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleConnectResponse
+                {
+                    Message = "Exception :-" + ex.Message,
+                    Code = Responcecode.Failed
+                });
+            }
+        }
     }
 }

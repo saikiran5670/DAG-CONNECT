@@ -82,16 +82,21 @@ namespace net.atos.daf.ct2.reports.repository
         /// </summary>
         /// <param name="TripFilters"></param>
         /// <returns></returns>
-        public async Task<List<Calender_Fleetutilization>> GetCalenderData(TripFilterRequest TripFilters)
+        public async Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter TripFilters)
         {
             List<Calender_Fleetutilization> List = new List<Calender_Fleetutilization>();
 
             var parameter = new DynamicParameters();
             parameter.Add("@StartDateTime", TripFilters.StartDateTime);
             parameter.Add("@EndDateTime", TripFilters.EndDateTime);
-            parameter.Add("@vin", TripFilters.VIN);
+            parameter.Add("@vins", TripFilters.VIN.ToArray());
+            //string vin = string.Join("','", TripFilters.VIN.ToArray());
+            //vin = "'"+ vin.Replace(",", "', '")+"'";
+            //parameter.Add("@vins", vin);           
+
             string query = @"WITH cte_workingdays AS(
                         select
+                        start_time_stamp as CalenderDate,
                         to_timestamp(start_time_stamp) as startdate,
                         count(start_time_stamp) as totalworkingdays,
                         sum(etl_gps_distance) as totaldistance,
@@ -103,27 +108,25 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(average_weight) as totalaverageweightperprip,
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
-                        where start_time_stamp >= @StartDateTime and end_time_stamp<= @EndDateTime
+                        where (start_time_stamp >= @StartDateTime and end_time_stamp<= @EndDateTime) and vin=ANY(@vins)
                         group by to_timestamp(start_time_stamp),
                         etl_gps_distance,etl_gps_trip_time,veh_message_driving_time
-                        ,idle_duration,veh_message_distance,average_speed,average_weight,last_odometer
+                        ,idle_duration,veh_message_distance,average_speed,average_weight,last_odometer,start_time_stamp
                         )
                         select
-                        startdate as calanderdate,
-                        CAST((totaldistance / totalworkingdays) as float) as averagedistance,
-                        CAST((totaltriptime / totalworkingdays) as float) as averagetriptime ,
-                        CAST((totaldrivingtime / totalworkingdays) as float) as averagedrivingtime ,
+                        startdate,
+                        CalenderDate,
+                        CAST((totaldistance / totalworkingdays) as float) as Averagedistance,
+                        CAST((totaltriptime / totalworkingdays) as float) as Averagetriptime ,
+                        CAST((totaldrivingtime / totalworkingdays) as float) as Averagedrivingtime ,
                         CAST((totaldistance / totalworkingdays) as float) as averagedistance ,
-                        CAST((totalidleduration / totalworkingdays) as float) as asaverageidleduration ,
-                        CAST((totalAveragedistanceperday / totalworkingdays) as float) as averagedistanceperday ,
-                        CAST((totalaverageSpeed / totalworkingdays) as float) as averageSpeed ,
-                        CAST((totalaverageweightperprip / totalworkingdays) as float) as averageweightperprip
+                        CAST((totalidleduration / totalworkingdays) as float) as Averageidleduration ,
+                        CAST((totalAveragedistanceperday / totalworkingdays) as float) as Averagedistanceperday ,
+                        CAST((totalaverageSpeed / totalworkingdays) as float) as AverageSpeed ,
+                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweightperprip
                         from cte_workingdays";
-
-
             List<Calender_Fleetutilization> data = (List<Calender_Fleetutilization>)await _dataMartdataAccess.QueryAsync<Calender_Fleetutilization>(query, parameter);
             return data;
-
         }
     }
 }

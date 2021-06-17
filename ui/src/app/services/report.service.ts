@@ -71,14 +71,14 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  getMultipleDriverDetails(data: any): Observable<any[]> {
+  getDriverTimeDetails(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/getdriverstimedetails`, data, headers
+        `${this.reportServiceUrl}/driverTime/getdetails`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -90,7 +90,7 @@ export class ReportService {
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/getsingledrivertimedetails`, data, headers
+        `${this.reportServiceUrl}/drivetime/getdetailssingle`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -102,7 +102,7 @@ export class ReportService {
       };
       return this.httpClient
         .post<any[]>(
-          `${this.reportServiceUrl}/getdriveractivityparameters`, data, headers
+          `${this.reportServiceUrl}/drivetime/getparameters`, data, headers
         )
         .pipe(catchError(this.handleError));
   }

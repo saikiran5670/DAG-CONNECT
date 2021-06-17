@@ -149,9 +149,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                     vehicleref.ScheduleReportId = report.Id;
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
-
-                report.ScheduledReportDriverRef.ScheduleReportId = report.Id;
-                int scheduledrid = await Createscheduledreportdriverref(report.ScheduledReportDriverRef);
+                foreach (var driverref in report.ScheduledReportDriverRef)
+                {
+                    driverref.ScheduleReportId = report.Id;
+                    int scheduledrid = await Createscheduledreportdriverref(driverref);
+                }
                 transactionScope.Commit();
             }
             catch (Exception)
@@ -244,6 +246,107 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
         #region Update UpdateReportSchedular
         public Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report) => throw new NotImplementedException();
+        #endregion
+
+        #region Get Report Scheduler
+        public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
+        {
+            MapperRepo repositoryMapper = new MapperRepo();
+            try
+            {
+                var parameterAlert = new DynamicParameters();
+
+                string queryAlert = @"SELECT repsch.id as repsch_id, 
+                                            repsch.organization_id as repsch_organization_id, 
+                                            repsch.report_id as repsch_report_id, 
+                                            repsch.frequency_type as repsch_frequency_type, 
+                                            repsch.status as repsch_status, 
+                                            repsch.type as repsch_type, 
+                                            repsch.file_name as repsch_file_name, 
+                                            repsch.start_date as repsch_start_date, 
+                                            repsch.end_date as repsch_end_date, 
+                                            repsch.code as repsch_code, 
+                                            repsch.last_schedule_run_date as repsch_last_schedule_run_date, 
+                                            repsch.next_schedule_run_date as repsch_next_schedule_run_date, 
+                                            repsch.created_at as repsch_created_at, 
+                                            repsch.created_by as repsch_created_by, 
+                                            repsch.modified_at as repsch_modified_at, 
+                                            repsch.modified_by as repsch_modified_by, 
+                                            repsch.mail_subject as repsch_mail_subject, 
+                                            repsch.mail_description as repsch_mail_description, 
+                                            repsch.report_dispatch_time as repsch_report_dispatch_time,
+                                            driveref.report_schedule_id as driveref_report_schedule_id, 
+                                            driveref.driver_id as driveref_driver_id, 
+                                            driveref.state as driveref_state, 
+                                            driveref.created_at as driveref_created_at, 
+                                            driveref.created_by as driveref_created_by, 
+                                            driveref.modified_at as driveref_modified_at, 
+                                            driveref.modified_by as driveref_modified_by,
+                                            receipt.id as receipt_id, 
+                                            receipt.schedule_report_id as receipt_schedule_report_id, 
+                                            receipt.email as receipt_email, 
+                                            receipt.state as receipt_state, 
+                                            receipt.created_at as receipt_created_at, 
+                                            receipt.modified_at as receipt_modified_at,
+                                            vehref.report_schedule_id as vehref_report_schedule_id, 
+                                            vehref.vehicle_group_id as vehref_vehicle_group_id, 
+                                            vehref.state as vehref_state, 
+                                            vehref.created_at vehref_created_at, 
+                                            vehref.created_by as vehref_created_by, 
+                                            vehref.modified_at as vehref_modified_at, 
+                                            vehref.modified_by as vehref_modified_by,
+                                            schrep.id as schrep_id, 
+                                            schrep.schedule_report_id as schrep_schedule_report_id, 
+                                            schrep.report as schrep_report,
+                                            schrep.downloaded_at as schrep_downloaded_at, 
+                                            schrep.valid_till as schrep_valid_till, 
+                                            schrep.created_at as schrep_created_at, 
+                                            schrep.start_date as schrep_start_date, 
+                                            schrep.end_date as schrep_end_date
+	                                    FROM master.reportscheduler as repsch
+	                                    LEFT JOIN master.scheduledreportdriverref as driveref
+	                                    ON repsch.id=driveref.report_schedule_id AND driveref.state='A'
+	                                    LEFT JOIN master.scheduledreportrecipient as receipt
+	                                    ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'
+	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
+	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status='A' AND vehref.state='A'
+	                                    LEFT JOIN master.scheduledreport as schrep
+	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status='A' ";
+
+                queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
+                parameterAlert.Add("@organization_id", organizationid);
+                IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameterAlert);
+                return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region EnableDisableDeleteReport
+        public async Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel)
+        {
+            try
+            {
+                string query = string.Empty;
+
+                query = @"UPDATE master.reportscheduler 
+                          SET state=@state 
+                          WHERE id=@id 
+                          AND organization_id=@organization_id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", objReportStatusUpdateDeleteModel.ReportId);
+                parameter.Add("@state", objReportStatusUpdateDeleteModel.Status);
+                parameter.Add("@organization_id", objReportStatusUpdateDeleteModel.OrganizationId);
+                return await _dataAccess.ExecuteAsync(query, parameter);
+            }
+            catch
+            {
+                throw;
+            }
+        }
         #endregion
     }
 }

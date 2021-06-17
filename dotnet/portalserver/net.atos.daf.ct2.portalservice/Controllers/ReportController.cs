@@ -400,10 +400,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                bool hasRights = await HasAdminPrivilege();
                 var grpcRequest = _mapper.MapUpdateEcoScoreProfile(request);
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
-                var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest);
+                Metadata headers = new Metadata();
+                headers.Add("hasRights", Convert.ToString(hasRights));
+                var response = await _reportServiceClient.UpdateEcoScoreProfileAsync(grpcRequest, headers);
                 return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
@@ -503,6 +506,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region  Eco Score Report By All Drivers
+        [HttpPost]
+        [Route("ecoscore/getdetailsbyalldriver")]
+        public async Task<IActionResult> GetEcoScoreReportByAllDrivers([FromBody] EcoScoreReportByAllDriversRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportByAllDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var data = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
+                if (data?.DriverRanking?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_ECOSCORE_REPORT_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Fleet utilization report details
@@ -522,6 +560,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("GetFleetUtilizationDetails method in Report (for Fleet Utilization details by vehicle) API called.");
                 var data = await _reportServiceClient.GetFleetUtilizationDetailsAsync(objFleetFilter);
                 if (data?.FleetDetails?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_TRIP_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [HttpPost]
+        [Route("fleetutilization/getcalenderdata")]
+        public async Task<IActionResult> GetCalenderData([FromBody] Entity.Report.FleetUtilizationFilter request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_DATEMISMATCH_MSG); }
+
+                string _filters = JsonConvert.SerializeObject(request);
+                FleetUtilizationFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetUtilizationFilterRequest>(_filters);
+                _logger.Info("GetFleetUtilizationDetails method in Report (for Fleet Utilization details by vehicle) API called.");
+                var data = await _reportServiceClient.GetFleetCalenderDetailsAsync(objFleetFilter);
+                if (data?.CalenderDetails?.Count > 0)
                 {
                     data.Message = ReportConstants.GET_TRIP_SUCCESS_MSG;
                     return Ok(data);

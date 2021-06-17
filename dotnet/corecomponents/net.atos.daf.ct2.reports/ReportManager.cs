@@ -104,6 +104,8 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Eco Score Report
+
         #region Eco Score Report - Create Profile
 
         public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
@@ -129,13 +131,39 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetEcoScoreProfileKPIDetails(profileId);
         }
         #endregion
+
         #region  Eco Score Report - Update/Delete Profile
-        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
+        public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto, bool isAdminRights)
         {
+
+            // Default Profile for basic and advance -	DAF Admin – Not Allowed Update Profile Name , Allowed  Rest profile KPIs modifications  2) Org Admin – nothing Allowed
+            // Custom profile(Global) -	DAF Admin – All allowed 2) Org Admin – nothing Allowed
+            // Custom profile(Org) – DAF Admin – All allowed  2)Org Admin – Allowed(Based on Role and Subscription)
             var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
-            if (await isExist)
+            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(ecoScoreProfileDto.Id);
+            bool isGlobalProfile = await _reportRepository.GetGlobalProfile(ecoScoreProfileDto.Id);
+            if (await isExist)// check if profile is avilable in DB or not
             {
-                return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                if (versionType != "" || versionType != null)// check if it is basic or advance versiontype= "B" or "A"
+                {
+                    if (isAdminRights)// admin rights with level 10 & 20
+                    {
+                        ecoScoreProfileDto.Name = null;
+                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto); // DAF Admin – Not Allowed Update Profile Name 
+                    }
+                }
+                else if (isGlobalProfile || !isGlobalProfile)
+                {
+                    if (isAdminRights)
+                    {
+                        return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                    }
+                    else if (!isGlobalProfile && !isAdminRights)
+                    {
+                        // Org Admin – Allowed(Based on Role and Subscription)
+                    }
+                }
+                return -2;
             }
             else
                 return -1;
@@ -168,7 +196,11 @@ namespace net.atos.daf.ct2.reports
                 string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
                 if (versionType == "" || versionType == null)
                 {
-                    ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                    if (isAdminRights)
+                        ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                    else
+                        ecoScoreProfileId = -1;
+                    // check priviledges
                 }
                 else
                 {
@@ -183,6 +215,16 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Eco Score Report By All Drivers
+        public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
+        {
+            List<EcoScoreReportByAllDrivers> lstByAllDrivers = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
+            return lstByAllDrivers;
+        }
+        #endregion
+
+        #endregion
+
         #region Fleet Utilizaiton Report
         public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter)
         {
@@ -190,7 +232,7 @@ namespace net.atos.daf.ct2.reports
             return lstFleetUtilizationDetails;
         }
 
-        public async Task<List<Calender_Fleetutilization>> GetCalenderData(TripFilterRequest TripFilters)
+        public async Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter TripFilters)
         {
             List<Calender_Fleetutilization> lstFleetUtilizationDetails = await _reportRepository.GetCalenderData(TripFilters);
             return lstFleetUtilizationDetails;

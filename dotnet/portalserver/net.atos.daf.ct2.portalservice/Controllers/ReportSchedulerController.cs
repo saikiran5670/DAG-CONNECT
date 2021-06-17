@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.ReportScheduler;
 using net.atos.daf.ct2.reportschedulerservice;
+using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.ReportScheduler;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
@@ -20,17 +21,19 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private ILog _logger;
         private readonly ReportSchedulerService.ReportSchedulerServiceClient _reportschedulerClient;
         private readonly AuditHelper _auditHelper;
+        private readonly Entity.ReportScheduler.Mapper _mapper;
         public ReportSchedulerController(ReportSchedulerService.ReportSchedulerServiceClient reportschedulerClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _reportschedulerClient = reportschedulerClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            _mapper = new Entity.ReportScheduler.Mapper();
         }
 
         #region Get Report Scheduler Paramenter
         [HttpGet]
         [Route("getreportschedulerparameter")]
-        public async Task<IActionResult> GetReportScheduleraParameter(int accountId, int orgnizationid, int roleid)
+        public async Task<IActionResult> GetReportSchedulerParameter(int accountId, int orgnizationid, int roleid)
         {
             try
             {
@@ -58,27 +61,75 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
 
-        //#region Create Schedular Report
-        //[HttpPost]
-        //[Route("CreateReportSchedulerParameter")]
-        //public async Task<IActionResult> CreateReportSchedulerParameter(ReportSchedulerRequest request)
-        //{
-        //    try
-        //    {
-        //        ReportSchedulerService.ReportSchedulerServiceClient reportResponse = await _reportschedulerClient.CreateReportScheduler();
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
-        //          ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-        //         string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetReportScheduleraParameter", ex.Message), 1, 2, Convert.ToString(accountId),
-        //           _userDetails);
-        //        _logger.Error(null, ex);
-        //        return StatusCode(500, ex.Message + " " + ex.StackTrace);
-        //    }
-        //}
+        #region Create Schedular Report
+        [HttpPost]
+        [Route("Create")]
+        public async Task<IActionResult> CreateReportScheduler(PortalAlertEntity.ReportScheduler request)
+        {
+            try
+            {
+                ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
+                ReportSchedulerResponse reportSchedulerResponse = new ReportSchedulerResponse();
+                reportSchedulerResponse = await _reportschedulerClient.CreateReportSchedulerAsync(reportSchedulerRequest);
 
-        //#endregion
+                if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                }
+                else if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Conflict)
+                {
+                    return StatusCode(409, reportSchedulerResponse.Message);
+                }
+                else if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Success)
+                {
+                    return Ok(reportSchedulerResponse);
+                }
+                else
+                {
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "CreateReportScheduler", ex.Message), 1, 2, "1",
+                   _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
+
+        #region Get Report Scheduler
+        [HttpGet]
+        [Route("get")]
+        public async Task<IActionResult> GetReportScheduler(int accountId, int orgnizationid)
+        {
+            try
+            {
+                if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
+                ReportSchedulerListResponse response = await _reportschedulerClient.GetReportSchedulerListAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid });
+
+                if (response == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (response.Code == ResponseCode.Success)
+                    return Ok(response);
+                if (response.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)response.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_DATA_NOT_FOUND_MSG, response.Message));
+                return StatusCode((int)response.Code, response.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetReportScheduler", ex.Message), 1, 2, Convert.ToString(accountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
     }
 }
