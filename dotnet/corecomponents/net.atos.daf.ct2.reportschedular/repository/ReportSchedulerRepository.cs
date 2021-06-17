@@ -149,9 +149,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                     vehicleref.ScheduleReportId = report.Id;
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
-
-                report.ScheduledReportDriverRef.ScheduleReportId = report.Id;
-                int scheduledrid = await Createscheduledreportdriverref(report.ScheduledReportDriverRef);
+                foreach (var driverref in report.ScheduledReportDriverRef)
+                {
+                    driverref.ScheduleReportId = report.Id;
+                    int scheduledrid = await Createscheduledreportdriverref(driverref);
+                }
                 transactionScope.Commit();
             }
             catch (Exception)

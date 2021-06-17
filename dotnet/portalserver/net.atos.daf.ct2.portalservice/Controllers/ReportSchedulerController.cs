@@ -70,7 +70,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
                 ReportSchedulerResponse reportSchedulerResponse = new ReportSchedulerResponse();
-                reportSchedulerResponse = _reportschedulerClient.CreateReportScheduler(reportSchedulerRequest);
+                reportSchedulerResponse = await _reportschedulerClient.CreateReportSchedulerAsync(reportSchedulerRequest);
 
                 if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Failed)
                 {

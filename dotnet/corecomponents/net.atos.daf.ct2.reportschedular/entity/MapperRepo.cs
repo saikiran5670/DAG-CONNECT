@@ -35,19 +35,41 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                 {
                     reportScheduler.ScheduledReport = new List<ScheduledReport>();
                 }
-                //if (reportSchedulerItem.Receipt_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Receipt_schedule_report_id)
-                //{
-                //    if (!scheduledReportRecipientLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Receipt_schedule_report_id), out _))
-                //    {
-                //        var scheduledReportRecipient = ToAlertUrgencyLevelRefModel(alertItem);
-                //        scheduledReportRecipientLookup.Add(Convert.ToInt32(reportSchedulerItem.Receipt_schedule_report_id), scheduledReportRecipient);
-                //        reportScheduler.ScheduledReportRecipient.Add(scheduledReportRecipient);
-                //    }
-                //}
+                if (reportScheduler.ScheduledReportDriverRef == null)
+                {
+                    reportScheduler.ScheduledReportDriverRef = new List<ScheduledReportDriverRef>();
+                }
+                if (reportSchedulerItem.Receipt_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Receipt_schedule_report_id)
+                {
+                    if (!scheduledReportRecipientLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Receipt_id), out _))
+                    {
+                        var scheduledReportRecipient = ToScheduledReportRecipientModel(reportSchedulerItem);
+                        scheduledReportRecipientLookup.Add(Convert.ToInt32(reportSchedulerItem.Receipt_schedule_report_id), scheduledReportRecipient);
+                        reportScheduler.ScheduledReportRecipient.Add(scheduledReportRecipient);
+                    }
+                }
+                if (reportSchedulerItem.Vehref_vehicle_group_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Vehref_report_schedule_id)
+                {
+                    if (!scheduledReportVehicleRefLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), out _))
+                    {
+                        var scheduledReportVehicle = ToScheduledReportVehicleRefModel(reportSchedulerItem);
+                        scheduledReportVehicleRefLookup.Add(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), scheduledReportVehicle);
+                        reportScheduler.ScheduledReportVehicleRef.Add(scheduledReportVehicle);
+                    }
+                }
+                if (reportSchedulerItem.Driveref_driver_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Driveref_report_schedule_id)
+                {
+                    if (!scheduledReportDriverRefLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), out _))
+                    {
+                        var scheduledReportDriver = ToScheduledReportDriverRefModel(reportSchedulerItem);
+                        scheduledReportDriverRefLookup.Add(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), scheduledReportDriver);
+                        reportScheduler.ScheduledReportDriverRef.Add(scheduledReportDriver);
+                    }
+                }
             }
             foreach (var keyValuePair in reportSchedulerLookup)
             {
-                //add alert object along with child tables to alert list 
+                //add report scheduler object along with child tables to report scheduler list 
                 reportSchedulerList.Add(keyValuePair.Value);
             }
             return reportSchedulerList;
@@ -76,9 +98,47 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             reportScheduler.MailSubject = request.Repsch_mail_subject;
             reportScheduler.ReportDispatchTime = request.Repsch_report_dispatch_time;
             reportScheduler.ScheduledReport = new List<ScheduledReport>();
-            reportScheduler.ScheduledReportDriverRef = new ScheduledReportDriverRef();
-
+            reportScheduler.ScheduledReportDriverRef = new List<ScheduledReportDriverRef>();
+            reportScheduler.ScheduledReportRecipient = new List<ScheduledReportRecipient>();
+            reportScheduler.ScheduledReportVehicleRef = new List<ScheduledReportVehicleRef>();
             return reportScheduler;
+        }
+
+        public ScheduledReportDriverRef ToScheduledReportDriverRefModel(ReportSchedulerResult request)
+        {
+            ScheduledReportDriverRef scheduledReportDriverRef = new ScheduledReportDriverRef();
+            scheduledReportDriverRef.ScheduleReportId = request.Driveref_report_schedule_id;
+            scheduledReportDriverRef.DriverId = request.Driveref_driver_id;
+            scheduledReportDriverRef.State = request.Driveref_state;
+            scheduledReportDriverRef.CreatedAt = request.Driveref_created_at;
+            scheduledReportDriverRef.CreatedBy = request.Driveref_created_by;
+            scheduledReportDriverRef.ModifiedAt = request.Driveref_modified_at;
+            scheduledReportDriverRef.ModifiedBy = request.Driveref_modified_by;
+            return scheduledReportDriverRef;
+        }
+
+        public ScheduledReportVehicleRef ToScheduledReportVehicleRefModel(ReportSchedulerResult request)
+        {
+            ScheduledReportVehicleRef schedulereportvr = new ScheduledReportVehicleRef();
+            schedulereportvr.ScheduleReportId = request.Vehref_report_schedule_id;
+            schedulereportvr.VehicleGroupId = request.Vehref_vehicle_group_id;
+            schedulereportvr.State = request.Vehref_state;
+            schedulereportvr.CreatedAt = request.Vehref_created_at;
+            schedulereportvr.CreatedBy = request.Vehref_created_by;
+            schedulereportvr.ModifiedAt = request.Vehref_modified_at;
+            schedulereportvr.ModifiedBy = request.Vehref_modified_by;
+            return schedulereportvr;
+        }
+        public ScheduledReportRecipient ToScheduledReportRecipientModel(ReportSchedulerResult request)
+        {
+            ScheduledReportRecipient schedulereportsr = new ScheduledReportRecipient();
+            schedulereportsr.Id = request.Receipt_id;
+            schedulereportsr.ScheduleReportId = request.Receipt_schedule_report_id;
+            schedulereportsr.Email = request.Receipt_email;
+            schedulereportsr.State = request.Receipt_state;
+            schedulereportsr.CreatedAt = request.Receipt_created_at;
+            schedulereportsr.ModifiedAt = request.Receipt_modified_at;
+            return schedulereportsr;
         }
     }
 }
