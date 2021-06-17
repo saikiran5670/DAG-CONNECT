@@ -40,6 +40,8 @@ export class DriverTimeManagementComponent implements OnInit {
   driverListData: any = [];
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
+  noDetailsExpandPanel : boolean = true;
+  generalExpandPanel : boolean = true;
 
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -55,6 +57,8 @@ export class DriverTimeManagementComponent implements OnInit {
   todayDate: any;
   onLoadData: any = [];
   tableInfoObj: any = {};
+  tableDetailsInfoObj: any = {};
+
   tripTraceArray: any = [];
   startTimeDisplay: any = '00:00:00';
   endTimeDisplay: any = '23:59:59';
@@ -161,25 +165,25 @@ export class DriverTimeManagementComponent implements OnInit {
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data=>data.vin);
-    let _driverData = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
+    let _vehicelIds = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data=>data.vin);
+    let _driverIds = this.driverListData.filter(item => item.driverID == (this.driverTimeForm.controls.driver.value)).map(data=>data.driverID);
    
  
    // let _driverData = this.driverListData.map(data=>data.driverID);
     let searchDataParam = {
       "StartDateTime":_startTime,
       "EndDateTime":_endTime,
-      "VINs": _vinData,
-      "DriverIds":_driverData
+      "VINs": _vehicelIds,
+      "DriverIds":_driverIds
     }
-    if(_vinData.length > 0){
+    if(_vehicelIds.length > 0){
       this.showLoadingIndicator = true;
-      //this.reportService.getMultipleDriverDetails(searchDataParam).subscribe((_tripData: any) => {
+      //this.reportService.getDriverTimeDetails(searchDataParam).subscribe((_tripData: any) => {
         this.hideloader();
         let tripData = {
           "driverActivities": [
             {
-              "driverId": "UK DB08176162022802",
+              "driverId": "NL B000384974000000",
               "driverName": "Helloupdated Helloupdated",
               "vin": "RERAE75PC0E261011",
               "activityDate": 1604338846000,
@@ -399,11 +403,11 @@ export class DriverTimeManagementComponent implements OnInit {
     this.startDateValue = defaultStartValue;
     this.endDateValue = defaultEndValue;
     let loadParam = {
-      "ReportId": 10,
-      "AccountId": this.accountId,
-      "OrganizationId": this.accountOrganizationId,
-      "StartDateTime": Util.convertDateToUtc(defaultStartValue),
-      "EndDateTime": Util.convertDateToUtc(defaultEndValue)
+      "reportId": 10,
+      "accountId": this.accountId,
+      "organizationId": this.accountOrganizationId,
+      "startDateTime": Util.convertDateToUtc(defaultStartValue),
+      "endDateTime": Util.convertDateToUtc(defaultEndValue)
     }
     this.showLoadingIndicator = true;
     this.reportService.getDefaultDriverParameter(loadParam).subscribe((initData: any) => {
@@ -489,7 +493,7 @@ export class DriverTimeManagementComponent implements OnInit {
   totalWorkTime : Number = 0;
   totalRestTime : Number = 0;
   totalAvailableTime : Number = 0;
-
+  totalServiceTime : Number = 0;
   setGeneralDriverValue(){
     this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
     this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
@@ -614,10 +618,85 @@ export class DriverTimeManagementComponent implements OnInit {
 
   }
 
+  driverDetails : any= [];
   onDriverSelected(_row){
-    this.driverSelected = true;
     this.selectedDriverData = _row;
-    //console.log(_row)
+    let setId = (this.driverListData.filter(elem=>elem.driverID === _row.driverId)[0]['driverID']);
+    this.driverTimeForm.get('driver').setValue(setId);
+    this.driverDetails =   [
+              {
+                "driverId": "UK DB08176162022802",
+                "driverName": "Helloupdated Helloupdated",
+                "vin": "RERAE75PC0E261011",
+                "activityDate": 1604338846000,
+                "startTime": 1604338846000,
+                "endTime": 1604337628000,
+                "code": 3,
+                "restTime": 0,
+                "availableTime": 0,
+                "workTime": 0,
+                "driveTime": 1218000,
+                "serviceTime": 1218000
+              },
+              {
+                "driverId": "UK DB08176162022802",
+                "driverName": "Helloupdated Helloupdated",
+                "vin": "RERAE75PC0E261011",
+                "activityDate": 1604338846000,
+                "startTime": 1604338846000,
+                "endTime": 1604337628000,
+                "code": 3,
+                "restTime": 0,
+                "availableTime": 0,
+                "workTime": 0,
+                "driveTime": 1218000,
+                "serviceTime": 1218000
+              },
+              
+            ]
+
+            let updateData = this.driverDetails;
+            this.setGeneralDriverDetailValue();
+            this.detailConvertedData = this.reportMapService.getDriverTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+
+    this.driverSelected = true;
+  }
+
+  detailConvertedData : any;
+  backToMainPage(){
+    this.driverSelected = false;
+    this.updateDataSource(this.initData);
+
+  }
+
+  setGeneralDriverDetailValue(){
+    this.totalDriveTime = 0;
+    this.totalWorkTime = 0;
+    this.totalRestTime = 0;
+    this.totalAvailableTime= 0;
+    this.totalServiceTime = 0;
+
+    this.fromDisplayDate = Util.convertUtcToDateFormat(this.startDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.toDisplayDate = Util.convertUtcToDateFormat(this.endDateValue,'DD/MM/YYYY HH:MM:SS');
+    this.driverDetails.forEach(element => {
+    this.totalDriveTime += element.driveTime,
+    this.totalWorkTime += element.workTime,
+    this.totalRestTime += element.restTime,
+    this.totalAvailableTime += element.availableTime,
+    this.totalServiceTime += element.serviceTime
+    });
+      this.tableDetailsInfoObj= {
+        fromDisplayDate : this.fromDisplayDate,
+        toDisplayDate : this.toDisplayDate,
+        selectedDriverName: this.driverDetails[0]['driverName'],
+        selectedDriverId : this.driverDetails[0]['driverId'],
+        driveTime: Util.getHhMmTime(this.totalDriveTime),
+        workTime: Util.getHhMmTime(this.totalWorkTime),
+        restTime: Util.getHhMmTime(this.totalRestTime),
+        availableTime: Util.getHhMmTime(this.totalAvailableTime),
+        serviceTime: Util.getHhMmTime(this.totalServiceTime)
+
+      }
   }
   //********************************** Date Time Functions *******************************************//
   setPrefFormatDate(){
