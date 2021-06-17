@@ -104,6 +104,8 @@ namespace net.atos.daf.ct2.reports
         }
         #endregion
 
+        #region Eco Score Report
+
         #region Eco Score Report - Create Profile
 
         public async Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto)
@@ -129,6 +131,7 @@ namespace net.atos.daf.ct2.reports
             return await _reportRepository.GetEcoScoreProfileKPIDetails(profileId);
         }
         #endregion
+
         #region  Eco Score Report - Update/Delete Profile
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
@@ -181,6 +184,16 @@ namespace net.atos.daf.ct2.reports
         {
             return await _reportRepository.GetProfileName(profileId);
         }
+        #endregion
+
+        #region Eco Score Report By All Drivers
+        public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
+        {
+            List<EcoScoreReportByAllDrivers> lstByAllDrivers = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
+            return lstByAllDrivers;
+        }
+        #endregion
+
         #endregion
 
         #region Fleet Utilizaiton Report

@@ -22,6 +22,7 @@ rpc DeleteEcoScoreProfile (DeleteEcoScoreProfileRequest) returns (DeleteEcoScore
 rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchParameterResponse);
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
 rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
+rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
 }
 
 enum Responsecode{
@@ -412,3 +413,30 @@ message FleetUtilizationcalender {
 }
 
 // END Fleet Utilization Report
+
+/// START: Eco Score Report By All Drivers
+message GetEcoScoreReportByAllDriversRequest {
+  int64 StartDateTime = 1;
+  int64 EndDateTime = 2; 
+  repeated string VINs = 3;
+  double MinTripDistance = 4;
+  double MinDriverTotalDistance = 5;
+  int32 OrgId = 6;
+  int32 AccountId = 7;
+  int32 TargetProfileId = 8;
+  }
+
+ message EcoScoreReportDriversRanking {
+  int32 Ranking = 1;
+  string DriverName = 2; 
+  string DriverId = 3;
+  double EcoScoreRanking = 4;
+  string EcoScoreRankingColor = 5;  
+  }
+  
+  message GetEcoScoreReportByAllDriversResponse {
+  Responsecode Code = 1;
+  string Message = 2;
+  repeated EcoScoreReportDriversRanking DriverRanking = 3;
+  }
+  /// END: Eco Score Report By All Drivers

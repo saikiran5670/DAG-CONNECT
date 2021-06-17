@@ -281,7 +281,8 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #endregion
-        #region Eco Score Report -Update Profile
+
+        #region Eco Score Report - Update Profile
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             _dataAccess.Connection.Open();
@@ -406,8 +407,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
         #endregion
 
-
-        #region - Delete Eco Score Profile
+        #region Eco Score Report - Delete Profile
         public async Task<int> DeleteEcoScoreProfile(int profileId)
         {
             _log.Info("Delete Eco Score Profile method called in repository");
@@ -467,5 +467,33 @@ namespace net.atos.daf.ct2.reports.repository
             return ProfileName != "" ? true : false;
         }
         #endregion
+
+        #region Eco Score Report By All Drivers
+        /// <summary>
+        /// Get Eco Score Report By All Drivers
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs);
+
+                //Update the query once we have understanding from DP Team on ranking formula
+                string query = string.Empty;
+                List<EcoScoreReportByAllDrivers> lstByAllDrivers = (List<EcoScoreReportByAllDrivers>)await _dataMartdataAccess.QueryAsync<EcoScoreReportByAllDrivers>(query, parameters);
+                return lstByAllDrivers?.Count > 0 ? lstByAllDrivers : new List<EcoScoreReportByAllDrivers>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
     }
 }

@@ -70,5 +70,18 @@
             }
             return grpcRequest;
         }
+
+        internal reportservice.GetEcoScoreReportByAllDriversRequest MapEcoScoreReportByAllDriver(EcoScoreReportByAllDriversRequest request)
+        {
+            var grpcRequest = new reportservice.GetEcoScoreReportByAllDriversRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+            };
+            grpcRequest.VINs.AddRange(request.VINs);
+            return grpcRequest;
+        }
     }
 }

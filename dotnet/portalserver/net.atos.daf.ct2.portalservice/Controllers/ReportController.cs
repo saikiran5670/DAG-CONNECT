@@ -503,6 +503,41 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region  Eco Score Report By All Drivers
+        [HttpPost]
+        [Route("ecoscore/getdetailsbyalldriver")]
+        public async Task<IActionResult> GetEcoScoreReportByAllDrivers([FromBody] EcoScoreReportByAllDriversRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportByAllDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var data = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
+                if (data?.DriverRanking?.Count > 0)
+                {
+                    data.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(data);
+                }
+                else
+                {
+                    return StatusCode(404, ReportConstants.GET_ECOSCORE_REPORT_FAILURE_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Fleet utilization report details

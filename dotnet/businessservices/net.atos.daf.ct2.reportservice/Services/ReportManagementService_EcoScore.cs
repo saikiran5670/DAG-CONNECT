@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reportservice.entity;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.reportservice.Services
@@ -247,7 +248,8 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
 
         #endregion
-        #region - Update Eco score
+
+        #region Eco Score Report - Update Profile
         public override async Task<UpdateEcoScoreProfileResponse> UpdateEcoScoreProfile(UpdateEcoScoreProfileRequest request, ServerCallContext context)
         {
             var response = new UpdateEcoScoreProfileResponse();
@@ -308,7 +310,8 @@ namespace net.atos.daf.ct2.reportservice.Services
 
 
         #endregion
-        #region - Delete Profile
+
+        #region Eco Score Report - Delete Profile
         public override async Task<DeleteEcoScoreProfileResponse> DeleteEcoScoreProfile(DeleteEcoScoreProfileRequest request, ServerCallContext context)
         {
             DeleteEcoScoreProfileResponse response = new DeleteEcoScoreProfileResponse();
@@ -351,6 +354,90 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return await Task.FromResult(response);
         }
+        #endregion
+
+        #region Eco Score Report By All Drivers
+
+        /// <summary>
+        /// Get Eco Score Report by All Drivers
+        /// </summary>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
+        /// <returns></returns>
+        public override async Task<GetEcoScoreReportByAllDriversResponse> GetEcoScoreReportByAllDrivers(GetEcoScoreReportByAllDriversRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await _reportManager.GetEcoScoreReportByAllDrivers(MapEcoScoreReportByAllDriversRequest(request));
+                var response = new GetEcoScoreReportByAllDriversResponse();
+                if (result?.Count > 0)
+                {
+                    response.DriverRanking.AddRange(MapEcoScoreReportByAllDriversResponse(result));
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportByAllDriversResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportByAllDrivers get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Mapper to covert GRPC request object
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private EcoScoreReportByAllDriversRequest MapEcoScoreReportByAllDriversRequest(GetEcoScoreReportByAllDriversRequest request)
+        {
+            var objRequest = new EcoScoreReportByAllDriversRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                VINs = request.VINs.ToList<string>(),
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                OrgId = request.OrgId,
+                AccountId = request.AccountId,
+                TargetProfileId = request.TargetProfileId
+            };
+            return objRequest;
+        }
+
+        /// <summary>
+        /// Mapper to covert object to  GRPC response
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        private IEnumerable<EcoScoreReportDriversRanking> MapEcoScoreReportByAllDriversResponse(List<EcoScoreReportByAllDrivers> response)
+        {
+            var lstDriverRanking = new List<EcoScoreReportDriversRanking>();
+            foreach (var item in response)
+            {
+                var ranking = new EcoScoreReportDriversRanking
+                {
+                    Ranking = item.Ranking,
+                    DriverName = item.DriverName ?? string.Empty,
+                    DriverId = item.DriverId ?? string.Empty,
+                    EcoScoreRanking = item.EcoScoreRanking,
+                    EcoScoreRankingColor = item.EcoScoreRankingColor ?? string.Empty
+                };
+                lstDriverRanking.Add(ranking);
+            }
+            return lstDriverRanking;
+        }
+
         #endregion
     }
 }

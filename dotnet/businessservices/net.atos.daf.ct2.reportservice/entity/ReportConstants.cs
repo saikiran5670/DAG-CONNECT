@@ -21,6 +21,10 @@
         #region Eco-Score Report
         public const string GET_ECOSCORE_PROFILE_SUCCESS_MSG = "Eco-Score profiles fetched successfully.";
         public const string GET_ECOSCORE_PROFILE_KPI_SUCCESS_MSG = "Eco-Score profile KPI details fetched successfully for given profile.";
+
+        public const string GET_ECOSCORE_REPORT_SUCCESS_MSG = "Eco-Score Report details fetched successfully.";
+        public const string GET_ECOSCORE_REPORT_FAILURE_MSG = "Eco-Score Report details fetched failed. With Error : {0}";
+        public const string GET_ECOSCORE_REPORT_NOTFOUND_MSG = "No records found for Eco-Score reprot.";
         #endregion
     }
 }

@@ -25,5 +25,6 @@ namespace net.atos.daf.ct2.reports
         Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN);
         Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter);
         Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter TripFilters);
+        Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
     }
 }
