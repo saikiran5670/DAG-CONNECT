@@ -8,7 +8,7 @@ using net.atos.daf.ct2.vehicle.entity;
 
 namespace net.atos.daf.ct2.vehicle.repository
 {
-    public partial class VehicleRepository
+    public partial class VehicleRepository : IVehicleRepository
     {
         public async Task<List<VehicleConnect>> VehicleConnectAll(List<VehicleConnect> vehicleConnects)
         {
