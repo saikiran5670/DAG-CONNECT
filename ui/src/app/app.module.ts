@@ -37,15 +37,16 @@ import { AlertAdvancedFilterComponent } from './configuration/alerts/create-edit
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './configuration/alerts/create-edit-view-alerts/period-selection-filter/period-selection-filter.component';
 import { ReportSchedulerService } from './services/report.scheduler.service';
+import { NotificationAdvancedFilterComponent } from './configuration/alerts/create-edit-view-alerts/create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
 
 export function configFactory(httpClient: HttpClient): ConfigLoader {
   return new ConfigHttpLoader(httpClient, 'assets/config/default.json');
-  // return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
+  //return new ConfigHttpLoader(httpClient, 'assets/config/dev-default.json');
 }
 
 @NgModule({
     declarations: [AppComponent, AlertsComponent, PreferencesComponent, ErrorComponent, CreateEditViewAlertsComponent, AlertsFilterComponent, CreateNotificationsAlertComponent, 
-      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent],
+      AlertAdvancedFilterComponent, PeriodSelectionFilterComponent, NotificationAdvancedFilterComponent,],
   imports: [
     BrowserModule,
     HttpClientModule,
