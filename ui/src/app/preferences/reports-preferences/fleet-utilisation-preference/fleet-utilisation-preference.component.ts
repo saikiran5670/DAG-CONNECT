@@ -14,7 +14,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() translationData: any;
   @Input() reportListData: any;
   @Input() editFlag: any;
-  @Output() setFleetUtilFlag = new EventEmitter<boolean>();
+  @Output() setFleetUtilFlag = new EventEmitter<any>();
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   reportId: any;
   slideState: any = false;
@@ -231,7 +231,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   onCancel(){
-    this.setFleetUtilFlag.emit(false);
+    this.setFleetUtilFlag.emit({flag: false, msg: ''});
     this.setColumnCheckbox();
   }
 
@@ -240,8 +240,15 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   onConfirm(){
-    this.setFleetUtilFlag.emit(false);
+    this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
     this.setColumnCheckbox();
+  }
+
+  getSuccessMsg(){
+    if(this.translationData.lblDetailssavesuccessfully)
+      return this.translationData.lblDetailssavesuccessfully;
+    else
+      return ("Details save successfully");
   }
 
   setDefaultFormValues(){

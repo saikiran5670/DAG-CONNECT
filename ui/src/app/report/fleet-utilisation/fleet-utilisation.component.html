@@ -169,7 +169,7 @@
                         <span>{{ translationData.lblNumberOfVehicles || 'Number of vehicles' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>3</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfVehicles')}}</span>
                     </div>
                 </div>
                 <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -177,7 +177,7 @@
                         <span>{{ translationData.lblTotalDistance || 'Total distance' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>40</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('distance').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
                     </div>
                 </div>
                 <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -185,7 +185,7 @@
                         <span>{{ translationData.lblNumberOfTrips || 'Number of trips' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>12</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('NumberOfTrips')}}</span>
                     </div>
                 </div>
                 <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -193,7 +193,7 @@
                         <span>{{ translationData.lblAverageDistancePerDay || 'Average distance per day' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>57.47 km</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('AverageDistancePerDay').toFixed(2)}} {{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }}</span>
                     </div>
                 </div>
                 <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
@@ -201,13 +201,22 @@
                         <span>{{ translationData.lblIdleDuration || 'Idle duration' }} </span>
                     </div>
                     <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>18:10 hh:mm</span>
+                        <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{sumOfColumns('idleDuration')}} hh:mm</span>
                     </div>
                 </div>
             </div>
            
           </div>
         </mat-expansion-panel>
+      </mat-card>
+      <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel  class="full-width" fxLayoutGap="10px">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+      </mat-expansion-panel>
       </mat-card>
       <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel  class="full-width" fxLayoutGap="10px">
