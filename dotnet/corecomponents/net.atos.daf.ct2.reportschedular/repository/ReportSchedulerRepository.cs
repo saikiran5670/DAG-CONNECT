@@ -149,9 +149,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                     vehicleref.ScheduleReportId = report.Id;
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
-
-                report.ScheduledReportDriverRef.ScheduleReportId = report.Id;
-                int scheduledrid = await Createscheduledreportdriverref(report.ScheduledReportDriverRef);
+                foreach (var driverref in report.ScheduledReportDriverRef)
+                {
+                    driverref.ScheduleReportId = report.Id;
+                    int scheduledrid = await Createscheduledreportdriverref(driverref);
+                }
                 transactionScope.Commit();
             }
             catch (Exception)
@@ -317,6 +319,30 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region EnableDisableDeleteReport
+        public async Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel)
+        {
+            try
+            {
+                string query = string.Empty;
+
+                query = @"UPDATE master.reportscheduler 
+                          SET state=@state 
+                          WHERE id=@id 
+                          AND organization_id=@organization_id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", objReportStatusUpdateDeleteModel.ReportId);
+                parameter.Add("@state", objReportStatusUpdateDeleteModel.Status);
+                parameter.Add("@organization_id", objReportStatusUpdateDeleteModel.OrganizationId);
+                return await _dataAccess.ExecuteAsync(query, parameter);
+            }
+            catch
             {
                 throw;
             }

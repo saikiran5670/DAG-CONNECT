@@ -11,5 +11,6 @@ namespace net.atos.daf.ct2.reportscheduler
         Task<ReportParameter> GetReportParameter(int accountid, int organizationid);
         Task<ReportScheduler> CreateReportSchedular(ReportScheduler report);
         Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report);
+        Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid);
     }
 }

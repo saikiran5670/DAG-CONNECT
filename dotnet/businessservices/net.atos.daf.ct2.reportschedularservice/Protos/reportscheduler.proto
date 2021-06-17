@@ -8,6 +8,7 @@ package reportscheduler;
 service ReportSchedulerService{  
   rpc GetReportParameter (ReportParameterRequest) returns (ReportParameterResponse);
   rpc CreateReportScheduler (ReportSchedulerRequest) returns (ReportSchedulerResponse);
+  rpc GetReportSchedulerList (ReportParameterRequest) returns (ReportSchedulerListResponse);
 }
 
 enum ResponseCode{
@@ -68,6 +69,12 @@ message ReportSchedulerResponse
    string message = 2;
    int32 ReportSchedulerId=3;
 }
+message ReportSchedulerListResponse
+{
+   ResponseCode Code=1;
+   string message = 2;
+   repeated ReportSchedulerRequest ReportSchedulerRequest=3;
+}
 message ReportSchedulerRequest
 {
 	int32 Id =1;
@@ -91,7 +98,7 @@ message ReportSchedulerRequest
     int64 ReportDispatchTime =19;
     repeated ScheduledReportRequest ScheduledReport=20;
     repeated ScheduledReportRecipientRequest ScheduledReportRecipient=21;
-    ScheduledReportDriverRefRequest ScheduledReportDriverRef=22;
+    repeated ScheduledReportDriverRefRequest ScheduledReportDriverRef=22;
     repeated ScheduledReportVehicleRefRequest ScheduledReportVehicleRef=23;
 }
 message ScheduledReportRequest

@@ -1,4 +1,4 @@
-import { Input } from '@angular/core';
+import { Input, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
@@ -6,6 +6,7 @@ import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { element } from 'protractor';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { NotificationAdvancedFilterComponent } from './notification-advanced-filter/notification-advanced-filter.component';
 
 @Component({
   selector: 'app-create-notifications-alert',
@@ -66,6 +67,10 @@ wsCount : number = 0;
 emailLabel : any;
 wsLabel: any;
 limitButton: any;
+
+@ViewChild(NotificationAdvancedFilterComponent)
+notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
+
   constructor(private _formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -309,7 +314,6 @@ if(isButtonClicked){
   getNotificationDetails() : any{
    this.notificationReceipients= [];
    let notificationLimits= [];
-   let alertTimingRefNotifications= [];
 
   let WsData;
     let EmailData;
@@ -341,25 +345,25 @@ if(isButtonClicked){
   else if(this.actionType == 'edit'){
     this.FormWebArray.controls.forEach((element, index) => {
       WsData = element['controls'];
-    webPayload = {
-    recipientLabel: WsData.webRecipientLabel.value,
-    accountGroupId: this.organizationId,
-    notificationModeType: WsData.webContactModes.value,
-    phoneNo: "",
-    sms: "",
-    emailId: "",
-    emailSub: "",
-    emailText: "",
-    wsUrl: WsData.webURL.value,
-    wsType: WsData.authentication.value,
-    wsText: WsData.wsDescription.value,
-    wsLogin: WsData.loginId.value,
-    wsPassword: WsData.password.value,
-    id: WsData.receipientId.value ? WsData.receipientId.value : 0,
-    notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
-  }
-  this.notificationReceipients.push(webPayload);
-});
+      webPayload = {
+        recipientLabel: WsData.webRecipientLabel.value,
+        accountGroupId: this.organizationId,
+        notificationModeType: WsData.webContactModes.value,
+        phoneNo: "",
+        sms: "",
+        emailId: "",
+        emailSub: "",
+        emailText: "",
+        wsUrl: WsData.webURL.value,
+        wsType: WsData.authentication.value,
+        wsText: WsData.wsDescription.value,
+        wsLogin: WsData.loginId.value,
+        wsPassword: WsData.password.value,
+        id: WsData.receipientId.value ? WsData.receipientId.value : 0,
+        notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
+      }
+      this.notificationReceipients.push(webPayload);
+    });
   }
 
 }
@@ -413,18 +417,22 @@ else if(this.actionType == 'edit'){
 }
 
 
+
 }   
+
+let notificationAdvancedFilterObj = this.notificationAdvancedFilterComponent.getNotificationAdvancedFilter();
+
 if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.notifications = [
     {
       "alertUrgencyLevelType": "C",
-      "frequencyType": "O",
+      "frequencyType": notificationAdvancedFilterObj.frequencyType,
       "frequencyThreshholdValue": 0,
-      "validityType": "A",
+      "validityType": notificationAdvancedFilterObj.validityType,
       "createdBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
       "notificationLimits": notificationLimits,
-      "alertTimingDetails": alertTimingRefNotifications
+      "alertTimingDetails": notificationAdvancedFilterObj.alertTimingRef
     }
   ]
 }
@@ -432,16 +440,16 @@ else if(this.actionType == 'edit'){
   this.notifications = [
     {
       "alertUrgencyLevelType": "C",
-      "frequencyType": "O",
+      "frequencyType": notificationAdvancedFilterObj.frequencyType,
       "frequencyThreshholdValue": 0,
-      "validityType": "A",
+      "validityType": notificationAdvancedFilterObj.validityType,
       "createdBy": this.selectedRowData.createdBy,
       "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
       "alertId": this.selectedRowData.id,
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
       "notificationLimits": notificationLimits,
-      "alertTimingDetails": alertTimingRefNotifications
+      "alertTimingDetails": notificationAdvancedFilterObj.alertTimingRef
     }
   ]
 }
