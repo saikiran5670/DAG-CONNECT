@@ -61,7 +61,8 @@ checkboxChecked: boolean = false;
     return this._formBuilder.group({
       daySelection: [''],
       fulldayCustom: [''],
-      FormArrayCustomItems : this._formBuilder.array([this.initCustomPeriodItems()])
+      FormArrayCustomItems : this._formBuilder.array([this.initCustomPeriodItems()]),
+      id: []
     });
   }
 
@@ -136,6 +137,7 @@ setDefaultValues(){
 
 setDayAndCustomDetails(index,element){
   this.weekDays().at(index).get("daySelection").setValue('true');
+  this.weekDays().at(index).get("id").setValue(element.id);
   if(element.periodType == 'A'){
     this.weekDays().at(index).get("fulldayCustom").setValue('A');
   }
@@ -175,6 +177,7 @@ getAlertTimingPayload(){
           let endTime = customTime.toTime.value;
           let startTimeSeconds = this.convertTimeToSeconds(startTime);
           let endTimeSeconds = this.convertTimeToSeconds(endTime);
+          if(this.actionType == 'create'){
           tempObj = {
             "type": 'U',
             "refId": 0,
@@ -186,11 +189,28 @@ getAlertTimingPayload(){
             "endDate": endTimeSeconds,
             "state": "A"
           }
+        }
+        else if(this.actionType == 'edit' || this.actionType == 'duplicate')
+        {
+          tempObj = {
+            "type": "U",
+            "refId": 0,
+            "dayType": [
+              false, false, false, false, false, false, false
+            ],
+            "periodType": "C",
+            "startDate": startTimeSeconds,
+            "endDate": endTimeSeconds,
+            "state": "A",
+            "id" : weekDay.id.value ? weekDay.id.value  : 0,
+          }
+        }
           tempObj["dayType"][index] = true;
           alertTimingRef.push(tempObj);
         })
       }
       else{
+        if(this.actionType == 'create'){
         tempObj = {
           "type": 'U',
           "refId": 0,
@@ -202,6 +222,21 @@ getAlertTimingPayload(){
           "endDate": 0,
           "state": "A"
         }
+      }
+      else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+        tempObj = {
+          "type": "U",
+          "refId": 0,
+          "dayType": [
+            false, false, false, false, false, false, false
+          ],
+          "periodType": "A",
+          "startDate": 0,
+          "endDate": 0,
+          "state": "A",
+          "id" : weekDay.id.value ? weekDay.id.value  : 0,
+        }
+      }
         tempObj["dayType"][index] = true;
         alertTimingRef.push(tempObj);
       }
