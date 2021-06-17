@@ -75,6 +75,8 @@ namespace net.atos.daf.ct2.reports
                                                           ActivityDate = activityItem.FirstOrDefault().ActivityDate,
                                                           Code = activityItem.FirstOrDefault().Code,
                                                           VIN = activityItem.FirstOrDefault().VIN,
+                                                          StartTime = activityItem.Max(mx => mx.StartTime),
+                                                          EndTime = activityItem.Max(mn => mn.EndTime),
                                                           AvailableTime = activityItem.Sum(c => c.AvailableTime),
                                                           DriveTime = activityItem.Sum(c => c.DriveTime),
                                                           RestTime = activityItem.Sum(c => c.RestTime),
