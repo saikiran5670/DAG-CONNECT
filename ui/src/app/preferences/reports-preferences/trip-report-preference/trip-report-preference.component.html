@@ -1,10 +1,13 @@
 <!-- trip report tab -->
-<div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center" style='background: #BEE3F8 !important;'>
+<div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
+    style='background: #BEE3F8 !important;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForColumns() : null'
             [checked]='selectionForTripColumns.hasValue() && isAllSelectedForColumns()'
             [indeterminate]='selectionForTripColumns.hasValue() && !isAllSelectedForColumns()'
-            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{ translationData.lblTripReportDetails || 'Trip Report Details' }} ({{ translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
+            [aria-label]='checkboxLabelForColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
+                translationData.lblTripReportDetails || 'Trip Report Details' }} ({{
+                translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span>
         </mat-checkbox>
     </div>
 </div>
@@ -18,7 +21,7 @@
                     initData.length > 0 ? initData[0].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[1]) : null; checkboxClicked($event, initData[1])'
                 [checked]="selectionForTripColumns.isSelected(initData[1])"
@@ -34,7 +37,7 @@
                     initData.length > 0 ? initData[2].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[3]) : null; checkboxClicked($event, initData[3])'
                 [checked]="selectionForTripColumns.isSelected(initData[3])"
@@ -50,7 +53,7 @@
                     initData.length > 0 ? initData[4].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[5]) : null; checkboxClicked($event, initData[5])'
                 [checked]="selectionForTripColumns.isSelected(initData[5])"
@@ -68,7 +71,7 @@
                     initData.length > 0 ? initData[6].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[7]) : null; checkboxClicked($event, initData[7])'
                 [checked]="selectionForTripColumns.isSelected(initData[7])"
@@ -84,7 +87,7 @@
                     initData.length > 0 ? initData[8].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[9]) : null; checkboxClicked($event, initData[9])'
                 [checked]="selectionForTripColumns.isSelected(initData[9])"
@@ -100,7 +103,7 @@
                     initData.length > 0 ? initData[10].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[11]) : null; checkboxClicked($event, initData[11])'
                 [checked]="selectionForTripColumns.isSelected(initData[11])"
@@ -118,7 +121,7 @@
                     initData.length > 0 ? initData[12].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[13]) : null; checkboxClicked($event, initData[13])'
                 [checked]="selectionForTripColumns.isSelected(initData[13])"
@@ -134,7 +137,7 @@
                     initData.length > 0 ? initData[14].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
-        <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForTripColumns.toggle(initData[15]) : null; checkboxClicked($event, initData[15])'
                 [checked]="selectionForTripColumns.isSelected(initData[15])"
@@ -142,17 +145,24 @@
                     initData.length > 0 ? initData[15].translatedName : '' }}</span>
             </mat-checkbox>
         </div>
+        <div fxLayout="row" class='areaWidth adjust-padding' style='height: 44px;' fxLayoutAlign="left"></div>
+        <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' style='height: 44px;' fxLayoutAlign="left">
+        </div>
     </div>
 </div>
 
-<div fxLayout="row" class='areaWidth' fxLayoutAlign="start" *ngIf="editFlag && reqField">
-    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN, Registration Number' }}</span>
-  </div>
-  <div fxLayout="row" class='areaWidth' fxLayoutAlign="end" *ngIf="editFlag">
+<!-- error msg -->
+<div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start" *ngIf="editFlag && reqField">
+    <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
+        Registration Number' }}</span>
+</div>
+
+<!-- buttons -->
+<div fxLayout="row" class='areaWidth margin-top-20' fxLayoutAlign="end" *ngIf="editFlag">
     <button class='resetCancelBtnColor margin-right-10' (click)='onCancel()' mat-raised-button color="primary">{{
-      translationData.lblCancel || 'Cancel' }}</button>
+        translationData.lblCancel || 'Cancel' }}</button>
     <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
-      translationData.lblReset || 'Reset' }}</button>
+        translationData.lblReset || 'Reset' }}</button>
     <button [disabled]='reqField || selectionForTripColumns.selected.length == 0' class='no-margin' mat-raised-button
-      color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
-  </div>
+        color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm || 'Confirm') }}</button>
+</div>
