@@ -13,6 +13,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DriverTimeManagementComponent } from './driver-time-management/driver-time-management.component';
 import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation.component';
+import { DriverTimeDetailComponent } from './driver-time-management/driver-time-detail/driver-time-detail.component';
 
 export const MY_DATE_FORMAT = {
   display: {
@@ -24,7 +25,7 @@ export const MY_DATE_FORMAT = {
 }
 
 @NgModule({
-  declarations: [ReportComponent, TripReportComponent, TripTracingComponent, DriverTimeManagementComponent, FleetUtilisationComponent],
+  declarations: [ReportComponent, TripReportComponent, TripTracingComponent, DriverTimeManagementComponent, FleetUtilisationComponent, DriverTimeDetailComponent],
   imports: [
     CommonModule,
     ReportRoutingModule,
