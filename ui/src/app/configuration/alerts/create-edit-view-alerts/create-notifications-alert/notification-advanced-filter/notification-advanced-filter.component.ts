@@ -21,6 +21,7 @@ export class NotificationAdvancedFilterComponent implements OnInit {
   days: any= [];
   weekDaySelected: boolean = false;
   checkboxChecked: boolean = false;
+  timings: any = [];
   
     constructor(private _formBuilder: FormBuilder) { }
   
@@ -35,13 +36,6 @@ export class NotificationAdvancedFilterComponent implements OnInit {
         validityAlwaysCustom: ['A'],
         FormArrayItems : this._formBuilder.array([this.initPeriodItems()]),
       });
-
-      if(this.alert_type_selected === 'D' || this.alert_type_selected === 'U' || this.alert_type_selected === 'G'){
-        this.notificationAdvancedFilterForm.get('notificationFrequency').setValue('O');
-      }
-      else{
-        this.notificationAdvancedFilterForm.get('notificationFrequency').setValue('T');
-      }
   
       if(this.actionType == 'create'){
         for(let i = 0; i < 6; i++ ){
@@ -60,8 +54,74 @@ export class NotificationAdvancedFilterComponent implements OnInit {
       this.selectedRowData.notifications[0].alertTimingDetail.length > 0)
       {
         this.setDefaultValues();
+      } 
+      else if (this.actionType == 'view') {
+      let PeriodType;
+      this.timings = [
+        {
+          "day": "Sunday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Monday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Tuesday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Wednesday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Thursday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Friday",
+          "Type": PeriodType,
+          "data": []
+        },
+        {
+          "day": "Saturday",
+          "Type": PeriodType,
+          "data": []
+        }
+      ];
+
+      if(this.selectedRowData.notifications[0].validityType == 'C'){
+      this.selectedRowData.notifications[0].alertTimingDetail.forEach((element, index) => {
+        element.dayType.forEach((item, index) => {
+          if (item == true) {
+            let totalTime = this.convertTimeIntoHours(element.startDate, element.endDate);
+            element.startDate = totalTime[0];
+            element.endDate = totalTime[1];
+            this.timings[index].data.push(element);
+            this.timings[index].Type = element.periodType;
+          }
+        });
+
+      })
+
+      this.timings = this.timings.filter(itm => itm.data.length > 0);
+    }
+    }
+    }
+
+    setAlertType(alertType: any){
+      this.alert_type_selected = alertType;
+      if(this.alert_type_selected === 'D' || this.alert_type_selected === 'U' || this.alert_type_selected === 'G'){
+        this.notificationAdvancedFilterForm.get('notificationFrequency').setValue('O');
       }
-   
+      else{
+        this.notificationAdvancedFilterForm.get('notificationFrequency').setValue('T');
+      }
     }
   
     initPeriodItems(): FormGroup{
@@ -92,8 +152,8 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     }
     
     onDeleteCustomPeriod(periodIndex, customIndex){
-      
-       this.customPeriods(periodIndex).removeAt(customIndex);
+      if(this.customPeriods(periodIndex).length > 1)
+         this.customPeriods(periodIndex).removeAt(customIndex);
     }
   
     addCustomPeriod(periodIndex, totalTime? ,isButtonClicked?){

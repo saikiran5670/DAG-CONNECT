@@ -24,7 +24,7 @@
                     </mat-radio-group>
                 </div>
                 <div *ngIf="actionType == 'view'">
-                  <!-- <span style='font-weight: 500!important;'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical || 'Critical') : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning || 'Warning') : (translationData.lblAdvisory || 'Advisory')) }}</span> -->
+                  Frequency : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].frequencyType == 'O' ? (translationData.lblOnce || 'Once') : (this.selectedRowData.notifications[0].frequencyType == 'T' ? (translationData.lblEachTime || 'Each Time') : (translationData.lblEachNumberOfOccurences || 'Each Number of Occurences')) }}</span>
                 </div>
                 <!-- <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate frequency for this alert</p> -->
             </div>
@@ -54,14 +54,14 @@
                       </mat-radio-group>
                   </div>
                   <div *ngIf="actionType == 'view'">
-                    <!-- <span style='font-weight: 500!important;'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical || 'Critical') : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning || 'Warning') : (translationData.lblAdvisory || 'Advisory')) }}</span> -->
+                    Validity Type : <span style='font-weight: 500!important;'>{{ this.selectedRowData.notifications[0].validityType == 'A' ? (translationData.lblAlways || 'Always') :  (translationData.lblCustom || 'Custom') }}</span>
                   </div>
                   <p *ngIf="actionType != 'view'" style="color: darkgray;">Define a time range when the alert will be active. This can be 'Always' or a 'Custom' time range.</p>
               </div>
             </div>
 
             <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px"> -->
-                <div fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
+                <div *ngIf="actionType != 'view'" fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
                     <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectPeriod || 'Select Period' }}
                     </mat-label>
                     <mat-label class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
@@ -142,6 +142,46 @@
                       </div>
                     </div>
                   </div>
+
+                  <div *ngIf="actionType == 'view' && timings.length > 0">
+                    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm"
+                      fxLayoutGap="10px">
+                      <mat-label style="font-size: 17px; font-weight: bold;">{{ translationData.lblSelectedDays || 'Selected Days'}}
+                      </mat-label>
+                    </div>
+                  
+                    <div *ngFor="let days of timings">
+                      <div fxLayout="row" class="areaWidth filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                        <mat-label>Day:<span style='font-weight: 500!important;'>{{days.day}}</span></mat-label>
+                        <mat-label>Period Type:
+                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'C'">Custom Period</span>
+                          <span style='font-weight: 500!important;' *ngIf="days.Type == 'A'">Full Day</span>
+                        </mat-label>
+                      </div>
+                  
+                      <div *ngIf="days.Type == 'C'" fxLayout="row" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="5px">
+                        <div *ngFor="let item of days.data" class="areaWidth min-width-20-per " fxLayout="column" fxLayoutAlign="left">
+                          <div class="areaWidth min-width-30-per" fxLayout="row" fxLayoutAlign="left">
+                  
+                            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                              <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
+                              <span style='font-weight: 500!important;'>{{ item.startDate }}</span>
+                            </div>
+                            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                              <mat-label>{{ translationData.lblFrom || 'To' }}</mat-label>
+                              <span style='font-weight: 500!important;'>{{ item.endDate }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style='padding: 10px; position: relative;'>
+                        <mat-divider></mat-divider>
+                      </div>
+                    </div>
+                  
+                  </div>
+                  
+
                 <!-- </div> -->
             </mat-expansion-panel>
       </mat-card>
