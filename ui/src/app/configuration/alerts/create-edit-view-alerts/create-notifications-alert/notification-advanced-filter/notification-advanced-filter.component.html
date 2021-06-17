@@ -1,0 +1,140 @@
+<form [formGroup]="notificationAdvancedFilterForm">
+    <!-- Notification Frequency -->
+    <mat-card class='mat-elevation-z'>
+      <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
+        <mat-expansion-panel-header class="full-width">
+          <mat-panel-title>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                translationData.lblFrequency || 'Frequency' }}<span class='mandatoryColor'>*</span></span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+            <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                <div *ngIf="actionType != 'view'" class="margin-bottom-sm">
+                    <mat-radio-group [disabled]="alert_type_selected === 'L' || alert_type_selected === 'U' || alert_type_selected === 'G'" formControlName="notificationFrequency">
+                        <mat-radio-button style='margin-right: 20px;' value="O">
+                            {{ translationData.lblOnce || 'Once' }}
+                        </mat-radio-button>
+                        <mat-radio-button style='margin-right: 20px;' value="T">
+                            {{ translationData.lblEachTime || 'Each Time' }}
+                        </mat-radio-button>
+                        <mat-radio-button style='margin-right: 20px;' value="E">
+                            {{ translationData.lblEachNumberOfOccurences || 'Each Number of Occurences' }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div *ngIf="actionType == 'view'">
+                  <!-- <span style='font-weight: 500!important;'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical || 'Critical') : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning || 'Warning') : (translationData.lblAdvisory || 'Advisory')) }}</span> -->
+                </div>
+                <!-- <p *ngIf="alert_category_selected != 'R' && actionType != 'view'" style="color: darkgray;">Choose appropriate frequency for this alert</p> -->
+            </div>
+          </div>
+      </mat-expansion-panel>
+    </mat-card>
+
+    <!-- Notification validity -->
+    <mat-card class='mat-elevation-z'>
+        <mat-expansion-panel class="full-width" fxLayoutGap="10px" [expanded]="true">
+          <mat-expansion-panel-header class="full-width">
+            <mat-panel-title>
+                <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+                  translationData.lblValidity || 'Validity' }}<span class='mandatoryColor'>*</span></span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+              <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
+                  <div *ngIf="actionType != 'view'" class="margin-bottom-sm">
+                      <mat-radio-group formControlName="validityAlwaysCustom">
+                          <mat-radio-button style='margin-right: 20px;' value="O">
+                              {{ translationData.lblAlways || 'Always' }}
+                          </mat-radio-button>
+                          <mat-radio-button style='margin-right: 20px;' value="T">
+                              {{ translationData.lblCustom || 'Custom' }}
+                          </mat-radio-button>
+                      </mat-radio-group>
+                  </div>
+                  <div *ngIf="actionType == 'view'">
+                    <!-- <span style='font-weight: 500!important;'>{{ selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'C' ? (translationData.lblCritical || 'Critical') : (selectedRowData.alertUrgencyLevelRefs[0].urgencyLevelType == 'W' ? (translationData.lblWarning || 'Warning') : (translationData.lblAdvisory || 'Advisory')) }}</span> -->
+                  </div>
+                  <p *ngIf="actionType != 'view'" style="color: darkgray;">Define a time range when the alert will be active. This can be 'Always' or a 'Custom' time range.</p>
+              </div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                <div fxLayout="column" fxLayoutAlign="left" fxLayoutAlign="space-between">
+                    <mat-label style="font-size: 17px; font-weight: bold;" class="margin-bottom-sm">{{ translationData.lblSelectPeriod || 'Select Period' }}
+                    </mat-label>
+                    <mat-label class="margin-bottom-sm">{{ translationData.lblSelectoneorseveraldays || 'Select one or several days' }} <span
+                        class='mandatoryColor'>*</span>
+                      <mat-label style="color: darkgray;">{{ translationData.lblMax04customperiodperday || '(Max 04 custom period per
+                        day)'}}</mat-label>
+                        <mat-label style="color: red;" *ngIf="weekDaySelected == false">{{ translationData.lblPleaseSelectAtLeastOneDay || 'Please select at least one day'}}</mat-label>
+                    </mat-label>
+                    <!-- calendar -->
+                    <div formArrayName="FormArrayItems">
+                      <div *ngFor="let item of weekDays().controls; let periodIndex = index">
+                        <div [formGroupName]="periodIndex">
+                          <mat-card class='mat-elevation-z' style="border: 1px solid #000; margin-bottom: 15px;">
+                            <div fxLayout="row" class="full-width margin-bottom-sm">
+                              <div class="areaWidth min-width-10-per" style='margin-right: 20px;' fxLayout="column" fxLayoutAlign="left">
+                                <mat-checkbox (change)="onChangeDaySelection($event, periodIndex)" formControlName="daySelection">
+                                  {{ days[periodIndex] }}</mat-checkbox>
+                              </div>
+                              <div class="areaWidth min-width-10-per" fxLayout="column" fxLayoutAlign="left">
+                                  <mat-radio-group [disabled]="item['controls']['daySelection'].value != true" formControlName="fulldayCustom">
+                                    <mat-radio-button style='margin-right: 20px;' value="A">
+                                        {{ translationData.lblFullDay || 'Full Day' }}
+                                    </mat-radio-button>
+                                    <mat-radio-button style='margin-right: 20px;' value="C">
+                                        {{ translationData.lblCustomPeriod || 'Custom Period' }}
+                                    </mat-radio-button>
+                                  </mat-radio-group>
+                              </div> 
+                            </div>
+                            <div  fxLayout="row" class="full-width margin-bottom-sm" *ngIf="item['controls']['fulldayCustom'].value ==  'C'">
+                              <div fxLayout="column" class="max-width-92-per"  fxLayoutAlign="left">
+                                <div  fxLayout="row" formArrayName="FormArrayCustomItems">
+                                <!-- <div formArrayName="FormArrayCustomItems">
+                                 <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index">
+                                  <div [formGroupName]="customIndex"> -->
+                                    <div *ngFor="let customItem of customPeriods(periodIndex).controls; let customIndex = index" style="background: #dedddd;border-radius: 7px;margin-right: 10px;"  class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
+                                      <div [formGroupName]="customIndex"  fxLayout="row" class="full-width margin-bottom-sm"  fxLayoutGap="5px">
+                                        <div class="max-width-42-per" fxLayout="column">
+                                          <mat-label style="margin-left: 5px;">{{ translationData.lblFrom || 'From' }}</mat-label>
+                                          <mat-form-field style="margin-left: 5px;" appearance="outline" class="full-width">
+                                              <input type="time" matInput formControlName="fromTime" >
+                                          </mat-form-field>
+                                        </div>
+                                        <div class="max-width-42-per" fxLayout="column">
+                                          <mat-label style="margin-left: 5px;">{{ translationData.lblTo || 'To' }}</mat-label>
+                                          <mat-form-field style="margin-left: 5px;" appearance="outline" class="full-width">
+                                              <input type="time" matInput formControlName="toTime" >
+                                          </mat-form-field>
+                                        </div>
+                                        <div class="max-width-5-per" fxLayout="column">
+                                          <!-- <button class='actionBtn' mat-flat-button (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}"> -->
+                                            <mat-icon class="deleteIcon" (click)="onDeleteCustomPeriod(periodIndex, customIndex)" matTooltip="{{ translationData.lblDelete || 'Delete' }}">delete_outline</mat-icon>
+                                          <!-- </button> -->
+                                        </div>
+                
+                                      </div>
+                                    </div>
+                                  <!-- </div>
+                                 </div>
+                                </div>  -->
+                              </div>
+                              </div>   
+                              <div  fxLayout="column" class="max-width-8-per"  fxLayoutAlign="left" fxLayoutGap="10px">
+                                <button class='button1' mat-raised-button color="primary" (click)='addCustomPeriod(periodIndex, [], true)'>
+                                  {{ translationData.lblAdd || 'Add' }}</button>
+                              </div>
+                            </div>
+                          </mat-card>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </mat-expansion-panel>
+      </mat-card>
+</form>

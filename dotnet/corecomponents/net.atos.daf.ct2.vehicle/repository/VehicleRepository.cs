@@ -901,7 +901,7 @@ namespace net.atos.daf.ct2.vehicle.repository
             return vehicles.AsEnumerable();
         }
 
-        private async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId)
+        public async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId)
         {
             try
             {
