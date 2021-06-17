@@ -56,7 +56,12 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
 
-
+        /// <summary>
+        /// Calender details get for fleet utilzation page
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="context"></param>
+        /// <returns>List of vehicle details per day</returns>
         public override async Task<FleetUtilizationCalenderResponse> GetFleetCalenderDetails(TripFilterRequest request, ServerCallContext context)
         {
             try
