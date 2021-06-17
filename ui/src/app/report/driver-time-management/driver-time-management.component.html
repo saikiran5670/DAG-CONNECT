@@ -118,7 +118,7 @@
           </div> 
         </mat-expansion-panel>
       </mat-card>
-      <div *ngIf="!driverSelected">
+      <div *ngIf="allDriversSelected && !driverSelected">
       <mat-card class='mat-elevation-z no-padding margin-bottom-xlg' *ngIf='initData.length == 0'>
         <mat-expansion-panel [(expanded)]="noDetailsExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width" >
@@ -289,16 +289,17 @@
                 <mat-row *matRowDef="let row; columns: displayedColumns;">
                 </mat-row>
               </mat-table>
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
+              <div class='mt-1'><mat-label>* {{ translationData.lblTableInstruction || 'values are processed with partial data'}}</mat-label></div>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageSizeUpdated($event)"></mat-paginator>
           </div>
           </mat-expansion-panel>
       </mat-card>
       <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
 
     </div>
-    <div *ngIf="driverSelected">
+    <div *ngIf="!allDriversSelected || driverSelected">
       <app-driver-time-detail [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
-            (backToMainPage)="backToMainPage()"
+            (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
       ></app-driver-time-detail>
     </div>
     </form>
