@@ -35,7 +35,6 @@ import { Ng2CompleterModule } from 'ng2-completer';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { CreateEditViewReportSchedulerComponent } from './report-scheduler/create-edit-view-report-scheduler/create-edit-view-report-scheduler.component';
-import { NotificationAdvancedFilterComponent } from './alerts/create-edit-view-alerts/create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +61,6 @@ import { NotificationAdvancedFilterComponent } from './alerts/create-edit-view-a
     RouteCalculatingComponent,
     ExistingTripsComponent,
     CreateEditViewReportSchedulerComponent,
-    NotificationAdvancedFilterComponent,
   ],
   imports: [
     CommonModule,

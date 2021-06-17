@@ -11,9 +11,10 @@ import { FleetOverviewPreferencesComponent } from './fleet-overview-preferences/
 import { ReportsPreferencesComponent } from './reports-preferences/reports-preferences.component';
 import { FleetUtilisationPreferenceComponent } from './reports-preferences/fleet-utilisation-preference/fleet-utilisation-preference.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { TripReportPreferenceComponent } from './reports-preferences/trip-report-preference/trip-report-preference.component';
 
 @NgModule({
-  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent ],
+  declarations: [ AccountInfoSettingsComponent, ChangePasswordComponent, DashboardPreferencesComponent, FleetOverviewPreferencesComponent, ReportsPreferencesComponent, FleetUtilisationPreferenceComponent, TripReportPreferenceComponent ],
   imports: [
     CommonModule,
     SharedModule,
