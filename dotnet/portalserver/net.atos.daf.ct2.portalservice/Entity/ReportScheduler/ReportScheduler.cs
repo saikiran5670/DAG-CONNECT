@@ -74,4 +74,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
     }
+    public class ReportStatusUpdateDeleteModel
+    {
+        public int ReportId { get; set; }
+        public int OrganizationId { get; set; }
+        public string Status { get; set; }
+    }
 }

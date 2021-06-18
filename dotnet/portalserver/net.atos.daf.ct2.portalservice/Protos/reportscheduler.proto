@@ -9,6 +9,8 @@ service ReportSchedulerService{
   rpc GetReportParameter (ReportParameterRequest) returns (ReportParameterResponse);
   rpc CreateReportScheduler (ReportSchedulerRequest) returns (ReportSchedulerResponse);
   rpc GetReportSchedulerList (ReportParameterRequest) returns (ReportSchedulerListResponse);
+  rpc EnableDisableReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
+  rpc DeleteReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
 }
 
 enum ResponseCode{
@@ -148,4 +150,15 @@ message VehicleSubscribeandFeatureRequest {
          string FeatureName =  3;
          string FeatureKey =  4;
          bool Subscribe =  5;
+}
+message ReportStatusUpdateDeleteRequest {
+   int32 ReportId = 1;
+   int32 OrganizationId = 2;
+   string Status = 3;
+}
+
+message ReportStatusUpdateDeleteResponse {
+  ResponseCode Code=1;
+  string Message = 2;  
+  int32 ReportId =3;
 }
