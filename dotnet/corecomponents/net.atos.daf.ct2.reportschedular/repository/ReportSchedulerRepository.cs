@@ -123,16 +123,44 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@mail_description", report.MailDescription);
                 parameterReportSchedular.Add("@report_dispatch_time", report.ReportDispatchTime);
 
-                string queryReportSchedular = @"INSERT INTO master.reportscheduler(organization_id, report_id,  frequency_type,
-                                        status,type, file_name, start_date, end_date, code,
-                                        last_schedule_run_date,next_schedule_run_date,created_at,created_by,modified_at,modified_by,
-                                        mail_subject,mail_description,report_dispatch_time)
-
-	                                    VALUES (@organization_id, @report_id, 
-                                        @frequency_type, @status, 
-                                        @type, @file_name, @start_date, @end_date, @code,@last_schedule_run_date,
-                                        @next_schedule_run_date,@created_at,@created_by,
-                                        @modified_at,@modified_by,@mail_subject,@mail_description,@report_dispatch_time) RETURNING id";
+                string queryReportSchedular = @"INSERT INTO master.reportscheduler
+                                                (organization_id, 
+                                                report_id, 
+                                                frequency_type,
+                                                status,
+                                                type, 
+                                                file_name, 
+                                                start_date, 
+                                                end_date, 
+                                                code,
+                                                last_schedule_run_date,
+                                                next_schedule_run_date,
+                                                created_at,
+                                                created_by,
+                                                modified_at,
+                                                modified_by,
+                                                mail_subject,
+                                                mail_description,
+                                                report_dispatch_time)
+	                                            VALUES (
+                                                @organization_id, 
+                                                @report_id, 
+                                                @frequency_type, 
+                                                @status, 
+                                                @type, 
+                                                @file_name, 
+                                                @start_date, 
+                                                @end_date, 
+                                                @code,
+                                                @last_schedule_run_date,
+                                                @next_schedule_run_date,
+                                                @created_at,
+                                                @created_by,
+                                                @modified_at,
+                                                @modified_by,
+                                                @mail_subject,
+                                                @mail_description,
+                                                @report_dispatch_time) RETURNING id";
 
 
                 var reportId = await _dataAccess.ExecuteScalarAsync<int>(queryReportSchedular, parameterReportSchedular);
@@ -149,9 +177,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                     vehicleref.ScheduleReportId = report.Id;
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
-
-                report.ScheduledReportDriverRef.ScheduleReportId = report.Id;
-                int scheduledrid = await Createscheduledreportdriverref(report.ScheduledReportDriverRef);
+                foreach (var driverref in report.ScheduledReportDriverRef)
+                {
+                    driverref.ScheduleReportId = report.Id;
+                    int scheduledrid = await Createscheduledreportdriverref(driverref);
+                }
                 transactionScope.Commit();
             }
             catch (Exception)
@@ -176,9 +206,18 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterschedulerecipient.Add("@created_at", srecipient.CreatedAt);
                 parameterschedulerecipient.Add("@modified_at", srecipient.ModifiedAt);
 
-                string querySchedulerecipient = @"INSERT INTO master.scheduledreportrecipient(schedule_report_id, email, state, 
-                                                     created_at, modified_at)
-                                                 VALUES (@schedule_report_id, @emaile, @state, @created_at,@modified_at) RETURNING id";
+                string querySchedulerecipient = @"INSERT INTO master.scheduledreportrecipient
+                                                (schedule_report_id, 
+                                                email, 
+                                                state, 
+                                                created_at,
+                                                modified_at)
+                                                VALUES 
+                                                (@schedule_report_id, 
+                                                 @emaile, 
+                                                 @state, 
+                                                 @created_at,
+                                                 @modified_at) RETURNING id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -202,9 +241,22 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportDriverRef.Add("@modified_at", sdriverref.ModifiedAt);
                 parameterScheduledReportDriverRef.Add("@modified_by", sdriverref.ModifiedBy);
 
-                string queryscheduledreportdriverref = @"INSERT INTO master.scheduledreportdriverref(report_schedule_id, driver_id, state, 
-                                                     created_at, created_by, modified_at,modified_by)
-                                                 VALUES (@schedule_report_id,@driver_id,  @state, @created_at,@created_by,@modified_at,@modified_by) RETURNING id";
+                string queryscheduledreportdriverref = @"INSERT INTO master.scheduledreportdriverref
+                                                        (report_schedule_id, 
+                                                        driver_id, 
+                                                        state, 
+                                                        created_at, 
+                                                        created_by,
+                                                        modified_at,
+                                                        modified_by)
+                                                        VALUES 
+                                                        (@schedule_report_id,
+                                                        @driver_id,  
+                                                        @state, 
+                                                        @created_at,
+                                                        @created_by,
+                                                        @modified_at,
+                                                        @modified_by) RETURNING id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(queryscheduledreportdriverref, parameterScheduledReportDriverRef);
                 return id;
@@ -227,9 +279,22 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportVehicleRef.Add("@modified_at", svehicleref.ModifiedAt);
                 parameterScheduledReportVehicleRef.Add("@modified_by", svehicleref.ModifiedBy);
 
-                string queryscheduledreportvehicleref = @"INSERT INTO master.scheduledreportvehicleref(report_schedule_id, vehicle_group_id,  state, 
-                                                     created_at,created_by, modified_at,modified_by)
-                                                 VALUES (@schedule_report_id,@vehicle_group_id, @state, @created_at,@created_by,@modified_at,@modified_by) RETURNING id";
+                string queryscheduledreportvehicleref = @"INSERT INTO master.scheduledreportvehicleref
+                                                        (report_schedule_id, 
+                                                        vehicle_group_id,  
+                                                        state, 
+                                                        created_at,
+                                                        created_by,
+                                                        modified_at,
+                                                        modified_by)
+                                                        VALUES 
+                                                        (@schedule_report_id,
+                                                        @vehicle_group_id, 
+                                                        @state, 
+                                                        @created_at,
+                                                        @created_by,
+                                                        @modified_at,
+                                                        @modified_by) RETURNING id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(queryscheduledreportvehicleref, parameterScheduledReportVehicleRef);
                 return id;
@@ -317,6 +382,38 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 return repositoryMapper.GetReportSchedulerList(reportSchedulerResult);
             }
             catch (Exception)
+            {
+                throw;
+            }
+        }
+        #endregion
+
+        #region EnableDisableDeleteReport
+        public async Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel)
+        {
+            try
+            {
+                string query = string.Empty;
+
+                query = @"UPDATE master.reportscheduler 
+                          SET state=@state 
+                          WHERE id=@id 
+                          AND organization_id=@organization_id";
+                var parameter = new DynamicParameters();
+                parameter.Add("@id", objReportStatusUpdateDeleteModel.ReportId);
+                parameter.Add("@state", objReportStatusUpdateDeleteModel.Status);
+                parameter.Add("@organization_id", objReportStatusUpdateDeleteModel.OrganizationId);
+                int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+                if (rowEffected > 0)
+                {
+                    return objReportStatusUpdateDeleteModel.ReportId;// to show reportid in gRPC message
+                }
+                else
+                {
+                    return 0;//to return Failed Message in grpc
+                }
+            }
+            catch
             {
                 throw;
             }

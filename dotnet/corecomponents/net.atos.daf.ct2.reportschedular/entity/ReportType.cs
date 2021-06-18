@@ -26,4 +26,13 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public IEnumerable<DriverDetail> DriverDetail { get; set; }
         public IEnumerable<ReceiptEmails> ReceiptEmails { get; set; }
     }
+
+    public class ReportStatusUpdateDeleteModel
+    {
+        public int ReportId { get; set; }
+        public int OrganizationId { get; set; }
+        public string Status { get; set; }
+    }
+
+  
 }

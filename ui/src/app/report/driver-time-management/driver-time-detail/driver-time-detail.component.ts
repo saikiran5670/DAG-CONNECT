@@ -19,7 +19,7 @@ import 'jspdf-autotable';
 })
 export class DriverTimeDetailComponent implements OnInit {
   @Input() translationData : any;
-
+  @Input() driverSelected : boolean;
   @Input() driverDetails : any;
   @Input() detailConvertedData : any;
   initData = [];
@@ -27,7 +27,7 @@ export class DriverTimeDetailComponent implements OnInit {
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel : boolean = true;
   generalExpandPanel : boolean = true;
-  
+
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;

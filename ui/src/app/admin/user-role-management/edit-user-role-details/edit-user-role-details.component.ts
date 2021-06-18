@@ -154,6 +154,7 @@ export class EditUserRoleDetailsComponent implements OnInit {
     }
     else {
       this.isUserRoleExist = false;
+      this.createButtonFlag = true;
       this.doneFlag = true;
       let featureIds = [];
       this.selectionForFeatures.selected.forEach(feature => {

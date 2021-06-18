@@ -267,6 +267,18 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
+        public async Task<VehicleConnectResponse> VehicleConnectAll(List<VehicleConnect> vehicleConnects)
+        {
+            try
+            {
+                return await _vehicleRepository.VehicleConnectAll(vehicleConnects);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId) => await _vehicleRepository.GetVehicleAssociatedGroup(vehicleId, organizationId);
 
         #region Vehicle Mileage Data
