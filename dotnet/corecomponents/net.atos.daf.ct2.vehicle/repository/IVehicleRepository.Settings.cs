@@ -6,8 +6,6 @@ namespace net.atos.daf.ct2.vehicle.repository
 {
     public partial interface IVehicleRepository
     {
-        Task<IEnumerable<Vehicle>> GetVehicleSetting(VehicleSettings vehicleSettings);
-
         Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects);
     }
 }

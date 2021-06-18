@@ -254,19 +254,6 @@ namespace net.atos.daf.ct2.vehicle
                 throw;
             }
         }
-
-        public async Task<IEnumerable<Vehicle>> GetVehicleSetting(VehicleSettings vehicleSettings)
-        {
-            try
-            {
-                return await _vehicleRepository.GetVehicleSetting(vehicleSettings);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         public async Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects)
         {
             try
