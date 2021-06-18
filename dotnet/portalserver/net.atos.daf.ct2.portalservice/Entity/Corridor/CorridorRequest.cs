@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 {
@@ -84,6 +85,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Corridor
 
     public class Attribute
     {
+        [Column("NoTrailer")]
         public int IsTrailer { get; set; }
         public bool IsExplosive { get; set; }
         public bool IsGas { get; set; }
