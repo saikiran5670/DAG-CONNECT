@@ -33,6 +33,4 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int OrganizationId { get; set; }
         public string Status { get; set; }
     }
-
-  
 }
