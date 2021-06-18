@@ -67,6 +67,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiWidth : number = 100;
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
+  selectedApplyOn: string;
   options: Options = {
     floor: 0,
     ceil: 10000
@@ -95,7 +96,12 @@ export class AlertAdvancedFilterComponent implements OnInit {
       distance: [''],
       occurences: [''],
       duration: [''],
-      widthInput: ['']
+      widthInput: [''],
+      fullorCustom: [''],
+      fromDate: [''],
+      fromTimeRange: ['00:00'],
+      toDate: [''],
+      toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
   }
@@ -107,6 +113,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
     else{
       this.isDistanceSelected= false;
     }
+  }
+
+  onApplyOnChange(event: any){
+    this.selectedApplyOn = event.value;
   }
 
   loadMapData(){
