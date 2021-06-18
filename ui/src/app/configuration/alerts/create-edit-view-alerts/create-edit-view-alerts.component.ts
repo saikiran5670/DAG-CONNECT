@@ -289,7 +289,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.unitTypes= [];
     this.alert_type_selected= value;
     if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
-      this.notificationAdvancedFilterComponent.setAlertType(this.alert_type_selected);
+      this.notificationComponent.setAlertType(this.alert_type_selected);
     }
     this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
     
