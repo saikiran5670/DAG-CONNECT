@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
@@ -115,7 +116,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
                 parameterReportSchedular.Add("@next_schedule_run_date", report.NextScheduleRunDate);
-                parameterReportSchedular.Add("@created_at", report.CreatedAt);
+                parameterReportSchedular.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterReportSchedular.Add("@created_by", report.CreatedBy);
                 parameterReportSchedular.Add("@modified_at", report.ModifiedAt);
                 parameterReportSchedular.Add("@modified_by", report.ModifiedBy);
@@ -203,7 +204,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterschedulerecipient.Add("@schedule_report_id", srecipient.ScheduleReportId);
                 parameterschedulerecipient.Add("@emaile", srecipient.Email);
                 parameterschedulerecipient.Add("@state", srecipient.State);
-                parameterschedulerecipient.Add("@created_at", srecipient.CreatedAt);
+                parameterschedulerecipient.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterschedulerecipient.Add("@modified_at", srecipient.ModifiedAt);
 
                 string querySchedulerecipient = @"INSERT INTO master.scheduledreportrecipient
@@ -217,7 +218,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                  @emaile, 
                                                  @state, 
                                                  @created_at,
-                                                 @modified_at) RETURNING id";
+                                                 @modified_at) RETURNING schedule_report_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -237,7 +238,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 parameterScheduledReportDriverRef.Add("@state", sdriverref.State);
                 parameterScheduledReportDriverRef.Add("@created_at", sdriverref.CreatedAt);
-                parameterScheduledReportDriverRef.Add("@created_by", sdriverref.CreatedBy);
+                parameterScheduledReportDriverRef.Add("@created_by", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterScheduledReportDriverRef.Add("@modified_at", sdriverref.ModifiedAt);
                 parameterScheduledReportDriverRef.Add("@modified_by", sdriverref.ModifiedBy);
 
@@ -256,7 +257,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                         @created_at,
                                                         @created_by,
                                                         @modified_at,
-                                                        @modified_by) RETURNING id";
+                                                        @modified_by) RETURNING driver_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(queryscheduledreportdriverref, parameterScheduledReportDriverRef);
                 return id;
@@ -271,10 +272,10 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             try
             {
                 var parameterScheduledReportVehicleRef = new DynamicParameters();
-                parameterScheduledReportVehicleRef.Add("@schedule_report_id", svehicleref.ScheduleReportId);
+                parameterScheduledReportVehicleRef.Add("@report_schedule_id", svehicleref.ScheduleReportId);
                 parameterScheduledReportVehicleRef.Add("@vehicle_group_id", svehicleref.VehicleGroupId);
                 parameterScheduledReportVehicleRef.Add("@state", svehicleref.State);
-                parameterScheduledReportVehicleRef.Add("@created_at", svehicleref.CreatedAt);
+                parameterScheduledReportVehicleRef.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterScheduledReportVehicleRef.Add("@created_by", svehicleref.CreatedBy);
                 parameterScheduledReportVehicleRef.Add("@modified_at", svehicleref.ModifiedAt);
                 parameterScheduledReportVehicleRef.Add("@modified_by", svehicleref.ModifiedBy);
@@ -288,13 +289,13 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                         modified_at,
                                                         modified_by)
                                                         VALUES 
-                                                        (@schedule_report_id,
+                                                        (@report_schedule_id,
                                                         @vehicle_group_id, 
                                                         @state, 
                                                         @created_at,
                                                         @created_by,
                                                         @modified_at,
-                                                        @modified_by) RETURNING id";
+                                                        @modified_by) RETURNING vehicle_group_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(queryscheduledreportvehicleref, parameterScheduledReportVehicleRef);
                 return id;

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.ReportScheduler;
 using net.atos.daf.ct2.reportschedulerservice;
+using net.atos.daf.ct2.vehicleservice;
 using Newtonsoft.Json;
 using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.ReportScheduler;
 namespace net.atos.daf.ct2.portalservice.Controllers
@@ -23,12 +24,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly ReportSchedulerService.ReportSchedulerServiceClient _reportschedulerClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.ReportScheduler.Mapper _mapper;
-        public ReportSchedulerController(ReportSchedulerService.ReportSchedulerServiceClient reportschedulerClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+        private readonly VehicleService.VehicleServiceClient _vehicleClient;
+        public ReportSchedulerController(ReportSchedulerService.ReportSchedulerServiceClient reportschedulerClient, VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _reportschedulerClient = reportschedulerClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Entity.ReportScheduler.Mapper();
+            _vehicleClient = vehicleClient;
         }
 
         #region Get Report Scheduler Paramenter
@@ -69,6 +72,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (request.ScheduledReportVehicleRef.Count > 0)
+                {
+                    foreach (var item in request.ScheduledReportVehicleRef)
+                    {
+                        if (item.VehicleGroupId == 0 && item.VehicleId > 0)
+                        {
+                            var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                            VehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                            if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
+                            VehicleGroupRequest.GroupType = "S";
+                            VehicleGroupRequest.RefId = item.VehicleGroupId;
+                            VehicleGroupRequest.FunctionEnum = "N";
+                            VehicleGroupRequest.OrganizationId = 1; //GetContextOrgId();
+                            VehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                            item.VehicleGroupId = 393;//response.VehicleGroup.Id;
+                        }
+                    }
+                }
                 ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
                 ReportSchedulerResponse reportSchedulerResponse = new ReportSchedulerResponse();
                 reportSchedulerResponse = await _reportschedulerClient.CreateReportSchedulerAsync(reportSchedulerRequest);
@@ -166,7 +188,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                         return Ok(data);
                     case ResponseCode.Failed:
                         return StatusCode(400, data.Message);
-                  default:
+                    default:
                         return StatusCode(500, data.Message);
                 }
             }
