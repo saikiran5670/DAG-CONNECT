@@ -76,7 +76,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 {
                     foreach (var item in request.ScheduledReportVehicleRef)
                     {
-                        if (item.VehicleGroupId == 0 && item.VehicleId > 0)
+                        if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
                         {
                             var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
                             VehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
@@ -84,11 +84,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                             VehicleGroupRequest.GroupType = "S";
                             VehicleGroupRequest.RefId = item.VehicleGroupId;
                             VehicleGroupRequest.FunctionEnum = "N";
-                            VehicleGroupRequest.OrganizationId = 1; //GetContextOrgId();
+                            VehicleGroupRequest.OrganizationId = GetContextOrgId();
                             VehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
                             vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
-                            item.VehicleGroupId = 393;//response.VehicleGroup.Id;
+                            item.VehicleGroupId = response.VehicleGroup.Id;
                         }
+                        //TOBE DO
+                        //Condition if vehicle select All and group select All
                     }
                 }
                 ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);

@@ -31,7 +31,7 @@ namespace net.atos.daf.ct2.reportscheduler
 
         public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
         {
-            return await _reportSchedulerRepository.CreateReportSchedular(report);
+            return await _reportSchedulerRepository.UpdateReportSchedular(report);
         }
 
         public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)

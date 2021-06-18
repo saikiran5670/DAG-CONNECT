@@ -104,26 +104,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             var transactionScope = _dataAccess.Connection.BeginTransaction();
             try
             {
-                var parameterReportSchedular = new DynamicParameters();
-                parameterReportSchedular.Add("@organization_id", report.OrganizationId);
-                parameterReportSchedular.Add("@report_id", report.Id);
-                parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
-                parameterReportSchedular.Add("@status", report.Status);
-                parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
-                parameterReportSchedular.Add("@start_date", report.OrganizationId);
-                parameterReportSchedular.Add("@end_date", report.EndDate);
-                parameterReportSchedular.Add("@code", report.Code);
-                parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
-                parameterReportSchedular.Add("@next_schedule_run_date", report.NextScheduleRunDate);
-                parameterReportSchedular.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                parameterReportSchedular.Add("@created_by", report.CreatedBy);
-                parameterReportSchedular.Add("@modified_at", report.ModifiedAt);
-                parameterReportSchedular.Add("@modified_by", report.ModifiedBy);
-                parameterReportSchedular.Add("@mail_subject", report.MailSubject);
-                parameterReportSchedular.Add("@mail_description", report.MailDescription);
-                parameterReportSchedular.Add("@report_dispatch_time", report.ReportDispatchTime);
-
                 string queryReportSchedular = @"INSERT INTO master.reportscheduler
                                                 (organization_id, 
                                                 report_id, 
@@ -163,6 +143,25 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 @mail_description,
                                                 @report_dispatch_time) RETURNING id";
 
+                var parameterReportSchedular = new DynamicParameters();
+                parameterReportSchedular.Add("@organization_id", report.OrganizationId);
+                parameterReportSchedular.Add("@report_id", report.Id);
+                parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
+                parameterReportSchedular.Add("@status", report.Status);
+                parameterReportSchedular.Add("@type", report.Type);
+                parameterReportSchedular.Add("@file_name", report.FileName);
+                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@end_date", report.EndDate);
+                parameterReportSchedular.Add("@code", report.Code);
+                parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
+                parameterReportSchedular.Add("@next_schedule_run_date", report.NextScheduleRunDate);
+                parameterReportSchedular.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterReportSchedular.Add("@created_by", report.CreatedBy);
+                parameterReportSchedular.Add("@modified_at", report.ModifiedAt);
+                parameterReportSchedular.Add("@modified_by", report.ModifiedBy);
+                parameterReportSchedular.Add("@mail_subject", report.MailSubject);
+                parameterReportSchedular.Add("@mail_description", report.MailDescription);
+                parameterReportSchedular.Add("@report_dispatch_time", report.ReportDispatchTime);
 
                 var reportId = await _dataAccess.ExecuteScalarAsync<int>(queryReportSchedular, parameterReportSchedular);
                 report.Id = reportId;
@@ -178,10 +177,25 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                     vehicleref.ScheduleReportId = report.Id;
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
+
                 foreach (var driverref in report.ScheduledReportDriverRef)
                 {
-                    driverref.ScheduleReportId = report.Id;
-                    int scheduledrid = await Createscheduledreportdriverref(driverref);
+                    if (driverref.DriverId == 0)//ALL driver list
+                    {
+                        IEnumerable<DriverDetail> driverList = await GetDriverDetails(report.OrganizationId);
+                        foreach (var item in driverList)
+                        {
+                            driverref.ScheduleReportId = report.Id;
+                            driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            int scheduledrid = await Createscheduledreportdriverref(driverref);
+                        }
+                    }
+                    else //Single driver
+                    {
+                        driverref.ScheduleReportId = report.Id;
+                        int scheduledrid = await Createscheduledreportdriverref(driverref);
+                    }
+
                 }
                 transactionScope.Commit();
             }
@@ -196,6 +210,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
             return report;
         }
+
         private async Task<int> CreateScheduleRecipient(ScheduledReportRecipient srecipient)
         {
             try
@@ -219,6 +234,24 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                  @state, 
                                                  @created_at,
                                                  @modified_at) RETURNING schedule_report_id";
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
+                return id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private async Task<int> DeleteScheduleRecipient(int reportscheduleId)
+        {
+            try
+            {
+                var parameterschedulerecipient = new DynamicParameters();
+                parameterschedulerecipient.Add("@schedule_report_id", reportscheduleId);
+
+                string querySchedulerecipient = @"DELETE master.scheduledreportrecipient
+                                                WHERE schedule_report_id=@schedule_report_id) RETURNING schedule_report_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -267,6 +300,24 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 throw;
             }
         }
+        private async Task<int> Deletescheduledreportdriverref(int reportscheduleId)
+        {
+            try
+            {
+                var parameterschedulerecipient = new DynamicParameters();
+                parameterschedulerecipient.Add("@report_schedule_id", reportscheduleId);
+
+                string querySchedulerecipient = @"DELETE master.scheduledreportdriverref
+                                                WHERE report_schedule_id=@report_schedule_id) RETURNING report_schedule_id";
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
+                return id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         private async Task<int> Createschedulereportvehicleref(ScheduledReportVehicleRef svehicleref)
         {
             try
@@ -306,10 +357,132 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
+        private async Task<int> Deleteschedulereportvehicleref(int reportscheduleId)
+        {
+            try
+            {
+                var parameterschedulerecipient = new DynamicParameters();
+                parameterschedulerecipient.Add("@report_schedule_id", reportscheduleId);
+
+                string querySchedulerecipient = @"DELETE master.scheduledreportvehicleref
+                                                WHERE report_schedule_id=@report_schedule_id) RETURNING report_schedule_id";
+
+                var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
+                return id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         #endregion
 
         #region Update UpdateReportSchedular
-        public Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report) => throw new NotImplementedException();
+        public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
+        {
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
+            try
+            {
+                string queryReportSchedular = @"UPDATE master.reportscheduler
+                                                SET 
+	                                            frequency_type=@frequency_type, 
+	                                            status=@status, 
+	                                            type=@type, 
+	                                            file_name=@file_name, 
+	                                            start_date=@start_date, 
+	                                            end_date=@end_date, 
+	                                            code=@code, 
+	                                            last_schedule_run_date=@last_schedule_run_date, 
+	                                            next_schedule_run_date=@next_schedule_run_date, 
+	                                            modified_at=@modified_at, 
+	                                            modified_by=@modified_by, 
+	                                            mail_subject=@mail_subject, 
+	                                            mail_description=@mail_description, 
+	                                            report_dispatch_time=@report_dispatch_time
+                                                WHERE id=@id) RETURNING id";
+
+                var parameterReportSchedular = new DynamicParameters();
+                parameterReportSchedular.Add("@id", report.Id);
+                parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
+                parameterReportSchedular.Add("@status", report.Status);
+                parameterReportSchedular.Add("@type", report.Type);
+                parameterReportSchedular.Add("@file_name", report.FileName);
+                parameterReportSchedular.Add("@start_date", report.OrganizationId);
+                parameterReportSchedular.Add("@end_date", report.EndDate);
+                parameterReportSchedular.Add("@code", report.Code);
+                parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
+                parameterReportSchedular.Add("@next_schedule_run_date", report.NextScheduleRunDate);
+                parameterReportSchedular.Add("@modified_at", report.ModifiedAt);
+                parameterReportSchedular.Add("@modified_by", report.ModifiedBy);
+                parameterReportSchedular.Add("@mail_subject", report.MailSubject);
+                parameterReportSchedular.Add("@mail_description", report.MailDescription);
+                parameterReportSchedular.Add("@report_dispatch_time", report.ReportDispatchTime);
+
+                var reportId = await _dataAccess.ExecuteScalarAsync<int>(queryReportSchedular, parameterReportSchedular);
+                report.Id = reportId;
+
+                int recepiet = await _dataAccess.QuerySingleAsync<int>("SELECT count(*) FROM master.scheduledreportrecipient where schedule_report_id=@schedule_report_id", new { schedule_report_id = report.Id });
+                if (recepiet > 0)
+                {
+                    await DeleteScheduleRecipient(report.Id);
+                }
+                foreach (var recipient in report.ScheduledReportRecipient)
+                {
+                    recipient.ScheduleReportId = report.Id;
+                    recipient.Id = await CreateScheduleRecipient(recipient);
+                }
+
+                int vehiclerefid = await _dataAccess.QuerySingleAsync<int>("SELECT count(*) FROM master.scheduledreportvehicleref where report_schedule_id=@report_schedule_id", new { report_schedule_id = report.Id });
+                if (vehiclerefid > 0)
+                {
+                    await Deleteschedulereportvehicleref(report.Id);
+                }
+                foreach (var vehicleref in report.ScheduledReportVehicleRef)
+                {
+                    vehicleref.ScheduleReportId = report.Id;
+                    vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
+                }
+
+                int driverrefid = await _dataAccess.QuerySingleAsync<int>("SELECT count(*) FROM master.scheduledreportdriverref where report_schedule_id=@report_schedule_id", new { report_schedule_id = report.Id });
+                if (driverrefid > 0)
+                {
+                    await Deletescheduledreportdriverref(report.Id);
+                }
+                foreach (var driverref in report.ScheduledReportDriverRef)
+                {
+                    if (driverref.DriverId == 0)//ALL driver list
+                    {
+                        IEnumerable<DriverDetail> driverList = await GetDriverDetails(report.OrganizationId);
+                        foreach (var item in driverList)
+                        {
+                            driverref.ScheduleReportId = report.Id;
+                            driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            int scheduledrid = await Createscheduledreportdriverref(driverref);
+                        }
+                    }
+                    else //Single driver
+                    {
+                        driverref.ScheduleReportId = report.Id;
+                        int scheduledrid = await Createscheduledreportdriverref(driverref);
+                    }
+
+                }
+
+                transactionScope.Commit();
+            }
+            catch (Exception)
+            {
+                transactionScope.Rollback();
+                throw;
+            }
+            finally
+            {
+                _dataAccess.Connection.Close();
+            }
+            return report;
+        }
         #endregion
 
         #region Get Report Scheduler
