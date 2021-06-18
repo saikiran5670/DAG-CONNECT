@@ -20,11 +20,11 @@ namespace net.atos.daf.ct2.vehicle.repository
                     bool result = await SetOptInStatus(vehicle.Opt_In, vehicle.ModifiedBy, vehicle.VehicleId);
                     if (result)
                     {
-                        connectedVehicles.VehicleConnectedList.Add(vehicle.VehicleId);
+                        connectedVehicles.VehicleConnectedList.Add(vehicle);
                     }
                     else
                     {
-                        connectedVehicles.VehicleConnectionfailedList.Add(vehicle.VehicleId);
+                        connectedVehicles.VehicleConnectionfailedList.Add(vehicle);
                     }
                 }
             }
