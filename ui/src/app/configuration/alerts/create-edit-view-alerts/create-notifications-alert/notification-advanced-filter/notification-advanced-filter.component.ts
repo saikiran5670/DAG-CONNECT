@@ -36,11 +36,15 @@ export class NotificationAdvancedFilterComponent implements OnInit {
         validityAlwaysCustom: ['A'],
         FormArrayItems : this._formBuilder.array([this.initPeriodItems()]),
       });
+
+      this.setAlertType(this.alert_type_selected);
   
       if(this.actionType == 'create'){
         for(let i = 0; i < 6; i++ ){
         this.weekDays().push(this.initPeriodItems());
+        this.onChangeDaySelection(true, i);
         }
+        this.onChangeDaySelection(true, 6);
       }
       else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
         for(let i = 0; i < 6; i++ ){
@@ -114,6 +118,19 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     }
     }
 
+    onChangeValidityType(value){
+      if(value == 'A'){
+        for(let i = 0; i < 7; i++ ){
+          this.onChangeDaySelection(true, i);
+        }
+      }
+      else{
+        for(let i = 0; i < 7; i++ ){
+          this.onChangeDaySelection(false, i);
+        }
+      }
+    }
+
     setAlertType(alertType: any){
       this.alert_type_selected = alertType;
       if(this.alert_type_selected === 'D' || this.alert_type_selected === 'U' || this.alert_type_selected === 'G'){
@@ -140,8 +157,8 @@ export class NotificationAdvancedFilterComponent implements OnInit {
       });
     }
   
-    onChangeDaySelection(event, periodIndex){
-      if(event.checked){
+    onChangeDaySelection(value, periodIndex){
+      if(value){
         this.weekDays().at(periodIndex).get("fulldayCustom").setValue('A');
         this.weekDaySelected = true;
       }

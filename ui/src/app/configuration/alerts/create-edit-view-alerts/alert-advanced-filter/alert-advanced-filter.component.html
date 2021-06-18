@@ -88,6 +88,12 @@
           </div>
         </div>
       </div>
+      <div *ngIf="selectedApplyOn =='C'" > 
+      <app-period-selection-filter  #periodComponent
+      [translationData] = 'translationData'
+      [selectedRowData] = 'selectedRowData'
+      [actionType]='actionType'></app-period-selection-filter>
+    </div>
     </mat-expansion-panel>
   </mat-card>
 

@@ -2,7 +2,7 @@
 
     <!-- summary tab -->
     <div fxLayout="row" class='areaWidth full-width padding-10 summaryPref' fxLayoutAlign="left center"
-        style='background: #BEE3F8 !important;'>
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForSummaryColumns() : null'
                 [checked]='selectionForSummaryColumns.hasValue() && isAllSelectedForSummaryColumns()'
@@ -66,7 +66,7 @@
 
     <!-- Charts tab -->
     <div fxLayout="row" class='areaWidth full-width padding-10 chartPref margin-top-20' fxLayoutAlign="left center"
-        style='background: #BEE3F8 !important;'>
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForChartsColumns() : null'
                 [checked]='selectionForChartsColumns.hasValue() && isAllSelectedForChartsColumns()'
@@ -220,7 +220,7 @@
 
     <!-- Calender tab -->
     <div fxLayout="row" class='areaWidth full-width padding-10 calenderPref margin-top-20' fxLayoutAlign="left center"
-        style='background: #BEE3F8 !important;'>
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' [checked]='true' [disabled]='!editFlag'>
                 <span class='headerFont'>{{ translationData.lblCalenderCriteria || 'Calender Criteria' }}</span>
@@ -253,7 +253,7 @@
 
     <!-- Details tab -->
     <div fxLayout="row" class='areaWidth full-width padding-10 detailsPref margin-top-20' fxLayoutAlign="left center"
-        style='background: #BEE3F8 !important;'>
+        style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
             <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForDetailsColumns() : null'
                 [checked]='selectionForDetailsColumns.hasValue() && isAllSelectedForDetailsColumns()'
