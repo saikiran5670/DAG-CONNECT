@@ -143,7 +143,9 @@ checkboxChecked: boolean = false;
   }
   
   onDeleteCustomPeriod(periodIndex, customIndex){
-     this.customPeriods(periodIndex).removeAt(customIndex);
+    if(this.customPeriods(periodIndex).length > 0){ 
+      this.customPeriods(periodIndex).removeAt(customIndex);
+    }
   }
 
   addCustomPeriod(periodIndex, totalTime? ,isButtonClicked?){
@@ -179,6 +181,16 @@ checkboxChecked: boolean = false;
   }
 
 setDefaultValues(){
+  for(let i = 0; i < 7; i++){
+    if(this.customPeriods(i).length > 0){
+      for(let j = 0; j < this.customPeriods(i).length; j++){
+        this.onDeleteCustomPeriod(i, j);
+      }
+    }
+    this.onChangeDaySelection(false, i);
+    this.weekDays().at(i).get("daySelection").setValue(false);
+  }
+  
   if(this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0){
   this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
     // this.addMultipleItems(false,element);
@@ -194,7 +206,7 @@ setDefaultValues(){
 }
 
 setDayAndCustomDetails(index,element){
-  this.weekDays().at(index).get("daySelection").setValue('true');
+  this.weekDays().at(index).get("daySelection").setValue(true);
   this.weekDays().at(index).get("id").setValue(element.id);
   if(element.periodType == 'A'){
     this.weekDays().at(index).get("fulldayCustom").setValue('A');

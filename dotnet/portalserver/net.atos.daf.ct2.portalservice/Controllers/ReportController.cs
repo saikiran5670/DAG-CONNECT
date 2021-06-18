@@ -318,14 +318,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 var data = await _reportServiceClient.GetDriverActivityParametersAsync(request);
 
                 if (data.Code.ToString()=="NotFound")
-                {
-                    data.Message = ReportConstants.GET_DRIVER_TIME_FAILURE_MSG;                                
+                {                                                 
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
                 }
-               else if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
+               else 
                 {
-                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;                  
-                }
-                return Ok(data);
+                    data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
+                    return Ok(data);
+                }               
             }
             catch (Exception ex)
             {

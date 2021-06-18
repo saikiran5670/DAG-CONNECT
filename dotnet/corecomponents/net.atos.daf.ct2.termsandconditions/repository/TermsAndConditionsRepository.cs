@@ -223,7 +223,7 @@ namespace net.atos.daf.ct2.termsandconditions.repository
             List<string> ObjVersionList = new List<string>();
             foreach (dynamic record in result)
             {
-                ObjVersionList.Add(record.version_no);
+                ObjVersionList.Add(record.Version_no);
             }
 
             return ObjVersionList;

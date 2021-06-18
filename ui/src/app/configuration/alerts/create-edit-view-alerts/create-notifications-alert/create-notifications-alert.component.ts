@@ -141,6 +141,13 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
     }
 
+    onReset(){ 
+      this.setDefaultValues();
+      if(this.notificationAdvancedFilterComponent){
+        this.notificationAdvancedFilterComponent.setDefaultValues();
+      }
+    }
+
     setAlertType(alertType: any){
       this.notificationAdvancedFilterComponent.setAlertType(alertType);
     }

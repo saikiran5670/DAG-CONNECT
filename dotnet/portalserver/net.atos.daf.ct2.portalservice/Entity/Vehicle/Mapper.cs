@@ -189,5 +189,20 @@ namespace net.atos.daf.ct2.portalservice.Entity.Vehicle
             group.GroupType = "G";
             return group;
         }
+
+
+        public VehicleBusinessService.VehicleConnectRequest ToUpdateVehicleConnection(List<VehicleConnectionSettings> poiList)
+        {
+
+            var request = new VehicleBusinessService.VehicleConnectRequest();
+            request.Vehicles.AddRange(poiList.Select(x => new VehicleBusinessService.VehicleConnection()
+            {
+                ModifiedBy = x.ModifiedBy,
+                OptIn = x.Opt_In.ToString(),
+                VehicleId = x.VehicleId
+            }).ToList());
+            return request;
+
+        }
     }
 }

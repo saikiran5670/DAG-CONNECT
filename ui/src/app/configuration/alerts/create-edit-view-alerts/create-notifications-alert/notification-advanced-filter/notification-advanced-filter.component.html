@@ -44,7 +44,7 @@
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
               <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
                   <div *ngIf="actionType != 'view'" class="margin-bottom-sm">
-                      <mat-radio-group formControlName="validityAlwaysCustom">
+                      <mat-radio-group formControlName="validityAlwaysCustom" (change)="onChangeValidityType($event.value)">
                           <mat-radio-button style='margin-right: 20px;' value="A">
                               {{ translationData.lblAlways || 'Always' }}
                           </mat-radio-button>
@@ -77,7 +77,7 @@
                           <mat-card class='mat-elevation-z' style="border: 1px solid #000; margin-bottom: 15px;">
                             <div fxLayout="row" class="full-width margin-bottom-sm">
                               <div class="areaWidth min-width-10-per" style='margin-right: 20px;' fxLayout="column" fxLayoutAlign="left">
-                                <mat-checkbox [disabled]="notificationAdvancedFilterForm.controls.validityAlwaysCustom.value == 'A'" [checked]="notificationAdvancedFilterForm.controls.validityAlwaysCustom.value == 'A'" (change)="onChangeDaySelection($event, periodIndex)" formControlName="daySelection">
+                                <mat-checkbox [disabled]="notificationAdvancedFilterForm.controls.validityAlwaysCustom.value == 'A'" [checked]="notificationAdvancedFilterForm.controls.validityAlwaysCustom.value == 'A'" (change)="onChangeDaySelection($event.checked, periodIndex)" formControlName="daySelection">
                                   {{ days[periodIndex] }}
                                 </mat-checkbox>
                               </div>

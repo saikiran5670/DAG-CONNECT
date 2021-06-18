@@ -33,6 +33,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   selectionForCalenderColumns = new SelectionModel(true, []);
   timeDisplay: any = '00:00';
   fleetUtilForm: FormGroup;
+  chartIndex: any = {};
   lineBarDD: any = [{
     status: 'A',
     id: 1,
@@ -93,7 +94,41 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     }else{
       this.reportId = 5; //- hard coded for fleet utilisation report
     }
+    this.translationUpdate();
     this.loadFleetUtilisationPreferences();
+  }
+
+  translationUpdate(){
+    this.translationData.da_report_details_stoptime = 'Stop Time';
+    this.translationData.da_report_details_vin = 'VIN';
+    this.translationData.da_report_calendarview_drivingtime = 'Driving Time';
+    this.translationData.da_report_details_vehiclename = 'Vehicle Name';
+    this.translationData.da_report_details_averagedistanceperday = 'Average distance per day';
+    this.translationData.da_report_general_averagedistanceperday = 'Average distance per day';
+    this.translationData.da_report_details_numberoftrips = 'Number of Trips';
+    this.translationData.da_report_calendarview_totaltrips = 'Total trips';
+    this.translationData.da_report_charts_mileagebasedutilization = 'Mileage Based Utilisation';
+    this.translationData.da_report_general_idleduration = 'Idle Duration';
+    this.translationData.da_report_general_totaldistance = 'Total Distance';
+    this.translationData.da_report_calendarview_idleduration = 'Idle Duration';
+    this.translationData.da_report_details_registrationnumber = 'Reg. Plate Number';
+    this.translationData.da_report_details_odometer = 'Odometer';
+    this.translationData.da_report_details_averagespeed = 'Average Speed';
+    this.translationData.da_report_charts_distanceperday = 'Distance Per Day';
+    this.translationData.da_report_details_drivingtime = 'Driving Time';
+    this.translationData.da_report_calendarview_timebasedutilization = 'Time Based Utilisation';
+    this.translationData.da_report_general_numberofvehicles = 'Number of Vehicles';
+    this.translationData.da_report_details_averageweightpertrip = 'Average Weight Per Trip';
+    this.translationData.da_report_charts_numberofvehiclesperday = 'Active Vehicles Per Day';
+    this.translationData.da_report_charts_timebasedutilization = 'Time Based Utilisation';
+    this.translationData.da_report_calendarview_mileagebasedutilization = 'Mileage Based Utilisation';
+    this.translationData.da_report_details_triptime = 'Trip Time';
+    this.translationData.da_report_calendarview_activevehicles = 'Active Vehicles';
+    this.translationData.da_report_details_idleduration = 'Idle Duration';
+    this.translationData.da_report_calendarview_distance = 'Distance';
+    this.translationData.da_report_details_distance = 'Distance';
+    this.translationData.da_report_calendarview_averageweight = 'Average Weight';
+    this.translationData.da_report_general_numberoftrips = 'Number of Trips';
   }
 
   loadFleetUtilisationPreferences(){
@@ -149,7 +184,27 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         }else{
           _data.translatedName = this.getName(element.name, 14);   
         }
-        this.chartsColumnData.push(_data);
+        let index: any;
+        switch(element.key){
+          case 'da_report_charts_distanceperday':{
+            index = this.chartIndex.distanceIndex = 0;
+            break;
+          }
+          case 'da_report_charts_numberofvehiclesperday':{
+            index = this.chartIndex.vehicleIndex = 1;
+            break;
+          }
+          case 'da_report_charts_mileagebasedutilization':{
+            index = this.chartIndex.mileageIndex = 2;
+            break;
+          }
+          case 'da_report_charts_timebasedutilization':{
+            index = this.chartIndex.timeIndex = 3;
+            break;
+          }
+        }
+        //this.chartsColumnData.push(_data);
+        this.chartsColumnData[index] = _data;
       }else if(element.key.includes('da_report_calendarview')){
         _data = element;
         if(this.translationData[element.key]){
