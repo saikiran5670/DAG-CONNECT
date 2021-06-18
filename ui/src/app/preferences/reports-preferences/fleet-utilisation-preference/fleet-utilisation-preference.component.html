@@ -85,7 +85,7 @@
             <span class='headerFont'>{{ translationData.lblThresholdType || 'Threshold Type' }}</span>
         </div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div *ngIf='chartIndex && chartIndex.distanceIndex == 0' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[0]) : null;'
@@ -108,7 +108,7 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
+    <div *ngIf='chartIndex && chartIndex.vehicleIndex == 1' fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[1]) : null;'
@@ -131,7 +131,7 @@
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per"></div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
+    <div *ngIf='chartIndex && chartIndex.mileageIndex == 2' fxLayout="row" class='areaWidth full-width padding-10 chartPref' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[2]) : null;'
@@ -171,7 +171,7 @@
             </mat-form-field>
         </div>
     </div>
-    <div fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
+    <div *ngIf='chartIndex && chartIndex.timeIndex == 3' fxLayout="row" class='areaWidth full-width padding-10 chartPref oddColumnColor' fxLayoutAlign="left center">
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per">
             <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
                 (change)='$event ? selectionForChartsColumns.toggle(chartsColumnData[3]) : null;'

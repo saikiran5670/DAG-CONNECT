@@ -96,6 +96,12 @@ export class CreateEditPackageDetailsComponent implements OnInit {
           this.dataSource = new MatTableDataSource(data);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
+          this.dataSource.sortData = (data: String[], sort: MatSort) => {
+            const isAsc = sort.direction === 'asc';
+            return data.sort((a: any, b: any) => {
+              return this.compare(a[sort.active].toUpperCase(), b[sort.active].toUpperCase(), isAsc);
+            });
+           }
           if(!this.createStatus || this.duplicateMsg || this.viewFlag){
             this.onReset();
           }
@@ -104,6 +110,10 @@ export class CreateEditPackageDetailsComponent implements OnInit {
       this.featuresData 
   }, (error) => { });
 }
+
+compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
 
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
