@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.vehicle.repository
 {
     public partial class VehicleRepository : IVehicleRepository
     {
-        public async Task<VehicleConnectedResult> VehicleConnectAll(List<VehicleConnect> vehicleConnects)
+        public async Task<VehicleConnectedResult> UpdateAllVehicleConnection(List<VehicleConnect> vehicleConnects)
         {
             var connectedVehicles = new VehicleConnectedResult();
             try

@@ -1048,7 +1048,7 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public override async Task<VehicleConnectResponse> VehicleConnectAll(VehicleConnectRequest request, ServerCallContext context)
+        public override async Task<VehicleConnectResponse> UpdateAllVehicleConnection(VehicleConnectRequest request, ServerCallContext context)
         {
             try
             {
@@ -1056,12 +1056,12 @@ namespace net.atos.daf.ct2.vehicleservice.Services
                 vehicleConnect.AddRange(request.Vehicles.Select(x => new VehicleConnect()
                 {
                     VehicleId = x.VehicleId,
-                    Opt_In = 'I',
+                    Opt_In = Convert.ToChar(x.OptIn),
                     ModifiedBy = x.ModifiedBy
                 }).ToList());
 
                 var response = new VehicleConnectResponse();
-                var result = await _vehicleManager.VehicleConnectAll(vehicleConnect);
+                var result = await _vehicleManager.UpdateAllVehicleConnection(vehicleConnect);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Vehicle Connect Status", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request)).Result;
                 response = _mapper.ToVehichleConnectResponse(result);
                 response.Message = "Vehicle Opt In Status updated.";

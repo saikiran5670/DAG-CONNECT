@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -192,6 +193,26 @@ namespace net.atos.daf.ct2.vehicle.test
             var results = await _vehiclemanager.GetVehicleGroupbyAccountId(accountId, orgId);
             Assert.IsNotNull(results);
             Assert.IsTrue(results != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for update vehicle")]
+        [TestMethod]
+        public async void UpdateVehicleConnection()
+        {
+
+
+            var ObjFilter = new List<VehicleConnect>() {
+            new VehicleConnect(){ VehicleId =10,Opt_In='I',ModifiedBy=1 },
+            new VehicleConnect(){ VehicleId =253,Opt_In='I',ModifiedBy=1},
+            };
+
+            var resultvehicleList = await _vehicleRepository.UpdateAllVehicleConnection(ObjFilter);
+
+
+            //  Assert.IsNotNull(resultvehicleList.VehicleConnectedList.Count > 0);
+            Assert.IsTrue(resultvehicleList.VehicleConnectedList.Count > 0);
+
         }
 
         #region Vehicle Mileage
@@ -422,5 +443,10 @@ namespace net.atos.daf.ct2.vehicle.test
         //   //  Assert.IsTrue(resultUpdatevehicle.ID > 0);
 
         // }
+
+
+
+
+
     }
 }

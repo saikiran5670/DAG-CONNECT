@@ -35,7 +35,7 @@ service VehicleService {
   rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
 
-  rpc VehicleConnectAll(VehicleConnectRequest)returns(VehicleConnectResponse);
+  rpc UpdateAllVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
 }
 
 message VehiclesBySubscriptionDetailsResponse{
