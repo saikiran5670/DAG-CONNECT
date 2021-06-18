@@ -33,6 +33,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   selectionForCalenderColumns = new SelectionModel(true, []);
   timeDisplay: any = '00:00';
   fleetUtilForm: FormGroup;
+  chartIndex: any = {};
   lineBarDD: any = [{
     status: 'A',
     id: 1,
@@ -183,7 +184,27 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         }else{
           _data.translatedName = this.getName(element.name, 14);   
         }
-        this.chartsColumnData.push(_data);
+        let index: any;
+        switch(element.key){
+          case 'da_report_charts_distanceperday':{
+            index = this.chartIndex.distanceIndex = 0;
+            break;
+          }
+          case 'da_report_charts_numberofvehiclesperday':{
+            index = this.chartIndex.vehicleIndex = 1;
+            break;
+          }
+          case 'da_report_charts_mileagebasedutilization':{
+            index = this.chartIndex.mileageIndex = 2;
+            break;
+          }
+          case 'da_report_charts_timebasedutilization':{
+            index = this.chartIndex.timeIndex = 3;
+            break;
+          }
+        }
+        //this.chartsColumnData.push(_data);
+        this.chartsColumnData[index] = _data;
       }else if(element.key.includes('da_report_calendarview')){
         _data = element;
         if(this.translationData[element.key]){
