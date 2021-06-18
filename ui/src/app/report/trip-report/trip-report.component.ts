@@ -411,6 +411,7 @@ export class TripReportComponent implements OnInit {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.updateDataSource(this.tripData);
     this.resetTripFormControlValue();
+    this.filterDateData(); // extra addded as per discuss with Atul
     this.tableInfoObj = {};
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
@@ -576,6 +577,8 @@ export class TripReportComponent implements OnInit {
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
@@ -587,6 +590,8 @@ export class TripReportComponent implements OnInit {
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   getTodayDate(){
@@ -675,16 +680,22 @@ export class TripReportComponent implements OnInit {
         break;
       }
     }
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   setStartEndDateTime(date: any, timeObj: any, type: any){
@@ -708,10 +719,14 @@ export class TripReportComponent implements OnInit {
   filterDateData(){
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
-    let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
-    let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
+    /* --- comment code as per discus with Atul --- */
+    // let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+    // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
+    // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
+    /* --- comment code as per discus with Atul --- */
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     //console.log(currentStartTime + "<->" + currentEndTime);
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
