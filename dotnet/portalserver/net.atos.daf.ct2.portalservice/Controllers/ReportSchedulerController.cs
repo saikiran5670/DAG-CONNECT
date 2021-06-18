@@ -63,7 +63,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Create Schedular Report
         [HttpPost]
-        [Route("Create")]
+        [Route("create")]
         public async Task<IActionResult> CreateReportScheduler(PortalAlertEntity.ReportScheduler request)
         {
             try

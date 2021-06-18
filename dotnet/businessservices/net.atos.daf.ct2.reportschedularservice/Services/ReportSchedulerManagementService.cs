@@ -108,13 +108,13 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 ReportScheduler reportscheduler = await _reportSchedulerManager.CreateReportSchedular(_mapper.ToReportSchedulerEntity(request));
                 if (reportscheduler.Id > 0)
                 {
-                    response.Message = "Report Parameter Created";
+                    response.Message = "Report Scheduler Created";
                     response.Code = ResponseCode.Success;
                     response.ReportSchedulerId = reportscheduler.Id;
                 }
                 else
                 {
-                    response.Message = "Report Parameter Creation is fail";
+                    response.Message = "Report Scheduler Creation is fail";
                     response.Code = ResponseCode.Failed;
                 }
                 _logger.Info("Create method in report scheduler called.");

@@ -322,48 +322,9 @@
             </div>
         </div>
     </mat-card>
-    <div *ngIf = "actionType != 'view'" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
-            <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
-        </div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
-    </div>
 
-    <div *ngIf="openAdvancedFilter" class="full-width" >
-        <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
-          <app-notification-advanced-filter 
-          [translationData]='translationData'
-          [alert_category_selected] = 'alert_category_selected'
-          [alert_type_selected] = 'alert_type_selected'
-          [selectedRowData] = 'selectedRowData'
-          [actionType] = 'actionType'
-          >
-        </app-notification-advanced-filter>
-      </mat-card>
-  </div>
-  
-
-    <!-- <div *ngIf="openAdvancedFilter && actionType != 'view'" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
-        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
-            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
-                <mat-panel-title>
-                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
-                </mat-panel-title>
-                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
-                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
-                </div>   
-            </mat-card>
-        </div>
-    </div> -->
-    </div></div></div>
-<!-- </div>
-</div>
-</div> -->
-</form>
-
-
-<div fxLayout="row" *ngIf="actionType == 'view'" fxLayoutAlign="space-between"
+    <!-- For view  -->
+    <div fxLayout="row" *ngIf="actionType == 'view'" fxLayoutAlign="space-between"
     class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
     <!-- for web service -->
     <div class="areaWidth full-width" fxLayout="column" fxLayoutAlign="left">
@@ -435,3 +396,45 @@
     </div>
 
 </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+            <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
+        </div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+        <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div>
+    </div>
+
+    <div *ngIf="openAdvancedFilter" class="full-width" >
+        <mat-card class='mat-elevation-z' style="background:#c3f1f7;">
+          <app-notification-advanced-filter 
+          [translationData]='translationData'
+          [alert_category_selected] = 'alert_category_selected'
+          [alert_type_selected] = 'alert_type_selected'
+          [selectedRowData] = 'selectedRowData'
+          [actionType] = 'actionType'
+          >
+        </app-notification-advanced-filter>
+      </mat-card>
+  </div>
+  
+
+    <!-- <div *ngIf="openAdvancedFilter && actionType != 'view'" style="background:#c3f1f7;" fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
+            <mat-card  class='mat-elevation-z' style="background:#c3f1f7;">
+                <mat-panel-title>
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAdvancedFilterDetails || 'Advanced Filter Details' }}</span>
+                </mat-panel-title>
+                <div fxLayout="row" fxLayoutAlign="space-around" fxLayoutGap="25px">
+                    <p style="color: darkgray; font-size: 2em">This feature is part of sprint5</p>
+                </div>   
+            </mat-card>
+        </div>
+    </div> -->
+    </div></div></div>
+<!-- </div>
+</div>
+</div> -->
+</form>
+
+
