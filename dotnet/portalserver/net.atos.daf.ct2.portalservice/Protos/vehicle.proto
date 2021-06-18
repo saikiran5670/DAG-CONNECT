@@ -26,16 +26,16 @@ service VehicleService {
   rpc Terminate (VehicleTerminateRequest) returns (VehicleGroupDeleteResponce);
   rpc SetOptInStatus (VehicleOptInRequest) returns (VehicleGroupDeleteResponce);
   rpc GetVehicle (VehicleIdRequest) returns (VehicleDetailsResponce);
+  rpc GetVehicleBySubscriptionId (subscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
   rpc GetVehicleGroupWithVehCount (VehicleGroupLandingRequest) returns (VehicleGroupLandingResponse);
 
   rpc GetDynamicAllVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
-  rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetDynamicOwnedVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
+  rpc GetDynamicVisibleVehicle (DynamicGroupFilterRequest) returns (VehicleListResponce);
   rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
-  rpc GetVehicleBySubscriptionId (subscriptionIdRequest) returns (VehiclesBySubscriptionDetailsResponse);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
 
-  rpc VehicleConnectAll(VehicleConnectRequest)returns(VehicleConnectResponse);
+  rpc UpdateAllVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -110,6 +110,7 @@ message VehicleResponce {
   Responcecode code=1;
   string message = 2;
   VehicleRequest vehicle=3;
+  bool Exists=4;
 }
 
 message VehicleCreateResponce {
@@ -308,7 +309,6 @@ message VehicleDetailsResponce {
   VehicleDetails vehicle=3;
 }
 
-
 message VehicleGroupLandingRequest{
   int32 Id=1;
   int32 OrganizationId = 2;
@@ -369,8 +369,8 @@ message VehicleConnectRequest{
 }
 
 message VehicleConnectResponse {
-
   Responcecode Code = 1;
   string Message = 2;
-  VehicleConnectRequest Vehicle = 3;
+  repeated VehicleConnectAllRequest VehicleConnectedList = 3;
+  repeated VehicleConnectAllRequest VehicleConnectionfailedList = 4;
 }
