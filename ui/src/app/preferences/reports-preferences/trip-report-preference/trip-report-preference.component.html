@@ -1,6 +1,6 @@
 <!-- trip report tab -->
 <div fxLayout="row" class='areaWidth full-width padding-10 tripReportPref' fxLayoutAlign="left center"
-    style='background: #BEE3F8 !important;'>
+    style='background: #BEE3F8 !important; border-radius: 5px 5px 0px 0px;'>
     <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
         <mat-checkbox class='custom-checkbox' (change)='$event ? masterToggleForColumns() : null'
             [checked]='selectionForTripColumns.hasValue() && isAllSelectedForColumns()'
