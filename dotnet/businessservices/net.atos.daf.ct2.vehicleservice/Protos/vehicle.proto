@@ -35,7 +35,7 @@ service VehicleService {
   rpc GetRelationshipVehicles (OrgvehicleIdRequest) returns (VehicleListResponce);
   rpc GetVehicleGroupbyAccountId (VehicleGroupListRequest) returns (VehicleGroupResponse);
 
-  rpc VehicleConnectAll(VehicleConnectRequest)returns(VehicleConnectResponse);
+  rpc UpdateVehicleConnection(VehicleConnectRequest)returns(VehicleConnectResponse);
 }
 
 message VehiclesBySubscriptionDetailsResponse{
@@ -68,10 +68,12 @@ enum Type{
 }
 
 enum Responcecode{
-  Success = 0;
-  Failed = 1;
-  Conflict = 2;
-  NotFound = 3;
+  NA=0; 
+  Success = 200;
+  Failed = 400;
+  Conflict = 409;
+  NotFound = 404;
+  InternalServerError = 500; 
 }
 
 enum ObjectType{
@@ -357,7 +359,7 @@ message VehicleGroupListRequest {
   int32 OrganizationId = 2;
 }
 
-message VehicleConnectAllRequest {
+message VehicleConnection {
   int32 VehicleId = 1;
   string Opt_In = 2;
   int32 ModifiedBy = 3;
@@ -365,12 +367,12 @@ message VehicleConnectAllRequest {
 }
 
 message VehicleConnectRequest{
-    repeated VehicleConnectAllRequest Vehicles = 1;
+    repeated VehicleConnection Vehicles = 1;
 }
 
 message VehicleConnectResponse {
   Responcecode Code = 1;
   string Message = 2;
-  repeated VehicleConnectAllRequest VehicleConnectedList = 3;
-  repeated VehicleConnectAllRequest VehicleConnectionfailedList = 4;
+  repeated VehicleConnection VehicleConnectedList = 3;
+  repeated VehicleConnection VehicleConnectionfailedList = 4;
 }

@@ -17,7 +17,6 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
-import { NotificationAdvancedFilterComponent } from './create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
 import { AlertAdvancedFilterComponent } from './alert-advanced-filter/alert-advanced-filter.component';
 
 declare var H: any;
@@ -114,9 +113,6 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   @ViewChild(AlertAdvancedFilterComponent)
   AlertAdvancedComponent: AlertAdvancedFilterComponent;
-
-  @ViewChild(NotificationAdvancedFilterComponent)
-  notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent
 
   typesOfLevel: any= [
                       {
@@ -1261,6 +1257,12 @@ PoiCheckboxClicked(event: any, row: any) {
     // this.selectPOITableRows(this.selectedRowData);
     // this.selectGeofenceTableRows(this.selectedRowData);
     this.setDefaultValue();
+    if(this.alert_type_selected == 'S'){ //hours of service
+      this.periodSelectionComponent.setDefaultValues();
+    }
+    if(this.panelOpenState){
+      this.notificationComponent.onReset();
+    }
   }
 
   onCancel(){

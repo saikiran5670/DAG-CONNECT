@@ -169,8 +169,9 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     }
     
     onDeleteCustomPeriod(periodIndex, customIndex){
-      if(this.customPeriods(periodIndex).length > 0)
+      if(this.customPeriods(periodIndex).length > 0){
          this.customPeriods(periodIndex).removeAt(customIndex);
+      }
     }
   
     addCustomPeriod(periodIndex, totalTime? ,isButtonClicked?){
@@ -206,6 +207,15 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     }
   
   setDefaultValues(){
+    for(let i = 0; i < 7; i++){
+      if(this.customPeriods(i).length > 0){
+        for(let j = 0; j < this.customPeriods(i).length; j++){
+          this.onDeleteCustomPeriod(i, j);
+        }
+      }
+      this.onChangeDaySelection(false, i);
+      this.weekDays().at(i).get("daySelection").setValue(false);
+    }
     this.notificationAdvancedFilterForm.get('notificationFrequency').setValue(this.selectedRowData.notifications[0].frequencyType)
     this.notificationAdvancedFilterForm.get('validityAlwaysCustom').setValue(this.selectedRowData.notifications[0].validityType)
     if(this.selectedRowData.notifications[0].alertTimingDetail.length > 0){
@@ -223,7 +233,7 @@ export class NotificationAdvancedFilterComponent implements OnInit {
   }
   
   setDayAndCustomDetails(index,element){
-    this.weekDays().at(index).get("daySelection").setValue('true');
+    this.weekDays().at(index).get("daySelection").setValue(true);
     this.weekDays().at(index).get("id").setValue(element.id);
     if(element.periodType == 'A'){
       this.weekDays().at(index).get("fulldayCustom").setValue('A');

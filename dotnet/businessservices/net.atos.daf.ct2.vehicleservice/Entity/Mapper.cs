@@ -294,7 +294,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
         {
             var vehicleConnectResponse = new VehicleConnectResponse();
             vehicleConnectResponse.VehicleConnectedList.AddRange(vehicleConnectedResult.VehicleConnectedList
-                                     .Select(x => new VehicleConnectAllRequest()
+                                     .Select(x => new VehicleConnection()
                                      {
                                          OptIn = x.Opt_In.ToString(),
                                          VehicleId = x.VehicleId,
@@ -302,7 +302,7 @@ namespace net.atos.daf.ct2.vehicleservice.Entity
 
                                      }).ToList());
             vehicleConnectResponse.VehicleConnectionfailedList.AddRange(vehicleConnectedResult.VehicleConnectionfailedList
-                                     .Select(x => new VehicleConnectAllRequest()
+                                     .Select(x => new VehicleConnection()
                                      {
                                          OptIn = x.Opt_In.ToString(),
                                          VehicleId = x.VehicleId,
