@@ -152,7 +152,7 @@ export class NotificationAdvancedFilterComponent implements OnInit {
     }
     
     onDeleteCustomPeriod(periodIndex, customIndex){
-      if(this.customPeriods(periodIndex).length > 1)
+      if(this.customPeriods(periodIndex).length > 0)
          this.customPeriods(periodIndex).removeAt(customIndex);
     }
   
