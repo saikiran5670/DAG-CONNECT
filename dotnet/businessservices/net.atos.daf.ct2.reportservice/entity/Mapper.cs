@@ -41,6 +41,8 @@ namespace net.atos.daf.ct2.reportservice.entity
             obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
             obj.CreatedAt = objUserPreferenceCreateRequest.CreatedAt;
             obj.ModifiedAt = objUserPreferenceCreateRequest.ModifiedAt;
+            obj.ThresholdType = objUserPreferenceCreateRequest.ThresholdType;
+            obj.ThresholdValue = objUserPreferenceCreateRequest.ThresholdValue;
 
             for (int i = 0; i < objUserPreferenceCreateRequest.AtributesShowNoShow.Count; i++)
             {

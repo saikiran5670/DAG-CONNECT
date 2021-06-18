@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@organization_id", OrganizationId);
                 #region Query Select User Preferences
                 var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,
-	                                 d.key as Key,case when rp.state is null then 'I' else rp.state end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType
+	                                 d.key as Key,case when rp.state is null then 'I' else rp.state end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType, rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue
                               FROM  master.reportattribute rd     
                                     INNER JOIN master.dataattribute d  	 ON rd.report_id = @report_id and d.id =rd.data_attribute_id 
                                     LEFT JOIN master.reportpreference rp ON rp.account_id = @account_id and rp.organization_id = @organization_id 
@@ -110,8 +110,8 @@ namespace net.atos.daf.ct2.reports.repository
         {
             _dataAccess.Connection.Open();
             string queryInsert = @"INSERT INTO master.reportpreference
-                                    (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at)
-                             VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at)";
+                                    (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value)
+                             VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at,@threshold_type,@threshold_value)";
 
             string queryDelete = @"DELETE FROM master.reportpreference
                                   WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
@@ -123,6 +123,8 @@ namespace net.atos.daf.ct2.reports.repository
             userPreference.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@chart_type", objUserPreferenceRequest.ChartType);
+            userPreference.Add("@threshold_type", objUserPreferenceRequest.ThresholdType);
+            userPreference.Add("@threshold_value", objUserPreferenceRequest.ThresholdValue);
 
             using (var transactionScope = _dataAccess.Connection.BeginTransaction())
             {

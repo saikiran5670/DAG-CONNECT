@@ -62,6 +62,8 @@ message UserPreferenceDataColumn{
     string Key =6;
     string State=7;
     string ChartType = 8;
+    string ThresholdType = 9;
+    string ThresholdValue = 10;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -72,13 +74,15 @@ message UserPreferenceDataColumnResponse{
 
 message UserPreferenceCreateRequest{
  repeated Atribute AtributesShowNoShow =1;
-   int32 AccountId =2;
+  int32 AccountId =2;
   int32 ReportId =3;
   int32 OrganizationId =4;
   string Type =5;
   int64 CreatedAt =6;
   int64 ModifiedAt =7;
   string CharType = 8;
+  string ThresholdType = 9;
+  string ThresholdValue = 10;
 }
 
 message Atribute{
