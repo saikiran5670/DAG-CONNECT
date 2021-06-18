@@ -20,6 +20,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { Options } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
 
 declare var H: any;
 
@@ -68,13 +69,17 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
   selectedApplyOn: string;
+  advancedAlertPayload: any = [];
   options: Options = {
     floor: 0,
     ceil: 10000
   };
-
+  @ViewChild(PeriodSelectionFilterComponent)
+  periodSelectionComponent: PeriodSelectionFilterComponent;
+  
   @ViewChild("map")
   private mapElement: ElementRef;
+  openAdvancedFilter: boolean;
   constructor(private _formBuilder: FormBuilder,private poiService: POIService,
               private domSanitizer: DomSanitizer,
               private landmarkGroupService: LandmarkGroupService,
@@ -104,6 +109,13 @@ export class AlertAdvancedFilterComponent implements OnInit {
       toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
+    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.setDefaultAdvanceAlert();
+    }
+  }
+
+  setDefaultAdvanceAlert(){
+
   }
 
   onChangeDistance(event: any){
@@ -786,5 +798,40 @@ export class AlertAdvancedFilterComponent implements OnInit {
      this.poiWidthKm = this.alertAdvancedFilterForm.controls.widthInput.value;
      this.poiWidth = this.poiWidthKm * 1000;
    }
+
+   getAdvancedFilterAlertPayload(){
+//Fuel Increase & Fuel Loss
+    if((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T'))
+    {
+      if(this.actionType == 'create' || this.actionType == 'duplicate'){
+      let obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": 0,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail":[]
+      }
+      this.advancedAlertPayload.push(obj);
+    }
+    else if(this.actionType == 'edit'){
+      let obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": 0,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail":[]
+      }
+      this.advancedAlertPayload.push(obj);
+    }
+    }
+
+   return this.advancedAlertPayload;
+  }
 
 }
