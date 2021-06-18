@@ -10,9 +10,9 @@ namespace net.atos.daf.ct2.vehicle.repository
 {
     public partial class VehicleRepository : IVehicleRepository
     {
-        public async Task<VehicleConnectedResult> UpdateAllVehicleConnection(List<VehicleConnect> vehicleConnects)
+        public async Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects)
         {
-            var connectedVehicles = new VehicleConnectedResult();
+            var connectedVehicles = new VehicleConnectedResult() { VehicleConnectedList = new List<VehicleConnect>(), VehicleConnectionfailedList = new List<VehicleConnect>() };
             try
             {
                 foreach (var vehicle in vehicleConnects)

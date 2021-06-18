@@ -981,8 +981,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         [HttpPut]
-        [Route("vehicleconnectall")]
-        public async Task<IActionResult> UpdateAllVehicleConnection(VehicleBusinessService.VehicleConnectRequest request)
+        [Route("updatevehicleconnection")]
+        public async Task<IActionResult> UpdateVehicleConnection(List<VehicleConnectionSettings> request)
 
         {
 
@@ -991,12 +991,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("Connect_All method in vehicle API called.");
 
                 // Validation
-                //if (request.VehicleId <= 0)
-                //{
-                //    return StatusCode(400, "The VehicleId is required.");
-                //}
+                if (request.Count <= 0)
+                {
+                    return StatusCode(400, "The vehicle settings data is required.");
+                }
+                var vehicleSettings = _mapper.ToUpdateVehicleConnection(request);
 
-                VehicleBusinessService.VehicleConnectResponse vehicleConnectResponse = _vehicleClient.VehicleConnectAll(request);
+                VehicleBusinessService.VehicleConnectResponse vehicleConnectResponse = _vehicleClient.UpdateVehicleConnection(vehicleSettings);
                 if (vehicleConnectResponse != null && vehicleConnectResponse.Code == VehicleBusinessService.Responcecode.Failed
                      && vehicleConnectResponse.Message == "There is an error updating vehicle opt in status.")
                 {
@@ -1008,7 +1009,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 "Vehicle service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                 "Connect_All method in Vehicle controller", 0, 0, JsonConvert.SerializeObject(request), _userDetails);
 
-                    return Ok(vehicleConnectResponse.Vehicle);
+                    return Ok(vehicleConnectResponse);
                 }
                 else
                 {

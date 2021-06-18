@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.vehicle.test
             new VehicleConnect(){ VehicleId =253,Opt_In='I',ModifiedBy=1},
             };
 
-            var resultvehicleList = await _vehicleRepository.UpdateAllVehicleConnection(ObjFilter);
+            var resultvehicleList = await _vehicleRepository.UpdateVehicleConnection(ObjFilter);
 
 
             //  Assert.IsNotNull(resultvehicleList.VehicleConnectedList.Count > 0);

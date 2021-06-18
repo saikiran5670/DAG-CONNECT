@@ -8,6 +8,6 @@ namespace net.atos.daf.ct2.vehicle.repository
     {
         Task<IEnumerable<Vehicle>> GetVehicleSetting(VehicleSettings vehicleSettings);
 
-        Task<VehicleConnectedResult> UpdateAllVehicleConnection(List<VehicleConnect> vehicleConnects);
+        Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects);
     }
 }

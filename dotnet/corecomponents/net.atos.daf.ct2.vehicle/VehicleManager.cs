@@ -267,11 +267,11 @@ namespace net.atos.daf.ct2.vehicle
             }
         }
 
-        public async Task<VehicleConnectedResult> UpdateAllVehicleConnection(List<VehicleConnect> vehicleConnects)
+        public async Task<VehicleConnectedResult> UpdateVehicleConnection(List<VehicleConnect> vehicleConnects)
         {
             try
             {
-                return await _vehicleRepository.UpdateAllVehicleConnection(vehicleConnects);
+                return await _vehicleRepository.UpdateVehicleConnection(vehicleConnects);
             }
             catch (Exception)
             {
