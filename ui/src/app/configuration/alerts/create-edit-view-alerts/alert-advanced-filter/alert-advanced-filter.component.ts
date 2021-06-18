@@ -860,22 +860,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
           });
         }
 
-    //   else if(this.actionType == 'edit'){
-    //   let obj = {
-    //     "alertUrgencyLevelId": 0,
-    //     "filterType": "N",
-    //     "thresholdValue": 0,
-    //     "unitType": "N",
-    //     "landmarkType": "P",
-    //     "refId": 0,
-    //     "positionType": 0,
-    //     "alertTimingDetail":[]
-    //   }
-    //   this.advancedAlertPayload.push(obj);
-    // }
-
        }
       }
+
+      // entering & existing zone & excessive avg idling
+  if(((this.alert_category_selected == 'L') && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')) ||
+  (this.alert_category_selected == 'F') && (this.alert_type_selected == 'I')){
+
+  }
+
        return this.advancedAlertPayload;
    
   }

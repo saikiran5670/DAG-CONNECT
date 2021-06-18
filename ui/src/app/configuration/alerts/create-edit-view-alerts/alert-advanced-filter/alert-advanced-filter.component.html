@@ -1,36 +1,9 @@
 <form [formGroup]="alertAdvancedFilterForm">
-  <!-- distance option -->
-  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A')" class='mat-elevation-z'>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
-      <mat-expansion-panel-header class="full-width">
-        <mat-panel-title>
-          <mat-checkbox (change)="onChangeDistance($event)" [checked]="isDistanceSelected">
-            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-              translationData.lblDistance || 'Distance' }}<span class='mandatoryColor'>*</span></span>
-          </mat-checkbox>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <div *ngIf="isDistanceSelected" fxLayout="row" class="full-width filter-direction">
-        <div fxLayout="column" class="areaWidth">
-          <mat-label>{{ translationData.lblDistanceLimit || 'Distance Limit' }}<span class='mandatoryColor'>*</span>
-            <mat-form-field appearance="outline">
-              <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="distance">
-            </mat-form-field>
-            <mat-label>m</mat-label>
-          </mat-label>
-        </div>
-        <div fxLayout="column" class="areaWidth">
-          <p style="color: darkgray;padding-top:4px;margin: 2px;line-height : 4px; padding-left:4px">
-            {{translationData.lblEnterathresholdwhenalertshouldbe || 'Enter a threshold when alert should be'}}</p>
-          <p style="color: darkgray; padding-top:4px; padding-left:4px">{{translationData.triggeredforthiscriteria ||
-            'triggered for this criteria'}}</p>
-        </div>
-      </div>
-    </mat-expansion-panel>
-  </mat-card> 
 
-  <!-- Select Period -->
-  <mat-card *ngIf="(alert_category_selected === 'L' && alert_type_selected === 'N')" class='mat-elevation-z'>
+   <!-- Select Period -->
+   <mat-card *ngIf="((alert_category_selected === 'L') && (alert_type_selected === 'N' || this.alert_type_selected == 'X'))
+   || ((alert_category_selected === 'F') && (alert_type_selected === 'I' || alert_type_selected === 'A'))" 
+  class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -96,6 +69,36 @@
     </div>
     </mat-expansion-panel>
   </mat-card>
+  
+  <!-- distance option -->
+  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A')" class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <mat-checkbox (change)="onChangeDistance($event)" [checked]="isDistanceSelected">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblDistance || 'Distance' }}<span class='mandatoryColor'>*</span></span>
+          </mat-checkbox>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngIf="isDistanceSelected" fxLayout="row" class="full-width filter-direction">
+        <div fxLayout="column" class="areaWidth">
+          <mat-label>{{ translationData.lblDistanceLimit || 'Distance Limit' }}<span class='mandatoryColor'>*</span>
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="{{ translationData.lbl00 || '00' }}" formControlName="distance">
+            </mat-form-field>
+            <mat-label>m</mat-label>
+          </mat-label>
+        </div>
+        <div fxLayout="column" class="areaWidth">
+          <p style="color: darkgray;padding-top:4px;margin: 2px;line-height : 4px; padding-left:4px">
+            {{translationData.lblEnterathresholdwhenalertshouldbe || 'Enter a threshold when alert should be'}}</p>
+          <p style="color: darkgray; padding-top:4px; padding-left:4px">{{translationData.triggeredforthiscriteria ||
+            'triggered for this criteria'}}</p>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-card> 
 
   <!-- No of occurences option -->
   <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
