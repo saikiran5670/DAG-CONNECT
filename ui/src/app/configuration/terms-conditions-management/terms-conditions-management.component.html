@@ -37,9 +37,6 @@
                                     <mat-error *ngIf="pdfEmptyMsg">
                                         {{ translationData.lblEmptyFile || 'Empty File' }}
                                     </mat-error>
-                                    <mat-error *ngIf="greaterVersionPresentMsg != ''">
-                                        {{ translationData.lblGreaterVersionPresent ||  greaterVersionPresentMsg }}
-                                    </mat-error>
                                 </div>
                                 <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
                                     <button style='color: #fff;' [disabled]="!uploadTermsConditionsFormGroup.valid || pdfEmptyMsg" [ngStyle]="{'margin-top': uploadTermsConditionsFormGroup.get('uploadFile').hasError('required') ? '9px' : '29px' }" mat-flat-button color="primary"
@@ -47,6 +44,11 @@
                                         <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblUploadFile || 'Upload File' }}
                                     </button>
                                 </div>
+                            </div>
+                            <div fxLayout="row" style='padding: 10px;' >
+                                <mat-error *ngIf="greaterVersionPresentMsg != ''">
+                                    {{ translationData.lblGreaterVersionPresent ||  greaterVersionPresentMsg }}
+                                </mat-error>
                             </div>
                         </div>
                     </div>

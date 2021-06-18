@@ -281,42 +281,45 @@ namespace net.atos.daf.ct2.reports.repository
         }
 
         #endregion
-        #region Eco Score Report -Update Profile
+
+        #region Eco Score Report - Update Profile
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto)
         {
             _dataAccess.Connection.Open();
             IDbTransaction txnScope = _dataAccess.Connection.BeginTransaction();
             try
             {
-
                 var updateParameter = new DynamicParameters();
 
                 StringBuilder queryForUpdateEcoScoreProfile = new StringBuilder();
 
                 queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at");
-
                 if (!string.IsNullOrEmpty(ecoScoreProfileDto.Name))
                 {
-                    updateParameter.Add("@name", ecoScoreProfileDto.Name);
-                    queryForUpdateEcoScoreProfile.Append(", name=@name");
+                    updateParameter.Add("@Name", ecoScoreProfileDto.Name);
+                    queryForUpdateEcoScoreProfile.Append(", name=@Name");
                 }
                 if (!string.IsNullOrEmpty(ecoScoreProfileDto.Description))
                 {
                     updateParameter.Add("@description", ecoScoreProfileDto.Description);
                     queryForUpdateEcoScoreProfile.Append(", description=@description");
                 }
+
                 updateParameter.Add("@modified_by", Convert.ToInt32(ecoScoreProfileDto.ActionedBy));
                 queryForUpdateEcoScoreProfile.Append(", modified_by= @modified_by");
+
                 updateParameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+
                 updateParameter.Add("@id", ecoScoreProfileDto.Id);
+
                 queryForUpdateEcoScoreProfile.Append(" where id=@id RETURNING id");
 
-
-
                 var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateEcoScoreProfile.ToString(), updateParameter);
-
-                var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, Convert.ToInt32(ecoScoreProfileDto.ActionedBy), id);
-                if (id <= 0 && tripDetails == false)
+                if (id > 0)
+                {
+                    var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, Convert.ToInt32(ecoScoreProfileDto.ActionedBy), id);
+                }
+                else if (id <= 0)
                 {
                     id = -1;
                 }
@@ -406,8 +409,7 @@ namespace net.atos.daf.ct2.reports.repository
         }
         #endregion
 
-
-        #region - Delete Eco Score Profile
+        #region Eco Score Report - Delete Profile
         public async Task<int> DeleteEcoScoreProfile(int profileId)
         {
             _log.Info("Delete Eco Score Profile method called in repository");
@@ -445,12 +447,19 @@ namespace net.atos.daf.ct2.reports.repository
         }
         public async Task<string> IsEcoScoreProfileBasicOrAdvance(int profileId)
         {
-            var parameter = new DynamicParameters();
-            StringBuilder query = new StringBuilder();
-            query.Append("SELECT  default_es_version_type FROM master.ecoscoreprofile where id =@ProfileId and state in ('A','I')");
-            parameter.Add("@ProfileId", profileId);
-            var versionType = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
-            return versionType;
+            try
+            {
+                var parameter = new DynamicParameters();
+                StringBuilder query = new StringBuilder();
+                query.Append("SELECT  default_es_version_type FROM master.ecoscoreprofile where id =@ProfileId and state in ('A','I')");
+                parameter.Add("@ProfileId", profileId);
+                var versionType = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+                return versionType;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<bool> GetGlobalProfile(int profileId)
@@ -459,13 +468,42 @@ namespace net.atos.daf.ct2.reports.repository
 
             StringBuilder query = new StringBuilder();
 
-            query.Append("select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null");
+            query.Append("select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null and default_es_version_type is null and state in ('A','I')");
             parameter.Add("@ProfileId", profileId);
 
             string ProfileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
 
-            return ProfileName != "" ? true : false;
+            return ProfileName != null ? true : false;
+        }
+
+        #endregion
+
+        #region Eco Score Report By All Drivers
+        /// <summary>
+        /// Get Eco Score Report By All Drivers
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", request.StartDateTime);
+                parameters.Add("@ToDate", request.EndDateTime);
+                parameters.Add("@Vins", request.VINs);
+
+                //Update the query once we have understanding from DP Team on ranking formula
+                string query = string.Empty;
+                List<EcoScoreReportByAllDrivers> lstByAllDrivers = (List<EcoScoreReportByAllDrivers>)await _dataMartdataAccess.QueryAsync<EcoScoreReportByAllDrivers>(query, parameters);
+                return lstByAllDrivers?.Count > 0 ? lstByAllDrivers : new List<EcoScoreReportByAllDrivers>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         #endregion
+
     }
 }

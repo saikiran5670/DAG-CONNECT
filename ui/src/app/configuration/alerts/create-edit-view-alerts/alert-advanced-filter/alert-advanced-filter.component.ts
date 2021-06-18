@@ -20,6 +20,7 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { Options } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
 
 declare var H: any;
 
@@ -52,6 +53,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isPoiSelected: boolean= false;
   selectedPoiSite: any;
   marker: any;
+  tableRowData: any = [];
+  groupArray: any = [];
   markerArray: any = [];
   geoMarkerArray: any = [];
   map: any;
@@ -67,13 +70,18 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiWidth : number = 100;
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
+  selectedApplyOn: string;
+  advancedAlertPayload: any = [];
   options: Options = {
     floor: 0,
     ceil: 10000
   };
-
+  @ViewChild(PeriodSelectionFilterComponent)
+  periodSelectionComponent: PeriodSelectionFilterComponent;
+  
   @ViewChild("map")
   private mapElement: ElementRef;
+  openAdvancedFilter: boolean;
   constructor(private _formBuilder: FormBuilder,private poiService: POIService,
               private domSanitizer: DomSanitizer,
               private landmarkGroupService: LandmarkGroupService,
@@ -95,9 +103,21 @@ export class AlertAdvancedFilterComponent implements OnInit {
       distance: [''],
       occurences: [''],
       duration: [''],
-      widthInput: ['']
+      widthInput: [''],
+      fullorCustom: [''],
+      fromDate: [''],
+      fromTimeRange: ['00:00'],
+      toDate: [''],
+      toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
+    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.setDefaultAdvanceAlert();
+    }
+  }
+
+  setDefaultAdvanceAlert(){
+
   }
 
   onChangeDistance(event: any){
@@ -107,6 +127,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
     else{
       this.isDistanceSelected= false;
     }
+  }
+
+  onApplyOnChange(event: any){
+    this.selectedApplyOn = event.value;
   }
 
   loadMapData(){
@@ -660,16 +684,23 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
 
         onGroupSelect(event: any, row: any){
+          if(event.checked){
           let groupDetails= [];
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id
           };
+          this.groupArray.push(row);
           this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
             groupDetails = groupData["groups"][0];
             this.selectPOITableRows(groupDetails, event);
             this.selectGeofenceTableRows(groupDetails, event);
           });
+        }
+        else{
+          let arr = this.groupArray.filter(item => item.id != row.id);
+          this.groupArray = arr;
+        }
         }
 
         selectGeofenceTableRows(rowData: any, event?: any){
@@ -776,5 +807,70 @@ export class AlertAdvancedFilterComponent implements OnInit {
      this.poiWidthKm = this.alertAdvancedFilterForm.controls.widthInput.value;
      this.poiWidth = this.poiWidthKm * 1000;
    }
+
+   getAdvancedFilterAlertPayload(){
+//Fuel Increase & Fuel Loss
+     if ((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T')) {
+
+       if (this.actionType == 'create' || this.actionType == 'duplicate') {
+         if (this.geoMarkerArray.length != 0) {
+           this.geoMarkerArray.forEach(element => {
+             let obj = {
+               "alertUrgencyLevelId": 0,
+               "filterType": "N",
+               "thresholdValue": 0,
+               "unitType": "N",
+               "landmarkType": element.type,
+               "refId": element.id,
+               "positionType": "N",
+               "alertTimingDetail": []
+             }
+             this.advancedAlertPayload.push(obj);
+           })
+         }
+         if(this.markerArray.length != 0) {
+           this.markerArray.forEach(element => {
+             let obj = {
+               "alertUrgencyLevelId": 0,
+               "filterType": "N",
+               "thresholdValue": 0,
+               "unitType": "N",
+               "landmarkType": "P",
+               "refId": element.id,
+               "positionType": "N",
+               "alertTimingDetail": []
+             }
+             this.advancedAlertPayload.push(obj);
+           });
+         }
+
+         if(this.groupArray.length != 0) {
+          this.groupArray.forEach(element => {
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": "N",
+              "thresholdValue": 0,
+              "unitType": "N",
+              "landmarkType": "G",
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": []
+            }
+            this.advancedAlertPayload.push(obj);
+          });
+        }
+
+       }
+      }
+
+      // entering & existing zone & excessive avg idling
+  if(((this.alert_category_selected == 'L') && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')) ||
+  (this.alert_category_selected == 'F') && (this.alert_type_selected == 'I')){
+
+  }
+
+       return this.advancedAlertPayload;
+   
+  }
 
 }
