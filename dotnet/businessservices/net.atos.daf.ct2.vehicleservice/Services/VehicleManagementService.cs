@@ -1048,29 +1048,26 @@ namespace net.atos.daf.ct2.vehicleservice.Services
             }
         }
 
-        public override async Task<VehicleConnectResponse> VehicleConnectAll(VehicleConnectRequest request, ServerCallContext context)
+        public override async Task<VehicleConnectResponse> UpdateVehicleConnection(VehicleConnectRequest request, ServerCallContext context)
         {
             try
             {
-                //var response = new VehicleConnectResponse();
                 var vehicleConnect = new List<VehicleConnect>();
-
                 vehicleConnect.AddRange(request.Vehicles.Select(x => new VehicleConnect()
                 {
                     VehicleId = x.VehicleId,
-                    Opt_In = 'I',
+                    Opt_In = Convert.ToChar(x.OptIn),
                     ModifiedBy = x.ModifiedBy
                 }).ToList());
 
-
-                var result = await _vehicleManager.VehicleConnectAll(vehicleConnect);
+                var response = new VehicleConnectResponse();
+                var result = await _vehicleManager.UpdateVehicleConnection(vehicleConnect);
                 var auditResult = _auditlog.AddLogs(DateTime.Now, DateTime.Now, 2, "Vehicle Component", "Vehicle Connect Status", AuditTrailEnum.Event_type.UPDATE, AuditTrailEnum.Event_status.SUCCESS, "Set Opt In status", 1, 2, Convert.ToString(request)).Result;
-                return await Task.FromResult(new VehicleConnectResponse
-                {
-                    Message = "Vehicle Opt In Status updated.",
-                    Code = Responcecode.Success,
-                    // Vehicle = result
-                });
+                response = _mapper.ToVehichleConnectResponse(result);
+                response.Message = "Vehicle Opt In Status updated.";
+                response.Code = Responcecode.Success;
+                _logger.Info("VehicleConnectAll method in Vehicle service called.");
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
