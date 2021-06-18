@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using net.atos.daf.ct2.reports.entity;
+using net.atos.daf.ct2.reportservice.entity;
 using Newtonsoft.Json;
 
 namespace net.atos.daf.ct2.reportservice.Services
@@ -247,6 +248,7 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
 
         #endregion
+
         #region - Update Eco score
         public override async Task<UpdateEcoScoreProfileResponse> UpdateEcoScoreProfile(UpdateEcoScoreProfileRequest request, ServerCallContext context)
         {
@@ -254,7 +256,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Update Eco Score Profile Report .");
-
+                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 EcoScoreProfileDto obj = new EcoScoreProfileDto();
                 obj.Id = request.ProfileId;
                 obj.Name = request.Name;
@@ -273,22 +275,27 @@ namespace net.atos.daf.ct2.reportservice.Services
                     obj.ProfileKPIs.Add(data);
                 }
 
-                var result = await _reportManager.UpdateEcoScoreProfile(obj);
+                var result = await _reportManager.UpdateEcoScoreProfile(obj, isAdminRights);
 
                 if (result > 0)
                 {
-                    response.Message = obj.Name + " Update successfully";
+                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_SUCCESS_MSG;
                     response.Code = Responsecode.Success;
 
                 }
                 else if (result == -1)
                 {
-                    response.Message = obj.Name + " does not exist to update";
+                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_NOT_EXIST_MSG;
                     response.Code = Responsecode.NotFound;
+                }
+                else if (result == -2)
+                {
+                    response.Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG;
+                    response.Code = Responsecode.Failed;
                 }
                 else
                 {
-                    response.Message = obj.Name + " Update Eco Score Profile Fail";
+                    response.Message = obj.Name + entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_FAIL_MSG;
                     response.Code = Responsecode.Failed;
 
                 }
@@ -301,7 +308,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 return await Task.FromResult(new UpdateEcoScoreProfileResponse
                 {
                     Code = Responsecode.Failed,
-                    Message = "UpdateEcoScoreProfile get failed due to - " + ex.Message
+                    Message = entity.ReportConstants.UPDATE_ECOSCORE_PROFILE_FAIL_MSG + " due to - " + ex.Message
                 });
             }
         }
@@ -314,32 +321,32 @@ namespace net.atos.daf.ct2.reportservice.Services
             DeleteEcoScoreProfileResponse response = new DeleteEcoScoreProfileResponse();
             try
             {
-                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 _logger.Info("Delete Eco Score Profile .");
+                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
                 var result = await _reportManager.DeleteEcoScoreProfile(request.ProfileId, isAdminRights);
                 if (result > 0)
                 {
-                    response.Message = " Delete successfully";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_SUCCESS_MSG;
                     response.Code = Responsecode.Success;
                 }
                 else if (result == 0)
                 {
-                    response.Message = " does not exist to delete ";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_NOT_EXIST_MSG;
                     response.Code = Responsecode.NotFound;
                 }
                 else if (result == -1)
                 {
-                    response.Message = " Is a default profile, Can't delete ";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_FAIL_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 else if (result == -2)
                 {
-                    response.Message = " Is a global profile, Can't delete ";
-                    response.Code = Responsecode.NotFound;
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG;
+                    response.Code = Responsecode.Failed;
                 }
                 else
                 {
-                    response.Message = " Delete Eco Score Profile Fail ";
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 return await Task.FromResult(response);
@@ -351,6 +358,90 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
             return await Task.FromResult(response);
         }
+        #endregion
+
+        #region Eco Score Report By All Drivers
+
+        /// <summary>
+        /// Get Eco Score Report by All Drivers
+        /// </summary>
+        /// <param name="request"> Search Parameter object</param>
+        /// <param name="context"> GRPC context</param>
+        /// <returns></returns>
+        public override async Task<GetEcoScoreReportByAllDriversResponse> GetEcoScoreReportByAllDrivers(GetEcoScoreReportByAllDriversRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var result = await _reportManager.GetEcoScoreReportByAllDrivers(MapEcoScoreReportByAllDriversRequest(request));
+                var response = new GetEcoScoreReportByAllDriversResponse();
+                if (result?.Count > 0)
+                {
+                    response.DriverRanking.AddRange(MapEcoScoreReportByAllDriversResponse(result));
+                    response.Code = Responsecode.Success;
+                    response.Message = ReportConstants.GET_REPORT_DETAILS_SUCCESS_MSG;
+                }
+                else
+                {
+                    response.Code = Responsecode.NotFound;
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_NOTFOUND_MSG;
+                }
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new GetEcoScoreReportByAllDriversResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetEcoScoreReportByAllDrivers get failed due to - " + ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Mapper to covert GRPC request object
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private EcoScoreReportByAllDriversRequest MapEcoScoreReportByAllDriversRequest(GetEcoScoreReportByAllDriversRequest request)
+        {
+            var objRequest = new EcoScoreReportByAllDriversRequest
+            {
+                StartDateTime = request.StartDateTime,
+                EndDateTime = request.EndDateTime,
+                VINs = request.VINs.ToList<string>(),
+                MinTripDistance = request.MinTripDistance,
+                MinDriverTotalDistance = request.MinDriverTotalDistance,
+                OrgId = request.OrgId,
+                AccountId = request.AccountId,
+                TargetProfileId = request.TargetProfileId
+            };
+            return objRequest;
+        }
+
+        /// <summary>
+        /// Mapper to covert object to  GRPC response
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        private IEnumerable<EcoScoreReportDriversRanking> MapEcoScoreReportByAllDriversResponse(List<EcoScoreReportByAllDrivers> response)
+        {
+            var lstDriverRanking = new List<EcoScoreReportDriversRanking>();
+            foreach (var item in response)
+            {
+                var ranking = new EcoScoreReportDriversRanking
+                {
+                    Ranking = item.Ranking,
+                    DriverName = item.DriverName ?? string.Empty,
+                    DriverId = item.DriverId ?? string.Empty,
+                    EcoScoreRanking = item.EcoScoreRanking,
+                    EcoScoreRankingColor = item.EcoScoreRankingColor ?? string.Empty
+                };
+                lstDriverRanking.Add(ranking);
+            }
+            return lstDriverRanking;
+        }
+
         #endregion
     }
 }

@@ -10,9 +10,9 @@ namespace net.atos.daf.ct2.vehicle.repository
 {
     public partial class VehicleRepository : IVehicleRepository
     {
-        public async Task<List<VehicleConnect>> VehicleConnectAll(List<VehicleConnect> vehicleConnects)
+        public async Task<VehicleConnectResponse> VehicleConnectAll(List<VehicleConnect> vehicleConnects)
         {
-            var connectedVehicles = new List<VehicleConnect>();
+            var connectedVehicles = new VehicleConnectResponse();
             try
             {
                 foreach (var vehicle in vehicleConnects)
@@ -20,7 +20,11 @@ namespace net.atos.daf.ct2.vehicle.repository
                     bool result = await SetOptInStatus(vehicle.Opt_In, vehicle.ModifiedBy, vehicle.VehicleId);
                     if (result)
                     {
-                        connectedVehicles.Add(vehicle);
+                        connectedVehicles.VehicleConnectedList.Add(vehicle.VehicleId);
+                    }
+                    else
+                    {
+                        connectedVehicles.VehicleNotConnectedList.Add(vehicle.VehicleId);
                     }
                 }
             }

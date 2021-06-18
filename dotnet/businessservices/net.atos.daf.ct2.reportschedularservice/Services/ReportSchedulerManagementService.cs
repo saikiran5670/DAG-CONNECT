@@ -108,13 +108,13 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 ReportScheduler reportscheduler = await _reportSchedulerManager.CreateReportSchedular(_mapper.ToReportSchedulerEntity(request));
                 if (reportscheduler.Id > 0)
                 {
-                    response.Message = "Report Parameter Created";
+                    response.Message = "Report Scheduler Created";
                     response.Code = ResponseCode.Success;
                     response.ReportSchedulerId = reportscheduler.Id;
                 }
                 else
                 {
-                    response.Message = "Report Parameter Creation is fail";
+                    response.Message = "Report Scheduler Creation is fail";
                     response.Code = ResponseCode.Failed;
                 }
                 _logger.Info("Create method in report scheduler called.");
@@ -127,6 +127,113 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                 {
                     Code = ResponseCode.Failed,
                     Message = "Create method in report scheduler fail : " + ex.Message
+                });
+            }
+        }
+        #endregion
+
+        #region Get Report Scheduler
+        public override async Task<ReportSchedulerListResponse> GetReportSchedulerList(ReportParameterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                IEnumerable<ReportScheduler> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                ReportSchedulerListResponse response = new ReportSchedulerListResponse();
+                if (reportSchedulerList.Any())
+                {
+                    foreach (var item in reportSchedulerList)
+                    {
+                        response.ReportSchedulerRequest.Add(_mapper.MapReportSchedulerEntity(item));
+                    }
+                }
+                response.Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_SUCCESS_MSG;
+                response.Code = ResponseCode.Success;
+                _logger.Info(ReportSchedulerConstant.REPORT_SCHEDULER_GET_CALLED_MSG);
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportSchedulerListResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = ReportSchedulerConstant.REPORT_SCHEDULER_GET_FAIL_MSG + ex.Message
+                });
+            }
+        }
+        #endregion
+
+        #region DeleteReportSchedule
+        public override async Task<ReportStatusUpdateDeleteResponse> DeleteReportSchedule(ReportStatusUpdateDeleteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel objRepoModel = new net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel();
+                objRepoModel.ReportId = request.ReportId;
+                objRepoModel.OrganizationId = request.OrganizationId;
+                objRepoModel.Status = "D";
+                int reportId = await _reportSchedulerManager.ManipulateReportSchedular(objRepoModel);
+                ReportStatusUpdateDeleteResponse response = new ReportStatusUpdateDeleteResponse();
+                if (reportId > 0)
+                {
+                    response.Message = $"ReportSchedule with Report Id:{reportId} Deleted Sucessfully";
+                    response.Code = ResponseCode.Success;
+                    response.ReportId = reportId;
+                }
+                else
+                {
+                    response.Message = "Deletion Failed.";
+                    response.Code = ResponseCode.Failed;
+                    response.ReportId = reportId;
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportStatusUpdateDeleteResponse
+                {
+                    Message = $"Exception While deleting ReportSchedule with Report Id: {request.ReportId}",
+                    Code = ResponseCode.InternalServerError,
+                    ReportId = request.ReportId
+                });
+            }
+        }
+        #endregion
+
+        #region EnableDisableReportSchedule
+        public override async Task<ReportStatusUpdateDeleteResponse> EnableDisableReportSchedule(ReportStatusUpdateDeleteRequest request, ServerCallContext context)
+        {
+            try
+            {
+                net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel objRepoModel = new net.atos.daf.ct2.reportscheduler.entity.ReportStatusUpdateDeleteModel();
+                objRepoModel.ReportId = request.ReportId;
+                objRepoModel.OrganizationId = request.OrganizationId;
+                objRepoModel.Status = request.Status;
+                int reportId = await _reportSchedulerManager.ManipulateReportSchedular(objRepoModel);
+                ReportStatusUpdateDeleteResponse response = new ReportStatusUpdateDeleteResponse();
+                if (reportId > 0)
+                {
+                    response.Message = $"ReportSchedule with Report Id:{reportId}, Enable/Disable is Sucessfully";
+                    response.Code = ResponseCode.Success;
+                    response.ReportId = reportId;
+                }
+                else
+                {
+                    response.Message = "Enable/Disable Failed";
+                    response.Code = ResponseCode.Failed;
+                    response.ReportId = reportId;
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportStatusUpdateDeleteResponse
+                {
+                    Message = $"Exception While Enable/Disable ReportSchedule with Report Id: {request.ReportId}",
+                    Code = ResponseCode.InternalServerError,
+                    ReportId = request.ReportId
                 });
             }
         }

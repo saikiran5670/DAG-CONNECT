@@ -37,7 +37,13 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
                     reportscheduler.ScheduledReportRecipient.Add(ToScheduledReportRecipientEntity(item));
                 }
             }
-            reportscheduler.ScheduledReportDriverRef = ToScheduledReportDriverRefEntity(request.ScheduledReportDriverRef);
+            if (reportscheduler.ScheduledReportDriverRef.Count > 0)
+            {
+                foreach (var item in request.ScheduledReportDriverRef)
+                {
+                    reportscheduler.ScheduledReportDriverRef.Add(ToScheduledReportDriverRefEntity(item));
+                }
+            }
             if (request.ScheduledReportVehicleRef.Count > 0)
             {
                 foreach (var item in request.ScheduledReportVehicleRef)

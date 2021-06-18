@@ -28,23 +28,23 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Driveref_report_schedule_id { get; set; }
         public int Driveref_driver_id { get; set; }
         public string Driveref_state { get; set; }
-        public string Driveref_created_at { get; set; }
-        public string Driveref_created_by { get; set; }
-        public string Driveref_modified_at { get; set; }
-        public string Driveref_modified_by { get; set; }
+        public long Driveref_created_at { get; set; }
+        public int Driveref_created_by { get; set; }
+        public long Driveref_modified_at { get; set; }
+        public int Driveref_modified_by { get; set; }
         public int Receipt_id { get; set; }
         public int Receipt_schedule_report_id { get; set; }
         public string Receipt_email { get; set; }
         public string Receipt_state { get; set; }
-        public string Receipt_created_at { get; set; }
-        public string Receipt_modified_at { get; set; }
+        public long Receipt_created_at { get; set; }
+        public long Receipt_modified_at { get; set; }
         public int Vehref_report_schedule_id { get; set; }
         public int Vehref_vehicle_group_id { get; set; }
         public string Vehref_state { get; set; }
-        public string Vehref_created_at { get; set; }
-        public string Vehref_created_by { get; set; }
-        public string Vehref_modified_at { get; set; }
-        public string Vehref_modified_by { get; set; }
+        public long Vehref_created_at { get; set; }
+        public int Vehref_created_by { get; set; }
+        public long Vehref_modified_at { get; set; }
+        public int Vehref_modified_by { get; set; }
         public int Schrep_id { get; set; }
         public int Schrep_schedule_report_id { get; set; }
         public string Schrep_report { get; set; }
