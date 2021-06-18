@@ -115,22 +115,26 @@ namespace net.atos.daf.ct2.reportservice.Services
 
                 if (vehicleDeatilsWithAccountVisibility.Count() > 0)
                 {
-                    string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
-                    response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
-
                     List<string> vinList = vehicleDeatilsWithAccountVisibility.Select(s => s.Vin).Distinct().ToList();
                     //string VINs = "'" + string.Join("','", vinList) + "'";
                     var lstDriver = await _reportManager.GetDriversByVIN(request.StartDateTime, request.EndDateTime, vinList);
-
                     if (lstDriver.Count() > 0)
                     {
+                        string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                        response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
                         string resDrivers = JsonConvert.SerializeObject(lstDriver);
                         response.DriverList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleFromDriverTimeDetails>>(resDrivers));
+                        response.Code = Responsecode.Success;
+                        response.Message = Responsecode.Success.ToString();
                     }
                     else
                     {
                         VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
                         response.DriverList.Add(vehicleFromDriverTimeDetails);
+                        VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
+                        response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                        response.Code = Responsecode.NotFound;
+                        response.Message = Responsecode.NotFound.ToString();
                     }
                 }
                 else
@@ -139,10 +143,9 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.DriverList.Add(vehicleFromDriverTimeDetails);
                     VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
                     response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
-                }
-
-                response.Code = Responsecode.Success;
-                response.Message = Responsecode.Success.ToString();
+                    response.Code = Responsecode.NotFound;
+                    response.Message = Responsecode.NotFound.ToString();
+                }                
             }
             catch (Exception ex)
             {

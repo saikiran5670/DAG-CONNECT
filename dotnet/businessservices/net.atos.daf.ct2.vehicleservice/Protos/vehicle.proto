@@ -369,8 +369,8 @@ message VehicleConnectRequest{
 }
 
 message VehicleConnectResponse {
-
   Responcecode Code = 1;
   string Message = 2;
-  VehicleConnectRequest Vehicle = 3;
+  repeated VehicleConnectAllRequest VehicleConnectedList = 3;
+  repeated VehicleConnectAllRequest VehicleConnectionfailedList = 4;
 }

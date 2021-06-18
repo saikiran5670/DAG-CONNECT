@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.vehicle
         Task<List<AccountVehicleEntity>> GetORGRelationshipVehicleGroupVehicles(int organizationId, bool is_vehicle);
         Task<IEnumerable<Vehicle>> GetVehicleSetting(VehicleSettings vehicleSettings);
 
-        Task<VehicleConnectResponse> VehicleConnectAll(List<VehicleConnect> vehicleConnects);
+        Task<VehicleConnectedResult> VehicleConnectAll(List<VehicleConnect> vehicleConnects);
 
         Task<string> GetVehicleAssociatedGroup(int vehicleId, int organizationId);
 

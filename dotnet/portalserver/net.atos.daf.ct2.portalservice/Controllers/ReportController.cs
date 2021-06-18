@@ -316,21 +316,22 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 _logger.Info("GetDriverActivityParameters method in Report API called.");
                 var data = await _reportServiceClient.GetDriverActivityParametersAsync(request);
-                if (data?.VehicleDetailsWithAccountVisibiltyList?.Count > 0)
+
+                if (data.Code.ToString()=="NotFound")
+                {                                                 
+                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
+                }
+               else 
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
                     return Ok(data);
-                }
-                else
-                {
-                    return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
-                }
+                }               
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }
+            }            
         }
 
         [HttpPost]
