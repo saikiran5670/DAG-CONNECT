@@ -17,6 +17,7 @@ import { CustomValidators } from 'src/app/shared/custom.validators';
 import { CreateNotificationsAlertComponent } from './create-notifications-alert/create-notifications-alert.component';
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from './period-selection-filter/period-selection-filter.component';
+import { NotificationAdvancedFilterComponent } from './create-notifications-alert/notification-advanced-filter/notification-advanced-filter.component';
 
 declare var H: any;
 
@@ -108,6 +109,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
 
   @ViewChild(PeriodSelectionFilterComponent)
   periodSelectionComponent: PeriodSelectionFilterComponent;
+
+  @ViewChild(NotificationAdvancedFilterComponent)
+  notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent
 
   typesOfLevel: any= [
                       {
@@ -279,6 +283,9 @@ export class CreateEditViewAlertsComponent implements OnInit {
     this.vehicleListForTable= [];
     this.unitTypes= [];
     this.alert_type_selected= value;
+    if(this.panelOpenState && this.notificationComponent.openAdvancedFilter){
+      this.notificationAdvancedFilterComponent.setAlertType(this.alert_type_selected);
+    }
     this.alertTypeName = this.alertTypeList.filter(item => item.enum == this.alert_type_selected)[0].value;
     
     //Render vehicle group and vehicle dropdowns based on alert type

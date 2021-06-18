@@ -101,6 +101,10 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
     {
       this.setDefaultValues();
     }
+
+    if(this.actionType == 'view'){
+      this.openAdvancedFilter = true;
+    }
   }
 
 
@@ -137,6 +141,9 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
     }
 
+    setAlertType(alertType: any){
+      this.notificationAdvancedFilterComponent.setAlertType(alertType);
+    }
 
     setDefaultValues(){
              
@@ -285,8 +292,6 @@ if(isButtonClicked){
     this.mailDescription = "";
   }
   
-
-
   onRadioButtonChange(event: any){
     this.radioButtonVal = event.value;
   }
