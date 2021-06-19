@@ -21,6 +21,7 @@ import { CommonTableComponent } from 'src/app/shared/common-table/common-table.c
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
+import { Util } from 'src/app/shared/util';
 
 declare var H: any;
 
@@ -810,6 +811,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
    getAdvancedFilterAlertPayload(){
 //Fuel Increase & Fuel Loss
+let urgencylevelStartDate = 0;
+let urgencylevelEndDate = 0;
+
      if ((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T')) {
 
        if (this.actionType == 'create' || this.actionType == 'duplicate') {
@@ -866,11 +870,39 @@ export class AlertAdvancedFilterComponent implements OnInit {
       // entering & existing zone & excessive avg idling
   if(((this.alert_category_selected == 'L') && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')) ||
   (this.alert_category_selected == 'F') && (this.alert_type_selected == 'I')){
-
+    let alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
+    alertTimingDetail.forEach(element => {
+      element["type"] = "F";
+    });
+    if (this.actionType == 'create' || this.actionType == 'duplicate') {
+      let obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": 0,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": alertTimingDetail
+      }
+      this.advancedAlertPayload.push(obj);
+      urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
+      urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+    }
   }
 
-       return this.advancedAlertPayload;
+       return {"urgencylevelStartDate" : urgencylevelStartDate, "urgencylevelEndDate" : urgencylevelEndDate, "advancedAlertPayload" : this.advancedAlertPayload};
    
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    
+    date.setHours(_x);
+    date.setMinutes(_y);
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
   }
 
 }

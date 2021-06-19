@@ -96,7 +96,8 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
     console.log(this.selectedRowData);
    
     if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
-       this.selectedRowData.notifications.length > 0)
+       this.selectedRowData.notifications.length > 0 && 
+       this.selectedRowData.notifications[0].notificationRecipients.length > 0)
     {
       this.setDefaultValues();
     }
@@ -162,11 +163,9 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
             this.deleteEmailNotificationRow(i);
           }
         }     
-        if(this.selectedRowData.notifications[0].notificationRecipients.length > 0){
         this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
           this.addMultipleItems(false,element);
         });
-      }
     }
 
     addMultipleItems(isButtonClicked: boolean, data? :any) :void{

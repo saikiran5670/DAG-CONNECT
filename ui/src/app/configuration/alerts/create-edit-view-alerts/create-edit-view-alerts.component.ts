@@ -112,7 +112,7 @@ export class CreateEditViewAlertsComponent implements OnInit {
   periodSelectionComponent: PeriodSelectionFilterComponent;
 
   @ViewChild(AlertAdvancedFilterComponent)
-  AlertAdvancedComponent: AlertAdvancedFilterComponent;
+  alertAdvancedComponent: AlertAdvancedFilterComponent;
 
   typesOfLevel: any= [
                       {
@@ -1282,12 +1282,17 @@ PoiCheckboxClicked(event: any, row: any) {
   }
 
   onCreateUpdate(){
+    let urgencylevelStartDate = 0;
+    let urgencylevelEndDate = 0;
     if(this.panelOpenState){
       this.notifications= this.notificationComponent.getNotificationDetails();
       //console.log(this.notifications);
     }
       if(this.openAdvancedFilter == true){
-      this.alertFilterRefs = this.AlertAdvancedComponent.getAdvancedFilterAlertPayload();
+        let alertAdvancedPayload = this.alertAdvancedComponent.getAdvancedFilterAlertPayload();
+        this.alertFilterRefs = alertAdvancedPayload["advancedAlertPayload"];
+        urgencylevelStartDate = alertAdvancedPayload["urgencylevelStartDate"];
+        urgencylevelEndDate = alertAdvancedPayload["urgencylevelEndDate"];
       }
 
     this.isDuplicateAlert= false;
@@ -1311,8 +1316,8 @@ PoiCheckboxClicked(event: any, row: any) {
             false, false, false, false, false, false, false
           ],
           "periodType": "A",
-          "urgencylevelStartDate": 0,
-          "urgencylevelEndDate": 0,
+          "urgencylevelStartDate": urgencylevelStartDate,
+          "urgencylevelEndDate": urgencylevelEndDate,
           "alertFilterRefs": this.alertFilterRefs,
           "alertTimingDetails" : alertTimingRefHoursOfService
         }
@@ -1326,15 +1331,25 @@ PoiCheckboxClicked(event: any, row: any) {
             false, false, false, false, false, false, false
           ],
           "periodType": "A",
-          "urgencylevelStartDate": 0,
-          "urgencylevelEndDate": 0,
+          "urgencylevelStartDate": urgencylevelStartDate,
+          "urgencylevelEndDate": urgencylevelEndDate,
           "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
           "alertId": this.selectedRowData.id,
           "alertFilterRefs": this.alertFilterRefs,
           "alertTimingDetails" : alertTimingRefHoursOfService
         }
       }
-      // alertUrgencyLevelRefs.push(urgenyLevelObj);
+      if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours of Service
+        alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
+        if(this.actionType == 'edit'){
+          alertTimingRefHoursOfService.forEach(element => {
+            element["refId"] = this.selectedRowData.alertUrgencyLevelRefs[0].id;;
+          })
+        }
+        urgenyLevelObj["alertTimingDetails"] = alertTimingRefHoursOfService;
+        // this.periodForm = this.periodSelectionComponent.periodSelectionForm;
+      }
+      alertUrgencyLevelRefs.push(urgenyLevelObj);
 
       // Entering Zone, Exiting Zone
       if(this.alert_category_selected == 'L' && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X')){
@@ -1454,12 +1469,6 @@ PoiCheckboxClicked(event: any, row: any) {
           }
         }
       }
-      else if(this.alert_category_selected == 'L' && this.alert_type_selected === 'S'){ //Hours if Service
-        alertTimingRefHoursOfService= this.periodSelectionComponent.getAlertTimingPayload();
-        urgenyLevelObj["alertTimingDetails"] = alertTimingRefHoursOfService;
-        // this.periodForm = this.periodSelectionComponent.periodSelectionForm;
-      }
-
     }
     else{
       if(this.isCriticalLevelSelected){
@@ -1473,8 +1482,8 @@ PoiCheckboxClicked(event: any, row: any) {
               false, false, false, false, false, false, false
             ],
             "periodType": "A",
-            "urgencylevelStartDate": 0,
-            "urgencylevelEndDate": 0,
+            "urgencylevelStartDate": urgencylevelStartDate,
+            "urgencylevelEndDate": urgencylevelEndDate,
             "alertFilterRefs": this.alertFilterRefs,
             "alertTimingDetails" : alertTimingRefHoursOfService 
           }
@@ -1489,8 +1498,8 @@ PoiCheckboxClicked(event: any, row: any) {
               false, false, false, false, false, false, false
             ],
             "periodType": "A",
-            "urgencylevelStartDate": 0,
-            "urgencylevelEndDate": 0,
+            "urgencylevelStartDate": urgencylevelStartDate,
+            "urgencylevelEndDate": urgencylevelEndDate,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
             "alertFilterRefs": this.alertFilterRefs,
@@ -1510,8 +1519,8 @@ PoiCheckboxClicked(event: any, row: any) {
               false, false, false, false, false, false, false
             ],
             "periodType": "A",
-            "urgencylevelStartDate": 0,
-            "urgencylevelEndDate": 0,
+            "urgencylevelStartDate": urgencylevelStartDate,
+            "urgencylevelEndDate": urgencylevelEndDate,
             "alertFilterRefs": this.alertFilterRefs,
             "alertTimingDetails" : alertTimingRefHoursOfService
           }
@@ -1526,8 +1535,8 @@ PoiCheckboxClicked(event: any, row: any) {
               false, false, false, false, false, false, false
             ],
             "periodType": "A",
-            "urgencylevelStartDate": 0,
-            "urgencylevelEndDate": 0,
+            "urgencylevelStartDate": urgencylevelStartDate,
+            "urgencylevelEndDate": urgencylevelEndDate,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
             "alertId": this.selectedRowData.id,
             "alertFilterRefs": this.alertFilterRefs,
