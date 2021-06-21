@@ -304,9 +304,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.summaryColumnData.forEach(element => {
       let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(sSearch.length > 0){
-        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
       }else{
-        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
       }
     });
 
@@ -317,25 +317,25 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       }else if(index == 3){ // time base utilisation
         _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
       }else{ // distance & active vehicle
-        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: "" });
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: 0 });
       }
     });
 
     this.calenderColumnData.forEach(element => {
       // this.fleetUtilForm.controls.calenderViewMode.value
       if(element.dataAtrributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
-        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
       }else{
-        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
       }
     });
 
     this.detailColumnData.forEach(element => {
       let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(dSearch.length > 0){
-        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
       }else{
-        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
       }
     });
 
