@@ -260,7 +260,7 @@
                 [indeterminate]='selectionForDetailsColumns.hasValue() && !isAllSelectedForDetailsColumns()'
                 [aria-label]='checkboxLabelForDetailsColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
                     translationData.lblDetails || 'Details'
-                    }}</span>
+                    }} <span>({{ translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span></span>
             </mat-checkbox>
         </div>
     </div>

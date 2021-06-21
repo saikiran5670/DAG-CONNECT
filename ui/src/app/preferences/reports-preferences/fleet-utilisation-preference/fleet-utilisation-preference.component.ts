@@ -111,14 +111,14 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.translationData.da_report_general_idleduration = 'Idle Duration';
     this.translationData.da_report_general_totaldistance = 'Total Distance';
     this.translationData.da_report_calendarview_idleduration = 'Idle Duration';
-    this.translationData.da_report_details_registrationnumber = 'Reg. Plate Number';
+    this.translationData.da_report_details_registrationnumber = 'Registration Number';
     this.translationData.da_report_details_odometer = 'Odometer';
     this.translationData.da_report_details_averagespeed = 'Average Speed';
     this.translationData.da_report_charts_distanceperday = 'Distance Per Day';
     this.translationData.da_report_details_drivingtime = 'Driving Time';
     this.translationData.da_report_calendarview_timebasedutilization = 'Time Based Utilisation';
     this.translationData.da_report_general_numberofvehicles = 'Number of Vehicles';
-    this.translationData.da_report_details_averageweightpertrip = 'Average Weight Per Trip';
+    this.translationData.da_report_details_averageweightpertrip = 'Average weight per trip';
     this.translationData.da_report_charts_numberofvehiclesperday = 'Active Vehicles Per Day';
     this.translationData.da_report_charts_timebasedutilization = 'Time Based Utilisation';
     this.translationData.da_report_calendarview_mileagebasedutilization = 'Mileage Based Utilisation';
