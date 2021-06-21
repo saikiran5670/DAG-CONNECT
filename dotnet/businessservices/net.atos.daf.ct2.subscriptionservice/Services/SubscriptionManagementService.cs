@@ -9,49 +9,47 @@ namespace net.atos.daf.ct2.subscriptionservice
 {
     public class SubscriptionManagementService : SubscribeGRPCService.SubscribeGRPCServiceBase
     {
-        // private readonly ILogger<SubscriptionManagementService> _logger;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly ISubscriptionManager _subscriptionManager;
 
-        public SubscriptionManagementService(ISubscriptionManager SubscriptionManager)
+        public SubscriptionManagementService(ISubscriptionManager subscriptionManager)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _subscriptionManager = SubscriptionManager;
+            _subscriptionManager = subscriptionManager;
         }
 
         public async override Task<SubscribeListResponce> Get(SubscriptionDetailsRequest objSubscriptionDetailsRequest, ServerCallContext context)
         {
             try
             {
-                net.atos.daf.ct2.subscription.entity.SubscriptionDetailsRequest objentityRequest = new net.atos.daf.ct2.subscription.entity.SubscriptionDetailsRequest();
+                subscription.entity.SubscriptionDetailsRequest objentityRequest = new subscription.entity.SubscriptionDetailsRequest();
                 objentityRequest.OrganizationId = objSubscriptionDetailsRequest.OrganizationId;
                 objentityRequest.Type = objSubscriptionDetailsRequest.Type;
-                objentityRequest.State = (net.atos.daf.ct2.subscription.entity.StatusType)objSubscriptionDetailsRequest.State;
+                objentityRequest.State = (subscription.entity.StatusType)objSubscriptionDetailsRequest.State;
 
-                SubscribeListResponce objSubscribeListResponce = new SubscribeListResponce();
+                SubscribeListResponce objSubscribeListResponse = new SubscribeListResponce();
 
                 var listsubscription = await _subscriptionManager.Get(objentityRequest);
                 foreach (var item in listsubscription)
                 {
                     SubscriptionDetails objSubscriptionDetails = new SubscriptionDetails();
                     objSubscriptionDetails.SubscriptionId = item.SubscriptionId;
-                    objSubscriptionDetails.Type = item.Type ?? null;
-                    objSubscriptionDetails.Name = item.Name ?? null;
-                    objSubscriptionDetails.PackageCode = item.PackageCode ?? null;
+                    objSubscriptionDetails.Type = item.Type ?? string.Empty;
+                    objSubscriptionDetails.Name = item.Name ?? string.Empty;
+                    objSubscriptionDetails.PackageCode = item.PackageCode ?? string.Empty;
                     objSubscriptionDetails.SubscriptionStartDate = item.SubscriptionStartDate;
                     objSubscriptionDetails.SubscriptionEndDate = item.SubscriptionEndDate;
-                    objSubscriptionDetails.State = item.State ?? null;
+                    objSubscriptionDetails.State = item.State ?? string.Empty;
                     objSubscriptionDetails.Count = item.Count;
-                    objSubscriptionDetails.OrgName = item.OrgName ?? null;
-                    objSubscribeListResponce.SubscriptionList.Add(objSubscriptionDetails);
+                    objSubscriptionDetails.OrgName = item.OrgName ?? string.Empty;
+                    objSubscribeListResponse.SubscriptionList.Add(objSubscriptionDetails);
                 }
-                return objSubscribeListResponce;
+                return objSubscribeListResponse;
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
-                throw;
+                return new SubscribeListResponce();
             }
         }
     }

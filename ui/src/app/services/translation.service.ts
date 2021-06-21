@@ -91,6 +91,29 @@ export class TranslationService {
                 )
             .pipe(catchError(this.handleError));
     }
+    getdtcWarningDetails (): Observable<any> {
+        let headerObj = this.generateHeader();
+        const headers = {
+          headers: new HttpHeaders({ headerObj }),
+        };
+        return this.httpClient
+            .get<any>(
+                `${this.translationUrl}/getdtcWarningDetails`,headers
+                )
+            .pipe(catchError(this.handleError));
+    }
+
+    getdtcIconDetails (): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+          .get<any>(
+              `${this.translationUrl}/getdtcIconDetails`,headers
+              )
+          .pipe(catchError(this.handleError));
+  }
 
     importTranslationData(data): Observable<any> {
         let headerObj = this.generateHeader();
@@ -101,15 +124,45 @@ export class TranslationService {
           .post<any>(`${this.translationUrl}/Import`, data, headers)
           .pipe(catchError(this.handleError));
     }
-
+    
     importDTCTranslationData(data: any): Observable<any> {
       let headerObj = this.generateHeader();
       const headers = {
         headers: new HttpHeaders({ headerObj }),
       };
       return this.httpClient
-        .post<any>(`${this.translationUrl}/ImportdtcWarning`, data, headers)
-        .pipe(catchError(this.handleError));
+      .post<any>(`${this.translationUrl}/ImportdtcWarning`, data, headers)
+        .pipe(catchError(this.handleError));        
+    }
+
+    updateDTCTranslationData(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+      .post<any>(`${this.translationUrl}/UpdatedtcWarning`, data, headers)
+        .pipe(catchError(this.handleError));        
+    }
+
+    importDTCIconTranslationData(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+      .post<any>(`${this.translationUrl}/updatedtcIconDetails`, data, headers)
+      .pipe(catchError(this.handleError))
+    }
+
+    updatedtcIconDetails(data: any): Observable<any> {
+      let headerObj = this.generateHeader();
+      const headers = {
+        headers: new HttpHeaders({ headerObj }),
+      };
+      return this.httpClient
+      .post<any>(`${this.translationUrl}/updatedtcIconDetails`, data, headers)
+        .pipe(catchError(this.handleError));        
     }
 
     checkUserAcceptedTaC(data: any): Observable<any> {

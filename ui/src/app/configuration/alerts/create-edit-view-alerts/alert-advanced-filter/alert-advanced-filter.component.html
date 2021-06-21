@@ -71,7 +71,9 @@
   </mat-card>
   
   <!-- distance option -->
-  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A')" class='mat-elevation-z'>
+  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A') ||
+  (alert_category_selected === 'L' && alert_type_selected === 'S')"
+   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -133,7 +135,7 @@
   </mat-card>
 
   <!-- Duration option -->
-  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
+  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected ==='S'))
                   || (alert_category_selected === 'F' && alert_type_selected === 'A')" 
     class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
@@ -167,7 +169,8 @@
   <!-- POI condition option -->
   <mat-card *ngIf="(alert_category_selected === 'F' && 
   (alert_type_selected === 'I' || alert_type_selected === 'A' || alert_type_selected === 'L' || 
-  alert_type_selected === 'T' || alert_type_selected === 'P'))"
+  alert_type_selected === 'T' || alert_type_selected === 'P')) ||
+  (alert_category_selected === 'L' && alert_type_selected === 'S')"
   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">

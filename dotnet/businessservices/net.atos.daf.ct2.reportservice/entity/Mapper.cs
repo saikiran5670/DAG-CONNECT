@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.ENUM;
 
@@ -49,8 +50,8 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
                     State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
-                    Type = Convert.ToChar(objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type),
-                    ChartType = Convert.ToChar(objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType),
+                    Type = objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type.ToCharArray().FirstOrDefault(),
+                    ChartType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType.ToCharArray().FirstOrDefault(),
                     ThresholdType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdType,
                     ThresholdValue = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdValue,
                 });

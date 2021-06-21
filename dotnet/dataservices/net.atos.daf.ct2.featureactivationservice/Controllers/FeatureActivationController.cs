@@ -47,10 +47,10 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else if (string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.PackageId))
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, value: nameof(objsubscriptionActivation.SubscribeEvent.PackageId));
 
-                    SubscriptionActivation Objsubs = new SubscriptionActivation();
-                    Objsubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
-                    Objsubs.PackageId = objsubscriptionActivation.SubscribeEvent.PackageId;
-                    Objsubs.VINs = new List<string>();
+                    SubscriptionActivation objSubs = new SubscriptionActivation();
+                    objSubs.OrganizationId = objsubscriptionActivation.SubscribeEvent.OrganizationId;
+                    objSubs.PackageId = objsubscriptionActivation.SubscribeEvent.PackageId;
+                    objSubs.VINs = new List<string>();
 
                     if (objsubscriptionActivation.SubscribeEvent.VINs != null && objsubscriptionActivation.SubscribeEvent.VINs.Count > 0)
                     {
@@ -59,15 +59,15 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                             .Where(g => g.Count() > 1).Count() > 0)
                             return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.VINs);
 
-                        Objsubs.VINs.AddRange(objsubscriptionActivation.SubscribeEvent.VINs);
+                        objSubs.VINs.AddRange(objsubscriptionActivation.SubscribeEvent.VINs);
                     }
 
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.SubscribeEvent.StartDateTime))
-                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime), "UTC");
+                            objSubs.StartDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.SubscribeEvent.StartDateTime), "UTC");
                         else
-                            Objsubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
+                            objSubs.StartDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
                     }
                     catch (Exception)
                     {
@@ -75,7 +75,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.SubscribeEvent.StartDateTime);
                     }
 
-                    var order = await _subscriptionManager.Subscribe(Objsubs);
+                    var order = await _subscriptionManager.Subscribe(objSubs);
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
                         if (order.Item2.Value is string[])
@@ -101,10 +101,10 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     if (!long.TryParse(objsubscriptionActivation.UnsubscribeEvent.OrderID, out _))
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: nameof(objsubscriptionActivation.UnsubscribeEvent.OrderID));
 
-                    UnSubscription Objunsubs = new UnSubscription();
-                    Objunsubs.OrganizationID = objsubscriptionActivation.UnsubscribeEvent.OrganizationID;
-                    Objunsubs.OrderID = objsubscriptionActivation.UnsubscribeEvent.OrderID;
-                    Objunsubs.VINs = new List<string>();
+                    UnSubscription objUnsubs = new UnSubscription();
+                    objUnsubs.OrganizationID = objsubscriptionActivation.UnsubscribeEvent.OrganizationID;
+                    objUnsubs.OrderID = objsubscriptionActivation.UnsubscribeEvent.OrderID;
+                    objUnsubs.VINs = new List<string>();
 
                     if (objsubscriptionActivation.UnsubscribeEvent.VINs != null && objsubscriptionActivation.UnsubscribeEvent.VINs.Count > 0)
                     {
@@ -113,15 +113,15 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                             .Where(g => g.Count() > 1).Count() > 0)
                             return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.VINs);
 
-                        Objunsubs.VINs.AddRange(objsubscriptionActivation.UnsubscribeEvent.VINs);
+                        objUnsubs.VINs.AddRange(objsubscriptionActivation.UnsubscribeEvent.VINs);
                     }
 
                     try
                     {
                         if (!string.IsNullOrEmpty(objsubscriptionActivation.UnsubscribeEvent.EndDateTime))
-                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime), "UTC");
+                            objUnsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(Convert.ToDateTime(objsubscriptionActivation.UnsubscribeEvent.EndDateTime), "UTC");
                         else
-                            Objunsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
+                            objUnsubs.EndDateTime = UTCHandling.GetUTCFromDateTime(DateTime.Now, "UTC");
                     }
                     catch (Exception)
                     {
@@ -129,7 +129,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                         return GenerateErrorResponse(HttpStatusCode.BadRequest, errorCode: "INVALID_PARAMETER", value: objsubscriptionActivation.UnsubscribeEvent.EndDateTime);
                     }
 
-                    var order = await _subscriptionManager.Unsubscribe(Objunsubs);
+                    var order = await _subscriptionManager.Unsubscribe(objUnsubs);
 
                     if (order.Item1 == HttpStatusCode.BadRequest)
                     {
@@ -141,7 +141,7 @@ namespace net.atos.daf.ct2.featureactivationservice.Controllers
                     else if (order.Item1 == HttpStatusCode.NotFound)
                         return GenerateErrorResponse(order.Item1, errorCode: order.Item2.ErrorCode, value: order.Item2.Value);
 
-                    _logger.LogInformation($"UnSubscription data has been Inserted, order ID - {Objunsubs.OrderID}");
+                    _logger.LogInformation($"UnSubscription data has been Inserted, order ID - {objUnsubs.OrderID}");
                     return Ok(order.Item2.Response);
                 }
                 else
