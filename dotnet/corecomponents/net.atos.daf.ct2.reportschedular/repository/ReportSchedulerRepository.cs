@@ -9,7 +9,7 @@ using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
-    public class ReportSchedulerRepository : IReportSchedulerRepository
+    public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
