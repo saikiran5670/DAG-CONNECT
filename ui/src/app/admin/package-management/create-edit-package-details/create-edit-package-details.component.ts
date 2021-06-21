@@ -99,7 +99,7 @@ export class CreateEditPackageDetailsComponent implements OnInit {
           this.dataSource.sortData = (data: String[], sort: MatSort) => {
             const isAsc = sort.direction === 'asc';
             return data.sort((a: any, b: any) => {
-              return this.compare(a[sort.active].toUpperCase(), b[sort.active].toUpperCase(), isAsc);
+              return this.compare(a[sort.active], b[sort.active], isAsc);
             });
            }
           if(!this.createStatus || this.duplicateMsg || this.viewFlag){
@@ -111,7 +111,9 @@ export class CreateEditPackageDetailsComponent implements OnInit {
   }, (error) => { });
 }
 
-compare(a: number | string, b: number | string, isAsc: boolean) {
+compare(a: Number | String, b: Number | String, isAsc: boolean) {
+  if(!(a instanceof Number)) a = a.toUpperCase();
+  if(!(b instanceof Number)) b = b.toUpperCase();
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
