@@ -11,8 +11,8 @@
             obj.ReportId = objUserPreferenceCreateRequest.ReportId;
             obj.AccountId = objUserPreferenceCreateRequest.AccountId;
             obj.ReportId = objUserPreferenceCreateRequest.ReportId;
-            obj.Type = objUserPreferenceCreateRequest.Type.ToString();
-            obj.CharType = objUserPreferenceCreateRequest.ChartType.ToString();
+            //obj.Type = objUserPreferenceCreateRequest.Type.ToString();
+            //obj.CharType = objUserPreferenceCreateRequest.ChartType.ToString();
             obj.CreatedAt = objUserPreferenceCreateRequest.CreatedAt;
             obj.ModifiedAt = objUserPreferenceCreateRequest.ModifiedAt;
 
@@ -21,7 +21,11 @@
                 obj.AtributesShowNoShow.Add(new reportservice.Atribute()
                 {
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
-                    State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State.ToString()
+                    State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State.ToString(),
+                    Type = objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type,
+                    CharType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ChartType,
+                    ThresholdType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdType,
+                    ThresholdValue = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdValue
                 });
             }
             return obj;

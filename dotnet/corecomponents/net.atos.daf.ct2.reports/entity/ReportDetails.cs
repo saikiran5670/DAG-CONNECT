@@ -10,16 +10,17 @@ namespace net.atos.daf.ct2.reports.entity
         public int OrganizationId { get; set; }
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
-        public char Type { get; set; }
-        public char ChartType { get; set; }
-        public string ThresholdType { get; set; }
-        public string ThresholdValue { get; set; }
+
         public List<Atribute> AtributesShowNoShow { get; set; }
     }
     public class Atribute
     {
         public int DataAttributeId { get; set; }
         public char State { get; set; }
+        public char Type { get; set; }
+        public char ChartType { get; set; }
+        public string ThresholdType { get; set; }
+        public string ThresholdValue { get; set; }
     }
     public class ReportListedParamaters
     {

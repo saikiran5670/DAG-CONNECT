@@ -119,12 +119,8 @@ namespace net.atos.daf.ct2.reports.repository
             userPreference.Add("@account_id", objUserPreferenceRequest.AccountId);
             userPreference.Add("@report_id", objUserPreferenceRequest.ReportId);
             userPreference.Add("@organization_id", objUserPreferenceRequest.OrganizationId);
-            userPreference.Add("@type", objUserPreferenceRequest.Type);
             userPreference.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            userPreference.Add("@chart_type", objUserPreferenceRequest.ChartType);
-            userPreference.Add("@threshold_type", objUserPreferenceRequest.ThresholdType);
-            userPreference.Add("@threshold_value", objUserPreferenceRequest.ThresholdValue);
 
             using (var transactionScope = _dataAccess.Connection.BeginTransaction())
             {
@@ -135,6 +131,10 @@ namespace net.atos.daf.ct2.reports.repository
                     {
                         userPreference.Add("@data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
                         userPreference.Add("@state", objUserPreferenceRequest.AtributesShowNoShow[i].State);
+                        userPreference.Add("@type", objUserPreferenceRequest.AtributesShowNoShow[i].Type);
+                        userPreference.Add("@chart_type", objUserPreferenceRequest.AtributesShowNoShow[i].ChartType);
+                        userPreference.Add("@threshold_type", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdType);
+                        userPreference.Add("@threshold_value", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdValue);
                         rowsEffected = await _dataAccess.ExecuteAsync(queryInsert, userPreference);
                     }
                     transactionScope.Commit();
