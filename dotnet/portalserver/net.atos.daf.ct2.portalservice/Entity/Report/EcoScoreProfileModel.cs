@@ -99,6 +99,10 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public List<string> VINs { get; set; }
         public int MinTripDistance { get; set; }
         public int MinDriverTotalDistance { get; set; }
+        public int OrgId { get; set; }
+        public int AccountId { get; set; }
+        public int TargetProfileId { get; set; }
+        public int ReportId { get; set; }
     }
 }
 

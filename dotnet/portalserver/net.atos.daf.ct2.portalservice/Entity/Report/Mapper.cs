@@ -79,6 +79,8 @@
                 EndDateTime = request.EndDateTime,
                 MinTripDistance = request.MinTripDistance,
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId
             };
             grpcRequest.VINs.AddRange(request.VINs);
             return grpcRequest;

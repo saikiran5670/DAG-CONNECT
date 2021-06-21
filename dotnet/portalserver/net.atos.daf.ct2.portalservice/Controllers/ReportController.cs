@@ -523,15 +523,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
 
-                var data = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
-                if (data?.DriverRanking?.Count > 0)
+                var response = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
+                if (response?.DriverRanking?.Count > 0)
                 {
-                    data.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
-                    return Ok(data);
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
                 }
                 else
                 {
-                    return StatusCode(404, ReportConstants.GET_ECOSCORE_REPORT_FAILURE_MSG);
+                    return StatusCode((int)response.Code, response.Message);
                 }
             }
             catch (Exception ex)
