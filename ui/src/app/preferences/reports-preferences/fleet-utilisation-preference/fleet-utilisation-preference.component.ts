@@ -129,10 +129,18 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   loadFleetUtilisationPreferences(){
     this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData: any) => {
       this.initData = prefData['userPreferences'];
+      this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
       this.initData = [];
     });
+  }
+
+  resetColumnData(){
+    this.summaryColumnData = [];
+    this.detailColumnData = [];
+    this.chartsColumnData = [];
+    this.calenderColumnData = [];
   }
 
   setColumnCheckbox(){
