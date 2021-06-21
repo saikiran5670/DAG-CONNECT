@@ -920,6 +920,19 @@ else{
       }
       this.advancedAlertPayload.push(obj);
     }
+    if(!this.isOccurenceSelected && !this.isDurationSelected){
+      obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": this.thresholdVal,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": this.alertTimingDetail
+      }
+      this.advancedAlertPayload.push(obj);
+    }
       // this.advancedAlertPayload.push(obj);
       // urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
       // urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
@@ -935,7 +948,35 @@ else{
         if(this.isOccurenceSelected == true){
           this.filterType = 'N';
           this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.occurences.value);
+          if(!this.isPoiSelected){
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": 'N',
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": 'N',
+              "refId": 0,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+            this.advancedAlertPayload.push(obj);
+          }
         }
+
+        if(!this.isPoiSelected && !this.isOccurenceSelected){
+          let obj = {
+            "alertUrgencyLevelId": 0,
+            "filterType": 'N',
+            "thresholdValue": 0,
+            "unitType": "N",
+            "landmarkType": 'N',
+            "refId": 0,
+            "positionType": "N",
+            "alertTimingDetail": this.alertTimingDetail
+          }
+          this.advancedAlertPayload.push(obj);
+        }
+
         if (this.geoMarkerArray.length != 0) {
           this.geoMarkerArray.forEach(element => {
             let obj = {
