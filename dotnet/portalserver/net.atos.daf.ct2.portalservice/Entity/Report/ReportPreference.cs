@@ -17,6 +17,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public string Type { get; set; }
         [StringLength(1, MinimumLength = 1)]
         public string ChartType { get; set; }
+        public string ThresholdType { get; set; }
+        public string ThresholdValue { get; set; }
         public List<Atribute> AtributesShowNoShow { get; set; }
     }
     public class Atribute
