@@ -55,9 +55,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 objBusinessEntity.OrganizationId = objSubscriptionDetailsRequest.Organization_id;
                 objBusinessEntity.Type = objSubscriptionDetailsRequest.Type ?? string.Empty;
                 objBusinessEntity.State = (SubscriptionBusinessService.StatusType)objSubscriptionDetailsRequest.State;
-                var data = await _subscribeClient.GetAsync(objBusinessEntity);
+                var details = await _subscribeClient.GetAsync(objBusinessEntity);
 
-                return Ok(data);
+                if (details.SubscriptionList.Count > 0)
+                {
+                    return Ok(details);
+                }
+                else
+                {
+                    return StatusCode(500, "Error occurred while processing the request.");
+                }
             }
             catch (Exception ex)
             {
