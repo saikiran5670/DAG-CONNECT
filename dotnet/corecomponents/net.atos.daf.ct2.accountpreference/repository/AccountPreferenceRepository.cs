@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.accountpreference
 {
@@ -14,11 +15,29 @@ namespace net.atos.daf.ct2.accountpreference
         {
             _dataAccess = dataAccess;
         }
+
+
         public async Task<AccountPreference> Create(AccountPreference preference)
         {
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
             try
             {
                 var parameter = new DynamicParameters();
+                parameter.Add("@icon", Convert.FromBase64String(preference.IconByte));
+                parameter.Add("@type", 'P');//For account preference
+                parameter.Add("@name", "Preference_Icon");//need to add name of the icon
+                parameter.Add("@state", 'A');
+                parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@created_by", 0);
+                parameter.Add("@modified_at", 0);
+                parameter.Add("@modified_by", 0);
+                string queryicon = @"insert into master.icon
+                                (icon,type,name,state,created_at,created_by,modified_at,modified_by) 
+                                values (@icon,@type,@name,@state,@created_at,@created_by,@modified_at,@modified_by)RETURNING id";
+
+                var iconId = await _dataAccess.ExecuteScalarAsync<int>(queryicon, parameter);
+
                 int PreferenceId = 0;
                 int Id = 0;
                 string queryCheck = string.Empty;
@@ -32,9 +51,10 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@date_format_id", preference.DateFormatTypeId);
                 parameter.Add("@time_format_id", preference.TimeFormatId);
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
+                parameter.Add("@Icon_id", iconId);
                 //parameter.Add("@driver_id", preference.DriverId);
 
-                // check the ref_id must be account id or organization id                
+                // check the ref_id must be account id or organization id
                 if (preference.PreferenceType == PreferenceType.Account)
                 {
                     // check if preference does not exists 
@@ -77,9 +97,9 @@ namespace net.atos.daf.ct2.accountpreference
 
                 string query = @"insert into master.accountpreference
                                 (type,language_id,timezone_id,
-                                currency_id,unit_id,vehicle_display_id,date_format_id,state,time_format_id,landing_page_display_id) 
+                                currency_id,unit_id,vehicle_display_id,date_format_id,state,time_format_id,landing_page_display_id,icon_id) 
                                 values (@type,@language_id,@timezone_id,
-                                @currency_id,@unit_id,@vehicle_display_id,@date_format_id,'A',@time_format_id,@landing_page_display_id) RETURNING id";
+                                @currency_id,@unit_id,@vehicle_display_id,@date_format_id,'A',@time_format_id,@landing_page_display_id,@Icon_id) RETURNING id";
 
                 var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 // Update preference id for account or organization
@@ -95,15 +115,26 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@preference_id", preferenceId);
                 await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
                 preference.Id = preferenceId;
+
+                transactionScope.Commit();
             }
             catch (Exception)
             {
+                transactionScope.Rollback();
                 throw;
+            }
+
+            finally
+            {
+                _dataAccess.Connection.Close();
             }
             return preference;
         }
         public async Task<AccountPreference> Update(AccountPreference preference)
         {
+            _dataAccess.Connection.Open();
+            var transactionScope = _dataAccess.Connection.BeginTransaction();
+
             try
             {
                 var parameter = new DynamicParameters();
@@ -116,6 +147,7 @@ namespace net.atos.daf.ct2.accountpreference
                 parameter.Add("@date_format_id", preference.DateFormatTypeId);
                 parameter.Add("@time_format_id", preference.TimeFormatId);
                 parameter.Add("@landing_page_display_id", preference.LandingPageDisplayId);
+                parameter.Add("@Icon_id", preference.IconId);
 
                 var query = @"update master.accountpreference set language_id=@language_id,
                             timezone_id=@timezone_id,currency_id=@currency_id,unit_id=@unit_id,
@@ -123,10 +155,28 @@ namespace net.atos.daf.ct2.accountpreference
                             date_format_id=@date_format_id,state='A',time_format_id=@time_format_id,landing_page_display_id=@landing_page_display_id
 	                        WHERE id=@id RETURNING id;";
                 var Id = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
+
+
+                parameter.Add("@icon", Convert.FromBase64String(preference.IconByte));
+                parameter.Add("@type", 'P');
+                parameter.Add("@name", preference.UnitId);
+                parameter.Add("@state", 'A');
+                parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                parameter.Add("@modified_by", 0);
+                var queryicon = @"update  master.icon set 
+                                icon=@icon,type=@type,name=@name,state=@state,modified_at=@modified_at,modified_by=@modified_by where id=" + preference.IconId + " RETURNING id;";
+                var Ids = await _dataAccess.ExecuteScalarAsync<int>(queryicon, parameter);
+                transactionScope.Commit();
             }
             catch (Exception)
             {
+                transactionScope.Rollback();
                 throw;
+            }
+
+            finally
+            {
+                _dataAccess.Connection.Close();
             }
             return preference;
 
@@ -146,6 +196,10 @@ namespace net.atos.daf.ct2.accountpreference
                 //using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 //{
                 query.Append("update master.accountpreference set state='D' where id=@id");
+                int icon_id = 0;
+                checkPreferenceQuery = @"select icon_id from master.accountpreference where id=@id and state='A'";
+                icon_id = await _dataAccess.ExecuteScalarAsync<int>(checkPreferenceQuery, parameter);
+                query.Append(" ; " + "update master.icon set state='D' where id=" + icon_id + " ");
                 //result = await dataAccess.ExecuteScalarAsync<int>(query, parameter);                    
                 // Update preference id for account or organization
                 if (preferenceType == PreferenceType.Account)
@@ -170,10 +224,31 @@ namespace net.atos.daf.ct2.accountpreference
         {
             try
             {
+
+
                 var parameter = new DynamicParameters();
                 List<AccountPreference> entity = new List<AccountPreference>();
                 parameter.Add("@id", filter.Id);
-                var query = @"select id,type,language_id,timezone_id,currency_id,unit_id,vehicle_display_id,date_format_id,time_format_id,vehicle_display_id,state,landing_page_display_id from master.accountpreference where state='A' and id= @id order by 1 desc limit 1";
+                var query = @"SELECT master.accountpreference.id,
+                                 master.accountpreference.type,
+       master.accountpreference.language_id,
+       master.accountpreference.timezone_id,
+       master.accountpreference.currency_id,
+       master.accountpreference.unit_id,
+       master.accountpreference.vehicle_display_id,
+       master.accountpreference.date_format_id,
+       master.accountpreference.time_format_id,
+       master.accountpreference.state,
+       master.accountpreference.landing_page_display_id,
+       master.icon.id as iconId,
+       master.icon.icon
+          FROM   master.accountpreference
+       INNER JOIN master.icon
+       ON icon.id = accountpreference.icon_id
+WHERE master.accountpreference.state = 'A'
+       AND master.accountpreference.id = @id
+ORDER BY 1 DESC
+LIMIT  1 ";
                 // if (filter != null)
                 // {
                 //     // id filter
@@ -224,6 +299,10 @@ namespace net.atos.daf.ct2.accountpreference
             //if (Convert.ToString(record.driver_id) != null) entity.DriverId = record.driver_id;
             entity.TimeFormatId = record.time_format_id;
             entity.LandingPageDisplayId = record.landing_page_display_id;
+            entity.IconId = record.iconid;
+            string base64String = Convert.ToBase64String(record.icon, 0, record.icon.Length);
+
+            entity.IconByte = Convert.ToBase64String(record.icon, 0, record.icon.Length);
             //record.isActive = record.state;
             return entity;
         }

@@ -239,6 +239,9 @@ message AccountFilter {
         int32 DateFormatId =9;        
         int32 TimeFormatId=10;
         int32 LandingPageDisplayId=11;
+        int32 IconId =12;
+        string IconByte =13;
+
     }
     message AccountPreferenceResponse
     {
