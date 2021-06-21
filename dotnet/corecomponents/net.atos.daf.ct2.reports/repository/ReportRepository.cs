@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.utilities;
-
+using System.Runtime.InteropServices;
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -152,6 +152,107 @@ namespace net.atos.daf.ct2.reports.repository
                 }
             }
             return rowsEffected;
+        }
+        #endregion
+
+        #region - GetReportQuery
+
+        public async Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin, [Optional] string reportView)
+        {
+            var parameterOfReport = new DynamicParameters();
+            parameterOfReport.Add("@FromDate", startDateTime);
+            parameterOfReport.Add("@ToDate", endDateTime);
+            parameterOfReport.Add("@Vins", vin.ToArray());
+            // TODO:: Delete once sql View is in use
+            _log.Info(reportView);
+            string queryDriversPull = GetReportQuery(reportID, "@FromDate", "@ToDate", "@Vins");
+
+            object lstDriver = await _dataMartdataAccess.QueryAsync(queryDriversPull, parameterOfReport);
+            return lstDriver;
+        }
+        /// <summary>
+        /// TODO :: Created this temp method till the SQL view creation get approval
+        /// </summary>
+        /// <param name="ReportId"></param>
+        /// <param name="FromDateParameter"></param>
+        /// <param name="EndDateParameter"></param>
+        /// <param name="VINsParamter"></param>
+        /// <param name="OptionalParameter"></param>
+        /// <returns>Formated string with respective report related query.</returns>
+        private static string GetReportQuery(int reportId, string fromDateParameter, string endDateParameter, string vinssParamter, [Optional] string optionalParameter, [Optional] string reportSQLView)
+        {
+            string _query;
+            switch (reportId)
+            {
+                case 1:
+                    // For - Trip Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+
+                case 2:
+                    // For - Trip Tracing
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 3:
+                    // For - Advanced Fleet Fuel Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 4:
+                    // For - Fleet Fuel Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 5:
+                    // For - Fleet Utilisation Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 6:
+                    // For - Fuel Benchmarking
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 7:
+                    // For - Fuel Deviation Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 8:
+                    // For - Vehicle Performance Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 9:
+                    // For - Drive Time Management
+                    _query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime FROM livefleet.livefleet_trip_driver_activity da Left join master.driver d on d.driver_id=da.driver_id WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) and vin=ANY ({2}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date ORDER BY da.driver_id DESC";
+                    //_query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime FROM livefleet.livefleet_trip_driver_activity da Left join master.driver d on d.driver_id=da.driver_id WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date ORDER BY da.driver_id DESC";
+                    _query = string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 10:
+                    // For -  Eco Score Report
+                    _query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime 
+											FROM tripdetail.ecoscoredata da
+                                            Left join master.driver d on d.driver_id=da.driver1_id
+											WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) and vin=ANY ({2}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date 
+											ORDER BY da.driver_id DESC";
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 11:
+                    // For -  Schedule Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                default:
+                    // Use this logic once VIEW implementation is done
+                    _query = "SELECT * from {0}";
+                    string.Format(_query, reportSQLView);
+                    break;
+
+            }
+            return _query;
         }
         #endregion
     }
