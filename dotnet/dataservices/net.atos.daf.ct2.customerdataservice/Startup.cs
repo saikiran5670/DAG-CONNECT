@@ -53,7 +53,7 @@ namespace net.atos.daf.ct2.customerdataservice
                       };
                   });
             //var connectionString = Configuration.GetConnectionString("ConnectionString");
-            //var connectionString = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=dafconnectmasterdatabase;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            //var connectionString = "Server=10.193.124.168;Database=dafconnectmasterdatabase;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-master;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
             //IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
 
             var connectionString = Configuration.GetConnectionString("ConnectionString");

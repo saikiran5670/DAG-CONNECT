@@ -11,7 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using notificationservice.protos;
-
+using Microsoft.AspNetCore.SignalR;
+using portalservice.Hubs;
 namespace portalservice
 {
     public class Startup
@@ -27,10 +28,13 @@ namespace portalservice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            // Enable support for unencrypted HTTP2  
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<PushNotificationService.PushNotificationServiceClient>(o =>
             {
                 o.Address = new Uri("http://localhost:5095");
             });
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +54,10 @@ namespace portalservice
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/NotificationHub");
+
             });
+          
         }
     }
 }

@@ -317,21 +317,21 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 _logger.Info("GetDriverActivityParameters method in Report API called.");
                 var data = await _reportServiceClient.GetDriverActivityParametersAsync(request);
 
-                if (data.Code.ToString()=="NotFound")
-                {                                                 
+                if (data.Code.ToString() == "NotFound")
+                {
                     return StatusCode(404, ReportConstants.GET_DRIVER_TIME_FAILURE_MSG);
                 }
-               else 
+                else
                 {
                     data.Message = ReportConstants.GET_DRIVER_TIME_SUCCESS_MSG;
                     return Ok(data);
-                }               
+                }
             }
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
-            }            
+            }
         }
 
         [HttpPost]
@@ -523,15 +523,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
 
-                var data = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
-                if (data?.DriverRanking?.Count > 0)
+                var response = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
+                if (response?.DriverRanking?.Count > 0)
                 {
-                    data.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
-                    return Ok(data);
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
                 }
                 else
                 {
-                    return StatusCode(404, ReportConstants.GET_ECOSCORE_REPORT_FAILURE_MSG);
+                    return StatusCode((int)response.Code, response.Message);
                 }
             }
             catch (Exception ex)

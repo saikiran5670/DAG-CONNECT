@@ -7,7 +7,7 @@ namespace notificationservice.Entity
 {
     public class TripAlert
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public string Tripid { get; set; }
         public string Vin { get; set; }
         public string CategoryType { get; set; }

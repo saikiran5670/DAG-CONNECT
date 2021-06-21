@@ -403,9 +403,9 @@ namespace net.atos.daf.ct2.reports.repository
             {
                 queryForProfileIsexist.Append(" and organization_id is null ");
             }
-            int ReportNameExist = await _dataAccess.ExecuteScalarAsync<int>(queryForProfileIsexist.ToString(), parameterDuplicate);
+            int reportNameExist = await _dataAccess.ExecuteScalarAsync<int>(queryForProfileIsexist.ToString(), parameterDuplicate);
 
-            return ReportNameExist == 0 ? false : true;
+            return reportNameExist == 0 ? false : true;
         }
         #endregion
 
@@ -441,9 +441,9 @@ namespace net.atos.daf.ct2.reports.repository
             query.Append("select name from master.ecoscoreprofile where id= @ProfileId ");
             parameter.Add("@ProfileId", profileId);
 
-            string ProfileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+            string profileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
 
-            return ProfileName;
+            return profileName;
         }
         public async Task<string> IsEcoScoreProfileBasicOrAdvance(int profileId)
         {
@@ -471,9 +471,9 @@ namespace net.atos.daf.ct2.reports.repository
             query.Append("select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null and default_es_version_type is null and state in ('A','I')");
             parameter.Add("@ProfileId", profileId);
 
-            string ProfileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+            string profileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
 
-            return ProfileName != null ? true : false;
+            return profileName != null ? true : false;
         }
 
         #endregion
@@ -491,16 +491,120 @@ namespace net.atos.daf.ct2.reports.repository
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
-                parameters.Add("@Vins", request.VINs);
+                parameters.Add("@Vins", request.VINs.ToArray());
 
-                //Update the query once we have understanding from DP Team on ranking formula
-                string query = string.Empty;
+                string query = @"WITH ecoscore AS (
+                                 SELECT 
+                                 dr.first_name || ' ' || dr.last_name AS driverName,
+                                 eco.driver1_id as driverid,
+                                 (
+                                 	(
+                                 	 (SUM(dpa_braking_score)/ SUM(dpa_braking_count)) +
+                                 	 (SUM(dpa_anticipation_score)/ SUM(dpa_anticipation_count))
+                                 	)/2
+                                 )/10 as ecoscoreranking
+                                 FROM tripdetail.ecoscoredata eco
+                                 JOIN master.driver dr 
+                                 	ON dr.driver_id = eco.driver1_id
+                                 WHERE eco.start_time >= @FromDate
+                                 	AND eco.end_time <= @ToDate
+                                 	AND eco.vin = ANY( @Vins )
+                                 GROUP BY dr.first_name, dr.last_name, eco.driver1_id
+                                 ORDER BY ecoscoreranking DESC
+                                 )
+                                 SELECT ROW_NUMBER () OVER (ORDER BY  ecoscoreranking DESC) as Ranking,
+                                 driverName, driverid, ecoscoreranking
+                                 FROM ecoscore
+                                 ORDER BY ecoscoreranking DESC, driverName";
                 List<EcoScoreReportByAllDrivers> lstByAllDrivers = (List<EcoScoreReportByAllDrivers>)await _dataMartdataAccess.QueryAsync<EcoScoreReportByAllDrivers>(query, parameters);
                 return lstByAllDrivers?.Count > 0 ? lstByAllDrivers : new List<EcoScoreReportByAllDrivers>();
             }
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Target Profile Eco-Score KPI Value
+        /// </summary>
+        /// <param name="request">Search Parameters</param>
+        /// <returns></returns>
+        public async Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(EcoScoreReportByAllDriversRequest request)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@ReportId", request.ReportId);
+                parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@AccountId", request.AccountId);
+                parameters.Add("@TargetProfileId", request.TargetProfileId);
+
+                string query = @"SELECT eco.id as profileid, kpimst.name as kpiname,
+                                 kpi.limit_val as minvalue, kpi.target_val as targetvalue
+                                 FROM master.ecoscoreprofile eco
+                                 JOIN master.reportpreference rep
+                                 	ON eco.id= rep.ecoscore_profile_id
+                                 JOIN master.ecoscoreprofilekpi kpi
+                                 	ON eco.id=kpi.profile_id
+                                 JOIN master.ecoscorekpi kpimst
+                                 	ON kpimst.id = kpi.ecoscore_kpi_id
+                                 WHERE rep.report_id = @ReportId
+                                 AND rep.organization_id = @OrgId
+                                 AND rep.account_id = @AccountId
+                                 AND eco.id = @TargetProfileId
+                                 AND kpimst.name = 'Eco-Score'";
+
+                EcoScoreKPIRanking obkEcoScoreKPI = (EcoScoreKPIRanking)await _dataAccess.QueryAsync<dynamic>(query, parameters);
+                return obkEcoScoreKPI;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Update Eco-Score Target Profile to Report Preferences
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateEcoScoreTargetProfile(EcoScoreReportByAllDriversRequest request)
+        {
+            _dataAccess.Connection.Open();
+            IDbTransaction txn = _dataAccess.Connection.BeginTransaction();
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@ReportId", request.ReportId);
+                parameters.Add("@OrgId", request.OrgId);
+                parameters.Add("@AccountId", request.AccountId);
+                parameters.Add("@TargetProfileId", request.TargetProfileId);
+
+                var updateTargetProfile = @"UPDATE master.reportpreference
+                                            SET ecoscore_profile_id = @TargetProfileId
+                                            WHERE organization_id = @OrgId
+                                            AND account_id = @AccountId
+                                            AND report_id = @ReportId
+                                            AND state ='A'
+                                            AND type= 'D'  RETURNING id";
+
+                int id = await _dataAccess.ExecuteScalarAsync<int>(updateTargetProfile, parameters);
+                txn.Commit();
+                return id > 0;
+            }
+            catch (Exception)
+            {
+                txn.Rollback();
+                throw;
+            }
+            finally
+            {
+                if (txn != null)
+                {
+                    _dataAccess.Connection.Close();
+                    txn.Dispose();
+                }
             }
         }
         #endregion

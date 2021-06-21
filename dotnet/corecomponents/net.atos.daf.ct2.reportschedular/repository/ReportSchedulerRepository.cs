@@ -9,7 +9,7 @@ using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
-    public class ReportSchedulerRepository : IReportSchedulerRepository
+    public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Create CreateReportSchedular
-        public async Task<ReportScheduler> CreateReportSchedular(ReportScheduler report)
+        public async Task<ReportScheduler> CreateReportScheduler(ReportScheduler report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -379,7 +379,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Update UpdateReportSchedular
-        public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
+        public async Task<ReportScheduler> UpdateReportScheduler(ReportScheduler report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
