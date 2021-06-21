@@ -18,6 +18,9 @@ import { LandmarkCategoryService } from '../../services/landmarkCategory.service
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
+import { ChartType } from 'chart.js';
+import { MultiDataSet, Label } from 'ng2-charts';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -25,7 +28,6 @@ import { Util } from '../../shared/util';
   styleUrls: ['./fleet-utilisation.component.less']
 })
 export class FleetUtilisationComponent implements OnInit {
-  viewDate: Date = new Date();
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -144,6 +146,11 @@ export class FleetUtilisationComponent implements OnInit {
       value: 'startPosition'
     }
   ];
+  doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done under 10500km', 'Percentage of vehicles with distance done above 10500km'];
+  doughnutChartData: MultiDataSet = [
+    [20, 80]
+  ];
+  doughnutChartType: ChartType = 'doughnut';
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
     this.defaultTranslation();
@@ -777,7 +784,41 @@ export class FleetUtilisationComponent implements OnInit {
       }
     })
     // below line for Download PDF document  
-    doc.save('tripFleetUtilisation.pdf');
+    doc.save('tripFleetUtilisationTable.pdf');
+
+    
+    // var data = document.getElementById('myChart');  
+    // const divHeight = data.clientHeight
+    // const divWidth = data.clientWidth
+    // const ratio = divHeight / divWidth;
+    // html2canvas(data,
+    //   {
+    //     height: window.outerHeight + window.innerHeight,
+    //     width: window.outerWidth + window.innerWidth,
+    //     windowHeight: window.outerHeight + window.innerHeight,
+    //     windowWidth: window.outerWidth + window.innerWidth,
+    //     scrollX: 0,
+    //     scrollY: 0
+    //   }
+    //   ).then(canvas => {  
+    //   var pdf = new jsPDF("l", "mm", "a4"); 
+    //   var imgData = canvas.toDataURL('image/png');
+    //   var width = pdf.internal.pageSize.getWidth();
+    //   var height = pdf.internal.pageSize.getHeight();
+    //   pdf.addImage(imgData, 'PNG', 0, 0, width, height*ratio); 
+    //   pdf.save('tripFleetUtilisation.pdf'); 
+    // });  
+
+// To merge both pdf
+
+
+  //   const merge = require('easy-pdf-merge');
+  //   merge(['tripFleetUtilisationTable.pdf', 'tripFleetUtilisation.pdf'], 'Ouput.pdf', function (err) {
+  //     if (err) {
+  //         return console.log(err)
+  //     }
+  //     console.log('Successfully merged!')
+  // });
   }
 
   pageSizeUpdated(_event) {

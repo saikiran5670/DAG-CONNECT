@@ -11,6 +11,7 @@ namespace net.atos.daf.ct2.data
     /// <summary>
     /// Class to create a Sql Executor
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class PgSQLDataAccess : IDataAccess
     {
         #region Members
