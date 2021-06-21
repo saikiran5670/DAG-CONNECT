@@ -8,6 +8,7 @@ package reportscheduler;
 service ReportSchedulerService{  
   rpc GetReportParameter (ReportParameterRequest) returns (ReportParameterResponse);
   rpc CreateReportScheduler (ReportSchedulerRequest) returns (ReportSchedulerResponse);
+  rpc UpdateReportScheduler (ReportSchedulerRequest) returns (ReportSchedulerResponse);
   rpc GetReportSchedulerList (ReportParameterRequest) returns (ReportSchedulerListResponse);
   rpc EnableDisableReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
   rpc DeleteReportSchedule (ReportStatusUpdateDeleteRequest) returns (ReportStatusUpdateDeleteResponse);
