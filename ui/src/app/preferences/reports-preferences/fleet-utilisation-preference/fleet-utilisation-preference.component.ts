@@ -296,8 +296,61 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   onConfirm(){
-    this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-    this.setColumnCheckbox();
+    let _summaryArr: any = [];
+    let _chartArr: any = [];
+    let _calenderArr: any = [];
+    let _detailArr: any = [];
+
+    this.summaryColumnData.forEach(element => {
+      let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(sSearch.length > 0){
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+      }else{
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+      }
+    });
+
+    this.chartsColumnData.forEach((element, index) => {
+      let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(index == 2){ // mileage base utilisation
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: this.convertKmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
+      }else if(index == 3){ // time base utilisation
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
+      }else{ // distance & active vehicle
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: "" });
+      }
+    });
+
+    this.calenderColumnData.forEach(element => {
+      // this.fleetUtilForm.controls.calenderViewMode.value
+      if(element.dataAtrributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+      }else{
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+      }
+    });
+
+    this.detailColumnData.forEach(element => {
+      let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(dSearch.length > 0){
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+      }else{
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: "" });
+      }
+    });
+
+    let objData: any = {
+      accountId: this.accountId,
+      reportId: this.reportId,
+      organizationId: this.accountOrganizationId,
+      createdAt: 0,
+      modifiedAt: 0,
+      atributesShowNoShow: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr] //-- merge data
+    }
+    this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
+      this.loadFleetUtilisationPreferences();
+      this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+    });
   }
 
   getSuccessMsg(){
@@ -332,10 +385,20 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     }
   }
 
+  convertHHMMToMs(hhmm: any){
+    let a = hhmm.split(':'); // split it at the colons
+    let seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60;
+    return seconds*1000; // convert to ms
+  }
+
+  convertKmToMeter(km: any){
+    return km ? parseInt((km*1000).toFixed(0)) : 0;
+  }
+
   setDefaultFormValues(){
     this.timeDisplay = this.chartsColumnData[3].thresholdValue != '' ? this.convertMilisecondsToHHMM(parseInt(this.chartsColumnData[3].thresholdValue)) : '00:00';
     let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? this.convertMeterToKm(parseInt(this.chartsColumnData[2].thresholdValue)) : 0;
-    this.slideState = false;
+    this.slideState = false; //-- TODO: API changes pending 
     let calenderSelectionId: any;
     let _selectionCalenderView = this.calenderColumnData.filter(i => i.state == 'A');
     if(_selectionCalenderView.length == this.calenderColumnData.length){
