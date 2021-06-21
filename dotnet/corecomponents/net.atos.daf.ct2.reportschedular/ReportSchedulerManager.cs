@@ -24,14 +24,14 @@ namespace net.atos.daf.ct2.reportscheduler
             return reportparameter;
         }
 
-        public async Task<ReportScheduler> CreateReportSchedular(ReportScheduler report)
+        public async Task<ReportScheduler> CreateReportScheduler(ReportScheduler report)
         {
-            return await _reportSchedulerRepository.CreateReportSchedular(report);
+            return await _reportSchedulerRepository.CreateReportScheduler(report);
         }
 
-        public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
+        public async Task<ReportScheduler> UpdateReportScheduler(ReportScheduler report)
         {
-            return await _reportSchedulerRepository.UpdateReportSchedular(report);
+            return await _reportSchedulerRepository.UpdateReportScheduler(report);
         }
 
         public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
