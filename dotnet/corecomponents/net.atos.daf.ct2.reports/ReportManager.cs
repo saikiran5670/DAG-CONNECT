@@ -218,8 +218,30 @@ namespace net.atos.daf.ct2.reports
         #region Eco Score Report By All Drivers
         public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
         {
-            List<EcoScoreReportByAllDrivers> lstByAllDrivers = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
-            return lstByAllDrivers;
+            List<EcoScoreReportByAllDrivers> lstDriverRanking = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
+            bool isTargetProfileUpdated = await _reportRepository.UpdateEcoScoreTargetProfile(request);
+            if (isTargetProfileUpdated)
+            {
+                var lstByAllDrivers = new List<EcoScoreReportByAllDrivers>();
+                EcoScoreKPIRanking objEcoScoreKPI = await _reportRepository.GetEcoScoreTargetProfileKPIValues(request);
+                foreach (var driver in lstDriverRanking)
+                {
+                    //< Min = Red
+                    if (driver.EcoScoreRanking < objEcoScoreKPI.MinValue)
+                        driver.EcoScoreRankingColor = RankingColor.RED.ToString();
+                    //> Target = Green
+                    else if (driver.EcoScoreRanking > objEcoScoreKPI.TargetValue)
+                        driver.EcoScoreRankingColor = RankingColor.GREEN.ToString();
+                    //Between Min and Target = Amber
+                    else
+                        driver.EcoScoreRankingColor = RankingColor.AMBER.ToString();
+
+                    lstByAllDrivers.Add(driver);
+                }
+                return lstByAllDrivers;
+            }
+            else
+                return lstDriverRanking;
         }
         #endregion
 

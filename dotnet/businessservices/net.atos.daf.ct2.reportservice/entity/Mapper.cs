@@ -37,10 +37,11 @@ namespace net.atos.daf.ct2.reportservice.entity
                        AccountId = objUserPreferenceCreateRequest.AccountId
                    };
             obj.ReportId = objUserPreferenceCreateRequest.ReportId;
-            obj.Type = Convert.ToChar(objUserPreferenceCreateRequest.Type);
-            obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
             obj.CreatedAt = objUserPreferenceCreateRequest.CreatedAt;
             obj.ModifiedAt = objUserPreferenceCreateRequest.ModifiedAt;
+            //obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
+            //obj.ThresholdType = objUserPreferenceCreateRequest.ThresholdType;
+            //obj.ThresholdValue = objUserPreferenceCreateRequest.ThresholdValue;
 
             for (int i = 0; i < objUserPreferenceCreateRequest.AtributesShowNoShow.Count; i++)
             {
@@ -48,6 +49,10 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
                     State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
+                    Type = Convert.ToChar(objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type),
+                    ChartType = Convert.ToChar(objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType),
+                    ThresholdType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdType,
+                    ThresholdValue = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdValue,
                 });
             }
             return obj;

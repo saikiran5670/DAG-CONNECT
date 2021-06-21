@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.utilities;
-
+using System.Runtime.InteropServices;
 
 namespace net.atos.daf.ct2.reports.repository
 {
@@ -48,7 +48,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@organization_id", OrganizationId);
                 #region Query Select User Preferences
                 var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,
-	                                 d.key as Key,case when rp.state is null then 'I' else rp.state end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType
+	                                 d.key as Key,case when rp.state is null then 'I' else rp.state end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType, rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue
                               FROM  master.reportattribute rd     
                                     INNER JOIN master.dataattribute d  	 ON rd.report_id = @report_id and d.id =rd.data_attribute_id 
                                     LEFT JOIN master.reportpreference rp ON rp.account_id = @account_id and rp.organization_id = @organization_id 
@@ -110,8 +110,8 @@ namespace net.atos.daf.ct2.reports.repository
         {
             _dataAccess.Connection.Open();
             string queryInsert = @"INSERT INTO master.reportpreference
-                                    (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at)
-                             VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at)";
+                                    (organization_id,account_id, report_id, type, data_attribute_id,state,chart_type,created_at,modified_at,threshold_limit_type,threshold_value)
+                             VALUES (@organization_id,@account_id,@report_id,@type,@data_attribute_id,@state,@chart_type,@created_at, @modified_at,@threshold_type,@threshold_value)";
 
             string queryDelete = @"DELETE FROM master.reportpreference
                                   WHERE organization_id=@organization_id and account_id=@account_id AND report_id=@report_id";
@@ -119,10 +119,8 @@ namespace net.atos.daf.ct2.reports.repository
             userPreference.Add("@account_id", objUserPreferenceRequest.AccountId);
             userPreference.Add("@report_id", objUserPreferenceRequest.ReportId);
             userPreference.Add("@organization_id", objUserPreferenceRequest.OrganizationId);
-            userPreference.Add("@type", objUserPreferenceRequest.Type);
             userPreference.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
             userPreference.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
-            userPreference.Add("@chart_type", objUserPreferenceRequest.ChartType);
 
             using (var transactionScope = _dataAccess.Connection.BeginTransaction())
             {
@@ -133,6 +131,10 @@ namespace net.atos.daf.ct2.reports.repository
                     {
                         userPreference.Add("@data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
                         userPreference.Add("@state", objUserPreferenceRequest.AtributesShowNoShow[i].State);
+                        userPreference.Add("@type", objUserPreferenceRequest.AtributesShowNoShow[i].Type);
+                        userPreference.Add("@chart_type", objUserPreferenceRequest.AtributesShowNoShow[i].ChartType);
+                        userPreference.Add("@threshold_type", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdType);
+                        userPreference.Add("@threshold_value", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdValue);
                         rowsEffected = await _dataAccess.ExecuteAsync(queryInsert, userPreference);
                     }
                     transactionScope.Commit();
@@ -150,6 +152,107 @@ namespace net.atos.daf.ct2.reports.repository
                 }
             }
             return rowsEffected;
+        }
+        #endregion
+
+        #region - GetReportQuery
+
+        public async Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin, [Optional] string reportView)
+        {
+            var parameterOfReport = new DynamicParameters();
+            parameterOfReport.Add("@FromDate", startDateTime);
+            parameterOfReport.Add("@ToDate", endDateTime);
+            parameterOfReport.Add("@Vins", vin.ToArray());
+            // TODO:: Delete once sql View is in use
+            _log.Info(reportView);
+            string queryDriversPull = GetReportQuery(reportID, "@FromDate", "@ToDate", "@Vins");
+
+            object lstDriver = await _dataMartdataAccess.QueryAsync(queryDriversPull, parameterOfReport);
+            return lstDriver;
+        }
+        /// <summary>
+        /// TODO :: Created this temp method till the SQL view creation get approval
+        /// </summary>
+        /// <param name="ReportId"></param>
+        /// <param name="FromDateParameter"></param>
+        /// <param name="EndDateParameter"></param>
+        /// <param name="VINsParamter"></param>
+        /// <param name="OptionalParameter"></param>
+        /// <returns>Formated string with respective report related query.</returns>
+        private static string GetReportQuery(int reportId, string fromDateParameter, string endDateParameter, string vinssParamter, [Optional] string optionalParameter, [Optional] string reportSQLView)
+        {
+            string _query;
+            switch (reportId)
+            {
+                case 1:
+                    // For - Trip Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+
+                case 2:
+                    // For - Trip Tracing
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 3:
+                    // For - Advanced Fleet Fuel Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 4:
+                    // For - Fleet Fuel Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 5:
+                    // For - Fleet Utilisation Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 6:
+                    // For - Fuel Benchmarking
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 7:
+                    // For - Fuel Deviation Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 8:
+                    // For - Vehicle Performance Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 9:
+                    // For - Drive Time Management
+                    _query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime FROM livefleet.livefleet_trip_driver_activity da Left join master.driver d on d.driver_id=da.driver_id WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) and vin=ANY ({2}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date ORDER BY da.driver_id DESC";
+                    //_query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime FROM livefleet.livefleet_trip_driver_activity da Left join master.driver d on d.driver_id=da.driver_id WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date ORDER BY da.driver_id DESC";
+                    _query = string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 10:
+                    // For -  Eco Score Report
+                    _query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime 
+											FROM tripdetail.ecoscoredata da
+                                            Left join master.driver d on d.driver_id=da.driver1_id
+											WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) and vin=ANY ({2}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date 
+											ORDER BY da.driver_id DESC";
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                case 11:
+                    // For -  Schedule Report
+                    _query = string.Empty;
+                    string.Format(_query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
+                    break;
+                default:
+                    // Use this logic once VIEW implementation is done
+                    _query = "SELECT * from {0}";
+                    string.Format(_query, reportSQLView);
+                    break;
+
+            }
+            return _query;
         }
         #endregion
     }

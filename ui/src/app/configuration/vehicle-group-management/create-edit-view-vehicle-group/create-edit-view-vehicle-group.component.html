@@ -22,7 +22,7 @@
           </mat-label>
             <div *ngIf="actionType != 'view'">
               <mat-form-field appearance="outline" class="full-width">
-                <input maxlength="50" placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Vehicle Group Name' }}" matInput
+                <input maxlength="60" placeholder="{{ translationData.lblEnterVehicleGroupName || 'Enter Vehicle Group Name' }}" matInput
                   formControlName="vehicleGroupName" required>
               </mat-form-field>
               <mat-error *ngIf="vehicleGroupForm.get('vehicleGroupName').hasError('required')">

@@ -9,6 +9,11 @@ namespace net.atos.daf.ct2.reports.repository
 {
     public partial class ReportRepository : IReportRepository
     {
+        /// <summary>
+        /// To Fetch utilization details from expected filters
+        /// </summary>
+        /// <param name="FleetUtilizationFilters"></param>
+        /// <returns></returns>
         public async Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetUtilizationFilters)
         {
             try

@@ -68,6 +68,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
     {
         public int ScheduleReportId { get; set; }
         public int VehicleGroupId { get; set; }
+        public int VehicleId { get; set; }
         public string State { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }

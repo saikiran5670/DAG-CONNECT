@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
 {
     public class ReportSchedulerManagementService : ReportSchedulerService.ReportSchedulerServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IReportSchedulerManager _reportSchedulerManager;
         private readonly Mapper _mapper;
         private readonly IVisibilityManager _visibilityManager;
@@ -105,7 +105,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
             {
 
                 ReportSchedulerResponse response = new ReportSchedulerResponse();
-                ReportScheduler reportscheduler = await _reportSchedulerManager.CreateReportSchedular(_mapper.ToReportSchedulerEntity(request));
+                ReportScheduler reportscheduler = await _reportSchedulerManager.CreateReportScheduler(_mapper.ToReportSchedulerEntity(request));
                 if (reportscheduler.Id > 0)
                 {
                     response.Message = "Report Scheduler Created";
@@ -132,12 +132,46 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         }
         #endregion
 
+        #region Update Report scheduler
+        public override async Task<ReportSchedulerResponse> UpdateReportScheduler(ReportSchedulerRequest request, ServerCallContext context)
+        {
+            try
+            {
+
+                ReportSchedulerResponse response = new ReportSchedulerResponse();
+                ReportScheduler reportscheduler = await _reportSchedulerManager.UpdateReportScheduler(_mapper.ToReportSchedulerEntity(request));
+                if (reportscheduler.Id > 0)
+                {
+                    response.Message = "Report Scheduler Updated";
+                    response.Code = ResponseCode.Success;
+                    response.ReportSchedulerId = reportscheduler.Id;
+                }
+                else
+                {
+                    response.Message = "Report Scheduler Updatation is fail";
+                    response.Code = ResponseCode.Failed;
+                }
+                _logger.Info("Update method in report scheduler called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportSchedulerResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Update method in report scheduler fail : " + ex.Message
+                });
+            }
+        }
+        #endregion
+
         #region Get Report Scheduler
         public override async Task<ReportSchedulerListResponse> GetReportSchedulerList(ReportParameterRequest request, ServerCallContext context)
         {
             try
             {
-                IEnumerable<ReportScheduler> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
                 ReportSchedulerListResponse response = new ReportSchedulerListResponse();
                 if (reportSchedulerList.Any())
                 {
