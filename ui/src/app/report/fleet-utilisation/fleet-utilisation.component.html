@@ -209,6 +209,9 @@
           </div>
         </mat-expansion-panel>
       </mat-card>
+
+<!-- Charts view -->
+
       <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
         <mat-expansion-panel  class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
@@ -216,18 +219,42 @@
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+            <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="chart-wrapper">
+            <canvas baseChart  id="myChart"
+            [data]="doughnutChartData"
+            [chartType]="doughnutChartType"
+            [labels]="doughnutChartLabels">
+          </canvas>
+        </div>
+        </div>
+          <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+            <div class="chart-wrapper">
+            <canvas baseChart  id="myChart"
+            [data]="doughnutChartData"
+            [chartType]="doughnutChartType"
+            [labels]="doughnutChartLabels">
+          </canvas>
+        </div>
+        </div>
+      </div>
       </mat-expansion-panel>
       </mat-card>
+
+      <!-- Calendar view -->
+
       <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel  class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
-              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalender || 'Calender' }}</span>
+              <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalendar || 'Calendar' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <!-- <mwl-calendar-month-view [viewDate]="viewDate">
-          </mwl-calendar-month-view> -->
-      </mat-expansion-panel>
+        
+          <!-- <mat-calendar>
+          </mat-calendar> -->
+      </mat-expansion-panel>   
       </mat-card>
 
       <!-- Fleet Table -->
@@ -243,7 +270,7 @@
             <div style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;' fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblNoRecordFound || 'No Record Found!' }}</div>
             <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>{{ translationData.lblSelectionMessage || 'Please select and search required fields from top to view the details' }}</div>
           </div>
-          <div *ngIf='initData.length > 0'>
+          <div *ngIf='initData.length > 0'  [ngClass]="{'reportTable': displayedColumns.length > 7}">
           <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">
             <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
               <mat-form-field appearance="outline">
