@@ -467,9 +467,9 @@ namespace net.atos.daf.ct2.subscription.repository
                 if (objSubscriptionDetailsRequest != null)
                 {
 
-                    if (objSubscriptionDetailsRequest.OrganizationId > 0)
+                    if (objSubscriptionDetailsRequest.Organization_Id > 0)
                     {
-                        parameter.Add("@organization_id", objSubscriptionDetailsRequest.OrganizationId);
+                        parameter.Add("@organization_id", objSubscriptionDetailsRequest.Organization_Id);
                         query = $"{query} and sub.organization_id=@organization_id ";
 
                         if (!string.IsNullOrEmpty(objSubscriptionDetailsRequest.Type))
