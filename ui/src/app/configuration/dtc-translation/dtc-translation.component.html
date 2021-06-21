@@ -7,15 +7,26 @@
             <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
             <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
             </div>
-    </div>
-    <mat-card class='mat-elevation-z margin-bottom-xlg'>
+       </div>   
         <form [formGroup]="dtcTranslationFormGroup">
-            <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
+            <mat-card class='mat-elevation-z margin-bottom-xlg'>
+         <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
                 <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportDTCTranslation || 'Import DTC Translation' }}</span>
                 </div>
             </div>
             <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
+                <div style='width: 60%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='display: flex; align-items: center;'>
+                        <img matTooltip='Download Excel' src='assets/images/icons/microsoftExcel/excel_icon.svg' style="width: 30px; height: 30px;" />&nbsp;
+                        <a (click)="downloadTranslatedData()" style='cursor: pointer; font: 1 16px/32px Roboto, "Helvetica Neue", sans-serif; text-decoration-line: underline;'>
+                            {{ translationData.lblDownloadTranslatedData || 'Download Translated Data' }}
+                        </a>
+                    </span>
+                    <span>{{ translationData.lblDownloadaTemplateMessage || 'Download final template from here and upload it here with updated details.'}}</span>
+                </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
                 <div style='width: 40%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                     <span>{{ translationData.lblDownloadaTemplateMessage || 'You can enter multiple dtc translation records.'}}</span>
                 </div>
@@ -26,7 +37,7 @@
                                 <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
                                     <mat-label>{{ translationData.lblUploadExcelFile || 'Upload Excel file' }} <span class='mandatoryColor'>*</span></mat-label>
                                     <mat-form-field appearance="outline">
-                                        <ngx-mat-file-input #removableInput (change)="addfile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
+                                        <ngx-mat-file-input #removableInput (change)="addDtcDatafile($event)" [accept]="'.xlsx'" formControlName="uploadFile" placeholder="Upload Excel File" ></ngx-mat-file-input>
                                         <button (click)='onBrowse()' mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
                                     </mat-form-field>
                                     <mat-error *ngIf="dtcTranslationFormGroup.get('uploadFile').hasError('required')">
@@ -54,6 +65,63 @@
                     </div>
                 </div>
             </div>
-        </form>
-    </mat-card>
+        </mat-card>
+        <mat-card class='mat-elevation-z margin-bottom-xlg'>
+            <div *ngIf='successIconMsg' fxLayout="row" fxLayoutAlign="center center"
+            style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
+            {{ translationData.lblDTCIconImportedsuccessfully || 'DTC icons imported successfully' }}
+            </div>
+            <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
+            <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
+            </div>
+       </div>  
+            <div class='margin-bottom-sm' fxLayout="row" fxLayoutAlign="start start">
+                <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblImportDTCTranslation || 'Upload Icon' }}</span>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="15px">
+                <div style='width: 40%' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                    <span>{{ translationData.lblDownloadaTemplateMessage || 'Upload a single icon file (svg format) or a zip file of svg icons'}}</span>
+                </div>
+                <div style='width: 90%; background: #ecf7fe; border-radius: 5px;' fxLayout="column" fxLayoutAlign="end">
+                    <div style='padding: 30px;' fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="start">
+                        <div class='full-width' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start">
+                                <div class='areaWidth full-width myform-wrappe uploadArea' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
+                                    <mat-label>{{ translationData.lblUploadExcelFile || 'Upload svg icon or zip file of icons' }} <span class='mandatoryColor'>*</span></mat-label>
+                                    <mat-form-field appearance="outline">
+                                        <ngx-mat-file-input #removableIconInput (change)="getZipContent($event.target.files)" [accept]="'.zip,.svg'" formControlName="uploadFile" placeholder="Upload svg files" ></ngx-mat-file-input>
+                                        <button (click)='onIconBrowse()' mat-flat-button color="primary" matSuffix>{{ translationData.lblBrowse || 'Browse' }}</button>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="dtcTranslationFormGroup.get('uploadFile').hasError('required')" >
+                                        {{ translationData.lblPleaseselectafile || 'Please select a icon/zip file' }}
+                                    </mat-error>
+                                    <!-- <mat-error *ngIf="dtcTranslationIconGroup.get('uploadFile').hasError('maxContentSize')">
+                                        The total size must not exceed {{dtcTranslationIconGroup.get('uploadFile')?.getError('maxContentSize').maxSize | byteFormat}} ({{dtcTranslationIconGroup.get('uploadFile')?.getError('maxContentSize').actualSize
+                                        | byteFormat}}).
+                                    </mat-error> -->
+                                    <!-- <mat-error *ngIf="!dtcTranslationFormGroup.get('uploadFile').hasError('required') && svgEmptyMsg">
+                                        {{ translationData.lblEmptyFile || 'svg file not found' }}
+                                    </mat-error> -->
+                                    <mat-error *ngIf="!dtcTranslationFormGroup.get('uploadFile').hasError('required') && serverIconError">
+                                        {{ errorIconMsg }} 
+                                    </mat-error>
+                                </div>
+                                <div fxLayout="column" fxLayoutAlign="space-around" class='margin-bottom-sm'>
+                                    <button style='color: #fff;' [disabled]="!dtcTranslationFormGroup.valid || svgEmptyMsg" [ngStyle]="{'margin-top': dtcTranslationFormGroup.get('uploadFile').hasError('required') || svgEmptyMsg || serverIconError ? serverIconError ? '-9px' : '9px' : '29px' }" mat-flat-button color="primary"
+                                        (click)="uploadIconTranslation(removableIconInput)">
+                                        <mat-icon>arrow_circle_up</mat-icon> {{ translationData.lblImport || 'Import Icon' }}
+                                    </button>
+                                </div>
+                               </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+        </form>   
+        
+      
 </div>

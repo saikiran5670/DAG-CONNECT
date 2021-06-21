@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
         {
             try
             {
-                IEnumerable<ReportScheduler> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
+                IEnumerable<ReportSchedulerMap> reportSchedulerList = await _reportSchedulerManager.GetReportSchedulerList(request.OrganizationId);
                 ReportSchedulerListResponse response = new ReportSchedulerListResponse();
                 if (reportSchedulerList.Any())
                 {

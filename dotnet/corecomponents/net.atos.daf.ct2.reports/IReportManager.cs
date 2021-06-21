@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter driverActivityFilter);
         Task<List<DriversActivities>> GetDriversActivity(DriverActivityFilter driverActivityFilter);
         Task<IEnumerable<ReportDetails>> GetReportDetails();
-        Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN);
+        Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin);
         Task<bool> CreateEcoScoreProfile(EcoScoreProfileDto dto);
         Task<int> GetEcoScoreProfilesCount(int orgId);
         Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
@@ -22,9 +22,9 @@ namespace net.atos.daf.ct2.reports
         Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto, bool isAdminRights);
         Task<int> DeleteEcoScoreProfile(int profileId, bool isAdminRights);
         Task<string> GetProfileName(int profileId);
-        Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN);
-        Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetFilter);
-        Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter TripFilters);
+        Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin);
+        Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter fleetFilter);
+        Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters);
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
     }
 }
