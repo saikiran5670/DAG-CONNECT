@@ -7,6 +7,7 @@ using Npgsql;
 
 namespace net.atos.daf.ct2.data
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class PgSQLDataMartDataAccess : IDataMartDataAccess
     {
 

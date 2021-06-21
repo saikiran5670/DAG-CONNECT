@@ -145,7 +145,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                     response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
                     response.Code = Responsecode.NotFound;
                     response.Message = Responsecode.NotFound.ToString();
-                }                
+                }
             }
             catch (Exception ex)
             {

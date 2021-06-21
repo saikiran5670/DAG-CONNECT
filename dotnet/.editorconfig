@@ -191,9 +191,9 @@ dotnet_naming_rule.constant_should_be_allcapitals.severity = error
 dotnet_naming_rule.constant_should_be_allcapitals.symbols = constant
 dotnet_naming_rule.constant_should_be_allcapitals.style = allcapitals
 
-# dotnet_naming_rule.method_parameters_should_be_camel_case_mp.symbols = method_parameters
-# dotnet_naming_rule.method_parameters_should_be_camel_case_mp.style = camel_case_mp
-# dotnet_naming_rule.method_parameters_should_be_camel_case_mp.severity = warning
+dotnet_naming_rule.method_parameters_should_be_camel_case_mp.symbols = method_parameters
+dotnet_naming_rule.method_parameters_should_be_camel_case_mp.style = camel_case_mp
+dotnet_naming_rule.method_parameters_should_be_camel_case_mp.severity = warning
 
 # Symbol specifications
 
@@ -243,9 +243,10 @@ dotnet_naming_style.allcapitals.required_suffix =
 dotnet_naming_style.allcapitals.word_separator = _
 dotnet_naming_style.allcapitals.capitalization = all_upper
 
-# dotnet_naming_style.camel_case_mp.required_prefix = 
-# dotnet_naming_style.camel_case_mp.required_suffix = 
-# dotnet_naming_style.camel_case_mp.word_separator = 
-# dotnet_naming_style.camel_case_mp.capitalization = camel_case
+dotnet_naming_style.camel_case_mp.required_prefix = 
+dotnet_naming_style.camel_case_mp.required_suffix = 
+dotnet_naming_style.camel_case_mp.word_separator = 
+dotnet_naming_style.camel_case_mp.capitalization = camel_case
 
 dotnet_diagnostic.IDE0055.severity = warning
+dotnet_diagnostic.IDE0044.severity = warning
