@@ -148,5 +148,48 @@ namespace net.atos.daf.ct2.reportservice.Services
             }
         }
         #endregion
+
+        #region - Common search parameter for all reports
+
+        public override async Task<ReportSearchParameterResponse> GetReportSearchParameter(IdRequestForDriverActivity request, ServerCallContext context)
+        {
+            ReportSearchParameterResponse response = new ReportSearchParameterResponse();
+            try
+            {
+                var visibleVehicle = await GetVisibleVINDetails(request.AccountId, request.OrganizationId);
+                if (visibleVehicle?.Item1?.Count() > 0)
+                {
+                    response.VehicleDetailsWithAccountVisibiltyList.AddRange(visibleVehicle.Item1);
+                    object lstDriver = await _reportManager.GetReportSearchParameterByVIN(request.ReportId, request.StartDateTime, request.EndDateTime, visibleVehicle.Item2);
+                    if (lstDriver != null)
+                    {
+                        string resDrivers = JsonConvert.SerializeObject(lstDriver);
+                        response.AdditionalSearchParameter.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<SearchParameter>>(resDrivers));
+                    }
+                    else
+                    {
+                        response.AdditionalSearchParameter.Add(new SearchParameter());
+                    }
+                }
+                else
+                {
+                    response.AdditionalSearchParameter.Add(new SearchParameter());
+                    response.VehicleDetailsWithAccountVisibiltyList.Add(new VehicleDetailsWithAccountVisibilty());
+                }
+                response.Code = Responsecode.Success;
+                response.Message = Responsecode.Success.ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new ReportSearchParameterResponse
+                {
+                    Code = Responsecode.Failed,
+                    Message = "GetDriverActivityParameters failed due to - " + ex.Message
+                });
+            }
+            return await Task.FromResult(response);
+        }
+        #endregion
     }
 }

@@ -50,13 +50,13 @@ checkboxChecked: boolean = false;
         }
     }
 
-    if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
-    this.selectedRowData.alertUrgencyLevelRefs.length > 0 && 
-    this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0)
- {
-   this.setDefaultValues();
- }
-
+    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      if(this.selectedRowData.alertUrgencyLevelRefs.length > 0 && 
+        (this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0 || (this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.length > 0 &&
+          this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail.length > 0))){
+        this.setDefaultValues();
+      }
+    }
     else if (this.actionType == 'view') {
       let PeriodType;
       this.timings = [
@@ -190,19 +190,35 @@ setDefaultValues(){
     this.onChangeDaySelection(false, i);
     this.weekDays().at(i).get("daySelection").setValue(false);
   }
-  
-  if(this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0){
-  this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
-    // this.addMultipleItems(false,element);
-  
-    element.dayType.forEach((item,index) =>{
-        if(item == true){
-          this.checkboxChecked = true;
-          this.setDayAndCustomDetails(index,element);
-        }
-      })  
-  });
-}
+  if(this.selectedRowData.type == 'S'){
+    if(this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0){
+    this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
+      // this.addMultipleItems(false,element);
+    
+        element.dayType.forEach((item,index) =>{
+          if(item == true){
+            this.checkboxChecked = true;
+            this.setDayAndCustomDetails(index,element);
+          }
+        })  
+      });
+    }
+  }
+  else{
+    if(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.length > 0 &&
+      this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail.length > 0){
+      this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
+        // this.addMultipleItems(false,element);
+      
+          element.dayType.forEach((item,index) =>{
+            if(item == true){
+              this.checkboxChecked = true;
+              this.setDayAndCustomDetails(index,element);
+            }
+          })  
+      });
+    }
+  }
 }
 
 setDayAndCustomDetails(index,element){
@@ -247,7 +263,7 @@ getAlertTimingPayload(){
           let endTime = customTime.toTime.value;
           let startTimeSeconds = this.convertTimeToSeconds(startTime);
           let endTimeSeconds = this.convertTimeToSeconds(endTime);
-          if(this.actionType == 'create'){
+          if(this.actionType == 'create' || this.actionType == 'duplicate'){
           tempObj = {
             "type": 'U',
             "refId": 0,
@@ -260,7 +276,7 @@ getAlertTimingPayload(){
             "state": "A"
           }
         }
-        else if(this.actionType == 'edit' || this.actionType == 'duplicate')
+        else if(this.actionType == 'edit')
         {
           tempObj = {
             "type": "U",
@@ -280,7 +296,7 @@ getAlertTimingPayload(){
         })
       }
       else{
-        if(this.actionType == 'create'){
+        if(this.actionType == 'create' || this.actionType == 'duplicate'){
         tempObj = {
           "type": 'U',
           "refId": 0,
@@ -293,7 +309,7 @@ getAlertTimingPayload(){
           "state": "A"
         }
       }
-      else if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      else if(this.actionType == 'edit'){
         tempObj = {
           "type": "U",
           "refId": 0,

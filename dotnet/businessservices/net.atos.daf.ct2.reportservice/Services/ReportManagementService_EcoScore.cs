@@ -249,7 +249,7 @@ namespace net.atos.daf.ct2.reportservice.Services
 
         #endregion
 
-        #region - Update Eco score
+        #region Eco Score Report - Update Profile
         public override async Task<UpdateEcoScoreProfileResponse> UpdateEcoScoreProfile(UpdateEcoScoreProfileRequest request, ServerCallContext context)
         {
             var response = new UpdateEcoScoreProfileResponse();
@@ -315,7 +315,8 @@ namespace net.atos.daf.ct2.reportservice.Services
 
 
         #endregion
-        #region - Delete Profile
+
+        #region Eco Score Report - Delete Profile
         public override async Task<DeleteEcoScoreProfileResponse> DeleteEcoScoreProfile(DeleteEcoScoreProfileRequest request, ServerCallContext context)
         {
             DeleteEcoScoreProfileResponse response = new DeleteEcoScoreProfileResponse();
@@ -414,7 +415,8 @@ namespace net.atos.daf.ct2.reportservice.Services
                 MinDriverTotalDistance = request.MinDriverTotalDistance,
                 OrgId = request.OrgId,
                 AccountId = request.AccountId,
-                TargetProfileId = request.TargetProfileId
+                TargetProfileId = request.TargetProfileId,
+                ReportId = request.ReportId
             };
             return objRequest;
         }

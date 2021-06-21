@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler;
+using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
 
 namespace atos.net.daf.ct2.reportscheduler.test
@@ -37,6 +38,42 @@ namespace atos.net.daf.ct2.reportscheduler.test
             int AccountId = 393;
             int OrgnisationId = 1;
             var result = await _reportSchedulerManager.GetReportParameter(AccountId, OrgnisationId);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for create report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_ReportScheduler_CreateReportScheduler()
+        {
+            ReportScheduler report = new ReportScheduler();
+            var result = await _reportSchedulerManager.CreateReportScheduler(report);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for update report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_ReportScheduler_UpdateReportScheduler()
+        {
+            ReportScheduler report = new ReportScheduler();
+            var result = await _reportSchedulerManager.UpdateReportScheduler(report);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for get report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_ReportScheduler_GetReportSchedulerList()
+        {
+            int OrgnisationId = 1;
+            var result = await _reportSchedulerManager.GetReportSchedulerList(OrgnisationId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }

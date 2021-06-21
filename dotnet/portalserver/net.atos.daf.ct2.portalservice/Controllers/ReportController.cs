@@ -49,6 +49,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getreportdetails")]
+        [Route("getdetails")]
         public async Task<IActionResult> GetReportDetails()
         {
             try
@@ -80,6 +81,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getuserpreferencereportdatacolumn")]
+        [Route("userpreference/get")]
         public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId)
         {
             try
@@ -118,6 +120,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region - Trip Report Table Details
         [HttpGet]
         [Route("gettripdetails")]
+        [Route("trip/getdetails")]
         public async Task<IActionResult> GetFilteredTripDetails([FromQuery] TripFilterRequest request)
         {
             try
@@ -158,6 +161,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Create User Preference
         [HttpPost]
         [Route("createuserpreference")]
+        [Route("userpreference/create")]
         public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             try
@@ -197,6 +201,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Select User Preferences
         [HttpGet]
         [Route("getvinsfromtripstatisticsandvehicledetails")]
+        [Route("trip/getpreferences")]
         public async Task<IActionResult> GetVinsFromTripStatisticsAndVehicleDetails(int accountId, int organizationId)
         {
             try
@@ -335,7 +340,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getsearchparameters")]
+        [Route("search/getparameters")]
         public async Task<IActionResult> GetReportSearchParameter([FromBody] IdRequestForDriverActivity request)
         {
             try
@@ -482,7 +487,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpDelete]
         [Route("ecoscore/deleteprofile")]
-
         public async Task<IActionResult> DeleteEcoScoreProfile([FromQuery] EcoScoreProfileDeleteRequest request)
         {
             try
@@ -523,15 +527,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 grpcRequest.AccountId = _userDetails.AccountId;
                 grpcRequest.OrgId = GetContextOrgId();
 
-                var data = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
-                if (data?.DriverRanking?.Count > 0)
+                var response = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
+                if (response?.DriverRanking?.Count > 0)
                 {
-                    data.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
-                    return Ok(data);
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
                 }
                 else
                 {
-                    return StatusCode(404, ReportConstants.GET_ECOSCORE_REPORT_FAILURE_MSG);
+                    return StatusCode((int)response.Code, response.Message);
                 }
             }
             catch (Exception ex)
