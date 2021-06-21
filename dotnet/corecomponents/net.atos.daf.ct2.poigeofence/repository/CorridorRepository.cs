@@ -135,7 +135,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public async Task<List<ViaAddressDetail>> GetCorridorViaStopById(int Id)
+        public async Task<List<ViaAddressDetail>> GetCorridorViaStopById(int id)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 						  FROM MASTER.CORRIDORVIASTOP WHERE
 						  landmark_id=@landmark_id and state = 'A'";
 
-                parameter.Add("@landmark_id", Id);
+                parameter.Add("@landmark_id", id);
                 var data = await _dataAccess.QueryAsync<ViaAddressDetail>(query, parameter);
                 List<ViaAddressDetail> objViaAddressDetailList;
                 return objViaAddressDetailList = data.ToList();
@@ -274,25 +274,25 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return routeCorridor;
         }
 
-        public async Task<bool> CheckRouteCorridorIsexist(string CorridorName, int? OrganizationId, int Id, char Type)
+        public async Task<bool> CheckRouteCorridorIsexist(string corridorName, int? organizationId, int id, char type)
         {
             var parameterduplicate = new DynamicParameters();
-            parameterduplicate.Add("@organization_id", OrganizationId);
-            parameterduplicate.Add("@name", CorridorName);
-            parameterduplicate.Add("@type", Type);
+            parameterduplicate.Add("@organization_id", organizationId);
+            parameterduplicate.Add("@name", corridorName);
+            parameterduplicate.Add("@type", type);
             var queryduplicate = @"SELECT id FROM master.landmark where state in ('A','I')  and type = @type and name=@name and organization_id=@organization_id;";
 
             int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
 
             return corridorExist == 0 ? false : true;
         }
-        public async Task<bool> CheckCorridorexistByIdName(string CorridorName, int? OrganizationId, int Id, char Type)
+        public async Task<bool> CheckCorridorexistByIdName(string corridorName, int? organizationId, int id, char type)
         {
             var parameterduplicate = new DynamicParameters();
-            parameterduplicate.Add("@organization_id", OrganizationId);
-            parameterduplicate.Add("@name", CorridorName);
-            parameterduplicate.Add("@type", Type);
-            parameterduplicate.Add("@id", Id);
+            parameterduplicate.Add("@organization_id", organizationId);
+            parameterduplicate.Add("@name", corridorName);
+            parameterduplicate.Add("@type", type);
+            parameterduplicate.Add("@id", id);
             var queryduplicate = @"SELECT id FROM master.landmark where id=@id and organization_id=@organization_id and name=@name and type = @type and state in ('A','I');";
 
             int corridorExist = await _dataAccess.ExecuteScalarAsync<int>(queryduplicate, parameterduplicate);
@@ -813,7 +813,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
         }
 
         #endregion
-        public async Task<CorridorID> DeleteCorridor(int CorridorId)
+        public async Task<CorridorID> DeleteCorridor(int corridorId)
         {
             _log.Info("Delete Corridor method called in repository");
             try
@@ -831,7 +831,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                                           SET  state= @State
                                             where landmark_id= @ID";
 
-                    parameter.Add("@ID", CorridorId);
+                    parameter.Add("@ID", corridorId);
                     parameter.Add("@State", "D");
 
                     var id = await _dataAccess.ExecuteScalarAsync<int>(deleteCorridor, parameter);
@@ -847,13 +847,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
             catch (Exception ex)
             {
-                _log.Info("Delete Corridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(CorridorId));
+                _log.Info("Delete Corridor method in repository failed :" + Newtonsoft.Json.JsonConvert.SerializeObject(corridorId));
                 _log.Error(ex.ToString());
                 throw;
             }
         }
 
-        public async Task<int> GetAssociateAlertbyId(int Id)
+        public async Task<int> GetAssociateAlertbyId(int id)
         {
             try
             {
@@ -862,7 +862,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                           from master.alertlandmarkref
                           where ref_id= @landmark_id and landmark_type=@Type and state =@State";
 
-                parameter.Add("@landmark_id", Id);
+                parameter.Add("@landmark_id", id);
                 parameter.Add("@Type", "R");
                 parameter.Add("@State", "A");
                 var data = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -880,19 +880,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
             var transactionScope = _dataAccess.Connection.BeginTransaction();
             try
             {
-                var UpdateCorridorparameter = new DynamicParameters();
+                var updateCorridorparameter = new DynamicParameters();
 
                 StringBuilder queryForUpdateCorridor = new StringBuilder();
                 queryForUpdateCorridor.Append("UPDATE master.landmark set modified_at=@modified_at");
                 //UpdateCorridorparameter.Add("@OrganizationId", routeCorridor.OrganizationId);
                 if (!string.IsNullOrEmpty(routeCorridor.CorridorLabel))
                 {
-                    UpdateCorridorparameter.Add("@name", routeCorridor.CorridorLabel);
+                    updateCorridorparameter.Add("@name", routeCorridor.CorridorLabel);
                     queryForUpdateCorridor.Append(", name=@name");
                 }
                 if (!string.IsNullOrEmpty(routeCorridor.StartAddress))
                 {
-                    UpdateCorridorparameter.Add("@address", routeCorridor.StartAddress);
+                    updateCorridorparameter.Add("@address", routeCorridor.StartAddress);
                     queryForUpdateCorridor.Append(", address=@address");
                 }
                 //if (!string.IsNullOrEmpty(routeCorridor.CorridorType))
@@ -902,39 +902,39 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 //}
                 if (routeCorridor.Distance > 0)
                 {
-                    UpdateCorridorparameter.Add("@distance", routeCorridor.Distance);
+                    updateCorridorparameter.Add("@distance", routeCorridor.Distance);
                     queryForUpdateCorridor.Append(", distance=@distance");
                 }
                 if (routeCorridor.Width > 0)
                 {
-                    UpdateCorridorparameter.Add("@Width", routeCorridor.Width);
+                    updateCorridorparameter.Add("@Width", routeCorridor.Width);
                     queryForUpdateCorridor.Append(", Width=@Width");
                 }
                 if (!string.IsNullOrEmpty(routeCorridor.State))
                 {
-                    UpdateCorridorparameter.Add("@state", routeCorridor.State);
+                    updateCorridorparameter.Add("@state", routeCorridor.State);
                     queryForUpdateCorridor.Append(", state=@state");
                 }
                 if (routeCorridor.StartLatitude > 0)
                 {
-                    UpdateCorridorparameter.Add("@latitude", routeCorridor.StartLatitude);
+                    updateCorridorparameter.Add("@latitude", routeCorridor.StartLatitude);
                     queryForUpdateCorridor.Append(", latitude=@latitude");
                 }
                 if (routeCorridor.StartLongitude > 0)
                 {
-                    UpdateCorridorparameter.Add("@longitude", routeCorridor.StartLongitude);
+                    updateCorridorparameter.Add("@longitude", routeCorridor.StartLongitude);
                     queryForUpdateCorridor.Append(", longitude=@longitude");
                 }
 
                 if (routeCorridor.Modified_By > 0)
                 {
-                    UpdateCorridorparameter.Add("@modified_by", routeCorridor.Modified_By);
+                    updateCorridorparameter.Add("@modified_by", routeCorridor.Modified_By);
                     queryForUpdateCorridor.Append(", modified_by=@modified_by");
                 }
 
-                UpdateCorridorparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                updateCorridorparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
                 //queryForUpdateCorridor.Append(", modified_at=@modified_at");
-                UpdateCorridorparameter.Add("@id", routeCorridor.Id);
+                updateCorridorparameter.Add("@id", routeCorridor.Id);
                 queryForUpdateCorridor.Append(" where id=@id RETURNING id");
 
                 //var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridor.ToString(), parameter);
@@ -950,31 +950,31 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 StringBuilder queryForUpdateCorridorNodes = new StringBuilder();
                 queryForUpdateCorridorNodes.Append("UPDATE master.nodes set modified_at=@modified_at");
-                var UpdateCorridorNodesparameter = new DynamicParameters();
+                var updateCorridorNodesparameter = new DynamicParameters();
                 if (routeCorridor.EndLatitude > 0)
                 {
-                    UpdateCorridorNodesparameter.Add("@latitude", routeCorridor.EndLatitude);
+                    updateCorridorNodesparameter.Add("@latitude", routeCorridor.EndLatitude);
                     queryForUpdateCorridorNodes.Append(", latitude=@latitude");
                 }
                 if (routeCorridor.EndLongitude > 0)
                 {
-                    UpdateCorridorNodesparameter.Add("@longitude", routeCorridor.EndLongitude);
+                    updateCorridorNodesparameter.Add("@longitude", routeCorridor.EndLongitude);
                     queryForUpdateCorridorNodes.Append(", longitude=@longitude");
                 }
                 if (!string.IsNullOrEmpty(routeCorridor.EndAddress))
                 {
-                    UpdateCorridorNodesparameter.Add("@address", routeCorridor.EndAddress);
+                    updateCorridorNodesparameter.Add("@address", routeCorridor.EndAddress);
                     queryForUpdateCorridorNodes.Append(", address=@address");
                 }
 
                 queryForUpdateCorridorNodes.Append(", modified_by=@modified_by");
-                UpdateCorridorNodesparameter.Add("@modified_by", routeCorridor.Modified_By);
+                updateCorridorNodesparameter.Add("@modified_by", routeCorridor.Modified_By);
 
                 //queryForUpdateCorridorNodes.Append(", modified_at=@modified_at");
-                UpdateCorridorNodesparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                updateCorridorNodesparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
                 queryForUpdateCorridorNodes.Append(" where landmark_id=@landmark_id RETURNING id");
-                UpdateCorridorNodesparameter.Add("@landmark_id", routeCorridor.Id);
+                updateCorridorNodesparameter.Add("@landmark_id", routeCorridor.Id);
 
                 //var insertIntoCorridorProperties = @"INSERT INTO master.corridorproperties(
                 //                      landmark_id, is_transport_data, is_traffic_flow, no_of_trailers, is_explosive, is_gas, is_flammable, is_combustible, is_organic, is_poison, is_radio_active, is_corrosive, is_poisonous_inhalation, is_warm_harm, is_other, toll_road_type, motorway_type, boat_ferries_type, rail_ferries_type, tunnels_type, dirt_road_type, vehicle_height, vehicle_width, vehicle_length, vehicle_limited_weight, vehicle_weight_per_axle, created_at)
@@ -982,138 +982,138 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 StringBuilder queryToUpdateCorridorProperties = new StringBuilder();
                 queryToUpdateCorridorProperties.Append("UPDATE master.corridorproperties set modified_at=@modified_at");
-                var UpdateCorridorPropertiesparameter = new DynamicParameters();
+                var updateCorridorPropertiesparameter = new DynamicParameters();
 
-                UpdateCorridorPropertiesparameter.Add("@is_transport_data", routeCorridor.TransportData);
+                updateCorridorPropertiesparameter.Add("@is_transport_data", routeCorridor.TransportData);
                 queryToUpdateCorridorProperties.Append(", is_transport_data=@is_transport_data");
 
-                UpdateCorridorPropertiesparameter.Add("@is_traffic_flow", routeCorridor.TrafficFlow);
+                updateCorridorPropertiesparameter.Add("@is_traffic_flow", routeCorridor.TrafficFlow);
                 queryToUpdateCorridorProperties.Append(", is_traffic_flow=@is_traffic_flow");
                 if (routeCorridor.Trailer > 0)
                 {
-                    UpdateCorridorPropertiesparameter.Add("@no_of_trailers", routeCorridor.Trailer);
+                    updateCorridorPropertiesparameter.Add("@no_of_trailers", routeCorridor.Trailer);
                     queryToUpdateCorridorProperties.Append(", no_of_trailers=@no_of_trailers");
                 }
-                UpdateCorridorPropertiesparameter.Add("@is_explosive", routeCorridor.Explosive);
+                updateCorridorPropertiesparameter.Add("@is_explosive", routeCorridor.Explosive);
                 queryToUpdateCorridorProperties.Append(", is_explosive=@is_explosive");
 
-                UpdateCorridorPropertiesparameter.Add("@is_gas", routeCorridor.Gas);
+                updateCorridorPropertiesparameter.Add("@is_gas", routeCorridor.Gas);
                 queryToUpdateCorridorProperties.Append(", is_gas=@is_gas");
 
-                UpdateCorridorPropertiesparameter.Add("@is_flammable", routeCorridor.Flammable);
+                updateCorridorPropertiesparameter.Add("@is_flammable", routeCorridor.Flammable);
                 queryToUpdateCorridorProperties.Append(", is_flammable=@is_flammable");
 
-                UpdateCorridorPropertiesparameter.Add("@is_combustible", routeCorridor.Combustible);
+                updateCorridorPropertiesparameter.Add("@is_combustible", routeCorridor.Combustible);
                 queryToUpdateCorridorProperties.Append(", is_combustible=@is_combustible");
 
-                UpdateCorridorPropertiesparameter.Add("@is_organic", routeCorridor.Organic);
+                updateCorridorPropertiesparameter.Add("@is_organic", routeCorridor.Organic);
                 queryToUpdateCorridorProperties.Append(", is_organic=@is_organic");
 
-                UpdateCorridorPropertiesparameter.Add("@is_poison", routeCorridor.Poision);
+                updateCorridorPropertiesparameter.Add("@is_poison", routeCorridor.Poision);
                 queryToUpdateCorridorProperties.Append(", is_poison=@is_poison");
 
-                UpdateCorridorPropertiesparameter.Add("@is_radio_active", routeCorridor.RadioActive);
+                updateCorridorPropertiesparameter.Add("@is_radio_active", routeCorridor.RadioActive);
                 queryToUpdateCorridorProperties.Append(", is_radio_active=@is_radio_active");
 
-                UpdateCorridorPropertiesparameter.Add("@is_corrosive", routeCorridor.Corrosive);
+                updateCorridorPropertiesparameter.Add("@is_corrosive", routeCorridor.Corrosive);
                 queryToUpdateCorridorProperties.Append(", is_corrosive=@is_corrosive");
 
-                UpdateCorridorPropertiesparameter.Add("@is_poisonous_inhalation", routeCorridor.PoisonousInhalation);
+                updateCorridorPropertiesparameter.Add("@is_poisonous_inhalation", routeCorridor.PoisonousInhalation);
                 queryToUpdateCorridorProperties.Append(", is_poisonous_inhalation=@is_poisonous_inhalation");
 
-                UpdateCorridorPropertiesparameter.Add("@is_warm_harm", routeCorridor.WaterHarm);
+                updateCorridorPropertiesparameter.Add("@is_warm_harm", routeCorridor.WaterHarm);
                 queryToUpdateCorridorProperties.Append(", is_warm_harm=@is_warm_harm");
 
-                UpdateCorridorPropertiesparameter.Add("@is_other", routeCorridor.Other);
+                updateCorridorPropertiesparameter.Add("@is_other", routeCorridor.Other);
                 queryToUpdateCorridorProperties.Append(", is_other=@is_other");
 
                 //Char type added validation at model level so if is not needed here
-                UpdateCorridorPropertiesparameter.Add("@toll_road_type", routeCorridor.TollRoad);
+                updateCorridorPropertiesparameter.Add("@toll_road_type", routeCorridor.TollRoad);
                 queryToUpdateCorridorProperties.Append(", toll_road_type=@toll_road_type");
 
-                UpdateCorridorPropertiesparameter.Add("@motorway_type", routeCorridor.Mortorway);
+                updateCorridorPropertiesparameter.Add("@motorway_type", routeCorridor.Mortorway);
                 queryToUpdateCorridorProperties.Append(", motorway_type=@motorway_type");
 
-                UpdateCorridorPropertiesparameter.Add("@boat_ferries_type", routeCorridor.BoatFerries);
+                updateCorridorPropertiesparameter.Add("@boat_ferries_type", routeCorridor.BoatFerries);
                 queryToUpdateCorridorProperties.Append(", boat_ferries_type=@boat_ferries_type");
 
-                UpdateCorridorPropertiesparameter.Add("@rail_ferries_type", routeCorridor.RailFerries);
+                updateCorridorPropertiesparameter.Add("@rail_ferries_type", routeCorridor.RailFerries);
                 queryToUpdateCorridorProperties.Append(", rail_ferries_type=@rail_ferries_type");
 
-                UpdateCorridorPropertiesparameter.Add("@tunnels_type", routeCorridor.Tunnels);
+                updateCorridorPropertiesparameter.Add("@tunnels_type", routeCorridor.Tunnels);
                 queryToUpdateCorridorProperties.Append(", tunnels_type=@tunnels_type");
 
-                UpdateCorridorPropertiesparameter.Add("@dirt_road_type", routeCorridor.DirtRoad);
+                updateCorridorPropertiesparameter.Add("@dirt_road_type", routeCorridor.DirtRoad);
                 queryToUpdateCorridorProperties.Append(", dirt_road_type=@dirt_road_type");
 
 
                 if (routeCorridor.VehicleSizeHeight > 0)
                 {
-                    UpdateCorridorPropertiesparameter.Add("@vehicle_height", routeCorridor.VehicleSizeHeight);
+                    updateCorridorPropertiesparameter.Add("@vehicle_height", routeCorridor.VehicleSizeHeight);
                     queryToUpdateCorridorProperties.Append(", vehicle_height=@vehicle_height");
                 }
                 if (routeCorridor.VehicleSizeWidth > 0)
                 {
-                    UpdateCorridorPropertiesparameter.Add("@vehicle_width", routeCorridor.VehicleSizeWidth);
+                    updateCorridorPropertiesparameter.Add("@vehicle_width", routeCorridor.VehicleSizeWidth);
                     queryToUpdateCorridorProperties.Append(", vehicle_width=@vehicle_width");
                 }
                 if (routeCorridor.VehicleSizeLength > 0)
                 {
-                    UpdateCorridorPropertiesparameter.Add("@vehicle_length", routeCorridor.VehicleSizeLength);
+                    updateCorridorPropertiesparameter.Add("@vehicle_length", routeCorridor.VehicleSizeLength);
                     queryToUpdateCorridorProperties.Append(", vehicle_length=@vehicle_length");
                 }
                 if (routeCorridor.VehicleSizeLimitedWeight > 0)
                 {
-                    UpdateCorridorPropertiesparameter.Add("@vehicle_limited_weight", routeCorridor.VehicleSizeLimitedWeight);
+                    updateCorridorPropertiesparameter.Add("@vehicle_limited_weight", routeCorridor.VehicleSizeLimitedWeight);
                     queryToUpdateCorridorProperties.Append(", vehicle_limited_weight=@vehicle_limited_weight");
                 }
                 if (routeCorridor.VehicleSizeWeightPerAxle > 0)
                 {
-                    UpdateCorridorPropertiesparameter.Add("@vehicle_weight_per_axle", routeCorridor.VehicleSizeWeightPerAxle);
+                    updateCorridorPropertiesparameter.Add("@vehicle_weight_per_axle", routeCorridor.VehicleSizeWeightPerAxle);
                     queryToUpdateCorridorProperties.Append(", vehicle_weight_per_axle=@vehicle_weight_per_axle");
                 }
 
-                UpdateCorridorPropertiesparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
+                updateCorridorPropertiesparameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
                 queryToUpdateCorridorProperties.Append(" where landmark_id=@landmark_id RETURNING id");
-                UpdateCorridorPropertiesparameter.Add("@landmark_id", routeCorridor.Id);
+                updateCorridorPropertiesparameter.Add("@landmark_id", routeCorridor.Id);
 
 
-                var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridor.ToString(), UpdateCorridorparameter);
+                var id = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridor.ToString(), updateCorridorparameter);
                 if (id > 0)
                 {
                     routeCorridor.Id = id;
                     //parameter.Add("@landmark_id", routeCorridor.Id);
 
-                    int NodeId = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridorNodes.ToString(), UpdateCorridorNodesparameter);
+                    int nodeId = await _dataAccess.ExecuteScalarAsync<int>(queryForUpdateCorridorNodes.ToString(), updateCorridorNodesparameter);
 
-                    int CorridorProperties = await _dataAccess.ExecuteScalarAsync<int>(queryToUpdateCorridorProperties.ToString(), UpdateCorridorPropertiesparameter);
+                    int corridorProperties = await _dataAccess.ExecuteScalarAsync<int>(queryToUpdateCorridorProperties.ToString(), updateCorridorPropertiesparameter);
 
                     ViaRoute routeObj = new ViaRoute();
-                    var UpdateViaStopparameter = new DynamicParameters();
-                    UpdateViaStopparameter.Add("@state", "I");
-                    UpdateViaStopparameter.Add("@landmark_id", routeCorridor.Id);
+                    var updateViaStopparameter = new DynamicParameters();
+                    updateViaStopparameter.Add("@state", "I");
+                    updateViaStopparameter.Add("@landmark_id", routeCorridor.Id);
                     string querytoUpdateViaStop = @"UPDATE master.corridorviastop set state=@state 
                                            where landmark_id=@landmark_id";
-                    await _dataAccess.ExecuteAsync(querytoUpdateViaStop, UpdateViaStopparameter);
+                    await _dataAccess.ExecuteAsync(querytoUpdateViaStop, updateViaStopparameter);
                     foreach (var item in routeCorridor.ViaRoutDetails)
                     {
                         var temp = new ViaRoute();
                         temp.ViaStopName = item.ViaStopName;
                         temp.Latitude = item.Latitude;
                         temp.Longitude = item.Longitude;
-                        var UpdateViaRoutparameter = new DynamicParameters();
-                        UpdateViaRoutparameter.Add("@latitude", temp.Latitude);
-                        UpdateViaRoutparameter.Add("@longitude", temp.Longitude);
-                        UpdateViaRoutparameter.Add("@name", temp.ViaStopName);
-                        UpdateViaRoutparameter.Add("@state", "A");
-                        UpdateViaRoutparameter.Add("@landmark_id", routeCorridor.Id);
-                        string QueryInsertViaStop = string.Empty;
-                        QueryInsertViaStop = @"INSERT INTO master.corridorviastop(
+                        var updateViaRoutparameter = new DynamicParameters();
+                        updateViaRoutparameter.Add("@latitude", temp.Latitude);
+                        updateViaRoutparameter.Add("@longitude", temp.Longitude);
+                        updateViaRoutparameter.Add("@name", temp.ViaStopName);
+                        updateViaRoutparameter.Add("@state", "A");
+                        updateViaRoutparameter.Add("@landmark_id", routeCorridor.Id);
+                        string queryInsertViaStop = string.Empty;
+                        queryInsertViaStop = @"INSERT INTO master.corridorviastop(
                                           landmark_id, latitude, longitude, name, state)
                                             VALUES (@landmark_id, @latitude, @longitude ,@name, @state)";
 
-                        await _dataAccess.ExecuteAsync(QueryInsertViaStop, UpdateViaRoutparameter);
+                        await _dataAccess.ExecuteAsync(queryInsertViaStop, updateViaRoutparameter);
                     }
                 }
                 transactionScope.Commit();

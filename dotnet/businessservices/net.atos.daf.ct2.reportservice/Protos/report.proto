@@ -89,7 +89,7 @@ message Atribute{
    string Type = 3;
  string CharType = 4;
   string ThresholdType = 5;
-  string ThresholdValue = 6;
+  int64 ThresholdValue = 6;
 }
 
 message UserPreferenceCreateResponse{

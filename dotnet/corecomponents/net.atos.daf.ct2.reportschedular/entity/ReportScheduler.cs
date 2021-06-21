@@ -12,7 +12,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string FrequencyType { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
-        public string FileName { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public string Code { get; set; }
@@ -37,6 +36,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long DownloadedAt { get; set; }
         public long ValidTill { get; set; }
         public long CreatedAt { get; set; }
+        public string FileName { get; set; }
     }
     public class ScheduledReportRecipient
     {

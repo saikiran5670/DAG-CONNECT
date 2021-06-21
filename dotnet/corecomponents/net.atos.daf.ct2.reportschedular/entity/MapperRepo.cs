@@ -84,7 +84,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             reportScheduler.FrequencyType = request.Repsch_frequency_type;
             reportScheduler.Status = request.Repsch_status;
             reportScheduler.Type = request.Repsch_type;
-            reportScheduler.FileName = request.Repsch_file_name;
             reportScheduler.StartDate = request.Repsch_start_date;
             reportScheduler.EndDate = request.Repsch_end_date;
             reportScheduler.Code = request.Repsch_code;
