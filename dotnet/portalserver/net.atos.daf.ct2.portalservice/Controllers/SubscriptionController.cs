@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.subscription.entity;
+using Newtonsoft.Json;
 using SubscriptionBusinessService = net.atos.daf.ct2.subscriptionservice;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -16,18 +17,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class SubscriptionController : BaseController
     {
-
         #region Private Variable
-        //private readonly ILogger<SubscriptionController> _logger;
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient _subscribeClient;
         private readonly AuditHelper _auditHelper;
 
         #endregion
 
         #region Constructor
-        public SubscriptionController(SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient subscribeClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public SubscriptionController(SubscriptionBusinessService.SubscribeGRPCService.SubscribeGRPCServiceClient subscribeClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _subscribeClient = subscribeClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -59,6 +58,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (details.SubscriptionList.Count > 0)
                 {
+                    await _auditHelper.AddLogs(DateTime.Now, "Subscription Component",
+                      "Subscription service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                      "GetSubscriptionDetails method in Subscription controller", _userDetails.AccountId, _userDetails.AccountId, JsonConvert.SerializeObject(details), _userDetails);
                     return Ok(details);
                 }
                 else
@@ -69,6 +71,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 _logger.Error(null, ex);
+                await _auditHelper.AddLogs(DateTime.Now, "Subscription Component",
+                          "Subscription service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                          "GetSubscriptionDetails method in Subscription controller", _userDetails.AccountId, _userDetails.AccountId,
+                          null, _userDetails);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
