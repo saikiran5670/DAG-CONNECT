@@ -35,6 +35,10 @@ namespace net.atos.daf.ct2.applications
                     {
                         if (args[0] == "PasswordExpiry")
                             services.AddHostedService<PasswordExpiryWorker>();
+                        else if (args[0] == "ReportCreationScheduler")
+                        {
+                            services.AddHostedService<ReportCreationSchedulerWorker>();
+                        }
                     }
                     else
                     {

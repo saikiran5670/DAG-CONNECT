@@ -78,17 +78,18 @@ message UserPreferenceCreateRequest{
    int32 AccountId =2;
   int32 ReportId =3;
   int32 OrganizationId =4;
-  string Type =5;
   int64 CreatedAt =6;
   int64 ModifiedAt =7;
-  string CharType = 8;
-  string ThresholdType = 9;
-  string ThresholdValue = 10;
+  
 }
 
 message Atribute{
- int32 DataAttributeId =1;
- string State =2;
+ int32 DataAttributeId = 1;
+ string State = 2;
+   string Type = 3;
+ string CharType = 4;
+  string ThresholdType = 5;
+  int64 ThresholdValue = 6;
 }
 
 message UserPreferenceCreateResponse{
@@ -428,6 +429,7 @@ message GetEcoScoreReportByAllDriversRequest {
   int32 OrgId = 6;
   int32 AccountId = 7;
   int32 TargetProfileId = 8;
+  int32 ReportId = 9;
   }
 
  message EcoScoreReportDriversRanking {

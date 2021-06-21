@@ -99,7 +99,7 @@
                 <mat-select [disabled]='!editFlag || lineBarDD.length == 0'
                     (selectionChange)="onlineBarDDChange($event)"
                     placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="distanceChart">
-                    <mat-option *ngFor="let rer of lineBarDD" [value]="rer.id">
+                    <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
                 </mat-select>
@@ -122,7 +122,7 @@
                 <mat-select [disabled]='!editFlag || lineBarDD.length == 0'
                     (selectionChange)="onlineBarDDChange($event)"
                     placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="vehicleChart">
-                    <mat-option *ngFor="let rer of lineBarDD" [value]="rer.id">
+                    <mat-option *ngFor="let rer of lineBarDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
                 </mat-select>
@@ -145,7 +145,7 @@
                 <mat-select [disabled]='!editFlag || donutPieDD.length == 0'
                     (selectionChange)="onDonutPieDDChange($event)"
                     placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="mileageChart">
-                    <mat-option *ngFor="let rer of donutPieDD" [value]="rer.id">
+                    <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
                 </mat-select>
@@ -164,7 +164,7 @@
                     (selectionChange)="onUpperLowerDDChange($event)"
                     placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}"
                     formControlName="mileageThreshold">
-                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.id">
+                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
                 </mat-select>
@@ -185,7 +185,7 @@
                 <mat-select [disabled]='!editFlag || donutPieDD.length == 0'
                     (selectionChange)="onDonutPieDDChange($event)"
                     placeholder="{{ translationData.lblChartType || 'Chart Type' }}" formControlName="timeChart">
-                    <mat-option *ngFor="let rer of donutPieDD" [value]="rer.id">
+                    <mat-option *ngFor="let rer of donutPieDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
                 </mat-select>
@@ -210,7 +210,7 @@
                     (selectionChange)="onUpperLowerDDChange($event)"
                     placeholder="{{ translationData.lblThresholdType || 'Threshold Type' }}"
                     formControlName="timeThreshold">
-                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.id">
+                    <mat-option *ngFor="let rer of upperLowerDD" [value]="rer.type">
                         {{ rer.name }}
                     </mat-option>
                 </mat-select>
@@ -260,7 +260,7 @@
                 [indeterminate]='selectionForDetailsColumns.hasValue() && !isAllSelectedForDetailsColumns()'
                 [aria-label]='checkboxLabelForDetailsColumns()' [disabled]='!editFlag'><span class='headerFont'>{{
                     translationData.lblDetails || 'Details'
-                    }}</span>
+                    }} <span>({{ translationData.lblTablecolumnviewsettings || 'Table column view settings' }})</span></span>
             </mat-checkbox>
         </div>
     </div>
@@ -268,7 +268,7 @@
         <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[0]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[0]) : null; detailCheckboxClicked($event, detailColumnData[0])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[0])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[0])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[0].translatedName : '' }}</span>
@@ -276,7 +276,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[1]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[1]) : null; detailCheckboxClicked($event, detailColumnData[1])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[1])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[1])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[1].translatedName : '' }}</span>
@@ -284,7 +284,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[2]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[2]) : null; detailCheckboxClicked($event, detailColumnData[2])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[2])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[2])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[2].translatedName : '' }}</span>
@@ -292,7 +292,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[3]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[3]) : null; detailCheckboxClicked($event, detailColumnData[3])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[3])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[3])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[3].translatedName : '' }}</span>
@@ -300,7 +300,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[4]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[4]) : null; detailCheckboxClicked($event, detailColumnData[4])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[4])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[4])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[4].translatedName : '' }}</span>
@@ -310,7 +310,7 @@
         <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[5]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[5]) : null; detailCheckboxClicked($event, detailColumnData[5])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[5])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[5])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[5].translatedName : '' }}</span>
@@ -318,7 +318,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[6]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[6]) : null; detailCheckboxClicked($event, detailColumnData[6])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[6])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[6])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[6].translatedName : '' }}</span>
@@ -326,7 +326,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[7]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[7]) : null; detailCheckboxClicked($event, detailColumnData[7])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[7])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[7])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[7].translatedName : '' }}</span>
@@ -334,7 +334,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[8]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[8]) : null; detailCheckboxClicked($event, detailColumnData[8])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[8])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[8])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[8].translatedName : '' }}</span>
@@ -342,7 +342,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[9]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[9]) : null; detailCheckboxClicked($event, detailColumnData[9])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[9])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[9])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[9].translatedName : '' }}</span>
@@ -352,7 +352,7 @@
         <div fxLayout="column" class="areaWidth min-width-33-3-per" fxLayoutGap="0px" fxLayoutAlign="left">
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[10]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[10]) : null; detailCheckboxClicked($event, detailColumnData[10])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[10])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[10])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[10].translatedName : '' }}</span>
@@ -360,7 +360,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding oddColumnColor' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[11]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[11]) : null; detailCheckboxClicked($event, detailColumnData[11])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[11])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[11])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[11].translatedName : '' }}</span>
@@ -368,7 +368,7 @@
             </div>
             <div fxLayout="row" class='areaWidth adjust-padding' fxLayoutAlign="left">
                 <mat-checkbox [disabled]='!editFlag' (click)='$event.stopPropagation()'
-                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[12]) : null;'
+                    (change)='$event ? selectionForDetailsColumns.toggle(detailColumnData[12]) : null; detailCheckboxClicked($event, detailColumnData[12])'
                     [checked]="selectionForDetailsColumns.isSelected(detailColumnData[12])"
                     [aria-label]='checkboxLabelForDetailsColumns(detailColumnData[12])' class='custom-checkbox'><span>{{
                         detailColumnData.length > 0 ? detailColumnData[12].translatedName : '' }}</span>
@@ -382,7 +382,7 @@
 
     <!-- Error msg -->
     <div fxLayout="row" class='areaWidth margin-top-10' fxLayoutAlign="start"
-        *ngIf='editFlag && selectionForSummaryColumns.selected.length == 0'>
+        *ngIf='editFlag && reqField'>
         <span style='color: red;'>{{ translationData.lblRequiredFieldMsg || 'Select at least one from Vehicle Name, VIN,
             Registration Number' }}</span>
     </div>
@@ -394,7 +394,7 @@
         <button class='resetCancelBtnColor margin-right-10' (click)='onReset()' mat-raised-button color="primary">{{
             translationData.lblReset || 'Reset' }}</button>
         <button
-            [disabled]='selectionForSummaryColumns.selected.length == 0 || selectionForDetailsColumns.selected.length == 0'
+            [disabled]='reqField || selectionForSummaryColumns.selected.length == 0 || selectionForDetailsColumns.selected.length == 0 || selectionForChartsColumns.selected.length == 0'
             class='no-margin' mat-raised-button color="primary" (click)='onConfirm()'>{{ (translationData.lblConfirm ||
             'Confirm') }}</button>
     </div>

@@ -6,12 +6,12 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class MapperRepo
     {
-        public IEnumerable<ReportScheduler> GetReportSchedulerList(IEnumerable<ReportSchedulerResult> reportSchedulerResult)
+        public IEnumerable<ReportSchedulerMap> GetReportSchedulerList(IEnumerable<ReportSchedulerResult> reportSchedulerResult)
         {
-            List<ReportScheduler> reportSchedulerList = new List<ReportScheduler>();
+            List<ReportSchedulerMap> reportSchedulerList = new List<ReportSchedulerMap>();
 
             //Lookups are implemeted to avoid inserting duplicate entry of same id into the list
-            Dictionary<int, ReportScheduler> reportSchedulerLookup = new Dictionary<int, ReportScheduler>();
+            Dictionary<int, ReportSchedulerMap> reportSchedulerLookup = new Dictionary<int, ReportSchedulerMap>();
             Dictionary<int, ScheduledReport> scheduledReportLookup = new Dictionary<int, ScheduledReport>();
             Dictionary<int, ScheduledReportRecipient> scheduledReportRecipientLookup = new Dictionary<int, ScheduledReportRecipient>();
             Dictionary<int, ScheduledReportVehicleRef> scheduledReportVehicleRefLookup = new Dictionary<int, ScheduledReportVehicleRef>();
@@ -19,7 +19,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 
             foreach (var reportSchedulerItem in reportSchedulerResult)
             {
-                if (!reportSchedulerLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Repsch_id), out ReportScheduler reportScheduler))
+                if (!reportSchedulerLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Repsch_id), out ReportSchedulerMap reportScheduler))
                 {
                     reportSchedulerLookup.Add(Convert.ToInt32(reportSchedulerItem.Repsch_id), reportScheduler = ToReportSchedulerModel(reportSchedulerItem));
                 }
@@ -75,9 +75,9 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             return reportSchedulerList;
         }
 
-        public ReportScheduler ToReportSchedulerModel(ReportSchedulerResult request)
+        public ReportSchedulerMap ToReportSchedulerModel(ReportSchedulerResult request)
         {
-            ReportScheduler reportScheduler = new ReportScheduler();
+            ReportSchedulerMap reportScheduler = new ReportSchedulerMap();
             reportScheduler.Id = request.Repsch_id;
             reportScheduler.OrganizationId = request.Repsch_organization_id;
             reportScheduler.ReportId = request.Repsch_report_id;

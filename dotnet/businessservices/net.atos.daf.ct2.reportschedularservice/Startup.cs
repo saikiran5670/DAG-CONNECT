@@ -40,14 +40,14 @@ namespace net.atos.daf.ct2.reportschedulerservice
             }));
 
             string connectionString = Configuration.GetConnectionString("ConnectionString");
-            string DataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
+            string dataMartconnectionString = Configuration.GetConnectionString("DataMartConnectionString");
             services.AddTransient<IDataAccess, PgSQLDataAccess>((ctx) =>
             {
                 return new PgSQLDataAccess(connectionString);
             });
             services.AddTransient<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
             {
-                return new PgSQLDataMartDataAccess(DataMartconnectionString);
+                return new PgSQLDataMartDataAccess(dataMartconnectionString);
             });
             services.AddTransient<IReportSchedulerManager, ReportSchedulerManager>();
             services.AddTransient<IReportSchedulerRepository, ReportSchedulerRepository>();

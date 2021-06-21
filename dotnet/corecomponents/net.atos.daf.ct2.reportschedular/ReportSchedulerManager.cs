@@ -7,7 +7,7 @@ using net.atos.daf.ct2.reportscheduler.repository;
 
 namespace net.atos.daf.ct2.reportscheduler
 {
-    public class ReportSchedulerManager : IReportSchedulerManager
+    public partial class ReportSchedulerManager : IReportSchedulerManager
     {
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
 
@@ -24,17 +24,17 @@ namespace net.atos.daf.ct2.reportscheduler
             return reportparameter;
         }
 
-        public async Task<ReportScheduler> CreateReportSchedular(ReportScheduler report)
+        public async Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report)
         {
-            return await _reportSchedulerRepository.CreateReportSchedular(report);
+            return await _reportSchedulerRepository.CreateReportScheduler(report);
         }
 
-        public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
+        public async Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report)
         {
-            return await _reportSchedulerRepository.UpdateReportSchedular(report);
+            return await _reportSchedulerRepository.UpdateReportScheduler(report);
         }
 
-        public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
         {
             return await _reportSchedulerRepository.GetReportSchedulerList(organizationid);
         }

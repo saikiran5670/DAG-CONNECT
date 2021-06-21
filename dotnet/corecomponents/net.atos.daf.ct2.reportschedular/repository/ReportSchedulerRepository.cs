@@ -9,7 +9,7 @@ using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
-    public class ReportSchedulerRepository : IReportSchedulerRepository
+    public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Create CreateReportSchedular
-        public async Task<ReportScheduler> CreateReportSchedular(ReportScheduler report)
+        public async Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -270,8 +270,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportDriverRef.Add("@driver_id", sdriverref.DriverId);
 
                 parameterScheduledReportDriverRef.Add("@state", sdriverref.State);
-                parameterScheduledReportDriverRef.Add("@created_at", sdriverref.CreatedAt);
-                parameterScheduledReportDriverRef.Add("@created_by", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterScheduledReportDriverRef.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterScheduledReportDriverRef.Add("@created_by", sdriverref.CreatedAt);
                 parameterScheduledReportDriverRef.Add("@modified_at", sdriverref.ModifiedAt);
                 parameterScheduledReportDriverRef.Add("@modified_by", sdriverref.ModifiedBy);
 
@@ -379,7 +379,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Update UpdateReportSchedular
-        public async Task<ReportScheduler> UpdateReportSchedular(ReportScheduler report)
+        public async Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -486,7 +486,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Get Report Scheduler
-        public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try

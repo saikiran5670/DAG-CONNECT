@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.map.test
         private readonly IMapManager _mapManager;
         public MapTest()
         {
-            string cs = "Server=dafct-dev0-dta-cdp-pgsql.postgres.database.azure.com;Database=vehicledatamart;Port=5432;User Id=pgadmin@dafct-dev0-dta-cdp-pgsql;Password=W%PQ1AI}Y97;Ssl Mode=Require;";
+            string cs = "Server=10.193.124.165;Database=vehicledatamart;Port=5432; User Id=pgdbadmin@dafct-lan1-d-euwe-cdp-pgsql-datamart;Password=9RQkJM2hwfe!;Ssl Mode=Require; Trust Server Certificate=True;";
             _dataAccess = new PgSQLDataMartDataAccess(cs);
             var mapRepository = new MapRepository(_dataAccess);
             _mapManager = new MapManager(mapRepository);

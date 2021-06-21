@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using net.atos.daf.ct2.reports.entity;
 using net.atos.daf.ct2.reports.ENUM;
 
@@ -37,12 +38,11 @@ namespace net.atos.daf.ct2.reportservice.entity
                        AccountId = objUserPreferenceCreateRequest.AccountId
                    };
             obj.ReportId = objUserPreferenceCreateRequest.ReportId;
-            obj.Type = Convert.ToChar(objUserPreferenceCreateRequest.Type);
-            obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
             obj.CreatedAt = objUserPreferenceCreateRequest.CreatedAt;
             obj.ModifiedAt = objUserPreferenceCreateRequest.ModifiedAt;
-            obj.ThresholdType = objUserPreferenceCreateRequest.ThresholdType;
-            obj.ThresholdValue = objUserPreferenceCreateRequest.ThresholdValue;
+            //obj.ChartType = Convert.ToChar(objUserPreferenceCreateRequest.CharType);
+            //obj.ThresholdType = objUserPreferenceCreateRequest.ThresholdType;
+            //obj.ThresholdValue = objUserPreferenceCreateRequest.ThresholdValue;
 
             for (int i = 0; i < objUserPreferenceCreateRequest.AtributesShowNoShow.Count; i++)
             {
@@ -50,6 +50,10 @@ namespace net.atos.daf.ct2.reportservice.entity
                 {
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
                     State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
+                    Type = objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type.ToCharArray().FirstOrDefault(),
+                    ChartType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType.ToCharArray().FirstOrDefault(),
+                    ThresholdType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdType,
+                    ThresholdValue = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdValue,
                 });
             }
             return obj;
