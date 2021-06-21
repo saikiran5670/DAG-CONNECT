@@ -220,7 +220,7 @@
     <!-- Advance filter -->
     <div *ngIf="actionType != 'view' && (alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
     alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
-    || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X')) )"
+    || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
         <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
             <a class="linkBtn" (click)="onClickAdvancedFilter()"> Advanced Filter <mat-icon class='font-size-20'> {{ openAdvancedFilter ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon></a>
