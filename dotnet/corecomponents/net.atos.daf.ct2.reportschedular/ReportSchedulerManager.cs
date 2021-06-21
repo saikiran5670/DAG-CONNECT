@@ -7,7 +7,7 @@ using net.atos.daf.ct2.reportscheduler.repository;
 
 namespace net.atos.daf.ct2.reportscheduler
 {
-    public class ReportSchedulerManager : IReportSchedulerManager
+    public partial class ReportSchedulerManager : IReportSchedulerManager
     {
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
 

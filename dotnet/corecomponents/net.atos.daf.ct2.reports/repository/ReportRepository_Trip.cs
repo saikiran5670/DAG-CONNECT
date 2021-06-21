@@ -39,7 +39,8 @@ namespace net.atos.daf.ct2.reports.repository
         /// </summary>
         /// <param name="TripFilters"></param>
         /// <returns>List of Trips Data with LiveFleet attached under *LiveFleetPosition* property</returns>
-        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest TripFilters)
+        public async Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest TripFilters,
+                                                                    bool IsLiveFleetRequired = true)
         {
             try
             {
@@ -79,7 +80,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@vin", TripFilters.VIN);
 
                 List<TripDetails> data = (List<TripDetails>)await _dataMartdataAccess.QueryAsync<TripDetails>(query, parameter);
-                if (data?.Count > 0)
+                if (data?.Count > 0 && IsLiveFleetRequired)
                 {
 
                     // new way To pull respective trip fleet position (One DB call for batch of 1000 trips)
