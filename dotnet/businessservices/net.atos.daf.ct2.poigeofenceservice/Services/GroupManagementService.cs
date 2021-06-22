@@ -15,7 +15,7 @@ namespace net.atos.daf.ct2.poigeofenceservice.Services
 {
     public class GroupManagementService : GroupService.GroupServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly ILandmarkGroupManager _landmarkGroupManager;
         private readonly Mapper _mapper;
 

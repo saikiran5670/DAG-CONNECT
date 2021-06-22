@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountSessionManager : IAccountSessionManager
     {
-        IAccountSessionRepository _sessionRepository;
+        readonly IAccountSessionRepository _sessionRepository;
         public AccountSessionManager(IAccountSessionRepository sessionRepository)
         {
             this._sessionRepository = sessionRepository;

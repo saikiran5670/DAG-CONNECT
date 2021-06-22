@@ -56,7 +56,7 @@ namespace net.atos.daf.ct2.applications
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
                     Event_status = AuditTrailEnum.Event_status.SUCCESS,
-                    Message =  $"Email send process run successfully",
+                    Message = $"Email send process run successfully",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
                     Updated_data = "Report Scheduler"

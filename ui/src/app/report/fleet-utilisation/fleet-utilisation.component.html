@@ -108,7 +108,8 @@
     </form>
 
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="tableExpandPanel == true"
+        (closed)="tableExpandPanel == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
@@ -220,18 +221,50 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-            <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div class="chart-wrapper">
-            <canvas baseChart  id="myChart"
+              <canvas baseChart 
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [plugins]="barChartPlugins"
+              [legend]="barChartLegend"
+              [chartType]="barChartType">
+            </canvas>
+          </div>
+        </div>
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
+          <div class="chart-wrapper">
+            <canvas baseChart 
+                [datasets]="lineChartData" 
+                [labels]="lineChartLabels" 
+                [options]="lineChartOptions"
+                [colors]="lineChartColors" 
+                [legend]="lineChartLegend" 
+                [chartType]="lineChartType" 
+                [plugins]="lineChartPlugins">
+            </canvas>
+        </div>
+      </div>
+
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+          <div class="chart-wrapper">
+            <canvas baseChart 
             [data]="doughnutChartData"
             [chartType]="doughnutChartType"
             [labels]="doughnutChartLabels">
           </canvas>
         </div>
         </div>
-          <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
-            <div class="chart-wrapper">
-            <canvas baseChart  id="myChart"
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+          <div class="chart-wrapper">
+            <canvas baseChart 
             [data]="doughnutChartData"
             [chartType]="doughnutChartType"
             [labels]="doughnutChartLabels">
@@ -251,7 +284,7 @@
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalendar || 'Calendar' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-        
+          <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
           <!-- <mat-calendar>
           </mat-calendar> -->
       </mat-expansion-panel>   
@@ -290,32 +323,34 @@
           </div>
           <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
           matSort #exporter="matTableExporter">
-          <ng-container matColumnDef="vehicle_name">
+          <ng-container matColumnDef="vehicleName">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.vehicle_name != '' ? row.vehicle_name : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="vin">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.vin != '' ? row.vin : '-' }}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="RegPlateNumber">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'RegPlateNumber' }}
+          <ng-container matColumnDef="registrationNumber">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.RegPlateNumber != '' ? row.RegPlateNumber : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">{{ row.registrationNumber != '' ? row.registrationNumber : '-' }}</mat-cell>
           </ng-container>
           <ng-container matColumnDef="distance">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDistance || 'Distance' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedDistance != '' ? row.convertedDistance : '-' }}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="NumberOfTrips">
+          <ng-container matColumnDef="numberOfTrips">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblNumberOfTrips || 'Number Of Trips' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.NumberOfTrips != '' ? row.NumberOfTrips : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">{{ row.numberOfTrips != '' ? row.numberOfTrips : '-' }}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="TripTime">
+          <ng-container matColumnDef="tripTime">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblTripTime || 'TripTime' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedTripTime != '' ? row.convertedTripTime : '-' }}</mat-cell>
@@ -330,17 +365,22 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedIdleDuration != '' ? row.convertedIdleDuration : '-' }}</mat-cell>
           </ng-container>
+          <ng-container matColumnDef="stopTime">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStopTime || 'Stop time' }} <span style="font-weight: normal;">({{ translationData.lblhhmm || 'hh:mm' }})</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.convertedStopTime != '' ? row.convertedStopTime : '-' }}</mat-cell>
+          </ng-container>
           <ng-container matColumnDef="averageSpeed">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageSpeed || 'Average Speed' }} <span style="font-weight: normal;">({{ (prefUnitFormat == 'dunit_Metric') ? (translationData.lblkmh || 'km/h') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmileh || 'mile/h') : (translationData.lblmileh || 'mile/h')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageSpeed != '' ? row.convertedAverageSpeed : '-' }}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="AverageWeightPerTrip">
+          <ng-container matColumnDef="averageWeightPerTrip">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Weight per Trip' }} <span style="font-weight: normal;">({{(prefUnitFormat == 'dunit_Metric') ? (translationData.lblkg || 'kg') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblpound || 'pound') : (translationData.lblpound || 'pound')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageWeight != '' ? row.convertedAverageWeight : '-' }}</mat-cell>
           </ng-container>
-          <ng-container matColumnDef="AverageDistancePerDay">
+          <ng-container matColumnDef="averageDistancePerDay">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAverageWeight || 'Average Distance per Day' }} <span style="font-weight: normal;">({{( prefUnitFormat == 'dunit_Metric') ? (translationData.lblkm || 'km') : (prefUnitFormat == 'dunit_Imperial') ? (translationData.lblmile || 'mile') : (translationData.lblmile || 'mile')  }})</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">{{ row.convertedAverageDistance != '' ? row.convertedAverageDistance : '-' }}</mat-cell>

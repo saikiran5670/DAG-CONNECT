@@ -116,6 +116,31 @@ export class ReportService {
       .get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
       .pipe(catchError(this.handleError));
   }
+
+  getFleetDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetutilization/getdetails`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getCalendarDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetutilization/getcalenderdata`, data, headers
+      )
+      .pipe(catchError(this.handleError));
+  }
+  
   
   private handleError(errResponse: HttpErrorResponse) {
       console.error('Error : ', errResponse.error);

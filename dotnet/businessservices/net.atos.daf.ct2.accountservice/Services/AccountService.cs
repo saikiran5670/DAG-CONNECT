@@ -29,7 +29,7 @@ namespace net.atos.daf.ct2.accountservice
         private readonly Group.IGroupManager _groupmanager;
         private readonly Mapper _mapper;
         private readonly IVehicleManager _vehicelManager;
-        private ILog _logger;
+        private readonly ILog _logger;
 
         private readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
 

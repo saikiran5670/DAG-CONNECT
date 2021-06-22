@@ -14,8 +14,8 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             Dictionary<int, ReportSchedulerMap> reportSchedulerLookup = new Dictionary<int, ReportSchedulerMap>();
             Dictionary<int, ScheduledReport> scheduledReportLookup = new Dictionary<int, ScheduledReport>();
             Dictionary<int, ScheduledReportRecipient> scheduledReportRecipientLookup = new Dictionary<int, ScheduledReportRecipient>();
-            Dictionary<int, ScheduledReportVehicleRef> scheduledReportVehicleRefLookup = new Dictionary<int, ScheduledReportVehicleRef>();
-            Dictionary<int, ScheduledReportDriverRef> scheduledReportDriverRefLookup = new Dictionary<int, ScheduledReportDriverRef>();
+            Dictionary<Tuple<int, int, int>, ScheduledReportVehicleRef> scheduledReportVehicleRefLookup = new Dictionary<Tuple<int, int, int>, ScheduledReportVehicleRef>();
+            Dictionary<Tuple<int, int>, ScheduledReportDriverRef> scheduledReportDriverRefLookup = new Dictionary<Tuple<int, int>, ScheduledReportDriverRef>();
 
             foreach (var reportSchedulerItem in reportSchedulerResult)
             {
@@ -50,19 +50,19 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                 }
                 if (reportSchedulerItem.Vehref_vehicle_group_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Vehref_report_schedule_id)
                 {
-                    if (!scheduledReportVehicleRefLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), out _))
+                    if (!scheduledReportVehicleRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), 0, reportSchedulerItem.Repsch_id), out _))
                     {
                         var scheduledReportVehicle = ToScheduledReportVehicleRefModel(reportSchedulerItem);
-                        scheduledReportVehicleRefLookup.Add(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), scheduledReportVehicle);
+                        scheduledReportVehicleRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), 0, reportSchedulerItem.Repsch_id), scheduledReportVehicle);
                         reportScheduler.ScheduledReportVehicleRef.Add(scheduledReportVehicle);
                     }
                 }
                 if (reportSchedulerItem.Driveref_driver_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Driveref_report_schedule_id)
                 {
-                    if (!scheduledReportDriverRefLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), out _))
+                    if (!scheduledReportDriverRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), reportSchedulerItem.Repsch_id), out _))
                     {
                         var scheduledReportDriver = ToScheduledReportDriverRefModel(reportSchedulerItem);
-                        scheduledReportDriverRefLookup.Add(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), scheduledReportDriver);
+                        scheduledReportDriverRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), reportSchedulerItem.Repsch_id), scheduledReportDriver);
                         reportScheduler.ScheduledReportDriverRef.Add(scheduledReportDriver);
                     }
                 }

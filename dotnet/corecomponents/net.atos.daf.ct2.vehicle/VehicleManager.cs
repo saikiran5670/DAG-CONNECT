@@ -13,13 +13,11 @@ namespace net.atos.daf.ct2.vehicle
 {
     public class VehicleManager : IVehicleManager
     {
-        IVehicleRepository _vehicleRepository;
-        IAuditTraillib _auditlog;
+        readonly IVehicleRepository _vehicleRepository;
 
-        public VehicleManager(IVehicleRepository vehicleRepository, IAuditTraillib auditlog)
+        public VehicleManager(IVehicleRepository vehicleRepository)
         {
             this._vehicleRepository = vehicleRepository;
-            this._auditlog = auditlog;
         }
 
         public async Task<List<VehiclesBySubscriptionId>> GetVehicleBySubscriptionId(int subscriptionId)
@@ -30,7 +28,6 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.CREATE,AuditTrailEnum.Event_status.SUCCESS,"Create method in vehicle manager",1,2,JsonConvert.SerializeObject(vehicle));
                 return await _vehicleRepository.Create(vehicle);
             }
             catch (Exception)
@@ -56,7 +53,6 @@ namespace net.atos.daf.ct2.vehicle
         {
             try
             {
-                // await auditlog.AddLogs(DateTime.Now,DateTime.Now,2,"Vehicle Component","vehicle Service",AuditTrailEnum.Event_type.UPDATE,AuditTrailEnum.Event_status.SUCCESS,"Update property method in vehicle manager",1,2,null);
                 return await _vehicleRepository.UpdateProperty(vehicleproperty);
             }
             catch (Exception)

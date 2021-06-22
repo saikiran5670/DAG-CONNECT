@@ -16,9 +16,9 @@ namespace net.atos.daf.ct2.account
     public class AccountRepository : IAccountRepository
     {
         private readonly IDataAccess _dataAccess;
-        public AccountRepository(IDataAccess _dataAccess)
+        public AccountRepository(IDataAccess dataAccess)
         {
-            this._dataAccess = _dataAccess;
+            this._dataAccess = dataAccess;
         }
 
         #region Account

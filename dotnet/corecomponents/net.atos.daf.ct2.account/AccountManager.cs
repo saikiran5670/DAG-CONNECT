@@ -23,9 +23,9 @@ namespace net.atos.daf.ct2.account
 {
     public class AccountManager : IAccountManager
     {
-        IAccountRepository _repository;
-        Identity.IAccountManager _identity;
-        IAuditTraillib _auditlog;
+        readonly IAccountRepository _repository;
+        readonly Identity.IAccountManager _identity;
+        readonly IAuditTraillib _auditlog;
         private readonly EmailConfiguration _emailConfiguration;
         private readonly IConfiguration _configuration;
         private readonly ITranslationManager _translationManager;
@@ -666,8 +666,8 @@ namespace net.atos.daf.ct2.account
 
         public async Task<SSOTokenResponse> GetAccountSSODetails(IdentitySessionEntity.AccountToken account)
         {
-            List<SSOTokenResponse> _responses = await _repository.GetAccountSSODetails(account);
-            return _responses.FirstOrDefault();
+            List<SSOTokenResponse> responses = await _repository.GetAccountSSODetails(account);
+            return responses.FirstOrDefault();
         }
 
         #endregion

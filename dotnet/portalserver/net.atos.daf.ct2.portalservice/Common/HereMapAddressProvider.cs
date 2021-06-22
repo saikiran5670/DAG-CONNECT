@@ -11,9 +11,7 @@ namespace net.atos.daf.ct2.portalservice.Common
     public class HereMapAddressProvider
     {
         private readonly MapServiceClient _mapServiceClient;
-        private POIService.POIServiceClient _poiServiceClient;
-
-
+        private readonly POIService.POIServiceClient _poiServiceClient;
 
         public HereMapAddressProvider(MapServiceClient mapServiceClient, POIService.POIServiceClient poiServiceClient)
         {

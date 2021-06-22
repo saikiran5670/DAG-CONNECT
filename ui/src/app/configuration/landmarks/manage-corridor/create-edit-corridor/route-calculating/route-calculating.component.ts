@@ -250,7 +250,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              console.log(data)
+              //console.log(data)
               if(data[0]["corridorProperties"]){
                  this.additionalData =  data[0]["corridorProperties"];
                  this.setAdditionalData();
@@ -276,7 +276,7 @@ export class RouteCalculatingComponent implements OnInit {
         this.viaRouteCount = true;
         this.viaRoutePlottedPoints = _selectedElementData.viaAddressDetail;
         _selectedElementData.viaAddressDetail.forEach(element => {
-          this.viaRoutesList.push(element.corridorViaStopName);
+          this.viaRoutesList.push(element.viaRoutName);
           
         });
        // this.plotViaPoint(this.viaRoutesList);
@@ -607,18 +607,18 @@ export class RouteCalculatingComponent implements OnInit {
       "modified_At": 0,
       "modified_By": this.organizationId,
       "attribute": {
-        "trailer": this.selectedTrailerId,
-        "explosive": this.explosiveChecked,
-        "gas": this.gasChecked,
-        "flammable": this.flammableChecked,
-        "combustible": this.combustibleChecked,
-        "organic": this.organicChecked,
-        "poision": this.poisonChecked,
-        "radioActive": this.radioactiveChecked,
-        "corrosive": this.corrosiveChecked,
-        "poisonousInhalation": this.poisonInhaleChecked,
-        "waterHarm": this.waterHarmChecked,
-        "other": this.othersChecked
+        "isTrailer": this.selectedTrailerId,
+        "isExplosive": this.explosiveChecked,
+        "isGas": this.gasChecked,
+        "isFlammable": this.flammableChecked,
+        "isCombustible": this.combustibleChecked,
+        "isorganic": this.organicChecked,
+        "ispoision": this.poisonChecked,
+        "isRadioActive": this.radioactiveChecked,
+        "isCorrosive": this.corrosiveChecked,
+        "isPoisonousInhalation": this.poisonInhaleChecked,
+        "isWaterHarm": this.waterHarmChecked,
+        "isOther": this.othersChecked
       },
       "exclusion": {
         "tollRoad": this.tollRoadChecked ? 'A' : 'I',
@@ -861,7 +861,7 @@ export class RouteCalculatingComponent implements OnInit {
       let _arr = this.viaRouteObj;
       let _viaArr = this.viaRoutePlottedPoints;
       this.viaRouteObj = _arr.filter(obj => obj.label !== route);
-      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.corridorViaStopName !== route);
+      this.viaRoutePlottedPoints = _viaArr.filter(obj => obj.viaRoutName !== route);
     }
    
     this.plotSeparateVia();
@@ -993,51 +993,55 @@ export class RouteCalculatingComponent implements OnInit {
 
   calculateTruckRoute(){
     let lineWidth = this.corridorWidthKm;
-    let routeRequestParams = 
-    'origin='+`${this.startAddressPositionLat},${this.startAddressPositionLong}`+
-    '&destination='+ `${this.endAddressPositionLat},${this.endAddressPositionLong}`+
-    '&return=polyline,summary,travelSummary'+
-    '&routingMode=fast'+
-    '&transportMode=truck'+
-    '&apikey='+this.map_key
+    let routeRequestParams = {
+      'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
+      'return':'polyline,summary,travelSummary',
+      'routingMode':'fast',
+      'transportMode':'truck',
+      'apikey':this.map_key
+
+    }
 
     if(this.viaRoutePlottedPoints.length>0){
-      this.viaRoutePlottedPoints.forEach(element => {
-      routeRequestParams += '&via='+ `${element["latitude"]},${element["longitude"]}`
-      });
+      let waypoints = [];
+      for(var i in this.viaRoutePlottedPoints){
+        waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
+      }
+      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints );
     }
 
     if(this.selectedTrailerId){
-      routeRequestParams += '&truck[trailerCount]='+ this.selectedTrailerId;
+      routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId;
     }
     if(this.tunnelId){
-      routeRequestParams += '&truck[tunnelCategory]='+ this.tunnelId;
+      routeRequestParams['truck[tunnelCategory]']= this.tunnelId;
     }
     if(this.corridorFormGroup.controls.vehicleHeight.value){
-      routeRequestParams += '&truck[height]='+ Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
+      routeRequestParams['truck[height]'] = Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
     }
     if(this.corridorFormGroup.controls.vehicleWidth.value){
-      routeRequestParams += '&truck[width]='+ Math.round(this.corridorFormGroup.controls.vehicleWidth.value);
+      routeRequestParams['truck[width]'] = Math.round(this.corridorFormGroup.controls.vehicleWidth.value);
     }
     if(this.corridorFormGroup.controls.vehicleLength.value){
-      routeRequestParams += '&truck[length]='+ Math.round(this.corridorFormGroup.controls.vehicleLength.value);
+      routeRequestParams['truck[length]']= Math.round(this.corridorFormGroup.controls.vehicleLength.value);
     }
     if(this.corridorFormGroup.controls.limitedWeight.value){
-      routeRequestParams += '&truck[grossWeight]='+ Math.round(this.corridorFormGroup.controls.limitedWeight.value);
+      routeRequestParams['truck[grossWeight]'] = Math.round(this.corridorFormGroup.controls.limitedWeight.value);
     }
     if(this.corridorFormGroup.controls.weightPerAxle.value){
-      routeRequestParams += '&truck[weightPerAxle]='+ Math.round(this.corridorFormGroup.controls.weightPerAxle.value);
+      routeRequestParams['truck[weightPerAxle]'] = Math.round(this.corridorFormGroup.controls.weightPerAxle.value);
     }
 
     if(this.hazardousMaterial.length > 0){
-      routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+      routeRequestParams['truck[shippedHazardousGoods]']= this.hazardousMaterial.join();
     }
     if(this.exclusions.length>0){
-      routeRequestParams += '&avoid[features]=' + this.exclusions.join();
+      routeRequestParams['avoid[features]'] = this.exclusions.join();
 
     }
     this.routePoints= [];
-    this.hereService.getTruckRoutes(routeRequestParams).subscribe((data)=>{
+    this.hereService.calculateRoutePoints(routeRequestParams).then((data:any)=>{
       if(data && data.routes){
         if(data.routes.length == 0){
           this.noRouteErr = true;

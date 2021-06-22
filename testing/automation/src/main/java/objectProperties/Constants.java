@@ -10,8 +10,8 @@ public class Constants {
 	public static final String Chrome_Driver_Path_Server  = "";
 	public static final String Chrome_Driver_Path_Server_exe  = "";	
 	public static final String APIURL = "https://api.dev2.ct2.atos.net/";
-	public static final String APITestURL = "https://api.acc3.ct2.atos.net/";
-	//public static final String APITestURL = "https://api.tst2.ct2.atos.net/";
+	//public static final String APITestURL = "https://api.acc3.ct2.atos.net/";
+	public static final String APITestURL = "https://api.tst2.ct2.atos.net/";
 	public static final String Json_Path = "\\src\\main\\resources\\jsonFiles\\";
 	//public static final String baseUrl = "http://51.144.184.19/UserGroup/";
 	public static final String customer_data ="customer-data/";
@@ -19,6 +19,9 @@ public class Constants {
 	public static final String update = "update";
 	public static final String Vehicle_data ="vehicle-data/";
 	public static final String Subscription ="subscription/";
+	public static final String Vehicle ="vehicle/";
+	public static final String VhMileage ="mileage";
+	public static final String VhNameList ="namelist";
 	
 	public static final String UserGroup = "http://51.144.184.19/UserGroup/";
 	public static final String AddUG = "AddUserGroup";

@@ -1,101 +1,13 @@
 <div class='bgtrans'>
-  <div *ngIf='titleVisible' fxLayout="row" fxLayoutAlign="center center"
-    style='padding:10px; color:#fff; background: #5dc24e;' class='margin-bottom-sm'>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center" style='width:95%;'>
-      {{ vehicleUpdatedMsg }}
-    </div>
-    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="center center">
-      <mat-icon (click)='onClose()' style='cursor: pointer;'>close</mat-icon>
-    </div>
-  </div>
-  <mat-card *ngIf='!updateViewStatus' class='mat-elevation-z'>
-    <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-      <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left">
-        <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-          translationData.lblAllVehicleDetails || 'All Vehicle Details' }}</span>
-      </div>
-    </div>
-    <div fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="space-between" class='margin-bottom-sm'>
-      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-        <mat-form-field appearance="outline">
-          <input matInput (keyup)="applyFilter($event.target.value)"
-            placeholder="{{ translationData.lblSearch || 'Search' }}">
-          <span matPrefix>
-            <mat-icon>search</mat-icon>
-          </span>
-        </mat-form-field>
-      </div>
-      <div class='areaWidth' fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end">
-          <button *ngIf='initData.length > 0' mat-button [matMenuTriggerFor]="menu"><mat-icon>file_upload</mat-icon>Export<mat-icon>more_vert</mat-icon></button>
-          <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="exportAsPdf()">PDF (as snapshot)</button>
-          <button mat-menu-item (click)="exportAsCSV()">CSV (as full data)</button>
-          </mat-menu>
-        </div>
-    </div>
-    <div *ngIf='initData.length == 0'>{{ translationData.lblNoRecordFound || 'No Record Found' }}</div>
-    <div *ngIf='initData.length > 0' id="vehicleMgmtData">
-      <mat-table matTableExporter [dataSource]="dataSource" matSort #exporter="matTableExporter" [hiddenColumns]="[6]">
-        <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicle || 'Vehicle' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="vin">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row" class="text-truncate"  matTooltip="{{row.vin}}">{{row.vin}} </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="licensePlateNumber">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRegistrationNumber || 'Registration Number' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.licensePlateNumber }}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="modelId">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblModel || 'Model' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.modelId ? row.modelId : '-' }}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="relationShip">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRelationship || 'Relationship' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{ row.relationShip }}</mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="status">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
-          <mat-cell *matCellDef="let row">
-          <span *ngIf="row.status == 'O'">
-            <img matTooltip="{{ translationData.lblOptOut || 'Opt-Out' }}" src='assets/images/icons/vehicleStatus/Opt_Out.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
-          <span *ngIf="row.status == 'C'">
-            <img matTooltip="{{ translationData.lblOptIn || 'Opt-In' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
-          <span *ngIf="row.status == 'N'">
-            <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}" src='assets/images/icons/vehicleStatus/Opt_In.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-            <img matTooltip="{{ translationData.lblOptInOTA || 'Opt-In + OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
-          <span *ngIf="row.status == 'A'">
-            <img matTooltip="{{ translationData.lblOTA || 'OTA' }}" src='assets/images/icons/vehicleStatus/Ota.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
-          <span *ngIf="row.status == 'T'">
-            <img matTooltip="{{ translationData.lblTerminate || 'Terminate' }}" src='assets/images/icons/vehicleStatus/Terminate.svg' style="width: 25px; height: 25px; margin-left: 5px;" />
-          </span>
-        </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="action">
-          <mat-header-cell *matHeaderCellDef class="action">{{ translationData.lblAction || 'Action'}}</mat-header-cell>
-          <mat-cell *matCellDef="let row" class="action">
-            <button class='actionBtn' (click)="editViewVehicle(row, 'view')" mat-flat-button matTooltip="View">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button class='actionBtn' mat-flat-button (click)="editViewVehicle(row, 'edit')" matTooltip="Edit">
-              <mat-icon>create</mat-icon>
-            </button>
-          </mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;">
-        </mat-row>
-    </mat-table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-    </div>
-    <app-spinner *ngIf="showLoadingIndicator"></app-spinner>
-  </mat-card>
-  <app-edit-view-vehicle *ngIf='updateViewStatus' [actionType]='actionType' [translationData]="translationData"
-  [selectedRowData]="selectedRowData" (backToPage)='onVehicleUpdateView($event)'></app-edit-view-vehicle>
+  <mat-card class='mat-elevation-z'>   
+      <mat-tab-group [(selectedIndex)]="selectedIndex" (selectedTabChange)="onTabChanged($event);">
+          <mat-tab label="{{ translationData.lblVehicleDetails || 'Vehicle Details' }}"> 
+              <app-vehicle-details *ngIf="selectedIndex == 0" [translationData]='translationData'></app-vehicle-details>
+          </mat-tab>
+          <mat-tab label="{{ translationData.lblVehicleConnectSettings || 'Vehicle Connect Settings' }}">
+            <app-vehicle-connect-settings *ngIf="selectedIndex == 1" ></app-vehicle-connect-settings>
+          </mat-tab>        
+      </mat-tab-group>  
+</mat-card>
 </div>
+

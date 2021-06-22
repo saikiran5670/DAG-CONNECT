@@ -39,17 +39,17 @@ namespace net.atos.daf.ct2.account.test
             IOptions<IdentityJsonConfiguration> setting = Options.Create(idenityconfiguration);
 
             var connectionString = _config.GetConnectionString("DevAzure");
-            IDataAccess _dataAccess = new PgSQLDataAccess(connectionString);
-            IAuditLogRepository _auditLogRepository = new AuditLogRepository(_dataAccess);
-            IAuditTraillib _auditlog = new AuditTraillib(_auditLogRepository);
-            IAccountPreferenceRepository _repository = new AccountPreferenceRepository(_dataAccess);
-            IPreferenceManager _preferenceManager = new PreferenceManager(_repository, _auditlog);
-            identity.ITokenManager _tokenManager = new identity.TokenManager(setting);
-            identity.IAccountManager _accountManager = new identity.AccountManager(setting);
-            identity.IAccountAuthenticator _autheticator = new identity.AccountAuthenticator(setting);
-            IAccountRepository _repo = new AccountRepository(_dataAccess);
-            IAccountManager _accManager = new AccountManager(_repo, _auditlog, _accountManager, null, null);
-            _accountIdentityManager = new AccountIdentityManager(_tokenManager, _autheticator, _accManager, null, null, null, null, null);
+            IDataAccess dataAccess = new PgSQLDataAccess(connectionString);
+            IAuditLogRepository auditLogRepository = new AuditLogRepository(dataAccess);
+            IAuditTraillib auditlog = new AuditTraillib(auditLogRepository);
+            IAccountPreferenceRepository repository = new AccountPreferenceRepository(dataAccess);
+            IPreferenceManager preferenceManager = new PreferenceManager(repository, auditlog);
+            identity.ITokenManager tokenManager = new identity.TokenManager(setting);
+            identity.IAccountManager accountManager = new identity.AccountManager(setting);
+            identity.IAccountAuthenticator autheticator = new identity.AccountAuthenticator(setting);
+            IAccountRepository repo = new AccountRepository(dataAccess);
+            IAccountManager accManager = new AccountManager(repo, auditlog, accountManager, null, null);
+            _accountIdentityManager = new AccountIdentityManager(tokenManager, autheticator, accManager, null, null, null, null, null);
 
         }
         [TestMethod]
