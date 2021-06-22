@@ -119,7 +119,6 @@ namespace net.atos.daf.ct2.alert.test
                 //ModifiedAt =,
                 //ModifiedBy =,
                 NotificationRecipients = new List<NotificationRecipient>(),
-                NotificationLimits = new List<NotificationLimit>(),
                 //NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
@@ -141,6 +140,7 @@ namespace net.atos.daf.ct2.alert.test
                 WsPassword = string.Empty,
                 State = "A",
                 CreatedAt = 1620272821,
+                NotificationLimits = new List<NotificationLimit>(),
                 //ModifiedAt =,
             };
             NotificationLimit notificationLimit = new NotificationLimit
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.alert.test
             #endregion
 
             //notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
-            notification.NotificationLimits.Add(notificationLimit);
+            notificationRecipient.NotificationLimits.Add(notificationLimit);
             notification.NotificationRecipients.Add(notificationRecipient);
 
             alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);
@@ -311,7 +311,6 @@ namespace net.atos.daf.ct2.alert.test
                 ModifiedAt = 1620272821,
                 ModifiedBy = 10,
                 NotificationRecipients = new List<NotificationRecipient>(),
-                NotificationLimits = new List<NotificationLimit>(),
                 // NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>(),
             };
             NotificationRecipient notificationRecipient = new NotificationRecipient
@@ -333,7 +332,8 @@ namespace net.atos.daf.ct2.alert.test
                 WsPassword = string.Empty,
                 State = "A",
                 //CreatedAt = 1620272821,
-                ModifiedAt = 1620272821
+                ModifiedAt = 1620272821,
+                NotificationLimits = new List<NotificationLimit>(),
             };
             NotificationLimit notificationLimit = new NotificationLimit
             {
@@ -410,7 +410,7 @@ namespace net.atos.daf.ct2.alert.test
             #endregion
 
             //notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
-            notification.NotificationLimits.Add(notificationLimit);
+            notificationRecipient.NotificationLimits.Add(notificationLimit);
             notification.NotificationRecipients.Add(notificationRecipient);
 
             alertUrgencyLevelRef.AlertFilterRefs.Add(alertFilterRef);

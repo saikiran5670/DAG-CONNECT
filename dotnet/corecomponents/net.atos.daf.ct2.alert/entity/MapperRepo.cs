@@ -106,22 +106,22 @@ namespace net.atos.daf.ct2.alert.entity
                     //        notification.NotificationAvailabilityPeriods.Add(notificationAvailabilityPeriod);
                     //    }
                     //}
-                    if (alertItem.Notlim_id > 0 && alertItem.Notlim_notification_id == alertItem.Noti_id)
+                    if (alertItem.Notrec_id > 0 && alertItem.Notref_notification_id == alertItem.Noti_id && alertItem.Notref_recipient_id == alertItem.Notrec_id && alertItem.Notref_alert_id == alertItem.Ale_id)
                     {
-                        if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notlim_id), out _))
+                        if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notrec_id), out NotificationRecipient notificationRecipient))
                         {
-                            var notificationLimit = ToNotificationLimitModel(alertItem);
-                            notificationLimitkRefLookup.Add(Convert.ToInt32(alertItem.Notlim_id), notificationLimit);
-                            notification.NotificationLimits.Add(notificationLimit);
-                        }
-                    }
-                    if (alertItem.Notrec_id > 0 && alertItem.Notrec_notification_id == alertItem.Noti_id)
-                    {
-                        if (!notificationRecipientRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notrec_id), out _))
-                        {
-                            var notificationRecipient = ToNotificationRecipientModel(alertItem);
+                            notificationRecipient = ToNotificationRecipientModel(alertItem);
                             notificationRecipientRefLookup.Add(Convert.ToInt32(alertItem.Notrec_id), notificationRecipient);
                             notification.NotificationRecipients.Add(notificationRecipient);
+                        }
+                        if (alertItem.Notlim_id > 0 && alertItem.Notlim_recipient_id == alertItem.Notrec_id)
+                        {
+                            if (!notificationLimitkRefLookup.TryGetValue(Convert.ToInt32(alertItem.Notlim_id), out _))
+                            {
+                                var notificationLimit = ToNotificationLimitModel(alertItem);
+                                notificationLimitkRefLookup.Add(Convert.ToInt32(alertItem.Notlim_id), notificationLimit);
+                                notificationRecipient.NotificationLimits.Add(notificationLimit);
+                            }
                         }
                     }
                 }
@@ -247,7 +247,6 @@ namespace net.atos.daf.ct2.alert.entity
             notification.CreatedAt = request.Noti_created_at;
             notification.ModifiedAt = request.Noti_modified_at;
             notification.NotificationRecipients = new List<NotificationRecipient>();
-            notification.NotificationLimits = new List<NotificationLimit>();
             //notification.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
             return notification;
         }
@@ -272,6 +271,7 @@ namespace net.atos.daf.ct2.alert.entity
             notificationRecipient.State = request.Notrec_state;
             notificationRecipient.CreatedAt = request.Notrec_created_at;
             notificationRecipient.ModifiedAt = request.Notrec_modified_at;
+            notificationRecipient.NotificationLimits = new List<NotificationLimit>();
             return notificationRecipient;
         }
 
@@ -349,6 +349,7 @@ namespace net.atos.daf.ct2.alert.entity
             notificationLimit.State = request.Notlim_state;
             notificationLimit.CreatedAt = request.Notlim_created_at;
             notificationLimit.ModifiedAt = request.Notlim_modified_at;
+            notificationLimit.RecipientId = request.Notlim_recipient_id;
             return notificationLimit;
         }
         public NotificationAvailabilityPeriod ToNotificationAvailabilityPeriodModel(AlertResult request)
@@ -364,6 +365,19 @@ namespace net.atos.daf.ct2.alert.entity
             notificationAvailabilityPeriod.CreatedAt = request.Notava_created_at;
             notificationAvailabilityPeriod.ModifiedAt = request.Notava_modified_at;
             return notificationAvailabilityPeriod;
+        }
+
+        public NotificationRecipientRef ToNotificationRecipientRefModel(AlertResult request)
+        {
+            NotificationRecipientRef notificationRecipientRef = new NotificationRecipientRef();
+            notificationRecipientRef.Id = request.Notref_id;
+            notificationRecipientRef.NotificationId = request.Notref_notification_id;
+            notificationRecipientRef.AlertId = request.Notref_alert_id;
+            notificationRecipientRef.RecipientId = request.Notref_recipient_id;
+            notificationRecipientRef.State = request.Notref_state;
+            notificationRecipientRef.CreatedAt = request.Notref_created_at;
+            notificationRecipientRef.ModifiedAt = request.Notref_modified_at;
+            return notificationRecipientRef;
         }
 
     }

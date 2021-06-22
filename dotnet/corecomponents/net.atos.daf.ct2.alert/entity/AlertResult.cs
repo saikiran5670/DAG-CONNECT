@@ -137,5 +137,13 @@ namespace net.atos.daf.ct2.alert.entity
         public string Vehiclegroupname { get; set; }
         public string Vin { get; set; }
         public string Regno { get; set; }
+        public int Notlim_recipient_id { get; set; }
+        public int Notref_id { get; set; }
+        public int Notref_alert_id { get; set; }
+        public int Notref_notification_id { get; set; }
+        public int Notref_recipient_id { get; set; }
+        public string Notref_state { get; set; }
+        public long Notref_created_at { get; set; }
+        public long Notref_modified_at { get; set; }
     }
 }

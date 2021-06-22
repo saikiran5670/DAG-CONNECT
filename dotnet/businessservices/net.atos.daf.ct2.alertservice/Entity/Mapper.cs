@@ -273,14 +273,6 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     notification.NotificationRecipients.Add(ToNotificationRecipientEntity(item));
                 }
             }
-            notification.NotificationLimits = new List<NotificationLimit>();
-            if (request.NotificationLimits.Count > 0)
-            {
-                foreach (var item in request.NotificationLimits)
-                {
-                    notification.NotificationLimits.Add(ToNotificationLimitEntity(item));
-                }
-            }
             notification.AlertTimingDetails = new List<AlertTimingDetail>();
             if (request.AlertTimingDetail.Count > 0)
             {
@@ -314,15 +306,6 @@ namespace net.atos.daf.ct2.alertservice.Entity
                     notification.NotificationRecipients.Add(MapNotificationRecipientEntity(item));
                 }
             }
-
-            if (request.NotificationLimits.Count > 0)
-            {
-                foreach (var item in request.NotificationLimits)
-                {
-                    notification.NotificationLimits.Add(MapNotificationLimitEntity(item));
-                }
-            }
-
             if (request.AlertTimingDetails.Count > 0)
             {
                 foreach (var item in request.AlertTimingDetails)
@@ -354,6 +337,14 @@ namespace net.atos.daf.ct2.alertservice.Entity
             notificationRecipient.State = request.State;
             notificationRecipient.CreatedAt = request.CreatedAt;
             notificationRecipient.ModifiedAt = request.ModifiedAt;
+            notificationRecipient.NotificationLimits = new List<NotificationLimit>();
+            if (request.NotificationLimits.Count > 0)
+            {
+                foreach (var item in request.NotificationLimits)
+                {
+                    notificationRecipient.NotificationLimits.Add(ToNotificationLimitEntity(item));
+                }
+            }
             return notificationRecipient;
         }
 
@@ -378,6 +369,13 @@ namespace net.atos.daf.ct2.alertservice.Entity
             notificationRecipient.State = request.State;
             notificationRecipient.CreatedAt = request.CreatedAt;
             notificationRecipient.ModifiedAt = request.ModifiedAt;
+            if (request.NotificationLimits.Count > 0)
+            {
+                foreach (var item in request.NotificationLimits)
+                {
+                    notificationRecipient.NotificationLimits.Add(MapNotificationLimitEntity(item));
+                }
+            }
             return notificationRecipient;
         }
 
@@ -393,6 +391,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             notificationLimit.State = request.State;
             notificationLimit.CreatedAt = request.CreatedAt;
             notificationLimit.ModifiedAt = request.ModifiedAt;
+            notificationLimit.RecipientId = request.RecipientId;
             return notificationLimit;
         }
 
@@ -408,6 +407,7 @@ namespace net.atos.daf.ct2.alertservice.Entity
             notificationLimit.State = request.State;
             notificationLimit.CreatedAt = request.CreatedAt;
             notificationLimit.ModifiedAt = request.ModifiedAt;
+            notificationLimit.RecipientId = request.RecipientId;
             return notificationLimit;
         }
 
