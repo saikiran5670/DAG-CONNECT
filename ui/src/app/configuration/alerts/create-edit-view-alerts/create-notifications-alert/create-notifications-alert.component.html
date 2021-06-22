@@ -184,12 +184,9 @@
                             <div fxLayout="row" fxLayoutGap = "6px">
                             <input type="number" min="0" max="60" matInput formControlName="emailEach" class="textField">
                             <mat-form-field appearance="outline" class="areawidth">
-                            <mat-select placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="minutes">
-                                <mat-option>
-                                    Minutes
-                                </mat-option>
-                                <mat-option>
-                                    Hours
+                            <mat-select (selectionChange)="onChangeTimeUnitForEmail($event.value)"  placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="minutes">
+                                <mat-option *ngFor="let item of emailTimeList" [value]="item.id" >
+                                    {{item.value}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -331,12 +328,9 @@
                             <div fxLayout="row" fxLayoutGap = "6px">
                             <input type="number" min="0" max="60" matInput formControlName="webEach" class="textField">
                             <mat-form-field appearance="outline" class="areawidth">
-                            <mat-select placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="webminutes">
-                                <mat-option>
-                                    Minutes
-                                </mat-option>
-                                <mat-option>
-                                    Hours
+                            <mat-select (selectionChange)="onChangeTimeUnit($event.value)" placeholder="{{ translationData.lblMinutes || 'Minutes' }}"  formControlName="webminutes">
+                                <mat-option *ngFor="let item of timeList" [value]="item.id" >
+                                    {{item.value}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
