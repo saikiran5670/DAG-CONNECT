@@ -100,12 +100,12 @@
               </mat-label>
             </div>
             <div class="areaWidth min-width-30-per"  style="width:30%" fxLayout="column" fxLayoutAlign="left">
-              <span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">
+              <!--<span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">-->
                 <mat-label>{{ translationData.lblDriverId || 'Driver Id' }}</mat-label>
                 <mat-label class='custom-font'>
                   {{ accountInfo.length > 0 ? accountInfo[0].driverId : '--' }}
                 </mat-label>
-              </span>
+             <!-- </span>-->
             </div>
             <!-- <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left"></div> -->
           </div>
@@ -201,13 +201,13 @@
                 </mat-form-field>
               </div>
               <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left">
-                <span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">
+                <!--<span *ngIf="accountInfo.length > 0 ? accountInfo[0].driverId != '' : false">-->
                   <mat-label>{{ translationData.lblDriverId || 'Driver Id' }}</mat-label>
                   <mat-form-field appearance="outline" class="full-width">
                     <input placeholder="{{ translationData.lblDriverId || 'Driver Id' }}" matInput
                       formControlName="driverId">
                   </mat-form-field>
-                </span>
+               <!-- </span>-->
               </div>
               <!-- <div class="areaWidth min-width-30-per mobile-margin-right-0" fxLayout="column" fxLayoutAlign="left"></div> -->
             </div>

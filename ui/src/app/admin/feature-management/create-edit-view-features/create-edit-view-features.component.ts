@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder,FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -33,6 +33,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   vehGrpName: string = '';
   showLoadingIndicator: any;
   createStatus:boolean;
+  createButtonClicked: boolean = false;
   duplicateMsg:boolean;
   isDataAttributeSetExist: boolean = false;
   duplicateEmailMsg: boolean = false;
@@ -45,6 +46,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
 
   ngOnInit() {
     this.featureFormGroup = this._formBuilder.group({
+      dataAttributeSetId: new FormControl({value: null, disabled: true}),
       dataAttributeSetName: ['', [Validators.required, CustomValidators.noWhitespaceValidatorforDesc]],
       dataAttributeDescription: ['', [CustomValidators.noWhitespaceValidatorforDesc]],
     },
@@ -64,6 +66,7 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   setDefaultValue(){
+    this.featureFormGroup.get("dataAttributeSetId").setValue(this.selectedElementData.id);
     this.featureFormGroup.get("dataAttributeSetName").setValue(this.selectedElementData.name);
     this.featureFormGroup.get("dataAttributeDescription").setValue(this.selectedElementData.description);
     this.selectedSetType = this.selectedElementData.dataAttribute.isExclusive;
@@ -107,7 +110,19 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc);
+        });
+       }
     });
+  }
+
+  compare(a: Number | String, b: Number | String, isAsc: boolean) {
+    if(!(a instanceof Number)) a = a.toUpperCase();
+    if(!(b instanceof Number)) b = b.toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
   
   toBack(){
@@ -131,10 +146,11 @@ export class CreateEditViewFeaturesComponent implements OnInit {
   }
 
   selectionIDs(){
-    return this.selectionForDataAttribute.selected.map(item => item.id)
+    this.selectionForDataAttribute.selected.map(item => item.id)
   }
 
   onCreate(){
+    this.createButtonClicked = true;
     this.duplicateEmailMsg = false;
     let selectedId = this.selectionIDs();
     let createFeatureParams = {
@@ -274,7 +290,6 @@ export class CreateEditViewFeaturesComponent implements OnInit {
     var selectedName = row.name;
     let selectedParentId = row.id;
     const isChecked = this.selectionForDataAttribute.isSelected(row) ? true : false;
-  
     if (selectedName.includes('.')) {
       //*****when the selected element is a child****
       var splitString = selectedName.split('.');
@@ -330,6 +345,11 @@ export class CreateEditViewFeaturesComponent implements OnInit {
         console.log("--allChildrenElements Id's--",this.allChildrenIds)
       }
     }
+    //make button disabled
+    if(this.selectedChildrens.length==0){
+      this.featureFormGroup.invalid;
+    }
+    this.featureFormGroup.valid;
   }
 
 

@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using net.atos.daf.ct2.portalservice.Common;
 using net.atos.daf.ct2.portalservice.Entity.ReportScheduler;
 using net.atos.daf.ct2.reportschedulerservice;
+using net.atos.daf.ct2.vehicleservice;
+using Newtonsoft.Json;
 using PortalAlertEntity = net.atos.daf.ct2.portalservice.Entity.ReportScheduler;
 namespace net.atos.daf.ct2.portalservice.Controllers
 {
@@ -22,12 +24,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly ReportSchedulerService.ReportSchedulerServiceClient _reportschedulerClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.ReportScheduler.Mapper _mapper;
-        public ReportSchedulerController(ReportSchedulerService.ReportSchedulerServiceClient reportschedulerClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
+        private readonly VehicleService.VehicleServiceClient _vehicleClient;
+        public ReportSchedulerController(ReportSchedulerService.ReportSchedulerServiceClient reportschedulerClient, VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _reportschedulerClient = reportschedulerClient;
             _auditHelper = auditHelper;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _mapper = new Entity.ReportScheduler.Mapper();
+            _vehicleClient = vehicleClient;
         }
 
         #region Get Report Scheduler Paramenter
@@ -68,6 +72,27 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
+                if (request.ScheduledReportVehicleRef.Count > 0)
+                {
+                    foreach (var item in request.ScheduledReportVehicleRef)
+                    {
+                        if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
+                        {
+                            var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                            vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                            if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                            vehicleGroupRequest.GroupType = "S";
+                            vehicleGroupRequest.RefId = item.VehicleGroupId;
+                            vehicleGroupRequest.FunctionEnum = "N";
+                            vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                            vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
+                            item.VehicleGroupId = response.VehicleGroup.Id;
+                        }
+                        //TOBE DO
+                        //Condition if vehicle select All and group select All
+                    }
+                }
                 ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
                 ReportSchedulerResponse reportSchedulerResponse = new ReportSchedulerResponse();
                 reportSchedulerResponse = await _reportschedulerClient.CreateReportSchedulerAsync(reportSchedulerRequest);
@@ -94,6 +119,68 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
                   ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
                  string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "CreateReportScheduler", ex.Message), 1, 2, "1",
+                   _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        #endregion
+
+        #region Update Schedular Report
+        [HttpPost]
+        [Route("update")]
+        public async Task<IActionResult> UpdateReportScheduler(PortalAlertEntity.ReportScheduler request)
+        {
+            try
+            {
+                if (request.ScheduledReportVehicleRef.Count > 0)
+                {
+                    foreach (var item in request.ScheduledReportVehicleRef)
+                    {
+                        if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
+                        {
+                            var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                            vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                            if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                            vehicleGroupRequest.GroupType = "S";
+                            vehicleGroupRequest.RefId = item.VehicleGroupId;
+                            vehicleGroupRequest.FunctionEnum = "N";
+                            vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                            vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
+                            item.VehicleGroupId = response.VehicleGroup.Id;
+                        }
+                        //TOBE DO
+                        //Condition if vehicle select All and group select All
+                    }
+                }
+                ReportSchedulerRequest reportSchedulerRequest = _mapper.ToReportSchedulerEntity(request);
+                ReportSchedulerResponse reportSchedulerResponse = new ReportSchedulerResponse();
+                reportSchedulerResponse = await _reportschedulerClient.UpdateReportSchedulerAsync(reportSchedulerRequest);
+
+                if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Failed)
+                {
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                }
+                else if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Conflict)
+                {
+                    return StatusCode(409, reportSchedulerResponse.Message);
+                }
+                else if (reportSchedulerResponse != null && reportSchedulerResponse.Code == ResponseCode.Success)
+                {
+                    return Ok(reportSchedulerResponse);
+                }
+                else
+                {
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_CREATE_FAILED_MSG);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                  ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "UpdateReportScheduler", ex.Message), 1, 2, "1",
                    _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -131,5 +218,103 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+
+        #region DeleteReportSchedule
+        [HttpDelete]
+        [Route("delete")]
+        public async Task<IActionResult> DeleteReportSchedule([FromQuery] Entity.ReportScheduler.ReportStatusUpdateDeleteModel request)
+        {
+            try
+            {
+                request.OrganizationId = GetContextOrgId();
+
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "Organization id is required.");
+                }
+                net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest obj = new net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest();
+                obj.OrganizationId = request.OrganizationId;
+                obj.ReportId = request.ReportId;
+                var data = await _reportschedulerClient.DeleteReportScheduleAsync(obj);
+                if (data == null)
+                {
+                    return StatusCode(404);
+                }
+
+                switch (data.Code)
+                {
+                    case ResponseCode.Success:
+                        await _auditHelper.AddLogs(DateTime.Now, "Report Scheduler Component",
+                                        "Report Scheduler service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "DeleteReportSchedule method in ReportSchedule controller", 0, 0, JsonConvert.SerializeObject(request),
+                                         _userDetails);
+                        return Ok(data);
+                    case ResponseCode.Failed:
+                        return StatusCode(400, data.Message);
+                    default:
+                        return StatusCode(500, data.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Scheduler Component",
+                                         "Report Scheduler service", Entity.Audit.AuditTrailEnum.Event_type.DELETE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "DeleteReportSchedule method in ReportSchedule controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message } {ex.StackTrace}");
+            }
+        }
+        #endregion
+
+        #region EnableDisableReportSchedule
+        [HttpPost]
+        [Route("EnableDisable")]
+        public async Task<IActionResult> EnableDisableReportSchedule(Entity.ReportScheduler.ReportStatusUpdateDeleteModel request)
+        {
+            try
+            {
+                request.OrganizationId = GetContextOrgId();
+
+                if (request.OrganizationId <= 0)
+                {
+                    return StatusCode(400, "Organization id is required.");
+                }
+                net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest obj = new net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest();
+                obj.OrganizationId = request.OrganizationId;
+                obj.ReportId = request.ReportId;
+                var data = await _reportschedulerClient.EnableDisableReportScheduleAsync(obj);
+                if (data == null)
+                {
+                    return StatusCode(404);
+                }
+
+                switch (data.Code)
+                {
+                    case ResponseCode.Success:
+                        await _auditHelper.AddLogs(DateTime.Now, "Report Scheduler Component",
+                                        "Report Scheduler service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                                        "EnableDisableReportSchedule method in ReportSchedule controller", 0, 0, JsonConvert.SerializeObject(request),
+                                         _userDetails);
+                        return Ok(data);
+                    case ResponseCode.Failed:
+                        return StatusCode(400, data.Message);
+                    default:
+                        return StatusCode(500, data.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Scheduler Component",
+                                         "Report Scheduler service", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                         "EnableDisableReportSchedule method in ReportSchedule controller", 0, 0, JsonConvert.SerializeObject(request),
+                                          _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message}  {ex.StackTrace}");
+            }
+        }
+        #endregion
+
     }
 }

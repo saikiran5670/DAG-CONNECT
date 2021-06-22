@@ -30,16 +30,15 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             return objreceiptemail;
         }
 
-        public ReportScheduler ToReportSchedulerEntity(ReportSchedulerRequest request)
+        public ReportSchedulerMap ToReportSchedulerEntity(ReportSchedulerRequest request)
         {
-            ReportScheduler reportscheduler = new ReportScheduler();
+            ReportSchedulerMap reportscheduler = new ReportSchedulerMap();
             reportscheduler.Id = request.Id;
             reportscheduler.OrganizationId = request.OrganizationId;
             reportscheduler.ReportId = request.ReportId;
             reportscheduler.FrequencyType = string.IsNullOrEmpty(request.FrequencyType) ? string.Empty : request.FrequencyType;
             reportscheduler.Status = string.IsNullOrEmpty(request.Status) ? string.Empty : request.Status;
             reportscheduler.Type = string.IsNullOrEmpty(request.Type) ? string.Empty : request.Type;
-            reportscheduler.FileName = string.IsNullOrEmpty(request.FileName) ? string.Empty : request.FileName;
             reportscheduler.StartDate = request.StartDate;
             reportscheduler.EndDate = request.EndDate;
             reportscheduler.Code = string.IsNullOrEmpty(request.Code) ? string.Empty : request.Code;
@@ -52,7 +51,6 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             reportscheduler.MailDescription = string.IsNullOrEmpty(request.MailDescription) ? string.Empty : request.MailDescription;
             reportscheduler.MailSubject = string.IsNullOrEmpty(request.MailSubject) ? string.Empty : request.MailSubject;
             reportscheduler.ReportDispatchTime = request.ReportDispatchTime;
-
             reportscheduler.ScheduledReportRecipient = new List<ScheduledReportRecipient>();
             if (request.ScheduledReportRecipient.Count > 0)
             {
@@ -79,7 +77,7 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             }
             return reportscheduler;
         }
-        public ReportSchedulerRequest MapReportSchedulerEntity(ReportScheduler request)
+        public ReportSchedulerRequest MapReportSchedulerEntity(ReportSchedulerMap request)
         {
             ReportSchedulerRequest reportscheduler = new ReportSchedulerRequest();
             reportscheduler.Id = request.Id;
@@ -88,7 +86,6 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             reportscheduler.FrequencyType = string.IsNullOrEmpty(request.FrequencyType) ? string.Empty : request.FrequencyType;
             reportscheduler.Status = string.IsNullOrEmpty(request.Status) ? string.Empty : request.Status;
             reportscheduler.Type = string.IsNullOrEmpty(request.Type) ? string.Empty : request.Type;
-            reportscheduler.FileName = string.IsNullOrEmpty(request.FileName) ? string.Empty : request.FileName;
             reportscheduler.StartDate = request.StartDate;
             reportscheduler.EndDate = request.EndDate;
             reportscheduler.Code = string.IsNullOrEmpty(request.Code) ? string.Empty : request.Code;

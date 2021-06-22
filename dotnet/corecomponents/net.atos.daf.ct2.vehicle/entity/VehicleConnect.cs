@@ -9,9 +9,9 @@ namespace net.atos.daf.ct2.vehicle.entity
         public int ModifiedBy { get; set; }
 
     }
-    public class VehicleConnectResponse
+    public class VehicleConnectedResult
     {
-        public List<int> VehicleConnectedList { get; set; }
-        public List<int> VehicleNotConnectedList { get; set; }
+        public List<VehicleConnect> VehicleConnectedList { get; set; }
+        public List<VehicleConnect> VehicleConnectionfailedList { get; set; }
     }
 }

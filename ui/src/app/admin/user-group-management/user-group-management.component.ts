@@ -250,9 +250,21 @@ export class UserGroupManagementComponent implements OnInit {
     setTimeout(() => {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortData = (data: String[], sort: MatSort) => {
+        const isAsc = sort.direction === 'asc';
+        return data.sort((a: any, b: any) => {
+          return this.compare(a[sort.active], b[sort.active], isAsc);
+        });
+       }
     });
   }
 
+  compare(a: Number | String, b: Number | String, isAsc: boolean) {
+    if(!(a instanceof Number)) a = a.toUpperCase();
+    if(!(b instanceof Number)) b = b.toUpperCase();
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+  
   openDeleteDialog(options: any, item: any) {
     // Model for delete
     let name = item.accountGroupName;
@@ -315,8 +327,8 @@ export class UserGroupManagementComponent implements OnInit {
   }
 
   onVehicleClick(data: any) {
-    const colsList = ['name', 'vin', 'licensePlateNumber'];
-    const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number'];
+    const colsList = ['name', 'vin', 'licensePlateNumber','vehicle groups'];
+    const colsName = [this.translationData.lblVehicleName || 'Vehicle Name', this.translationData.lblVIN || 'VIN', this.translationData.lblRegistrationNumber || 'Registration Number',this.translationData.lblGroupName || 'vehicle Group'];
     const tableTitle = `${data.accountGroupName} - ${this.translationData.lblVehicles || 'Vehicles'}`;
     this.vehicleService.getVehiclesDataByAccGrpID(data.groupId, data.organizationId).subscribe((data) => {
       this.callToCommonTable(data, colsList, colsName, tableTitle);

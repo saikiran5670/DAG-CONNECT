@@ -10,6 +10,7 @@ import { DataInterchangeService } from 'src/app/services/data-interchange.servic
 import { DomSanitizer } from '@angular/platform-browser';
 import { OrganizationService } from '../../services/organization.service';
 import { FileValidator } from 'ngx-material-file-input';
+import { DriverService } from '../../services/driver.service';
 
 @Component({
   selector: 'app-account-info-settings',
@@ -57,6 +58,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   accountId: any;
   blobId: number= 0;
   organizationId: any;
+  driverId: any;
   imageError= '';
   profilePicture: any= '';
   croppedImageTemp= '';
@@ -89,7 +91,7 @@ export class AccountInfoSettingsComponent implements OnInit {
   }
 
   constructor(private dialog: MatDialog, private _formBuilder: FormBuilder, private accountService: AccountService, private translationService: TranslationService, private dataInterchangeService: DataInterchangeService,
-              private domSanitizer: DomSanitizer, private organizationService: OrganizationService) { }
+              private domSanitizer: DomSanitizer, private organizationService: OrganizationService, private driverService: DriverService) { }
 
   ngOnInit() {
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -99,7 +101,7 @@ export class AccountInfoSettingsComponent implements OnInit {
       lastName: ['', [Validators.required, CustomValidators.noWhitespaceValidator]],
       loginEmail: new FormControl({value: null, disabled: true}), //['', [Validators.required, Validators.email]],
       organization: new FormControl({value: null, disabled: true}),
-      driverId: new  FormControl({value: null, disabled: true})
+      driverId: new  FormControl({value: null, disabled: false})
     },{
       validator : [
         CustomValidators.specialCharValidationForName('firstName'),
@@ -299,7 +301,7 @@ export class AccountInfoSettingsComponent implements OnInit {
         firstName: this.accountSettingsForm.controls.firstName.value,
         lastName: this.accountSettingsForm.controls.lastName.value,
         organizationId: this.organizationId,
-        driverId: "",
+        driverId: this.driverId,
         type: this.accountInfo.type ? this.accountInfo.type : 'P'
     }
     this.accountService.updateAccount(objData).subscribe((data)=>{

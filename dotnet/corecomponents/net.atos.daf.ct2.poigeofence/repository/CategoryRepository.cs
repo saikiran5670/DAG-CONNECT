@@ -85,19 +85,19 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     CategoryID categoryID = new CategoryID();
                     var parameter = new DynamicParameters();
 
-                    var IsexistSubcategory = await GetSubCategory(categoryId, isbulk);
-                    var IsexistPOIGeofence = await GetPOICategory(categoryId);
+                    var isexistSubcategory = await GetSubCategory(categoryId, isbulk);
+                    var isexistPOIGeofence = await GetPOICategory(categoryId);
 
-                    if (IsexistSubcategory.Count() <= 0 && IsexistPOIGeofence.Count() <= 0)
+                    if (isexistSubcategory.Count() <= 0 && isexistPOIGeofence.Count() <= 0)
                     {
 
 
-                        var Deletecategory = @"update master.category set state='D' 
+                        var deleteCategory = @"update master.category set state='D' 
                                    WHERE id = @ID RETURNING id ";
 
                         parameter.Add("@ID", categoryId);
 
-                        id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
+                        id = await _dataAccess.ExecuteScalarAsync<int>(deleteCategory, parameter);
 
                         transactionScope.Complete();
                     }
@@ -105,11 +105,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     {
                         categoryID.ID = id;
                     }
-                    else if (IsexistSubcategory.Count() > 0)
+                    else if (isexistSubcategory.Count() > 0)
                     {
                         categoryID.ID = -1;
                     }
-                    else if (IsexistPOIGeofence.Count() > 0)
+                    else if (isexistPOIGeofence.Count() > 0)
                     {
                         categoryID.ID = -2;
                     }
@@ -207,7 +207,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     if (!isCategoryNameExist)
                     {
                         var parameter = new DynamicParameters();
-                        var Insertcategory = @"UPDATE master.category
+                        var insertCategory = @"UPDATE master.category
                                    SET  name=@name, icon_id=@icon_id, description=@description,  modified_at=@modified_at, modified_by=@modified_by
                                   WHERE id = @ID RETURNING id";
 
@@ -218,7 +218,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                         parameter.Add("@modified_by", category.Modified_By);
                         parameter.Add("@ID", category.Id);
 
-                        var id = await _dataAccess.ExecuteScalarAsync<int>(Insertcategory, parameter);
+                        var id = await _dataAccess.ExecuteScalarAsync<int>(insertCategory, parameter);
                         category.Id = id;
                     }
                     else
@@ -238,11 +238,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
             return category;
         }
 
-        private bool CheckCategoryNameForUpdate(string categoryName, int? Organization_Id)
+        private bool CheckCategoryNameForUpdate(string categoryName, int? organization_Id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryName = categoryName;
-            categoryFilter.OrganizationId = Organization_Id;
+            categoryFilter.OrganizationId = organization_Id;
 
             var categories = GetCategory(categoryFilter);
 
@@ -255,11 +255,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        private bool CheckCategoryForUpdate(int id, int? Organization_Id)
+        private bool CheckCategoryForUpdate(int id, int? organization_Id)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryID = id;
-            categoryFilter.OrganizationId = Organization_Id;
+            categoryFilter.OrganizationId = organization_Id;
 
             var categories = GetCategory(categoryFilter);
 
@@ -272,12 +272,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 return codeExistsForUpdate == 0 ? false : true;
         }
 
-        public Task<IEnumerable<Category>> GetCategoryType(string Type, int OrganizationId)
+        public Task<IEnumerable<Category>> GetCategoryType(string type, int organizationId)
 
         {
             CategoryFilter categoryFilter = new CategoryFilter();
-            categoryFilter.Type = Type.ToUpper();
-            categoryFilter.OrganizationId = OrganizationId;
+            categoryFilter.Type = type.ToUpper();
+            categoryFilter.OrganizationId = organizationId;
             if (categoryFilter.Type.Length > 1)
             {
                 categoryFilter.Type = _catogoryCoreMapper.MapType(categoryFilter.Type);
@@ -346,11 +346,11 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        private bool CheckCategoryIsexist(string categoryName, int? OrganizationId, int categoryid)
+        private bool CheckCategoryIsexist(string categoryName, int? organizationId, int categoryid)
         {
             CategoryFilter categoryFilter = new CategoryFilter();
             categoryFilter.CategoryName = categoryName;
-            categoryFilter.OrganizationId = OrganizationId;
+            categoryFilter.OrganizationId = organizationId;
 
             var categories = GetCategory(categoryFilter);
 
@@ -368,12 +368,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
         {
             try
             {
-                var QueryStatement = @"INSERT INTO master.icon(
+                var queryStatement = @"INSERT INTO master.icon(
                                      icon, type, name, state, created_at, created_by)  
                                     VALUES (@icon, @type, @name, @state, @created_at, @created_by)
                                     RETURNING id;";
 
-                var UpdateQueryStatement = @" UPDATE master.icon
+                var updateQueryStatement = @" UPDATE master.icon
                                     SET                                
                                     icon=@icon, 
                                     modified_at=@modified_at,
@@ -399,7 +399,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                     parameter.Add("@modified_by", category.Modified_By);
 
-                    iconId = await _dataAccess.ExecuteScalarAsync<int>(UpdateQueryStatement, parameter);
+                    iconId = await _dataAccess.ExecuteScalarAsync<int>(updateQueryStatement, parameter);
                 }
                 else
                 {
@@ -410,7 +410,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     parameter.Add("@state", "A");
                     parameter.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                     parameter.Add("@created_by", category.Created_By);
-                    iconId = await _dataAccess.ExecuteScalarAsync<int>(QueryStatement, parameter);
+                    iconId = await _dataAccess.ExecuteScalarAsync<int>(queryStatement, parameter);
                 }
 
                 return iconId;
@@ -531,7 +531,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 if (categoryobj.CategoryId > 0 && categoryobj.SubCategoryId == 0)
                 {
-                    var IsexistSubcategory = await GetSubCategory(categoryobj.CategoryId, isbulk);
+                    var isExistSubcategory = await GetSubCategory(categoryobj.CategoryId, isbulk);
 
                     var parameter = new DynamicParameters();
                     var updatecategory = @"update master.category 
@@ -580,12 +580,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     CategoryID categoryID = new CategoryID();
                     var parameter = new DynamicParameters();
 
-                    var Deletecategory = @"update master.category set state='D' 
+                    var deleteCategory = @"update master.category set state='D' 
                                    WHERE id = @ID RETURNING id ";
 
                     parameter.Add("@ID", subcategoryId);
 
-                    id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
+                    id = await _dataAccess.ExecuteScalarAsync<int>(deleteCategory, parameter);
                     categoryID.ID = id;
                     transactionScope.Complete();
 
@@ -601,7 +601,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int OrganizationId)
+        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int organizationId)
         {
             try
             {
@@ -620,13 +620,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            WHERE l.organization_id = @organization_id
 	                            AND l.type = 'P' 
 	                            AND l.state= 'A'";
-                parameter.Add("@organization_id", OrganizationId);
+                parameter.Add("@organization_id", organizationId);
                 var data = await _dataAccess.QueryAsync<CategoryWisePOI>(query, parameter);
                 return data.ToList();
             }
             catch (Exception ex)
             {
-                _log.Info($"Get CategoryWisePOI method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(OrganizationId)}");
+                _log.Info($"Get CategoryWisePOI method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(organizationId)}");
                 _log.Error(ex.ToString());
                 throw;
             }

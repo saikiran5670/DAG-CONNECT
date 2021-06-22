@@ -41,18 +41,18 @@ namespace net.atos.daf.ct2.translation.repository
 
         public async Task<IEnumerable<Langauge>> GetAllLanguageCode()
         {
-            string LangagugeQuery = @"SELECT id, name, code, key, description
+            string langagugeQuery = @"SELECT id, name, code, key, description
 	                                    FROM translation.language";
 
 
             var parameter = new DynamicParameters();
-            IEnumerable<Langauge> LangagugeCodes = await _dataAccess.QueryAsync<Langauge>(LangagugeQuery, parameter);
-            return LangagugeCodes;
+            IEnumerable<Langauge> langagugeCodes = await _dataAccess.QueryAsync<Langauge>(langagugeQuery, parameter);
+            return langagugeCodes;
         }
 
         public async Task<IEnumerable<Translations>> GetKeyTranslationByLanguageCode(string langaguecode, string key)
         {
-            string LangagugeQuery = @"SELECT t.id,
+            string langagugeQuery = @"SELECT t.id,
                                             t.name,
                                             t.value,
                                             t.type,
@@ -76,20 +76,17 @@ namespace net.atos.daf.ct2.translation.repository
                                             and t.name not in (SELECT name
                                             FROM translation.translation where code= @langaguecode and  t.name = @key )";
 
-            // string LangagugeQuery= @"select  t.id,t.name,t.value,t.type from translation.translation t
-            //                         where t.code = @langaguecode and t.name = @key";
-
 
             var parameter = new DynamicParameters();
             parameter.Add("@langaguecode", langaguecode);
             parameter.Add("@key", key);
-            IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
+            IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameter);
             return translations;
         }
 
         public async Task<IEnumerable<Translations>> GetLangagugeTranslationByKey(string key)
         {
-            string LangagugeQuery = @"select  t.id,t.name,t.code,t.value,t.type from translation.translation t
+            string langagugeQuery = @"select  t.id,t.name,t.code,t.value,t.type from translation.translation t
                                         where 1=1";
 
 
@@ -97,16 +94,16 @@ namespace net.atos.daf.ct2.translation.repository
             if (key.Length > 0)
             {
                 parameter.Add("@key", key);
-                LangagugeQuery = LangagugeQuery + " and  t.name = @key";
+                langagugeQuery = langagugeQuery + " and  t.name = @key";
 
             }
-            IEnumerable<Translations> Translations = await _dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
-            return Translations;
+            IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameter);
+            return translations;
         }
 
-        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int MenuId, string type, string langaguecode)
+        public async Task<IEnumerable<Translations>> GetTranslationsByMenu(int menuId, string type, string langagueCode)
         {
-            string LangagugeQuery = @"SELECT t.id,
+            string langagugeQuery = @"SELECT t.id,
                                             t.name,
                                             t.value,
                                             t.type,
@@ -132,28 +129,25 @@ namespace net.atos.daf.ct2.translation.repository
                                             and t.name not in (SELECT name
                                             FROM translation.translation where code= @langaguecode and tg.ref_id =@menuid )";
 
-            if (langaguecode == "EN-GB")
+            if (langagueCode == "EN-GB")
             {
-                LangagugeQuery = @"select tg.id,t.name,t.value,t.type,t.code,tg.ref_id from translation.translation t
+                langagugeQuery = @"select tg.id,t.name,t.value,t.type,t.code,tg.ref_id from translation.translation t
                                         inner join translation.translationgrouping tg
                                         on t.name = tg.name where t.code=@langaguecode and tg.ref_id= @menuid";
             }
             var parameter = new DynamicParameters();
-            parameter.Add("@langaguecode", langaguecode);
+            parameter.Add("@langaguecode", langagueCode);
 
-            parameter.Add("@menuid", MenuId);
-            // LangagugeQuery = LangagugeQuery + " and tg.ref_id  = @menuid";
-
+            parameter.Add("@menuid", menuId);
 
             if (type != null)
             {
                 parameter.Add("@type", type.ToString());
-                // LangagugeQuery = LangagugeQuery + " and tg.type  = @type";
 
             }
             List<Translations> list = new List<Translations>();
-            var Translations = await _dataAccess.QueryAsync<dynamic>(LangagugeQuery, parameter);
-            foreach (var item in Translations)
+            var translations = await _dataAccess.QueryAsync<dynamic>(langagugeQuery, parameter);
+            foreach (var item in translations)
             {
                 list.Add(Map(item));
             }
@@ -175,31 +169,31 @@ namespace net.atos.daf.ct2.translation.repository
             return list;
         }
 
-        public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string Dropdownname, string langagugecode)
+        public async Task<IEnumerable<Translations>> GetTranslationsForDropDowns(string dropdownName, string langagugeCode)
         {
             try
             {
-                string LangagugeQuery = "";
-                if (string.IsNullOrEmpty(langagugecode) || langagugecode == "EN-GB")
+                string langagugeQuery = "";
+                if (string.IsNullOrEmpty(langagugeCode) || langagugeCode == "EN-GB")
                 {
-                    if (Dropdownname == "language")
-                        LangagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
+                    if (dropdownName == "language")
+                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from translation.language tc inner join translation.translation t on tc.key = t.name ";
                     else
                     {
-                        LangagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from master." + Dropdownname + " tc inner join translation.translation t on tc.key = t.name ";
+                        langagugeQuery = @"select tc.id,t.name,t.code,t.value,t.type from master." + dropdownName + " tc inner join translation.translation t on tc.key = t.name ";
                     }
 
                     var parameter = new DynamicParameters();
-                    parameter.Add("@code", langagugecode);
-                    LangagugeQuery = LangagugeQuery + " Where t.code=  'EN-GB'";
-                    IEnumerable<Translations> Translations = await _dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
+                    parameter.Add("@code", langagugeCode);
+                    langagugeQuery = langagugeQuery + " Where t.code=  'EN-GB'";
+                    IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameter);
 
-                    return Translations;
+                    return translations;
                 }
                 else
                 {
-                    if (Dropdownname == "language")
-                        LangagugeQuery = @"SELECT  tc.id,
+                    if (dropdownName == "language")
+                        langagugeQuery = @"SELECT  tc.id,
                                         t.name,
                                         t.code,
                                         t.value,
@@ -219,17 +213,17 @@ namespace net.atos.daf.ct2.translation.repository
                                         FROM translation.translation where code= @code ) ";
                     else
                     {
-                        LangagugeQuery = @"SELECT  tc.id,
+                        langagugeQuery = @"SELECT  tc.id,
                                         t.name,
                                         t.code,
                                         t.value,
-                                        t.type from master." + Dropdownname + @" tc LEFT join translation.translation t
+                                        t.type from master." + dropdownName + @" tc LEFT join translation.translation t
                                         on tc.key = t.name 
                                         where  
                                         (t.code= @code)
                                         union
                                         SELECT  tc.id,t.name,t.code,t.value,t.type
-                                        from master." + Dropdownname + @" tc 
+                                        from master." + dropdownName + @" tc 
                                         LEFT join translation.translation t
                                         on tc.key = t.name 
                                         where   (t.code= 'EN-GB')
@@ -238,10 +232,10 @@ namespace net.atos.daf.ct2.translation.repository
                     }
 
                     var parameter = new DynamicParameters();
-                    parameter.Add("@code", langagugecode);
+                    parameter.Add("@code", langagugeCode);
 
-                    IEnumerable<Translations> Translations = await _dataAccess.QueryAsync<Translations>(LangagugeQuery, parameter);
-                    return Translations;
+                    IEnumerable<Translations> translations = await _dataAccess.QueryAsync<Translations>(langagugeQuery, parameter);
+                    return translations;
 
                 }
 
@@ -320,11 +314,11 @@ namespace net.atos.daf.ct2.translation.repository
             try
             {
                 List<Translations> translations = new List<Translations>();
-                var QueryStatement = @" SELECT *
+                var queryStatement = @" SELECT *
                                     FROM translation.translation  ";
                 var parameter = new DynamicParameters();
 
-                dynamic result = await _dataAccess.QueryAsync<dynamic>(QueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(queryStatement, parameter);
 
                 foreach (dynamic record in result)
                 {
@@ -347,7 +341,7 @@ namespace net.atos.daf.ct2.translation.repository
             {
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var InsertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
+                    var insertFileDetailsQueryStatement = @"INSERT INTO translation.translationupload(
                                                              file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by)
                                                            VALUES (@file_name, @description, @file_size, @failure_count, @created_at, @file, @added_count, @updated_count,@created_by)
                                                              RETURNING id";
@@ -363,26 +357,10 @@ namespace net.atos.daf.ct2.translation.repository
                     parameter.Add("@updated_count", translationupload.UpdatedCount);
                     parameter.Add("@created_by", translationupload.CreatedBy);
 
-                    int InsertedFileUploadID = await _dataAccess.ExecuteScalarAsync<int>(InsertFileDetailsQueryStatement, parameter);
-
-                    // Convert Byte array to List Type
-                    //List<Translations> myList;
-                    //BinaryFormatter bf = new BinaryFormatter();
-                    //using (Stream ms = new MemoryStream(translationupload.file))
-                    //{
-                    //    myList = (List<Translations>)bf.Deserialize(ms);
-                    //}
-
-                    //if (translationupload.translations != null)
-                    //{
-                    //    // foreach (var item in myList)
-                    //    // {
-                    //    var parameterfeature = ImportExcelDataIntoTranslations(translationupload.translations);
-                    //    // }
-                    //}
-                    if (InsertedFileUploadID > 0)
+                    int insertedFileUploadID = await _dataAccess.ExecuteScalarAsync<int>(insertFileDetailsQueryStatement, parameter);
+                    if (insertedFileUploadID > 0)
                     {
-                        translationupload.Id = InsertedFileUploadID;
+                        translationupload.Id = insertedFileUploadID;
                     }
 
                     transactionScope.Complete();
@@ -399,15 +377,14 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
-        public async Task<TranslationStatus> InsertTranslationFileData(Translations translationdata, List<Translations> TranslationsList)
+        public async Task<TranslationStatus> InsertTranslationFileData(Translations translationdata, List<Translations> translationsList)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 string query = string.Empty;
-                //TranslationsList = GetAllTranslations(translationdata.Name, translationdata.Code);
 
-                var translationcodeList = TranslationsList.Where(I => I.Name == translationdata.Name).ToList();
+                var translationcodeList = translationsList.Where(I => I.Name == translationdata.Name).ToList();
 
 
                 if (translationcodeList != null && translationcodeList.Count > 0)
@@ -429,7 +406,6 @@ namespace net.atos.daf.ct2.translation.repository
                             parameter.Add("@Type", type ?? "L");
                             parameter.Add("@Name", translationobjdata.Name);
                             parameter.Add("@Value", translationdata.Value);
-                            //parameter.Add("@Created_at", translationdata.created_at);
                             parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                             query = @"update translation.translation set 
                                 code= @Code,type= @Type,name= @Name,value = @Value,modified_at = @modified_at Where id=@id RETURNING id";
@@ -447,7 +423,6 @@ namespace net.atos.daf.ct2.translation.repository
                         parameter.Add("@Name", translationdata.Name);
                         parameter.Add("@Value", translationdata.Value);
                         parameter.Add("@Created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
-                        //parameter.Add("@modified_at", translationdata.modified_at);
                         query = @"INSERT INTO translation.translation(code, type, name, value, created_at) " +
                                 "values(@Code,@Type,@Name,@Value,@Created_at) RETURNING id";
                         var translationId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
@@ -465,42 +440,25 @@ namespace net.atos.daf.ct2.translation.repository
             }
         }
 
-        //private static Translations[] ConvertList(byte [] file)
-        //{
-        //    List<Translations> tmpList = new List<Translations>();
-        //    foreach (Byte[] byteArray in file)
-        //        foreach (Byte singleByte in byteArray)
-        //            tmpList.Add(singleByte);
-        //    return tmpList.ToArray();
-        //}
-
-        public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int FileID)
+        public async Task<IEnumerable<Translationupload>> GetFileUploadDetails(int fileID)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                var InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, added_count, updated_count, created_by
+                var insertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, added_count, updated_count, created_by
                                                              FROM translation.translationupload
                                                                   where 1=1";
-                if (FileID > 0)
+                if (fileID > 0)
                 {
-                    parameter.Add("@FileID", FileID);
-                    InsertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by
+                    parameter.Add("@FileID", fileID);
+                    insertFileDetailsQueryStatement = @"SELECT id, file_name, description, file_size, failure_count, created_at, file, added_count, updated_count, created_by
                                                              FROM translation.translationupload
                                                                   where 1=1";
-                    InsertFileDetailsQueryStatement = InsertFileDetailsQueryStatement + " and id=@FileID";
+                    insertFileDetailsQueryStatement = insertFileDetailsQueryStatement + " and id=@FileID";
 
                 }
-                //// organization id filter
-                //if (FileName != null || FileName !="")
-                //{
-                //    parameter.Add("@FileName", FileName);
-                //    InsertFileDetailsQueryStatement = InsertFileDetailsQueryStatement + " and file_name=@FileName";
-
-                //}
-
                 List<Translationupload> fileuploadlist = new List<Translationupload>();
-                dynamic result = await _dataAccess.QueryAsync<dynamic>(InsertFileDetailsQueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(insertFileDetailsQueryStatement, parameter);
                 foreach (dynamic record in result)
                 {
                     fileuploadlist.Add(MapfileDetails(record));
@@ -566,27 +524,27 @@ namespace net.atos.daf.ct2.translation.repository
 
         private Translationupload MapfileDetails(dynamic record)
         {
-            Translationupload Entity = new Translationupload();
-            Entity.Id = record.id;
-            Entity.FileName = record.file_name;
-            Entity.Description = record.description;
-            Entity.FileSize = record.file_size;
-            Entity.FailureCount = record.failure_count;
-            Entity.CreatedAt = record.created_at;
-            Entity.File = record.file;
-            Entity.AddedCount = record.added_count;
+            Translationupload entity = new Translationupload();
+            entity.Id = record.id;
+            entity.FileName = record.file_name;
+            entity.Description = record.description;
+            entity.FileSize = record.file_size;
+            entity.FailureCount = record.failure_count;
+            entity.CreatedAt = record.created_at;
+            entity.File = record.file;
+            entity.AddedCount = record.added_count;
             try
             {
-                Entity.UpdatedCount = Convert.ToInt32(record.updated_count);
+                entity.UpdatedCount = Convert.ToInt32(record.updated_count);
             }
             catch (Exception)
             {
 
-                Entity.UpdatedCount = 0; ;
+                entity.UpdatedCount = 0; ;
             }
 
-            Entity.CreatedBy = record.created_by;
-            return Entity;
+            entity.CreatedBy = record.created_by;
+            return entity;
         }
 
         public async Task<List<DTCwarning>> ImportDTCWarningData(List<DTCwarning> dtcwarningList)
@@ -600,7 +558,7 @@ namespace net.atos.daf.ct2.translation.repository
                     foreach (DTCwarning item in dtcwarningList)
                     {
                         // If warning data is already exist then update specific record 
-                        int WarningId = CheckDtcWarningClassExist(item.WarningClass, item.Number, item.Code);
+                        int warningId = CheckDtcWarningClassExist(item.WarningClass, item.Number, item.Code);
                         var iconID = GetIcocIDFromIcon(item.WarningClass, item.Number);
 
                         if (iconID == 0)
@@ -610,21 +568,20 @@ namespace net.atos.daf.ct2.translation.repository
                             return dtcwarningList;
                         }
 
-                        var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.Code);
+                        var languageCode = _translationCoreMapper.MapDTCTLanguageCode(item.Code);
 
 
-                        if (WarningId == 0)
+                        if (warningId == 0)
                         {
                             // Insert
 
-                            //DTCwarning dtcwarning = new DTCwarning();
-                            var InsertWarningDataQueryStatement = @"INSERT INTO master.dtcwarning(
+                            var insertWarningDataQueryStatement = @"INSERT INTO master.dtcwarning(
                                                               code, type, veh_type, class, number, description, advice, expires_at, icon_id, created_at, created_by)
                                                           VALUES(@code, @type, @veh_type, @class, @number, @description, @advice, @expires_at, @icon_id, @created_at, @created_by)
                                                              RETURNING id";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", LanguageCode);
+                            parameter.Add("@code", languageCode);
                             parameter.Add("@type", item.Type);
                             parameter.Add("@veh_type", item.VehType);
                             parameter.Add("@class", item.WarningClass);
@@ -637,10 +594,10 @@ namespace net.atos.daf.ct2.translation.repository
                             parameter.Add("@created_by", item.CreatedBy);
 
 
-                            int InsertedDTCUploadID = await _dataAccess.ExecuteScalarAsync<int>(InsertWarningDataQueryStatement, parameter);
-                            if (InsertedDTCUploadID > 0)
+                            int insertedDTCUploadID = await _dataAccess.ExecuteScalarAsync<int>(insertWarningDataQueryStatement, parameter);
+                            if (insertedDTCUploadID > 0)
                             {
-                                item.Id = InsertedDTCUploadID;
+                                item.Id = insertedDTCUploadID;
                                 dtcwarningLists.Add(item);
                             }
                         }
@@ -648,8 +605,7 @@ namespace net.atos.daf.ct2.translation.repository
                         {
                             //Update
 
-
-                            var UpdateWarningDataQueryStatement = @"UPDATE master.dtcwarning
+                            var updateWarningDataQueryStatement = @"UPDATE master.dtcwarning
                                                               SET code=@code, 
                                                                   type=@type, 
                                                                   veh_type=@veh_type,
@@ -664,7 +620,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                            WHERE class = @class and number = @number and code =@code  RETURNING id";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", LanguageCode);
+                            parameter.Add("@code", languageCode);
                             parameter.Add("@type", item.Type);
                             parameter.Add("@veh_type", item.VehType);
                             parameter.Add("@class", item.WarningClass);
@@ -676,10 +632,10 @@ namespace net.atos.daf.ct2.translation.repository
                             parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                             parameter.Add("@modified_by", item.ModifyBy);
 
-                            int UpdateDTCUploadID = await _dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
-                            if (UpdateDTCUploadID > 0)
+                            int updateDTCUploadID = await _dataAccess.ExecuteScalarAsync<int>(updateWarningDataQueryStatement, parameter);
+                            if (updateDTCUploadID > 0)
                             {
-                                item.Id = UpdateDTCUploadID;
+                                item.Id = updateDTCUploadID;
                                 dtcwarningLists.Add(item);
                             }
 
@@ -696,17 +652,17 @@ namespace net.atos.daf.ct2.translation.repository
             }
         }
 
-        public int GetIcocIDFromIcon(int WarningClass, int Number)
+        public int GetIcocIDFromIcon(int warningClass, int number)
         {
             try
             {
-                var QueryStatement = @" select id from master.icon
+                var queryStatement = @" select id from master.icon
                                    where warning_class = @class AND warning_number= @number
                                      ";
                 var parameter = new DynamicParameters();
-                parameter.Add("@class", WarningClass);
-                parameter.Add("@number", Number);
-                int iconID = _dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+                parameter.Add("@class", warningClass);
+                parameter.Add("@number", number);
+                int iconID = _dataAccess.ExecuteScalar<int>(queryStatement, parameter);
                 return iconID;
             }
             catch (Exception)
@@ -717,30 +673,30 @@ namespace net.atos.daf.ct2.translation.repository
 
         }
 
-        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string LanguageCode)
+        public async Task<IEnumerable<DTCwarning>> GetDTCWarningData(string languageCode)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 List<DTCwarning> dtcWarninglist = new List<DTCwarning>();
-                string GetDTCWarningDataQueryStatement = string.Empty;
-                if (LanguageCode.Length == 2)
+                string getDTCWarningDataQueryStatement = string.Empty;
+                if (languageCode.Length == 2)
                 {
-                    LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(LanguageCode);
+                    languageCode = _translationCoreMapper.MapDTCTLanguageCode(languageCode);
                 }
 
-                parameter.Add("@LanguageCode", LanguageCode);
-                GetDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class as Warningclass, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
+                parameter.Add("@LanguageCode", languageCode);
+                getDTCWarningDataQueryStatement = @"SELECT id, code, type, veh_type, class as Warningclass, number, description, advice, expires_at,icon_id, created_at, created_by, modified_at, modified_by
                                                                 FROM master.dtcwarning
                                                                   where 1=1";
-                if (LanguageCode != null && LanguageCode != "")
+                if (languageCode != null && languageCode != "")
                 {
 
-                    GetDTCWarningDataQueryStatement = GetDTCWarningDataQueryStatement + " and code=@LanguageCode";
+                    getDTCWarningDataQueryStatement = getDTCWarningDataQueryStatement + " and code=@LanguageCode";
                 }
 
 
-                dynamic result = await _dataAccess.QueryAsync<dynamic>(GetDTCWarningDataQueryStatement, parameter);
+                dynamic result = await _dataAccess.QueryAsync<dynamic>(getDTCWarningDataQueryStatement, parameter);
                 foreach (dynamic record in result)
                 {
                     dtcWarninglist.Add(_translationCoreMapper.MapWarningDetails(record));
@@ -758,19 +714,19 @@ namespace net.atos.daf.ct2.translation.repository
         }
 
 
-        public int CheckDtcWarningClassExist(int WarningClass, int WarningNumber, string excelLanguageCode)
+        public int CheckDtcWarningClassExist(int warningClass, int warningNumber, string excelLanguageCode)
         {
-            var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(excelLanguageCode);
-            var QueryStatement = @"select id 
+            var languageCode = _translationCoreMapper.MapDTCTLanguageCode(excelLanguageCode);
+            var queryStatement = @"select id 
                                     from master.dtcwarning
                                    where class=@class and number=@number and code = @code";
             var parameter = new DynamicParameters();
 
-            parameter.Add("@class", WarningClass);
-            parameter.Add("@number", WarningNumber);
-            parameter.Add("@code", LanguageCode);
+            parameter.Add("@class", warningClass);
+            parameter.Add("@number", warningNumber);
+            parameter.Add("@code", languageCode);
 
-            int resultWarningId = _dataAccess.ExecuteScalar<int>(QueryStatement, parameter);
+            int resultWarningId = _dataAccess.ExecuteScalar<int>(queryStatement, parameter);
             return resultWarningId;
 
         }
@@ -787,16 +743,16 @@ namespace net.atos.daf.ct2.translation.repository
                     foreach (DTCwarning item in dtcwarningList)
                     {
                         // If warning data is already exist then update specific record 
-                        int WarningId = CheckDtcWarningClassExist(item.WarningClass, item.Number, item.Code);
+                        int warningId = CheckDtcWarningClassExist(item.WarningClass, item.Number, item.Code);
                         // Get Icon id from Icon table
                         var iconID = GetIcocIDFromIcon(item.WarningClass, item.Number);
-                        var LanguageCode = _translationCoreMapper.MapDTCTLanguageCode(item.Code);
+                        var languageCode = _translationCoreMapper.MapDTCTLanguageCode(item.Code);
 
-                        if (WarningId > 0)
+                        if (warningId > 0)
                         {
                             // Update
 
-                            var UpdateWarningDataQueryStatement = @"UPDATE master.dtcwarning
+                            var updateWarningDataQueryStatement = @"UPDATE master.dtcwarning
                                                               SET code=@code, 
                                                                   type=@type, 
                                                                   veh_type=@veh_type,
@@ -811,7 +767,7 @@ namespace net.atos.daf.ct2.translation.repository
                                                            WHERE code = @code and number = @number and code =@code  RETURNING id ";
 
                             var parameter = new DynamicParameters();
-                            parameter.Add("@code", LanguageCode);
+                            parameter.Add("@code", languageCode);
                             parameter.Add("@type", item.Type);
                             parameter.Add("@veh_type", item.VehType);
                             parameter.Add("@class", item.WarningClass);
@@ -823,10 +779,10 @@ namespace net.atos.daf.ct2.translation.repository
                             parameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                             parameter.Add("@modified_by", item.ModifyBy);
 
-                            int UpdateDTCUploadID = await _dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
-                            if (UpdateDTCUploadID > 0)
+                            int updateDTCUploadID = await _dataAccess.ExecuteScalarAsync<int>(updateWarningDataQueryStatement, parameter);
+                            if (updateDTCUploadID > 0)
                             {
-                                item.Id = UpdateDTCUploadID;
+                                item.Id = updateDTCUploadID;
                                 dtcwarningLists.Add(item);
                             }
 
@@ -850,27 +806,27 @@ namespace net.atos.daf.ct2.translation.repository
             try
             {
                 var dtcwarningLists = new List<DTCwarning>();
-                int DeleteDTCID = 0;
+                int deleteDTCID = 0;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     if (id != 0)
                     {
                         // Delete
 
-                        var UpdateWarningDataQueryStatement = @"DELETE FROM master.dtcwarning
+                        var updateWarningDataQueryStatement = @"DELETE FROM master.dtcwarning
                                                                    WHERE id = @id ";
 
                         var parameter = new DynamicParameters();
                         parameter.Add("@id", id);
 
-                        DeleteDTCID = await _dataAccess.ExecuteScalarAsync<int>(UpdateWarningDataQueryStatement, parameter);
+                        deleteDTCID = await _dataAccess.ExecuteScalarAsync<int>(updateWarningDataQueryStatement, parameter);
 
                     }
 
 
                     transactionScope.Complete();
                 }
-                return DeleteDTCID;
+                return deleteDTCID;
             }
             catch (Exception)
             {

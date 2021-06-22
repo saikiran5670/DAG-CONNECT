@@ -141,12 +141,28 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
     }
 
+    onReset(){ 
+      this.setDefaultValues();
+      if(this.notificationAdvancedFilterComponent){
+        this.notificationAdvancedFilterComponent.setDefaultValues();
+      }
+    }
+
     setAlertType(alertType: any){
       this.notificationAdvancedFilterComponent.setAlertType(alertType);
     }
 
     setDefaultValues(){
-             
+        if(this.FormWebArray && this.FormWebArray.length != 0){
+          for(let i = 0; i < this.FormWebArray.length; i++){
+            this.deleteWebNotificationRow(i);
+          }
+        }
+        if(this.FormEmailArray && this.FormEmailArray.length != 0){
+          for(let i = 0; i < this.FormEmailArray.length; i++){
+            this.deleteEmailNotificationRow(i);
+          }
+        }     
         this.selectedRowData.notifications[0].notificationRecipients.forEach(element => {
           this.addMultipleItems(false,element);
         });

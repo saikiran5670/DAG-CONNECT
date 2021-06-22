@@ -17,7 +17,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
             reportscheduler.FrequencyType = string.IsNullOrEmpty(request.FrequencyType) ? string.Empty : request.FrequencyType;
             reportscheduler.Status = string.IsNullOrEmpty(request.Status) ? string.Empty : request.Status;
             reportscheduler.Type = string.IsNullOrEmpty(request.Type) ? string.Empty : request.Type;
-            reportscheduler.FileName = string.IsNullOrEmpty(request.FileName) ? string.Empty : request.FileName;
             reportscheduler.StartDate = request.StartDate;
             reportscheduler.EndDate = request.EndDate;
             reportscheduler.Code = string.IsNullOrEmpty(request.Code) ? string.Empty : request.Code;
@@ -37,7 +36,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
                     reportscheduler.ScheduledReportRecipient.Add(ToScheduledReportRecipientEntity(item));
                 }
             }
-            if (reportscheduler.ScheduledReportDriverRef.Count > 0)
+            if (request.ScheduledReportDriverRef.Count > 0)
             {
                 foreach (var item in request.ScheduledReportDriverRef)
                 {

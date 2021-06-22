@@ -16,6 +16,8 @@ namespace net.atos.daf.ct2.accountpreference
         public bool Active { get; set; }
         public bool Exists { get; set; }
         public bool RefIdNotValid { get; set; }
-
+        public int IconId { get; set; }
+        public string IconByte { get; set; }
     }
+
 }

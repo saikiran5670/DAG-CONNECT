@@ -109,12 +109,12 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public async Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN)
+        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
         {
             var parameterOfReport = new DynamicParameters();
-            parameterOfReport.Add("@FromDate", StartDateTime);
-            parameterOfReport.Add("@ToDate", EndDateTime);
-            parameterOfReport.Add("@Vins", VIN.ToArray());
+            parameterOfReport.Add("@FromDate", startDateTime);
+            parameterOfReport.Add("@ToDate", endDateTime);
+            parameterOfReport.Add("@Vins", vin.ToArray());
             string queryDriversPull = @"SELECT da.vin VIN,
                                                da.driver_id DriverId,
                                                d.first_name FirstName,
@@ -136,101 +136,6 @@ namespace net.atos.daf.ct2.reports.repository
                 return new List<Driver>();
             }
         }
-
-        public async Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN, [Optional] string ReportView)
-        {
-            var parameterOfReport = new DynamicParameters();
-            parameterOfReport.Add("@FromDate", StartDateTime);
-            parameterOfReport.Add("@ToDate", EndDateTime);
-            parameterOfReport.Add("@Vins", VIN.ToArray());
-            // TODO:: Delete once sql View is in use
-            _log.Info(ReportView);
-            string queryDriversPull = GetReportQuery(ReportID, "@FromDate", "@ToDate", "@Vins");
-
-            object lstDriver = await _dataMartdataAccess.QueryAsync(queryDriversPull, parameterOfReport);
-            return lstDriver;
-        }
-        /// <summary>
-        /// TODO :: Created this temp method till the SQL view creation get approval
-        /// </summary>
-        /// <param name="ReportId"></param>
-        /// <param name="FromDateParameter"></param>
-        /// <param name="EndDateParameter"></param>
-        /// <param name="VINsParamter"></param>
-        /// <param name="OptionalParameter"></param>
-        /// <returns>Formated string with respective report related query.</returns>
-        private static string GetReportQuery(int ReportId, string FromDateParameter, string EndDateParameter, string VINsParamter, [Optional] string OptionalParameter, [Optional] string ReportSQLView)
-        {
-            string _query;
-            switch (ReportId)
-            {
-                case 1:
-                    // For - Trip Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-
-                case 2:
-                    // For - Trip Tracing
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 3:
-                    // For - Advanced Fleet Fuel Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 4:
-                    // For - Fleet Fuel Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 5:
-                    // For - Fleet Utilisation Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 6:
-                    // For - Fuel Benchmarking
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 7:
-                    // For - Fuel Deviation Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 8:
-                    // For - Vehicle Performance Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 9:
-                    // For - Drive Time Management
-                    _query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime FROM livefleet.livefleet_trip_driver_activity da Left join master.driver d on d.driver_id=da.driver_id WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) and vin=ANY ({2}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date ORDER BY da.driver_id DESC";
-                    //_query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime FROM livefleet.livefleet_trip_driver_activity da Left join master.driver d on d.driver_id=da.driver_id WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date ORDER BY da.driver_id DESC";
-                    _query = string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 10:
-                    // For - 
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                case 11:
-                    // For -  Schedule Report
-                    _query = string.Empty;
-                    string.Format(_query, FromDateParameter, EndDateParameter, VINsParamter, OptionalParameter);
-                    break;
-                default:
-                    // Use this logic once VIEW implementation is done
-                    _query = "SELECT * from {0}";
-                    string.Format(_query, ReportSQLView);
-                    break;
-
-            }
-            return _query;
-        }
-
         #endregion
     }
 }

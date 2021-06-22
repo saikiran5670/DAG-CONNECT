@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
+using Google.Protobuf;
 using net.atos.daf.ct2.portalservice.Entity.Account;
 using net.atos.daf.ct2.utilities;
 using AccountBusinessService = net.atos.daf.ct2.accountservice;
@@ -136,7 +138,9 @@ namespace net.atos.daf.ct2.portalservice.Account
                 VehicleDisplayId = request.VehicleDisplayId,
                 DateFormatId = request.DateFormatTypeId,
                 TimeFormatId = request.TimeFormatId,
-                LandingPageDisplayId = request.LandingPageDisplayId
+                LandingPageDisplayId = request.LandingPageDisplayId,
+                IconId = (int)request.IconId,
+                IconByte = request.IconByte.ToString(),
             };
             return preference;
         }
@@ -152,6 +156,8 @@ namespace net.atos.daf.ct2.portalservice.Account
             preference.DateFormatTypeId = request.DateFormatId;
             preference.TimeFormatId = request.TimeFormatId;
             preference.LandingPageDisplayId = request.LandingPageDisplayId;
+            preference.IconId = request.IconId;
+            preference.IconByte = request.IconByte.ToString();
             return preference;
         }
 

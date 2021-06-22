@@ -19,6 +19,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   reportId: any;
   slideState: any = false;
   localStLanguage: any;
+  reqField: boolean = false;
   accountId: any;
   accountOrganizationId: any;
   roleID: any;
@@ -33,37 +34,32 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   selectionForCalenderColumns = new SelectionModel(true, []);
   timeDisplay: any = '00:00';
   fleetUtilForm: FormGroup;
+  chartIndex: any = {};
   lineBarDD: any = [{
-    status: 'A',
-    id: 1,
+    type: 'L',
     name: 'Line Chart'
   },
   {
-    status: 'I',
-    id: 2,
+    type: 'B',
     name: 'Bar Chart'
   }];
   
   donutPieDD: any = [{
-    status: 'A',
-    id: 1,
+    type: 'D',
     name: 'Donut Chart'
   },
   {
-    status: 'I',
-    id: 2,
+    type: 'P',
     name: 'Pie Chart'
   }];
 
   upperLowerDD: any = [{
-    status: 'A',
-    id: 1,
-    name: 'Upper'
+    type: 'L',
+    name: 'Lower'
   },
   {
-    status: 'I',
-    id: 2,
-    name: 'Lower'
+    type: 'U',
+    name: 'Upper'
   }];
   
   constructor(private reportService: ReportService, private _formBuilder: FormBuilder) { }
@@ -93,16 +89,58 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     }else{
       this.reportId = 5; //- hard coded for fleet utilisation report
     }
+    this.translationUpdate();
     this.loadFleetUtilisationPreferences();
+  }
+
+  translationUpdate(){
+    this.translationData.da_report_details_stoptime = 'Stop Time';
+    this.translationData.da_report_details_vin = 'VIN';
+    this.translationData.da_report_calendarview_drivingtime = 'Driving Time';
+    this.translationData.da_report_details_vehiclename = 'Vehicle Name';
+    this.translationData.da_report_details_averagedistanceperday = 'Average distance per day';
+    this.translationData.da_report_general_averagedistanceperday = 'Average distance per day';
+    this.translationData.da_report_details_numberoftrips = 'Number of Trips';
+    this.translationData.da_report_calendarview_totaltrips = 'Total trips';
+    this.translationData.da_report_charts_mileagebasedutilization = 'Mileage Based Utilisation';
+    this.translationData.da_report_general_idleduration = 'Idle Duration';
+    this.translationData.da_report_general_totaldistance = 'Total Distance';
+    this.translationData.da_report_calendarview_idleduration = 'Idle Duration';
+    this.translationData.da_report_details_registrationnumber = 'Registration Number';
+    this.translationData.da_report_details_odometer = 'Odometer';
+    this.translationData.da_report_details_averagespeed = 'Average Speed';
+    this.translationData.da_report_charts_distanceperday = 'Distance Per Day';
+    this.translationData.da_report_details_drivingtime = 'Driving Time';
+    this.translationData.da_report_calendarview_timebasedutilization = 'Time Based Utilisation';
+    this.translationData.da_report_general_numberofvehicles = 'Number of Vehicles';
+    this.translationData.da_report_details_averageweightpertrip = 'Average weight per trip';
+    this.translationData.da_report_charts_numberofvehiclesperday = 'Active Vehicles Per Day';
+    this.translationData.da_report_charts_timebasedutilization = 'Time Based Utilisation';
+    this.translationData.da_report_calendarview_mileagebasedutilization = 'Mileage Based Utilisation';
+    this.translationData.da_report_details_triptime = 'Trip Time';
+    this.translationData.da_report_calendarview_activevehicles = 'Active Vehicles';
+    this.translationData.da_report_details_idleduration = 'Idle Duration';
+    this.translationData.da_report_calendarview_distance = 'Distance';
+    this.translationData.da_report_details_distance = 'Distance';
+    this.translationData.da_report_calendarview_averageweight = 'Average Weight';
+    this.translationData.da_report_general_numberoftrips = 'Number of Trips';
   }
 
   loadFleetUtilisationPreferences(){
     this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData: any) => {
       this.initData = prefData['userPreferences'];
+      this.resetColumnData();
       this.preparePrefData(this.initData);
     }, (error)=>{
       this.initData = [];
     });
+  }
+
+  resetColumnData(){
+    this.summaryColumnData = [];
+    this.detailColumnData = [];
+    this.chartsColumnData = [];
+    this.calenderColumnData = [];
   }
 
   setColumnCheckbox(){
@@ -129,6 +167,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     });
 
     this.setDefaultFormValues();
+    this.validateRequiredField();
   }
 
   preparePrefData(prefData: any){
@@ -149,7 +188,26 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         }else{
           _data.translatedName = this.getName(element.name, 14);   
         }
-        this.chartsColumnData.push(_data);
+        let index: any;
+        switch(element.key){
+          case 'da_report_charts_distanceperday':{
+            index = this.chartIndex.distanceIndex = 0;
+            break;
+          }
+          case 'da_report_charts_numberofvehiclesperday':{
+            index = this.chartIndex.vehicleIndex = 1;
+            break;
+          }
+          case 'da_report_charts_mileagebasedutilization':{
+            index = this.chartIndex.mileageIndex = 2;
+            break;
+          }
+          case 'da_report_charts_timebasedutilization':{
+            index = this.chartIndex.timeIndex = 3;
+            break;
+          }
+        }
+        this.chartsColumnData[index] = _data;
       }else if(element.key.includes('da_report_calendarview')){
         _data = element;
         if(this.translationData[element.key]){
@@ -197,9 +255,15 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   masterToggleForDetailsColumns(){
     if(this.isAllSelectedForDetailsColumns()){
       this.selectionForDetailsColumns.clear();
+      this.validateRequiredField();
     }else{
       this.detailColumnData.forEach(row => { this.selectionForDetailsColumns.select(row) });
+      this.validateRequiredField();
     }
+  }
+
+  detailCheckboxClicked(event: any, rowData: any){
+    this.validateRequiredField();
   }
 
   isAllSelectedForDetailsColumns(){
@@ -240,8 +304,61 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   }
 
   onConfirm(){
-    this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-    this.setColumnCheckbox();
+    let _summaryArr: any = [];
+    let _chartArr: any = [];
+    let _calenderArr: any = [];
+    let _detailArr: any = [];
+
+    this.summaryColumnData.forEach(element => {
+      let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(sSearch.length > 0){
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.chartsColumnData.forEach((element, index) => {
+      let cSearch = this.selectionForChartsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(index == 2){ // mileage base utilisation
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.mileageChart.value, thresholdType: this.fleetUtilForm.controls.mileageThreshold.value, thresholdValue: this.convertKmToMeter(parseInt(this.fleetUtilForm.controls.mileageTarget.value)) });
+      }else if(index == 3){ // time base utilisation
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: this.fleetUtilForm.controls.timeChart.value, thresholdType: this.fleetUtilForm.controls.timeThreshold.value, thresholdValue: this.convertHHMMToMs(this.fleetUtilForm.controls.timeTarget.value) });
+      }else{ // distance & active vehicle
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: (cSearch.length > 0) ? "A" : "I", type: "C", chartType: (index == 0) ? this.fleetUtilForm.controls.distanceChart.value : this.fleetUtilForm.controls.vehicleChart.value, thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.calenderColumnData.forEach(element => {
+      // this.fleetUtilForm.controls.calenderViewMode.value
+      if(element.dataAtrributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.detailColumnData.forEach(element => {
+      let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(dSearch.length > 0){
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    let objData: any = {
+      accountId: this.accountId,
+      reportId: this.reportId,
+      organizationId: this.accountOrganizationId,
+      createdAt: 0,
+      modifiedAt: 0,
+      atributesShowNoShow: [..._summaryArr, ..._chartArr, ..._calenderArr, ..._detailArr] //-- merge data
+    }
+    this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
+      this.loadFleetUtilisationPreferences();
+      this.setFleetUtilFlag.emit({ flag: false, msg: this.getSuccessMsg() });
+    });
   }
 
   getSuccessMsg(){
@@ -251,18 +368,66 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
       return ("Details save successfully");
   }
 
+  convertMeterToKm(meter: any){
+    return meter ? (meter/1000).toFixed(0) : 0;
+  }
+
+  convertMilisecondsToHHMM(ms: any){
+    if(ms){
+      // 1- Convert to seconds:
+      let seconds: any = ms / 1000;
+      // 2- Extract hours:
+      let hours: any = (seconds / 3600); // 3,600 seconds in 1 hour
+      hours = parseInt(hours);
+      seconds = (seconds % 3600); // seconds remaining after extracting hours
+      seconds = parseInt(seconds);
+      // 3- Extract minutes:
+      let minutes: any = (seconds / 60); // 60 seconds in 1 minute
+      // 4- Keep only seconds not extracted to minutes:
+      minutes = parseInt(minutes);
+      seconds = seconds % 60;
+      //console.log( hours+":"+minutes+":"+seconds);
+      return `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}`;
+    }else{
+      return '00:00';
+    }
+  }
+
+  convertHHMMToMs(hhmm: any){
+    let a = hhmm.split(':'); // split it at the colons
+    let seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60;
+    return seconds*1000; // convert to ms
+  }
+
+  convertKmToMeter(km: any){
+    return km ? parseInt((km*1000).toFixed(0)) : 0;
+  }
+
   setDefaultFormValues(){
-    this.timeDisplay = '00:00';
-    this.slideState = false;
-    this.fleetUtilForm.get('distanceChart').setValue(1);
-    this.fleetUtilForm.get('vehicleChart').setValue(1);
-    this.fleetUtilForm.get('mileageChart').setValue(1);
-    this.fleetUtilForm.get('timeChart').setValue(1);
-    this.fleetUtilForm.get('mileageTarget').setValue(0);
+    this.timeDisplay = this.chartsColumnData[3].thresholdValue != '' ? this.convertMilisecondsToHHMM(parseInt(this.chartsColumnData[3].thresholdValue)) : '00:00';
+    let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? this.convertMeterToKm(parseInt(this.chartsColumnData[2].thresholdValue)) : 0;
+    this.slideState = false; //-- TODO: API changes pending 
+    let calenderSelectionId: any;
+    let _selectionCalenderView = this.calenderColumnData.filter(i => i.state == 'A');
+    if(_selectionCalenderView.length == this.calenderColumnData.length){
+      let search = this.calenderColumnData.filter(j => j.key == 'da_report_calendarview_totaltrips');
+      if(search.length > 0){
+        calenderSelectionId = search[0].dataAtrributeId;
+      }else{
+        calenderSelectionId = _selectionCalenderView[0].dataAtrributeId;
+      }
+    }else{
+      calenderSelectionId = _selectionCalenderView[0].dataAtrributeId;
+    }
+    this.fleetUtilForm.get('distanceChart').setValue(this.chartsColumnData[0].chartType != '' ? this.chartsColumnData[0].chartType : 'B');
+    this.fleetUtilForm.get('vehicleChart').setValue(this.chartsColumnData[1].chartType != '' ? this.chartsColumnData[1].chartType : 'B');
+    this.fleetUtilForm.get('mileageChart').setValue(this.chartsColumnData[2].chartType != '' ? this.chartsColumnData[2].chartType : 'D');
+    this.fleetUtilForm.get('timeChart').setValue(this.chartsColumnData[3].chartType != '' ? this.chartsColumnData[3].chartType : 'D');
+    this.fleetUtilForm.get('mileageTarget').setValue(mileageInKm);
     this.fleetUtilForm.get('timeTarget').setValue(this.timeDisplay);
-    this.fleetUtilForm.get('mileageThreshold').setValue(1);
-    this.fleetUtilForm.get('timeThreshold').setValue(1);
-    this.fleetUtilForm.get('calenderView').setValue(this.calenderColumnData[0].dataAtrributeId);
+    this.fleetUtilForm.get('mileageThreshold').setValue(this.chartsColumnData[2].thresholdType != '' ? this.chartsColumnData[2].thresholdType : 'L');
+    this.fleetUtilForm.get('timeThreshold').setValue(this.chartsColumnData[3].thresholdType != '' ? this.chartsColumnData[3].thresholdType : 'L');
+    this.fleetUtilForm.get('calenderView').setValue(calenderSelectionId);
     this.fleetUtilForm.get('calenderViewMode').setValue(this.slideState);
   }
 
@@ -284,6 +449,17 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
 
   timeChanged(selectedTime: any) {
     this.timeDisplay = selectedTime;
+  }
+
+  validateRequiredField(){
+    let _flag = true;
+    if(this.selectionForDetailsColumns.selected.length > 0){
+      let _search = this.selectionForDetailsColumns.selected.filter(i => (i.key == 'da_report_details_vehiclename' || i.key == 'da_report_details_vin' || i.key == 'da_report_details_registrationnumber'));
+      if(_search.length){
+        _flag = false;
+      }
+    }
+    this.reqField = _flag;
   }
 
 }

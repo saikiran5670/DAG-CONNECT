@@ -94,13 +94,13 @@ namespace net.atos.daf.ct2.reports
         /// <returns></returns>
         public async Task<List<DriversActivities>> GetDriverActivity(DriverActivityFilter DriverActivityFilter) => await _reportRepository.GetDriversActivity(DriverActivityFilter);
 
-        public async Task<List<Driver>> GetDriversByVIN(long StartDateTime, long EndDateTime, List<string> VIN)
+        public async Task<List<Driver>> GetDriversByVIN(long startDateTime, long endDateTime, List<string> vin)
         {
-            return await _reportRepository.GetDriversByVIN(StartDateTime, EndDateTime, VIN);
+            return await _reportRepository.GetDriversByVIN(startDateTime, endDateTime, vin);
         }
-        public async Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN)
+        public async Task<object> GetReportSearchParameterByVIN(int reportID, long startDateTime, long endDateTime, List<string> vin)
         {
-            return await _reportRepository.GetReportSearchParameterByVIN(ReportID, StartDateTime, EndDateTime, VIN);
+            return await _reportRepository.GetReportSearchParameterByVIN(reportID, startDateTime, endDateTime, vin);
         }
         #endregion
 
@@ -218,8 +218,30 @@ namespace net.atos.daf.ct2.reports
         #region Eco Score Report By All Drivers
         public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
         {
-            List<EcoScoreReportByAllDrivers> lstByAllDrivers = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
-            return lstByAllDrivers;
+            List<EcoScoreReportByAllDrivers> lstDriverRanking = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
+            bool isTargetProfileUpdated = await _reportRepository.UpdateEcoScoreTargetProfile(request);
+            if (isTargetProfileUpdated)
+            {
+                var lstByAllDrivers = new List<EcoScoreReportByAllDrivers>();
+                EcoScoreKPIRanking objEcoScoreKPI = await _reportRepository.GetEcoScoreTargetProfileKPIValues(request);
+                foreach (var driver in lstDriverRanking)
+                {
+                    //< Min = Red
+                    if (driver.EcoScoreRanking < objEcoScoreKPI.MinValue)
+                        driver.EcoScoreRankingColor = RankingColor.RED.ToString();
+                    //> Target = Green
+                    else if (driver.EcoScoreRanking > objEcoScoreKPI.TargetValue)
+                        driver.EcoScoreRankingColor = RankingColor.GREEN.ToString();
+                    //Between Min and Target = Amber
+                    else
+                        driver.EcoScoreRankingColor = RankingColor.AMBER.ToString();
+
+                    lstByAllDrivers.Add(driver);
+                }
+                return lstByAllDrivers;
+            }
+            else
+                return lstDriverRanking;
         }
         #endregion
 

@@ -20,6 +20,8 @@ import { ConfirmDialogService } from 'src/app/shared/confirm-dialog/confirm-dial
 import { CommonTableComponent } from 'src/app/shared/common-table/common-table.component';
 import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { Options } from '@angular-slider/ngx-slider';
+import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
+import { Util } from 'src/app/shared/util';
 
 declare var H: any;
 
@@ -52,8 +54,12 @@ export class AlertAdvancedFilterComponent implements OnInit {
   isPoiSelected: boolean= false;
   selectedPoiSite: any;
   marker: any;
+  tableRowData: any = [];
+  alertTimingDetail: any =[];
+  groupArray: any = [];
   markerArray: any = [];
   geoMarkerArray: any = [];
+  filterTypeArray: any =[];
   map: any;
   polyPoints: any = [];
   poiDataSource: any = new MatTableDataSource([]);
@@ -67,13 +73,20 @@ export class AlertAdvancedFilterComponent implements OnInit {
   poiWidth : number = 100;
   poiWidthKm : number = 0.1;
   sliderValue : number = 0;
+  selectedApplyOn: string = 'A';
+  advancedAlertPayload: any = [];
+  filterType: any;
+  thresholdVal: any;
   options: Options = {
     floor: 0,
     ceil: 10000
   };
-
+  @ViewChild(PeriodSelectionFilterComponent)
+  periodSelectionComponent: PeriodSelectionFilterComponent;
+  
   @ViewChild("map")
   private mapElement: ElementRef;
+  openAdvancedFilter: boolean;
   constructor(private _formBuilder: FormBuilder,private poiService: POIService,
               private domSanitizer: DomSanitizer,
               private landmarkGroupService: LandmarkGroupService,
@@ -95,9 +108,21 @@ export class AlertAdvancedFilterComponent implements OnInit {
       distance: [''],
       occurences: [''],
       duration: [''],
-      widthInput: ['']
+      widthInput: [''],
+      fullorCustom: [''],
+      fromDate: [''],
+      fromTimeRange: ['00:00'],
+      toDate: [''],
+      toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
+    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.setDefaultAdvanceAlert();
+    }
+  }
+
+  setDefaultAdvanceAlert(){
+
   }
 
   onChangeDistance(event: any){
@@ -107,6 +132,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
     else{
       this.isDistanceSelected= false;
     }
+  }
+
+  onApplyOnChange(event: any){
+    this.selectedApplyOn = event.value;
   }
 
   loadMapData(){
@@ -660,16 +689,23 @@ export class AlertAdvancedFilterComponent implements OnInit {
         }
 
         onGroupSelect(event: any, row: any){
+          if(event.checked){
           let groupDetails= [];
           let objData = { 
             organizationid : this.organizationId,
             groupid : row.id
           };
+          this.groupArray.push(row);
           this.landmarkGroupService.getLandmarkGroups(objData).subscribe((groupData) => {
             groupDetails = groupData["groups"][0];
             this.selectPOITableRows(groupDetails, event);
             this.selectGeofenceTableRows(groupDetails, event);
           });
+        }
+        else{
+          let arr = this.groupArray.filter(item => item.id != row.id);
+          this.groupArray = arr;
+        }
         }
 
         selectGeofenceTableRows(rowData: any, event?: any){
@@ -776,5 +812,643 @@ export class AlertAdvancedFilterComponent implements OnInit {
      this.poiWidthKm = this.alertAdvancedFilterForm.controls.widthInput.value;
      this.poiWidth = this.poiWidthKm * 1000;
    }
+
+   getAdvancedFilterAlertPayload(){
+
+let urgencylevelStartDate = 0;
+let urgencylevelEndDate = 0;
+if(this.selectedApplyOn == 'C'){
+  this.alertTimingDetail = this.periodSelectionComponent.getAlertTimingPayload();
+  urgencylevelStartDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.fromDate.value, this.alertAdvancedFilterForm.controls.fromTimeRange.value, "start"));
+  urgencylevelEndDate = Util.convertDateToUtc(this.setStartEndDateTime(this.alertAdvancedFilterForm.controls.toDate.value, this.alertAdvancedFilterForm.controls.toTimeRange.value, "end"));;
+  this.alertTimingDetail.forEach(element => {
+    element["type"] = "F";
+  });
+}
+else{
+    this.alertTimingDetail = [];
+    urgencylevelStartDate = 0;
+    urgencylevelEndDate = 0;
+  }
+  
+//Fuel Increase & Fuel Loss
+     if ((this.alert_category_selected == 'F') && (this.alert_type_selected == 'P' || this.alert_type_selected == 'L' || this.alert_type_selected == 'T')) {
+
+       if (this.actionType == 'create' || this.actionType == 'duplicate' || this.actionType == 'edit') {
+         if (this.geoMarkerArray.length != 0) {
+           this.geoMarkerArray.forEach(element => {
+             let obj = {
+               "alertUrgencyLevelId": 0,
+               "filterType": "N",
+               "thresholdValue": 0,
+               "unitType": "N",
+               "landmarkType": element.type,
+               "refId": element.id,
+               "positionType": "N",
+               "alertTimingDetail": []
+             }
+             if(this.actionType == 'edit'){
+              let geofenceLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+              obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = element.state == 'Active' ? 'A' : 'I';
+             }
+            
+             this.advancedAlertPayload.push(obj);
+           })
+         }
+         if(this.markerArray.length != 0) {
+           this.markerArray.forEach(element => {
+             let obj = {
+               "alertUrgencyLevelId": 0,
+               "filterType": "N",
+               "thresholdValue": 0,
+               "unitType": "N",
+               "landmarkType": "P",
+               "refId": element.id,
+               "positionType": "N",
+               "alertTimingDetail": []
+             }
+             if(this.actionType == 'edit'){
+              let poiLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+              obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = element.state == 'Active' ? 'A' : 'I';
+             }
+             this.advancedAlertPayload.push(obj);
+           });
+         }
+
+         if(this.groupArray.length != 0) {
+          this.groupArray.forEach(element => {
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": "N",
+              "thresholdValue": 0,
+              "unitType": "N",
+              "landmarkType": "G",
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": []
+            }
+            if(this.actionType == 'edit'){
+              let groupLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
+              obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = element.state == 'Active' ? 'A' : 'I';
+             }
+            this.advancedAlertPayload.push(obj);
+          });
+        }
+
+       }
+      }
+
+      // entering & existing zone
+  if((this.alert_category_selected == 'L') && (this.alert_type_selected == 'N' || this.alert_type_selected == 'X'))
+  {
+
+    if (this.actionType == 'create' || this.actionType == 'duplicate' || this.actionType == 'edit') {
+      let obj;
+      this.thresholdVal = 0;
+      this.filterType = "N";
+      if(this.isOccurenceSelected){
+        this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.occurences.value);
+      obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": this.thresholdVal,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": this.alertTimingDetail
+      }
+      if(this.actionType == 'edit'){
+        let noOfOccuranceRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'N'); 
+        obj["id"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+        obj["alertId"] = this.selectedRowData.id;
+        obj["state"] = 'A';
+        obj["alertTimingDetail"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+       }
+       this.advancedAlertPayload.push(obj);
+    }
+      
+    
+      if(this.isDurationSelected){
+      this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.duration.value);
+      obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "D",
+        "thresholdValue": this.thresholdVal,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": this.alertTimingDetail
+      }
+      if(this.actionType == 'edit'){
+        let durationRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D'); 
+        obj["id"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+        obj["alertId"] = this.selectedRowData.id;
+        obj["state"] = 'A';
+        obj["alertTimingDetail"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+       }
+      this.advancedAlertPayload.push(obj);
+    }
+    if(!this.isOccurenceSelected && !this.isDurationSelected){
+      obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": this.thresholdVal,
+        "unitType": "N",
+        "landmarkType": "N",
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": this.alertTimingDetail
+      }
+      this.advancedAlertPayload.push(obj);
+    }
+
+    
+    }
+  }
+
+  // excessive avg idling
+  if((this.alert_category_selected == 'F') && (this.alert_type_selected == 'I')){
+
+      if(this.actionType == 'create' || this.actionType == 'duplicate' || this.actionType == 'edit') {
+        this.filterType = 'N';
+        this.thresholdVal = 0;
+        if(this.isOccurenceSelected == true){
+          this.filterType = 'N';
+          this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.occurences.value);
+          if(!this.isPoiSelected){
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": 'N',
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": 'N',
+              "refId": 0,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+            this.advancedAlertPayload.push(obj);
+          }
+        }
+
+        if(!this.isPoiSelected && !this.isOccurenceSelected){
+          let obj = {
+            "alertUrgencyLevelId": 0,
+            "filterType": 'N',
+            "thresholdValue": 0,
+            "unitType": "N",
+            "landmarkType": 'N',
+            "refId": 0,
+            "positionType": "N",
+            "alertTimingDetail": this.alertTimingDetail
+          }
+          this.advancedAlertPayload.push(obj);
+        }
+
+        if (this.geoMarkerArray.length != 0) {
+          this.geoMarkerArray.forEach(element => {
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": this.filterType,
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": element.type,
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+            if(this.actionType == 'edit'){
+              let geofenceLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+              obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = element.state == 'Active' ? 'A' : 'I';
+              obj["alertTimingDetail"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+             }
+            this.advancedAlertPayload.push(obj);
+          })
+        }
+        if(this.markerArray.length != 0) {
+          this.markerArray.forEach(element => {
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": this.filterType,
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": "P",
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+            if(this.actionType == 'edit'){
+              let poiLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+              obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = element.state == 'Active' ? 'A' : 'I';
+              obj["alertTimingDetail"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+             }
+            this.advancedAlertPayload.push(obj);
+          });
+        }
+
+        if(this.groupArray.length != 0) {
+         this.groupArray.forEach(element => {
+           let obj = {
+             "alertUrgencyLevelId": 0,
+             "filterType": this.filterType,
+             "thresholdValue": this.thresholdVal,
+             "unitType": "N",
+             "landmarkType": "G",
+             "refId": element.id,
+             "positionType": "N",
+             "alertTimingDetail": this.alertTimingDetail
+           }
+           if(this.actionType == 'edit'){
+            let groupLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
+            obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
+            obj["alertId"] = this.selectedRowData.id;
+            obj["state"] = element.state == 'Active' ? 'A' : 'I';
+            obj["alertTimingDetail"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
+           }
+           this.advancedAlertPayload.push(obj);
+         });
+       }
+      }
+
+  }
+
+    // hours of service
+    if((this.alert_category_selected == 'L') && (this.alert_type_selected == 'S')){
+
+      if (this.actionType == 'create' || this.actionType == 'duplicate') {
+        let obj;
+        if(this.isDurationSelected){
+          this.filterType = 'D';
+          this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.duration.value);
+          let filterObj = {
+            "type" : this.filterType,
+            "val" : this.thresholdVal
+          }
+          this.filterTypeArray.push(filterObj);
+          if(!this.isPoiSelected){
+          obj = {
+          "alertUrgencyLevelId": 0,
+          "filterType": "D",
+          "thresholdValue": this.thresholdVal,
+          "unitType": "N",
+          "landmarkType": 'N',
+          "refId": 0,
+          "positionType": "N",
+          "alertTimingDetail": []
+        }
+        this.advancedAlertPayload.push(obj);
+      }
+      }
+  
+      if(this.isDistanceSelected){
+        this.filterType = 'T';
+        this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+        let filterObj = {
+          "type" : this.filterType,
+          "val" : this.thresholdVal
+        }
+        this.filterTypeArray.push(filterObj);
+        if(!this.isPoiSelected){
+        obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "T",
+        "thresholdValue": this.thresholdVal,
+        "unitType": "N",
+        "landmarkType": 'N',
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": []
+      }
+      this.advancedAlertPayload.push(obj);
+    }
+    }
+  
+    if (this.geoMarkerArray.length != 0) {
+      this.geoMarkerArray.forEach(element => {
+        if(this.filterTypeArray.length == 0){
+        let obj = {
+          "alertUrgencyLevelId": 0,
+          "filterType": 'N',
+          "thresholdValue": 0,
+          "unitType": "N",
+          "landmarkType": element.type,
+          "refId": element.id,
+          "positionType": "N",
+          "alertTimingDetail": this.alertTimingDetail
+        }
+        this.advancedAlertPayload.push(obj);
+      }
+  
+        if (this.filterTypeArray.length != 0) {
+          this.filterTypeArray.forEach(item => {
+            this.filterType = item.type;
+            this.thresholdVal = parseInt(item.val);
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": this.filterType,
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": element.type,
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+            this.advancedAlertPayload.push(obj);
+          });
+        }
+        
+      })
+    }
+        if(this.markerArray.length != 0) {
+          this.markerArray.forEach(element => {
+            if(this.filterTypeArray.length == 0){
+              let obj = {
+                "alertUrgencyLevelId": 0,
+                "filterType": "N",
+                "thresholdValue": 0,
+                "unitType": "N",
+                "landmarkType": "P",
+                "refId": element.id,
+                "positionType": "N",
+                "alertTimingDetail": []
+                
+              }
+              this.advancedAlertPayload.push(obj);
+            }
+            if (this.filterTypeArray.length != 0) {
+              this.filterTypeArray.forEach(item => {
+                this.filterType = item.type;
+                this.thresholdVal = parseInt(item.val);
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": this.filterType,
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": "P",
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+         
+            this.advancedAlertPayload.push(obj);
+          });
+        }
+          });
+        
+        }
+  
+        if(this.groupArray.length != 0) {
+         this.groupArray.forEach(element => {
+          if(this.filterTypeArray.length == 0){
+           let obj = {
+             "alertUrgencyLevelId": 0,
+             "filterType": "N",
+             "thresholdValue": 0,
+             "unitType": "N",
+             "landmarkType": "G",
+             "refId": element.id,
+             "positionType": "N",
+             "alertTimingDetail": []
+           }
+           this.advancedAlertPayload.push(obj);
+          }
+  
+          if (this.filterTypeArray.length != 0) {
+            this.filterTypeArray.forEach(item => {
+              this.filterType = item.type;
+              this.thresholdVal = parseInt(item.val);
+          let obj = {
+            "alertUrgencyLevelId": 0,
+            "filterType": this.filterType,
+            "thresholdValue": this.thresholdVal,
+            "unitType": "N",
+            "landmarkType": "G",
+            "refId": element.id,
+            "positionType": "N",
+            "alertTimingDetail": this.alertTimingDetail
+          }
+       
+          this.advancedAlertPayload.push(obj);
+        });
+      }
+         });
+       }
+  
+      }
+      }
+  
+      // excessive average speed
+      if((this.alert_category_selected == 'F') && (this.alert_type_selected == 'A')){
+  
+        if (this.actionType == 'create' || this.actionType == 'duplicate') {
+          let obj;
+          if(this.isDurationSelected){
+            this.filterType = 'D';
+            this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.duration.value);
+            let filterObj = {
+              "type" : this.filterType,
+              "val" : this.thresholdVal
+            }
+            this.filterTypeArray.push(filterObj);
+            if(!this.isPoiSelected){
+            obj = {
+            "alertUrgencyLevelId": 0,
+            "filterType": "D",
+            "thresholdValue": this.thresholdVal,
+            "unitType": "N",
+            "landmarkType": 'N',
+            "refId": 0,
+            "positionType": "N",
+            "alertTimingDetail": this.alertTimingDetail
+          }
+          this.advancedAlertPayload.push(obj);
+        }
+        }
+    
+        if(this.isDistanceSelected){
+          this.filterType = 'T';
+          this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.distance.value);
+          let filterObj = {
+            "type" : this.filterType,
+            "val" : this.thresholdVal
+          }
+          this.filterTypeArray.push(filterObj);
+          if(!this.isPoiSelected){
+          obj = {
+          "alertUrgencyLevelId": 0,
+          "filterType": "T",
+          "thresholdValue": this.thresholdVal,
+          "unitType": "N",
+          "landmarkType": 'N',
+          "refId": 0,
+          "positionType": "N",
+          "alertTimingDetail": this.alertTimingDetail
+        }
+        this.advancedAlertPayload.push(obj);
+      }
+      }
+    
+      if(this.isOccurenceSelected){
+        this.filterType = 'N';
+        this.thresholdVal = parseInt(this.alertAdvancedFilterForm.controls.occurences.value);
+        let filterObj = {
+          "type" : this.filterType,
+          "val" : this.thresholdVal
+        }
+        this.filterTypeArray.push(filterObj);
+        if(!this.isPoiSelected){
+        obj = {
+        "alertUrgencyLevelId": 0,
+        "filterType": "N",
+        "thresholdValue": this.thresholdVal,
+        "unitType": "N",
+        "landmarkType": 'N',
+        "refId": 0,
+        "positionType": "N",
+        "alertTimingDetail": this.alertTimingDetail
+      }
+      this.advancedAlertPayload.push(obj);
+    }
+    }
+
+
+      if (this.geoMarkerArray.length != 0) {
+        this.geoMarkerArray.forEach(element => {
+          if(this.filterTypeArray.length == 0){
+          let obj = {
+            "alertUrgencyLevelId": 0,
+            "filterType": 'N',
+            "thresholdValue": 0,
+            "unitType": "N",
+            "landmarkType": element.type,
+            "refId": element.id,
+            "positionType": "N",
+            "alertTimingDetail": this.alertTimingDetail
+          }
+          this.advancedAlertPayload.push(obj);
+        }
+    
+          if (this.filterTypeArray.length != 0) {
+            this.filterTypeArray.forEach(item => {
+              this.filterType = item.type;
+              this.thresholdVal = parseInt(item.val);
+              let obj = {
+                "alertUrgencyLevelId": 0,
+                "filterType": this.filterType,
+                "thresholdValue": this.thresholdVal,
+                "unitType": "N",
+                "landmarkType": element.type,
+                "refId": element.id,
+                "positionType": "N",
+                "alertTimingDetail": this.alertTimingDetail
+              }
+              this.advancedAlertPayload.push(obj);
+            });
+          }
+          
+        })
+      }
+          if(this.markerArray.length != 0) {
+            this.markerArray.forEach(element => {
+              if(this.filterTypeArray.length == 0){
+                let obj = {
+                  "alertUrgencyLevelId": 0,
+                  "filterType": "N",
+                  "thresholdValue": 0,
+                  "unitType": "N",
+                  "landmarkType": "P",
+                  "refId": element.id,
+                  "positionType": "N",
+                  "alertTimingDetail": []
+                  
+                }
+                this.advancedAlertPayload.push(obj);
+              }
+              if (this.filterTypeArray.length != 0) {
+                this.filterTypeArray.forEach(item => {
+                  this.filterType = item.type;
+                  this.thresholdVal = parseInt(item.val);
+              let obj = {
+                "alertUrgencyLevelId": 0,
+                "filterType": this.filterType,
+                "thresholdValue": this.thresholdVal,
+                "unitType": "N",
+                "landmarkType": "P",
+                "refId": element.id,
+                "positionType": "N",
+                "alertTimingDetail": this.alertTimingDetail
+              }
+           
+              this.advancedAlertPayload.push(obj);
+            });
+          }
+            });
+          
+          }
+    
+          if(this.groupArray.length != 0) {
+           this.groupArray.forEach(element => {
+            if(this.filterTypeArray.length == 0){
+             let obj = {
+               "alertUrgencyLevelId": 0,
+               "filterType": "N",
+               "thresholdValue": 0,
+               "unitType": "N",
+               "landmarkType": "G",
+               "refId": element.id,
+               "positionType": "N",
+               "alertTimingDetail": []
+             }
+             this.advancedAlertPayload.push(obj);
+            }
+    
+            if (this.filterTypeArray.length != 0) {
+              this.filterTypeArray.forEach(item => {
+                this.filterType = item.type;
+                this.thresholdVal = parseInt(item.val);
+            let obj = {
+              "alertUrgencyLevelId": 0,
+              "filterType": this.filterType,
+              "thresholdValue": this.thresholdVal,
+              "unitType": "N",
+              "landmarkType": "G",
+              "refId": element.id,
+              "positionType": "N",
+              "alertTimingDetail": this.alertTimingDetail
+            }
+         
+            this.advancedAlertPayload.push(obj);
+          });
+        }
+           });
+         }
+    
+        }
+        }
+
+       return {"urgencylevelStartDate" : urgencylevelStartDate, "urgencylevelEndDate" : urgencylevelEndDate, "advancedAlertPayload" : this.advancedAlertPayload};
+   
+  }
+
+  setStartEndDateTime(date: any, timeObj: any, type: any){
+    let _x = timeObj.split(":")[0];
+    let _y = timeObj.split(":")[1];
+    
+    date.setHours(_x);
+    date.setMinutes(_y);
+    date.setSeconds(type == 'start' ? '00' : '59');
+    return date;
+  }
 
 }

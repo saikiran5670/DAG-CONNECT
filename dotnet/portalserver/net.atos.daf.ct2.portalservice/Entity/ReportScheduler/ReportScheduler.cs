@@ -13,7 +13,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
         public string FrequencyType { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
-        public string FileName { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public string Code { get; set; }
@@ -68,10 +67,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
     {
         public int ScheduleReportId { get; set; }
         public int VehicleGroupId { get; set; }
+        public int VehicleId { get; set; }
         public string State { get; set; }
         public long CreatedAt { get; set; }
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+    }
+    public class ReportStatusUpdateDeleteModel
+    {
+        public int ReportId { get; set; }
+        public int OrganizationId { get; set; }
+        public string Status { get; set; }
     }
 }

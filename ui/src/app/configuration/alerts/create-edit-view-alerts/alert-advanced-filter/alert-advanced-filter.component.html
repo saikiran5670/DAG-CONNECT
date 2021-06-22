@@ -1,6 +1,79 @@
 <form [formGroup]="alertAdvancedFilterForm">
+
+   <!-- Select Period -->
+   <mat-card *ngIf="((alert_category_selected === 'L') && (alert_type_selected === 'N' || this.alert_type_selected == 'X'))
+   || ((alert_category_selected === 'F') && (alert_type_selected === 'I' || alert_type_selected === 'A'))" 
+  class='mat-elevation-z'>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+            translationData.lblPeriod || 'Period' }}<span class='mandatoryColor'>*</span></span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div fxLayout="row" class="full-width filter-direction">
+        <mat-radio-group formControlName="fullorCustom" (change)='onApplyOnChange($event)'>
+          <mat-radio-button [checked]='true' style='margin-right: 20px;' value="A">
+            {{ translationData.lblFullDay || 'Full Day' }}
+          </mat-radio-button>
+          <mat-radio-button style='margin-right: 20px;' value="C">
+            {{ translationData.lblCustomPeriod || 'Custom Period' }}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div *ngIf="selectedApplyOn =='C'" fxLayout="row" class="areaWidth">
+        <div class="areaWidth" fxLayout="column">
+          <div fxLayout="row" class="areaWidth" fxLayoutGap="5px">
+            <div class="max-width-35-per" fxLayout="column">
+              <mat-label>{{ translationData.lblFrom || 'From' }}</mat-label>
+              <mat-form-field appearance="outline">
+                <mat-label>Choose a date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="fromDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="max-width-20-per" fxLayout="column">
+              <mat-label>{{ translationData.lblAt || 'At' }}</mat-label>
+              <mat-form-field appearance="outline" class="full-width">
+                <input type="time" matInput formControlName="fromTimeRange">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div class="areaWidth" fxLayout="column">
+          <div fxLayout="row" class="areaWidth" fxLayoutGap="5px">
+            <div class="max-width-35-per" fxLayout="column">
+              <mat-label>{{ translationData.lblTo || 'To' }}</mat-label>
+              <mat-form-field appearance="outline">
+                <mat-label>Choose a date</mat-label>
+                <input matInput [matDatepicker]="picker1" formControlName="toDate">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="max-width-20-per" fxLayout="column">
+              <mat-label>{{ translationData.lblAt || 'At' }}</mat-label>
+              <mat-form-field appearance="outline" class="full-width">
+                <input type="time" matInput formControlName="toTimeRange">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="selectedApplyOn =='C'" > 
+      <app-period-selection-filter  #periodComponent
+      [translationData] = 'translationData'
+      [selectedRowData] = 'selectedRowData'
+      [actionType]='actionType'></app-period-selection-filter>
+    </div>
+    </mat-expansion-panel>
+  </mat-card>
+  
   <!-- distance option -->
-  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A')" class='mat-elevation-z'>
+  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A') ||
+  (alert_category_selected === 'L' && alert_type_selected === 'S')"
+   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -27,7 +100,7 @@
         </div>
       </div>
     </mat-expansion-panel>
-  </mat-card>
+  </mat-card> 
 
   <!-- No of occurences option -->
   <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
@@ -62,7 +135,7 @@
   </mat-card>
 
   <!-- Duration option -->
-  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
+  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected ==='S'))
                   || (alert_category_selected === 'F' && alert_type_selected === 'A')" 
     class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
@@ -96,7 +169,8 @@
   <!-- POI condition option -->
   <mat-card *ngIf="(alert_category_selected === 'F' && 
   (alert_type_selected === 'I' || alert_type_selected === 'A' || alert_type_selected === 'L' || 
-  alert_type_selected === 'T' || alert_type_selected === 'P'))"
+  alert_type_selected === 'T' || alert_type_selected === 'P')) ||
+  (alert_category_selected === 'L' && alert_type_selected === 'S')"
   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">

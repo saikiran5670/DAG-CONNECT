@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.atos.daf.ct2.data;
 using net.atos.daf.ct2.reportscheduler;
+using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
 
 namespace atos.net.daf.ct2.reportscheduler.test
@@ -34,9 +35,45 @@ namespace atos.net.daf.ct2.reportscheduler.test
         [Timeout(TestTimeout.Infinite)]
         public async Task UnT_ReportScheduler_GetReportParameter()
         {
-            int AccountId = 393;
-            int OrgnisationId = 1;
-            var result = await _reportSchedulerManager.GetReportParameter(AccountId, OrgnisationId);
+            int accountId = 393;
+            int orgnisationId = 1;
+            var result = await _reportSchedulerManager.GetReportParameter(accountId, orgnisationId);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for create report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_ReportScheduler_CreateReportScheduler()
+        {
+            ReportSchedulerMap report = new ReportSchedulerMap();
+            var result = await _reportSchedulerManager.CreateReportScheduler(report);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for update report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_ReportScheduler_UpdateReportScheduler()
+        {
+            ReportSchedulerMap report = new ReportSchedulerMap();
+            var result = await _reportSchedulerManager.UpdateReportScheduler(report);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result != null);
+        }
+
+        [TestCategory("Unit-Test-Case")]
+        [Description("Test for get report scheduler")]
+        [TestMethod]
+        [Timeout(TestTimeout.Infinite)]
+        public async Task UnT_ReportScheduler_GetReportSchedulerList()
+        {
+            int orgnisationId = 1;
+            var result = await _reportSchedulerManager.GetReportSchedulerList(orgnisationId);
             Assert.IsNotNull(result);
             Assert.IsTrue(result != null);
         }
