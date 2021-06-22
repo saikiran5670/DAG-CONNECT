@@ -1,55 +1,23 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { TranslationService } from '../../services/translation.service';
-import { VehicleService } from '../../services/vehicle.service';
-import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import { MatTableExporterDirective } from 'mat-table-exporter';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-vehicle-management',
   templateUrl: './vehicle-management.component.html',
-  styleUrls: ['./vehicle-management.component.less']
+  styleUrls: ['./vehicle-management.component.less'],
 })
 
 export class VehicleManagementComponent implements OnInit {
-  actionType: any = '';
-  selectedRowData: any = [];
-  displayedColumns: string[] = ['name', 'vin', 'licensePlateNumber', 'modelId', 'relationShip', 'status', 'action'];
-  dataSource: any = new MatTableDataSource([]);
-  vehicleUpdatedMsg: any = '';
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective
-  initData: any = [];
-  translationData: any;
-  accountOrganizationId: any = 0;
-  titleVisible: boolean = false;
-  showLoadingIndicator: any = false;
+    public selectedIndex: number = 0; 
+  translationData: any =[];
   localStLanguage: any;
-  actionBtn:any; 
-  updateViewStatus: boolean = false;
+  accountOrganizationId: any = 0;
 
-  constructor(private vehicleService: VehicleService, private dialogService: ConfirmDialogService, private translationService: TranslationService) {
-    this.defaultTranslation();
-  }
+  constructor(private translationService: TranslationService, private route: Router,) {}
 
-  defaultTranslation() {
-    this.translationData = {
-      lblAllVehicleDetails: "All Vehicle Details",
-      lblNoRecordFound: "No Record Found",
-      lblVehicle: "Vehicle",
-      lblVIN: "VIN"      
-    };
-  }
-
-  onClose() {
-    this.titleVisible = false;
-  }
-
+     
   ngOnInit() {
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -63,99 +31,22 @@ export class VehicleManagementComponent implements OnInit {
       menuId: 21 //-- for vehicle mgnt
     };
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.loadVehicleData();
+      this.processTranslation(data);    
     });
+    //let currentComponentUrl: String;
+    // currentComponentUrl = this.route.routerState.snapshot.url
+    // if(currentComponentUrl == "/vehicleconnectsettings")
+    //   this.selectedIndex = 1;    
+    // else
+    //   this.selectedIndex = 0;
+  }
+
+  onTabChanged(event: any){
+    this.selectedIndex = event.index;
   }
 
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
   }
-
-  loadVehicleData(){
-    this.showLoadingIndicator = true;
-    this.vehicleService.getVehiclesData(this.accountOrganizationId).subscribe((vehData: any) => {
-      this.hideloader();
-      this.updateDataSource(vehData);
-    }, (error) => {
-        //console.error(error);
-        this.hideloader();
-        this.updateDataSource([]);
-      }
-    );
-  }
-
-  updateDataSource(tableData: any) {
-    this.initData = tableData;
-    setTimeout(() => {
-      this.dataSource = new MatTableDataSource(this.initData);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-  }
-
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
-  }
   
-  hideloader() {
-    // Setting display of spinner
-    this.showLoadingIndicator = false;
-  }
-
-  editViewVehicle(rowData: any, type: any){
-    this.selectedRowData = rowData;
-    this.actionType = type;
-    this.updateViewStatus = true;
-  }
-
-  onVehicleUpdateView(item: any){
-    //this.updateViewStatus = !this.updateViewStatus;
-    this.updateViewStatus = item.stepFlag;
-    if(item.successMsg && item.successMsg != ''){
-      this.showSuccessMessage(item.successMsg);
-    }
-    if(item.tableData){
-      this.initData = item.tableData;  
-    }
-    this.updateDataSource(this.initData);
-  }
-
-  showSuccessMessage(msg: any){
-    this.vehicleUpdatedMsg = msg;
-    this.titleVisible = true;
-    setTimeout(() => {
-      this.titleVisible = false;
-    }, 5000);
-  }
-
-  exportAsCSV(){
-    this.matTableExporter.exportTable('csv', {fileName:'VehicleMgmt_Data', sheet: 'sheet_name'});
-}
-
-exportAsPdf() {
-  let DATA = document.getElementById('vehicleMgmtData');
-    
-  html2canvas( DATA , { onclone: (document) => {
-    this.actionBtn = document.getElementsByClassName('action');
-    for (let obj of this.actionBtn) {
-      obj.style.visibility = 'hidden';  }       
-  }})
-  .then(canvas => {  
-      
-      let fileWidth = 208;
-      let fileHeight = canvas.height * fileWidth / canvas.width;
-      
-      const FILEURI = canvas.toDataURL('image/png')
-      let PDF = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
-      PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
-      
-      PDF.save('VehicleMgmt_Data.pdf');
-      PDF.output('dataurlnewwindow');
-  });     
-}
-
 }
