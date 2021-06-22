@@ -18,6 +18,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
   reportId: any;
   slideState: any = false;
+  slideStateData: any = {};
   localStLanguage: any;
   reqField: boolean = false;
   accountId: any;
@@ -215,7 +216,11 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
         }else{
           _data.translatedName = this.getName(element.name, 20);   
         }
-        this.calenderColumnData.push(_data);
+        if(element.key == 'da_report_calendarview_expensiontype'){
+          this.slideStateData = element;
+        }else{
+          this.calenderColumnData.push(_data);
+        }
       }else if(element.key.includes('da_report_details')){
         _data = element;
         if(this.translationData[element.key]){
@@ -312,9 +317,9 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     this.summaryColumnData.forEach(element => {
       let sSearch = this.selectionForSummaryColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(sSearch.length > 0){
-        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _summaryArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
@@ -330,20 +335,21 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
     });
 
     this.calenderColumnData.forEach(element => {
-      // this.fleetUtilForm.controls.calenderViewMode.value
       if(element.dataAtrributeId == parseInt(this.fleetUtilForm.controls.calenderView.value)){
-        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _calenderArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
+
+    _calenderArr.push({ dataAttributeId: this.slideStateData.dataAtrributeId, state: (this.fleetUtilForm.controls.calenderViewMode.value) ? "A" : "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 })
 
     this.detailColumnData.forEach(element => {
       let dSearch = this.selectionForDetailsColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(dSearch.length > 0){
-        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _detailArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
@@ -406,7 +412,7 @@ export class FleetUtilisationPreferenceComponent implements OnInit {
   setDefaultFormValues(){
     this.timeDisplay = this.chartsColumnData[3].thresholdValue != '' ? this.convertMilisecondsToHHMM(parseInt(this.chartsColumnData[3].thresholdValue)) : '00:00';
     let mileageInKm: any = this.chartsColumnData[2].thresholdValue != '' ? this.convertMeterToKm(parseInt(this.chartsColumnData[2].thresholdValue)) : 0;
-    this.slideState = false; //-- TODO: API changes pending 
+    this.slideState = this.slideStateData ? ((this.slideStateData.state == 'A') ? true : false) : false; //-- TODO: API changes pending 
     let calenderSelectionId: any;
     let _selectionCalenderView = this.calenderColumnData.filter(i => i.state == 'A');
     if(_selectionCalenderView.length == this.calenderColumnData.length){

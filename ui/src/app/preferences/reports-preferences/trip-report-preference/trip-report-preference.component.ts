@@ -148,9 +148,9 @@ export class TripReportPreferenceComponent implements OnInit {
     this.initData.forEach(element => {
       let search = this.selectionForTripColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(search.length > 0){
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "P", thresholdType: "", thresholdValue: 0 });
+        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
