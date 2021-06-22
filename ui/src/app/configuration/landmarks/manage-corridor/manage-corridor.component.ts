@@ -281,17 +281,16 @@ export class ManageCorridorComponent implements OnInit {
     this.showMap = this.selectedCorridors.selected.length > 0 ? true : false;
     //console.log(this.selectedpois.selected.length)
     //console.log(row);
+    this.mapFunctions.clearRoutesFromMap();
     if(event.checked){ //-- add new marker
       this.markerArray.push(row);
-      
-    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
+    //this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
     }else{ //-- remove existing marker
       //It will filter out checked points only
       let arr = this.markerArray.filter(item => item.id != row.id);
       this.markerArray = arr;
-      this.mapFunctions.clearRoutesFromMap();
-
       }
+    this.mapFunctions.viewSelectedRoutes(this.markerArray,this.accountOrganizationId);
 
      // this.addPolylineToMap();
   }

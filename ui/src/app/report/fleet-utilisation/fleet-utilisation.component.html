@@ -219,13 +219,13 @@
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <!-- <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-           
-          <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+          <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div class="chart-wrapper">
               <canvas baseChart 
               [datasets]="barChartData"
-              [labels]="barChartsLabelsdefined"
+              [labels]="barChartLabels"
               [options]="barChartOptions"
               [plugins]="barChartPlugins"
               [legend]="barChartLegend"
@@ -233,17 +233,44 @@
             </canvas>
           </div>
         </div>
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div class="chart-wrapper">
-          <canvas baseChart  id="myChart"
-          [data]="doughnutChartData"
-          [chartType]="doughnutChartType"
-          [labels]="doughnutChartLabels">
-        </canvas>
-      </div>
+            <canvas baseChart 
+                [datasets]="lineChartData" 
+                [labels]="lineChartLabels" 
+                [options]="lineChartOptions"
+                [colors]="lineChartColors" 
+                [legend]="lineChartLegend" 
+                [chartType]="lineChartType" 
+                [plugins]="lineChartPlugins">
+            </canvas>
+        </div>
       </div>
 
-      </div> -->
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
+          <div class="chart-wrapper">
+            <canvas baseChart 
+            [data]="doughnutChartData"
+            [chartType]="doughnutChartType"
+            [labels]="doughnutChartLabels">
+          </canvas>
+        </div>
+        </div>
+        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
+          <div class="chart-wrapper">
+            <canvas baseChart 
+            [data]="doughnutChartData"
+            [chartType]="doughnutChartType"
+            [labels]="doughnutChartLabels">
+          </canvas>
+        </div>
+        </div>
+      </div>
       </mat-expansion-panel>
       </mat-card>
 

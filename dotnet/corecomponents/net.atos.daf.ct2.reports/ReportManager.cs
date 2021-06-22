@@ -133,18 +133,24 @@ namespace net.atos.daf.ct2.reports
         #endregion
 
         #region  Eco Score Report - Update/Delete Profile
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ecoScoreProfileDto"></param>
+        /// <param name="isAdminRights"></param>
+        /// <returns> return -2 = Is a default profile, Can't update.</returns>
+        /// /// <returns> return -1 = does not exist to update.</returns>
         public async Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto, bool isAdminRights)
         {
-
             // Default Profile for basic and advance -	DAF Admin – Not Allowed Update Profile Name , Allowed  Rest profile KPIs modifications  2) Org Admin – nothing Allowed
             // Custom profile(Global) -	DAF Admin – All allowed 2) Org Admin – nothing Allowed
             // Custom profile(Org) – DAF Admin – All allowed  2)Org Admin – Allowed(Based on Role and Subscription)
-            var isExist = _reportRepository.CheckEcoScoreProfileIsexist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
-            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(ecoScoreProfileDto.Id);
-            bool isGlobalProfile = await _reportRepository.GetGlobalProfile(ecoScoreProfileDto.Id);
-            if (await isExist)// check if profile is avilable in DB or not
+            var isExist = await _reportRepository.CheckEcoScoreProfileIsExist(ecoScoreProfileDto.OrganizationId, ecoScoreProfileDto.Name);
+            if (isExist)// check if profile is avilable in DB or not
             {
-                if (versionType != "" || versionType != null)// check if it is basic or advance versiontype= "B" or "A"
+                string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(ecoScoreProfileDto.Id);
+                bool isGlobalProfile = await _reportRepository.GetGlobalProfile(ecoScoreProfileDto.Id);
+                if (!string.IsNullOrEmpty(versionType))// check if it is basic or advance versiontype= "B" or "A"
                 {
                     if (isAdminRights)// admin rights with level 10 & 20
                     {
@@ -152,15 +158,18 @@ namespace net.atos.daf.ct2.reports
                         return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto); // DAF Admin – Not Allowed Update Profile Name 
                     }
                 }
-                else if (isGlobalProfile || !isGlobalProfile)
+                else if (versionType == null)
                 {
-                    if (isAdminRights)
+                    if (isGlobalProfile)
+                    {
+                        if (isAdminRights)
+                        {
+                            return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
+                        }
+                    }
+                    else
                     {
                         return await _reportRepository.UpdateEcoScoreProfile(ecoScoreProfileDto);
-                    }
-                    else if (!isGlobalProfile && !isAdminRights)
-                    {
-                        // Org Admin – Allowed(Based on Role and Subscription)
                     }
                 }
                 return -2;
@@ -168,50 +177,41 @@ namespace net.atos.daf.ct2.reports
             else
                 return -1;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="profileId"></param>
+        /// <param name="isAdminRights"></param>
+        /// <returns> return -2 = Is a default profile, Can't delete.</returns>
+        /// /// <returns> return -1 = Is a global profile, Can't delete.</returns>
         public async Task<int> DeleteEcoScoreProfile(int profileId, bool isAdminRights)
         {
             int ecoScoreProfileId;
-            bool isGlobalProfile = await _reportRepository.GetGlobalProfile(profileId);
-            if (isGlobalProfile)
+            string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
+
+            if (!string.IsNullOrEmpty(versionType))
             {
-                if (isAdminRights)
-                {
-                    string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
-                    if (versionType == "" || versionType == null)
-                    {
-                        ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
-                    }
-                    else
-                    {
-                        ecoScoreProfileId = -1;
-                    }
-                }
-                else
-                {
-                    return -2;
-                }
-            }
-            else
-            {
-                string versionType = await _reportRepository.IsEcoScoreProfileBasicOrAdvance(profileId);
-                if (versionType == "" || versionType == null)
+                bool isGlobalProfile = await _reportRepository.GetGlobalProfile(profileId);
+
+                if (isGlobalProfile)
                 {
                     if (isAdminRights)
+                    {
                         ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
+                    }
                     else
-                        ecoScoreProfileId = -1;
-                    // check priviledges
+                    {
+                        return -1;
+                    }
                 }
                 else
                 {
-                    ecoScoreProfileId = -1;
+                    ecoScoreProfileId = await _reportRepository.DeleteEcoScoreProfile(profileId);
                 }
+
             }
-            return ecoScoreProfileId;
-        }
-        public async Task<string> GetProfileName(int profileId)
-        {
-            return await _reportRepository.GetProfileName(profileId);
+            return -2;
         }
         #endregion
 

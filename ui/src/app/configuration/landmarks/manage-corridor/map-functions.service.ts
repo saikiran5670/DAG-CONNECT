@@ -101,6 +101,10 @@ export class MapFunctionsService {
   clearRoutesFromMap() { 
     this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
+    this.transportOnceChecked = false;
+    this.trafficOnceChecked = false;
   }
 
   group = new H.map.Group();
@@ -113,7 +117,7 @@ export class MapFunctionsService {
     let endAddress = '';
     
     this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
-    this.hereMap.removeLayer(this.defaultLayers.vector.normal.transport);
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
     this.transportOnceChecked = false;
     this.trafficOnceChecked = false;
  // var group = new H.map.Group();
