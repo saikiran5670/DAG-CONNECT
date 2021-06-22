@@ -200,12 +200,13 @@ export class ReportMapService {
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone);
-      element.convertedAverageWeight = this.getAvrgWeight(element.AverageWeightPerTrip, unitFormat);
+      element.convertedAverageWeight = this.getAvrgWeight(element.averageWeightPerTrip, unitFormat);
       element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
-      element.convertedAverageDistance = this.getDistance(element.AverageDistancePerDay, unitFormat);
+      element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
-      element.convertedTripTime = this.getHhMmTime(element.TripTime);
+      element.convertedTripTime = this.getHhMmTime(element.tripTime);
+      element.convertedStopTime = this.getHhMmTime(element.stopTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
     });
     return gridData;
