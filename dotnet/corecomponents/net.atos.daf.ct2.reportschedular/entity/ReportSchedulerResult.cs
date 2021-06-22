@@ -45,6 +45,12 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int Vehref_created_by { get; set; }
         public long Vehref_modified_at { get; set; }
         public int Vehref_modified_by { get; set; }
+        public int Vehicleid { get; set; }
+        public string Vin { get; set; }
+        public string Regno { get; set; }
+        public string Vehiclename { get; set; }
+        public string Vehiclegroupname { get; set; }
+        public string Vehiclegrouptype { get; set; }
         public int Schrep_id { get; set; }
         public int Schrep_schedule_report_id { get; set; }
         public string Schrep_report { get; set; }

@@ -69,6 +69,12 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+        public int VehicleId { get; set; }
+        public string Vin { get; set; }
+        public string Regno { get; set; }
+        public string VehicleName { get; set; }
+        public string VehicleGroupName { get; set; }
+        public string VehicleGroupType { get; set; }
     }
     public class ReportSchedulerMap : ReportScheduler
     {
