@@ -11,9 +11,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<ReportType>> GetReportType(int accountid, int organizationid);
         Task<IEnumerable<ReceiptEmails>> GetRecipientsEmails(int organizationid);
         Task<IEnumerable<DriverDetail>> GetDriverDetails(int organizationid);
-        Task<ReportScheduler> CreateReportScheduler(ReportScheduler report);
-        Task<ReportScheduler> UpdateReportScheduler(ReportScheduler report);
-        Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid);
+        Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report);
+        Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report);
+        Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid);
         Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel);
         #endregion
     }

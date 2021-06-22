@@ -85,24 +85,23 @@ message ReportSchedulerRequest
     int32 ReportId =3;
     string FrequencyType =4;
     string Status =5;
-    string Type =6;
-    string FileName =7;
-    int64 StartDate =8;
-    int64 EndDate =9;
-    string Code =10;
-    int64 LastScheduleRunDate =11;
-    int64 NextScheduleRunDate =12;
-    int64 CreatedAt =13;
-    int32 CreatedBy =14;
-    int64 ModifiedAt =15;
-    int32 ModifiedBy =16;
-    string MailSubject =17;
-    string MailDescription =18;
-    int64 ReportDispatchTime =19;
-    repeated ScheduledReportRequest ScheduledReport=20;
-    repeated ScheduledReportRecipientRequest ScheduledReportRecipient=21;
-    repeated ScheduledReportDriverRefRequest ScheduledReportDriverRef=22;
-    repeated ScheduledReportVehicleRefRequest ScheduledReportVehicleRef=23;
+    string Type =6;    
+    int64 StartDate =7;
+    int64 EndDate =8;
+    string Code =9;
+    int64 LastScheduleRunDate =10;
+    int64 NextScheduleRunDate =11;
+    int64 CreatedAt =12;
+    int32 CreatedBy =13;
+    int64 ModifiedAt =14;
+    int32 ModifiedBy =15;
+    string MailSubject =16;
+    string MailDescription =17;
+    int64 ReportDispatchTime =18;
+    repeated ScheduledReportRequest ScheduledReport=19;
+    repeated ScheduledReportRecipientRequest ScheduledReportRecipient=20;
+    repeated ScheduledReportDriverRefRequest ScheduledReportDriverRef=21;
+    repeated ScheduledReportVehicleRefRequest ScheduledReportVehicleRef=22;
 }
 message ScheduledReportRequest
 {

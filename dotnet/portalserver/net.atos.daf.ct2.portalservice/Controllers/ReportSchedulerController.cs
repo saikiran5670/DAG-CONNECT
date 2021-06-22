@@ -78,15 +78,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
                         {
-                            var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                            VehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
-                            if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
-                            VehicleGroupRequest.GroupType = "S";
-                            VehicleGroupRequest.RefId = item.VehicleGroupId;
-                            VehicleGroupRequest.FunctionEnum = "N";
-                            VehicleGroupRequest.OrganizationId = GetContextOrgId();
-                            VehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
-                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                            var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                            vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                            if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                            vehicleGroupRequest.GroupType = "S";
+                            vehicleGroupRequest.RefId = item.VehicleGroupId;
+                            vehicleGroupRequest.FunctionEnum = "N";
+                            vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                            vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                             item.VehicleGroupId = response.VehicleGroup.Id;
                         }
                         //TOBE DO
@@ -140,15 +140,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     {
                         if ((item.VehicleGroupId == 0 && item.VehicleId > 0) || (item.VehicleGroupId >= 0 && item.VehicleId > 0))
                         {
-                            var VehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
-                            VehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
-                            if (VehicleGroupRequest.Name.Length > 50) VehicleGroupRequest.Name = VehicleGroupRequest.Name.Substring(0, 49);
-                            VehicleGroupRequest.GroupType = "S";
-                            VehicleGroupRequest.RefId = item.VehicleGroupId;
-                            VehicleGroupRequest.FunctionEnum = "N";
-                            VehicleGroupRequest.OrganizationId = GetContextOrgId();
-                            VehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
-                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(VehicleGroupRequest);
+                            var vehicleGroupRequest = new vehicleservice.VehicleGroupRequest();
+                            vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
+                            if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
+                            vehicleGroupRequest.GroupType = "S";
+                            vehicleGroupRequest.RefId = item.VehicleGroupId;
+                            vehicleGroupRequest.FunctionEnum = "N";
+                            vehicleGroupRequest.OrganizationId = GetContextOrgId();
+                            vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
+                            vehicleservice.VehicleGroupResponce response = await _vehicleClient.CreateGroupAsync(vehicleGroupRequest);
                             item.VehicleGroupId = response.VehicleGroup.Id;
                         }
                         //TOBE DO
