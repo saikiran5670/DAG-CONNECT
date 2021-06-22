@@ -35,6 +35,8 @@ import { Ng2CompleterModule } from 'ng2-completer';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { CreateEditViewReportSchedulerComponent } from './report-scheduler/create-edit-view-report-scheduler/create-edit-view-report-scheduler.component';
+import { VehicleConnectSettingsComponent } from './vehicle-management/vehicle-connect-settings/vehicle-connect-settings.component';
+import { VehicleDetailsComponent } from './vehicle-management/vehicle-details/vehicle-details.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +63,8 @@ import { CreateEditViewReportSchedulerComponent } from './report-scheduler/creat
     RouteCalculatingComponent,
     ExistingTripsComponent,
     CreateEditViewReportSchedulerComponent,
+    VehicleConnectSettingsComponent,
+    VehicleDetailsComponent,
   ],
   imports: [
     CommonModule,

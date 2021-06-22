@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                     Type = userpreference.Type,
                     Key = userpreference.Key,
                     State = userpreference.State ?? ((char)ReportPreferenceState.InActive).ToString(),
-                    ChartType = userpreference.ChartType,
+                    ChartType = userpreference.ChartType ?? string.Empty,
                     ThresholdType = userpreference.ThresholdType ?? string.Empty,
                     ThresholdValue = userpreference.ThresholdValue
                 });
