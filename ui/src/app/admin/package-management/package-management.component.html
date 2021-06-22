@@ -81,14 +81,16 @@
       <mat-cell *matCellDef="let row">{{ row.type }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="state">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.state == true ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Expired' }}</mat-cell>
+    <!--<mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStatus || 'Status' }}</mat-header-cell>
     <mat-cell *matCellDef="let row">
       <button class='actionBtn' mat-flat-button (click)="changePackageStatus(row)" matTooltip="{{ row.state == 'Active' ? (translationData.lblClicktodeactivate || 'Click to Deactivate') : translationData.lblClicktoactivate || 'Click to Activate' }}">
         <mat-slide-toggle color="primary" [checked]='row.state == "Active" ? true : false' >
       </mat-slide-toggle>&nbsp;
       <span>{{ row.state == "Active" ? (translationData.lblActive || 'Active') : translationData.lblInActive || 'Inactive' }}</span>
       </button>
-    </mat-cell>
+    </mat-cell>-->
   </ng-container>
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef class="action"> {{ translationData.lblAction || 'Actions' }} </mat-header-cell>
