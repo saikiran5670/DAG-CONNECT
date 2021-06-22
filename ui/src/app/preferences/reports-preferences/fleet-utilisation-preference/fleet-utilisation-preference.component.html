@@ -153,8 +153,8 @@
         </div>
         <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="left" class="areaWidth min-width-25-per targetSpanIcon">
             <mat-form-field appearance="outline" style='width: 80%'>
-                <input [readonly]='!editFlag' matInput type="number"
-                    placeholder="{{ translationData.lblSetTarget || 'Set Target' }}" formControlName="mileageTarget">
+                <input [readonly]='!editFlag' matInput type="text"
+                    placeholder="{{ translationData.lblSetTarget || 'Set Target' }}" (keypress)="keyPressNumbers($event)" formControlName="mileageTarget">
                 <span matSuffix>km</span>
             </mat-form-field>
         </div>
