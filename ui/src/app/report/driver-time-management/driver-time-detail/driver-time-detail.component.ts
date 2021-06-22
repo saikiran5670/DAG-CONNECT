@@ -11,7 +11,7 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportMapService } from '../../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
+import { ChartOptions, ChartType, ChartDataSets ,ChartColor} from 'chart.js';
 
 
 @Component({
@@ -45,6 +45,11 @@ export class DriverTimeDetailComponent implements OnInit {
   };
   barChartType: ChartType = 'horizontalBar';
   barChartLegend = true;
+  barChartColors: Array<any> = [
+    {
+      backgroundColor :['rgba(255, 165, 0,1)','rgba(0, 0, 255, 1)','rgba(0, 128, 0, 1)','rgba(128, 128, 128, 1)']
+    },
+  ];
 
   barChartData: ChartDataSets[] = [] ;
   // [
@@ -82,6 +87,7 @@ export class DriverTimeDetailComponent implements OnInit {
     
     this.barChartLabels = dateArray;
 
+    
     
   }
 
