@@ -109,8 +109,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 report_id, 
                                                 frequency_type,
                                                 status,
-                                                type, 
-                                                file_name, 
+                                                type,                                                 
                                                 start_date, 
                                                 end_date, 
                                                 code,
@@ -128,8 +127,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 @report_id, 
                                                 @frequency_type, 
                                                 @status, 
-                                                @type, 
-                                                @file_name, 
+                                                @type,                                               
                                                 @start_date, 
                                                 @end_date, 
                                                 @code,
@@ -149,7 +147,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
                 parameterReportSchedular.Add("@start_date", report.OrganizationId);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
@@ -389,8 +386,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 SET 
 	                                            frequency_type=@frequency_type, 
 	                                            status=@status, 
-	                                            type=@type, 
-	                                            file_name=@file_name, 
+	                                            type=@type,	                                            
 	                                            start_date=@start_date, 
 	                                            end_date=@end_date, 
 	                                            code=@code, 
@@ -408,7 +404,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
                 parameterReportSchedular.Add("@start_date", report.OrganizationId);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
@@ -498,8 +493,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             repsch.report_id as repsch_report_id, 
                                             repsch.frequency_type as repsch_frequency_type, 
                                             repsch.status as repsch_status, 
-                                            repsch.type as repsch_type, 
-                                            repsch.file_name as repsch_file_name, 
+                                            repsch.type as repsch_type,                                            
                                             repsch.start_date as repsch_start_date, 
                                             repsch.end_date as repsch_end_date, 
                                             repsch.code as repsch_code, 
