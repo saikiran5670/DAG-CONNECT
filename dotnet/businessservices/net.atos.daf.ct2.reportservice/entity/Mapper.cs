@@ -21,6 +21,8 @@ namespace net.atos.daf.ct2.reportservice.entity
                     Type = userpreference.Type,
                     Key = userpreference.Key,
                     State = userpreference.State ?? ((char)ReportPreferenceState.InActive).ToString(),
+                    ThresholdType = userpreference.ThresholdType ?? string.Empty,
+                    ThresholdValue = userpreference.ThresholdValue
                 });
             }
             return userPreferenceResult;
@@ -51,7 +53,7 @@ namespace net.atos.daf.ct2.reportservice.entity
                     DataAttributeId = objUserPreferenceCreateRequest.AtributesShowNoShow[i].DataAttributeId,
                     State = objUserPreferenceCreateRequest.AtributesShowNoShow[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
                     Type = objUserPreferenceCreateRequest.AtributesShowNoShow[i].Type.ToCharArray().FirstOrDefault(),
-                    ChartType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType.ToCharArray().FirstOrDefault(),
+                    ChartType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType == "" ? new char() : (char)objUserPreferenceCreateRequest.AtributesShowNoShow[i].CharType[0],
                     ThresholdType = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdType,
                     ThresholdValue = objUserPreferenceCreateRequest.AtributesShowNoShow[i].ThresholdValue,
                 });

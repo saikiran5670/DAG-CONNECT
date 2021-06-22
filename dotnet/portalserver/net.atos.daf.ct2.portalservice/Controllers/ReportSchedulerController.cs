@@ -37,11 +37,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Get Report Scheduler Paramenter
         [HttpGet]
         [Route("getreportschedulerparameter")]
-        public async Task<IActionResult> GetReportSchedulerParameter(int accountId, int orgnizationid, int roleid)
+        public async Task<IActionResult> GetReportSchedulerParameter(int accountId, int orgnizationid)
         {
             try
             {
                 if (orgnizationid == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
+                orgnizationid = GetContextOrgId();
+                int roleid = AssignOrgContextByRoleId(0);
                 ReportParameterResponse response = await _reportschedulerClient.GetReportParameterAsync(new ReportParameterRequest { AccountId = accountId, OrganizationId = orgnizationid, RoleId = roleid });
 
                 if (response == null)
@@ -128,7 +130,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Update Schedular Report
-        [HttpPost]
+        [HttpPut]
         [Route("update")]
         public async Task<IActionResult> UpdateReportScheduler(PortalAlertEntity.ReportScheduler request)
         {
@@ -284,6 +286,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest obj = new net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest();
                 obj.OrganizationId = request.OrganizationId;
                 obj.ReportId = request.ReportId;
+                obj.Status = request.Status;
                 var data = await _reportschedulerClient.EnableDisableReportScheduleAsync(obj);
                 if (data == null)
                 {
