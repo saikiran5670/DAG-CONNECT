@@ -19,12 +19,11 @@ namespace net.atos.daf.ct2.vehicleservice.Services
 {
     public class VehicleManagementService : VehicleService.VehicleServiceBase
     {
-        //private readonly ILogger<VehicleManagementService> _logger;
         private readonly IVehicleManager _vehicleManager;
         private readonly Group.IGroupManager _groupManager;
         private readonly Mapper _mapper;
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IAuditTraillib _auditlog;
         private readonly AccountComponent.IAccountManager _accountmanager;
 

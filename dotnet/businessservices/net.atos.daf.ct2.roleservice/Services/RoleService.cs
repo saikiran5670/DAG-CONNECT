@@ -15,41 +15,35 @@ namespace net.atos.daf.ct2.roleservice
 
     public class RoleManagementService : RoleService.RoleServiceBase
     {
-
-        // private readonly ILogger<RoleManagementService> _logger;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IRoleManagement _roleManagement;
 
-        public RoleManagementService(IRoleManagement RoleManagement)
+        public RoleManagementService(IRoleManagement roleManagement)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            _roleManagement = RoleManagement;
-
-
+            _roleManagement = roleManagement;
         }
 
         public async override Task<RoleResponce> Create(RoleRequest request, ServerCallContext context)
         {
             try
             {
-
-                RoleMaster ObjRole = new RoleMaster();
-                ObjRole.Organization_Id = request.OrganizationId;
-                ObjRole.Name = request.RoleName;
-                ObjRole.Created_by = request.CreatedBy;
-                ObjRole.Description = request.Description;
-                ObjRole.Feature_set_id = 0;
-                ObjRole.Level = request.Level;
-                ObjRole.Code = request.Code;
-                ObjRole.FeatureSet = new FeatureSet();
-                ObjRole.FeatureSet.Features = new List<Feature>();
+                RoleMaster objRole = new RoleMaster();
+                objRole.Organization_Id = request.OrganizationId;
+                objRole.Name = request.RoleName;
+                objRole.Created_by = request.CreatedBy;
+                objRole.Description = request.Description;
+                objRole.Feature_set_id = 0;
+                objRole.Level = request.Level;
+                objRole.Code = request.Code;
+                objRole.FeatureSet = new FeatureSet();
+                objRole.FeatureSet.Features = new List<Feature>();
                 foreach (var item in request.FeatureIds)
                 {
-                    ObjRole.FeatureSet.Features.Add(new Feature() { Id = item });
+                    objRole.FeatureSet.Features.Add(new Feature() { Id = item });
                 }
-                int Rid = _roleManagement.CheckRoleNameExist(request.RoleName.Trim(), request.OrganizationId, 0);
-                if (Rid > 0)
+                int rid = _roleManagement.CheckRoleNameExist(request.RoleName.Trim(), request.OrganizationId, 0);
+                if (rid > 0)
                 {
                     return await Task.FromResult(new RoleResponce
                     {
@@ -58,7 +52,7 @@ namespace net.atos.daf.ct2.roleservice
 
                     });
                 }
-                var role = await _roleManagement.CreateRole(ObjRole);
+                var role = await _roleManagement.CreateRole(objRole);
 
                 return await Task.FromResult(new RoleResponce
                 {

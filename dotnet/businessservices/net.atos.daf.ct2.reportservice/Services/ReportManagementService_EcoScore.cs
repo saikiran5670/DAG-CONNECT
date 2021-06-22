@@ -256,7 +256,7 @@ namespace net.atos.daf.ct2.reportservice.Services
             try
             {
                 _logger.Info("Update Eco Score Profile Report .");
-                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.LastOrDefault().Value);
+                bool isAdminRights = Convert.ToBoolean(context.RequestHeaders.Get("hasrights").Value);
                 EcoScoreProfileDto obj = new EcoScoreProfileDto();
                 obj.Id = request.ProfileId;
                 obj.Name = request.Name;
@@ -337,7 +337,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 else if (result == -1)
                 {
-                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_FAIL_MSG;
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 else if (result == -2)
@@ -347,7 +347,7 @@ namespace net.atos.daf.ct2.reportservice.Services
                 }
                 else
                 {
-                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_GLOBAL_PROFILE_MSG;
+                    response.Message = entity.ReportConstants.DELETE_ECOSCORE_PROFILE_FAIL_MSG;
                     response.Code = Responsecode.Failed;
                 }
                 return await Task.FromResult(response);

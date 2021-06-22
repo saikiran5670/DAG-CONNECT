@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Common
 {
     public class BasicAuthenticationService : IBasicAuthenticationService
     {
-        AccountComponent.IAccountIdentityManager _accountIdentityManager;
+        readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
         public BasicAuthenticationService(AccountComponent.IAccountIdentityManager accountIdentityManager)
         {
             this._accountIdentityManager = accountIdentityManager;

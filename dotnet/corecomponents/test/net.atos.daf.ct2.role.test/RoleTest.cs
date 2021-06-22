@@ -31,29 +31,29 @@ namespace net.atos.daf.ct2.role.test
 
             _featureRepository = new FeatureRepository(_dataAccess);
             _featureManagement = new FeatureManager(_featureRepository);
-            _roleManagement = new RoleManagement(_roleRepository, _featureManagement, _featureRepository);
+            _roleManagement = new RoleManagement(_roleRepository, _featureManagement);
 
         }
 
         [TestMethod]
         public void CreateRole()
         {
-            RoleMaster ObjRole = new RoleMaster();
+            RoleMaster objRole = new RoleMaster();
 
-            ObjRole.Organization_Id = 12;
-            ObjRole.Name = "Role 9";
-            ObjRole.FeatureSet = new FeatureSet();
-            ObjRole.FeatureSet.Features = new List<Feature>();
+            objRole.Organization_Id = 12;
+            objRole.Name = "Role 9";
+            objRole.FeatureSet = new FeatureSet();
+            objRole.FeatureSet.Features = new List<Feature>();
             features.entity.Feature objfeature = new features.entity.Feature();
             objfeature.Id = 4;
             features.entity.Feature objfeature1 = new features.entity.Feature();
             objfeature1.Id = 2;
             features.entity.Feature objfeature2 = new features.entity.Feature();
             objfeature2.Id = 3;
-            ObjRole.FeatureSet.Features.Add(objfeature);
-            ObjRole.FeatureSet.Features.Add(objfeature1);
-            ObjRole.FeatureSet.Features.Add(objfeature2);
-            var role = _roleManagement.CreateRole(ObjRole).Result;
+            objRole.FeatureSet.Features.Add(objfeature);
+            objRole.FeatureSet.Features.Add(objfeature1);
+            objRole.FeatureSet.Features.Add(objfeature2);
+            var role = _roleManagement.CreateRole(objRole).Result;
             Assert.IsNotNull(role);
             Assert.IsTrue(role > 0);
 

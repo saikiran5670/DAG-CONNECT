@@ -4,9 +4,9 @@
     {
         private TCURegistrationEvents _tCURegistrationEvents;
 
-        public TCUDataSend(TCURegistrationEvents _tCURegistrationEvents)
+        public TCUDataSend(TCURegistrationEvents tCURegistrationEvents)
         {
-            this._tCURegistrationEvents = _tCURegistrationEvents;
+            this._tCURegistrationEvents = tCURegistrationEvents;
         }
 
         public TCURegistrationEvents TCURegistrationEvents

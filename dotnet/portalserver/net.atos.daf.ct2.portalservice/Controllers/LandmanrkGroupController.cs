@@ -16,13 +16,13 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Route("landmarkgroup")]
     public class LandmanrkGroupController : BaseController
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly GroupService.GroupServiceClient _groupServiceclient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.POI.Mapper _mapper;
-        private string _fK_Constraint = "violates foreign key constraint";
+        private readonly string _fK_Constraint = "violates foreign key constraint";
         private readonly AlertService.AlertServiceClient _alertServiceClient;
-        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor) : base(_httpContextAccessor, sessionHelper)
+        public LandmanrkGroupController(GroupService.GroupServiceClient groupService, AuditHelper auditHelper, SessionHelper sessionHelper, AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _groupServiceclient = groupService;

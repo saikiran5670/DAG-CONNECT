@@ -16,10 +16,10 @@ namespace net.atos.daf.ct2.poigeofence.repository
         private static readonly log4net.ILog _log =
        log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public PoiRepository(IDataAccess _dataAccess, IDataMartDataAccess _DataMartdataAccess)
+        public PoiRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
-            this._dataAccess = _dataAccess;
-            _dataMartdataAccess = _DataMartdataAccess;
+            _dataAccess = dataAccess;
+            _dataMartdataAccess = dataMartdataAccess;
         }
         public async Task<List<POI>> GetAllGobalPOI(POIEntityRequest objPOIEntityRequest)
         {

@@ -21,12 +21,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
         private readonly Mapper _mapper;
 
-        private ILog _logger;
-        private string _fk_Constraint = "violates foreign key constraint";
-        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly ILog _logger;
+        private readonly string _fk_Constraint = "violates foreign key constraint";
+        private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly AuditHelper _auditHelper;
 
-        public VehicleController(VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public VehicleController(VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _vehicleClient = vehicleClient;
