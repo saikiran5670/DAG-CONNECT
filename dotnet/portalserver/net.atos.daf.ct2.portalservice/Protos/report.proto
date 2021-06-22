@@ -64,7 +64,7 @@ message UserPreferenceDataColumn{
     string State=7;
     string ChartType = 8;
     string ThresholdType = 9;
-    string ThresholdValue = 10;
+    int64 ThresholdValue = 10;
 }
 
 message UserPreferenceDataColumnResponse{
@@ -412,7 +412,9 @@ message FleetUtilizationcalender {
     double Averageidleduration = 7;
     double Averagedistanceperday = 8;
     double AverageSpeed = 9;
-   
+   int32 Vehiclecount =10;
+    int32 Tripcount =11;
+    double Averageweight=12;
 
 }
 

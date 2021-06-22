@@ -67,6 +67,29 @@ wsCount : number = 0;
 emailLabel : any;
 wsLabel: any;
 limitButton: any;
+weblimitButton: any;
+timeList: any =[
+  {
+    id: 'M',
+    value:'Minutes'
+  },
+  {
+    id: 'H',
+    value:'Hours'
+  },
+];
+emailTimeList: any =[
+  {
+    id: 'M',
+    value:"Minutes"
+  },
+  {
+    id: 'H',
+    value:"Hours"
+  },
+];
+timeUnitValue :any;
+emailtimeUnitValue: any;
 
 @ViewChild(NotificationAdvancedFilterComponent)
 notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
@@ -136,7 +159,10 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
         webRecipientLabel: [''],
         webContactModes: [''],
         receipientId: [],
-        widthInput: ['']
+        widthInput: [''],
+        webretrictTo: ['1'],
+        webEach: ['1'],
+        webminutes: ['1']
       });
 
     }
@@ -151,6 +177,15 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
     setAlertType(alertType: any){
       this.notificationAdvancedFilterComponent.setAlertType(alertType);
     }
+
+    onChangeTimeUnit(event :any){
+      this.timeUnitValue = event.value;
+    }
+
+    onChangeTimeUnitForEmail(event :any){
+      this.emailtimeUnitValue = event.value;
+    }
+
 
     setDefaultValues(){
         if(this.FormWebArray && this.FormWebArray.length != 0){
@@ -314,6 +349,10 @@ if(isButtonClicked){
 
   onLimitationButtonChange(event: any){
     this.limitButton = event.value;
+  }
+
+  onWebLimitationButtonChange(event: any){
+    this.weblimitButton = event.value;
   }
 
   onClickAdvancedFilter(){

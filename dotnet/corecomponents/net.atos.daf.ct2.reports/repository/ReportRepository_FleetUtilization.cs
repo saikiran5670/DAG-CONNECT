@@ -85,28 +85,28 @@ namespace net.atos.daf.ct2.reports.repository
         /// <summary>
         /// Get Calender data for fleet utilization page
         /// </summary>
-        /// <param name="TripFilters"></param>
+        /// <param name="tripFilters"></param>
         /// <returns></returns>
-        public async Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter TripFilters)
+        public async Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@StartDateTime", TripFilters.StartDateTime);
-                parameter.Add("@EndDateTime", TripFilters.EndDateTime);
-                parameter.Add("@vins", TripFilters.VIN.ToArray());
+                parameter.Add("@StartDateTime", tripFilters.StartDateTime);
+                parameter.Add("@EndDateTime", tripFilters.EndDateTime);
+                parameter.Add("@vins", tripFilters.VIN.ToArray());
                 //string vin = string.Join("','", TripFilters.VIN.ToArray());
                 //vin = "'"+ vin.Replace(",", "', '")+"'";
                 //parameter.Add("@vins", vin);
                 string query;
-                if (TripFilters.VIN.Count > 0)
+                if (tripFilters.VIN.Count > 0)
                 {
                     query = @"WITH cte_workingdays AS(
                         select
-                        --start_time_stamp as CalenderDate,
                         date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
                         count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
-						 vin as VIN,
+						Count(distinct vin) as vehiclecount,
+						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
                         sum(etl_gps_trip_time) as totaltriptime,
                         sum(veh_message_driving_time) as totaldrivingtime,
@@ -118,13 +118,15 @@ namespace net.atos.daf.ct2.reports.repository
                         FROM tripdetail.trip_statistics
                         where (start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime) 
 						and vin=ANY(@vins)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000)),vin                     
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
                         )
                         select
+                        '' as VIN,
                         startdate,
 						extract(epoch from startdate) * 1000 as Calenderdate,
                        	totalworkingdays,
-						VIN,
+						vehiclecount,
+                        tripcount,
                         CAST((totaldistance / totalworkingdays) as float) as Averagedistance,
                         CAST((totaltriptime / totalworkingdays) as float) as Averagetriptime ,
                         CAST((totaldrivingtime / totalworkingdays) as float) as Averagedrivingtime ,
@@ -132,17 +134,17 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((totalidleduration / totalworkingdays) as float) as Averageidleduration ,
                         CAST((totalAveragedistanceperday / totalworkingdays) as float) as Averagedistanceperday ,
                         CAST((totalaverageSpeed / totalworkingdays) as float) as AverageSpeed ,
-                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweightperprip
+                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
                         from cte_workingdays";
                 }
                 else
                 {
                     query = query = @"WITH cte_workingdays AS(
                         select
-                        --start_time_stamp as CalenderDate,
                         date_trunc('day', to_timestamp(start_time_stamp/1000)) as startdate,
                         count(distinct date_trunc('day', to_timestamp(start_time_stamp/1000))) as totalworkingdays,
-						 vin as VIN,
+						Count(distinct vin) as vehiclecount,
+						Count(distinct trip_id) as tripcount,
                         sum(etl_gps_distance) as totaldistance,
                         sum(etl_gps_trip_time) as totaltriptime,
                         sum(veh_message_driving_time) as totaldrivingtime,
@@ -153,13 +155,15 @@ namespace net.atos.daf.ct2.reports.repository
                         sum(last_odometer) as totalodometer
                         FROM tripdetail.trip_statistics
                         where (start_time_stamp >= @StartDateTime  and end_time_stamp<= @EndDateTime)
-                        group by date_trunc('day', to_timestamp(start_time_stamp/1000)),vin                     
+                        group by date_trunc('day', to_timestamp(start_time_stamp/1000))                     
                         )
                         select
+                        '' as VIN,
                         startdate,
 						extract(epoch from startdate) * 1000 as Calenderdate,
                        	totalworkingdays,
-						VIN,
+						vehiclecount,
+                        tripcount,
                         CAST((totaldistance / totalworkingdays) as float) as Averagedistance,
                         CAST((totaltriptime / totalworkingdays) as float) as Averagetriptime ,
                         CAST((totaldrivingtime / totalworkingdays) as float) as Averagedrivingtime ,
@@ -167,7 +171,7 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((totalidleduration / totalworkingdays) as float) as Averageidleduration ,
                         CAST((totalAveragedistanceperday / totalworkingdays) as float) as Averagedistanceperday ,
                         CAST((totalaverageSpeed / totalworkingdays) as float) as AverageSpeed ,
-                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweightperprip
+                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
                         from cte_workingdays";
                 }
 
