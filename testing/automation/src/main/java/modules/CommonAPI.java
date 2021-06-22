@@ -170,7 +170,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.customer_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");//"jtcadmin@ct2.net","123456");//
 	    	}	
 	    public static void KeyHandover() throws Exception {
 	    	Log.info("Updating Customer data");
@@ -194,7 +194,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Vehicle_data;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.patel@atos.net", "Ulka@123451");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");//
 	    	}	
 	    public static void Subscription() throws Exception {
 	    	Log.info("Updating Subscription of package");
@@ -202,7 +202,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.postRequest_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.postRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");//"jtcadmin@ct2.net","123456");//
 	    	}	
 	   // Subscription_withAuth
 	    
@@ -212,10 +212,25 @@ public class CommonAPI extends CommonFunctionLib {
 	    	String url = Constants.APITestURL;
 	    	String module = Constants.Subscription;
 	    	String request = Constants.update;
-	    	CommonAPI.Subscriptions_withAuth(url,module,request,"jtcadmin@ct2.net","123456");//"ulka.pate@atos.net", "Ulka@1234567");
+	    	CommonAPI.Subscriptions_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567");//"jtcadmin@ct2.net","123456");//
 	    	}	
 	    
-	    
+	    public static void GetVehicleMillage_withAuth() throws Exception {
+	    	Log.info("Updating Subscription of package");
+			test.log(LogStatus.INFO, "Updating Subscription of package");    	
+	    	String url = Constants.APITestURL;
+	    	String module = Constants.Vehicle;
+	    	String request = Constants.VhMileage;
+	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Accept","since","vehicles");//"jtcadmin@ct2.net","123456");//
+	    	}	    
+	    public static void GetVehicleNameList_withAuth() throws Exception {
+	    	Log.info("Updating Subscription of package");
+			test.log(LogStatus.INFO, "Updating Subscription of package");    	
+	    	String url = Constants.APITestURL;
+	    	String module = Constants.Vehicle;
+	    	String request = Constants.VhNameList;
+	    	CommonAPI.getRequest_withAuth(url,module,request,"ulka.pate@atos.net", "Ulka@1234567","Content-Type","since","vehicles");//"jtcadmin@ct2.net","123456");//
+	    	}	    
 	    
 //***************************Common Functions************************************************************
 	    public static String encode(String str1, String str2) {
@@ -371,8 +386,7 @@ public class CommonAPI extends CommonFunctionLib {
 	    		    DriverScript.bResult=false;
 	    		}	
 	        }
-	    @SuppressWarnings("unchecked")
-	    //This function is only for unsubscribe method 
+	  	    //This function is only for unsubscribe method 
 		public static void Subscriptions_withAuth(String url, String module, String request,String UserName, String Pass) {//, String param1, String param2) {
 	   	   	try {
 	   	   	System.out.println(url);
@@ -550,6 +564,134 @@ public class CommonAPI extends CommonFunctionLib {
 	        }
 	        return jsonObject;
 	    }
+	    public static void getRequest_withAuth(String url, String module, String request,String UserName, String Pass, String Param1, String Param2, String Exp_id) {
+	   	 System.out.println(url);
+	   	 String validTC;
+	   	try {
+	   		//-----------------
+	   		test.log(LogStatus.PASS, "Verifying " +request+ " of "+ module);
+	            Log.info("Verifying " +request+ " of "+ module);
+    		String bearerToken = auth(url, UserName, Pass);
+			 System.out.println(bearerToken);
+			 //----------------
+	   		String Param1_Val = ExcelSheet.getCellData(TestStep, Constants.Col_Parm1, Constants.Sheet_TestSteps);
+	   		String Param2_val = ExcelSheet.getCellData(TestStep, Constants.Col_Parm2, Constants.Sheet_TestSteps);
+	   		validTC = ExcelSheet.getCellData(TestStep, Constants.Col_PageObject, Constants.Sheet_TestSteps);
+	   		if(Param1.equals(" ") && Param2.equals(" ")) {
+	   			Log.info("Trying to get details of all records ");
+	   			test.log(LogStatus.INFO, "Trying to get details of all records ");
+	   		}else {
+	   			Log.info("Trying to get details by : " +Param1 +" and by "+ Param2);
+	   			test.log(LogStatus.INFO, "Trying to get details by : " +Param1 +" and by "+ Param2);	
+	   		}	   		
+	   		if (Param2_val.isEmpty() || Param2_val== null) {
+	   			Param2 ="";	
+	   		}
+	   		 	RestAssured.baseURI = url + module+request;
+	   		    RequestSpecification httpRequest = RestAssured.given();
+	   		    httpRequest.header(Param1,Param1_Val);
+	   		    httpRequest.header("Authorization", "Bearer "+ bearerToken);
+	   		    Response  response = httpRequest.queryParam(Param2, Param2_val).request(Method.GET, "");
+//	   		    Response response=null;
+//	   	       // Response response = httpRequest.request(Method.GET, Param);
+//	   		    if(Param1_Val.isEmpty()||!Param2_val.isEmpty()) {
+//	   		    	 response = httpRequest.queryParam(Param2, Param2_val).request(Method.GET, "");
+//	   		    }
+//	   		    if(!Param1_Val.isEmpty()||Param2_val.isEmpty()) {
+//	   		    	 response = httpRequest.queryParam(Param1, Param1_Val).request(Method.GET, "");
+//	   		    }
+//	   		     if(!Param2_val.isEmpty()||!Param1_Val.isEmpty()) {
+//	   	         response = httpRequest.queryParam(Param1, Param1_Val).queryParam(Param2, Param2_val).request(Method.GET, "");
+//	   			}		    
+//	   		    if(Param1_Val.isEmpty()||Param2_val.isEmpty()) {
+//	   		    	response = httpRequest.request(Method.GET, "");
+//	   		    }
+	   	       // validateResponse(response);
+	   	        int statusCode = response.getStatusCode();
+	   	        System.out.println(statusCode);
+	   	     System.out.println(response.asString());
+	   	       String id = response.asString();
+	   	        if(validTC.equalsIgnoreCase("Yes")){				 
+	   			switch(statusCode) {					
+	   				case 200: //OK
+	   					if(Param2.equals(" ")) {  
+	   			        test.log(LogStatus.PASS, "Sucessfully received details of all record and status code is:" + statusCode);
+	   		            Log.info("Sucessfully received details of all record and status code is: " + statusCode);
+	   		            System.out.println("Sucessfully received details of all record and status code is: " + statusCode);
+	   		            DriverScript.bResult = true;
+	   		            ExcelSheet.setCellData("Sucessfully received details of all record and status code is: 200", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	   		            Assert.assertEquals("Correct status code returned", statusCode /*actual value*/, 200 /*expected value*/);
+	   		            }else{
+	   			        	Log.info("Sucessfully received details of record : " +Param2 + " "+Param2_val + " record is: " + id);
+	   				        test.log(LogStatus.PASS, "Sucessfully received details of record : "+Param2 + " "+Param2_val + "record is: " + id);	
+	   				        DriverScript.bResult=true;	
+	   					}
+	   		            break;
+	   		       case 202: //It indicates that the request has been accepted for processing
+	   		    	   if(Param2.equals(" ")) {
+	   			        test.log(LogStatus.PASS, "Request has been processing for all record and status code is " + statusCode);
+	   		            Log.info("Request has been processing for all record and status code is " + statusCode);
+	   		            DriverScript.bResult = true;
+	   		            ExcelSheet.setCellData("Request has been processing for all record and status code is: 202", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	   		            break;
+	   		    	   }else{
+	   			        	Log.info("Sucessfully received details of record : "+Param2 + " "+Param2_val + "record is: " + id);
+	   				        test.log(LogStatus.PASS, "Sucessfully received details of record : " +Param2 + " "+Param2_val + "record is: " + id);	
+	   				        DriverScript.bResult=true;	
+	   		    	   }
+	   		       default:   
+	   		    	   test.log(LogStatus.FAIL, "Not getting expected response." + statusCode);
+	   		            Log.info("Not getting expected response." + statusCode);
+	   		            DriverScript.bResult=false;	
+	   		            break;
+	   				}
+	   			}else if(validTC.equalsIgnoreCase("No")){
+	   				switch(statusCode) {
+	   				case 400: //Bad Request
+	   		        	test.log(LogStatus.PASS, "Getting invalid response and status code is " + statusCode);
+	   		            Log.info("Getting invalid response and status code is " + statusCode);	        
+	   			        DriverScript.bResult = true;
+	   					ExcelSheet.setCellData("Getting invalid response status code is: 400", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	   					 break;
+	   				case 401://Unauthorized
+	   			        test.log(LogStatus.PASS, "You are not authorized to perform this operation. " + statusCode);
+	   		            Log.info("You are not authorized to perform this operation. " + statusCode);
+	   		            DriverScript.bResult = true;
+	   		            ExcelSheet.setCellData("You are not authorized to perform this operation and status code is: 401", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);		            	
+	   		            break; 
+	   				case 409: //The request could not be completed due to a conflict with the current state of the target resource
+	   					test.log(LogStatus.PASS, "The Record is already whitelisted." + statusCode);
+	   		            Log.info("The Record is already whitelisted." + statusCode);	        
+	   			         ExcelSheet.setCellData("The Record is already whitelisted and status code is: 409", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	   					 DriverScript.bResult=true;	
+	   					break;
+	   				case 204: //No Content						  
+	   			        test.log(LogStatus.PASS, "This record is not present and status code is:" + statusCode);
+	   		            Log.info("his record is not present and status code is: " + statusCode);
+	   		            DriverScript.bResult = true;
+	   		            ExcelSheet.setCellData("his record is not present and status code is: 200", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	   		            Assert.assertEquals("Correct status code returned", statusCode /*actual value*/, 200 /*expected value*/);
+	   		            break;
+	   		       case 404: //Not Found
+	   			        test.log(LogStatus.PASS, "This record is not found and status code is " + statusCode);
+	   		            Log.info("This record is not found and status code is " + statusCode);
+	   		            DriverScript.bResult = true;
+	   		            ExcelSheet.setCellData("Request has been processing for all record and status code is: 202", TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+	   		            break;		
+	   				default:
+	   					test.log(LogStatus.FAIL, "Not getting expected response." + statusCode);
+	   		            Log.info("Not getting expected response." + statusCode);
+	   		            DriverScript.bResult=false;	
+	   		            break;
+	   				}
+	   			}			
+	   	} catch (Exception e) {
+	   		e.printStackTrace();
+	   		Log.info("Unable to received details of Vehicle : " +e.getMessage() );
+	          test.log(LogStatus.FAIL, "Unable received details of Vehicle : " +e.getMessage() );	
+	          DriverScript.bResult=false;		
+	   	}
+	   	    }
 
 public static void postRequest_XML_JSON(String url) {
 	try {
