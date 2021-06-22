@@ -5,7 +5,7 @@
     },
     "net.atos.daf.ct2.applications": {
       "commandName": "Project",
-      "commandLineArgs": "ReportScheduler",
+      "commandLineArgs": "ReportCreationScheduler",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }

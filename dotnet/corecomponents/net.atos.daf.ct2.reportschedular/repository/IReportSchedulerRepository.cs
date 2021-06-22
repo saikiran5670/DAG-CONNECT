@@ -16,5 +16,11 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid);
         Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel);
         #endregion
+
+        #region Report Creation Scheduler
+        Task<IEnumerable<ReportCreationScheduler>> GetReportCreationSchedulerList();
+        Task<IEnumerable<VehicleList>> GetVehicleList(IEnumerable<int> groupId);
+        Task<ReportLogo> GetReportLogo(int accountId);
+        #endregion
     }
 }
