@@ -588,7 +588,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                     return 0;//to return Failed Message in grpc
                 }
             }
-            catch (Exception)
+            catch
             {
                 throw;
             }
