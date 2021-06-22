@@ -18,7 +18,7 @@ import { LandmarkCategoryService } from '../../services/landmarkCategory.service
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
-import { MultiDataSet, Label } from 'ng2-charts';
+import { MultiDataSet, Label, Color} from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 
@@ -146,9 +146,94 @@ export class FleetUtilisationComponent implements OnInit {
       value: 'startPosition'
     }
   ];
+  chartsLabelsdefined: any = [];
+  barVarticleData: any = []; 
+  averageDistanceBarData: any = [];
+  lineChartVehicleCount: any = [];
 
-  daysCount: number;
- 
+// Bar chart implementation
+
+barChartOptions: any = {
+  scales: {
+    yAxes: [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: 'per vehicle(km/day)'    
+      }
+    }]
+  }
+};
+barChartLabels: Label[] =this.chartsLabelsdefined;
+barChartType: ChartType = 'bar';
+barChartLegend = true;
+barChartPlugins = [];
+
+barChartData: any[] = [
+  { 
+    label: 'Average distance per vehicle(km/day)',
+    type: 'bar',
+    yAxesID: "y-axis-1",
+    data: this.averageDistanceBarData,	    
+    },
+    {
+      label: 'Total distance(km)',
+      type: 'bar',
+      yAxesID: "y-axis-1",
+       data: this.barVarticleData
+    },
+];
+
+// Doughnut chart implementation
+
+doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done under 10500km', 'Percentage of vehicles with distance done above 10500km'];
+doughnutChartData: MultiDataSet = [
+  [20, 80]
+];
+doughnutChartType: ChartType = 'doughnut';
+
+// Line chart implementation
+
+lineChartData: ChartDataSets[] = [
+  { data: this.lineChartVehicleCount, label: 'Number of Vehicles' },
+];
+
+lineChartLabels: Label[] =this.chartsLabelsdefined;
+
+lineChartOptions = {
+  scales: {
+    yAxes: [{
+      id: "y-axis-1",
+      position: 'left',
+      type: 'linear',
+      ticks: {
+        beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: 'value(number of vehicles)'    
+      }
+    }]
+  }
+};
+
+lineChartColors: Color[] = [
+  {
+    borderColor: 'blue',
+    backgroundColor: 'rgba(255,255,0,0)',
+  },
+];
+
+lineChartLegend = true;
+lineChartPlugins = [];
+lineChartType = 'line';
+  
+
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
     this.defaultTranslation();
@@ -379,6 +464,9 @@ export class FleetUtilisationComponent implements OnInit {
       // Dummy data ends
 
       this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+      this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
+        this.setChartData(calendarData["calenderDetails"]);
+      })
       this.setTableInfo();
       this.updateDataSource(this.tripData);
       this.hideloader();
@@ -443,6 +531,17 @@ export class FleetUtilisationComponent implements OnInit {
       }
     }
     return sum; 
+  }
+
+  setChartData(chartData: any){
+    chartData.forEach(e => {
+      var date = new Date(e.calenderDate);
+      let resultDate = `${date.getDate()}/${date.getMonth()+1}/ ${date.getFullYear()}`;
+      this.chartsLabelsdefined.push(resultDate);
+      this.barVarticleData.push(e.averagedistanceperday/1000);
+      this.averageDistanceBarData.push(this.barVarticleData/e.vehiclecount);
+      this.lineChartVehicleCount.push(e.vehiclecount);
+    });
   }
 
   resetTripFormControlValue(){
@@ -557,7 +656,6 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-        this.daysCount = 1;
         break;
       }
       case 'yesterday': {
@@ -565,7 +663,6 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.daysCount = 2;
         break;
       }
       case 'lastweek': {
@@ -573,7 +670,6 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.daysCount = 7;
         break;
       }
       case 'lastmonth': {
@@ -581,7 +677,6 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.daysCount = 30;
         break;
       }
       case 'last3month': {
@@ -589,7 +684,6 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.daysCount = 90;
         break;
       }
     }
@@ -762,19 +856,20 @@ export class FleetUtilisationComponent implements OnInit {
     doc.setFontSize(11);
     doc.setTextColor(100);
 
-    let pdfColumns = [['Vehicle Name', 'VIN', 'RegPlateNumber', 'Distance', 'Number Of Trips', 'Trip Time', 'Driving Time', 'Idle Duration', 'Average Speed', 'Average Weight Per Trip', 'Average Distance Per Day', 'Odometer']];
+    let pdfColumns = [['Vehicle Name', 'VIN', 'RegPlateNumber', 'Distance', 'Number Of Trips', 'Trip Time', 'Driving Time', 'Idle Duration','Stop time', 'Average Speed', 'Average Weight Per Trip', 'Average Distance Per Day', 'Odometer']];
 
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
-      tempObj.push(e.vehicle_name);
+      tempObj.push(e.vehicleName);
       tempObj.push(e.vin);
-      tempObj.push(e.RegPlateNumber);
+      tempObj.push(e.registrationNumber);
       tempObj.push(e.convertedDistance);
-      tempObj.push(e.NumberOfTrips);
+      tempObj.push(e.numberOfTrips);
       tempObj.push(e.convertedTripTime);
       tempObj.push(e.convertedDrivingTime);
       tempObj.push(e.convertedIdleDuration);
+      tempObj.push(e.convertedStopTime);
       tempObj.push(e.convertedAverageSpeed);
       tempObj.push(e.convertedAverageWeight);
       tempObj.push(e.convertedAverageDistance);

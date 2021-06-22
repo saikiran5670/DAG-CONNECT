@@ -206,7 +206,6 @@ export class ReportMapService {
       element.convertedDistance = this.getDistance(element.distance, unitFormat);
       element.convertedDrivingTime = this.getHhMmTime(element.drivingTime);
       element.convertedTripTime = this.getHhMmTime(element.tripTime);
-      element.convertedStopTime = this.getHhMmTime(element.stopTime);
       element.convertedIdleDuration = this.getHhMmTime(element.idleDuration);
     });
     return gridData;
