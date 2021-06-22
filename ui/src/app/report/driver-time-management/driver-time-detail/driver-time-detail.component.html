@@ -84,7 +84,28 @@
       </div>
       </mat-expansion-panel>
   </mat-card>
-
+  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+    <mat-expansion-panel [(expanded)]="chartExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title >
+          <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
+        <div style='padding: 20px; margin-bottom: 10px;'>
+          <div class="row">
+            <div class="col-md-12">
+              <div style="display: block">
+                <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+                  [legend]="barChartLegend" [chartType]="barChartType" (chartHover)="chartHovered($event)"
+                  (chartClick)="chartClicked($event)"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </mat-expansion-panel>
+  </mat-card>
   <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
     <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
@@ -118,7 +139,7 @@
             <ng-container matColumnDef="date">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDate || 'Date' }} <span style="font-weight: normal;"></span>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row">{{ row.endTime != '' ? row.endTime : '-' }}</mat-cell>
+              <mat-cell *matCellDef="let row">{{ row.activityDate != '' ? row.activityDate : '-' }}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="driveTime">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} (hh:mm)
