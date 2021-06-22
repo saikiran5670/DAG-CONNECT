@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.reports.entity
         public double Averageidleduration { get; set; }
         public double Averagedistanceperday { get; set; }
         public double AverageSpeed { get; set; }
-        public double Averageweightpertrip { get; set; }
+        public double Averageweight { get; set; }
         public string VIN { get; set; }
         public int Vehiclecount { get; set; }
         public int Tripcount { get; set; }

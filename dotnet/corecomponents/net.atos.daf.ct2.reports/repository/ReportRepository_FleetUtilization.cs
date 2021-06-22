@@ -134,7 +134,7 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((totalidleduration / totalworkingdays) as float) as Averageidleduration ,
                         CAST((totalAveragedistanceperday / totalworkingdays) as float) as Averagedistanceperday ,
                         CAST((totalaverageSpeed / totalworkingdays) as float) as AverageSpeed ,
-                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweightpertrip
+                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
                         from cte_workingdays";
                 }
                 else
@@ -171,7 +171,7 @@ namespace net.atos.daf.ct2.reports.repository
                         CAST((totalidleduration / totalworkingdays) as float) as Averageidleduration ,
                         CAST((totalAveragedistanceperday / totalworkingdays) as float) as Averagedistanceperday ,
                         CAST((totalaverageSpeed / totalworkingdays) as float) as AverageSpeed ,
-                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweightpertrip
+                        CAST((totalaverageweightperprip / totalworkingdays) as float) as Averageweight
                         from cte_workingdays";
                 }
 
