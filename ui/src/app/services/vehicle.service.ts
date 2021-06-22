@@ -166,10 +166,21 @@ export class VehicleService {
     }
   }
 
+  setoptinstatus(id): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .put<any>(`${this.vehicleServiceUrl}/vehicle/setoptinstatus?alertId=${id}`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(errResponse: HttpErrorResponse) {
     console.error('Error : ', errResponse.error);
     return throwError(
       errResponse
     );
   }
+
 }

@@ -132,7 +132,7 @@ namespace net.atos.daf.ct2.reports.repository
                         userPreference.Add("@data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
                         userPreference.Add("@state", objUserPreferenceRequest.AtributesShowNoShow[i].State);
                         userPreference.Add("@type", objUserPreferenceRequest.AtributesShowNoShow[i].Type);
-                        userPreference.Add("@chart_type", objUserPreferenceRequest.AtributesShowNoShow[i].ChartType);
+                        userPreference.Add("@chart_type", objUserPreferenceRequest.AtributesShowNoShow[i].ChartType == new char() ? null : objUserPreferenceRequest.AtributesShowNoShow[i].ChartType);
                         userPreference.Add("@threshold_type", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdType);
                         userPreference.Add("@threshold_value", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdValue);
                         rowsEffected = await _dataAccess.ExecuteAsync(queryInsert, userPreference);
@@ -233,11 +233,12 @@ namespace net.atos.daf.ct2.reports.repository
                     break;
                 case 10:
                     // For -  Eco Score Report
-                    query = @"SELECT da.vin VIN, da.driver_id DriverId, d.first_name FirstName, d.last_name LastName, da.activity_date ActivityDateTime 
+                    query = @"SELECT da.vin VIN, da.driver1_id DriverId, d.first_name FirstName, d.last_name LastName
 											FROM tripdetail.ecoscoredata da
                                             Left join master.driver d on d.driver_id=da.driver1_id
-											WHERE (da.activity_date >= {0} AND da.activity_date <= {1}) and vin=ANY ({2}) GROUP BY da.driver_id, da.vin,d.first_name,d.last_name,da.activity_date 
-											ORDER BY da.driver_id DESC";
+											WHERE (da.start_time >= {0} AND da.end_time <= {1}) and vin=ANY ({2}) 
+                                            GROUP BY da.driver1_id, da.vin,d.first_name,d.last_name
+											ORDER BY da.driver1_id DESC";
                     string.Format(query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
                     break;
                 case 11:

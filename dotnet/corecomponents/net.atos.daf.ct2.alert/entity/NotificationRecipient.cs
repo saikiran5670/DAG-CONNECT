@@ -1,4 +1,6 @@
-﻿namespace net.atos.daf.ct2.alert.entity
+﻿using System.Collections.Generic;
+
+namespace net.atos.daf.ct2.alert.entity
 {
     public class NotificationRecipient
     {
@@ -21,5 +23,6 @@
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
         public bool Exists { get; set; }
+        public List<NotificationLimit> NotificationLimits { get; set; }
     }
 }

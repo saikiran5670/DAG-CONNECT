@@ -151,15 +151,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
                     request.NotificationRecipients.Add(ToNotificationRecipientRequest(item));
                 }
             }
-            //request.NotificationLimits = new List<NotificationLimit>();
-            if (entity.NotificationLimits.Count > 0)
-            {
-                foreach (var item in entity.NotificationLimits)
-                {
-                    request.NotificationLimits.Add(ToNotificationLimitRequest(item));
-                }
-            }
-            //request.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
             if (entity.AlertTimingDetails.Count > 0)
             {
                 foreach (var item in entity.AlertTimingDetails)
@@ -172,7 +163,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public NotificationRecipientRequest ToNotificationRecipientRequest(PortalAlertEntity.NotificationRecipient entity)
         {
             NotificationRecipientRequest request = new NotificationRecipientRequest();
-            //request.Id = entity.Id;
+            request.Id = entity.Id;
             //request.NotificationId = entity.NotificationId;
             request.RecipientLabel = entity.RecipientLabel;
             request.AccountGroupId = entity.AccountGroupId;
@@ -190,12 +181,19 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             //request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             //request.ModifiedAt = entity.ModifiedAt;
+            if (entity.NotificationLimits.Count > 0)
+            {
+                foreach (var item in entity.NotificationLimits)
+                {
+                    request.NotificationLimits.Add(ToNotificationLimitRequest(item));
+                }
+            }
             return request;
         }
         public NotificationLimitRequest ToNotificationLimitRequest(PortalAlertEntity.NotificationLimit entity)
         {
             NotificationLimitRequest request = new NotificationLimitRequest();
-            //request.Id = entity.Id;
+            request.Id = entity.Id;
             //request.NotificationId = entity.NotificationId;
             request.NotificationModeType = entity.NotificationModeType;
             request.MaxLimit = entity.MaxLimit;
@@ -204,6 +202,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             //request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             //request.ModifiedAt = entity.ModifiedAt;
+            request.RecipientId = entity.RecipientId;
             return request;
         }
         public NotificationAvailabilityPeriodRequest ToNotificationAvailabilityPeriodRequest(PortalAlertEntity.NotificationAvailabilityPeriod entity)
@@ -372,13 +371,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
                 }
             }
             //request.NotificationLimits = new List<NotificationLimit>();
-            if (entity.NotificationLimits.Count > 0)
-            {
-                foreach (var item in entity.NotificationLimits)
-                {
-                    request.NotificationLimits.Add(ToNotificationEditLimitRequest(item));
-                }
-            }
             //request.NotificationAvailabilityPeriods = new List<NotificationAvailabilityPeriod>();
             if (entity.AlertTimingDetails.Count > 0)
             {
@@ -394,7 +386,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         {
             NotificationRecipientRequest request = new NotificationRecipientRequest();
             request.Id = entity.Id;
-            request.NotificationId = entity.NotificationId;
+            //request.NotificationId = entity.NotificationId;
             request.RecipientLabel = entity.RecipientLabel;
             request.AccountGroupId = entity.AccountGroupId;
             request.NotificationModeType = entity.NotificationModeType;
@@ -411,14 +403,22 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
             //request.State = entity.State;
             //request.CreatedAt = entity.CreatedAt;
             //request.ModifiedAt = entity.ModifiedAt;
+            if (entity.NotificationLimits.Count > 0)
+            {
+                foreach (var item in entity.NotificationLimits)
+                {
+                    request.NotificationLimits.Add(ToNotificationEditLimitRequest(item));
+                }
+            }
             return request;
         }
 
-        public NotificationLimitRequest ToNotificationEditLimitRequest(PortalAlertEntity.NotificationLimitEdit entity)
+        public NotificationLimitRequest ToNotificationEditLimitRequest(PortalAlertEntity.NotificationLimit entity)
         {
             NotificationLimitRequest request = new NotificationLimitRequest();
             request.Id = entity.Id;
             request.NotificationId = entity.NotificationId;
+            request.RecipientId = entity.RecipientId;
             request.NotificationModeType = entity.NotificationModeType;
             request.MaxLimit = entity.MaxLimit;
             request.NotificationPeriodType = entity.NotificationPeriodType;

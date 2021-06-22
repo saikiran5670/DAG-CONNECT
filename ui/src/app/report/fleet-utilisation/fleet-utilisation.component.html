@@ -108,7 +108,8 @@
     </form>
 
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="tableExpandPanel == true"
+        (closed)="tableExpandPanel == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
@@ -220,7 +221,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-          <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div class="chart-wrapper">
               <canvas baseChart 
@@ -233,7 +234,7 @@
             </canvas>
           </div>
         </div>
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblActiveVehiclesPerDay || 'Active vehicles per day' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -250,7 +251,7 @@
 
       </div>
       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -260,7 +261,7 @@
           </canvas>
         </div>
         </div>
-        <div class="areaWidth min-width-35-per" fxLayout="column" fxLayoutAlign="right">
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -283,7 +284,7 @@
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalendar || 'Calendar' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-        
+          <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
           <!-- <mat-calendar>
           </mat-calendar> -->
       </mat-expansion-panel>   
@@ -325,7 +326,9 @@
           <ng-container matColumnDef="vehicleName">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="vin">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}

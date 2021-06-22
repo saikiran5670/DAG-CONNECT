@@ -1,9 +1,16 @@
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.repository;
 using net.atos.daf.ct2.data;
+using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reports.repository;
+using net.atos.daf.ct2.reportscheduler;
+using net.atos.daf.ct2.reportscheduler.report;
+using net.atos.daf.ct2.reportscheduler.repository;
 using net.atos.daf.ct2.translation;
 using net.atos.daf.ct2.translation.repository;
 using Identity = net.atos.daf.ct2.identity;
@@ -37,6 +44,21 @@ namespace net.atos.daf.ct2.applications
                             services.AddHostedService<PasswordExpiryWorker>();
                         else if (args[0] == "ReportCreationScheduler")
                         {
+                            string dataMartconnectionString = hostContext.Configuration["ConnectionStrings:DataMartConnectionString"];
+
+                            services.AddSingleton<IDataMartDataAccess, PgSQLDataMartDataAccess>((ctx) =>
+                            {
+                                return new PgSQLDataMartDataAccess(dataMartconnectionString);
+                            });
+                            services.AddSingleton<IReportCreationSchedulerManager, ReportCreationSchedulerManager>();
+                            services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
+                            services.AddTransient<IReportCreator, ReportCreator>();
+                            services.AddTransient<IReportManager, ReportManager>();
+                            services.AddTransient<IReportRepository, ReportRepository>();
+                            //services.AddControllersWithViews();
+                            //services.AddRazorPages();
+                            //services.AddControllers();
+                            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
                             services.AddHostedService<ReportCreationSchedulerWorker>();
                         }
                     }

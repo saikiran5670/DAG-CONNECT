@@ -173,8 +173,7 @@ message NotificationRequest
 	int64 ModifiedAt=10;
 	int32 ModifiedBy=11;
 	repeated NotificationRecipientRequest NotificationRecipients=12;
-	repeated NotificationLimitRequest NotificationLimits=13;
-	repeated AlertTimingDetailRequest AlertTimingDetail=14;
+	repeated AlertTimingDetailRequest AlertTimingDetail=13;
 }
 
 message NotificationAvailabilityPeriodRequest
@@ -201,6 +200,7 @@ message NotificationLimitRequest
 	string State=7;
 	int64 CreatedAt=8;
 	int64 ModifiedAt=9;
+	int32 RecipientId=10;
 }
 
 message NotificationRecipientRequest
@@ -223,6 +223,7 @@ message NotificationRecipientRequest
 	string State=16;
 	int64 CreatedAt=17;
 	int64 ModifiedAt=18;
+	repeated NotificationLimitRequest NotificationLimits=19;
 }
 
 message LandmarkIdRequest {
