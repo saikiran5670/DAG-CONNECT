@@ -68,6 +68,16 @@ emailLabel : any;
 wsLabel: any;
 limitButton: any;
 weblimitButton: any;
+timeList: any =[
+  {time:"Minutes"},
+  {time:"Hours"}
+];
+emailTimeList: any =[
+  {time:"Minutes"},
+  {time:"Hours"}
+];
+timeUnitValue :any;
+emailtimeUnitValue: any;
 
 @ViewChild(NotificationAdvancedFilterComponent)
 notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
@@ -155,6 +165,15 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
     setAlertType(alertType: any){
       this.notificationAdvancedFilterComponent.setAlertType(alertType);
     }
+
+    onChangeTimeUnit(event :any){
+      this.timeUnitValue = event.value;
+    }
+
+    onChangeTimeUnitForEmail(event :any){
+      this.emailtimeUnitValue = event.value;
+    }
+
 
     setDefaultValues(){
         if(this.FormWebArray && this.FormWebArray.length != 0){
