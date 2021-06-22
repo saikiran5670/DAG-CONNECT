@@ -18,9 +18,9 @@ import { LandmarkCategoryService } from '../../services/landmarkCategory.service
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
-import { ChartType } from 'chart.js';
 import { MultiDataSet, Label } from 'ng2-charts';
 import html2canvas from 'html2canvas';
+import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -35,7 +35,7 @@ export class FleetUtilisationComponent implements OnInit {
   selectedStartTime: any = '00:00';
   selectedEndTime: any = '23:59'; 
   tripForm: FormGroup;
-  displayedColumns = ['vehicle_name', 'vin', 'RegPlateNumber', 'distance', 'NumberOfTrips', 'TripTime', 'drivingTime', 'idleDuration', 'averageSpeed', 'AverageWeightPerTrip', 'AverageDistancePerDay', 'odometer'];
+  displayedColumns = ['vehicleName', 'vin', 'registrationNumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageSpeed', 'averageWeightPerTrip', 'averageDistancePerDay', 'odometer'];
   translationData: any;
   // hereMap: any;
   // platform: any;
@@ -60,8 +60,8 @@ export class FleetUtilisationComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
   showLoadingIndicator: boolean = false;
-  startDateValue: any;
-  endDateValue: any;
+  startDateValue: any = 0;
+  endDateValue: any = 0;
   last3MonthDate: any;
   todayDate: any;
   wholeTripData: any = [];
@@ -146,11 +146,9 @@ export class FleetUtilisationComponent implements OnInit {
       value: 'startPosition'
     }
   ];
-  doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done under 10500km', 'Percentage of vehicles with distance done above 10500km'];
-  doughnutChartData: MultiDataSet = [
-    [20, 80]
-  ];
-  doughnutChartType: ChartType = 'doughnut';
+
+  daysCount: number;
+ 
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
     this.defaultTranslation();
@@ -290,105 +288,107 @@ export class FleetUtilisationComponent implements OnInit {
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    let VINs = [];
+    VINs.push(_vinData[0].vin) ;
+    
     if(_vinData.length > 0){
       this.showLoadingIndicator = true;
-
+      let searchDataParam = {
+        "startDateTime":_startTime,
+        "endDateTime":_endTime,
+        "viNs":  VINs,
+      }
+      this.reportService.getFleetDetails(searchDataParam).subscribe((_fleetData: any) => {
       // Dummy data
 
-      let fleetData =[
-        {
-          "vehicle_name":"Vehicle 1",
-          "vin":"XLR0998HGFFT5566",
-          "StopTime":1587143959831,
-          "NumberOfTrips":15,
-          "distance":139,
-          "idleDuration":353,
-          "averageSpeed":2663,
-          "odometer":298850780,
-          "AverageDistancePerDay":50,
-          "AverageWeightPerTrip":5000,
-          "drivingTime":0,
-          "TripTime":0,
-          "RegPlateNumber":"",
-        },
-        {
-          "vehicle_name":"Vehicle 2",
-          "vin":"XLR0998HGFFT5566",
-          "StopTime":1587143959831,
-          "NumberOfTrips":7,
-          "distance":144,
-          "idleDuration":253,
-          "averageSpeed":2663,
-          "odometer":298850780,
-          "AverageDistancePerDay":50,
-          "AverageWeightPerTrip":5000,
-          "drivingTime":0,
-          "TripTime":0,
-          "RegPlateNumber":"",
-        },{
-          "vehicle_name":"Vehicle 3",
-          "vin":"XLR0998HGFFT5566",
-          "StopTime":1587143959831,
-          "NumberOfTrips":5,
-          "distance":133,
-          "idleDuration":258,
-          "averageSpeed":2663,
-          "odometer":298850780,
-          "AverageDistancePerDay":50,
-          "AverageWeightPerTrip":5000,
-          "drivingTime":0,
-          "TripTime":0,
-          "RegPlateNumber":"",
-        },{
-          "vehicle_name":"Vehicle 4",
-          "vin":"XLR0998HGFFT5566",
-          "StopTime":1587143959831,
-          "NumberOfTrips":10,
-          "distance":130,
-          "idleDuration":255,
-          "averageSpeed":2663,
-          "odometer":298850780,
-          "AverageDistancePerDay":50,
-          "AverageWeightPerTrip":5000,
-          "drivingTime":0,
-          "TripTime":0,
-          "RegPlateNumber":"",
-        },{
-          "vehicle_name":"Vehicle 5",
-          "vin":"XLR0998HGFFT5566",
-          "StopTime":1587143959831,
-          "NumberOfTrips":14,
-          "distance":150,
-          "idleDuration":553,
-          "averageSpeed":2663,
-          "odometer":298850780,
-          "AverageDistancePerDay":50,
-          "AverageWeightPerTrip":5000,
-          "drivingTime":0,
-          "TripTime":0,
-          "RegPlateNumber":"",
-        }
-      ];
-      this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(fleetData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      this.setTableInfo();
-      this.updateDataSource(this.tripData);
-      this.hideloader();
+      // let fleetData =[
+      //   {
+      //     "vehicle_name":"Vehicle 1",
+      //     "vin":"XLR0998HGFFT5566",
+      //     "StopTime":1587143959831,
+      //     "NumberOfTrips":15,
+      //     "distance":139,
+      //     "idleDuration":353,
+      //     "averageSpeed":2663,
+      //     "odometer":298850780,
+      //     "AverageDistancePerDay":50,
+      //     "AverageWeightPerTrip":5000,
+      //     "drivingTime":0,
+      //     "TripTime":0,
+      //     "RegPlateNumber":"",
+      //   },
+      //   {
+      //     "vehicle_name":"Vehicle 2",
+      //     "vin":"XLR0998HGFFT5566",
+      //     "StopTime":1587143959831,
+      //     "NumberOfTrips":7,
+      //     "distance":144,
+      //     "idleDuration":253,
+      //     "averageSpeed":2663,
+      //     "odometer":298850780,
+      //     "AverageDistancePerDay":50,
+      //     "AverageWeightPerTrip":5000,
+      //     "drivingTime":0,
+      //     "TripTime":0,
+      //     "RegPlateNumber":"",
+      //   },{
+      //     "vehicle_name":"Vehicle 3",
+      //     "vin":"XLR0998HGFFT5566",
+      //     "StopTime":1587143959831,
+      //     "NumberOfTrips":5,
+      //     "distance":133,
+      //     "idleDuration":258,
+      //     "averageSpeed":2663,
+      //     "odometer":298850780,
+      //     "AverageDistancePerDay":50,
+      //     "AverageWeightPerTrip":5000,
+      //     "drivingTime":0,
+      //     "TripTime":0,
+      //     "RegPlateNumber":"",
+      //   },{
+      //     "vehicle_name":"Vehicle 4",
+      //     "vin":"XLR0998HGFFT5566",
+      //     "StopTime":1587143959831,
+      //     "NumberOfTrips":10,
+      //     "distance":130,
+      //     "idleDuration":255,
+      //     "averageSpeed":2663,
+      //     "odometer":298850780,
+      //     "AverageDistancePerDay":50,
+      //     "AverageWeightPerTrip":5000,
+      //     "drivingTime":0,
+      //     "TripTime":0,
+      //     "RegPlateNumber":"",
+      //   },{
+      //     "vehicle_name":"Vehicle 5",
+      //     "vin":"XLR0998HGFFT5566",
+      //     "StopTime":1587143959831,
+      //     "NumberOfTrips":14,
+      //     "distance":150,
+      //     "idleDuration":553,
+      //     "averageSpeed":2663,
+      //     "odometer":298850780,
+      //     "AverageDistancePerDay":50,
+      //     "AverageWeightPerTrip":5000,
+      //     "drivingTime":0,
+      //     "TripTime":0,
+      //     "RegPlateNumber":"",
+      //   }
+      // ];
 
       // Dummy data ends
 
-      // this.reportService.getTripDetails(_startTime, _endTime, _vinData[0].vin).subscribe((_tripData: any) => {
-      //   this.hideloader();
-      //   //_tripData = [{"id":11903,"tripId":"ae6e42d3-4ba1-49eb-8fe1-704a2271bc49","vin":"XLR0998HGFFT5566","startTimeStamp":1587143959831,"endTimeStamp":1587143959831,"distance":139,"idleDuration":53,"averageSpeed":2663,"averageWeight":655350,"odometer":298850780,"startPosition":"NA","endPosition":"NA","fuelConsumed":166.896551724138,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.66896551724138,"liveFleetPosition":[],"startPositionLattitude":50.96831131,"startPositionLongitude":-1.388581276,"endPositionLattitude":50.9678421,"endPositionLongitude":-1.388695598},{"id":12576,"tripId":"11c2c2c1-c56f-42ce-9e62-31685ed5d2ae","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":22,"idleDuration":3,"averageSpeed":6545,"averageWeight":655350,"odometer":298981400,"startPosition":"NA","endPosition":"NA","fuelConsumed":50,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":0.5,"liveFleetPosition":[],"startPositionLattitude":50.81643677,"startPositionLongitude":-0.7481001616,"endPositionLattitude":50.81661987,"endPositionLongitude":-0.74804914},{"id":13407,"tripId":"ce3c49fb-2291-4052-9d1b-3b2ee343ab33","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":213,"idleDuration":39,"averageSpeed":3461,"averageWeight":655350,"odometer":74677630,"startPosition":"NA","endPosition":"NA","fuelConsumed":91,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":0.91,"liveFleetPosition":[],"startPositionLattitude":51.39526367,"startPositionLongitude":-1.229614377,"endPositionLattitude":51.39541626,"endPositionLongitude":-1.231176734},{"id":12582,"tripId":"6adb296a-549e-4d50-af9d-3bfbc6fc3e4b","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":4,"idleDuration":14,"averageSpeed":3130,"averageWeight":655350,"odometer":10327065,"startPosition":"NA","endPosition":"NA","fuelConsumed":175,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.75,"liveFleetPosition":[],"startPositionLattitude":41.71875763,"startPositionLongitude":26.35817528,"endPositionLattitude":41.71875,"endPositionLongitude":26.35810089},{"id":12587,"tripId":"cc5b9533-1d94-4af8-8cc8-903b0dcd5514","vin":"XLR0998HGFFT5566","startTimeStamp":0,"endTimeStamp":0,"distance":65,"idleDuration":10,"averageSpeed":8000,"averageWeight":655350,"odometer":14747690,"startPosition":"NA","endPosition":"NA","fuelConsumed":105,"drivingTime":0,"alert":0,"events":0,"fuelConsumed100Km":1.05,"liveFleetPosition":[],"startPositionLattitude":43.00225067,"startPositionLongitude":22.80965805,"endPositionLattitude":43.00209045,"endPositionLongitude":22.8104248}];
-      //   this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_tripData.tripData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      //   this.setTableInfo();
-      //   this.updateDataSource(this.tripData);
-      // }, (error)=>{
-      //   //console.log(error);
-      //   this.hideloader();
-      //   this.tripData = [];
-      //   this.tableInfoObj = {};
-      //   this.updateDataSource(this.tripData);
-      // });
+      this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+      this.setTableInfo();
+      this.updateDataSource(this.tripData);
+      this.hideloader();
+      }, (error)=>{
+         //console.log(error);
+        this.hideloader();
+        this.tripData = [];
+         this.tableInfoObj = {};
+        this.updateDataSource(this.tripData);
+      });
     }
   }
 
@@ -415,11 +415,11 @@ export class FleetUtilisationComponent implements OnInit {
         });
         break;
       }case 'NumberOfVehicles': { 
-        sum = this.tripData.length + 1;
+        sum = this.tripData.length;
         break;
       } case 'NumberOfTrips': { 
         let s = this.tripData.forEach(element => {
-          sum += element.NumberOfTrips;
+          sum += element.numberOfTrips;
          });
         break;
       }  case 'AverageDistancePerDay': { 
@@ -509,7 +509,7 @@ export class FleetUtilisationComponent implements OnInit {
       vehicleName: vehName,
       vin: vin,
       regNo: plateNo
-    }
+    }    
   }
 
   formStartDate(date: any){
@@ -557,6 +557,7 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
+        this.daysCount = 1;
         break;
       }
       case 'yesterday': {
@@ -564,6 +565,7 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.daysCount = 2;
         break;
       }
       case 'lastweek': {
@@ -571,6 +573,7 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.daysCount = 7;
         break;
       }
       case 'lastmonth': {
@@ -578,6 +581,7 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.daysCount = 30;
         break;
       }
       case 'last3month': {
@@ -585,6 +589,7 @@ export class FleetUtilisationComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+        this.daysCount = 90;
         break;
       }
     }
@@ -742,6 +747,8 @@ export class FleetUtilisationComponent implements OnInit {
     return date;
   }
 
+  
+
   exportAsExcelFile(){
     this.matTableExporter.exportTable('xlsx', {fileName:'Trip_Fleet_Utilisation', sheet: 'sheet_name'});
   }
@@ -786,7 +793,7 @@ export class FleetUtilisationComponent implements OnInit {
     // below line for Download PDF document  
     doc.save('tripFleetUtilisationTable.pdf');
 
-    
+
     // var data = document.getElementById('myChart');  
     // const divHeight = data.clientHeight
     // const divWidth = data.clientWidth

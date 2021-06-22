@@ -783,7 +783,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     (request.LandingPageDisplayId <= 0)
                     )
                 {
-                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatTypeId, TimeFormatId, LandingPageDisplayId is required");
                 }
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
