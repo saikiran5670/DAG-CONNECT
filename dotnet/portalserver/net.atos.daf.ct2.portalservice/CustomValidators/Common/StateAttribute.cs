@@ -33,4 +33,22 @@ namespace net.atos.daf.ct2.portalservice.CustomValidators.Common
                 , new string[] { validationContext.MemberName });
         }
     }
+    //This Validation is for accepting only state A(Enable) and I(Disable)
+    public class StateForEnableDisableAttribute : ValidationAttribute
+    {
+        public StateForEnableDisableAttribute()
+        : base("Invalid {0}") { }
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            switch (value)
+            {
+                case "A":
+                case "I":
+                    return null;
+                default:
+                    return new ValidationResult(base.FormatErrorMessage(validationContext.MemberName)
+               , new string[] { validationContext.MemberName });
+            }
+        }
+    }
 }

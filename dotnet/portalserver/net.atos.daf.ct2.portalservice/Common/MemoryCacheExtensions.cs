@@ -6,16 +6,16 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
-
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public class MemoryCacheExtensions : IMemoryCacheExtensions
     {
         public IDistributedCache _cache;
         public BinaryFormatter binaryFormatter;
 
-        public MemoryCacheExtensions(IDistributedCache _cache)
+        public MemoryCacheExtensions(IDistributedCache cache)
         {
             this.binaryFormatter = new BinaryFormatter();
-            this._cache = _cache;
+            this._cache = cache;
         }
 
         public async Task<T> GetCacheAsync<T>(string key) where T : class

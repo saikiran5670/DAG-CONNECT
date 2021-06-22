@@ -22,12 +22,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class PackageController : BaseController
     {
         private readonly AuditHelper _auditHelper;
-        //private readonly ILogger<PackageController> _logger;
         private readonly PackageService.PackageServiceClient _packageClient;
         private readonly FeatureService.FeatureServiceClient _featureclient;
         private readonly PackageMapper _packageMapper;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly FeatureSetMapper _featureSetMapper;
 
         public PackageController(PackageService.PackageServiceClient packageClient,

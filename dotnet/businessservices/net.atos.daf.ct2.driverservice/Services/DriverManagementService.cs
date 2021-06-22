@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.driverservice
 
         private readonly DriverMapper _mapper;
 
-        private ILog _logger;
+        private readonly ILog _logger;
 
         public DriverManagementService(IAuditTraillib auditTrail, IAuditTraillib auditlog, IDriverManager driverManager)
         {

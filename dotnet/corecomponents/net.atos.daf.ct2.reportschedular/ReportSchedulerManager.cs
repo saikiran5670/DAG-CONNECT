@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
 
@@ -10,7 +11,6 @@ namespace net.atos.daf.ct2.reportscheduler
     public partial class ReportSchedulerManager : IReportSchedulerManager
     {
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
-
         public ReportSchedulerManager(IReportSchedulerRepository reportSchedularRepository)
         {
             _reportSchedulerRepository = reportSchedularRepository;
@@ -24,17 +24,17 @@ namespace net.atos.daf.ct2.reportscheduler
             return reportparameter;
         }
 
-        public async Task<ReportScheduler> CreateReportScheduler(ReportScheduler report)
+        public async Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report)
         {
             return await _reportSchedulerRepository.CreateReportScheduler(report);
         }
 
-        public async Task<ReportScheduler> UpdateReportScheduler(ReportScheduler report)
+        public async Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report)
         {
             return await _reportSchedulerRepository.UpdateReportScheduler(report);
         }
 
-        public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
         {
             return await _reportSchedulerRepository.GetReportSchedulerList(organizationid);
         }

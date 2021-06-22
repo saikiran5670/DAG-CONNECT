@@ -7,7 +7,7 @@ namespace net.atos.daf.ct2.customerdataservice.Common
 {
     public class BasicAuthenticationService : IBasicAuthenticationService
     {
-        AccountComponent.IAccountIdentityManager _accountIdentityManager;
+        readonly AccountComponent.IAccountIdentityManager _accountIdentityManager;
         private readonly ILogger<BasicAuthenticationService> _logger;
         public BasicAuthenticationService(AccountComponent.IAccountIdentityManager accountIdentityManager, ILogger<BasicAuthenticationService> logger)
         {

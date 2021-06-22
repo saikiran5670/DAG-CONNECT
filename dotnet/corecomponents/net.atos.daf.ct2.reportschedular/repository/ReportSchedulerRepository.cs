@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Create CreateReportSchedular
-        public async Task<ReportScheduler> CreateReportScheduler(ReportScheduler report)
+        public async Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -109,8 +109,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 report_id, 
                                                 frequency_type,
                                                 status,
-                                                type, 
-                                                file_name, 
+                                                type,                                                 
                                                 start_date, 
                                                 end_date, 
                                                 code,
@@ -128,8 +127,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 @report_id, 
                                                 @frequency_type, 
                                                 @status, 
-                                                @type, 
-                                                @file_name, 
+                                                @type,                                               
                                                 @start_date, 
                                                 @end_date, 
                                                 @code,
@@ -149,7 +147,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
                 parameterReportSchedular.Add("@start_date", report.OrganizationId);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
@@ -250,8 +247,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterschedulerecipient = new DynamicParameters();
                 parameterschedulerecipient.Add("@schedule_report_id", reportscheduleId);
 
-                string querySchedulerecipient = @"DELETE master.scheduledreportrecipient
-                                                WHERE schedule_report_id=@schedule_report_id) RETURNING schedule_report_id";
+                string querySchedulerecipient = @"DELETE from master.scheduledreportrecipient
+                                                WHERE schedule_report_id=@schedule_report_id RETURNING schedule_report_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -270,8 +267,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportDriverRef.Add("@driver_id", sdriverref.DriverId);
 
                 parameterScheduledReportDriverRef.Add("@state", sdriverref.State);
-                parameterScheduledReportDriverRef.Add("@created_at", sdriverref.CreatedAt);
-                parameterScheduledReportDriverRef.Add("@created_by", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterScheduledReportDriverRef.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterScheduledReportDriverRef.Add("@created_by", sdriverref.CreatedAt);
                 parameterScheduledReportDriverRef.Add("@modified_at", sdriverref.ModifiedAt);
                 parameterScheduledReportDriverRef.Add("@modified_by", sdriverref.ModifiedBy);
 
@@ -307,8 +304,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterschedulerecipient = new DynamicParameters();
                 parameterschedulerecipient.Add("@report_schedule_id", reportscheduleId);
 
-                string querySchedulerecipient = @"DELETE master.scheduledreportdriverref
-                                                WHERE report_schedule_id=@report_schedule_id) RETURNING report_schedule_id";
+                string querySchedulerecipient = @"DELETE from master.scheduledreportdriverref
+                                                WHERE report_schedule_id=@report_schedule_id RETURNING report_schedule_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -364,8 +361,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterschedulerecipient = new DynamicParameters();
                 parameterschedulerecipient.Add("@report_schedule_id", reportscheduleId);
 
-                string querySchedulerecipient = @"DELETE master.scheduledreportvehicleref
-                                                WHERE report_schedule_id=@report_schedule_id) RETURNING report_schedule_id";
+                string querySchedulerecipient = @"DELETE from master.scheduledreportvehicleref
+                                                WHERE report_schedule_id=@report_schedule_id RETURNING report_schedule_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -379,7 +376,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Update UpdateReportSchedular
-        public async Task<ReportScheduler> UpdateReportScheduler(ReportScheduler report)
+        public async Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -389,8 +386,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 SET 
 	                                            frequency_type=@frequency_type, 
 	                                            status=@status, 
-	                                            type=@type, 
-	                                            file_name=@file_name, 
+	                                            type=@type,	                                            
 	                                            start_date=@start_date, 
 	                                            end_date=@end_date, 
 	                                            code=@code, 
@@ -401,20 +397,20 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                            mail_subject=@mail_subject, 
 	                                            mail_description=@mail_description, 
 	                                            report_dispatch_time=@report_dispatch_time
-                                                WHERE id=@id) RETURNING id";
+                                                WHERE id=@id
+                                                RETURNING id";
 
                 var parameterReportSchedular = new DynamicParameters();
                 parameterReportSchedular.Add("@id", report.Id);
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
                 parameterReportSchedular.Add("@start_date", report.OrganizationId);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
                 parameterReportSchedular.Add("@next_schedule_run_date", report.NextScheduleRunDate);
-                parameterReportSchedular.Add("@modified_at", report.ModifiedAt);
+                parameterReportSchedular.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterReportSchedular.Add("@modified_by", report.ModifiedBy);
                 parameterReportSchedular.Add("@mail_subject", report.MailSubject);
                 parameterReportSchedular.Add("@mail_description", report.MailDescription);
@@ -431,6 +427,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 foreach (var recipient in report.ScheduledReportRecipient)
                 {
                     recipient.ScheduleReportId = report.Id;
+                    recipient.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                     recipient.Id = await CreateScheduleRecipient(recipient);
                 }
 
@@ -442,6 +439,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 foreach (var vehicleref in report.ScheduledReportVehicleRef)
                 {
                     vehicleref.ScheduleReportId = report.Id;
+                    vehicleref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
 
@@ -459,12 +457,14 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                         {
                             driverref.ScheduleReportId = report.Id;
                             driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            driverref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                             int scheduledrid = await Createscheduledreportdriverref(driverref);
                         }
                     }
                     else //Single driver
                     {
                         driverref.ScheduleReportId = report.Id;
+                        driverref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                         int scheduledrid = await Createscheduledreportdriverref(driverref);
                     }
 
@@ -472,7 +472,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 transactionScope.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 transactionScope.Rollback();
                 throw;
@@ -486,7 +486,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Get Report Scheduler
-        public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
@@ -498,8 +498,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             repsch.report_id as repsch_report_id, 
                                             repsch.frequency_type as repsch_frequency_type, 
                                             repsch.status as repsch_status, 
-                                            repsch.type as repsch_type, 
-                                            repsch.file_name as repsch_file_name, 
+                                            repsch.type as repsch_type,                                            
                                             repsch.start_date as repsch_start_date, 
                                             repsch.end_date as repsch_end_date, 
                                             repsch.code as repsch_code, 
@@ -570,13 +569,15 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 string query = string.Empty;
 
                 query = @"UPDATE master.reportscheduler 
-                          SET state=@state 
+                          SET status=@status 
                           WHERE id=@id 
-                          AND organization_id=@organization_id";
+                          AND organization_id=@organization_id
+                          RETURNING id";
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", objReportStatusUpdateDeleteModel.ReportId);
-                parameter.Add("@state", objReportStatusUpdateDeleteModel.Status);
+                parameter.Add("@status", objReportStatusUpdateDeleteModel.Status);
                 parameter.Add("@organization_id", objReportStatusUpdateDeleteModel.OrganizationId);
+
                 int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
                 if (rowEffected > 0)
                 {

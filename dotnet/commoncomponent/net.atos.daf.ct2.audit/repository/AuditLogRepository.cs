@@ -14,24 +14,10 @@ namespace net.atos.daf.ct2.audit.repository
 {
     public class AuditLogRepository : IAuditLogRepository
     {
-        //private readonly IConfiguration  _config;
-
-        //     private readonly IDataAccess dataAccess;
-
-        //    public AuditLogRepository(IDataAccess _dataAccess) 
-        //     {
-        //         //_config = new ConfigurationBuilder()
-        //        //.AddJsonFile("appsettings.Test.json")
-        //        //.Build();
-        //        // Get connection string
-        //        //var connectionString = _config.GetConnectionString("DevAzure");
-        //        //dataAccess = new PgSQLDataAccess(connectionString);
-        //        dataAccess= _dataAccess;
-        //     }
         private readonly IDataAccess _dataAccess;
-        public AuditLogRepository(IDataAccess _dataAccess)
+        public AuditLogRepository(IDataAccess dataAccess)
         {
-            this._dataAccess = _dataAccess;
+            _dataAccess = dataAccess;
         }
         public async Task<int> AddLogs(AuditTrail auditTrail)
         {

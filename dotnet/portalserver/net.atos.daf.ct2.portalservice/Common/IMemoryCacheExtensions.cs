@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace net.atos.daf.ct2.portalservice.Common
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public interface IMemoryCacheExtensions
     {
         void SetCache<T>(T values, string key);

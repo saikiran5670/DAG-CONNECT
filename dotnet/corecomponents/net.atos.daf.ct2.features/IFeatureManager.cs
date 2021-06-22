@@ -9,25 +9,25 @@ namespace net.atos.daf.ct2.features
     {
         Task<int> AddFeatureSet(FeatureSet featureSet);
         Task<int> GetMinimumLevel(List<Feature> features);
-        Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state);
-        Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode);
-        Task<IEnumerable<Feature>> GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode);
-        Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID);
-        Task<bool> DeleteFeatureSet(int FeatureSetId);
+        Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, char state);
+        Task<IEnumerable<Feature>> GetFeatures(int roleId, int organizationid, int featureId, int level, char? featureType, string langaugeCode);
+        Task<IEnumerable<Feature>> GetFeatureIdsForFeatureSet(int getFeatureIdsForFeatureSet, string langaugeCode);
+        Task<DataAttributeSet> GetDataAttributeset(int dataAttributeSetID);
+        Task<bool> DeleteFeatureSet(int featureSetId);
         Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet);
         Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet);
         Task<DataAttributeSet> UpdatedataattributeSet(DataAttributeSet dataAttributeSet);
         Task<bool> DeleteDataAttribute(int dataAttributeSetID);
         Task<List<DataAttributeSet>> GetDataAttributeSetDetails(int dataAttributeSetID);
-        Task<int> UpdateFeatureSetMapping(int UpdateFeatureSetID, int ID);
+        Task<int> UpdateFeatureSetMapping(int updateFeatureSetID, int id);
         Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet);
         //Task<int> CreateDataattributeSetFeature(Feature feature, int InserteddataAttributeSetID);
         Task<int> CreateDataattributeFeature(Feature feature);
         Task<Feature> UpdateFeature(Feature feature);
-        Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode);
-        Task<int> DeleteFeature(int FeatureId);
+        Task<IEnumerable<DataAttribute>> GetDataAttributes(string langaugeCode);
+        Task<int> DeleteFeature(int featureId);
 
-        int CheckFeatureNameExist(string FeatureName, int FeatureId);
-        Task<int> ChangeFeatureState(int FeatureID, Char State);
+        int CheckFeatureNameExist(string featureName, int featureId);
+        Task<int> ChangeFeatureState(int featureID, Char state);
     }
 }

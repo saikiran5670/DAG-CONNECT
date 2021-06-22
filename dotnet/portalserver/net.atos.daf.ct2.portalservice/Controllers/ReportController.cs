@@ -254,8 +254,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.DriverIds.Count <= 0) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
 
-                string _filters = JsonConvert.SerializeObject(request);
-                ActivityFilterRequest objMultipleDrivers = JsonConvert.DeserializeObject<ActivityFilterRequest>(_filters);
+                string filters = JsonConvert.SerializeObject(request);
+                ActivityFilterRequest objMultipleDrivers = JsonConvert.DeserializeObject<ActivityFilterRequest>(filters);
                 _logger.Info("GetDriversActivityAsync method in Report (Multiple Driver Time details Report) API called.");
                 var data = await _reportServiceClient.GetDriversActivityAsync(objMultipleDrivers);
                 if (data?.DriverActivities?.Count > 0)
@@ -287,8 +287,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (string.IsNullOrEmpty(request.DriverId)) { return BadRequest(ReportConstants.GET_DRIVER_TIME_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_TRIP_VALIDATION_DATEMISMATCH_MSG); }
 
-                string _filters = JsonConvert.SerializeObject(request);
-                SingleDriverActivityFilterRequest objSingleDriver = JsonConvert.DeserializeObject<SingleDriverActivityFilterRequest>(_filters);
+                string filters = JsonConvert.SerializeObject(request);
+                SingleDriverActivityFilterRequest objSingleDriver = JsonConvert.DeserializeObject<SingleDriverActivityFilterRequest>(filters);
                 _logger.Info("GetDriverActivityAsync method in Report (Single Driver Time details Report) API called.");
                 var data = await _reportServiceClient.GetDriverActivityAsync(objSingleDriver);
                 if (data?.DriverActivities?.Count > 0)
@@ -430,12 +430,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("ecoscore/getprofiles")]
-        public async Task<IActionResult> GetEcoScoreProfiles(int? organizationId)
+        public async Task<IActionResult> GetEcoScoreProfiles(bool isGlobal)
         {
             try
             {
-                //organizationId = GetUserSelectedOrgId();
-                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = Convert.ToInt32(organizationId) });
+                var organizationId = !isGlobal ? GetContextOrgId() : 0;
+                var response = await _reportServiceClient.GetEcoScoreProfilesAsync(new GetEcoScoreProfileRequest { OrgId = organizationId });
                 if (response?.Profiles?.Count > 0)
                 {
                     response.Message = ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG;
@@ -448,7 +448,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
-                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG, 0, 0, Convert.ToString(organizationId),
+                                "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED, ReportConstants.GET_ECOSCORE_PROFILE_SUCCESS_MSG, 0, 0, Convert.ToString(isGlobal),
                                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
@@ -560,8 +560,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_DATEMISMATCH_MSG); }
 
-                string _filters = JsonConvert.SerializeObject(request);
-                FleetUtilizationFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetUtilizationFilterRequest>(_filters);
+                string filters = JsonConvert.SerializeObject(request);
+                FleetUtilizationFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetUtilizationFilterRequest>(filters);
                 _logger.Info("GetFleetUtilizationDetails method in Report (for Fleet Utilization details by vehicle) API called.");
                 var data = await _reportServiceClient.GetFleetUtilizationDetailsAsync(objFleetFilter);
                 if (data?.FleetDetails?.Count > 0)
@@ -592,8 +592,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_VINREQUIRED_MSG); }
                 if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_FLEET_UTILIZATION_VALIDATION_DATEMISMATCH_MSG); }
 
-                string _filters = JsonConvert.SerializeObject(request);
-                FleetUtilizationFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetUtilizationFilterRequest>(_filters);
+                string filters = JsonConvert.SerializeObject(request);
+                FleetUtilizationFilterRequest objFleetFilter = JsonConvert.DeserializeObject<FleetUtilizationFilterRequest>(filters);
                 _logger.Info("GetFleetUtilizationDetails method in Report (for Fleet Utilization details by vehicle) API called.");
                 var data = await _reportServiceClient.GetFleetCalenderDetailsAsync(objFleetFilter);
                 if (data?.CalenderDetails?.Count > 0)

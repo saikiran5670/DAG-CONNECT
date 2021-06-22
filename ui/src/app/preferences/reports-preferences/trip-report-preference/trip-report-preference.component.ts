@@ -148,9 +148,9 @@ export class TripReportPreferenceComponent implements OnInit {
     this.initData.forEach(element => {
       let search = this.selectionForTripColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
       if(search.length > 0){
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A" });
+        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I" });
+        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
@@ -160,11 +160,9 @@ export class TripReportPreferenceComponent implements OnInit {
       organizationId: this.accountOrganizationId,
       createdAt: 0,
       modifiedAt: 0,
-      type: "D", //-- For trip report
-      chartType: "D", //-- 'chartType' based on dashboard pref chart-Type. like Doughnut/Pie/Line/Bar etc
       atributesShowNoShow: _dataArr
     }
-    this.reportService.createTripReportPreference(objData).subscribe((tripPrefData: any) => {
+    this.reportService.createReportUserPreference(objData).subscribe((tripPrefData: any) => {
       this.loadTripReportPreferences();
       this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
       if((this.router.url).includes("tripreport")){

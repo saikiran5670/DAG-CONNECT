@@ -12,6 +12,6 @@
         public string ChartType { get; set; }
         public string ReportReferenceType { get; set; }
         public string ThresholdType { get; set; }
-        public string ThresholdValue { get; set; }
+        public long ThresholdValue { get; set; }
     }
 }

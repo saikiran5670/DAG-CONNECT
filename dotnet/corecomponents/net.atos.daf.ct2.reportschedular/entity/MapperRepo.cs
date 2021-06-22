@@ -6,20 +6,20 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class MapperRepo
     {
-        public IEnumerable<ReportScheduler> GetReportSchedulerList(IEnumerable<ReportSchedulerResult> reportSchedulerResult)
+        public IEnumerable<ReportSchedulerMap> GetReportSchedulerList(IEnumerable<ReportSchedulerResult> reportSchedulerResult)
         {
-            List<ReportScheduler> reportSchedulerList = new List<ReportScheduler>();
+            List<ReportSchedulerMap> reportSchedulerList = new List<ReportSchedulerMap>();
 
             //Lookups are implemeted to avoid inserting duplicate entry of same id into the list
-            Dictionary<int, ReportScheduler> reportSchedulerLookup = new Dictionary<int, ReportScheduler>();
+            Dictionary<int, ReportSchedulerMap> reportSchedulerLookup = new Dictionary<int, ReportSchedulerMap>();
             Dictionary<int, ScheduledReport> scheduledReportLookup = new Dictionary<int, ScheduledReport>();
             Dictionary<int, ScheduledReportRecipient> scheduledReportRecipientLookup = new Dictionary<int, ScheduledReportRecipient>();
-            Dictionary<int, ScheduledReportVehicleRef> scheduledReportVehicleRefLookup = new Dictionary<int, ScheduledReportVehicleRef>();
-            Dictionary<int, ScheduledReportDriverRef> scheduledReportDriverRefLookup = new Dictionary<int, ScheduledReportDriverRef>();
+            Dictionary<Tuple<int, int, int>, ScheduledReportVehicleRef> scheduledReportVehicleRefLookup = new Dictionary<Tuple<int, int, int>, ScheduledReportVehicleRef>();
+            Dictionary<Tuple<int, int>, ScheduledReportDriverRef> scheduledReportDriverRefLookup = new Dictionary<Tuple<int, int>, ScheduledReportDriverRef>();
 
             foreach (var reportSchedulerItem in reportSchedulerResult)
             {
-                if (!reportSchedulerLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Repsch_id), out ReportScheduler reportScheduler))
+                if (!reportSchedulerLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Repsch_id), out ReportSchedulerMap reportScheduler))
                 {
                     reportSchedulerLookup.Add(Convert.ToInt32(reportSchedulerItem.Repsch_id), reportScheduler = ToReportSchedulerModel(reportSchedulerItem));
                 }
@@ -50,19 +50,19 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                 }
                 if (reportSchedulerItem.Vehref_vehicle_group_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Vehref_report_schedule_id)
                 {
-                    if (!scheduledReportVehicleRefLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), out _))
+                    if (!scheduledReportVehicleRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), 0, reportSchedulerItem.Repsch_id), out _))
                     {
                         var scheduledReportVehicle = ToScheduledReportVehicleRefModel(reportSchedulerItem);
-                        scheduledReportVehicleRefLookup.Add(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), scheduledReportVehicle);
+                        scheduledReportVehicleRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), 0, reportSchedulerItem.Repsch_id), scheduledReportVehicle);
                         reportScheduler.ScheduledReportVehicleRef.Add(scheduledReportVehicle);
                     }
                 }
                 if (reportSchedulerItem.Driveref_driver_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Driveref_report_schedule_id)
                 {
-                    if (!scheduledReportDriverRefLookup.TryGetValue(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), out _))
+                    if (!scheduledReportDriverRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Driveref_driver_id), reportSchedulerItem.Repsch_id), out _))
                     {
                         var scheduledReportDriver = ToScheduledReportDriverRefModel(reportSchedulerItem);
-                        scheduledReportDriverRefLookup.Add(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), scheduledReportDriver);
+                        scheduledReportDriverRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), reportSchedulerItem.Repsch_id), scheduledReportDriver);
                         reportScheduler.ScheduledReportDriverRef.Add(scheduledReportDriver);
                     }
                 }
@@ -75,16 +75,15 @@ namespace net.atos.daf.ct2.reportscheduler.entity
             return reportSchedulerList;
         }
 
-        public ReportScheduler ToReportSchedulerModel(ReportSchedulerResult request)
+        public ReportSchedulerMap ToReportSchedulerModel(ReportSchedulerResult request)
         {
-            ReportScheduler reportScheduler = new ReportScheduler();
+            ReportSchedulerMap reportScheduler = new ReportSchedulerMap();
             reportScheduler.Id = request.Repsch_id;
             reportScheduler.OrganizationId = request.Repsch_organization_id;
             reportScheduler.ReportId = request.Repsch_report_id;
             reportScheduler.FrequencyType = request.Repsch_frequency_type;
             reportScheduler.Status = request.Repsch_status;
             reportScheduler.Type = request.Repsch_type;
-            reportScheduler.FileName = request.Repsch_file_name;
             reportScheduler.StartDate = request.Repsch_start_date;
             reportScheduler.EndDate = request.Repsch_end_date;
             reportScheduler.Code = request.Repsch_code;

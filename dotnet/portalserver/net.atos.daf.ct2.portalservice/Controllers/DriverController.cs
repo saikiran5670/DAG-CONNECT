@@ -22,9 +22,9 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly AuditHelper _auditHelper;
         private readonly DriverMapper _mapper;
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly DriverBusinessService.DriverService.DriverServiceClient _driverClient;
-        private string _fk_Constraint = "violates foreign key constraint";
+        private readonly string _fk_Constraint = "violates foreign key constraint";
 
         public DriverController(DriverBusinessService.DriverService.DriverServiceClient driverClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {

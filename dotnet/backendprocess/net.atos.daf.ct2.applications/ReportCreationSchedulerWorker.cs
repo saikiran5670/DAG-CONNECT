@@ -9,6 +9,7 @@ using net.atos.daf.ct2.account;
 using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.audit.entity;
 using net.atos.daf.ct2.audit.Enum;
+using net.atos.daf.ct2.reportscheduler;
 using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.applications
@@ -17,20 +18,20 @@ namespace net.atos.daf.ct2.applications
     {
         private readonly ILogger<PasswordExpiryWorker> _logger;
         private readonly IAuditTraillib _auditlog;
-        private readonly IAccountManager _accountManager;
+        private readonly IReportCreationSchedulerManager _reportCreationSchedulerManager;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IConfiguration _configuration;
 
         public ReportCreationSchedulerWorker(ILogger<PasswordExpiryWorker> logger,
                         IConfiguration configuration,
                         IAuditTraillib auditlog,
-                        IAccountManager accountManager,
+                        IReportCreationSchedulerManager reportCreationSchedulerManager,
                         IHostApplicationLifetime hostApplicationLifetime)
         {
             _logger = logger;
             _configuration = configuration;
             _auditlog = auditlog;
-            _accountManager = accountManager;
+            _reportCreationSchedulerManager = reportCreationSchedulerManager;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,8 +43,8 @@ namespace net.atos.daf.ct2.applications
             try
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                
-                
+
+                var temp = _reportCreationSchedulerManager.GenerateReport();
 
 
                 await _auditlog.AddLogs(new AuditTrail
@@ -55,7 +56,7 @@ namespace net.atos.daf.ct2.applications
                     Service_name = "Backend Process",
                     Event_type = AuditTrailEnum.Event_type.Mail,
                     Event_status = AuditTrailEnum.Event_status.SUCCESS,
-                    Message =  $"Email send process run successfully",
+                    Message = $"Email send process run successfully",
                     Sourceobject_id = 0,
                     Targetobject_id = 0,
                     Updated_data = "Report Scheduler"

@@ -54,6 +54,8 @@ export class MapFunctionsService {
   selectedTrailerId = undefined;
   trafficFlowChecked = false;
   transportDataChecked = false;
+  trafficOnceChecked = false;
+  transportOnceChecked = false;
   vehicleHeightValue = 0
   vehicleWidthValue = 0
   vehicleLengthValue = 0
@@ -99,6 +101,10 @@ export class MapFunctionsService {
   clearRoutesFromMap() { 
     this.mapGroup.removeAll();
     this.startMarker = null; this.endMarker = null;
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
+    this.transportOnceChecked = false;
+    this.trafficOnceChecked = false;
   }
 
   group = new H.map.Group();
@@ -109,7 +115,11 @@ export class MapFunctionsService {
     let corridorName = '';
     let startAddress = '';
     let endAddress = '';
-
+    
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.traffic);
+    this.hereMap.removeLayer(this.defaultLayers.vector.normal.truck);
+    this.transportOnceChecked = false;
+    this.trafficOnceChecked = false;
  // var group = new H.map.Group();
  this.mapGroup.removeAll();
  this.hereMap.removeObjects(this.hereMap.getObjects())
@@ -197,6 +207,13 @@ export class MapFunctionsService {
               if (data[0]["corridorProperties"]) {
                 this.additionalData = data[0]["corridorProperties"];
                 this.setAdditionalData();
+                  if(this.trafficOnceChecked){
+                    this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
+                  }
+                  if(this.transportOnceChecked){
+                    this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
+                  }
+                
                 if (data[0].viaAddressDetail.length > 0) {
                   this.viaRoutePlottedPoints = data[0].viaAddressDetail;
                   this.plotViaStopPoints();
@@ -216,6 +233,7 @@ export class MapFunctionsService {
         // this.hereMap.getViewModel().setLookAtData({ bounds: group.getBoundingBox()});
         // let successRoute = this.calculateAB('view');
       }
+     
     }
   }
 
@@ -242,6 +260,7 @@ export class MapFunctionsService {
     this.getExclusionList = _data["exclusion"];
     this.hazardousMaterial = [];
     this.exclusions = [];
+
     this.getAttributeData["isCombustible"] ? this.hazardousMaterial.push('combustible') : '';
     this.getAttributeData["isCorrosive"] ? this.hazardousMaterial.push('corrosive') : '';
     this.getAttributeData["isExplosive"] ? this.hazardousMaterial.push('explosive') : '';
@@ -260,10 +279,12 @@ export class MapFunctionsService {
     this.transportDataChecked = _data["isTransportData"];
     this.trafficFlowChecked = _data["isTrafficFlow"];
     if(this.trafficFlowChecked){
+      this.trafficOnceChecked= true;
       //this.hereMap.addLayer(this.defaultLayers.vector.normal.traffic);
     }
     this.transportDataChecked = _data["isTransportData"];
     if(this.transportDataChecked){
+      this.transportOnceChecked = true;
       //this.hereMap.addLayer(this.defaultLayers.vector.normal.truck);
     }
     this.vehicleHeightValue = _data["vehicleSize"].vehicleHeight;
@@ -365,60 +386,67 @@ export class MapFunctionsService {
   routePoints: any;
   calculateTruckRoute() {
     let lineWidth = this.corridorWidthKm;
-    let routeRequestParams =
-      'origin=' + `${this.startAddressPositionLat},${this.startAddressPositionLong}` +
-      '&destination=' + `${this.endAddressPositionLat},${this.endAddressPositionLong}` +
-      '&return=polyline,summary,travelSummary' +
-      '&routingMode=fast' +
-      '&transportMode=truck' +
-      '&apikey=' + this.map_key
+    let routeRequestParams = {
+      'origin':`${this.startAddressPositionLat},${this.startAddressPositionLong}`,
+      'destination': `${this.endAddressPositionLat},${this.endAddressPositionLong}`,
+      'return':'polyline,summary,travelSummary',
+      'routingMode':'fast',
+      'transportMode':'truck',
+      'apikey':this.map_key
 
-    if (this.viaRoutePlottedPoints.length > 0) {
-      this.viaRoutePlottedPoints.forEach(element => {
-        routeRequestParams += '&via=' + `${element["latitude"]},${element["longitude"]}`
-      });
+    }
+    
+    if(this.viaRoutePlottedPoints.length>0){
+      let waypoints = [];
+      for(var i in this.viaRoutePlottedPoints){
+        waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
+      }
+      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints )
+      
     }
 
     if (this.selectedTrailerId) {
-      routeRequestParams += '&truck[trailerCount]=' + this.selectedTrailerId;
+      routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId;
     }
     if (this.tunnelId) {
-      routeRequestParams += '&truck[tunnelCategory]=' + this.tunnelId;
+      routeRequestParams['truck[tunnelCategory]']= this.tunnelId;
     }
     if (this.vehicleHeightValue) {
-      routeRequestParams += '&truck[height]=' + Math.round(this.vehicleHeightValue);
+      routeRequestParams['truck[height]'] = Math.round(this.vehicleHeightValue);
     }
     if (this.vehicleWidthValue) {
-      routeRequestParams += '&truck[width]=' + Math.round(this.vehicleWidthValue);
+      routeRequestParams['truck[width]'] = Math.round(this.vehicleWidthValue);
     }
     if (this.vehicleLengthValue) {
-      routeRequestParams += '&truck[length]=' + Math.round(this.vehicleLengthValue);
+      routeRequestParams['truck[length]']= Math.round(this.vehicleLengthValue);
     }
     if (this.vehicleLimitedWtValue) {
-      routeRequestParams += '&truck[grossWeight]=' + Math.round(this.vehicleLimitedWtValue);
+      routeRequestParams['truck[grossWeight]'] = Math.round(this.vehicleLimitedWtValue);
     }
     if (this.vehicleWtPerAxleValue) {
-      routeRequestParams += '&truck[weightPerAxle]=' + Math.round(this.vehicleWtPerAxleValue);
+      routeRequestParams['truck[weightPerAxle]'] = Math.round(this.vehicleWtPerAxleValue);
     }
 
     if (this.hazardousMaterial.length > 0) {
-      routeRequestParams += '&truck[shippedHazardousGoods]=' + this.hazardousMaterial.join();
+      routeRequestParams['truck[shippedHazardousGoods]']= this.hazardousMaterial.join();
     }
     
     if(this.exclusions.length>0){
-      routeRequestParams += '&avoid[features]=' + this.exclusions.join();
+      routeRequestParams['avoid[features]'] = this.exclusions.join();
 
     }
     this.routePoints = [];
-    this.hereService.getTruckRoutes(routeRequestParams).subscribe((data) => {
-      if (data && data.routes) {
-        if (data.routes.length == 0) {
-          // this.noRoutesLabel = true;
-        } else {
+    this.hereService.calculateRoutePoints(routeRequestParams).then((data:any)=>{
+      if(data && data.routes){
+        if(data.routes.length == 0){
+        }
+        else{
           this.routePoints = data.routes[0];
           this.addTruckRouteShapeToMap(lineWidth);
         }
-      }
+        
+        }
+      
     })
 
   }
