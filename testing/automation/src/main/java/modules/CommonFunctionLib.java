@@ -1293,7 +1293,8 @@ try
 	String rowvalueF = null;
 	rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]")).getText();
 	if(rowvalueF.startsWith("New")) {
-	if(driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")).isDisplayed()) {
+		List<WebElement> dis =driver.findElements(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")); 
+	if(dis.size()>0) {
 		 rowvalueF = driver.findElement(By.xpath(RowPart + j + "]/mat-cell["+i+"]/span[3]")).getText();
 	}}
 	String[] str;
@@ -1309,14 +1310,17 @@ try
 	System.out.println("Value found in expected column");
 	test.log(LogStatus.PASS,  "Value found in expected column");
 	Log.info("Value found in expected column");	
-	if (column.equals("Name")||column.equals("Email ID")||column.equals("Package Code")) {
-		String Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("ROLE_DELETE");
+	String Btn_Delete;
+	//if (column.equals("Name")||column.equals("Email ID")||column.equals("Package Code")) {
+		 Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("ROLE_DELETE");
 		System.out.println(RowPart + j + Btn_Delete);
+		List<WebElement> dis =driver.findElements(By.xpath(RowPart + j + Btn_Delete)); 
+		if(dis.size()>0) {		
 		driver.findElement(By.xpath(RowPart + j + Btn_Delete)).click();
 		
 	}
 	else {
-	String Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("GRP_DELETE");
+	 Btn_Delete = getTextFromOR("GRP_DELETE1")+ ActionColNo + getTextFromOR("GRP_DELETE");
 	System.out.println(RowPart + j + Btn_Delete);
 	driver.findElement(By.xpath(RowPart + j + Btn_Delete)).click();
 	}
@@ -1829,7 +1833,7 @@ if (driver.findElement(getLocator("TABLE")).isDisplayed());
 System.out.println(" Next Page button is working");
 Thread.sleep(3000);
 List<WebElement> options1 = driver.findElements(getLocator("GRP_ROW"));
-Thread.sleep(3001);
+Thread.sleep(3000);
 for (int j = 1; j <= options1.size(); j++) 
 {
 String RowPart = getTextFromOR("TABLE_ROW_PART_ONE");
@@ -1856,7 +1860,8 @@ Log.info("Value found in expected column");
 //if(column.equals("Name")||column.equals("Email ID")||column.equals("Package Code")) {
 	String Btn_EditR = getTextFromOR("GRP_EDIT1")+ ActionColNo + getTextFromOR("GRP_EDIT");//"ROLE_EDIT");
 	System.out.println(RowPart + j + Btn_EditR);
-	if(driver.findElement(By.xpath(RowPart + j + Btn_EditR)).isDisplayed()) {
+	List<WebElement> Dis =driver.findElements(By.xpath(RowPart + j + Btn_EditR));
+	if(Dis.size() > 0) {
 	driver.findElement(By.xpath(RowPart + j + Btn_EditR)).click();
 	
 }else {
@@ -2367,6 +2372,45 @@ public static void verifyPartialText() throws Exception {
 		DriverScript.bResult = false;
 	}
 }
+
+//********************Verifying Partial Text************************************************   	
+public static void ClickOnMap() throws Exception {
+	try {
+		test.log(LogStatus.INFO, "Clicking on Map");
+		Log.info("Clicking on Map" );
+		 WebElement we = driver.findElement(By.xpath("//canvas"));
+		    int x = we.getSize().width/2;
+		    int y = we.getSize().height/2;
+
+		    Actions builder = new Actions(driver).moveToElement(new WebDriverWait(driver,20)
+		                .until(ExpectedConditions.elementToBeClickable(we)));
+
+		    System.out.println("width:" + x + "\theight:" + y);
+		    builder.click().build().perform();
+		    System.out.println("clicked:1");
+
+		Actions clickAt = new Actions(getDriver());
+		clickAt.moveToElement(getDriver().findElement(By.xpath("//canvas")), 40, 1).click(); 
+		clickAt.build().perform();
+		Actions clickAt1 = new Actions(getDriver());
+		clickAt1.moveToElement(getDriver().findElement(By.xpath("//canvas")), 20, 30).click(); 
+		clickAt1.build().perform();
+	} catch (Exception e) {
+		test.log(LogStatus.FAIL, e.getMessage());
+		Log.error("Text Not found..." + e.getMessage());
+		String screenshotPath = getScreenshot(driver, DriverScript.TestCaseID);
+		test.log(LogStatus.FAIL, test.addScreenCapture(screenshotPath));
+		ExcelSheet.setCellData(e.getMessage(), TestStep, Constants.Col_TestStepOutput, Constants.Sheet_TestSteps);
+		DriverScript.bResult = false;
+	}
+}
+/**
+ * @return
+ */
+private static WebDriver getDriver() {	
+	return driver;
+}
+
 
 //******************************************************************************  
 }
