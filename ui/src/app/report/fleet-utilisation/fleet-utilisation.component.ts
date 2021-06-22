@@ -22,6 +22,7 @@ import { MultiDataSet, Label, Color} from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Router, NavigationExtras } from '@angular/router';
+// import { CalendarOptions } from '@fullcalendar/angular';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -77,6 +78,9 @@ export class FleetUtilisationComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   advanceFilterOpen: boolean = false;
+  isChartsOpen: boolean = false;
+  isCalendarOpen: boolean = false;
+  isSummaryOpen: boolean = false;
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -152,6 +156,8 @@ export class FleetUtilisationComponent implements OnInit {
   barVarticleData: any = []; 
   averageDistanceBarData: any = [];
   lineChartVehicleCount: any = [];
+  greaterMileageCount :  any = 0;
+  greaterTimeCount :  any = 0;
 
 // Bar chart implementation
 
@@ -167,8 +173,16 @@ barChartOptions: any = {
       scaleLabel: {
         display: true,
         labelString: 'per vehicle(km/day)'    
+      }} ,{
+        id: "y-axis-2",
+        position: 'right',
+        type: 'linear',
+        ticks: {
+          beginAtZero:true,
+          labelString: 'Attendace'
+        }
       }
-    }]
+    ]
   }
 };
 barChartLabels: Label[] =this.chartsLabelsdefined;
@@ -187,17 +201,21 @@ barChartData: any[] = [
       label: 'Total distance(km)',
       type: 'bar',
       yAxesID: "y-axis-1",
-       data: this.barVarticleData
+      data: this.barVarticleData
     },
 ];
 
-// Doughnut chart implementation
+// Doughnut chart implementation for Mileage based utilisation
 
-doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done under 10500km', 'Percentage of vehicles with distance done above 10500km'];
-doughnutChartData: MultiDataSet = [
-  [20, 80]
-];
+doughnutChartLabels: Label[] = ['Percentage of vehicles with distance done above 1000 km', 'Percentage of vehicles with distance done under 1000 km'];
+doughnutChartData: any = [];
 doughnutChartType: ChartType = 'doughnut';
+
+// Doughnut chart implementation for Time based utilisation
+
+doughnutChartLabelsForTime: Label[] = ['Percentage of vehicles with driving time above 1h 0 m', 'Percentage of vehicles with driving time under 1h 0 m'];
+doughnutChartDataForTime: any = [];
+doughnutChartTypeTime: ChartType = 'doughnut';
 
 // Line chart implementation
 
@@ -235,7 +253,17 @@ lineChartLegend = true;
 lineChartPlugins = [];
 lineChartType = 'line';
   
-
+// calendarOptions: CalendarOptions = {
+//   initialView: 'dayGridMonth',
+//   visibleRange: {
+//     start: '2020-03-22',
+//     end: '2020-03-25'
+//   },
+//   // events: [
+//   //   { title: 'event 1', date: '2021-06-21' },
+//   //   { title: 'event 2', date: '2021-06-20' }
+//   // ]
+// };
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router) {
     this.defaultTranslation();
@@ -394,88 +422,101 @@ lineChartType = 'line';
 
       // let fleetData =[
       //   {
-      //     "vehicle_name":"Vehicle 1",
+      //     "vehicleName":"Vehicle 1",
       //     "vin":"XLR0998HGFFT5566",
-      //     "StopTime":1587143959831,
-      //     "NumberOfTrips":15,
+      //     "stopTime":1587143959831,
+      //     "numberOfTrips":15,
       //     "distance":139,
       //     "idleDuration":353,
       //     "averageSpeed":2663,
       //     "odometer":298850780,
-      //     "AverageDistancePerDay":50,
-      //     "AverageWeightPerTrip":5000,
+      //     "averageDistancePerDay":50,
+      //     "averageWeightPerTrip":5000,
       //     "drivingTime":0,
-      //     "TripTime":0,
-      //     "RegPlateNumber":"",
+      //     "tripTime":0,
+      //     "registrationNumber":"",
       //   },
       //   {
-      //     "vehicle_name":"Vehicle 2",
+      //     "vehicleName":"Vehicle 2",
       //     "vin":"XLR0998HGFFT5566",
-      //     "StopTime":1587143959831,
-      //     "NumberOfTrips":7,
-      //     "distance":144,
-      //     "idleDuration":253,
+      //     "stopTime":1587143959831,
+      //     "numberOfTrips":15,
+      //     "distance":13950132,
+      //     "idleDuration":353,
       //     "averageSpeed":2663,
       //     "odometer":298850780,
-      //     "AverageDistancePerDay":50,
-      //     "AverageWeightPerTrip":5000,
+      //     "averageDistancePerDay":50,
+      //     "averageWeightPerTrip":5000,
       //     "drivingTime":0,
-      //     "TripTime":0,
-      //     "RegPlateNumber":"",
+      //     "tripTime":0,
+      //     "registrationNumber":"",
       //   },{
-      //     "vehicle_name":"Vehicle 3",
+      //     "vehicleName":"Vehicle 3",
       //     "vin":"XLR0998HGFFT5566",
-      //     "StopTime":1587143959831,
-      //     "NumberOfTrips":5,
-      //     "distance":133,
-      //     "idleDuration":258,
+      //     "stopTime":1587143959831,
+      //     "numberOfTrips":15,
+      //     "distance":13925230,
+      //     "idleDuration":353,
       //     "averageSpeed":2663,
       //     "odometer":298850780,
-      //     "AverageDistancePerDay":50,
-      //     "AverageWeightPerTrip":5000,
+      //     "averageDistancePerDay":50,
+      //     "averageWeightPerTrip":5000,
       //     "drivingTime":0,
-      //     "TripTime":0,
-      //     "RegPlateNumber":"",
+      //     "tripTime":0,
+      //     "registrationNumber":"",
       //   },{
-      //     "vehicle_name":"Vehicle 4",
+      //     "vehicleName":"Vehicle 4",
       //     "vin":"XLR0998HGFFT5566",
-      //     "StopTime":1587143959831,
-      //     "NumberOfTrips":10,
-      //     "distance":130,
-      //     "idleDuration":255,
+      //     "stopTime":1587143959831,
+      //     "numberOfTrips":15,
+      //     "distance":13900,
+      //     "idleDuration":353,
       //     "averageSpeed":2663,
       //     "odometer":298850780,
-      //     "AverageDistancePerDay":50,
-      //     "AverageWeightPerTrip":5000,
+      //     "averageDistancePerDay":50,
+      //     "averageWeightPerTrip":5000,
       //     "drivingTime":0,
-      //     "TripTime":0,
-      //     "RegPlateNumber":"",
+      //     "tripTime":0,
+      //     "registrationNumber":"",
       //   },{
-      //     "vehicle_name":"Vehicle 5",
+      //     "vehicleName":"Vehicle 5",
       //     "vin":"XLR0998HGFFT5566",
-      //     "StopTime":1587143959831,
-      //     "NumberOfTrips":14,
-      //     "distance":150,
-      //     "idleDuration":553,
+      //     "stopTime":1587143959831,
+      //     "numberOfTrips":15,
+      //     "distance":13900000,
+      //     "idleDuration":353,
       //     "averageSpeed":2663,
       //     "odometer":298850780,
-      //     "AverageDistancePerDay":50,
-      //     "AverageWeightPerTrip":5000,
+      //     "averageDistancePerDay":50,
+      //     "averageWeightPerTrip":5000,
       //     "drivingTime":0,
-      //     "TripTime":0,
-      //     "RegPlateNumber":"",
+      //     "tripTime":0,
+      //     "registrationNumber":"",
       //   }
       // ];
-
+     // this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(fleetData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
       // Dummy data ends
 
-      this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
-      this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
-        this.setChartData(calendarData["calenderDetails"]);
-      })
+       this.tripData = this.reportMapService.getConvertedFleetDataBasedOnPref(_fleetData["fleetDetails"], this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
       this.setTableInfo();
       this.updateDataSource(this.tripData);
       this.hideloader();
+      this.isChartsOpen = true;
+      this.isCalendarOpen = true;
+      this.isSummaryOpen = true;
+      this.tripData.forEach(element => {
+        if((element.distance/1000) > 1000){
+          this.greaterMileageCount = this.greaterMileageCount + 1;
+        }
+        if(element.drivingTime > 360000){
+          this.greaterTimeCount = this.greaterTimeCount + 1;
+        }
+      });
+      let percentage1 = (this.greaterMileageCount/this.tripData.length)*100 ;
+      this.doughnutChartData = [percentage1, 100- percentage1];
+      let percentage2 = (this.greaterTimeCount/this.tripData.length)* 100;
+      this.doughnutChartDataForTime = [percentage2, 100- percentage2];
+      
       }, (error)=>{
          //console.log(error);
         this.hideloader();
@@ -483,6 +524,9 @@ lineChartType = 'line';
          this.tableInfoObj = {};
         this.updateDataSource(this.tripData);
       });
+      this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
+        this.setChartData(calendarData["calenderDetails"]);
+      })
     }
   }
 
@@ -546,7 +590,7 @@ lineChartType = 'line';
       this.chartsLabelsdefined.push(resultDate);
       this.barVarticleData.push(e.averagedistanceperday/1000);
       this.averageDistanceBarData.push(this.barVarticleData/e.vehiclecount);
-      this.lineChartVehicleCount.push(e.vehiclecount);
+      this.lineChartVehicleCount.push(e.vehiclecount);     
     });
   }
 
