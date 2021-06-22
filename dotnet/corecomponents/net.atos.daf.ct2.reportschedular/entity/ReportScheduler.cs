@@ -12,7 +12,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string FrequencyType { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
-        public string FileName { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public string Code { get; set; }
@@ -25,10 +24,6 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public string MailSubject { get; set; }
         public string MailDescription { get; set; }
         public long ReportDispatchTime { get; set; }
-        public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
-        public List<ScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<ScheduledReportRecipient>();
-        public List<ScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<ScheduledReportVehicleRef>();
-        public List<ScheduledReportDriverRef> ScheduledReportDriverRef { get; set; } = new List<ScheduledReportDriverRef>();
     }
     public class ScheduledReport
     {
@@ -41,6 +36,7 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public long DownloadedAt { get; set; }
         public long ValidTill { get; set; }
         public long CreatedAt { get; set; }
+        public string FileName { get; set; }
     }
     public class ScheduledReportRecipient
     {
@@ -72,5 +68,12 @@ namespace net.atos.daf.ct2.reportscheduler.entity
         public int CreatedBy { get; set; }
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
+    }
+    public class ReportSchedulerMap : ReportScheduler
+    {
+        public List<ScheduledReport> ScheduledReport { get; set; } = new List<ScheduledReport>();
+        public List<ScheduledReportRecipient> ScheduledReportRecipient { get; set; } = new List<ScheduledReportRecipient>();
+        public List<ScheduledReportVehicleRef> ScheduledReportVehicleRef { get; set; } = new List<ScheduledReportVehicleRef>();
+        public List<ScheduledReportDriverRef> ScheduledReportDriverRef { get; set; } = new List<ScheduledReportDriverRef>();
     }
 }

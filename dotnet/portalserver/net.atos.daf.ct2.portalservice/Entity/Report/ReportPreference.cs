@@ -13,12 +13,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int OrganizationId { get; set; }
         public long CreatedAt { get; set; }
         public long ModifiedAt { get; set; }
-        [StringLength(1, MinimumLength = 1)]
-        public string Type { get; set; }
-        [StringLength(1, MinimumLength = 1)]
-        public string ChartType { get; set; }
-        public string ThresholdType { get; set; }
-        public string ThresholdValue { get; set; }
         public List<Atribute> AtributesShowNoShow { get; set; }
     }
     public class Atribute
@@ -27,6 +21,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public int DataAttributeId { get; set; }
         [StringLength(1, MinimumLength = 1)]
         public string State { get; set; }
+        [StringLength(1, MinimumLength = 1)]
+        public string Type { get; set; }
+        // [StringLength(1, MinimumLength = 1)]
+        public string ChartType { get; set; }
+        public string ThresholdType { get; set; }
+        public long ThresholdValue { get; set; }
     }
     public class ReportListedParamaters
     {

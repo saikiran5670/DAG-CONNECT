@@ -49,6 +49,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getreportdetails")]
+        [Route("getdetails")]
         public async Task<IActionResult> GetReportDetails()
         {
             try
@@ -80,6 +81,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpGet]
         [Route("getuserpreferencereportdatacolumn")]
+        [Route("userpreference/get")]
         public async Task<IActionResult> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId)
         {
             try
@@ -118,6 +120,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region - Trip Report Table Details
         [HttpGet]
         [Route("gettripdetails")]
+        [Route("trip/getdetails")]
         public async Task<IActionResult> GetFilteredTripDetails([FromQuery] TripFilterRequest request)
         {
             try
@@ -158,6 +161,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Create User Preference
         [HttpPost]
         [Route("createuserpreference")]
+        [Route("userpreference/create")]
         public async Task<IActionResult> CreateUserPreference(net.atos.daf.ct2.portalservice.Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             try
@@ -197,6 +201,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Select User Preferences
         [HttpGet]
         [Route("getvinsfromtripstatisticsandvehicledetails")]
+        [Route("trip/getpreferences")]
         public async Task<IActionResult> GetVinsFromTripStatisticsAndVehicleDetails(int accountId, int organizationId)
         {
             try
@@ -335,7 +340,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         }
 
         [HttpPost]
-        [Route("getsearchparameters")]
+        [Route("search/getparameters")]
         public async Task<IActionResult> GetReportSearchParameter([FromBody] IdRequestForDriverActivity request)
         {
             try
@@ -482,7 +487,6 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         [HttpDelete]
         [Route("ecoscore/deleteprofile")]
-
         public async Task<IActionResult> DeleteEcoScoreProfile([FromQuery] EcoScoreProfileDeleteRequest request)
         {
             try

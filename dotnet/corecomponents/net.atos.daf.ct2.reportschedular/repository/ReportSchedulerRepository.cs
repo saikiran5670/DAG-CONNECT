@@ -98,7 +98,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Create CreateReportSchedular
-        public async Task<ReportScheduler> CreateReportScheduler(ReportScheduler report)
+        public async Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -109,8 +109,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 report_id, 
                                                 frequency_type,
                                                 status,
-                                                type, 
-                                                file_name, 
+                                                type,                                                 
                                                 start_date, 
                                                 end_date, 
                                                 code,
@@ -128,8 +127,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 @report_id, 
                                                 @frequency_type, 
                                                 @status, 
-                                                @type, 
-                                                @file_name, 
+                                                @type,                                               
                                                 @start_date, 
                                                 @end_date, 
                                                 @code,
@@ -149,7 +147,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
                 parameterReportSchedular.Add("@start_date", report.OrganizationId);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
@@ -270,8 +267,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterScheduledReportDriverRef.Add("@driver_id", sdriverref.DriverId);
 
                 parameterScheduledReportDriverRef.Add("@state", sdriverref.State);
-                parameterScheduledReportDriverRef.Add("@created_at", sdriverref.CreatedAt);
-                parameterScheduledReportDriverRef.Add("@created_by", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterScheduledReportDriverRef.Add("@created_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
+                parameterScheduledReportDriverRef.Add("@created_by", sdriverref.CreatedAt);
                 parameterScheduledReportDriverRef.Add("@modified_at", sdriverref.ModifiedAt);
                 parameterScheduledReportDriverRef.Add("@modified_by", sdriverref.ModifiedBy);
 
@@ -379,7 +376,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Update UpdateReportSchedular
-        public async Task<ReportScheduler> UpdateReportScheduler(ReportScheduler report)
+        public async Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report)
         {
             _dataAccess.Connection.Open();
             var transactionScope = _dataAccess.Connection.BeginTransaction();
@@ -389,8 +386,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                                 SET 
 	                                            frequency_type=@frequency_type, 
 	                                            status=@status, 
-	                                            type=@type, 
-	                                            file_name=@file_name, 
+	                                            type=@type,	                                            
 	                                            start_date=@start_date, 
 	                                            end_date=@end_date, 
 	                                            code=@code, 
@@ -408,7 +404,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@frequency_type", report.FrequencyType);
                 parameterReportSchedular.Add("@status", report.Status);
                 parameterReportSchedular.Add("@type", report.Type);
-                parameterReportSchedular.Add("@file_name", report.FileName);
                 parameterReportSchedular.Add("@start_date", report.OrganizationId);
                 parameterReportSchedular.Add("@end_date", report.EndDate);
                 parameterReportSchedular.Add("@code", report.Code);
@@ -486,7 +481,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         #endregion
 
         #region Get Report Scheduler
-        public async Task<IEnumerable<ReportScheduler>> GetReportSchedulerList(int organizationid)
+        public async Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid)
         {
             MapperRepo repositoryMapper = new MapperRepo();
             try
@@ -498,8 +493,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             repsch.report_id as repsch_report_id, 
                                             repsch.frequency_type as repsch_frequency_type, 
                                             repsch.status as repsch_status, 
-                                            repsch.type as repsch_type, 
-                                            repsch.file_name as repsch_file_name, 
+                                            repsch.type as repsch_type,                                            
                                             repsch.start_date as repsch_start_date, 
                                             repsch.end_date as repsch_end_date, 
                                             repsch.code as repsch_code, 

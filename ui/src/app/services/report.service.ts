@@ -59,14 +59,14 @@ export class ReportService {
       .pipe(catchError(this.handleError));
   }
 
-  createTripReportPreference(data: any): Observable<any[]> {
+  createReportUserPreference(data: any): Observable<any[]> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
       .post<any[]>(
-        `${this.reportServiceUrl}/createuserpreference`, data, headers
+        `${this.reportServiceUrl}/userpreference/create`, data, headers
       )
       .pipe(catchError(this.handleError));
   }
@@ -114,6 +114,18 @@ export class ReportService {
     };
     return this.httpClient
       .get<any[]>(`${this.reportServiceUrl}/getreportdetails`, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+  getFleetDetails(data: any): Observable<any[]> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+      .post<any[]>(
+        `${this.reportServiceUrl}/fleetutilization/getdetails`, data, headers
+      )
       .pipe(catchError(this.handleError));
   }
   

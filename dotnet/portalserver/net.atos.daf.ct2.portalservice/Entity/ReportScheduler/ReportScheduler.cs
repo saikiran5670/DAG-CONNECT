@@ -13,7 +13,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
         public string FrequencyType { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
-        public string FileName { get; set; }
         public long StartDate { get; set; }
         public long EndDate { get; set; }
         public string Code { get; set; }
