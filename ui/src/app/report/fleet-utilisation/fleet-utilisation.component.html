@@ -108,7 +108,7 @@
     </form>
 
     <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="isSummaryOpen" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
         (closed)="isSummaryOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -214,7 +214,7 @@
 <!-- Charts view -->
 
       <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel *ngIf = 'isChartsOpen'  [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen == true"
+        <mat-expansion-panel *ngIf = 'tableExpandPanel'  [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen == true"
         (closed)="isChartsOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
@@ -279,7 +279,7 @@
       <!-- Calendar view -->
 
       <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="isCalendarOpen" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
         (closed)="isCalendarOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
