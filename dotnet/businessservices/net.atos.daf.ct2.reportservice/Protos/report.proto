@@ -413,6 +413,9 @@ message FleetUtilizationcalender {
     double Averageidleduration = 7;
     double Averagedistanceperday = 8;
     double AverageSpeed = 9;
+    int32 Vehiclecount =10;
+    int32 Tripcount =11;
+
    
 
 }
