@@ -128,7 +128,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #endregion
 
         #region Update Schedular Report
-        [HttpPost]
+        [HttpPut]
         [Route("update")]
         public async Task<IActionResult> UpdateReportScheduler(PortalAlertEntity.ReportScheduler request)
         {
@@ -284,6 +284,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest obj = new net.atos.daf.ct2.reportschedulerservice.ReportStatusUpdateDeleteRequest();
                 obj.OrganizationId = request.OrganizationId;
                 obj.ReportId = request.ReportId;
+                obj.Status = request.Status;
                 var data = await _reportschedulerClient.EnableDisableReportScheduleAsync(obj);
                 if (data == null)
                 {
