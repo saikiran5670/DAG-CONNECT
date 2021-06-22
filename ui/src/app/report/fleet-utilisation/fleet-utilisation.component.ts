@@ -38,6 +38,7 @@ export class FleetUtilisationComponent implements OnInit {
   tripForm: FormGroup;
   displayedColumns = ['vehicleName', 'vin', 'registrationNumber', 'distance', 'numberOfTrips', 'tripTime', 'drivingTime', 'idleDuration', 'stopTime', 'averageSpeed', 'averageWeightPerTrip', 'averageDistancePerDay', 'odometer'];
   translationData: any;
+  fleetUtilizationSearchData: any = {};
   // hereMap: any;
   // platform: any;
   // ui: any;
@@ -247,6 +248,8 @@ lineChartType = 'line';
   }
 
   ngOnInit(): void {
+    this.fleetUtilizationSearchData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+    // console.log("----globalSearchFilterData---",this.fleetUtilizationSearchData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -279,6 +282,7 @@ lineChartType = 'line';
         this.setPrefFormatDate();
         this.setDefaultTodayDate();
         this.getFleetPreferences();
+
       });
     });
   }
@@ -368,6 +372,7 @@ lineChartType = 'line';
       this.resetTripFormControlValue();
     }
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    this.setVehicleGroupAndVehiclePreSelection();
   }
 
   onSearch(){
@@ -551,7 +556,7 @@ lineChartType = 'line';
   }
 
   onVehicleChange(event: any){
-
+ 
   }
 
 
@@ -572,15 +577,30 @@ lineChartType = 'line';
     });
   }
 
+  setVehicleGroupAndVehiclePreSelection() {
+    if(this.fleetUtilizationSearchData.vehicleGroupDropDownValue !== "") {
+      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+      this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue)
+    }else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
+      // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+    }
+  }
   onVehicleGroupChange(event: any){
-    this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
-    if(parseInt(event.value) == 0){ //-- all group
+   if(event.value){
+     
+     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+     if(parseInt(event.value) == 0){ //-- all group
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     }else{
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
     }
+  }else {
+    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+    this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
+    this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
   }
-
+  }
+    
   setTableInfo(){
     let vehName: any = '';
     let vehGrpName: any = '';
@@ -727,19 +747,45 @@ lineChartType = 'line';
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
+    if(this.fleetUtilizationSearchData.modifiedFrom !== "") {
+      console.log("---if fleetUtilizationSearchData exist")
+      this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
+      this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
+
+    }else{
+      console.log("---if fleetUtilizationSearch Data not exist")
     this.selectedStartTime = "00:00";
     this.selectedEndTime = "23:59";
+    }
   }
 
   setDefaultTodayDate(){
+
+    if(this.fleetUtilizationSearchData.startDateStamp !== "") {
+      console.log("---if fleetUtilizationSearchData startDateStamp exist")
+      if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
+        this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
+        this.selectionTimeRange(this.selectionTab)
+      }else {
+        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
+        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
+        console.log(typeof(startDateFromSearch));
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
+      }
+      
+    }else{
     this.selectionTab = 'today';
+
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+    }
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
   }

@@ -227,6 +227,17 @@ export class AppComponent {
   languageId: any;
   orgName: any;
   roleId: any;
+  globalSearchFilterData: any = { 
+    startDateStamp : "",
+    startTimeStamp : "",
+    endDateStamp : "",
+    endTimeStamp : "",
+    vehicleGroupDropDownValue : "",
+    vehicleDropDownValue : "",
+    driverDropDownValue : "",
+    modifiedFrom: "",
+    timeRangeSelection: ""
+  };
 
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService) {
     this.defaultTranslation();
@@ -666,6 +677,9 @@ export class AppComponent {
     this.accountID = parseInt(localStorage.getItem("accountId"));
     this.roleId = localStorage.getItem('accountRoleId');
     this.languageId = JSON.parse(localStorage.getItem("language"));
+
+    //Global Search FIlter Persist Data
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
     //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
