@@ -250,7 +250,7 @@ export class RouteCalculatingComponent implements OnInit {
       this.corridorId = _selectedElementData.id;
       if(this.corridorId){
           this.corridorService.getCorridorFullList(this.organizationId,this.corridorId).subscribe((data)=>{
-              console.log(data)
+              //console.log(data)
               if(data[0]["corridorProperties"]){
                  this.additionalData =  data[0]["corridorProperties"];
                  this.setAdditionalData();
@@ -607,18 +607,18 @@ export class RouteCalculatingComponent implements OnInit {
       "modified_At": 0,
       "modified_By": this.organizationId,
       "attribute": {
-        "trailer": this.selectedTrailerId,
-        "explosive": this.explosiveChecked,
-        "gas": this.gasChecked,
-        "flammable": this.flammableChecked,
-        "combustible": this.combustibleChecked,
-        "organic": this.organicChecked,
-        "poision": this.poisonChecked,
-        "radioActive": this.radioactiveChecked,
-        "corrosive": this.corrosiveChecked,
-        "poisonousInhalation": this.poisonInhaleChecked,
-        "waterHarm": this.waterHarmChecked,
-        "other": this.othersChecked
+        "isTrailer": this.selectedTrailerId,
+        "isExplosive": this.explosiveChecked,
+        "isGas": this.gasChecked,
+        "isFlammable": this.flammableChecked,
+        "isCombustible": this.combustibleChecked,
+        "isorganic": this.organicChecked,
+        "ispoision": this.poisonChecked,
+        "isRadioActive": this.radioactiveChecked,
+        "isCorrosive": this.corrosiveChecked,
+        "isPoisonousInhalation": this.poisonInhaleChecked,
+        "isWaterHarm": this.waterHarmChecked,
+        "isOther": this.othersChecked
       },
       "exclusion": {
         "tollRoad": this.tollRoadChecked ? 'A' : 'I',
@@ -1008,30 +1008,14 @@ export class RouteCalculatingComponent implements OnInit {
       for(var i in this.viaRoutePlottedPoints){
         waypoints.push(`${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}`)
       }
-      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints )
-      
-      // let _viaString = '{';
-      // for(var i in this.viaRoutePlottedPoints){
-      //   if(Number(i) < (this.viaRoutePlottedPoints.length-1))
-      //   _viaString += 'via:"'+ `${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}",`
-      // else
-      //   _viaString += 'via:"'+ `${this.viaRoutePlottedPoints[i]["latitude"]},${this.viaRoutePlottedPoints[i]["longitude"]}"`
-
-      // }
-      // this.viaRoutePlottedPoints.forEach(element => {
-      //   _viaString += 'via:'+ `${element["latitude"]},${element["longitude"]},`
-      // });
-      // _viaString += '}';
-      // let viaObj = JSON.parse(_viaString);
-      // console.log(_viaString)
-      // console.log(viaObj)
+      routeRequestParams['via'] = new H.service.Url.MultiValueQueryParameter( waypoints );
     }
 
     if(this.selectedTrailerId){
-      routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId
+      routeRequestParams['truck[trailerCount]'] = this.selectedTrailerId;
     }
     if(this.tunnelId){
-      routeRequestParams['truck[tunnelCategory]']= this.tunnelId 
+      routeRequestParams['truck[tunnelCategory]']= this.tunnelId;
     }
     if(this.corridorFormGroup.controls.vehicleHeight.value){
       routeRequestParams['truck[height]'] = Math.round(this.corridorFormGroup.controls.vehicleHeight.value);
