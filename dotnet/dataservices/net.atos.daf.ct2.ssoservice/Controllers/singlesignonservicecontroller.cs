@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
         {
             try
             {
-                UserDetails _details = new UserDetails();
+                UserDetails details = new UserDetails();
                 if (!string.IsNullOrEmpty(token))
                 {
                     SSOResponse result = await _accountIdentityManager.ValidateSSOToken(token);
@@ -38,17 +38,17 @@ namespace net.atos.daf.ct2.singlesignonservice.Controllers
                     {
                         if (result.Details != null)
                         {
-                            _details.AccountID = result.Details.AccountID;
-                            _details.AccountName = result.Details.AccountName;
-                            _details.RoleID = result.Details.RoleID;
-                            _details.OrganizationID = result.Details.OrganizationID;
-                            _details.OraganizationName = result.Details.OrganizationName;
-                            _details.DateFormat = result.Details.DateFormat;
-                            _details.TimeZone = result.Details.TimeZone;
-                            _details.UnitDisplay = result.Details.UnitDisplay;
-                            _details.VehicleDisplay = result.Details.VehicleDisplay;
+                            details.AccountID = result.Details.AccountID;
+                            details.AccountName = result.Details.AccountName;
+                            details.RoleID = result.Details.RoleID;
+                            details.OrganizationID = result.Details.OrganizationID;
+                            details.OraganizationName = result.Details.OrganizationName;
+                            details.DateFormat = result.Details.DateFormat;
+                            details.TimeZone = result.Details.TimeZone;
+                            details.UnitDisplay = result.Details.UnitDisplay;
+                            details.VehicleDisplay = result.Details.VehicleDisplay;
 
-                            return Ok(_details);
+                            return Ok(details);
                         }
                         else
                         {

@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.subscription
 {
     public class SubscriptionManager : ISubscriptionManager
     {
-        ISubscriptionRepository _subscriptionRepository;
+        readonly ISubscriptionRepository _subscriptionRepository;
 
         public SubscriptionManager(ISubscriptionRepository subscriptionRepository)
         {

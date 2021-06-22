@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
 {
     public class POIManagementService : POIService.POIServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IPoiManager _poiManager;
         private readonly Mapper _mapper;
         public POIManagementService(IPoiManager poiManager)

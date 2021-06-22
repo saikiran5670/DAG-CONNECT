@@ -12,27 +12,22 @@ namespace net.atos.daf.ct2.role
 {
     public class RoleManagement : IRoleManagement
     {
-        IRoleRepository _roleRepository;
+        readonly IRoleRepository _roleRepository;
+        readonly IFeatureManager _featureManager;
 
-        IFeatureRepository _featureRepository;
-        IFeatureManager _featureManager;
-
-        // IAuditLog auditlog;
-        public RoleManagement(IRoleRepository roleRepository, IFeatureManager FeatureManager, IFeatureRepository featureRepository)
+        public RoleManagement(IRoleRepository roleRepository, IFeatureManager featureManager)
         {
             _roleRepository = roleRepository;
-            _featureRepository = featureRepository;
-            _featureManager = FeatureManager;
-
-            // auditlog=_auditlog;
+            _featureManager = featureManager;
         }
+
         public async Task<int> CreateRole(RoleMaster roleMaster)
         {
             try
             {
 
                 roleMaster.FeatureSet.Name = "FeatureSet_" + DateTimeOffset.Now.ToUnixTimeSeconds();
-                int RoleId = 0;
+                int roleId = 0;
                 int featuresetid = await _featureManager.AddFeatureSet(roleMaster.FeatureSet);
                 //to get minimum features level
                 int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
@@ -40,10 +35,10 @@ namespace net.atos.daf.ct2.role
                 if (featuresetid > 0)
                 {
                     roleMaster.Feature_set_id = featuresetid;
-                    RoleId = await _roleRepository.CreateRole(roleMaster);
+                    roleId = await _roleRepository.CreateRole(roleMaster);
                 }
 
-                return RoleId;
+                return roleId;
             }
             catch (Exception)
             {

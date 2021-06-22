@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.visibility.repository
 
         public IEnumerable<FeatureSet> GetFeatureSet(int userid, int orgid)
         {
-            var featureSet = new List<FeatureSet>();
+            var featureSets = new List<FeatureSet>();
             var func = "dafconnectmaster.getuserrolefeatures";
             var result = _dataAccess.Query<Feature>(
                             sql: func,
@@ -36,20 +36,20 @@ namespace net.atos.daf.ct2.visibility.repository
             {
                 if (feature != null)
                 {
-                    var _featureSet = new FeatureSet();
-                    _featureSet.FeatureSetID = feature.RoleFeatureId;
-                    _featureSet.FeatureSetName = feature.FeatureDescription;
+                    var featureSet = new FeatureSet();
+                    featureSet.FeatureSetID = feature.RoleFeatureId;
+                    featureSet.FeatureSetName = feature.FeatureDescription;
                     // get child features
-                    var childFeatures = result.Where(fe => fe.ParentFeatureId == _featureSet.FeatureSetID).ToList();
+                    var childFeatures = result.Where(fe => fe.ParentFeatureId == featureSet.FeatureSetID).ToList();
                     if (childFeatures != null)
                     {
-                        _featureSet.Features = new List<Feature>();
-                        _featureSet.Features.AddRange(childFeatures);
+                        featureSet.Features = new List<Feature>();
+                        featureSet.Features.AddRange(childFeatures);
                     }
-                    featureSet.Add(_featureSet);
+                    featureSets.Add(featureSet);
                 }
             }
-            return featureSet;
+            return featureSets;
         }
 
         public Task<IEnumerable<VehicleDetailsAccountVisibilty>> GetVehicleByAccountVisibility(int accountId,

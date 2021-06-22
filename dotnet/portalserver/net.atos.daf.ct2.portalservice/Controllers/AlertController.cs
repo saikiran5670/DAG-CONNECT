@@ -21,7 +21,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Route("alert")]
     public class AlertController : BaseController
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly AlertService.AlertServiceClient _alertServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.Alert.Mapper _mapper;

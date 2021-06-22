@@ -29,25 +29,25 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     {
         private readonly OrganizationMapper _mapper;
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly AuditHelper _auditHelper;
         private readonly FeatureSetMapper _featureSetMapper;
         private readonly RelationshipMapper _relationshipMapper;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         private readonly OrganizationService.OrganizationServiceClient _organizationClient;
         private readonly VehicleBusinessService.VehicleService.VehicleServiceClient _vehicleClient;
-        private string _fk_Constraint = "violates foreign key constraint";
+        private readonly string _fk_Constraint = "violates foreign key constraint";
         public IConfiguration Configuration { get; }
 
         public OrganizationController(
-                                      OrganizationService.OrganizationServiceClient _organizationClient,
+                                      OrganizationService.OrganizationServiceClient organizationClient,
                                       AccountBusinessService.AccountService.AccountServiceClient accountClient,
                                       FeatureService.FeatureServiceClient featureclient,
                                       VehicleBusinessService.VehicleService.VehicleServiceClient vehicleClient,
-                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+                                      IConfiguration configuration, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            this._organizationClient = _organizationClient;
+            this._organizationClient = organizationClient;
             _accountClient = accountClient;
             _mapper = new OrganizationMapper();
             _relationshipMapper = new RelationshipMapper();
