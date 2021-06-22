@@ -326,7 +326,9 @@
           <ng-container matColumnDef="vehicleName">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVehicleName || 'Vehicle Name' }}
             </mat-header-cell>
-            <mat-cell *matCellDef="let row">{{ row.vehicleName != '' ? row.vehicleName : '-' }}</mat-cell>
+            <mat-cell *matCellDef="let row">
+              <span class='navigatePoint' (click)='gotoTrip(row)'>{{ row.vehicleName != '' ? row.vehicleName : '-' }}</span>
+            </mat-cell>
           </ng-container>
           <ng-container matColumnDef="vin">
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblVIN || 'VIN' }}

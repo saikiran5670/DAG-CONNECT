@@ -18,6 +18,7 @@ import { LandmarkCategoryService } from '../../services/landmarkCategory.service
 //var jsPDF = require('jspdf');
 import * as moment from 'moment-timezone';
 import { Util } from '../../shared/util';
+import { Router, NavigationExtras } from '@angular/router';
 
 declare var H: any;
 
@@ -150,8 +151,14 @@ export class TripReportComponent implements OnInit {
     }
   ];
   
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private landmarkCategoryService: LandmarkCategoryService, private router: Router) {
     this.defaultTranslation();
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state as {
+      fromFleetUtilReport: boolean,
+      vehicleData: any
+    };
+    console.log(state)
   }
 
   defaultTranslation(){
