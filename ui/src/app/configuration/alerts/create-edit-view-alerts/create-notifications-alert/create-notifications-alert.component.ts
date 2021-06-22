@@ -69,12 +69,24 @@ wsLabel: any;
 limitButton: any;
 weblimitButton: any;
 timeList: any =[
-  {time:"Minutes"},
-  {time:"Hours"}
+  {
+    id: 'M',
+    value:'Minutes'
+  },
+  {
+    id: 'H',
+    value:'Hours'
+  },
 ];
 emailTimeList: any =[
-  {time:"Minutes"},
-  {time:"Hours"}
+  {
+    id: 'M',
+    value:"Minutes"
+  },
+  {
+    id: 'H',
+    value:"Hours"
+  },
 ];
 timeUnitValue :any;
 emailtimeUnitValue: any;
