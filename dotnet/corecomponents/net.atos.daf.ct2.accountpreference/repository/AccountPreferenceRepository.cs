@@ -55,6 +55,7 @@ namespace net.atos.daf.ct2.accountpreference
                 //parameter.Add("@driver_id", preference.DriverId);
 
                 // check the ref_id must be account id or organization id
+                //comment code open
                 if (preference.PreferenceType == PreferenceType.Account)
                 {
                     // check if preference does not exists 
@@ -94,6 +95,7 @@ namespace net.atos.daf.ct2.accountpreference
                         return preference;
                     }
                 }
+                //comment code end
 
                 string query = @"insert into master.accountpreference
                                 (type,language_id,timezone_id,
@@ -103,6 +105,7 @@ namespace net.atos.daf.ct2.accountpreference
 
                 var preferenceId = await _dataAccess.ExecuteScalarAsync<int>(query, parameter);
                 // Update preference id for account or organization
+                //comment code open
                 if (preference.PreferenceType == PreferenceType.Account)
                 {
                     queryCheck = "update master.account set preference_id=@preference_id where id=@ref_id";
@@ -114,6 +117,7 @@ namespace net.atos.daf.ct2.accountpreference
                 }
                 parameter.Add("@preference_id", preferenceId);
                 await _dataAccess.ExecuteScalarAsync<int>(queryCheck, parameter);
+                //comment code end
                 preference.Id = preferenceId;
 
                 transactionScope.Commit();
