@@ -21,6 +21,7 @@ import { Util } from '../../shared/util';
 import { MultiDataSet, Label, Color} from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-fleet-utilisation',
@@ -235,7 +236,7 @@ lineChartType = 'line';
   
 
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router) {
     this.defaultTranslation();
    }
 
@@ -927,6 +928,16 @@ lineChartType = 'line';
     // setTimeout(() => {
     //   document.getElementsByTagName('mat-sidenav-content')[0].scrollTo(0, 0)
     // }, 100);
+  }
+
+  gotoTrip(vehData: any){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromFleetUtilReport: true,
+        vehicleData: vehData
+      }
+    };
+    this.router.navigate(['report/tripreport'], navigationExtras);
   }
 
 }
