@@ -132,7 +132,7 @@ namespace net.atos.daf.ct2.reports.repository
                         userPreference.Add("@data_attribute_id", objUserPreferenceRequest.AtributesShowNoShow[i].DataAttributeId);
                         userPreference.Add("@state", objUserPreferenceRequest.AtributesShowNoShow[i].State);
                         userPreference.Add("@type", objUserPreferenceRequest.AtributesShowNoShow[i].Type);
-                        userPreference.Add("@chart_type", objUserPreferenceRequest.AtributesShowNoShow[i].ChartType);
+                        userPreference.Add("@chart_type", objUserPreferenceRequest.AtributesShowNoShow[i].ChartType == new char() ? null : objUserPreferenceRequest.AtributesShowNoShow[i].ChartType);
                         userPreference.Add("@threshold_type", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdType);
                         userPreference.Add("@threshold_value", objUserPreferenceRequest.AtributesShowNoShow[i].ThresholdValue);
                         rowsEffected = await _dataAccess.ExecuteAsync(queryInsert, userPreference);
