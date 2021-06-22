@@ -21,10 +21,9 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<EcoScoreProfileDto>> GetEcoScoreProfiles(int orgId);
         Task<EcoScoreProfileDto> GetEcoScoreProfileKPIDetails(int profileId);
         Task<int> UpdateEcoScoreProfile(EcoScoreProfileDto ecoScoreProfileDto);
-        Task<bool> CheckEcoScoreProfileIsexist(int? organizationId, string name);
+        Task<bool> CheckEcoScoreProfileIsExist(int? organizationId, string name);
         Task<int> DeleteEcoScoreProfile(int profileId);
         Task<string> IsEcoScoreProfileBasicOrAdvance(int profileId);
-        Task<string> GetProfileName(int profileId);
         Task<bool> GetGlobalProfile(int profileId);
         Task<object> GetReportSearchParameterByVIN(int ReportID, long StartDateTime, long EndDateTime, List<string> VIN, [Optional] string ReportView);
         Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetUtilizationFilters);
