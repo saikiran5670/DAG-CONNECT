@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace net.atos.daf.ct2.portalservice.Entity.Alert
 {
-    public class NotificationRecipient
+    public class NotificationRecipientBase
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         //public int NotificationId { get; set; }
         [StringLength(50, MinimumLength = 0, ErrorMessage = "Notification recipient Label should be between 1 and 50 characters")]
         [RegularExpression(@"^[a-zA-ZÀ-ÚÄ-Ü0-9]([\w -]*[a-zA-ZÀ-ÚÄ-Ü0-9])?$", ErrorMessage = "Only alphabets,numbers,hyphens,dash,spaces,periods,international alphabets allowed in alert name.")]
@@ -34,11 +35,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public long CreatedAt { get; set; }
         //public long ModifiedAt { get; set; }
     }
-    public class NotificationRecipientEdit : NotificationRecipient
+    public class NotificationRecipientEdit : NotificationRecipientBase
     {
-        public int Id { get; set; }
-        public int NotificationId { get; set; }
-        //public string State { get; set; }
-        //public long ModifiedAt { get; set; }
+        //public int Id { get; set; }
+        //public int NotificationId { get; set; }
+        public List<NotificationLimit> NotificationLimits { get; set; }
     }
+    public class NotificationRecipient : NotificationRecipientBase
+    {
+        //public int Id { get; set; }
+        //public int NotificationId { get; set; }
+        public List<NotificationLimit> NotificationLimits { get; set; }
+    }
+
 }

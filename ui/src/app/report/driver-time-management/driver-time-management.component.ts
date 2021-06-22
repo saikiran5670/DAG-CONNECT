@@ -411,7 +411,7 @@ export class DriverTimeManagementComponent implements OnInit {
               "driverId": "UK DB08176162022802",
               "driverName": "Helloupdated Helloupdated",
               "vin": "RERAE75PC0E261011",
-              "activityDate": 1604338846000,
+              "activityDate": 1624373306931,
               "startTime": 1604338846000,
               "endTime": 1604337628000,
               "code": 3,
@@ -426,7 +426,7 @@ export class DriverTimeManagementComponent implements OnInit {
           let updateData = this.driverDetails;
           
           this.setGeneralDriverDetailValue();
-          this.detailConvertedData = this.reportMapService.getDriverTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+          this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
           this.setSingleDriverData();
         }
        
@@ -710,29 +710,29 @@ export class DriverTimeManagementComponent implements OnInit {
                 "restTime": 0,
                 "availableTime": 0,
                 "workTime": 0,
-                "driveTime": 1218000,
-                "serviceTime": 1218000
+                "driveTime": 14400,
+                "serviceTime": 10800
               },
               {
                 "driverId": "UK DB08176162022802",
                 "driverName": "Helloupdated Helloupdated",
                 "vin": "RERAE75PC0E261011",
-                "activityDate": 1604338846000,
+                "activityDate": 1624370044000,
                 "startTime": 1604338846000,
                 "endTime": 1604337628000,
                 "code": 3,
                 "restTime": 0,
                 "availableTime": 0,
                 "workTime": 0,
-                "driveTime": 1218000,
-                "serviceTime": 1218000
+                "driveTime": 10800,
+                "serviceTime": 14400
               },
               
             ]
 
             let updateData = this.driverDetails;
             this.setGeneralDriverDetailValue();
-            this.detailConvertedData = this.reportMapService.getDriverTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
+            this.detailConvertedData = this.reportMapService.getDriverDetailsTimeDataBasedOnPref(updateData, this.prefDateFormat, this.prefTimeFormat, this.prefUnitFormat,  this.prefTimeZone);
 
     this.driverSelected = true;
   }

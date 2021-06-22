@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using net.atos.daf.ct2.audit;
 using net.atos.daf.ct2.reportscheduler.entity;
 using net.atos.daf.ct2.reportscheduler.repository;
 
@@ -10,7 +11,6 @@ namespace net.atos.daf.ct2.reportscheduler
     public partial class ReportSchedulerManager : IReportSchedulerManager
     {
         private readonly IReportSchedulerRepository _reportSchedulerRepository;
-
         public ReportSchedulerManager(IReportSchedulerRepository reportSchedularRepository)
         {
             _reportSchedulerRepository = reportSchedularRepository;

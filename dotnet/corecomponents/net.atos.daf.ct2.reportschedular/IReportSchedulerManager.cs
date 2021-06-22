@@ -13,6 +13,6 @@ namespace net.atos.daf.ct2.reportscheduler
         Task<ReportSchedulerMap> UpdateReportScheduler(ReportSchedulerMap report);
         Task<IEnumerable<ReportSchedulerMap>> GetReportSchedulerList(int organizationid);
         Task<int> ManipulateReportSchedular(ReportStatusUpdateDeleteModel objReportStatusUpdateDeleteModel);
-        Task<int> GenerateReport();
+        
     }
 }

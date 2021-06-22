@@ -79,6 +79,7 @@ export class TripReportComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   advanceFilterOpen: boolean = false;
+  showBack: boolean = false;
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -159,7 +160,12 @@ export class TripReportComponent implements OnInit {
       fromFleetUtilReport: boolean,
       vehicleData: any
     };
-    console.log(state)
+    if(state){
+      this.showBack = true;
+    }
+    else{
+      this.showBack = false;
+    }
   }
 
   defaultTranslation(){
@@ -862,4 +868,9 @@ export class TripReportComponent implements OnInit {
   onMapRepresentationChange(event: any){
 
   }
+
+  backToFleetUtilReport(){
+    this.router.navigate(['/report/fleetutilisation']);
+  }
+
 }
