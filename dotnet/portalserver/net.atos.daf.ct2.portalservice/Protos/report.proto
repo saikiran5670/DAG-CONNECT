@@ -414,6 +414,7 @@ message FleetUtilizationcalender {
     double AverageSpeed = 9;
    int32 Vehiclecount =10;
     int32 Tripcount =11;
+    double Averageweight=12;
 
 }
 
