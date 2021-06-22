@@ -783,7 +783,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                     (request.LandingPageDisplayId <= 0)
                     )
                 {
-                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatId, TimeFormatId, LandingPageDisplayId is required");
+                    return StatusCode(400, "The Account Id, LanguageId, TimezoneId, CurrencyId, UnitId, VehicleDisplayId,DateFormatTypeId, TimeFormatId, LandingPageDisplayId is required");
                 }
                 var accountPreference = new AccountBusinessService.AccountPreference();
                 var preference = new AccountBusinessService.AccountPreferenceResponse();
@@ -1825,36 +1825,36 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                int s_accountId = _userDetails.AccountId;
-                int s_roleId = _userDetails.RoleId;
-                int s_orgId = _userDetails.OrgId;
-                int s_contextOrgId = _userDetails.ContextOrgId;
+                int sAccountId = _userDetails.AccountId;
+                int sRoleId = _userDetails.RoleId;
+                int sOrgId = _userDetails.OrgId;
+                int sContextOrgId = _userDetails.ContextOrgId;
 
                 await _auditHelper.AddLogs(DateTime.Now, "Account Component",
                               "Account controller", Entity.Audit.AuditTrailEnum.Event_type.UPDATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
                               "SwitchOrgContext method in Account controller", _userDetails.AccountId, _userDetails.AccountId,
                               _userDetails.ToString(), _userDetails);
 
-                if (request.AccountId != s_accountId)
+                if (request.AccountId != sAccountId)
                     return BadRequest("Account Id mismatched");
 
                 // check for DAF Admin
-                int level = await _privilegeChecker.GetLevelByRoleId(s_orgId, s_roleId);
+                int level = await _privilegeChecker.GetLevelByRoleId(sOrgId, sRoleId);
 
                 //Add context org id to session
                 if (level >= 30)
                     return Unauthorized("Unauthorized access");
 
-                if (s_contextOrgId != request.ContextOrgId)
+                if (sContextOrgId != request.ContextOrgId)
                 {
                     _httpContextAccessor.HttpContext.Session.SetInt32(SessionConstants.ContextOrgKey, request.ContextOrgId);
 
                     //return menu items
                     var response = await _accountClient.GetMenuFeaturesAsync(new AccountBusinessService.MenuFeatureRequest()
                     {
-                        AccountId = s_accountId,
-                        OrganizationId = s_orgId,
-                        RoleId = s_roleId,
+                        AccountId = sAccountId,
+                        OrganizationId = sOrgId,
+                        RoleId = sRoleId,
                         LanguageCode = request.LanguageCode,
                         ContextOrgId = request.ContextOrgId
                     });

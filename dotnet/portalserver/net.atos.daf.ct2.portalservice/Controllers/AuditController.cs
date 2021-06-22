@@ -14,9 +14,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuditController : ControllerBase
     {
-        // private readonly ILogger<AuditController> _logger;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly AuditService.AuditServiceClient _auditService;
 
         //Constructor

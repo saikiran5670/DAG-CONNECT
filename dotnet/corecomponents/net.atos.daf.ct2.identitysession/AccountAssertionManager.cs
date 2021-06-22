@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountAssertionManager : IAccountAssertionManager
     {
-        IAccountAssertionRepository _accountassertionRepository;
+        readonly IAccountAssertionRepository _accountassertionRepository;
         public AccountAssertionManager(IAccountAssertionRepository accountassertionRepository)
         {
             this._accountassertionRepository = accountassertionRepository;

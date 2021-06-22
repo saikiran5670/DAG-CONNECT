@@ -268,7 +268,16 @@ export class DriverManagementComponent implements OnInit {
       this.dataSource.sortData = (data: String[], sort: MatSort) => {
         const isAsc = sort.direction === 'asc';
         return data.sort((a: any, b: any) => {
-          return this.compare(a[sort.active], b[sort.active], isAsc);
+          var a1;
+          var b1;
+          if(sort.active && sort.active === 'firstName'){
+            a1 = a.firstName + a.lastName;
+            b1 = b.firstName + b.lastName;
+          } else {
+            a1 = a[sort.active];
+            b1 = b[sort.active]
+          }
+          return this.compare(a1, b1, isAsc);
         });
        }
     });

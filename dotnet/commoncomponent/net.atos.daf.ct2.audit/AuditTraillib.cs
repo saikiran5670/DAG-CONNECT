@@ -11,9 +11,9 @@ namespace net.atos.daf.ct2.audit
         private readonly IAuditLogRepository _repository; // = new TranslationRepository();
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        public AuditTraillib(IAuditLogRepository _repository)
+        public AuditTraillib(IAuditLogRepository repository)
         {
-            this._repository = _repository;
+            this._repository = repository;
         }
         public async Task<int> AddLogs(AuditTrail auditTrail)
         {

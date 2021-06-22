@@ -6,15 +6,13 @@ namespace net.atos.daf.ct2.group
 {
     public class GroupManager : IGroupManager
     {
-        IGroupRepository _gropRepository;
-        IAuditTraillib _auditlog;
-
+        readonly IGroupRepository _gropRepository;
+        readonly IAuditTraillib _auditlog;
         public GroupManager(IGroupRepository gropRepository, IAuditTraillib auditlog)
         {
             this._gropRepository = gropRepository;
             this._auditlog = auditlog;
         }
-
         public async Task<Group> Create(Group group)
         {
             return await _gropRepository.Create(group);

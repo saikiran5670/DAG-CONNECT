@@ -21,13 +21,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class TranslationController : BaseController
     {
         private readonly AuditHelper _audit;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly TranslationService.TranslationServiceClient _translationServiceClient;
         private readonly Mapper _mapper;
 
         //Constructor
-        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public TranslationController(TranslationService.TranslationServiceClient translationServiceClient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _translationServiceClient = translationServiceClient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

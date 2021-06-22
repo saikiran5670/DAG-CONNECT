@@ -49,10 +49,10 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
         private readonly IAuditLogRepository _auditrepo = null;
         private readonly IVehicleRepository _vehiclerepo = null;
 
-        public ProvisionVehicle(ILog _log, IConfiguration _config)
+        public ProvisionVehicle(ILog log, IConfiguration config)
         {
-            this._log = _log;
-            this._config = _config;
+            this._log = log;
+            this._config = config;
             _brokerList = this._config.GetSection("EH_FQDN").Value;
             _connStr = this._config.GetSection("EH_CONNECTION_STRING").Value;
             _consumerGroup = this._config.GetSection("CONSUMER_GROUP").Value;
@@ -114,7 +114,7 @@ namespace net.atos.daf.ct2.tcuvehiclebusinessservice
             {
                 _log.Info("Fetching Vehicle object from database");
 
-                VehicleManager vehicleManager = new VehicleManager(_vehiclerepo, _auditlog);
+                VehicleManager vehicleManager = new VehicleManager(_vehiclerepo);
 
                 var receivedVehicle = await GetVehicle(tcuDataReceive, vehicleManager);
 

@@ -13,13 +13,11 @@ namespace net.atos.daf.ct2.tcucore
         {
         }
 
-        public TCU(string _id, string _brand, string _version)
+        public TCU(string id, string brand, string version)
         {
-            this.ID = _id;
-            this.Brand = _brand;
-            this.Version = _version;
+            this.ID = id;
+            this.Brand = brand;
+            this.Version = version;
         }
-
-
     }
 }

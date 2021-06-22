@@ -247,8 +247,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterschedulerecipient = new DynamicParameters();
                 parameterschedulerecipient.Add("@schedule_report_id", reportscheduleId);
 
-                string querySchedulerecipient = @"DELETE master.scheduledreportrecipient
-                                                WHERE schedule_report_id=@schedule_report_id) RETURNING schedule_report_id";
+                string querySchedulerecipient = @"DELETE from master.scheduledreportrecipient
+                                                WHERE schedule_report_id=@schedule_report_id RETURNING schedule_report_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -304,8 +304,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterschedulerecipient = new DynamicParameters();
                 parameterschedulerecipient.Add("@report_schedule_id", reportscheduleId);
 
-                string querySchedulerecipient = @"DELETE master.scheduledreportdriverref
-                                                WHERE report_schedule_id=@report_schedule_id) RETURNING report_schedule_id";
+                string querySchedulerecipient = @"DELETE from master.scheduledreportdriverref
+                                                WHERE report_schedule_id=@report_schedule_id RETURNING report_schedule_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -361,8 +361,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 var parameterschedulerecipient = new DynamicParameters();
                 parameterschedulerecipient.Add("@report_schedule_id", reportscheduleId);
 
-                string querySchedulerecipient = @"DELETE master.scheduledreportvehicleref
-                                                WHERE report_schedule_id=@report_schedule_id) RETURNING report_schedule_id";
+                string querySchedulerecipient = @"DELETE from master.scheduledreportvehicleref
+                                                WHERE report_schedule_id=@report_schedule_id RETURNING report_schedule_id";
 
                 var id = await _dataAccess.ExecuteScalarAsync<int>(querySchedulerecipient, parameterschedulerecipient);
                 return id;
@@ -397,7 +397,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                            mail_subject=@mail_subject, 
 	                                            mail_description=@mail_description, 
 	                                            report_dispatch_time=@report_dispatch_time
-                                                WHERE id=@id) RETURNING id";
+                                                WHERE id=@id
+                                                RETURNING id";
 
                 var parameterReportSchedular = new DynamicParameters();
                 parameterReportSchedular.Add("@id", report.Id);
@@ -409,7 +410,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 parameterReportSchedular.Add("@code", report.Code);
                 parameterReportSchedular.Add("@last_schedule_run_date", report.LastScheduleRunDate);
                 parameterReportSchedular.Add("@next_schedule_run_date", report.NextScheduleRunDate);
-                parameterReportSchedular.Add("@modified_at", report.ModifiedAt);
+                parameterReportSchedular.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now));
                 parameterReportSchedular.Add("@modified_by", report.ModifiedBy);
                 parameterReportSchedular.Add("@mail_subject", report.MailSubject);
                 parameterReportSchedular.Add("@mail_description", report.MailDescription);
@@ -426,6 +427,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 foreach (var recipient in report.ScheduledReportRecipient)
                 {
                     recipient.ScheduleReportId = report.Id;
+                    recipient.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                     recipient.Id = await CreateScheduleRecipient(recipient);
                 }
 
@@ -437,6 +439,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 foreach (var vehicleref in report.ScheduledReportVehicleRef)
                 {
                     vehicleref.ScheduleReportId = report.Id;
+                    vehicleref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                     vehicleref.ScheduleReportId = await Createschedulereportvehicleref(vehicleref);
                 }
 
@@ -454,12 +457,14 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                         {
                             driverref.ScheduleReportId = report.Id;
                             driverref.DriverId = Convert.ToInt32(item.DriverId);
+                            driverref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                             int scheduledrid = await Createscheduledreportdriverref(driverref);
                         }
                     }
                     else //Single driver
                     {
                         driverref.ScheduleReportId = report.Id;
+                        driverref.ModifiedAt = UTCHandling.GetUTCFromDateTime(DateTime.Now);
                         int scheduledrid = await Createscheduledreportdriverref(driverref);
                     }
 
@@ -467,7 +472,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
                 transactionScope.Commit();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 transactionScope.Rollback();
                 throw;
@@ -564,13 +569,15 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                 string query = string.Empty;
 
                 query = @"UPDATE master.reportscheduler 
-                          SET state=@state 
+                          SET status=@status 
                           WHERE id=@id 
-                          AND organization_id=@organization_id";
+                          AND organization_id=@organization_id
+                          RETURNING id";
                 var parameter = new DynamicParameters();
                 parameter.Add("@id", objReportStatusUpdateDeleteModel.ReportId);
-                parameter.Add("@state", objReportStatusUpdateDeleteModel.Status);
+                parameter.Add("@status", objReportStatusUpdateDeleteModel.Status);
                 parameter.Add("@organization_id", objReportStatusUpdateDeleteModel.OrganizationId);
+
                 int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
                 if (rowEffected > 0)
                 {

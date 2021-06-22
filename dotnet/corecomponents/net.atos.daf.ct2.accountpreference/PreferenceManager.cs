@@ -6,8 +6,8 @@ namespace net.atos.daf.ct2.accountpreference
 {
     public class PreferenceManager : IPreferenceManager
     {
-        IAccountPreferenceRepository _repository;
-        IAuditTraillib _auditlog;
+        readonly IAccountPreferenceRepository _repository;
+        readonly IAuditTraillib _auditlog;
         public PreferenceManager(IAccountPreferenceRepository repository, IAuditTraillib auditlog)
         {
             _repository = repository;

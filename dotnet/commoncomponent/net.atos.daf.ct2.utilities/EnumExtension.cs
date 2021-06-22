@@ -6,6 +6,7 @@ namespace net.atos.daf.ct2.utilities
 {
     public static class EnumExtension
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public static TAttribute GetAttribute<TAttribute>(this Enum value)
         where TAttribute : Attribute
         {

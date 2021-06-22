@@ -13,8 +13,7 @@ namespace net.atos.daf.ct2.poigeofenceservice
 {
     public class CorridorManagementService : CorridorService.CorridorServiceBase
     {
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly ICorridorManger _corridorManger;
         private readonly CorridorMapper _corridorMapper;
         public CorridorManagementService(ICorridorManger corridorManger)
@@ -22,7 +21,6 @@ namespace net.atos.daf.ct2.poigeofenceservice
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorManger = corridorManger;
             _corridorMapper = new CorridorMapper();
-
         }
 
         public override async Task<CorridorResponseList> GetCorridorList(CorridorRequest request, ServerCallContext context)

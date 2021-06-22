@@ -14,7 +14,7 @@ namespace net.atos.daf.ct2.geofenceservice
 {
     public class GeofenceManagementService : GeofenceService.GeofenceServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IGeofenceManager _geofenceManager;
         private readonly Mapper _mapper;
         public GeofenceManagementService(IGeofenceManager geofenceManager)

@@ -293,20 +293,15 @@ namespace net.atos.daf.ct2.reports.repository
 
                 StringBuilder queryForUpdateEcoScoreProfile = new StringBuilder();
 
-                queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at");
+                queryForUpdateEcoScoreProfile.Append("UPDATE master.ecoscoreprofile set modified_at=@modified_at ,description=@description , modified_by= @modified_by");
                 if (!string.IsNullOrEmpty(ecoScoreProfileDto.Name))
                 {
                     updateParameter.Add("@Name", ecoScoreProfileDto.Name);
                     queryForUpdateEcoScoreProfile.Append(", name=@Name");
                 }
-                if (!string.IsNullOrEmpty(ecoScoreProfileDto.Description))
-                {
-                    updateParameter.Add("@description", ecoScoreProfileDto.Description);
-                    queryForUpdateEcoScoreProfile.Append(", description=@description");
-                }
+                updateParameter.Add("@description", ecoScoreProfileDto.Description);
 
                 updateParameter.Add("@modified_by", Convert.ToInt32(ecoScoreProfileDto.ActionedBy));
-                queryForUpdateEcoScoreProfile.Append(", modified_by= @modified_by");
 
                 updateParameter.Add("@modified_at", UTCHandling.GetUTCFromDateTime(DateTime.Now.ToString()));
 
@@ -318,10 +313,6 @@ namespace net.atos.daf.ct2.reports.repository
                 if (id > 0)
                 {
                     var tripDetails = await UpdateEcoscoreProfileKpi(ecoScoreProfileDto.ProfileKPIs, Convert.ToInt32(ecoScoreProfileDto.ActionedBy), id);
-                }
-                else if (id <= 0)
-                {
-                    id = -1;
                 }
                 txnScope.Commit();
 
@@ -377,35 +368,20 @@ namespace net.atos.daf.ct2.reports.repository
 
                 id = await _dataAccess.ExecuteScalarAsync<int>(query.ToString(), updateParameter);
             }
-            return id > 0 ? true : false;
+            return id > 0;
         }
 
-        public async Task<bool> CheckEcoScoreProfileIsexist(int? organizationId, string name)
+        public async Task<bool> CheckEcoScoreProfileIsExist(int? organizationId, string name)
         {
             var parameterDuplicate = new DynamicParameters();
 
-            StringBuilder queryForProfileIsexist = new StringBuilder();
+            var query = "SELECT id FROM master.ecoscoreprofile where state ='A' and name=@name and (organization_id = @organization_id or organization_id is null)";
 
-            queryForProfileIsexist.Append("SELECT id FROM master.ecoscoreprofile where state in ('A','I')");
+            parameterDuplicate.Add("@name", name);
+            parameterDuplicate.Add("@organization_id", organizationId);
+            int reportNameExist = await _dataAccess.ExecuteScalarAsync<int>(query, parameterDuplicate);
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                parameterDuplicate.Add("@name", name);
-                queryForProfileIsexist.Append("and name=@name");
-            }
-
-            if (organizationId != 0)
-            {
-                parameterDuplicate.Add("@organization_id", organizationId);
-                queryForProfileIsexist.Append(" and organization_id = @organization_id");
-            }
-            else
-            {
-                queryForProfileIsexist.Append(" and organization_id is null ");
-            }
-            int reportNameExist = await _dataAccess.ExecuteScalarAsync<int>(queryForProfileIsexist.ToString(), parameterDuplicate);
-
-            return reportNameExist == 0 ? false : true;
+            return reportNameExist != 0;
         }
         #endregion
 
@@ -450,10 +426,9 @@ namespace net.atos.daf.ct2.reports.repository
             try
             {
                 var parameter = new DynamicParameters();
-                StringBuilder query = new StringBuilder();
-                query.Append("SELECT  default_es_version_type FROM master.ecoscoreprofile where id =@ProfileId and state in ('A','I')");
+                var query = "SELECT  default_es_version_type FROM master.ecoscoreprofile where id =@ProfileId and state = 'A' ";
                 parameter.Add("@ProfileId", profileId);
-                var versionType = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+                var versionType = await _dataAccess.ExecuteScalarAsync<string>(query, parameter);
                 return versionType;
             }
             catch (Exception)
@@ -465,15 +440,12 @@ namespace net.atos.daf.ct2.reports.repository
         public async Task<bool> GetGlobalProfile(int profileId)
         {
             var parameter = new DynamicParameters();
-
-            StringBuilder query = new StringBuilder();
-
-            query.Append("select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null and default_es_version_type is null and state in ('A','I')");
+            var query = "select name from master.ecoscoreprofile where id= @ProfileId and organization_id is null and default_es_version_type is null and state = 'A'";
             parameter.Add("@ProfileId", profileId);
 
-            string profileName = await _dataAccess.ExecuteScalarAsync<string>(query.ToString(), parameter);
+            string profileName = await _dataAccess.ExecuteScalarAsync<string>(query, parameter);
 
-            return profileName != null ? true : false;
+            return string.IsNullOrEmpty(profileName);
         }
 
         #endregion

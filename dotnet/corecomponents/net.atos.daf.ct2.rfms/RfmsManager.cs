@@ -8,8 +8,7 @@ namespace net.atos.daf.ct2.rfms
 {
     public class RfmsManager : IRfmsManager
     {
-        IRfmsRepository _rfmsRepository;
-
+        readonly IRfmsRepository _rfmsRepository;
         public RfmsManager(IRfmsRepository rfmsRepository)
         {
             _rfmsRepository = rfmsRepository;

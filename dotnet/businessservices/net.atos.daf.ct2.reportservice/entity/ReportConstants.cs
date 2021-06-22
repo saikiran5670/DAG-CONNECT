@@ -28,7 +28,7 @@
         public const string UPDATE_ECOSCORE_PROFILE_SUCCESS_MSG = "Update successfully.";
         public const string UPDATE_ECOSCORE_PROFILE_NOT_EXIST_MSG = "does not exist to update.";
         public const string UPDATE_ECOSCORE_PROFILE_FAIL_MSG = "Update Eco Score Profile Fail.";
-        public const string UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't delete.";
+        public const string UPDATE_ECOSCORE_PROFILE_DEFAULT_PROFILE_MSG = "Is a default profile, Can't update.";
 
         public const string DELETE_ECOSCORE_PROFILE_SUCCESS_MSG = "Delete successfully.";
         public const string DELETE_ECOSCORE_PROFILE_NOT_EXIST_MSG = "does not exist to delete.";
