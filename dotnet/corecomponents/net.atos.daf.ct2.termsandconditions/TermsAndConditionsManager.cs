@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.termsandconditions
 {
     public class TermsAndConditionsManager : ITermsAndConditionsManager
     {
-        ITermsAndConditionsRepository _termsAndConditionsRepository;
+        readonly ITermsAndConditionsRepository _termsAndConditionsRepository;
         public TermsAndConditionsManager(ITermsAndConditionsRepository termsAndConditionsRepository)
         {
             this._termsAndConditionsRepository = termsAndConditionsRepository;

@@ -16,7 +16,7 @@ namespace net.atos.daf.ct2.alertservice.Services
 {
     public class AlertManagementService : AlertService.AlertServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IAlertManager _alertManager;
         private readonly Mapper _mapper;
         private readonly IVisibilityManager _visibilityManager;

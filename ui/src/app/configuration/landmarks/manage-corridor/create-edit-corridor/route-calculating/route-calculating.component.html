@@ -93,7 +93,7 @@
             <input type="number" min="0" max="10" *ngIf="actionType != 'view'" class="sliderInput" formControlName="widthInput"  (focusout)="changeSliderInput()">
         </span>
         <mat-error *ngIf="corridorFormGroup.get('widthInput').hasError('cannotExceedMaxValue')">
-        {{ translationData.lblMax10km || 'Width cannot be greater than 10km' }}
+        {{ translationData.lblMaxkm || 'Width cannot be greater than 10km' }}
         </mat-error>
         <div *ngIf="actionType == 'view'">
             <span style='font-weight: 500!important;'>{{corridorWidthKm}}</span>
@@ -260,7 +260,7 @@
                                     {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleHeight').hasError('cannotExceedMaxValue')">
-                                    {{ translationData.lblMax50 || 'Maximum Value is 50' }}
+                                    {{ translationData.lblMaxHeight || 'Maximum Value is 50' }}
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
@@ -278,7 +278,7 @@
                                     {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleWidth').hasError('cannotExceedMaxValue')">
-                                    {{ translationData.lblMax50 || 'Maximum Value is 50' }}
+                                    {{ translationData.lblMaxHeight || 'Maximum Value is 50' }}
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
@@ -296,7 +296,7 @@
                                     {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('vehicleLength').hasError('cannotExceedMaxValue')">
-                                    {{ translationData.lblMax300 || 'Maximum Value is 300' }}
+                                    {{ translationData.lblMaxLength || 'Maximum Value is 300' }}
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
@@ -316,7 +316,7 @@
                                     {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('limitedWeight').hasError('cannotExceedMaxValue')">
-                                    {{ translationData.lblMax1000 || 'Maximum Value is 1000' }}
+                                    {{ translationData.lblMaxWeight || 'Maximum Value is 1000' }}
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">
@@ -334,7 +334,7 @@
                                     {{ translationData.lblNegativenotallowed || 'Negative value not allowed' }}
                                 </mat-error>
                                 <mat-error *ngIf="corridorFormGroup.get('weightPerAxle').hasError('cannotExceedMaxValue')">
-                                    {{ translationData.lblMax1000 || 'Maximum Value is 1000' }}
+                                    {{ translationData.lblMaxAxle || 'Maximum Value is 1000' }}
                                 </mat-error>
                             </div>
                             <div *ngIf="actionType === 'view'">

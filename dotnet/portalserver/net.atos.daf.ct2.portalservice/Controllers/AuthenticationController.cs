@@ -20,10 +20,8 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuthenticationController : ControllerBase
     {
-        //private readonly ILogger<AuthenticationController> _logger;
         private readonly AuditHelper _auditHelper;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly AccountBusinessService.AccountService.AccountServiceClient _accountClient;
         public AuthenticationController(AccountBusinessService.AccountService.AccountServiceClient accountClient, AuditHelper auditHelper)
         {
@@ -31,6 +29,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _auditHelper = auditHelper;
         }
+
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]

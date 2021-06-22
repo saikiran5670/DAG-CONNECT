@@ -9,7 +9,7 @@ namespace net.atos.daf.ct2.identity
 {
     public class AccountAuthenticator : IAccountAuthenticator
     {
-        private HttpClient _client = new HttpClient();
+        private readonly HttpClient _client = new HttpClient();
         private readonly IdentityJsonConfiguration _settings;
         public AccountAuthenticator(IOptions<IdentityJsonConfiguration> setting)
         {

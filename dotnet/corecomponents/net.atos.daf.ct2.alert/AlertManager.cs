@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.alert
 {
     public class AlertManager : IAlertManager
     {
-        IAlertRepository _alertRepository;
+        readonly IAlertRepository _alertRepository;
         public AlertManager(IAlertRepository alertRepository)
         {
             _alertRepository = alertRepository;

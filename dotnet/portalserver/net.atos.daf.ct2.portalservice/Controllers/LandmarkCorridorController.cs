@@ -20,12 +20,12 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     public class LandmarkCorridorController : BaseController
     {
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly CorridorService.CorridorServiceClient _corridorServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly CorridorMapper _corridorMapper;
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
-        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public LandmarkCorridorController(CorridorService.CorridorServiceClient corridorServiceClient, AuditHelper auditHelper, Alert.AlertService.AlertServiceClient alertServiceClient, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             _corridorServiceClient = corridorServiceClient;

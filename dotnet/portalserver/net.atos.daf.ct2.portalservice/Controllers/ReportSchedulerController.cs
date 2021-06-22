@@ -20,7 +20,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Route("reportscheduler")]
     public class ReportSchedulerController : BaseController
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly ReportSchedulerService.ReportSchedulerServiceClient _reportschedulerClient;
         private readonly AuditHelper _auditHelper;
         private readonly Entity.ReportScheduler.Mapper _mapper;

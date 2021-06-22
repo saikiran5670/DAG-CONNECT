@@ -13,7 +13,7 @@ namespace net.atos.daf.ct2.poigeofenservice
 {
     public class CategoryManagementService : CategoryService.CategoryServiceBase
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         // private readonly Mapper _mapper;
         private readonly ICategoryManager _categoryManager;
         private readonly DeleteCategoryMapper _deleteCategoryMapper;

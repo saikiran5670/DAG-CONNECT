@@ -24,7 +24,7 @@ namespace net.atos.daf.ct2.organizationservice
         private readonly IAuditTraillib _auditTrail;
         private readonly IAuditTraillib _auditlog;
 
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IOrganizationManager _organizationtmanager;
         private readonly IPreferenceManager _preferencemanager;
         private readonly IVehicleManager _vehicleManager;
