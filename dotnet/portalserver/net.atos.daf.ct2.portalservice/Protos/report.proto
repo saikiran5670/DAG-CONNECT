@@ -64,7 +64,7 @@ message UserPreferenceDataColumn{
     string State=7;
     string ChartType = 8;
     string ThresholdType = 9;
-    string ThresholdValue = 10;
+    int64 ThresholdValue = 10;
 }
 
 message UserPreferenceDataColumnResponse{
