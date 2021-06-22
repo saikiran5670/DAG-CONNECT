@@ -87,10 +87,17 @@ namespace net.atos.daf.ct2.portalservice.Entity.ReportScheduler
         public long ModifiedAt { get; set; }
         public int ModifiedBy { get; set; }
     }
-    public class ReportStatusUpdateDeleteModel
+    public class ReportStatusEnableDisableModel
     {
+        [Required]
         public int ReportId { get; set; }
-        public int OrganizationId { get; set; }
+        [StateForEnableDisable]
+        [StringLength(1, MinimumLength = 1, ErrorMessage = "Report scheduler Status should be 1 character Either A or I")]
         public string Status { get; set; }
+    }
+    public class ReportStatusDeleteModel
+    {
+        [Required]
+        public int ReportId { get; set; }
     }
 }
