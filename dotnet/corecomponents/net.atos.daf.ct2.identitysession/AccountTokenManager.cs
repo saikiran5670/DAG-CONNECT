@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.identitysession
 {
     public class AccountTokenManager : IAccountTokenManager
     {
-        IAccountTokenRepository _tokenRepository;
+        readonly IAccountTokenRepository _tokenRepository;
         public AccountTokenManager(IAccountTokenRepository tokenRepository)
         {
             this._tokenRepository = tokenRepository;

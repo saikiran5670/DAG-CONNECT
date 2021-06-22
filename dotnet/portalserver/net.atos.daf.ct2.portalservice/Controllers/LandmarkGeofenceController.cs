@@ -21,15 +21,15 @@ namespace net.atos.daf.ct2.portalservice.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class LandmarkGeofenceController : BaseController
     {
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly GeofenceService.GeofenceServiceClient _geofenceServiceClient;
         private readonly AuditHelper _auditHelper;
         private readonly Mapper _mapper;
-        private string _fk_Constraint = "violates foreign key constraint";
-        private string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
+        private readonly string _fk_Constraint = "violates foreign key constraint";
+        private readonly string _socketException = "Error starting gRPC call. HttpRequestException: No connection could be made because the target machine actively refused it.";
         private readonly Alert.AlertService.AlertServiceClient _alertServiceClient;
         public LandmarkGeofenceController(GeofenceService.GeofenceServiceClient GeofenceServiceClient, AuditHelper auditHelper
-            , IHttpContextAccessor _httpContextAccessor, Alert.AlertService.AlertServiceClient alertServiceClient, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+            , IHttpContextAccessor httpContextAccessor, Alert.AlertService.AlertServiceClient alertServiceClient, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _geofenceServiceClient = GeofenceServiceClient;
             _auditHelper = auditHelper;

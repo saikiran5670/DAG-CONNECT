@@ -12,16 +12,16 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         protected HeaderObj _userDetails;
         private readonly AccountPrivilegeChecker _privilegeChecker;
 
-        public BaseController(IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper)
+        public BaseController(IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper)
         {
             _sessionHelper = sessionHelper;
-            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
+            _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
         }
 
-        public BaseController(IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker)
+        public BaseController(IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper, AccountPrivilegeChecker privilegeChecker)
         {
             _sessionHelper = sessionHelper;
-            _userDetails = _sessionHelper.GetSessionInfo(_httpContextAccessor.HttpContext.Session);
+            _userDetails = _sessionHelper.GetSessionInfo(httpContextAccessor.HttpContext.Session);
             _privilegeChecker = privilegeChecker;
         }
 

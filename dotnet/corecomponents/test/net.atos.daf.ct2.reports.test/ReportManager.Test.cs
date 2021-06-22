@@ -96,18 +96,18 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetDriversActivity_Success()
         {
-            List<string> _driverID = new List<string>
+            List<string> driverID = new List<string>
             {
                 "UK DB08176162022802"
-            }; List<string> _vin = new List<string>
+            }; List<string> vin = new List<string>
             {
                 "RERAE75PC0E261011"
             }; var result = await _reportManager.GetDriversActivity(new entity.DriverActivityFilter()
             {
-                DriverId = _driverID,
+                DriverId = driverID,
                 StartDateTime = 1604337628000,
                 EndDateTime = 1604338846000,
-                VIN = _vin
+                VIN = vin
             });
             Assert.IsTrue(result.Count() > 0);
         }

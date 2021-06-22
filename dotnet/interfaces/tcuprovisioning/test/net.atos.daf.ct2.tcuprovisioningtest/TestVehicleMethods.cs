@@ -41,7 +41,7 @@ namespace net.atos.daf.ct2.tcuprovisioningtest
         public async Task TestVehicleUpdate()
         {
             var vin = "KLRAE75PC0E200148";
-            VehicleManager vehicleManager = new VehicleManager(_vehiclerepo, _auditlog);
+            VehicleManager vehicleManager = new VehicleManager(_vehiclerepo);
 
             var receivedVehicle = await GetVehicle(vin, vehicleManager);
 

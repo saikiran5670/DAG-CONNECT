@@ -9,8 +9,8 @@ namespace net.atos.daf.ct2.organization
 {
     public class OrganizationManager : IOrganizationManager
     {
-        IOrganizationRepository _organizationRepository;
-        IAuditTraillib _auditlog;
+        readonly IOrganizationRepository _organizationRepository;
+        readonly IAuditTraillib _auditlog;
 
         public OrganizationManager(IOrganizationRepository organizationRepository, IAuditTraillib auditlog)
         {

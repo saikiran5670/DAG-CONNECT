@@ -21,9 +21,9 @@ namespace net.atos.daf.ct2.organization.repository
         private readonly IVehicleManager _vehicelManager;
         private readonly IGroupManager _groupManager;
         private readonly IAccountManager _accountManager;
-        SubscriptionComponent.ISubscriptionManager _subscriptionManager;
-        IdentitySessionComponent.IAccountSessionManager _accountSessionManager;
-        IdentitySessionComponent.IAccountTokenManager _accountTokenManager;
+        readonly SubscriptionComponent.ISubscriptionManager _subscriptionManager;
+        readonly IdentitySessionComponent.IAccountSessionManager _accountSessionManager;
+        readonly IdentitySessionComponent.IAccountTokenManager _accountTokenManager;
 
         private static readonly log4net.ILog _log =
         log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

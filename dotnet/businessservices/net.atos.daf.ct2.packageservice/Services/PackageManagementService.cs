@@ -13,9 +13,7 @@ namespace net.atos.daf.ct2.packageservice
 {
     public class PackageManagementService : PackageService.PackageServiceBase
     {
-        //private readonly ILogger<PackageManagementService> _logger;
-
-        private ILog _logger;
+        private readonly ILog _logger;
         private readonly IAuditTraillib _auditTraillib;
         private readonly IPackageManager _packageManager;
         public PackageManagementService(

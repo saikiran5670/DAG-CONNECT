@@ -27,15 +27,14 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Private Variable
         private readonly RoleService.RoleServiceClient _roleclient;
         private readonly Mapper _mapper;
-
-        private ILog _logger;
-        private string _fk_Constraint = "violates foreign key constraint";
+        private readonly ILog _logger;
+        private readonly string _fk_Constraint = "violates foreign key constraint";
         private readonly AuditHelper _auditHelper;
 
         #endregion
 
         #region Constructor
-        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor _httpContextAccessor, SessionHelper sessionHelper) : base(_httpContextAccessor, sessionHelper)
+        public RoleController(RoleBusinessService.RoleService.RoleServiceClient roleclient, AuditHelper auditHelper, IHttpContextAccessor httpContextAccessor, SessionHelper sessionHelper) : base(httpContextAccessor, sessionHelper)
         {
             _roleclient = roleclient;
             _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
