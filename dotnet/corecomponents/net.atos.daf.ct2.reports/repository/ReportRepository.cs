@@ -238,7 +238,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             Left join master.driver d on d.driver_id=da.driver1_id
 											WHERE (da.start_time >= {0} AND da.end_time <= {1}) and vin=ANY ({2}) 
                                             GROUP BY da.driver1_id, da.vin,d.first_name,d.last_name
-											ORDER BY da.driver1_id DESC
+											ORDER BY da.driver1_id DESC";
                     string.Format(query, fromDateParameter, endDateParameter, vinssParamter, optionalParameter);
                     break;
                 case 11:
