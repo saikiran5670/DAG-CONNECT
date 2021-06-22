@@ -531,7 +531,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
 
                 if (categoryobj.CategoryId > 0 && categoryobj.SubCategoryId == 0)
                 {
-                    var IsexistSubcategory = await GetSubCategory(categoryobj.CategoryId, isbulk);
+                    var isExistSubcategory = await GetSubCategory(categoryobj.CategoryId, isbulk);
 
                     var parameter = new DynamicParameters();
                     var updatecategory = @"update master.category 
@@ -580,12 +580,12 @@ namespace net.atos.daf.ct2.poigeofence.repository
                     CategoryID categoryID = new CategoryID();
                     var parameter = new DynamicParameters();
 
-                    var Deletecategory = @"update master.category set state='D' 
+                    var deleteCategory = @"update master.category set state='D' 
                                    WHERE id = @ID RETURNING id ";
 
                     parameter.Add("@ID", subcategoryId);
 
-                    id = await _dataAccess.ExecuteScalarAsync<int>(Deletecategory, parameter);
+                    id = await _dataAccess.ExecuteScalarAsync<int>(deleteCategory, parameter);
                     categoryID.ID = id;
                     transactionScope.Complete();
 
@@ -601,7 +601,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
             }
         }
 
-        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int OrganizationId)
+        public async Task<List<CategoryWisePOI>> GetCategoryWisePOI(int organizationId)
         {
             try
             {
@@ -620,13 +620,13 @@ namespace net.atos.daf.ct2.poigeofence.repository
 	                            WHERE l.organization_id = @organization_id
 	                            AND l.type = 'P' 
 	                            AND l.state= 'A'";
-                parameter.Add("@organization_id", OrganizationId);
+                parameter.Add("@organization_id", organizationId);
                 var data = await _dataAccess.QueryAsync<CategoryWisePOI>(query, parameter);
                 return data.ToList();
             }
             catch (Exception ex)
             {
-                _log.Info($"Get CategoryWisePOI method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(OrganizationId)}");
+                _log.Info($"Get CategoryWisePOI method in repository failed : {Newtonsoft.Json.JsonConvert.SerializeObject(organizationId)}");
                 _log.Error(ex.ToString());
                 throw;
             }

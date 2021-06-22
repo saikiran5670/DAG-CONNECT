@@ -23,7 +23,7 @@ namespace net.atos.daf.ct2.subscriptionservice
             try
             {
                 subscription.entity.SubscriptionDetailsRequest objentityRequest = new subscription.entity.SubscriptionDetailsRequest();
-                objentityRequest.OrganizationId = objSubscriptionDetailsRequest.OrganizationId;
+                objentityRequest.Organization_Id = objSubscriptionDetailsRequest.OrganizationId;
                 objentityRequest.Type = objSubscriptionDetailsRequest.Type;
                 objentityRequest.State = (subscription.entity.StatusType)objSubscriptionDetailsRequest.State;
 
@@ -33,12 +33,12 @@ namespace net.atos.daf.ct2.subscriptionservice
                 foreach (var item in listsubscription)
                 {
                     SubscriptionDetails objSubscriptionDetails = new SubscriptionDetails();
-                    objSubscriptionDetails.SubscriptionId = item.SubscriptionId;
+                    objSubscriptionDetails.SubscriptionId = item.Subscription_Id;
                     objSubscriptionDetails.Type = item.Type ?? string.Empty;
                     objSubscriptionDetails.Name = item.Name ?? string.Empty;
-                    objSubscriptionDetails.PackageCode = item.PackageCode ?? string.Empty;
-                    objSubscriptionDetails.SubscriptionStartDate = item.SubscriptionStartDate;
-                    objSubscriptionDetails.SubscriptionEndDate = item.SubscriptionEndDate;
+                    objSubscriptionDetails.PackageCode = item.Package_Code ?? string.Empty;
+                    objSubscriptionDetails.SubscriptionStartDate = item.Subscription_Start_Date;
+                    objSubscriptionDetails.SubscriptionEndDate = item.Subscription_End_Date;
                     objSubscriptionDetails.State = item.State ?? string.Empty;
                     objSubscriptionDetails.Count = item.Count;
                     objSubscriptionDetails.OrgName = item.OrgName ?? string.Empty;

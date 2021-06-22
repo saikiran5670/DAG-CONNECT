@@ -11,29 +11,29 @@ namespace net.atos.daf.ct2.features
         readonly IFeatureRepository _featureRepository;
 
         // IAuditLog auditlog;
-        public FeatureManager(IFeatureRepository FeatureRepository) => _featureRepository = FeatureRepository;// auditlog=_auditlog;
+        public FeatureManager(IFeatureRepository featureRepository) => _featureRepository = featureRepository;// auditlog=_auditlog;
 
         public async Task<int> AddFeatureSet(FeatureSet featureSet) => await _featureRepository.AddFeatureSet(featureSet);
         public async Task<int> GetMinimumLevel(List<Feature> features) => await _featureRepository.GetMinimumLevel(features);
-        public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int FeatureSetId, char state) => await _featureRepository.GetFeatureSet(FeatureSetId, state);
+        public async Task<IEnumerable<FeatureSet>> GetFeatureSet(int featureSetId, char state) => await _featureRepository.GetFeatureSet(featureSetId, state);
 
-        public async Task<IEnumerable<Feature>> GetFeatures(int RoleId, int Organizationid, int FeatureId, int level, char? Featuretype, string Langaugecode)
+        public async Task<IEnumerable<Feature>> GetFeatures(int roleId, int organizationid, int featureId, int level, char? featureType, string langaugeCode)
         {
-            return await _featureRepository.GetFeatures(RoleId, Organizationid, FeatureId, level, Featuretype, Langaugecode);
+            return await _featureRepository.GetFeatures(roleId, organizationid, featureId, level, featureType, langaugeCode);
         }
 
-        public async Task<IEnumerable<Feature>> GetFeatureIdsForFeatureSet(int GetFeatureIdsForFeatureSet, string Langaugecode)
+        public async Task<IEnumerable<Feature>> GetFeatureIdsForFeatureSet(int getFeatureIdsForFeatureSet, string langaugeCode)
         {
-            return await _featureRepository.GetFeatureIdsForFeatureSet(GetFeatureIdsForFeatureSet, Langaugecode);
+            return await _featureRepository.GetFeatureIdsForFeatureSet(getFeatureIdsForFeatureSet, langaugeCode);
         }
 
-        public async Task<DataAttributeSet> GetDataAttributeset(int DataAttributeSetID)
+        public async Task<DataAttributeSet> GetDataAttributeset(int dataAttributeSetID)
         {
-            return await _featureRepository.GetDataAttributeset(DataAttributeSetID);
+            return await _featureRepository.GetDataAttributeset(dataAttributeSetID);
         }
-        public async Task<bool> DeleteFeatureSet(int FeatureSetId)
+        public async Task<bool> DeleteFeatureSet(int featureSetId)
         {
-            return await _featureRepository.DeleteFeatureSet(FeatureSetId);
+            return await _featureRepository.DeleteFeatureSet(featureSetId);
         }
         public async Task<FeatureSet> CreateFeatureSet(FeatureSet featureSet)
         {
@@ -42,13 +42,13 @@ namespace net.atos.daf.ct2.features
 
         public async Task<int> CreateDataattributeFeature(Feature feature)
         {
-            var DataAttributeSet = await CreateDataattributeSet(feature.DataAttributeSets);
-            int FeatureID = 0;
-            if (DataAttributeSet.ID > 0)
+            var dataAttributeSet = await CreateDataattributeSet(feature.DataAttributeSets);
+            int featureID = 0;
+            if (dataAttributeSet.ID > 0)
             {
-                FeatureID = await _featureRepository.CreateDataattributeSetFeature(feature, DataAttributeSet.ID);
+                featureID = await _featureRepository.CreateDataattributeSetFeature(feature, dataAttributeSet.ID);
             }
-            return FeatureID;
+            return featureID;
 
         }
 
@@ -62,13 +62,13 @@ namespace net.atos.daf.ct2.features
 
         public async Task<int> UpdateeDataattributeFeature(Feature feature)
         {
-            var DataAttributeSet = await UpdatedataattributeSet(feature.DataAttributeSets);
-            int FeatureID = 0;
-            if (DataAttributeSet.ID > 0)
+            var dataAttributeSet = await UpdatedataattributeSet(feature.DataAttributeSets);
+            int featureID = 0;
+            if (dataAttributeSet.ID > 0)
             {
-                FeatureID = await _featureRepository.CreateDataattributeSetFeature(feature, DataAttributeSet.ID);
+                featureID = await _featureRepository.CreateDataattributeSetFeature(feature, dataAttributeSet.ID);
             }
-            return FeatureID;
+            return featureID;
 
         }
         public async Task<DataAttributeSet> CreateDataattributeSet(DataAttributeSet dataAttributeSet)
@@ -87,34 +87,34 @@ namespace net.atos.daf.ct2.features
         {
             return await _featureRepository.GetDataAttributeSetDetails(dataAttributeSetID);
         }
-        public async Task<int> UpdateFeatureSetMapping(int UpdateFeatureSetID, int ID)
+        public async Task<int> UpdateFeatureSetMapping(int updateFeatureSetID, int id)
         {
-            return await _featureRepository.UpdateFeatureSetMapping(UpdateFeatureSetID, ID);
+            return await _featureRepository.UpdateFeatureSetMapping(updateFeatureSetID, id);
         }
         public async Task<FeatureSet> UpdateFeatureSet(FeatureSet featureSet)
         {
             return await _featureRepository.UpdateFeatureSet(featureSet);
         }
 
-        public async Task<IEnumerable<DataAttribute>> GetDataAttributes(string Langaugecode)
+        public async Task<IEnumerable<DataAttribute>> GetDataAttributes(string langaugeCode)
         {
-            return await _featureRepository.GetDataAttributes(Langaugecode);
+            return await _featureRepository.GetDataAttributes(langaugeCode);
         }
 
-        public async Task<int> DeleteFeature(int FeatureId)
+        public async Task<int> DeleteFeature(int featureId)
         {
 
-            return await _featureRepository.DeleteFeature(FeatureId);
+            return await _featureRepository.DeleteFeature(featureId);
         }
 
-        public int CheckFeatureNameExist(string FeatureName, int FeatureId)
+        public int CheckFeatureNameExist(string featureName, int featureId)
         {
-            return _featureRepository.CheckFeatureNameExist(FeatureName, FeatureId);
+            return _featureRepository.CheckFeatureNameExist(featureName, featureId);
         }
 
-        public async Task<int> ChangeFeatureState(int FeatureID, Char State)
+        public async Task<int> ChangeFeatureState(int featureID, Char state)
         {
-            return await _featureRepository.ChangeFeatureState(FeatureID, State);
+            return await _featureRepository.ChangeFeatureState(featureID, state);
         }
     }
 }
