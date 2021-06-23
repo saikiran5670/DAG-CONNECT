@@ -8,5 +8,7 @@
         public double GpsLongitude { get; set; }
         public int Id { get; set; }
         public string TripId { get; set; }
+        public double Fuelconsumtion { get; set; }
+        public double Co2emission { get; set; }
     }
 }

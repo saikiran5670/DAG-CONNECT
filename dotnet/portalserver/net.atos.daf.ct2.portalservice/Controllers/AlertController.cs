@@ -418,6 +418,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             {
                 if (orgnizationId == 0) return BadRequest(AlertConstants.ALERT_ORG_ID_NOT_NULL_MSG);
                 orgnizationId = GetContextOrgId();
+
                 NotificationRecipientResponse response = await _alertServiceClient.GetRecipientLabelListAsync(new OrgIdRequest { OrganizationId = orgnizationId });
 
                 if (response.NotificationRecipient != null && response.NotificationRecipient.Count > 0)

@@ -8,7 +8,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
 {
     public static class ReportHelper
     {
-        public static DataTable ToDataTable<T>(List<T> items)
+        public static string ToDataTableAndGenerateHTML<T>(List<T> items)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
 
@@ -32,7 +32,7 @@ namespace net.atos.daf.ct2.reportscheduler.helper
                 dataTable.Rows.Add(values);
             }
             //put a breakpoint here and check datatable
-            return dataTable;
+            return GenerateHTMLString(dataTable);
         }
 
         public static string GenerateHTMLString(DataTable reportData)

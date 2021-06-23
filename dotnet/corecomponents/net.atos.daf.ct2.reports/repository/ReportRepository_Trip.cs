@@ -190,7 +190,9 @@ namespace net.atos.daf.ct2.reports.repository
                                          gps_altitude as GpsAltitude, 
                                          gps_heading as GpsHeading,
                                          gps_latitude as GpsLatitude,
-                                         gps_longitude as GpsLongitude
+                                         gps_longitude as GpsLongitude,
+                                         fuel_consumption as Fuelconsumtion,
+                                         co2_emission as Co2emission
                                     from livefleet.livefleet_position_statistics
                                     where trip_id = ANY (@trip_id) order by id desc";
                 List<LiveFleetPosition> lstLiveFleetPosition = (List<LiveFleetPosition>)await _dataMartdataAccess.QueryAsync<LiveFleetPosition>(queryPosition, parameterPosition);

@@ -25,5 +25,7 @@ namespace net.atos.daf.ct2.reports
         Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter fleetFilter);
         Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters);
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
+        Task<bool> CreateEcoScoreUserPreference();
+        Task<int> GetEcoScoreUserPreference();
     }
 }
