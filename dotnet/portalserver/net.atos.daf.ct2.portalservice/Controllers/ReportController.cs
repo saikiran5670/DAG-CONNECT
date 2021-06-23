@@ -94,10 +94,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             new IdRequest
                                             {
                                                 ReportId = reportId,
-                                                AccountId = 336,//_userDetails.AccountId,
-                                                RoleId = 161,//_userDetails.RoleId,
-                                                OrganizationId = 1,//GetUserSelectedOrgId(),
-                                                ContextOrgId = 1,//GetContextOrgId()
+                                                AccountId = _userDetails.AccountId,
+                                                RoleId = _userDetails.RoleId,
+                                                OrganizationId = GetUserSelectedOrgId(),
+                                                ContextOrgId = GetContextOrgId()
                                             });
                 if (response.Code == Responsecode.Success)
                 {
