@@ -114,23 +114,56 @@ export class AlertAdvancedFilterComponent implements OnInit {
       occurences: [''],
       duration: [''],
       widthInput: [''],
-      fullorCustom: [''],
+      fullorCustom: ['A'],
       fromDate: [''],
       fromTimeRange: ['00:00'],
       toDate: [''],
       toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
-    if(this.actionType == 'view'){
+    if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultAdvanceAlert();
     }
   }
 
   setDefaultAdvanceAlert(){
-      this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
-      this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
-      this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
-      this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
+    this.loadMapData();
+    this.loadPOIData();
+    this.loadGeofenceData();
+    this.loadGroupData();
+      // this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
+      // this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
+      // this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
+      // this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
+      this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+      this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
+      let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
+        if(element.filterType == 'N' && element.thresholdValue !=0)
+        {
+          this.isOccurenceSelected =true;
+          this.alertAdvancedFilterForm.get('occurences').setValue(element.thresholdValue);
+        }
+        if(element.filterType == 'T')
+        {
+          this.isDistanceSelected =true;
+          this.alertAdvancedFilterForm.get('distance').setValue(element.thresholdValue);
+        }
+        if(element.filterType == 'D')
+        {
+          this.isDurationSelected =true;
+          this.alertAdvancedFilterForm.get('duration').setValue(element.thresholdValue);
+        }
+        if(element.landmarkType == 'P' || element.landmarkType == 'O' || element.landmarkType == 'G')
+        {
+
+            this.isPoiSelected= true;
+            // this.loadMapData();
+            // this.loadPOIData();
+            // this.loadGeofenceData();
+            // this.loadGroupData();
+          
+        }
+      });
   }
 
   onChangeDistance(event: any){
@@ -246,7 +279,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       let selectedGeofenceList: any = [];
       if(this.actionType == 'view'){
         tableData.forEach((row: any) => {
-          let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
+          let search = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
           if (search.length > 0) {
             selectedGeofenceList.push(row);
             setTimeout(() => {
@@ -331,7 +364,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
 
     selectGroupTableRows(){
       this.groupDataSource.data.forEach((row: any) => {
-        let search = this.selectedRowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
+        let search = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && item.landmarkType == 'G');
         if (search.length > 0) {
           this.selectedGroup.select(row);
         }
@@ -454,7 +487,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
       }
       else{
         this.poiDataSource.data.forEach((row: any) => {
-          let search = rowData.alertLandmarkRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
+          let search = rowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && item.landmarkType == "P");
           if(search.length > 0) {
             this.selectedPOI.select(row);
             setTimeout(() => {
@@ -719,7 +752,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
         selectGeofenceTableRows(rowData: any, event?: any){
           if(event){
             this.geofenceDataSource.data.forEach((row: any) => {
-              let search = rowData.landmarks.filter(item => item.landmarkid == row.id && (item.type == "C" || item.type == "O"));
+              let search = rowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
               if (event && search.length > 0) {
                 if(event.checked)
                   this.selectedGeofence.select(row);
@@ -731,7 +764,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           }
           else{
             this.geofenceDataSource.data.forEach((row: any) => {
-              let search = rowData.alertLandmarkRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
+              let search = rowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == row.id && (item.landmarkType == "C" || item.landmarkType == "O"));
               if(search.length > 0) {
                 this.selectedGeofence.select(row);
                 setTimeout(() => {
@@ -976,7 +1009,7 @@ else{
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
-        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.refId;
+        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].refId;
         obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
@@ -1334,7 +1367,7 @@ else{
       // excessive average speed
       if((this.alert_category_selected == 'F') && (this.alert_type_selected == 'A')){
   
-        if (this.actionType == 'create' || this.actionType == 'duplicate') {
+        if (this.actionType == 'create' || this.actionType == 'duplicate'  || this.actionType == 'edit') {
           let obj;
           if(this.isDurationSelected){
             this.filterType = 'D';

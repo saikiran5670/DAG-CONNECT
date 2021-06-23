@@ -207,7 +207,7 @@ setDefaultValues(){
   else{
     if(this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.length > 0 &&
       this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail.length > 0){
-      this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach(element => {
+      this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail.forEach(element => {
         // this.addMultipleItems(false,element);
       
           element.dayType.forEach((item,index) =>{

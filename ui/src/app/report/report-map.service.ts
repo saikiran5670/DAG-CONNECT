@@ -35,7 +35,7 @@ export class ReportMapService {
   initMap(mapElement: any){
     let defaultLayers = this.platform.createDefaultLayers();
     this.hereMap = new H.Map(mapElement.nativeElement,
-      defaultLayers.vector.normal.map, {
+      defaultLayers.raster.normal.map, {
       center: { lat: 51.43175839453286, lng: 5.519981221425336 },
       //center:{lat:41.881944, lng:-87.627778},
       zoom: 4,
@@ -46,6 +46,27 @@ export class ReportMapService {
     this.ui = H.ui.UI.createDefault(this.hereMap, defaultLayers);
     var group = new H.map.Group();
     this.mapGroup = group;
+
+    this.ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl( {
+        baseLayers : [ { 
+          label:"normal",layer:defaultLayers.raster.normal.map
+        },{
+          label:"satellite",layer:defaultLayers.raster.satellite.map
+        }, {
+          label:"terrain",layer:defaultLayers.raster.terrain.map
+        }
+        ],
+      layers : [{
+            label: "layer.traffic", layer: defaultLayers.vector.normal.traffic
+        },
+        {
+            label: "layer.incidents", layer: defaultLayers.vector.normal.trafficincidents
+        }
+    ]
+      });
+      this.ui.addControl("customized",ms);
   }
 
   clearRoutesFromMap(){

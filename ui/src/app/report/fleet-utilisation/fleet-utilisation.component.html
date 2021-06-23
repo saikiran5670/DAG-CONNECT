@@ -25,13 +25,13 @@
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblVehicleGroup || 'Vehicle Group' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleGroupListData.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
-                    <mat-option *ngFor="let rer of vehicleGroupListData" [value]="rer.vehicleGroupId">
+                  <mat-select [disabled]="vehicleGrpDD.length == 0" (selectionChange)="onVehicleGroupChange($event)" placeholder="{{ translationData.lblSelectVehicleGroup || 'Select Vehicle Group' }}"  formControlName="vehicleGroup">
+                    <mat-option *ngFor="let rer of vehicleGrpDD" [value]="rer.vehicleGroupId">
                         {{ rer.vehicleGroupName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field> 
-                <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGroupListData.length > 0">
+                <mat-error *ngIf="tripForm.get('vehicleGroup').hasError('required') && vehicleGrpDD.length > 0">
                   {{translationData.lblPleaseSelectvehicleGroup || 'Please Select Vehicle Group' }}
                 </mat-error>
               </div>
@@ -84,14 +84,14 @@
               <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
                 <mat-label>{{ translationData.lblVehicle || 'Vehicle' }} <span class='mandatoryColor'>*</span></mat-label>
                 <mat-form-field appearance="outline">
-                  <mat-select [disabled]="vehicleListData.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
+                  <mat-select [disabled]="vehicleDD.length == 0" (selectionChange)="onVehicleChange($event)" placeholder="{{ translationData.lblSelectVehicle || 'Select Vehicle' }}" formControlName="vehicle">
                     <!-- <mat-option value="0">--All--</mat-option> -->
-                    <mat-option *ngFor="let rer of vehicleListData" [value]="rer.vehicleId">
+                    <mat-option *ngFor="let rer of vehicleDD" [value]="rer.vehicleId">
                         {{ rer.vehicleName }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-error *ngIf="tripForm.get('vehicle').hasError('required') && vehicleListData.length > 0">
+                <mat-error *ngIf="tripForm.get('vehicle').hasError('required') && vehicleDD.length > 0">
                   {{translationData.lblPleaseSelectVehicle || 'Please Select Vehicle' }}
                 </mat-error>
               </div>
@@ -302,10 +302,7 @@
             </div>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-              <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
-            </div>
-            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
-              <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
+              <full-calendar [options]="calendarOptions"></full-calendar>
             </div>
           </div>
           <!-- <mat-calendar>

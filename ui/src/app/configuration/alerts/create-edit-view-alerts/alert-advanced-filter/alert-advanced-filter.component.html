@@ -13,7 +13,7 @@
       </mat-expansion-panel-header>
       <div fxLayout="row" class="full-width filter-direction">
         <mat-radio-group formControlName="fullorCustom" (change)='onApplyOnChange($event)'>
-          <mat-radio-button [checked]='true' style='margin-right: 20px;' value="A">
+          <mat-radio-button style='margin-right: 20px;' value="A">
             {{ translationData.lblFullDay || 'Full Day' }}
           </mat-radio-button>
           <mat-radio-button style='margin-right: 20px;' value="C">

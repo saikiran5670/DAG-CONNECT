@@ -36,27 +36,24 @@ namespace net.atos.daf.ct2.reports.repository
                 throw;
             }
         }
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
-                                                                                                  int accountId,
-                                                                                                  int OrganizationId)
+        public Task<bool> CheckIfUserPreferencesExist(int reportId, int accountId, int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@report_id", reportId);
                 parameter.Add("@account_id", accountId);
-                parameter.Add("@organization_id", OrganizationId);
+                parameter.Add("@organization_id", organizationId);
                 #region Query Select User Preferences
-                var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,
-	                                 d.key as Key,case when rp.state is null then 'I' else rp.state end as State, rp.id as ReportReferenceId, rp.chart_type as ChartType, rp.type as ReportReferenceType, rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue
-                              FROM  master.reportattribute rd     
-                                    INNER JOIN master.dataattribute d  	 ON rd.report_id = @report_id and d.id =rd.data_attribute_id 
-                                    LEFT JOIN master.reportpreference rp ON rp.account_id = @account_id and rp.organization_id = @organization_id 
-										                                    and rp.report_id = @report_id  and rp.report_id = rd.report_id 
-	   									                                    and rp.data_attribute_id = rd.data_attribute_id 
-                              WHERE rd.report_id = @report_id";
+                var query = @"SELECT EXISTS 
+                            (
+                                SELECT 1 FROM master.reportpreference 
+                                WHERE account_id = @account_id and 
+                                      organization_id = @organization_id and 
+                                      report_id = @report_id
+                            )";
                 #endregion
-                return _dataAccess.QueryAsync<UserPrefernceReportDataColumn>(query, parameter);
+                return _dataAccess.ExecuteScalarAsync<bool>(query, parameter);
             }
             catch (Exception)
             {
@@ -64,39 +61,68 @@ namespace net.atos.daf.ct2.reports.repository
             }
         }
 
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId,
-                                                                                       int accountId,
-                                                                                       int OrganizationId)
+        public Task<IEnumerable<UserPreferenceReportDataColumn>> GetReportUserPreference(int reportId, int accountId,
+                                                                                        int organizationId)
         {
             try
             {
                 var parameter = new DynamicParameters();
                 parameter.Add("@report_id", reportId);
                 parameter.Add("@account_id", accountId);
-                parameter.Add("@organization_id", OrganizationId);
-                #region Query RoleBasedDataColumn
-                var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.description as Description,d.type as Type,
-	                                 d.key as Key,case when t.State = 'A' then 'A' else 'I' end as State, null as ReportReferenceId, null as ChartType, null as ReportReferenceType
-                              FROM master.reportattribute rd     
-                              INNER JOIN master.dataattribute d  ON rd.report_id = @report_id and d.id =rd.data_attribute_id 
-		                      LEFT JOIN ( SELECT da.id,'A' as State
-					                      FROM master.report r 
-						                     INNER JOIN master.reportattribute ra ON ra.report_id = @report_id and ra.report_id = r.id
-						                     INNER JOIN master.dataattribute da ON da.id = ra.data_attribute_id 
-						                     INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = da.id
-						                     INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' and das.is_exlusive = false
-						                     INNER JOIN master.Feature f ON f.data_attribute_set_id = das.id AND f.state = 'A' and f.type = 'D'
-						                     INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_id = f.id
-						                     INNER JOIN master.FeatureSet fset ON fsf.feature_set_id = fset.id AND fset.state = 'A'
-						                     INNER JOIN master.Role ro ON ro.feature_set_id = fset.id AND ro.state = 'A'
-						                     INNER JOIN master.AccountRole ar ON ro.id = ar.role_id and ar.organization_id = @organization_id
-						                     INNER JOIN master.account acc ON  acc.id = @account_id AND acc.id = ar.account_id AND acc.state = 'A'
-	 			                          WHERE acc.id = @account_id AND ar.Organization_id = @organization_id AND r.id = @report_id
-                                        ) t 
-		                                ON t.id = d.id
-                              WHERE  rd.report_id = @report_id";
+                parameter.Add("@organization_id", organizationId);
+                #region Query Select User Preferences
+                var query = @"SELECT d.id as DataAtrributeId,d.name as Name,d.type as Type,
+	                                 d.key as Key, rp.state, rp.id as ReportPreferenceId, rp.chart_type as ChartType, rp.type as ReportPreferenceType, rp.threshold_limit_type as ThresholdType, rp.threshold_value as ThresholdValue
+                              FROM master.reportpreference rp
+                              INNER JOIN master.dataattribute d ON rp.data_attribute_id = d.id and rp.account_id = @account_id and 
+                                                                   rp.organization_id = @organization_id and rp.report_id = @report_id";
                 #endregion
-                return _dataAccess.QueryAsync<UserPrefernceReportDataColumn>(query, parameter);
+                return _dataAccess.QueryAsync<UserPreferenceReportDataColumn>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<IEnumerable<UserPreferenceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountId, int roleId,
+                                                                                       int organizationId, int contextOrgId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_id", reportId);
+                parameter.Add("@account_id", accountId);
+                parameter.Add("@role_id", roleId);
+                parameter.Add("@organization_id", organizationId);
+                parameter.Add("@context_org_id", contextOrgId);
+                #region Query RoleBasedDataColumn
+                var query = @"SELECT d.id as DataAtrributeId,d.name as Name, d.type as Type, d.key as Key, 'A' as state
+                              FROM master.reportattribute ra
+                              INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 
+                              INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = d.id
+                              INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' and das.is_exlusive = false
+                              INNER JOIN
+                              (
+                                  --Account Route
+                                  SELECT f.id, f.data_attribute_set_id
+                                  FROM master.Account acc
+                                  INNER JOIN master.AccountRole ar ON acc.id = ar.account_id AND acc.id = @account_id AND ar.organization_id = @organization_id AND ar.role_id = @role_id AND acc.state = 'A'
+                                  INNER JOIN master.Role r ON ar.role_id = r.id AND r.state = 'A'
+                                  INNER JOIN master.FeatureSet fset ON r.feature_set_id = fset.id AND fset.state = 'A'
+                                  INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
+                                  INTERSECT
+                                  --Subscription Route
+                                  SELECT f.id, f.data_attribute_set_id
+                                  FROM master.Subscription s
+                                  INNER JOIN master.Package pkg ON s.package_id = pkg.id AND s.organization_id = @context_org_id AND s.state = 'A' AND pkg.state = 'A'
+                                  INNER JOIN master.FeatureSet fset ON pkg.feature_set_id = fset.id AND fset.state = 'A'
+                                  INNER JOIN master.FeatureSetFeature fsf ON fsf.feature_set_id = fset.id
+                                  INNER JOIN master.Feature f ON f.id = fsf.feature_id AND f.state = 'A' AND f.type = 'D'
+                              ) fsets ON fsets.data_attribute_set_id = das.id";
+                #endregion
+                return _dataAccess.QueryAsync<UserPreferenceReportDataColumn>(query, parameter);
             }
             catch (Exception)
             {

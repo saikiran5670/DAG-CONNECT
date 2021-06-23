@@ -7,8 +7,9 @@ namespace net.atos.daf.ct2.reports.repository
 {
     public interface IReportRepository
     {
-        Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountIdint, int organizationId);
-        Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountIdint, int organizationId);
+        Task<bool> CheckIfUserPreferencesExist(int reportId, int accountIdint, int organizationId);
+        Task<IEnumerable<UserPreferenceReportDataColumn>> GetReportUserPreference(int reportId, int accountId, int organizationId);
+        Task<IEnumerable<UserPreferenceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList);
         Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripEntityRequest,
@@ -29,7 +30,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetUtilizationFilters);
         Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters);
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
-        Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(EcoScoreReportByAllDriversRequest request);
+        Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(int targetProfileId);
         Task<bool> UpdateEcoScoreTargetProfile(EcoScoreReportByAllDriversRequest request);
         Task<bool> CreateEcoScoreUserPreference();
         Task<int> GetEcoScoreUserPreference();

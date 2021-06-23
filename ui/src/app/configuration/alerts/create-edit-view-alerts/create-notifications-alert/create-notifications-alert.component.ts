@@ -5,6 +5,7 @@ import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { element } from 'protractor';
+import { AlertService } from 'src/app/services/alert.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { NotificationAdvancedFilterComponent } from './notification-advanced-filter/notification-advanced-filter.component';
 
@@ -68,6 +69,8 @@ emailLabel : any;
 wsLabel: any;
 limitButton: any;
 weblimitButton: any;
+notificationRecipients = [];
+keyword = 'recipientLabel';
 timeList: any =[
   {
     id: 'M',
@@ -110,7 +113,7 @@ emailtimeUnitValue: any;
 @ViewChild(NotificationAdvancedFilterComponent)
 notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private alertService : AlertService) { }
 
   ngOnInit(): void {
     console.log("action type=" +this.actionType);
@@ -134,6 +137,11 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
     });
     console.log(this.selectedRowData);
    
+    if(this.actionType == 'create' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.alertService.getNotificationRecipients(this.organizationId).subscribe(data => {
+        this.notificationReceipients = data;
+      })
+    }
     if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
        this.selectedRowData.notifications.length > 0 && 
        this.selectedRowData.notifications[0].notificationRecipients.length > 0)
@@ -411,8 +419,6 @@ if(isButtonClicked){
 
   getNotificationDetails() : any{
    this.notificationReceipients= [];
-   let notificationLimits= [];
-let emailnotificationLimits = [];
   let WsData;
     let EmailData;
     let webPayload= {};
@@ -420,11 +426,13 @@ let emailnotificationLimits = [];
   if(this.FormWebArray && this.FormWebArray.length > 0){
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
         this.FormWebArray.controls.forEach((element, index) => {
+          let webNotificationLimits = [];
+          let obj = {};
           WsData = element['controls'];
           let webrestrict = parseInt(WsData.webretrictTo.value);
           let limitVal = parseInt(WsData.webEach.value);
           if(WsData.notifyPeriodweb.value == 'A'){
-            let obj = {
+            obj = {
                 "id": 0,
                 "recipientId": 0,
                 "notificationId": 0,
@@ -433,10 +441,9 @@ let emailnotificationLimits = [];
                 "notificationPeriodType": "N",
                 "periodLimit": 0
               }
-              notificationLimits.push(obj);
           }
-          if(WsData.notifyPeriodweb.value == 'C'){
-            let obj = 
+          else if(WsData.notifyPeriodweb.value == 'C'){
+            obj = 
               {
                 "id": 0,
                 "recipientId": 0,
@@ -446,9 +453,11 @@ let emailnotificationLimits = [];
                 "notificationPeriodType": WsData.webminutes.value,
                 "periodLimit": limitVal
               }
-              notificationLimits.push(obj);
           }
+          webNotificationLimits.push(obj);
+
         webPayload = {
+        id: WsData.receipientId ? WsData.receipientId.value : 0,
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
         notificationModeType: WsData.webContactModes.value,
@@ -462,7 +471,7 @@ let emailnotificationLimits = [];
         wsText: WsData.wsDescription.value,
         wsLogin: WsData.loginId.value,
         wsPassword: WsData.password.value,
-        notificationLimits: notificationLimits
+        notificationLimits: webNotificationLimits
       }
       this.notificationReceipients.push(webPayload);
 
@@ -470,11 +479,13 @@ let emailnotificationLimits = [];
   }
   else if(this.actionType == 'edit'){
     this.FormWebArray.controls.forEach((element, index) => {
+      let webNotificationLimits = [];
+      let obj = {};
       WsData = element['controls'];
       let webrestrict = parseInt(WsData.webretrictTo.value);
       let limitVal = parseInt(WsData.webEach.value);
       if(WsData.notifyPeriodweb.value == 'A'){
-        let obj = {
+        obj = {
             "id": 0,
             "recipientId": 0,
             "notificationId": 0,
@@ -483,10 +494,9 @@ let emailnotificationLimits = [];
             "notificationPeriodType": "N",
             "periodLimit": 0
           }
-          notificationLimits.push(obj);
       }
-      if(WsData.notifyPeriodweb.value == 'C'){
-        let obj = 
+     else if(WsData.notifyPeriodweb.value == 'C'){
+        obj = 
           {
             "id": 0,
             "recipientId": 0,
@@ -496,8 +506,8 @@ let emailnotificationLimits = [];
             "notificationPeriodType": WsData.webminutes.value,
             "periodLimit": limitVal
           }
-          notificationLimits.push(obj);
       }
+      webNotificationLimits.push(obj);
       webPayload = {
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
@@ -514,7 +524,7 @@ let emailnotificationLimits = [];
         wsPassword: WsData.password.value,
         id: WsData.receipientId.value ? WsData.receipientId.value : 0,
         notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-        notificationLimits: notificationLimits
+        notificationLimits: webNotificationLimits
       }
       this.notificationReceipients.push(webPayload);
     });
@@ -527,11 +537,13 @@ let emailnotificationLimits = [];
   
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.FormEmailArray.controls.forEach((item,index)=>{
+    let emailNotificationLimits = [];
+    let obj = {};
     EmailData = item['controls'];
     let restrictTo = parseInt(EmailData.retrictTo.value);
     let limitVal = parseInt(EmailData.emailEach.value);
     if(EmailData.notifyPeriod.value == 'A'){
-      let obj = {
+      obj = {
           "id": 0,
           "recipientId": 0,
           "notificationId": 0,
@@ -540,10 +552,9 @@ let emailnotificationLimits = [];
           "notificationPeriodType": "N",
           "periodLimit": 0
         }
-        emailnotificationLimits.push(obj);
     }
-    if(EmailData.notifyPeriod.value == 'C'){
-      let obj = 
+    else if(EmailData.notifyPeriod.value == 'C'){
+      obj = 
         {
           "id": 0,
           "recipientId": 0,
@@ -553,9 +564,10 @@ let emailnotificationLimits = [];
           "notificationPeriodType": EmailData.minutes.value,
           "periodLimit": limitVal
         }
-        emailnotificationLimits.push(obj);
     }
+    emailNotificationLimits.push(obj);
     emailPayload = {
+          id: EmailData.receipientId ? EmailData.receipientId.value : 0,
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
           notificationModeType: EmailData.emailContactModes.value,
@@ -569,18 +581,20 @@ let emailnotificationLimits = [];
           wsText: "",
           wsLogin: "",
           wsPassword: "",
-          notificationLimits: emailnotificationLimits
+          notificationLimits: emailNotificationLimits
     }
     this.notificationReceipients.push(emailPayload);
   });
 }
 else if(this.actionType == 'edit'){
   this.FormEmailArray.controls.forEach((item,index)=>{
+    let emailNotificationLimits = [];
+    let obj = {};
     EmailData = item['controls'];
     let restrictTo = parseInt(EmailData.retrictTo.value);
     let limitVal = parseInt(EmailData.emailEach.value);
     if(EmailData.notifyPeriod.value == 'A'){
-      let obj = {
+       obj = {
           "id": 0,
           "recipientId": 0,
           "notificationId": 0,
@@ -589,10 +603,9 @@ else if(this.actionType == 'edit'){
           "notificationPeriodType": "N",
           "periodLimit": 0
         }
-        emailnotificationLimits.push(obj);
     }
-    if(EmailData.notifyPeriod.value == 'C'){
-      let obj = 
+    else if(EmailData.notifyPeriod.value == 'C'){
+       obj = 
         {
           "id": 0,
           "recipientId": 0,
@@ -602,8 +615,8 @@ else if(this.actionType == 'edit'){
           "notificationPeriodType": EmailData.minutes.value,
           "periodLimit": limitVal
         }
-        emailnotificationLimits.push(obj);
     }
+    emailNotificationLimits.push(obj);
      emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
@@ -620,7 +633,7 @@ else if(this.actionType == 'edit'){
           wsPassword: "",
           id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
           notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-          notificationLimits: emailnotificationLimits
+          notificationLimits: emailNotificationLimits
     }
     this.notificationReceipients.push(emailPayload);
   });

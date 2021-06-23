@@ -86,31 +86,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (!(reportId > 0)) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
-                if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
-                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
-                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId, OrganizationId = organizationId });
-                if (response == null)
-                    return StatusCode(500, "Internal Server Error.(01)");
+                if (reportId < 1) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
+                if (accountId < 1) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
+                if (organizationId < 1) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
+                var response = await _reportServiceClient
+                                        .GetUserPreferenceReportDataColumnAsync(
+                                            new IdRequest
+                                            {
+                                                ReportId = reportId,
+                                                AccountId = _userDetails.AccountId,
+                                                RoleId = _userDetails.RoleId,
+                                                OrganizationId = GetUserSelectedOrgId(),
+                                                ContextOrgId = GetContextOrgId()
+                                            });
                 if (response.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                     "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     $"GetUserPreferenceReportDataColumn method", 1, 2, Convert.ToString(reportId),
+                      _userDetails);
                     return Ok(response);
-                if (response.Code == Responsecode.Failed)
-                    return StatusCode((int)response.Code, String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2));
+                }
                 if (response.Code == Responsecode.InternalServerError)
-                    return StatusCode((int)response.Code, String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, response.Message));
-                return StatusCode((int)response.Code, response.Message);
+                    return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, response.Message));
+                else
+                    return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
-                // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
-                //  Request);
-                // check for fk violation
-                if (ex.Message.Contains(_socketException))
-                {
-                    return StatusCode(500, "Internal Server Error.(02)");
-                }
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                     "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(reportId),
+                      _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -511,6 +518,40 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
+        #region  Eco Score Report By All Drivers
+        [HttpPost]
+        [Route("ecoscore/getdetailsbyalldriver")]
+        public async Task<IActionResult> GetEcoScoreReportByAllDrivers([FromBody] EcoScoreReportByAllDriversRequest request)
+        {
+            try
+            {
+                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
+                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
+                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
+                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
+
+                var grpcRequest = _mapper.MapEcoScoreReportByAllDriver(request);
+                grpcRequest.AccountId = _userDetails.AccountId;
+                grpcRequest.OrgId = GetContextOrgId();
+
+                var response = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
+                if (response?.DriverRanking?.Count > 0)
+                {
+                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+        #endregion
 
         #region Eco Score Report - User Preferences
 
