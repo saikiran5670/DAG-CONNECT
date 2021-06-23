@@ -651,15 +651,15 @@ else if(this.actionType == 'edit'){
   this.notifications = [
     {
       "alertUrgencyLevelType": "C",
-      "frequencyType": notificationAdvancedFilterObj.frequencyType,
+      "frequencyType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.frequencyType : 'T',
       "frequencyThreshholdValue": 0,
-      "validityType": notificationAdvancedFilterObj.validityType,
+      "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType: 'A',
       "createdBy": this.selectedRowData.createdBy,
       "id": this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
       "alertId": this.selectedRowData.id,
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "alertTimingDetails": notificationAdvancedFilterObj.alertTimingRef
+      "alertTimingDetails": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.alertTimingRef: []
     }
   ]
 }
