@@ -19,8 +19,10 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
         #region Report Creation Scheduler
         Task<IEnumerable<ReportCreationScheduler>> GetReportCreationSchedulerList();
-        Task<IEnumerable<VehicleList>> GetVehicleList(IEnumerable<int> groupId);
+        Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId);
+        Task<VehicleList> GetVehicleListForSingle(int reprotSchedulerId);
         Task<ReportLogo> GetReportLogo(int accountId);
+        Task<IEnumerable<UserTimeZone>> GetUserTimeZone();
         #endregion
     }
 }
