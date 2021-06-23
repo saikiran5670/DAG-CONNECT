@@ -22,6 +22,7 @@ import { MultiDataSet, Label, Color} from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Router, NavigationExtras } from '@angular/router';
+import { CalendarOptions } from '@fullcalendar/angular';
 // import { CalendarOptions } from '@fullcalendar/angular';
 
 @Component({
@@ -160,6 +161,8 @@ export class FleetUtilisationComponent implements OnInit {
   lineChartVehicleCount: any = [];
   greaterMileageCount :  any = 0;
   greaterTimeCount :  any = 0;
+  calendarSelectedStartDate : any = '';
+  calendarSelectedEndDate : any = '';
 
 // Bar chart implementation
 
@@ -256,17 +259,28 @@ lineChartPlugins = [];
 lineChartType = 'line';
 fromTripPageBack: boolean = false;
 
-// calendarOptions: CalendarOptions = {
-//   initialView: 'dayGridMonth',
-//   visibleRange: {
-//     start: '2020-03-22',
-//     end: '2020-03-25'
-//   },
-//   // events: [
-//   //   { title: 'event 1', date: '2021-06-21' },
-//   //   { title: 'event 2', date: '2021-06-20' }
-//   // ]
-// };
+// Calnedar implementation
+
+calendarOptions: CalendarOptions = {
+  initialView: 'dayGridMonth',
+  timeZone: 'local',
+  validRange: function(nowDate) {
+    return {
+      start:  '2021-03-24' ,
+      end: nowDate
+    };
+  },
+  // validRange: {
+  //   start: `${this.calendarSelectedStartDate}`,
+  //   end: '2021-06-03'
+  // },
+  events: [
+    { title: '2', date: '2021-04-21' },
+    { title: '4', date: '2021-03-28' },
+    { title: '8', date: '2021-06-02' }
+  ],
+  
+};
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router) {
     this.defaultTranslation();
@@ -567,6 +581,13 @@ fromTripPageBack: boolean = false;
         this.setChartData(calendarData["calenderDetails"]);
       })
     }
+    this.calendarOptions.initialDate = this.startDateValue
+    let startday = this.startDateValue.getDate();
+    let startmonth = this.startDateValue.getMonth();
+    let startyear = this.startDateValue.getFullYear();
+    this.calendarSelectedStartDate = `${startyear}-${startmonth + 1}-${startday}`
+   //  this.calendarOptions.visibleRange = {start: `'${this.calendarSelectedStartDate}'`, end : '2021-06-03'};
+    console.log(this.calendarSelectedStartDate);
   }
 
   onReset(){
