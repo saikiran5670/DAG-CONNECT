@@ -86,31 +86,38 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                if (!(reportId > 0)) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
-                if (!(accountId > 0)) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
-                if (!(organizationId > 0)) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
-                var response = await _reportServiceClient.GetUserPreferenceReportDataColumnAsync(new IdRequest { ReportId = reportId, AccountId = accountId, OrganizationId = organizationId });
-                if (response == null)
-                    return StatusCode(500, "Internal Server Error.(01)");
+                if (reportId < 1) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
+                if (accountId < 1) return BadRequest(ReportConstants.ACCOUNT_REQUIRED_MSG);
+                if (organizationId < 1) return BadRequest(ReportConstants.ORGANIZATION_REQUIRED_MSG);
+                var response = await _reportServiceClient
+                                        .GetUserPreferenceReportDataColumnAsync(
+                                            new IdRequest
+                                            {
+                                                ReportId = reportId,
+                                                AccountId = 336,//_userDetails.AccountId,
+                                                RoleId = 161,//_userDetails.RoleId,
+                                                OrganizationId = 1,//GetUserSelectedOrgId(),
+                                                ContextOrgId = 1,//GetContextOrgId()
+                                            });
                 if (response.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                     "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     $"GetUserPreferenceReportDataColumn method", 1, 2, Convert.ToString(reportId),
+                      _userDetails);
                     return Ok(response);
-                if (response.Code == Responsecode.Failed)
-                    return StatusCode((int)response.Code, String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, ReportConstants.USER_PREFERENCE_FAILURE_MSG2));
+                }
                 if (response.Code == Responsecode.InternalServerError)
-                    return StatusCode((int)response.Code, String.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, response.Message));
-                return StatusCode((int)response.Code, response.Message);
+                    return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, accountId, reportId, response.Message));
+                else
+                    return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
-                //await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
-                // "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                // $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(accountId),
-                //  Request);
-                // check for fk violation
-                if (ex.Message.Contains(_socketException))
-                {
-                    return StatusCode(500, "Internal Server Error.(02)");
-                }
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                     "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                     $"GetUserPreferenceReportDataColumn method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(reportId),
+                      _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
@@ -544,6 +551,48 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+        #endregion
+
+        #region Eco Score Report - User Preferences
+
+        [HttpPost]
+        [Route("ecoscoreuserpreference/create")]
+        public async Task<IActionResult> CreateEcoScoreUserPreference(Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                 $"CreateEcoScoreUserPreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
+
+        [HttpGet]
+        [Route("ecoscoreuserpreference/get")]
+        public async Task<IActionResult> GetEcoScoreUserPreference()
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"GetEcoScoreUserPreference method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, ex.Message + " " + ex.StackTrace);
+            }
+        }
+
         #endregion
 
         #endregion

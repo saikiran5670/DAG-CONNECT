@@ -23,6 +23,8 @@ rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchP
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
 rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
+rpc GetEcoScoreUserPreference (EcoScoreGetUserPreferenceRequest) returns (EcoScoreGetUserPreferenceResponse);
+rpc CreateEcoScoreUserPreference (EcoScoreUserPreferenceCreateRequest) returns (EcoScoreUserPreferenceCreateResponse);
 }
 
 enum Responsecode{
@@ -52,8 +54,11 @@ message ReportDetails {
 message IdRequest {
   int32 ReportId = 1;
   int32 AccountId=2;
-  int32 OrganizationId=3;
+  int32 RoleId=3;
+  int32 OrganizationId=4;
+  int32 ContextOrgId=5;
 }
+
 message UserPreferenceDataColumn{
     int32 DataAtrributeId =1;
     string Name=2;
@@ -75,18 +80,43 @@ message UserPreferenceDataColumnResponse{
 
 message UserPreferenceCreateRequest{
  repeated Atribute AtributesShowNoShow =1;
-  int32 AccountId =2;
+   int32 AccountId =2;
   int32 ReportId =3;
   int32 OrganizationId =4;
   int64 CreatedAt =6;
-  int64 ModifiedAt =7;
+  int64 ModifiedAt =7;  
+}
+
+message EcoScoreGetUserPreferenceRequest {
+    int32 ReportId = 1;
+    int32 AccountId=2;
+    int32 OrganizationId=3;
+}
+
+message EcoScoreGetUserPreferenceResponse {
+    Responsecode Code = 2;
+    string Message = 3;
+}
+
+message EcoScoreUserPreferenceCreateRequest{
+    repeated Atribute AtributesShowNoShow =1;
+    int32 AccountId =2;
+    int32 ReportId =3;
+    int32 OrganizationId =4;
+    int64 CreatedAt =6;
+    int64 ModifiedAt =7;  
+}
+
+message EcoScoreUserPreferenceCreateResponse{
+    Responsecode Code = 1;
+    string Message = 2;
 }
 
 message Atribute{
- int32 DataAttributeId =1;
- string State =2;
- string Type =3;
-  string CharType = 4;
+ int32 DataAttributeId = 1;
+ string State = 2;
+   string Type = 3;
+ string CharType = 4;
   string ThresholdType = 5;
   int64 ThresholdValue = 6;
 }
@@ -147,6 +177,8 @@ message LiveFleetPosition {
     double GpsHeading=2; 
     double GpsLatitude=3;
     double GpsLongitude=4; 
+     double Fuelconsumtion=6;
+    double Co2emission=7;
     int32 Id=5;
 }
 // End Trip Report Table
@@ -412,13 +444,14 @@ message FleetUtilizationcalender {
     double Averageidleduration = 7;
     double Averagedistanceperday = 8;
     double AverageSpeed = 9;
-   int32 Vehiclecount =10;
-    int32 Tripcount =11;
     double Averageweight=12;
+    int32 Vehiclecount =10;
+    int32 Tripcount =11;
+
+   
 
 }
 
-// END Fleet Utilization Report
 // END Fleet Utilization Report
 
 /// START: Eco Score Report By All Drivers
@@ -439,7 +472,7 @@ message GetEcoScoreReportByAllDriversRequest {
   string DriverName = 2; 
   string DriverId = 3;
   double EcoScoreRanking = 4;
-  string EcoScoreRankingColor = 5;
+  string EcoScoreRankingColor = 5;  
   }
   
   message GetEcoScoreReportByAllDriversResponse {

@@ -12,6 +12,7 @@ import { ReportMapService } from '../../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { ChartOptions, ChartType, ChartDataSets ,ChartColor} from 'chart.js';
+import { color } from 'html2canvas/dist/types/css/types/color';
 
 
 @Component({
@@ -45,11 +46,11 @@ export class DriverTimeDetailComponent implements OnInit {
   };
   barChartType: ChartType = 'horizontalBar';
   barChartLegend = true;
-  barChartColors: Array<any> = [
-    {
-      backgroundColor :['rgba(255, 165, 0,1)','rgba(0, 0, 255, 1)','rgba(0, 128, 0, 1)','rgba(128, 128, 128, 1)']
-    }
-  ];
+  // barChartColors: Array<any> = [
+  //   {
+  //     backgroundColor :['rgba(255, 165, 0,1)','rgba(0, 0, 255, 1)','rgba(0, 128, 0, 1)','rgba(128, 128, 128, 1)']
+  //   }
+  // ];
 
   barChartData: ChartDataSets[] = [] ;
   // [
@@ -63,7 +64,7 @@ export class DriverTimeDetailComponent implements OnInit {
   constructor(private reportMapService:ReportMapService) { }
 
   ngOnInit(): void {
-
+console.log(this.driverDetails)
     //this.setGeneralDriverValue();
     this.setTableInfo();
     this.updateDataSource(this.detailConvertedData);
@@ -79,15 +80,57 @@ export class DriverTimeDetailComponent implements OnInit {
     let availableTimeArray = this.detailConvertedData.map(data=>data.availableTime);
 
     this.barChartData = [
-        { data: [8.0,6.15], label: 'Work', stack: 'a' },
-        { data: [4.0,6.45], label: 'Drive', stack: 'a' },
-        { data: [8.0,6.15], label: 'Rest', stack: 'a' },
-        { data: [4.0,6.45], label: 'Available', stack: 'a' },
-      ]
+      { data: [8.0,6.15,6.15], label: 'Work', stack: 'a',backgroundColor: '#e85c2a', hoverBackgroundColor: '#e85c2a',barThickness: 10},
+      { data: [4.0,6.45,6.45], label: 'Drive', stack: 'a',backgroundColor: '#29539b',hoverBackgroundColor: '#29539b',barThickness: 10},
+      { data: [8.0,6.15,6.15], label: 'Rest', stack: 'a', backgroundColor: '#8ac543',hoverBackgroundColor: '#8ac543',barThickness: 10},
+      { data: [4.0,6.45,6.45], label: 'Available', stack: 'a' ,backgroundColor: '#dddee2',hoverBackgroundColor: '#dddee2',barThickness: 10},
+    ]
     
     this.barChartLabels = dateArray;
 
-    
+    this.barChartOptions = {
+      responsive: true,
+      legend: {
+        position: 'bottom',
+      },
+      scales: {
+        xAxes: [
+          {
+            //stacked: true,
+            time: {
+              unit: 'hour',
+            },
+            gridLines: {
+              display: true,
+              drawBorder:true,
+              drawOnChartArea:false,
+              color:'#00000'
+            },
+           ticks: {
+            beginAtZero: true,
+            max: 24
+          },
+          },
+        ],
+        yAxes: [
+          {
+            //stacked: true,
+            gridLines: {
+              display: true,
+              drawBorder:true,
+              drawOnChartArea:false,
+              color:'#00000'
+
+            },
+            ticks: {
+              beginAtZero: true,
+              //    max: 0
+            },
+          },
+        ],
+      },
+    };
+
     
   }
 

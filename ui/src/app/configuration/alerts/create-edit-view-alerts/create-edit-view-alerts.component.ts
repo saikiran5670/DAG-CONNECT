@@ -1132,13 +1132,13 @@ PoiCheckboxClicked(event: any, row: any) {
     setTimeout(()=>{
       this.geofenceDataSource.paginator = this.paginator.toArray()[2];
       this.geofenceDataSource.sort = this.sort.toArray()[2];
-      this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-          return this.compare(a[sort.active], b[sort.active], isAsc);
-        });
-       }
-    });
+      // this.geofenceDataSource.sortData = (data: String[], sort: MatSort) => {
+      //   const isAsc = sort.direction === 'asc';
+      //   return data.sort((a: any, b: any) => {
+      //     return this.compare(a[sort.active], b[sort.active], isAsc);
+      //   });
+      //  }
+    }, 2000);
   }
 
   compare(a: Number | String, b: Number | String, isAsc: boolean) {
@@ -1300,9 +1300,11 @@ PoiCheckboxClicked(event: any, row: any) {
       this.notifications= this.notificationComponent.getNotificationDetails();
       //console.log(this.notifications);
     }
+    let periodType = 'A';
       if(this.openAdvancedFilter == true){
         let alertAdvancedPayload = this.alertAdvancedComponent.getAdvancedFilterAlertPayload();
         this.alertFilterRefs = alertAdvancedPayload["advancedAlertPayload"];
+        periodType = this.alertFilterRefs[0].alertTimingDetails.length == 0 ? 'A' : 'C'; 
         urgencylevelStartDate = alertAdvancedPayload["urgencylevelStartDate"];
         urgencylevelEndDate = alertAdvancedPayload["urgencylevelEndDate"];
       }
@@ -1327,7 +1329,7 @@ PoiCheckboxClicked(event: any, row: any) {
           "dayType": [
             false, false, false, false, false, false, false
           ],
-          "periodType": "A",
+          "periodType": periodType,
           "urgencylevelStartDate": urgencylevelStartDate,
           "urgencylevelEndDate": urgencylevelEndDate,
           "alertFilterRefs": this.alertFilterRefs,
@@ -1342,7 +1344,7 @@ PoiCheckboxClicked(event: any, row: any) {
           "dayType": [
             false, false, false, false, false, false, false
           ],
-          "periodType": "A",
+          "periodType": periodType,
           "urgencylevelStartDate": urgencylevelStartDate,
           "urgencylevelEndDate": urgencylevelEndDate,
           "id": this.selectedRowData.alertUrgencyLevelRefs[0].id,	
@@ -1493,7 +1495,7 @@ PoiCheckboxClicked(event: any, row: any) {
             "dayType": [
               false, false, false, false, false, false, false
             ],
-            "periodType": "A",
+            "periodType": periodType,
             "urgencylevelStartDate": urgencylevelStartDate,
             "urgencylevelEndDate": urgencylevelEndDate,
             "alertFilterRefs": this.alertFilterRefs,
@@ -1509,7 +1511,7 @@ PoiCheckboxClicked(event: any, row: any) {
             "dayType": [
               false, false, false, false, false, false, false
             ],
-            "periodType": "A",
+            "periodType": periodType,
             "urgencylevelStartDate": urgencylevelStartDate,
             "urgencylevelEndDate": urgencylevelEndDate,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
@@ -1530,7 +1532,7 @@ PoiCheckboxClicked(event: any, row: any) {
             "dayType": [
               false, false, false, false, false, false, false
             ],
-            "periodType": "A",
+            "periodType": periodType,
             "urgencylevelStartDate": urgencylevelStartDate,
             "urgencylevelEndDate": urgencylevelEndDate,
             "alertFilterRefs": this.alertFilterRefs,
@@ -1546,7 +1548,7 @@ PoiCheckboxClicked(event: any, row: any) {
             "dayType": [
               false, false, false, false, false, false, false
             ],
-            "periodType": "A",
+            "periodType": periodType,
             "urgencylevelStartDate": urgencylevelStartDate,
             "urgencylevelEndDate": urgencylevelEndDate,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,
@@ -1567,7 +1569,7 @@ PoiCheckboxClicked(event: any, row: any) {
             "dayType": [
               false, false, false, false, false, false, false
             ],
-            "periodType": "A",
+            "periodType": periodType,
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
             "alertFilterRefs": this.alertFilterRefs,
@@ -1583,7 +1585,7 @@ PoiCheckboxClicked(event: any, row: any) {
             "dayType": [
               false, false, false, false, false, false, false
             ],
-            "periodType": "A",
+            "periodType": periodType,
             "urgencylevelStartDate": 0,
             "urgencylevelEndDate": 0,
             "id": urgencyLevelRefArr.length > 0 ? urgencyLevelRefArr[0].id : 0,

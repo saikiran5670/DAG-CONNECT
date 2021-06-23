@@ -24,11 +24,14 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                             rs.next_schedule_run_date as NextScheduleRunDate, rs.created_at as CreatedAt, 
                             rs.created_by as CreatedBy, rs.modified_at as ModifiedAT, rs.modified_by as ModifiedBy, 
                             rs.mail_subject as MailSubject, rs.mail_description as MailDescription, 
-                            rs.report_dispatch_time as ReportDispatchTime
+                            rs.report_dispatch_time as ReportDispatchTime,
+							ap.timezone_id as TimeZoneId
                             from master.reportscheduler rs
                                  inner join master.report r on to_date(TO_CHAR(TO_TIMESTAMP(rs.next_schedule_run_date / 1000), 'DD/MM/YYYY') , 'DD/MM/YYYY')=
 									                            to_date(TO_CHAR(now(), 'DD/MM/YYYY') , 'DD/MM/YYYY') and r.id = rs.report_id
-	                             left join master.scheduledreport sr on sr.schedule_report_id = rs.id and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
+								 inner Join master.account ac on ac.id = rs.created_by	
+	                             left join master.accountpreference ap on ap.id = ac.preference_id								 
+								 left join master.scheduledreport sr on sr.schedule_report_id = rs.id and rs.start_date = sr.start_date and  sr.end_date = rs.end_date
                             where to_date(TO_CHAR(TO_TIMESTAMP(rs.next_schedule_run_date / 1000), 'DD/MM/YYYY') , 'DD/MM/YYYY')=
 									                            to_date(TO_CHAR(now(), 'DD/MM/YYYY') , 'DD/MM/YYYY') and
 	                              sr.id is null";
@@ -41,21 +44,21 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
-        public Task<IEnumerable<VehicleList>> GetVehicleList(IEnumerable<int> groupId)
+        public Task<IEnumerable<VehicleList>> GetVehicleList(int reprotSchedulerId)
         {
             try
             {
                 var parameter = new DynamicParameters();
-                parameter.Add("@group_id", groupId.ToArray());
+                parameter.Add("@report_schedule_id", reprotSchedulerId);
                 var query = @"with cte_VehicaleList
                             AS (
-                            select distinct ref_id as VehicleId from master.group where id = Any(@group_id) and group_type = 'S' and object_type = 'V'
+                            select distinct ref_id as VehicleId from master.group where id  in (select vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id = @report_schedule_id) and group_type = 'S' and object_type = 'V'
                             union
                             select distinct ref_id as VehicleId 
                             from master.groupref
-                            where group_id in (select distinct id from master.group where id = Any(@group_id) and group_type = 'G' and object_type = 'V')
+                            where group_id in (select distinct id from master.group where id in (select vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id = @report_schedule_id) and group_type = 'G' and object_type = 'V')
                             )
-                            select distinct vin as VIN 
+                            select distinct v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
                             from cte_VehicaleList vl
                                  inner join master.vehicle v on v.id = vl.VehicleId";
                 return _dataMartdataAccess.QueryAsync<VehicleList>(query, parameter);
@@ -66,6 +69,40 @@ namespace net.atos.daf.ct2.reportscheduler.repository
             }
         }
 
+        public Task<VehicleList> GetVehicleListForSingle(int reprotSchedulerId)
+        {
+            try
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@report_schedule_id", reprotSchedulerId);
+                var query = @"with cte_VehicaleList
+                            AS (
+                            select distinct ref_id as VehicleId from master.group where id  in (select vehicle_group_id from master.scheduledreportvehicleref where report_schedule_id = @report_schedule_id) and group_type = 'S' and object_type = 'V'
+                            )
+                            select distinct v.vin as VIN ,v.name as VehicleName,v.license_plate_number as RegistrationNo
+                            from cte_VehicaleList vl
+                                 inner join master.vehicle v on v.id = vl.VehicleId";
+                return _dataMartdataAccess.ExecuteScalarAsync<VehicleList>(query, parameter);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public Task<IEnumerable<UserTimeZone>> GetUserTimeZone()
+        {
+            try
+            {
+
+                var query = @"select id as Id, name as Name from master.timezone";
+                return _dataMartdataAccess.QueryAsync<UserTimeZone>(query);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public Task<ReportLogo> GetReportLogo(int accountId)
         {
             try

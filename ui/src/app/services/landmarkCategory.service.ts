@@ -105,13 +105,13 @@ export class LandmarkCategoryService {
         .pipe(catchError(this.handleError));
     }
 
-    getSubCategoryPOI(orgId : any, subCategoryId: any): Observable<any[]> {
+    getSubCategoryPOI(orgId : any, categoryID: any, subCategoryId: any): Observable<any[]> {
       let headerObj = this.generateHeader();
       const headers = {
         headers: new HttpHeaders({ headerObj }),
       };
       return this.httpClient
-        .get<any[]>(`${this.poiServiceUrl}/get?OrganizationId=${orgId}&SubCategoryId=${subCategoryId}`,headers)
+        .get<any[]>(`${this.poiServiceUrl}/get?OrganizationId=${orgId}&CategoryId=${categoryID}&SubCategoryId=${subCategoryId}`,headers)
         .pipe(catchError(this.handleError));
     }
 

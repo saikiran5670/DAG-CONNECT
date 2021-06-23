@@ -31,19 +31,19 @@ namespace net.atos.daf.ct2.reportscheduler
             try
             {
                 //Get the records from reportscheduler for next run date as today
-                foreach (var report in await _reportSchedulerRepository.GetReportCreationSchedulerList())
+                foreach (var reportSchedulerData in await _reportSchedulerRepository.GetReportCreationSchedulerList())
                 //int cnt = 1;
                 //while (cnt == 1)
                 {
                     try
                     {
                         //Generate Report as per report id / key
-                        _reportCreator.SetParameters(report.ReportName, report.ReportKey);
+                        _reportCreator.SetParameters(reportSchedulerData);
                         //_reportCreator.SetParameters("Trip Report", "lblTripReport");
                         var pdf = await _reportCreator.GenerateReport();
                         //Insert the pdf bytes into scheduledreport , with 
                         // Calculate nect run
-                        
+
                         //cnt += 1;
                     }
                     catch (Exception ex)

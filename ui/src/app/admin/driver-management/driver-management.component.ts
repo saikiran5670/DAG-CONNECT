@@ -271,8 +271,8 @@ export class DriverManagementComponent implements OnInit {
           var a1;
           var b1;
           if(sort.active && sort.active === 'firstName'){
-            a1 = a.firstName + a.lastName;
-            b1 = b.firstName + b.lastName;
+            a1 = a.firstName + ' ' + a.lastName;
+            b1 = b.firstName + ' ' + b.lastName;
           } else {
             a1 = a[sort.active];
             b1 = b[sort.active]

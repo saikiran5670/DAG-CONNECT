@@ -259,15 +259,17 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onPOIClick(rowData: any){
-    let id: any; 
-    if(rowData.subCategoryId == 0){ // parent-cat
-      id = rowData.parentCategoryId;
-      this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+    let subCategoryId: any; 
+    let categoryID: any;
+    categoryID = rowData.parentCategoryId;
+    subCategoryId = rowData.subCategoryId;
+    if(subCategoryId == 0){ // parent-cat
+      this.landmarkCategoryService.getCategoryPOI(this.accountOrganizationId, categoryID).subscribe((poiData: any) => {
         this.nextStepforPOI(poiData);
       });
-    }else{ // sub-cat
-      id = rowData.subCategoryId;
-      this.landmarkCategoryService.getSubCategoryPOI(this.accountOrganizationId, id).subscribe((poiData: any) => {
+    }
+    else{ // sub-cat
+      this.landmarkCategoryService.getSubCategoryPOI(this.accountOrganizationId, categoryID, subCategoryId).subscribe((poiData: any) => {
         this.nextStepforPOI(poiData);
       });
     }

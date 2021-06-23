@@ -96,11 +96,12 @@ namespace net.atos.daf.ct2.portalservice.Entity.Report
         public long StartDateTime { get; set; }
         [Required]
         public long EndDateTime { get; set; }
+        [Required]
         public List<string> VINs { get; set; }
-        public int MinTripDistance { get; set; }
-        public int MinDriverTotalDistance { get; set; }
-        public int OrgId { get; set; }
-        public int AccountId { get; set; }
+        [Range(typeof(double), "0", "100", ErrorMessage = "Minimum Trip Distance should be less than 100")]
+        public double MinTripDistance { get; set; }
+        [Range(0, 100, ErrorMessage = "Minimum Driver Total Distance should be less than 100")]
+        public double MinDriverTotalDistance { get; set; }
         public int TargetProfileId { get; set; }
         public int ReportId { get; set; }
     }

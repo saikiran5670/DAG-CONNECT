@@ -41,6 +41,7 @@ namespace net.atos.daf.ct2.reports.repository
                                             		where
                                             			start_time_stamp   >= @FromDate
                                             			and end_time_stamp <= @ToDate
+                                                        and VIN = ANY(@Vins)
                                             		GROUP BY
                                             			VIN
                                             	)

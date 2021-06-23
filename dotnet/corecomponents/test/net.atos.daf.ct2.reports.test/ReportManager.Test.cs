@@ -36,8 +36,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetUserPreferences_Success()
         {
-            var result = await _reportManager.GetUserPreferenceReportDataColumn(1, 144, 1);
-            Assert.IsTrue(result.Count() > 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(1, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -46,8 +46,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetUserPreferences_Failure()
         {
-            var result = await _reportManager.GetUserPreferenceReportDataColumn(100000, 144, 1);
-            Assert.IsTrue(result.Count() == 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(100000, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -56,8 +56,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetRoleBasedDataColumn_Success()
         {
-            var result = await _reportManager.GetRoleBasedDataColumn(1, 144, 1);
-            Assert.IsTrue(result.Count() > 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(1, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
@@ -66,8 +66,8 @@ namespace net.atos.daf.ct2.reports.test
         [Timeout(TestTimeout.Infinite)]
         public async Task GetRoleBasedDataColumn_Falure()
         {
-            var result = await _reportManager.GetRoleBasedDataColumn(10000, 144, 1);
-            Assert.IsTrue(result.Count() == 0);
+            var result = await _reportManager.CheckIfUserPreferencesExist(10000, 144, 1);
+            Assert.IsTrue(result);
         }
 
         [TestCategory("Unit-Test-Case")]
