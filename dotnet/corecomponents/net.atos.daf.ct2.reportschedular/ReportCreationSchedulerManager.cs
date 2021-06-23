@@ -43,7 +43,7 @@ namespace net.atos.daf.ct2.reportscheduler
                         var pdf = await _reportCreator.GenerateReport();
                         //Insert the pdf bytes into scheduledreport , with 
                         // Calculate nect run
-                        
+
                         //cnt += 1;
                     }
                     catch (Exception ex)
