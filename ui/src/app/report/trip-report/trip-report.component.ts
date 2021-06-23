@@ -505,10 +505,13 @@ export class TripReportComponent implements OnInit {
   resetTripFormControlValue(){
     this.tripForm.get('vehicle').setValue('');
     this.tripForm.get('vehicleGroup').setValue(0);
+    this.globalSearchFilterData["vehicleGroupDropDownValue"] = 0;
+    this.globalSearchFilterData["vehicleDropDownValue"] = '';
+    this.setGlobalSearchData(this.globalSearchFilterData);
   }
 
   onVehicleGroupChange(event: any){
-    if(event.value){
+    if(event.value || event.value == 0){
 
     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
@@ -527,6 +530,7 @@ export class TripReportComponent implements OnInit {
     }
 
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = event.value;
+    this.globalSearchFilterData["vehicleDropDownValue"] = '';
     this.setGlobalSearchData(this.globalSearchFilterData)
     // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
   }
@@ -894,6 +898,10 @@ export class TripReportComponent implements OnInit {
             }
           });
         }
+      }else{
+        this.globalSearchFilterData["vehicleGroupDropDownValue"] = '';
+        this.globalSearchFilterData["vehicleDropDownValue"] = '';
+        this.setGlobalSearchData(this.globalSearchFilterData);
       }
     }
     this.vehicleGroupListData = finalVINDataList;
