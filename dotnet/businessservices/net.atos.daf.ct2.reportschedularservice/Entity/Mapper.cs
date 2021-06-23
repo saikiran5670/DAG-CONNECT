@@ -194,11 +194,11 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             schedulereportvr.ModifiedAt = request.ModifiedAt;
             schedulereportvr.ModifiedBy = request.ModifiedBy;
             schedulereportvr.VehicleId = request.VehicleId;
-            schedulereportvr.Vin = request.Vin;
-            schedulereportvr.Regno = request.Regno;
-            schedulereportvr.VehicleName = request.VehicleName;
-            schedulereportvr.VehicleGroupName = request.VehicleGroupName;
-            schedulereportvr.VehicleGroupType = request.VehicleGroupType;
+            schedulereportvr.Vin = string.IsNullOrEmpty(request.Vin) ? string.Empty : request.Vin;
+            schedulereportvr.Regno = string.IsNullOrEmpty(request.Regno) ? string.Empty : request.Regno;
+            schedulereportvr.VehicleName = string.IsNullOrEmpty(request.VehicleName) ? string.Empty : request.VehicleName;
+            schedulereportvr.VehicleGroupName = string.IsNullOrEmpty(request.VehicleGroupName) ? string.Empty : request.VehicleGroupName;
+            schedulereportvr.VehicleGroupType = string.IsNullOrEmpty(request.VehicleGroupType) ? string.Empty : request.VehicleGroupType;
             return schedulereportvr;
         }
 

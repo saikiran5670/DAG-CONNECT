@@ -62,6 +62,8 @@ export class FleetUtilisationComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
+  vehicleDD: any = [];
+  vehicleGrpDD: any = [];
   showLoadingIndicator: boolean = false;
   startDateValue: any = 0;
   endDateValue: any = 0;
@@ -384,6 +386,8 @@ fromTripPageBack: boolean = false;
   filterDateData(){
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
+    this.vehicleListData = [];
+    this.vehicleGrpDD = [];
     // let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
     // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
     // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
@@ -400,19 +404,37 @@ fromTripPageBack: boolean = false;
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
             if(_item.length > 0){
-              finalVINDataList.push(_item[0])
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              _item.forEach(element => {
+                finalVINDataList.push(element);
+              });
             }
           });
           ////console.log("finalVINDataList:: ", finalVINDataList); 
         }
+      }else{
+        this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
+        this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+        this.setGlobalSearchData(this.fleetUtilizationSearchData)
       }
     }
     this.vehicleGroupListData = finalVINDataList;
     if(this.vehicleGroupListData.length > 0){
-      this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+      if(_s.length > 0){
+        _s.forEach(element => {
+          let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+          if(count.length > 0){
+            this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+          }
+        });
+      }
+      //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
     }
-    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    this.vehicleDD = this.vehicleListData;
     this.setVehicleGroupAndVehiclePreSelection();
     if(this.fromTripPageBack){
       this.onSearch();
@@ -422,11 +444,12 @@ fromTripPageBack: boolean = false;
   onSearch(){
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let VINs = [];
-    VINs.push(_vinData[0].vin) ;
+    //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     
     if(_vinData.length > 0){
+      let VINs = [];
+      VINs.push(_vinData[0].vin);
       this.showLoadingIndicator = true;
       let searchDataParam = {
         "startDateTime":_startTime,
@@ -550,8 +573,9 @@ fromTripPageBack: boolean = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
-    this.vehicleGroupListData = this.vehicleGroupListData;
-    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    this.vehicleListData = [];
+    // this.vehicleGroupListData = this.vehicleGroupListData;
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.updateDataSource(this.tripData);
     this.tableInfoObj = {};
     this.advanceFilterOpen = false;
@@ -649,15 +673,25 @@ fromTripPageBack: boolean = false;
     // }
   }
   onVehicleGroupChange(event: any){
-   if(event.value){
+   if(event.value || event.value == 0){
      
      this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
      if(parseInt(event.value) == 0){ //-- all group
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+      this.vehicleDD = this.vehicleListData;
     }else{
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      
+      if(search.length > 0){
+        this.vehicleDD = [];
+        search.forEach(element => {
+          this.vehicleDD.push(element);  
+        });
+      }
     }
     this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
+    this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
     this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }else {
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
@@ -671,22 +705,34 @@ fromTripPageBack: boolean = false;
     let vehGrpName: any = '';
     let vin: any = '';
     let plateNo: any = '';
-    this.vehicleGroupListData.forEach(element => {
-      if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
-        vehName = element.vehicleName;
-        vin = element.vin;
-        plateNo = element.registrationNo;
-      }
-      if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
-        if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
-          vehGrpName = element.vehicleGroupName;
-        }
-      }
-    });
+    // this.vehicleGroupListData.forEach(element => {
+    //   if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
+    //     vehName = element.vehicleName;
+    //     vin = element.vin;
+    //     plateNo = element.registrationNo;
+    //   }
+    //   if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
+    //     if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
+    //       vehGrpName = element.vehicleGroupName;
+    //     }
+    //   }
+    // });
 
-    if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
-      vehGrpName = this.translationData.lblAll || 'All';
+    let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
+    if(vehGrpCount.length > 0){
+      vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
+    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(vehCount.length > 0){
+      vehName = vehCount[0].vehicleName;
+      vin = vehCount[0].vin;
+      plateNo = vehCount[0].registrationNo;
+    }
+
+    // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
+    //   vehGrpName = this.translationData.lblAll || 'All';
+    // }
+
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),

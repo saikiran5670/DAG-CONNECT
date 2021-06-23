@@ -69,16 +69,16 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                     response.AssociatedVehicle.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
                         );
-                    var vehicleByVisibilityAndFeature
-                                                = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
-                                                                                       ReportSchedulerConstant.REPORT_SCHEDULER_FEATURE_NAME);
+                    //var vehicleByVisibilityAndFeature
+                    //                            = await _visibilityManager
+                    //                                .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                    //                                                                   request.RoleId, vehicleDetailsAccountVisibilty,
+                    //                                                                   ReportSchedulerConstant.REPORT_SCHEDULER_FEATURE_NAME);
 
-                    res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
-                    response.VehicleSubscribeandFeature.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleSubscribeandFeatureRequest>>(res)
-                        );
+                    //res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
+                    //response.VehicleSubscribeandFeature.AddRange(
+                    //    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleSubscribeandFeatureRequest>>(res)
+                    //    );
                 }
 
                 response.Message = "Report Parameter retrieved";
