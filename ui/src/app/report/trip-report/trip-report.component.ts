@@ -51,6 +51,7 @@ export class TripReportComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   globalSearchFilterData: any = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+  searchFilterpersistData: any = {};
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
@@ -169,6 +170,7 @@ export class TripReportComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     // console.log("---global object Search---",this.globalSearchFilterData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -242,13 +244,22 @@ export class TripReportComponent implements OnInit {
   }
 
   setPrefFormatTime(){
-    if(this.prefTimeFormat == 24){
-      this.startTimeDisplay = '00:00:00';
-      this.endTimeDisplay = '23:59:59';
-    }else{
-      this.startTimeDisplay = '12:00 AM';
-      this.endTimeDisplay = '11:59 PM';
+    if(this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
+      console.log("---if fleetUtilizationSearchData exist")
+      this.selectedStartTime = this.searchFilterpersistData.startTimeStamp;
+      this.selectedEndTime = this.searchFilterpersistData.endTimeStamp;
+      this.startTimeDisplay = `${this.searchFilterpersistData.startTimeStamp+":00"}`;
+      this.endTimeDisplay = `${this.searchFilterpersistData.endTimeStamp+":59"}`;
+    }else {
+      if(this.prefTimeFormat == 24){
+        this.startTimeDisplay = '00:00:00';
+        this.endTimeDisplay = '23:59:59';
+      } else{
+        this.startTimeDisplay = '12:00 AM';
+        this.endTimeDisplay = '11:59 PM';
+      }
     }
+  
   }
 
   setPrefFormatDate(){
@@ -277,17 +288,43 @@ export class TripReportComponent implements OnInit {
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
+    if(this.searchFilterpersistData.modifiedFrom == ""){
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
+    }
   }
 
   setDefaultTodayDate(){
+    
+    if(this.searchFilterpersistData.modifiedFrom !== "") {
+      console.log("---if searchFilterpersistData startDateStamp exist")
+      if(this.searchFilterpersistData.timeRangeSelection !== ""){
+        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+        // this.globalSearchFilterData["timeRangeSelection"] = this.searchFilterpersistData.timeRangeSelection;
+        // this.setGlobalSearchData(this.globalSearchFilterData);
+        // this.selectionTimeRange(this.selectionTab)
+      }else {
+        this.selectionTab = 'today';
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
+        console.log(typeof(startDateFromSearch));
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+      }
+      
+    }else {
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
   }
+}
 
   loadWholeTripData(){
     this.showLoadingIndicator = true;
@@ -446,6 +483,8 @@ export class TripReportComponent implements OnInit {
   }
 
   onVehicleGroupChange(event: any){
+    if(event.value){
+
     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
@@ -453,6 +492,7 @@ export class TripReportComponent implements OnInit {
     }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+
       if(search.length > 0){
         this.vehicleDD = [];
         search.forEach(element => {
@@ -464,6 +504,12 @@ export class TripReportComponent implements OnInit {
     this.globalSearchFilterData["vehicleGroupDropDownValue"] = event.value;
     this.setGlobalSearchData(this.globalSearchFilterData)
     // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+  }
+    else {
+      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+      this.tripForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
+      this.tripForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
+    }
   }
 
   onVehicleChange(event: any){
@@ -686,7 +732,7 @@ export class TripReportComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
-        this.globalSearchFilterData["timeRangeSelection"] = "today";
+        // this.globalSearchFilterData["timeRangeSelection"] = "today";
         // this.setGlobalSearchData(this.globalSearchFilterData);
         break;
       }
@@ -695,7 +741,7 @@ export class TripReportComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.globalSearchFilterData["timeRangeSelection"] = "yesterday";
+        // this.globalSearchFilterData["timeRangeSelection"] = "yesterday";
         // this.setGlobalSearchData(this.globalSearchFilterData);
         break;
       }
@@ -704,7 +750,7 @@ export class TripReportComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastWeekDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.globalSearchFilterData["timeRangeSelection"] = "lastweek";
+        // this.globalSearchFilterData["timeRangeSelection"] = "lastweek";
         // this.setGlobalSearchData(this.globalSearchFilterData);
         break;
       }
@@ -713,7 +759,7 @@ export class TripReportComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLastMonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.globalSearchFilterData["timeRangeSelection"] = "lastmonth";
+        // this.globalSearchFilterData["timeRangeSelection"] = "lastmonth";
         // this.setGlobalSearchData(this.globalSearchFilterData);
         break;
       }
@@ -722,11 +768,12 @@ export class TripReportComponent implements OnInit {
         this.setDefaultStartEndTime();
         this.startDateValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
         this.endDateValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-        this.globalSearchFilterData["timeRangeSelection"] = "last3month";
+        // this.globalSearchFilterData["timeRangeSelection"] = "last3month";
         // this.setGlobalSearchData(this.globalSearchFilterData);
         break;
       }
     }
+    this.globalSearchFilterData["timeRangeSelection"] = this.selectionTab;
     this.setGlobalSearchData(this.globalSearchFilterData);
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -841,8 +888,14 @@ export class TripReportComponent implements OnInit {
     }
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData;
+    this.setVehicleGroupAndVehiclePreSelection();
   }
 
+  setVehicleGroupAndVehiclePreSelection() {
+    if(this.searchFilterpersistData.vehicleDropDownValue !== "") {
+      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
+    }
+  }
   onAdvanceFilterOpen(){
     this.advanceFilterOpen = !this.advanceFilterOpen;
   }

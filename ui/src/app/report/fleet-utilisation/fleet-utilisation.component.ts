@@ -373,11 +373,13 @@ lineChartType = 'line';
   filterDateData(){
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
-    let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
-    let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
+    // let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+    // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
+    // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
@@ -537,10 +539,11 @@ lineChartType = 'line';
     this.vehicleGroupListData = this.vehicleGroupListData;
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.updateDataSource(this.tripData);
-    this.resetTripFormControlValue();
     this.tableInfoObj = {};
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
+    this.resetTripFormControlValue();
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   sumOfColumns(columnName : any){
@@ -600,7 +603,8 @@ lineChartType = 'line';
   }
 
   onVehicleChange(event: any){
- 
+    this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
+    this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
 
 
@@ -622,12 +626,13 @@ lineChartType = 'line';
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(this.fleetUtilizationSearchData.vehicleGroupDropDownValue !== "") {
+    if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue)
-    }else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
-      // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
     }
+    // else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
+    //   // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+    // }
   }
   onVehicleGroupChange(event: any){
    if(event.value){
@@ -638,10 +643,12 @@ lineChartType = 'line';
     }else{
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
     }
+    this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
+    this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }else {
-    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
     this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
-    this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+    this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
   }
   }
     
@@ -752,17 +759,34 @@ lineChartType = 'line';
         break;
       }
     }
+    this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetUtilizationSearchData["modifiedFrom"] = "TripReport";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
 
   setPrefFormatTime(){
-    if(this.prefTimeFormat == 24){
-      this.startTimeDisplay = '00:00:00';
-      this.endTimeDisplay = '23:59:59';
-    }else{
-      this.startTimeDisplay = '12:00 AM';
-      this.endTimeDisplay = '11:59 PM';
+    if(this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
+      console.log("---if fleetUtilizationSearchData exist")
+      this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
+      this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
+      this.startTimeDisplay = `${this.fleetUtilizationSearchData.startTimeStamp+":00"}`;
+      this.endTimeDisplay = `${this.fleetUtilizationSearchData.endTimeStamp+":59"}`;
+    }else {
+      if(this.prefTimeFormat == 24){
+        this.startTimeDisplay = '00:00:00';
+        this.endTimeDisplay = '23:59:59';
+      } else{
+        this.startTimeDisplay = '12:00 AM';
+        this.endTimeDisplay = '11:59 PM';
+      }
     }
+  
   }
 
   setPrefFormatDate(){
@@ -790,17 +814,14 @@ lineChartType = 'line';
   }
 
   setDefaultStartEndTime(){
-    this.setPrefFormatTime();
-    if(this.fleetUtilizationSearchData.modifiedFrom !== "") {
-      console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
-      this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
 
-    }else{
-      console.log("---if fleetUtilizationSearch Data not exist")
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
+    console.log("---if fleetUtilizationSearch Data not exist")
+    this.setPrefFormatTime();
+    if(this.fleetUtilizationSearchData.modifiedFrom == ""){
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
     }
+    
   }
 
   setDefaultTodayDate(){
@@ -809,8 +830,16 @@ lineChartType = 'line';
       console.log("---if fleetUtilizationSearchData startDateStamp exist")
       if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
         this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
-        this.selectionTimeRange(this.selectionTab)
+
+       
+        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
+        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
+
+        // this.selectionTimeRange(this.selectionTab)
       }else {
+        this.selectionTab = 'today';
         let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
         let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
         console.log(typeof(startDateFromSearch));
@@ -832,14 +861,35 @@ lineChartType = 'line';
     
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
   
   setStartEndDateTime(date: any, timeObj: any, type: any){
+
+    if(type == "start"){
+      console.log("--date type--",date)
+      console.log("--date type--",timeObj)
+      this.fleetUtilizationSearchData["startDateStamp"] = date;
+      this.fleetUtilizationSearchData.testDate = date;
+      this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
+      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+      // console.log("---time after function called--",timeObj)
+    }else if(type == "end") {
+      this.fleetUtilizationSearchData["endDateStamp"] = date;
+      this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
+      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+    }
+
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if(this.prefTimeFormat == 12){
@@ -871,6 +921,8 @@ lineChartType = 'line';
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData();// extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
@@ -882,6 +934,8 @@ lineChartType = 'line';
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData();
   }
 
   getTodayDate(){
