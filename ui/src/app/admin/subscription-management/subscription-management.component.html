@@ -99,8 +99,12 @@
                   <!-- <button mat-stroked-button color="primary" class='actionBtn' *ngIf="row.status == 'Expired' ? true : false ">
                      shop
                   </button>  -->
-                  <span *ngIf = "row.state">-</span>
-                  <button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.state ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>           
+                  <span  *ngIf="row.state == 'A'  "  (click)="onShopclick(row)">
+                  <button mat-flat-button color="primary" type="button" class="actionBtn">
+                    Shop
+                  </button>
+                  </span>
+                  <!--<button type="button" class="btn btn-outline-primary btn-sm" *ngIf="row.state ? false : true " [disabled]="!adminAccessType.adminReadOnlyAccess">Shop</button>-->       
                </mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
