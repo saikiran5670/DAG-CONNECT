@@ -511,39 +511,47 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #endregion
 
-        #region  Eco Score Report By All Drivers
+
+        #region Eco Score Report - User Preferences
+
         [HttpPost]
-        [Route("ecoscore/getdetailsbyalldriver")]
-        public async Task<IActionResult> GetEcoScoreReportByAllDrivers([FromBody] EcoScoreReportByAllDriversRequest request)
+        [Route("ecoscoreuserpreference/create")]
+        public async Task<IActionResult> CreateEcoScoreUserPreference(Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             try
             {
-                if (!(request.StartDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_STARTDATE_MSG); }
-                if (!(request.EndDateTime > 0)) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_ENDDATE_MSG); }
-                if (request.VINs.Count <= 0) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_VINREQUIRED_MSG); }
-                if (request.StartDateTime > request.EndDateTime) { return BadRequest(ReportConstants.GET_ECOSCORE_REPORT_VALIDATION_DATEMISMATCH_MSG); }
-
-                var grpcRequest = _mapper.MapEcoScoreReportByAllDriver(request);
-                grpcRequest.AccountId = _userDetails.AccountId;
-                grpcRequest.OrgId = GetContextOrgId();
-
-                var response = await _reportServiceClient.GetEcoScoreReportByAllDriversAsync(grpcRequest);
-                if (response?.DriverRanking?.Count > 0)
-                {
-                    response.Message = ReportConstants.GET_ECOSCORE_REPORT_SUCCESS_MSG;
-                    return Ok(response);
-                }
-                else
-                {
-                    return StatusCode((int)response.Code, response.Message);
-                }
+                return Ok();
             }
             catch (Exception ex)
             {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                                 $"CreateEcoScoreUserPreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
+            }
+        }
+
+        [HttpGet]
+        [Route("ecoscoreuserpreference/get")]
+        public async Task<IActionResult> GetEcoScoreUserPreference()
+        {
+            try
+            {
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                 "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                 $"GetEcoScoreUserPreference method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                  _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);
             }
         }
+
         #endregion
 
         #endregion

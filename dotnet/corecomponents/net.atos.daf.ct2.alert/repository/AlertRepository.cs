@@ -897,8 +897,8 @@ namespace net.atos.daf.ct2.alert.repository
                 //}
                 //else if (accountid == 0 && organizationid > 0)
                 //{
-                 queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D'";
-                 parameterAlert.Add("@organization_id", organizationid);
+                queryAlert = queryAlert + " where ale.organization_id = @organization_id and ale.state<>'D'";
+                parameterAlert.Add("@organization_id", organizationid);
                 //}               
 
                 IEnumerable<AlertResult> alertResult = await _dataAccess.QueryAsync<AlertResult>(queryAlert, parameterAlert);
