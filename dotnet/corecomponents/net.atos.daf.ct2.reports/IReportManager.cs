@@ -6,8 +6,9 @@ namespace net.atos.daf.ct2.reports
 {
     public interface IReportManager
     {
-        Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId, int accountId, int organizationId);
-        Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountIdint, int organizationId);
+        Task<bool> CheckIfUserPreferencesExist(int reportId, int accountId, int organizationId);
+        Task<IEnumerable<UserPreferenceReportDataColumn>> GetReportUserPreference(int reportId, int accountId, int organizationId);
+        Task<IEnumerable<UserPreferenceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountId, int roleId, int organizationId, int contextOrgId);
         Task<int> CreateUserPreference(UserPreferenceCreateRequest objUserPreferenceRequest);
         Task<IEnumerable<VehicleFromTripDetails>> GetVinsFromTripStatistics(IEnumerable<string> vinList);
         Task<List<TripDetails>> GetFilteredTripDetails(TripFilterRequest tripFilter);

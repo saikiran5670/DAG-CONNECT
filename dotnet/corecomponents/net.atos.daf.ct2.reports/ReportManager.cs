@@ -22,18 +22,20 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetReportDetails();
         }
 
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
-                                                                                                  int accountId,
-                                                                                                  int organizationId)
+        public Task<bool> CheckIfUserPreferencesExist(int reportId, int accountId, int organizationId)
         {
-            return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId, organizationId);
+            return _reportRepository.CheckIfUserPreferencesExist(reportId, accountId, organizationId);
         }
 
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId,
-                                                                                                  int accountId,
-                                                                                                  int organizationId)
+        public Task<IEnumerable<UserPreferenceReportDataColumn>> GetReportUserPreference(int reportId, int accountId, int organizationId)
         {
-            return _reportRepository.GetRoleBasedDataColumn(reportId, accountId, organizationId);
+            return _reportRepository.GetReportUserPreference(reportId, accountId, organizationId);
+        }
+
+        public Task<IEnumerable<UserPreferenceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountId, int roleId,
+                                                                                       int organizationId, int contextOrgId)
+        {
+            return _reportRepository.GetRoleBasedDataColumn(reportId, accountId, roleId, organizationId, contextOrgId);
         }
         #endregion
 

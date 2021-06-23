@@ -8,18 +8,17 @@ namespace net.atos.daf.ct2.reportservice.entity
 {
     public class Mapper
     {
-        internal IEnumerable<UserPreferenceDataColumn> MapUserPrefences(IEnumerable<UserPrefernceReportDataColumn> userPrefernces)
+        internal IEnumerable<UserPreferenceDataColumn> MapUserPreferences(IEnumerable<UserPreferenceReportDataColumn> userPreferences)
         {
             var userPreferenceResult = new List<UserPreferenceDataColumn>();
-            foreach (var userpreference in userPrefernces)
+            foreach (var userpreference in userPreferences)
             {
                 userPreferenceResult.Add(new UserPreferenceDataColumn
                 {
                     DataAtrributeId = userpreference.DataAtrributeId,
-                    Name = userpreference.Name,
-                    Description = userpreference.Description ?? string.Empty,
-                    Type = userpreference.Type,
-                    Key = userpreference.Key,
+                    Name = userpreference.Name ?? string.Empty,
+                    Type = userpreference.Type ?? string.Empty,
+                    Key = userpreference.Key ?? string.Empty,
                     State = userpreference.State ?? ((char)ReportPreferenceState.InActive).ToString(),
                     ChartType = userpreference.ChartType ?? string.Empty,
                     ThresholdType = userpreference.ThresholdType ?? string.Empty,
@@ -29,7 +28,7 @@ namespace net.atos.daf.ct2.reportservice.entity
             return userPreferenceResult;
         }
 
-        internal net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest MapCreateUserPrefences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        internal net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest MapCreateUserPreferences(UserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest obj
                    = new net.atos.daf.ct2.reports.entity.UserPreferenceCreateRequest
