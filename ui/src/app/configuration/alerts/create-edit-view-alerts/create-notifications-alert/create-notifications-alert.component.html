@@ -380,6 +380,44 @@
                         <span style='font-weight: 500!important;'>{{ item.wsLogin }}</span>
                     </div>
                 </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways || 'Always'}}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom || 'Custom'}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
+                            <span style='font-weight: 500!important;'>{{ item.notificationLimits[0].maxLimit }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblWebEach || 'WebEach' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.notificationLimits[0].periodLimit }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes || 'Minutes' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblHours || 'Hours' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblDays || 'Days' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks || 'Weeks' }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div *ngIf="item.notificationModeType == 'E'">
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
@@ -406,6 +444,44 @@
                     <div  class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
                         <mat-label>{{ translationData.lblEmailText || 'Email Description' }}</mat-label>
                         <span style='font-weight: 500!important;'>{{ item.emailText }}</span>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblNotifyType || 'NotifyType' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'A'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblAlways || 'Always'}}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'">
+                            <span style='font-weight: 500!important;'>{{ translationData.lblCustom || 'Custom'}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="item.notificationLimits[0].notificationModeType == 'C'" class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                            <mat-label>{{ translationData.lblRestrictTo || 'RestrictTo' }}</mat-label>
+                            <span style='font-weight: 500!important;'>{{ item.notificationLimits[0].maxLimit }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblEmailEach || 'EmailEach' }}</mat-label>
+                        <span style='font-weight: 500!important;'>{{ item.notificationLimits[0].periodLimit }}</span>
+                    </div>
+                    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+                        <mat-label>{{ translationData.lblPeriodType || 'Period Type' }}</mat-label>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'M'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblMinutes || 'Minutes' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'H'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblHours || 'Hours' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'D'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblDays || 'Days' }}</span>
+                        </div>
+                        <div *ngIf="item.notificationLimits[0].notificationPeriodType == 'W'">
+                            <span style='font-weight: 500!important;'>{{translationData.lblWeeks || 'Weeks' }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
