@@ -201,7 +201,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region Select User Preferences
         [HttpGet]
         [Route("getvinsfromtripstatisticsandvehicledetails")]
-        [Route("trip/getpreferences")]
+        [Route("trip/getparameters")]
         public async Task<IActionResult> GetVinsFromTripStatisticsAndVehicleDetails(int accountId, int organizationId)
         {
             try

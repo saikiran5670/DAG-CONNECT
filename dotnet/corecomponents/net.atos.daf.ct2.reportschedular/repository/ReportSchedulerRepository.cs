@@ -531,6 +531,12 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             vehref.created_by as vehref_created_by, 
                                             vehref.modified_at as vehref_modified_at, 
                                             vehref.modified_by as vehref_modified_by,
+                                            (CASE WHEN grp.group_type='S' THEN vehs.id END) as vehicleid,
+                                            (CASE WHEN grp.group_type='S' THEN vehs.vin END) as vin,
+                                            (CASE WHEN grp.group_type='S' THEN vehs.license_plate_number END) as regno,
+					                        (CASE WHEN grp.group_type='S' THEN vehs.name END) as vehiclename,
+					                        (CASE WHEN grp.group_type<>'S' THEN grp.name END) as vehiclegroupname,
+                                            (CASE WHEN grp.group_type='S' THEN 'S' ELSE 'G' END) as vehiclegrouptype,
                                             schrep.id as schrep_id, 
                                             schrep.schedule_report_id as schrep_schedule_report_id, 
                                             schrep.report as schrep_report,
@@ -547,7 +553,15 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                    LEFT JOIN master.scheduledreportvehicleref as vehref
 	                                    ON repsch.id=vehref.report_schedule_id AND repsch.status='A' AND vehref.state='A'
 	                                    LEFT JOIN master.scheduledreport as schrep
-	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status='A' ";
+	                                    ON repsch.id=schrep.schedule_report_id AND repsch.status='A'
+                                        LEFT JOIN master.group grp 
+					                    on vehref.vehicle_group_id=grp.id
+					                    LEFT JOIN master.groupref vgrpref
+					                    on  grp.id=vgrpref.group_id and grp.object_type='V'	
+					                    LEFT JOIN master.vehicle veh
+					                    on vgrpref.ref_id=veh.id 
+                                        LEFT JOIN master.vehicle vehs
+					                    on grp.ref_id=vehs.id and grp.group_type='S'";
 
                 queryAlert = queryAlert + " where repsch.organization_id = @organization_id and repsch.status<>'D'";
                 parameterAlert.Add("@organization_id", organizationid);
