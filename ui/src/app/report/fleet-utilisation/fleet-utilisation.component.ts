@@ -252,7 +252,8 @@ lineChartColors: Color[] = [
 lineChartLegend = true;
 lineChartPlugins = [];
 lineChartType = 'line';
-  
+fromTripPageBack: boolean = false;
+
 // calendarOptions: CalendarOptions = {
 //   initialView: 'dayGridMonth',
 //   visibleRange: {
@@ -267,6 +268,16 @@ lineChartType = 'line';
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router) {
     this.defaultTranslation();
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state as {
+      fromTripReport: boolean
+    };
+    //console.log(state)
+    if(state){
+      this.fromTripPageBack = true;
+    }else{
+      this.fromTripPageBack = false;
+    }
    }
 
   defaultTranslation(){
@@ -403,6 +414,9 @@ lineChartType = 'line';
     }
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.setVehicleGroupAndVehiclePreSelection();
+    if(this.fromTripPageBack){
+      this.onSearch();
+    }
   }
 
   onSearch(){
@@ -1077,8 +1091,7 @@ lineChartType = 'line';
   gotoTrip(vehData: any){
     const navigationExtras: NavigationExtras = {
       state: {
-        fromFleetUtilReport: true,
-        vehicleData: vehData
+        fromFleetUtilReport: true
       }
     };
     this.router.navigate(['report/tripreport'], navigationExtras);

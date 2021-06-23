@@ -44,6 +44,7 @@ export class TripReportComponent implements OnInit {
   @ViewChild("map")
   public mapElement: ElementRef;
   showMap: boolean = false;
+  showBack: boolean = false;
   showMapPanel: boolean = false;
   searchExpandPanel: boolean = true;
   tableExpandPanel: boolean = true;
@@ -160,7 +161,12 @@ export class TripReportComponent implements OnInit {
       fromFleetUtilReport: boolean,
       vehicleData: any
     };
-    console.log(state)
+    //console.log(state)
+    if(state){
+      this.showBack = true;
+    }else{
+      this.showBack = false;
+    }
   }
 
   defaultTranslation(){
@@ -343,10 +349,29 @@ export class TripReportComponent implements OnInit {
 
   loadUserPOI(){
     this.landmarkCategoryService.getCategoryWisePOI(this.accountOrganizationId).subscribe((poiData: any) => {
-      this.userPOIList = poiData; 
+      this.userPOIList = this.makeUserCategoryPOIList(poiData);
+      //this.userPOIList = poiData;  
     }, (error) => {
       this.userPOIList = [];
     });
+  }
+
+  makeUserCategoryPOIList(poiData: any){
+    let categoryArr: any = [];
+    let _arr: any = poiData.map(item => item.categoryId).filter((value, index, self) => self.indexOf(value) === index);
+    if(_arr.length > 0){
+      _arr.forEach(element => {
+        let _data = poiData.filter(i => i.categoryId == element);
+        if(_data.length > 0){
+          categoryArr.push({
+            categoryId: _data[0].categoryId,
+            categoryName: _data[0].categoryName,
+            poiList: _data
+          });
+        }
+      });
+    }
+    return categoryArr;
   }
 
   processTranslation(transData: any) {
@@ -889,6 +914,9 @@ export class TripReportComponent implements OnInit {
     //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.vehicleDD = this.vehicleListData;
     this.setVehicleGroupAndVehiclePreSelection();
+    if(this.showBack){
+      this.onSearch();
+    }
   }
 
   setVehicleGroupAndVehiclePreSelection() {
@@ -914,5 +942,14 @@ export class TripReportComponent implements OnInit {
 
   onMapRepresentationChange(event: any){
 
+  }
+
+  backToFleetUtilReport(){
+    const navigationExtras: NavigationExtras = {
+      state: {
+        fromTripReport: true
+      }
+    };
+    this.router.navigate(['report/fleetutilisation'], navigationExtras);
   }
 }
