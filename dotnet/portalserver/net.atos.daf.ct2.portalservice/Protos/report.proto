@@ -54,8 +54,11 @@ message ReportDetails {
 message IdRequest {
   int32 ReportId = 1;
   int32 AccountId=2;
-  int32 OrganizationId=3;
+  int32 RoleId=3;
+  int32 OrganizationId=4;
+  int32 ContextOrgId=5;
 }
+
 message UserPreferenceDataColumn{
     int32 DataAtrributeId =1;
     string Name=2;

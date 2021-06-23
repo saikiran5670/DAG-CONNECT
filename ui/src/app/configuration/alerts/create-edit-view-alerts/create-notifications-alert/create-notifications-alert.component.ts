@@ -411,8 +411,6 @@ if(isButtonClicked){
 
   getNotificationDetails() : any{
    this.notificationReceipients= [];
-   let notificationLimits= [];
-let emailnotificationLimits = [];
   let WsData;
     let EmailData;
     let webPayload= {};
@@ -420,11 +418,13 @@ let emailnotificationLimits = [];
   if(this.FormWebArray && this.FormWebArray.length > 0){
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
         this.FormWebArray.controls.forEach((element, index) => {
+          let webNotificationLimits = [];
+          let obj = {};
           WsData = element['controls'];
           let webrestrict = parseInt(WsData.webretrictTo.value);
           let limitVal = parseInt(WsData.webEach.value);
           if(WsData.notifyPeriodweb.value == 'A'){
-            let obj = {
+            obj = {
                 "id": 0,
                 "recipientId": 0,
                 "notificationId": 0,
@@ -433,10 +433,9 @@ let emailnotificationLimits = [];
                 "notificationPeriodType": "N",
                 "periodLimit": 0
               }
-              notificationLimits.push(obj);
           }
-          if(WsData.notifyPeriodweb.value == 'C'){
-            let obj = 
+          else if(WsData.notifyPeriodweb.value == 'C'){
+            obj = 
               {
                 "id": 0,
                 "recipientId": 0,
@@ -446,8 +445,9 @@ let emailnotificationLimits = [];
                 "notificationPeriodType": WsData.webminutes.value,
                 "periodLimit": limitVal
               }
-              notificationLimits.push(obj);
           }
+          webNotificationLimits.push(obj);
+
         webPayload = {
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
@@ -462,20 +462,21 @@ let emailnotificationLimits = [];
         wsText: WsData.wsDescription.value,
         wsLogin: WsData.loginId.value,
         wsPassword: WsData.password.value,
-        notificationLimits: notificationLimits
+        notificationLimits: webNotificationLimits
       }
       this.notificationReceipients.push(webPayload);
 
    });
   }
   else if(this.actionType == 'edit'){
-    notificationLimits = [];
     this.FormWebArray.controls.forEach((element, index) => {
+      let webNotificationLimits = [];
+      let obj = {};
       WsData = element['controls'];
       let webrestrict = parseInt(WsData.webretrictTo.value);
       let limitVal = parseInt(WsData.webEach.value);
       if(WsData.notifyPeriodweb.value == 'A'){
-        let obj = {
+        obj = {
             "id": 0,
             "recipientId": 0,
             "notificationId": 0,
@@ -484,10 +485,9 @@ let emailnotificationLimits = [];
             "notificationPeriodType": "N",
             "periodLimit": 0
           }
-          notificationLimits.push(obj);
       }
-      if(WsData.notifyPeriodweb.value == 'C'){
-        let obj = 
+     else if(WsData.notifyPeriodweb.value == 'C'){
+        obj = 
           {
             "id": 0,
             "recipientId": 0,
@@ -497,8 +497,8 @@ let emailnotificationLimits = [];
             "notificationPeriodType": WsData.webminutes.value,
             "periodLimit": limitVal
           }
-          notificationLimits.push(obj);
       }
+      webNotificationLimits.push(obj);
       webPayload = {
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
@@ -515,7 +515,7 @@ let emailnotificationLimits = [];
         wsPassword: WsData.password.value,
         id: WsData.receipientId.value ? WsData.receipientId.value : 0,
         notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-        notificationLimits: notificationLimits
+        notificationLimits: webNotificationLimits
       }
       this.notificationReceipients.push(webPayload);
     });
@@ -528,11 +528,13 @@ let emailnotificationLimits = [];
   
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.FormEmailArray.controls.forEach((item,index)=>{
+    let emailNotificationLimits = [];
+    let obj = {};
     EmailData = item['controls'];
     let restrictTo = parseInt(EmailData.retrictTo.value);
     let limitVal = parseInt(EmailData.emailEach.value);
     if(EmailData.notifyPeriod.value == 'A'){
-      let obj = {
+      obj = {
           "id": 0,
           "recipientId": 0,
           "notificationId": 0,
@@ -541,10 +543,9 @@ let emailnotificationLimits = [];
           "notificationPeriodType": "N",
           "periodLimit": 0
         }
-        emailnotificationLimits.push(obj);
     }
-    if(EmailData.notifyPeriod.value == 'C'){
-      let obj = 
+    else if(EmailData.notifyPeriod.value == 'C'){
+      obj = 
         {
           "id": 0,
           "recipientId": 0,
@@ -554,8 +555,8 @@ let emailnotificationLimits = [];
           "notificationPeriodType": EmailData.minutes.value,
           "periodLimit": limitVal
         }
-        emailnotificationLimits.push(obj);
     }
+    emailNotificationLimits.push(obj);
     emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
@@ -570,19 +571,20 @@ let emailnotificationLimits = [];
           wsText: "",
           wsLogin: "",
           wsPassword: "",
-          notificationLimits: emailnotificationLimits
+          notificationLimits: emailNotificationLimits
     }
     this.notificationReceipients.push(emailPayload);
   });
 }
 else if(this.actionType == 'edit'){
-  emailnotificationLimits =[];
   this.FormEmailArray.controls.forEach((item,index)=>{
+    let emailNotificationLimits = [];
+    let obj = {};
     EmailData = item['controls'];
     let restrictTo = parseInt(EmailData.retrictTo.value);
     let limitVal = parseInt(EmailData.emailEach.value);
     if(EmailData.notifyPeriod.value == 'A'){
-      let obj = {
+       obj = {
           "id": 0,
           "recipientId": 0,
           "notificationId": 0,
@@ -591,10 +593,9 @@ else if(this.actionType == 'edit'){
           "notificationPeriodType": "N",
           "periodLimit": 0
         }
-        emailnotificationLimits.push(obj);
     }
-    if(EmailData.notifyPeriod.value == 'C'){
-      let obj = 
+    else if(EmailData.notifyPeriod.value == 'C'){
+       obj = 
         {
           "id": 0,
           "recipientId": 0,
@@ -604,8 +605,8 @@ else if(this.actionType == 'edit'){
           "notificationPeriodType": EmailData.minutes.value,
           "periodLimit": limitVal
         }
-        emailnotificationLimits.push(obj);
     }
+    emailNotificationLimits.push(obj);
      emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
@@ -622,7 +623,7 @@ else if(this.actionType == 'edit'){
           wsPassword: "",
           id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
           notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
-          notificationLimits: emailnotificationLimits
+          notificationLimits: emailNotificationLimits
     }
     this.notificationReceipients.push(emailPayload);
   });
