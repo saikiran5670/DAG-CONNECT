@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Dapper;
 using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.utilities;
 
 namespace net.atos.daf.ct2.reportscheduler.repository
 {
@@ -9,10 +11,6 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     {
         private async void GetReportEmailDetails()
         {
-
-
-            var parameterAlert = new DynamicParameters();
-
             string queryAlert = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 
                                             repsch.report_id as repsch_report_id, 
@@ -40,10 +38,41 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 	                                       ON repsch.id=receipt.schedule_report_id AND repsch.status='A' AND receipt.state='A'	                                  
 	                                       LEFT JOIN master.scheduledreport as schrep
 	                                       ON repsch.id=schrep.schedule_report_id AND repsch.status='A' ";
-            queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC')";
+            queryAlert += " where date_trunc('hour', (to_timestamp(repsch.next_schedule_run_date) AT TIME ZONE 'UTC')) = date_trunc('hour', NOW() AT TIME ZONE 'UTC') GROUP BY repsch.created_by";
 
-            IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert, parameterAlert);
+            IEnumerable<ReportSchedulerResult> reportSchedulerResult = await _dataAccess.QueryAsync<ReportSchedulerResult>(queryAlert);
 
+        }
+
+        public async Task<int> UpdateTimeRangeByDate(ReportEmailFrequency reportEmailFrequency)
+        {
+            var next_schedule_run_date = _helper.GetNextFrequencyTime(reportEmailFrequency.ReportScheduleRunDate, reportEmailFrequency.FrequencyType);
+            var query = @"UPDATE master.reportscheduler 
+                          SET next_schedule_run_date=@next_schedule_run_date 
+                          WHERE id=@id RETURNING id";
+            var parameter = new DynamicParameters();
+            parameter.Add("@id", reportEmailFrequency.ReportId);
+            parameter.Add("@next_schedule_run_date", UTCHandling.GetUTCFromDateTime(next_schedule_run_date));
+            int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+            return rowEffected;
+        }
+        public async Task<int> UpdateTimeRangeByCalenderTime(ReportEmailFrequency reportEmailFrequency)
+        {
+
+            var next_schedule_run_date = reportEmailFrequency.FrequencyType == ENUM.TimeFrequenyType.Monthly ?
+                                        _helper.GetNextMonthlyTime(reportEmailFrequency.ReportScheduleRunDate) :
+                                        _helper.GetNextQuarterTime(reportEmailFrequency.ReportScheduleRunDate);
+
+            var query = @"UPDATE master.reportscheduler 
+                          SET start_date=@start_date ,
+                              end_date=@end_date 
+                          WHERE id=@id RETURNING id";
+            var parameter = new DynamicParameters();
+            parameter.Add("@id", reportEmailFrequency.ReportId);
+            parameter.Add("@start_date", next_schedule_run_date.StartDate);
+            parameter.Add("@end_date", next_schedule_run_date.EndDate);
+            int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
+            return rowEffected;
         }
     }
 }

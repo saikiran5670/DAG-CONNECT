@@ -13,10 +13,12 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
+        private readonly Helper _helper;
         public ReportSchedulerRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
+            _helper = new Helper();
         }
 
         #region Activate Report Scheduler
