@@ -232,7 +232,7 @@ export class AppComponent {
     startTimeStamp : "",
     endDateStamp : "",
     endTimeStamp : "",
-    vehicleGroupDropDownValue : "",
+    vehicleGroupDropDownValue : 0,
     vehicleDropDownValue : "",
     driverDropDownValue : "",
     modifiedFrom: "",
@@ -250,6 +250,8 @@ export class AppComponent {
       this.isLogedIn = data;
       localStorage.setItem("isUserLogin", this.isLogedIn.toString());
       this.getTranslationLabels();
+      //Global Search FIlter Persist Data
+      localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       //this.getAccountInfo();
       // this.getNavigationMenu();
     });
@@ -678,8 +680,7 @@ export class AppComponent {
     this.roleId = localStorage.getItem('accountRoleId');
     this.languageId = JSON.parse(localStorage.getItem("language"));
 
-    //Global Search FIlter Persist Data
-    localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+
     //this.getOrgListData();
     if (this.router.url) {
       //this.isLogedIn = true;
