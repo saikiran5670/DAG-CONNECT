@@ -445,5 +445,45 @@ namespace net.atos.daf.ct2.reportservice.Services
         }
 
         #endregion
+
+        #region Eco Score Report - Create User Preference
+
+        public override async Task<EcoScoreUserPreferenceCreateResponse> CreateEcoScoreUserPreference(EcoScoreUserPreferenceCreateRequest request, ServerCallContext context)
+        {
+            try
+            {
+                EcoScoreUserPreferenceCreateResponse response = new EcoScoreUserPreferenceCreateResponse();
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new EcoScoreUserPreferenceCreateResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(CreateEcoScoreUserPreference)} failed due to - " + ex.Message
+                };
+            }
+        }
+
+        public override async Task<EcoScoreGetUserPreferenceResponse> GetEcoScoreUserPreference(EcoScoreGetUserPreferenceRequest request, ServerCallContext context)
+        {
+            try
+            {
+                EcoScoreGetUserPreferenceResponse response = new EcoScoreGetUserPreferenceResponse();
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return new EcoScoreGetUserPreferenceResponse()
+                {
+                    Code = Responsecode.InternalServerError,
+                    Message = $"{nameof(CreateEcoScoreUserPreference)} failed due to - " + ex.Message
+                };
+            }
+        }
+
+        #endregion
     }
 }

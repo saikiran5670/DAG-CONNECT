@@ -51,11 +51,11 @@ namespace net.atos.daf.ct2.reportscheduler.report
         public async Task<byte[]> GenerateReport()
         {
             var globalSettings = new GlobalSettings
-            {                
+            {
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10, Bottom =10},
+                Margins = new MarginSettings { Top = 10, Bottom = 10 },
                 //DocumentTitle = "PDF Report"//,
                 //Out = @"C:\Harneet\POC\Employee_Report5.pdf"
             };

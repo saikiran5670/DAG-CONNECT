@@ -77,6 +77,14 @@ timeList: any =[
     id: 'H',
     value:'Hours'
   },
+  {
+    id: 'D',
+    value:'Days'
+  },
+  {
+    id: 'W',
+    value:'Weeks'
+  },
 ];
 emailTimeList: any =[
   {
@@ -86,6 +94,14 @@ emailTimeList: any =[
   {
     id: 'H',
     value:"Hours"
+  },
+  {
+    id: 'D',
+    value:'Days'
+  },
+  {
+    id: 'W',
+    value:'Weeks'
   },
 ];
 timeUnitValue :any;
@@ -215,6 +231,7 @@ if(isButtonClicked){
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(this.emailtimeUnitValue);
           this.notificationForm.get("recipientLabel").reset();
           this.notificationForm.get("contactMode").reset();
         }
@@ -224,6 +241,7 @@ if(isButtonClicked){
           this.emailLabel = this.notificationForm.get("recipientLabel").value;
           this.FormEmailArray.at(this.emailIndex).get("emailRecipientLabel").setValue(this.emailLabel);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(this.contactModeType);
+          this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(this.emailtimeUnitValue);
           this.notificationForm.get("recipientLabel").reset();
           this.notificationForm.get("contactMode").reset();
         }
@@ -237,6 +255,7 @@ if(isButtonClicked){
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+          this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(this.timeUnitValue);
           this.notificationForm.get("recipientLabel").reset();
           this.notificationForm.get("contactMode").reset();
         }
@@ -246,6 +265,7 @@ if(isButtonClicked){
           this.wsLabel = this.notificationForm.get("recipientLabel").value;
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(this.wsLabel);
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(this.contactModeType);
+          this.FormWebArray.at(this.wsIndex).get("webminutes").setValue(this.timeUnitValue);
           this.notificationForm.get("recipientLabel").reset();
           this.notificationForm.get("contactMode").reset();
         }
@@ -254,6 +274,8 @@ if(isButtonClicked){
     //for edit or duplicate functionality
     else{
       this.contactModeType = data.notificationModeType;
+      this.weblimitButton = data.notificationLimits[0].notificationModeType;
+      this.limitButton = data.notificationLimits[0].notificationModeType;
       //this is for email
       if (this.contactModeType == 'E') {
         this.addEmailFlag = true;
@@ -266,6 +288,10 @@ if(isButtonClicked){
           this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
           this.FormEmailArray.at(this.emailIndex).get("receipientId").setValue(data.id);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(data.notificationModeType);
+          this.FormEmailArray.at(this.emailIndex).get("notifyPeriod").setValue(data.notificationLimits[0].notificationModeType);
+          this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(data.notificationLimits[0].notificationPeriodType);
+          this.FormEmailArray.at(this.emailIndex).get("retrictTo").setValue(data.notificationLimits[0].maxLimit);
+          this.FormEmailArray.at(this.emailIndex).get("emailEach").setValue(data.notificationLimits[0].periodLimit);
         }
         else {
           this.emailIndex = this.emailIndex+1;
@@ -276,6 +302,10 @@ if(isButtonClicked){
           this.FormEmailArray.at(this.emailIndex).get("mailSubject").setValue(data.emailSub);
           this.FormEmailArray.at(this.emailIndex).get("receipientId").setValue(data.id);
           this.FormEmailArray.at(this.emailIndex).get("emailContactModes").setValue(data.notificationModeType);
+          this.FormEmailArray.at(this.emailIndex).get("notifyPeriod").setValue(data.notificationLimits[0].notificationModeType);
+          this.FormEmailArray.at(this.emailIndex).get("minutes").setValue(data.notificationLimits[0].notificationPeriodType);
+          this.FormEmailArray.at(this.emailIndex).get("retrictTo").setValue(data.notificationLimits[0].maxLimit);
+          this.FormEmailArray.at(this.emailIndex).get("emailEach").setValue(data.notificationLimits[0].periodLimit);
         }
       }
       //this is for web service
@@ -290,6 +320,10 @@ if(isButtonClicked){
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel); 
           this.FormWebArray.at(this.wsIndex).get("receipientId").setValue(data.id);    
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(data.notificationModeType);
+          this.FormWebArray.at(this.emailIndex).get("notifyPeriodweb").setValue(data.notificationLimits[0].notificationModeType);
+          this.FormWebArray.at(this.emailIndex).get("webminutes").setValue(data.notificationLimits[0].notificationPeriodType);
+          this.FormWebArray.at(this.emailIndex).get("webretrictTo").setValue(data.notificationLimits[0].maxLimit);
+          this.FormWebArray.at(this.emailIndex).get("webEach").setValue(data.notificationLimits[0].periodLimit);
           if(data.wsType == 'A'){
           this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
           this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
@@ -305,6 +339,10 @@ if(isButtonClicked){
           this.FormWebArray.at(this.wsIndex).get("webRecipientLabel").setValue(data.recipientLabel);
           this.FormWebArray.at(this.wsIndex).get("receipientId").setValue(data.id);   
           this.FormWebArray.at(this.wsIndex).get("webContactModes").setValue(data.notificationModeType); 
+          this.FormWebArray.at(this.emailIndex).get("notifyPeriodweb").setValue(data.notificationLimits[0].notificationModeType);
+          this.FormWebArray.at(this.emailIndex).get("webminutes").setValue(data.notificationLimits[0].notificationPeriodType);
+          this.FormWebArray.at(this.emailIndex).get("webretrictTo").setValue(data.notificationLimits[0].maxLimit);
+          this.FormWebArray.at(this.emailIndex).get("webEach").setValue(data.notificationLimits[0].periodLimit);
           if(data.wsType == 'A'){
           this.FormWebArray.at(this.wsIndex).get("loginId").setValue(data.wsLogin);
           this.FormWebArray.at(this.wsIndex).get("password").setValue(data.wsPassword);
@@ -374,7 +412,7 @@ if(isButtonClicked){
   getNotificationDetails() : any{
    this.notificationReceipients= [];
    let notificationLimits= [];
-
+let emailnotificationLimits = [];
   let WsData;
     let EmailData;
     let webPayload= {};
@@ -383,6 +421,33 @@ if(isButtonClicked){
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
         this.FormWebArray.controls.forEach((element, index) => {
           WsData = element['controls'];
+          let webrestrict = parseInt(WsData.webretrictTo.value);
+          let limitVal = parseInt(WsData.webEach.value);
+          if(WsData.notifyPeriodweb.value == 'A'){
+            let obj = {
+                "id": 0,
+                "recipientId": 0,
+                "notificationId": 0,
+                "notificationModeType": "A",
+                "maxLimit": 0,
+                "notificationPeriodType": "N",
+                "periodLimit": 0
+              }
+              notificationLimits.push(obj);
+          }
+          if(WsData.notifyPeriodweb.value == 'C'){
+            let obj = 
+              {
+                "id": 0,
+                "recipientId": 0,
+                "notificationId": 0,
+                "notificationModeType": 'C',
+                "maxLimit": webrestrict,
+                "notificationPeriodType": WsData.webminutes.value,
+                "periodLimit": limitVal
+              }
+              notificationLimits.push(obj);
+          }
         webPayload = {
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
@@ -396,7 +461,8 @@ if(isButtonClicked){
         wsType: WsData.authentication.value,
         wsText: WsData.wsDescription.value,
         wsLogin: WsData.loginId.value,
-        wsPassword: WsData.password.value
+        wsPassword: WsData.password.value,
+        notificationLimits: notificationLimits
       }
       this.notificationReceipients.push(webPayload);
 
@@ -405,6 +471,33 @@ if(isButtonClicked){
   else if(this.actionType == 'edit'){
     this.FormWebArray.controls.forEach((element, index) => {
       WsData = element['controls'];
+      let webrestrict = parseInt(WsData.webretrictTo.value);
+      let limitVal = parseInt(WsData.webEach.value);
+      if(WsData.notifyPeriodweb.value == 'A'){
+        let obj = {
+            "id": 0,
+            "recipientId": 0,
+            "notificationId": 0,
+            "notificationModeType": "A",
+            "maxLimit": 0,
+            "notificationPeriodType": "N",
+            "periodLimit": 0
+          }
+          notificationLimits.push(obj);
+      }
+      if(WsData.notifyPeriodweb.value == 'C'){
+        let obj = 
+          {
+            "id": 0,
+            "recipientId": 0,
+            "notificationId": 0,
+            "notificationModeType": 'C',
+            "maxLimit": webrestrict,
+            "notificationPeriodType": WsData.webminutes.value,
+            "periodLimit": limitVal
+          }
+          notificationLimits.push(obj);
+      }
       webPayload = {
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
@@ -420,7 +513,8 @@ if(isButtonClicked){
         wsLogin: WsData.loginId.value,
         wsPassword: WsData.password.value,
         id: WsData.receipientId.value ? WsData.receipientId.value : 0,
-        notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
+        notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+        notificationLimits: notificationLimits
       }
       this.notificationReceipients.push(webPayload);
     });
@@ -434,6 +528,33 @@ if(isButtonClicked){
     if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.FormEmailArray.controls.forEach((item,index)=>{
     EmailData = item['controls'];
+    let restrictTo = parseInt(EmailData.retrictTo.value);
+    let limitVal = parseInt(EmailData.emailEach.value);
+    if(EmailData.notifyPeriod.value == 'A'){
+      let obj = {
+          "id": 0,
+          "recipientId": 0,
+          "notificationId": 0,
+          "notificationModeType": "A",
+          "maxLimit": 0,
+          "notificationPeriodType": "N",
+          "periodLimit": 0
+        }
+        emailnotificationLimits.push(obj);
+    }
+    if(EmailData.notifyPeriod.value == 'C'){
+      let obj = 
+        {
+          "id": 0,
+          "recipientId": 0,
+          "notificationId": 0,
+          "notificationModeType": 'C',
+          "maxLimit": restrictTo,
+          "notificationPeriodType": EmailData.minutes.value,
+          "periodLimit": limitVal
+        }
+        emailnotificationLimits.push(obj);
+    }
     emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
@@ -447,7 +568,8 @@ if(isButtonClicked){
           wsType: "",
           wsText: "",
           wsLogin: "",
-          wsPassword: ""
+          wsPassword: "",
+          notificationLimits: emailnotificationLimits
     }
     this.notificationReceipients.push(emailPayload);
   });
@@ -455,6 +577,33 @@ if(isButtonClicked){
 else if(this.actionType == 'edit'){
   this.FormEmailArray.controls.forEach((item,index)=>{
     EmailData = item['controls'];
+    let restrictTo = parseInt(EmailData.retrictTo.value);
+    let limitVal = parseInt(EmailData.emailEach.value);
+    if(EmailData.notifyPeriod.value == 'A'){
+      let obj = {
+          "id": 0,
+          "recipientId": 0,
+          "notificationId": 0,
+          "notificationModeType": "A",
+          "maxLimit": 0,
+          "notificationPeriodType": "N",
+          "periodLimit": 0
+        }
+        emailnotificationLimits.push(obj);
+    }
+    if(EmailData.notifyPeriod.value == 'C'){
+      let obj = 
+        {
+          "id": 0,
+          "recipientId": 0,
+          "notificationId": 0,
+          "notificationModeType": 'C',
+          "maxLimit": restrictTo,
+          "notificationPeriodType": EmailData.minutes.value,
+          "periodLimit": limitVal
+        }
+        emailnotificationLimits.push(obj);
+    }
      emailPayload = {
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
@@ -470,7 +619,8 @@ else if(this.actionType == 'edit'){
           wsLogin: "",
           wsPassword: "",
           id: EmailData.receipientId.value ? EmailData.receipientId.value : 0,
-          notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0
+          notificationId: this.selectedRowData.notifications.length > 0 ? this.selectedRowData.notifications[0].id : 0,
+          notificationLimits: emailnotificationLimits
     }
     this.notificationReceipients.push(emailPayload);
   });
@@ -480,19 +630,20 @@ else if(this.actionType == 'edit'){
 
 }   
 
-let notificationAdvancedFilterObj = this.notificationAdvancedFilterComponent.getNotificationAdvancedFilter();
-
+let notificationAdvancedFilterObj ;
+if(this.openAdvancedFilter){
+ notificationAdvancedFilterObj = this.notificationAdvancedFilterComponent.getNotificationAdvancedFilter();
+}
 if(this.actionType == 'create' || this.actionType == 'duplicate'){
   this.notifications = [
     {
       "alertUrgencyLevelType": "C",
-      "frequencyType": notificationAdvancedFilterObj.frequencyType,
+      "frequencyType": notificationAdvancedFilterObj ?  notificationAdvancedFilterObj.frequencyType : 'T',
       "frequencyThreshholdValue": 0,
-      "validityType": notificationAdvancedFilterObj.validityType,
+      "validityType": notificationAdvancedFilterObj ? notificationAdvancedFilterObj.validityType : 'A',
       "createdBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "notificationLimits": notificationLimits,
-      "alertTimingDetails": notificationAdvancedFilterObj.alertTimingRef
+      "alertTimingDetails": notificationAdvancedFilterObj? notificationAdvancedFilterObj.alertTimingRef: []
     }
   ]
 }
@@ -508,7 +659,6 @@ else if(this.actionType == 'edit'){
       "alertId": this.selectedRowData.id,
       "modifiedBy": this.accountId,
       "notificationRecipients": this.notificationReceipients,
-      "notificationLimits": notificationLimits,
       "alertTimingDetails": notificationAdvancedFilterObj.alertTimingRef
     }
   ]

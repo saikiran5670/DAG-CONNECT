@@ -369,11 +369,14 @@ namespace net.atos.daf.ct2.alertservice.Entity
             notificationRecipient.State = request.State;
             notificationRecipient.CreatedAt = request.CreatedAt;
             notificationRecipient.ModifiedAt = request.ModifiedAt;
-            if (request.NotificationLimits.Count > 0)
+            if (request.NotificationLimits != null)
             {
-                foreach (var item in request.NotificationLimits)
+                if (request.NotificationLimits.Count > 0)
                 {
-                    notificationRecipient.NotificationLimits.Add(MapNotificationLimitEntity(item));
+                    foreach (var item in request.NotificationLimits)
+                    {
+                        notificationRecipient.NotificationLimits.Add(MapNotificationLimitEntity(item));
+                    }
                 }
             }
             return notificationRecipient;
