@@ -22,6 +22,7 @@ import { GeofenceService } from 'src/app/services/landmarkGeofence.service';
 import { Options } from '@angular-slider/ngx-slider';
 import { PeriodSelectionFilterComponent } from '../period-selection-filter/period-selection-filter.component';
 import { Util } from 'src/app/shared/util';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 declare var H: any;
 
@@ -76,6 +77,10 @@ export class AlertAdvancedFilterComponent implements OnInit {
   selectedApplyOn: string = 'A';
   advancedAlertPayload: any = [];
   filterType: any;
+  selectedDistance: any;
+  selectedDuration :any;
+  selectedOccurance : any;
+  rowData : any;
   thresholdVal: any;
   options: Options = {
     floor: 0,
@@ -116,13 +121,16 @@ export class AlertAdvancedFilterComponent implements OnInit {
       toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
-    if(this.actionType == 'edit' || this.actionType == 'duplicate'){
+    if(this.actionType == 'view'){
       this.setDefaultAdvanceAlert();
     }
   }
 
   setDefaultAdvanceAlert(){
-
+      this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
+      this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
+      this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
+      this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
   }
 
   onChangeDistance(event: any){
@@ -845,7 +853,7 @@ else{
                "landmarkType": element.type,
                "refId": element.id,
                "positionType": "N",
-               "alertTimingDetail": []
+               "alertTimingDetails": []
              }
              if(this.actionType == 'edit'){
               let geofenceLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
@@ -867,7 +875,7 @@ else{
                "landmarkType": "P",
                "refId": element.id,
                "positionType": "N",
-               "alertTimingDetail": []
+               "alertTimingDetails": []
              }
              if(this.actionType == 'edit'){
               let poiLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
@@ -889,7 +897,7 @@ else{
               "landmarkType": "G",
               "refId": element.id,
               "positionType": "N",
-              "alertTimingDetail": []
+              "alertTimingDetails": []
             }
             if(this.actionType == 'edit'){
               let groupLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
@@ -922,14 +930,14 @@ else{
         "landmarkType": "N",
         "refId": 0,
         "positionType": "N",
-        "alertTimingDetail": this.alertTimingDetail
+        "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
         let noOfOccuranceRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'N'); 
         obj["id"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
-        obj["alertTimingDetail"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+        obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
        }
        this.advancedAlertPayload.push(obj);
     }
@@ -945,14 +953,14 @@ else{
         "landmarkType": "N",
         "refId": 0,
         "positionType": "N",
-        "alertTimingDetail": this.alertTimingDetail
+        "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
         let durationRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D'); 
         obj["id"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';
-        obj["alertTimingDetail"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+        obj["alertTimingDetails"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
        }
       this.advancedAlertPayload.push(obj);
     }
@@ -965,8 +973,15 @@ else{
         "landmarkType": "N",
         "refId": 0,
         "positionType": "N",
-        "alertTimingDetail": this.alertTimingDetail
+        "alertTimingDetails": this.alertTimingDetail
       }
+      if(this.actionType == 'edit'){
+        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.refId;
+        obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+        obj["alertId"] = this.selectedRowData.id;
+        obj["state"] = 'A';
+        obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+       }
       this.advancedAlertPayload.push(obj);
     }
 
@@ -992,8 +1007,15 @@ else{
               "landmarkType": 'N',
               "refId": 0,
               "positionType": "N",
-              "alertTimingDetail": this.alertTimingDetail
+              "alertTimingDetails": this.alertTimingDetail
             }
+            if(this.actionType == 'edit'){
+              let noOfOccuranceRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'N'); 
+              obj["id"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = 'A';
+              obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+             }
             this.advancedAlertPayload.push(obj);
           }
         }
@@ -1007,8 +1029,15 @@ else{
             "landmarkType": 'N',
             "refId": 0,
             "positionType": "N",
-            "alertTimingDetail": this.alertTimingDetail
+            "alertTimingDetails": this.alertTimingDetail
           }
+          if(this.actionType == 'edit'){
+            let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.refId;
+            obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+            obj["alertId"] = this.selectedRowData.id;
+            obj["state"] = 'A';
+            obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+           }
           this.advancedAlertPayload.push(obj);
         }
 
@@ -1022,14 +1051,14 @@ else{
               "landmarkType": element.type,
               "refId": element.id,
               "positionType": "N",
-              "alertTimingDetail": this.alertTimingDetail
+              "alertTimingDetails": this.alertTimingDetail
             }
             if(this.actionType == 'edit'){
               let geofenceLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
               obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
-              obj["alertTimingDetail"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+              obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
              }
             this.advancedAlertPayload.push(obj);
           })
@@ -1044,14 +1073,14 @@ else{
               "landmarkType": "P",
               "refId": element.id,
               "positionType": "N",
-              "alertTimingDetail": this.alertTimingDetail
+              "alertTimingDetails": this.alertTimingDetail
             }
             if(this.actionType == 'edit'){
               let poiLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
               obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
               obj["alertId"] = this.selectedRowData.id;
               obj["state"] = element.state == 'Active' ? 'A' : 'I';
-              obj["alertTimingDetail"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+              obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
              }
             this.advancedAlertPayload.push(obj);
           });
@@ -1067,14 +1096,14 @@ else{
              "landmarkType": "G",
              "refId": element.id,
              "positionType": "N",
-             "alertTimingDetail": this.alertTimingDetail
+             "alertTimingDetails": this.alertTimingDetail
            }
            if(this.actionType == 'edit'){
             let groupLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
             obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
             obj["alertId"] = this.selectedRowData.id;
             obj["state"] = element.state == 'Active' ? 'A' : 'I';
-            obj["alertTimingDetail"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
+            obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
            }
            this.advancedAlertPayload.push(obj);
          });
@@ -1086,7 +1115,7 @@ else{
     // hours of service
     if((this.alert_category_selected == 'L') && (this.alert_type_selected == 'S')){
 
-      if (this.actionType == 'create' || this.actionType == 'duplicate') {
+      if (this.actionType == 'create' || this.actionType == 'duplicate' || this.actionType == 'edit') {
         let obj;
         if(this.isDurationSelected){
           this.filterType = 'D';
@@ -1105,8 +1134,15 @@ else{
           "landmarkType": 'N',
           "refId": 0,
           "positionType": "N",
-          "alertTimingDetail": []
+          "alertTimingDetails": []
         }
+        if(this.actionType == 'edit'){
+          let durationRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D'); 
+          obj["id"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+          obj["alertId"] = this.selectedRowData.id;
+          obj["state"] = 'A';
+          obj["alertTimingDetails"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+         }
         this.advancedAlertPayload.push(obj);
       }
       }
@@ -1128,8 +1164,15 @@ else{
         "landmarkType": 'N',
         "refId": 0,
         "positionType": "N",
-        "alertTimingDetail": []
+        "alertTimingDetails": []
       }
+      if(this.actionType == 'edit'){
+        let distanceRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T'); 
+        obj["id"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
+        obj["alertId"] = this.selectedRowData.id;
+        obj["state"] = 'A';
+        obj["alertTimingDetails"]["refId"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
+       }
       this.advancedAlertPayload.push(obj);
     }
     }
@@ -1145,8 +1188,15 @@ else{
           "landmarkType": element.type,
           "refId": element.id,
           "positionType": "N",
-          "alertTimingDetail": this.alertTimingDetail
+          "alertTimingDetails": this.alertTimingDetail
         }
+        if(this.actionType == 'edit'){
+          let geofenceLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+          obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+          obj["alertId"] = this.selectedRowData.id;
+          obj["state"] = element.state == 'Active' ? 'A' : 'I';
+          obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+         }
         this.advancedAlertPayload.push(obj);
       }
   
@@ -1162,8 +1212,15 @@ else{
               "landmarkType": element.type,
               "refId": element.id,
               "positionType": "N",
-              "alertTimingDetail": this.alertTimingDetail
+              "alertTimingDetails": this.alertTimingDetail
             }
+              if(this.actionType == 'edit'){
+                let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+                obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                obj["alertId"] = this.selectedRowData.id;
+                obj["state"] = 'A';
+                obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+               }
             this.advancedAlertPayload.push(obj);
           });
         }
@@ -1181,9 +1238,16 @@ else{
                 "landmarkType": "P",
                 "refId": element.id,
                 "positionType": "N",
-                "alertTimingDetail": []
+                "alertTimingDetails": []
                 
               }
+              if(this.actionType == 'edit'){
+                let poiLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+                obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+                obj["alertId"] = this.selectedRowData.id;
+                obj["state"] = element.state == 'Active' ? 'A' : 'I';
+                obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+               }
               this.advancedAlertPayload.push(obj);
             }
             if (this.filterTypeArray.length != 0) {
@@ -1198,9 +1262,15 @@ else{
               "landmarkType": "P",
               "refId": element.id,
               "positionType": "N",
-              "alertTimingDetail": this.alertTimingDetail
+              "alertTimingDetails": this.alertTimingDetail
             }
-         
+            if(this.actionType == 'edit'){
+              let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+              obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = 'A';
+              obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+             }
             this.advancedAlertPayload.push(obj);
           });
         }
@@ -1219,7 +1289,14 @@ else{
              "landmarkType": "G",
              "refId": element.id,
              "positionType": "N",
-             "alertTimingDetail": []
+             "alertTimingDetails": []
+           }
+           if(this.actionType == 'edit'){
+            let groupLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
+            obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
+            obj["alertId"] = this.selectedRowData.id;
+            obj["state"] = element.state == 'Active' ? 'A' : 'I';
+            obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
            }
            this.advancedAlertPayload.push(obj);
           }
@@ -1236,9 +1313,15 @@ else{
             "landmarkType": "G",
             "refId": element.id,
             "positionType": "N",
-            "alertTimingDetail": this.alertTimingDetail
+            "alertTimingDetails": this.alertTimingDetail
           }
-       
+          if(this.actionType == 'edit'){
+            let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+            obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+            obj["alertId"] = this.selectedRowData.id;
+            obj["state"] = 'A';
+            obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+           }
           this.advancedAlertPayload.push(obj);
         });
       }
@@ -1270,8 +1353,15 @@ else{
             "landmarkType": 'N',
             "refId": 0,
             "positionType": "N",
-            "alertTimingDetail": this.alertTimingDetail
+            "alertTimingDetails": this.alertTimingDetail
           }
+          if(this.actionType == 'edit'){
+            let durationRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D'); 
+            obj["id"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+            obj["alertId"] = this.selectedRowData.id;
+            obj["state"] = 'A';
+            obj["alertTimingDetails"]["refId"] = durationRefArr.length > 0 ? durationRefArr[0].id : 0;
+           }
           this.advancedAlertPayload.push(obj);
         }
         }
@@ -1293,8 +1383,15 @@ else{
           "landmarkType": 'N',
           "refId": 0,
           "positionType": "N",
-          "alertTimingDetail": this.alertTimingDetail
+          "alertTimingDetails": this.alertTimingDetail
         }
+        if(this.actionType == 'edit'){
+          let distanceRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T'); 
+          obj["id"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
+          obj["alertId"] = this.selectedRowData.id;
+          obj["state"] = 'A';
+          obj["alertTimingDetails"]["refId"] = distanceRefArr.length > 0 ? distanceRefArr[0].id : 0;
+         }
         this.advancedAlertPayload.push(obj);
       }
       }
@@ -1316,8 +1413,16 @@ else{
         "landmarkType": 'N',
         "refId": 0,
         "positionType": "N",
-        "alertTimingDetail": this.alertTimingDetail
+        "alertTimingDetails": this.alertTimingDetail
       }
+      
+      if(this.actionType == 'edit'){
+        let noOfOccuranceRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'N'); 
+        obj["id"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+        obj["alertId"] = this.selectedRowData.id;
+        obj["state"] = 'A';
+        obj["alertTimingDetails"]["refId"] = noOfOccuranceRefArr.length > 0 ? noOfOccuranceRefArr[0].id : 0;
+       }
       this.advancedAlertPayload.push(obj);
     }
     }
@@ -1334,8 +1439,15 @@ else{
             "landmarkType": element.type,
             "refId": element.id,
             "positionType": "N",
-            "alertTimingDetail": this.alertTimingDetail
+            "alertTimingDetails": this.alertTimingDetail
           }
+          if(this.actionType == 'edit'){
+            let geofenceLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+            obj["id"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+            obj["alertId"] = this.selectedRowData.id;
+            obj["state"] = element.state == 'Active' ? 'A' : 'I';
+            obj["alertTimingDetails"]["refId"] = geofenceLandmarkRefArr.length > 0 ? geofenceLandmarkRefArr[0].id : 0;
+           }
           this.advancedAlertPayload.push(obj);
         }
     
@@ -1351,8 +1463,15 @@ else{
                 "landmarkType": element.type,
                 "refId": element.id,
                 "positionType": "N",
-                "alertTimingDetail": this.alertTimingDetail
+                "alertTimingDetails": this.alertTimingDetail
               }
+              if(this.actionType == 'edit'){
+                let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+                obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                obj["alertId"] = this.selectedRowData.id;
+                obj["state"] = 'A';
+                obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+               }
               this.advancedAlertPayload.push(obj);
             });
           }
@@ -1370,9 +1489,16 @@ else{
                   "landmarkType": "P",
                   "refId": element.id,
                   "positionType": "N",
-                  "alertTimingDetail": []
+                  "alertTimingDetails": []
                   
                 }
+                if(this.actionType == 'edit'){
+                  let poiLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id); 
+                  obj["id"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+                  obj["alertId"] = this.selectedRowData.id;
+                  obj["state"] = element.state == 'Active' ? 'A' : 'I';
+                  obj["alertTimingDetails"]["refId"] = poiLandmarkRefArr.length > 0 ? poiLandmarkRefArr[0].id : 0;
+                 }
                 this.advancedAlertPayload.push(obj);
               }
               if (this.filterTypeArray.length != 0) {
@@ -1387,9 +1513,15 @@ else{
                 "landmarkType": "P",
                 "refId": element.id,
                 "positionType": "N",
-                "alertTimingDetail": this.alertTimingDetail
+                "alertTimingDetails": this.alertTimingDetail
               }
-           
+              if(this.actionType == 'edit'){
+                let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+                obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+                obj["alertId"] = this.selectedRowData.id;
+                obj["state"] = 'A';
+                obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+               }
               this.advancedAlertPayload.push(obj);
             });
           }
@@ -1408,7 +1540,14 @@ else{
                "landmarkType": "G",
                "refId": element.id,
                "positionType": "N",
-               "alertTimingDetail": []
+               "alertTimingDetails": []
+             }
+             if(this.actionType == 'edit'){
+              let groupLandmarkRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.refId == element.id && item.landmarkType == 'G'); 
+              obj["id"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = element.state == 'Active' ? 'A' : 'I';
+              obj["alertTimingDetails"]["refId"] = groupLandmarkRefArr.length > 0 ? groupLandmarkRefArr[0].id : 0;
              }
              this.advancedAlertPayload.push(obj);
             }
@@ -1425,9 +1564,15 @@ else{
               "landmarkType": "G",
               "refId": element.id,
               "positionType": "N",
-              "alertTimingDetail": this.alertTimingDetail
+              "alertTimingDetails": this.alertTimingDetail
             }
-         
+            if(this.actionType == 'edit'){
+              let filterTypeRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == this.filterType); 
+              obj["id"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+              obj["alertId"] = this.selectedRowData.id;
+              obj["state"] = 'A';
+              obj["alertTimingDetails"]["refId"] = filterTypeRefArr.length > 0 ? filterTypeRefArr[0].id : 0;
+             }
             this.advancedAlertPayload.push(obj);
           });
         }
