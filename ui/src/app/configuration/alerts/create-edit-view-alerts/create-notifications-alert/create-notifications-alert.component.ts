@@ -5,6 +5,7 @@ import { EmailValidator, FormArray, FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { element } from 'protractor';
+import { AlertService } from 'src/app/services/alert.service';
 import { CustomValidators } from 'src/app/shared/custom.validators';
 import { NotificationAdvancedFilterComponent } from './notification-advanced-filter/notification-advanced-filter.component';
 
@@ -68,6 +69,8 @@ emailLabel : any;
 wsLabel: any;
 limitButton: any;
 weblimitButton: any;
+notificationRecipients = [];
+keyword = 'recipientLabel';
 timeList: any =[
   {
     id: 'M',
@@ -110,7 +113,7 @@ emailtimeUnitValue: any;
 @ViewChild(NotificationAdvancedFilterComponent)
 notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder, private alertService : AlertService) { }
 
   ngOnInit(): void {
     console.log("action type=" +this.actionType);
@@ -134,6 +137,11 @@ notificationAdvancedFilterComponent: NotificationAdvancedFilterComponent;
     });
     console.log(this.selectedRowData);
    
+    if(this.actionType == 'create' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+      this.alertService.getNotificationRecipients(this.organizationId).subscribe(data => {
+        this.notificationReceipients = data;
+      })
+    }
     if((this.actionType == 'edit' || this.actionType == 'duplicate') &&
        this.selectedRowData.notifications.length > 0 && 
        this.selectedRowData.notifications[0].notificationRecipients.length > 0)
@@ -449,6 +457,7 @@ if(isButtonClicked){
           webNotificationLimits.push(obj);
 
         webPayload = {
+        id: WsData.receipientId ? WsData.receipientId.value : 0,
         recipientLabel: WsData.webRecipientLabel.value,
         accountGroupId: this.organizationId,
         notificationModeType: WsData.webContactModes.value,
@@ -558,6 +567,7 @@ if(isButtonClicked){
     }
     emailNotificationLimits.push(obj);
     emailPayload = {
+          id: EmailData.receipientId ? EmailData.receipientId.value : 0,
           recipientLabel: EmailData.emailRecipientLabel.value,
           accountGroupId: this.organizationId,
           notificationModeType: EmailData.emailContactModes.value,

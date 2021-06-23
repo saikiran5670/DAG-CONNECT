@@ -29,10 +29,24 @@
         <div class="areaWidth" fxLayout="column" fxLayoutAlign="left">
             <mat-label>{{ translationData.lblRecipientLabel || 'Recipient Label' }} <span
                     class='mandatoryColor'>*</span></mat-label>
-            <mat-form-field appearance="outline" class="full-width">
+                    <div class="ng-autocomplete">
+                        <ng-autocomplete
+                          [data]="notificationReceipients"
+                          [searchKeyword]="keyword"
+                          placeholder="{{ translationData.lblEnterRecipientLabel || 'Enter Recipient Label' }}"
+                          (selected)='addMultipleItems(false, $event)'
+                          [itemTemplate]="itemTemplate"
+                          formControlName="recipientLabel">
+                        </ng-autocomplete>
+                      
+                        <ng-template #itemTemplate let-item>
+                          <a [innerHTML]="item.recipientLabel"></a>
+                        </ng-template>
+                    </div>
+            <!-- <mat-form-field appearance="outline" class="full-width">
                 <input placeholder="{{ translationData.lblEnterRecipientLabel || 'Enter Recipient Label' }}" matInput
                     formControlName="recipientLabel" maxlength="50">
-            </mat-form-field>
+            </mat-form-field> -->
             <mat-hint>{{translationData.lblEnterMaxRecipientLabelForCategorization || 'Enter max 10 recipient label for
                 categorization' }}</mat-hint>
             <mat-error *ngIf="notificationForm.get('recipientLabel').hasError('required') && notificationForm.get('recipientLabel').touched">
@@ -84,7 +98,13 @@
             <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                translationData.lblRecipientLabel02 || 'Recipient Label' }} <span style="margin-left: 5px;">{{item['controls']['emailRecipientLabel'].value}}</span></span>
+            
+            translationData.lblRecipientLabel02 || 'Recipient Label' }} </span>
+                <mat-form-field appearance="outline" class="full-width">
+                    <input matInput
+                        formControlName="emailRecipientLabel" >
+                </mat-form-field>
+                <!-- <span style="margin-left: 5px;">{{item['controls']['emailRecipientLabel'].value}}</span> -->
                </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
                 <mat-icon style="color: red;cursor: pointer;" (click)="deleteEmailNotificationRow(i)">deleteicon</mat-icon>
@@ -212,7 +232,14 @@
             <div fxLayout="row" fxLayoutAlign="space-between" style="width: 100%;">
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="right" class="areawidth">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
-                translationData.lblRecipientLabel02 || 'Recipient Label' }} <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span></span>
+                translationData.lblRecipientLabel02 || 'Recipient Label' }} 
+
+                <!-- <span style="margin-left: 5px;">{{item['controls']['webRecipientLabel'].value}}</span> -->
+            </span>
+            <mat-form-field appearance="outline" class="full-width">
+                <input matInput
+                    formControlName="webRecipientLabel" >
+            </mat-form-field>
                </div>
                 <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="end" class="areawidth">
                 <mat-icon style="color: red;cursor: pointer;" (click)="deleteWebNotificationRow(i)">deleteicon</mat-icon>
