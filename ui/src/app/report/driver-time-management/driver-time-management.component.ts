@@ -727,6 +727,20 @@ export class DriverTimeManagementComponent implements OnInit {
                 "driveTime": 10800,
                 "serviceTime": 14400
               },
+              {
+                "driverId": "UK DB08176162022802",
+                "driverName": "Helloupdated Helloupdated",
+                "vin": "RERAE75PC0E261011",
+                "activityDate": 1624427508387,
+                "startTime": 1604338846000,
+                "endTime": 1604337628000,
+                "code": 3,
+                "restTime": 0,
+                "availableTime": 0,
+                "workTime": 0,
+                "driveTime": 10800,
+                "serviceTime": 14400
+              },
               
             ]
 
@@ -764,6 +778,8 @@ export class DriverTimeManagementComponent implements OnInit {
       this.tableDetailsInfoObj= {
         fromDisplayDate : this.fromDisplayDate,
         toDisplayDate : this.toDisplayDate,
+        fromDisplayOnlyDate :  this.fromDisplayDate.split(" ")[0],
+        toDisplayOnlyDate : this.toDisplayDate.split(" ")[0],
         selectedDriverName: this.driverDetails[0]['driverName'],
         selectedDriverId : this.driverDetails[0]['driverId'],
         driveTime: Util.getHhMmTime(this.totalDriveTime),
