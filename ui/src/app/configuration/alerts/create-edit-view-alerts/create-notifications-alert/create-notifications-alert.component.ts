@@ -469,6 +469,7 @@ let emailnotificationLimits = [];
    });
   }
   else if(this.actionType == 'edit'){
+    notificationLimits = [];
     this.FormWebArray.controls.forEach((element, index) => {
       WsData = element['controls'];
       let webrestrict = parseInt(WsData.webretrictTo.value);
@@ -575,6 +576,7 @@ let emailnotificationLimits = [];
   });
 }
 else if(this.actionType == 'edit'){
+  emailnotificationLimits =[];
   this.FormEmailArray.controls.forEach((item,index)=>{
     EmailData = item['controls'];
     let restrictTo = parseInt(EmailData.retrictTo.value);
