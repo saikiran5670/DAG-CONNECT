@@ -185,7 +185,7 @@ export class ReportMapService {
 
   getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
       element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
       element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
@@ -199,7 +199,7 @@ export class ReportMapService {
 
   getConvertedFleetDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
-      element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone);
+      element.convertedStopTime = this.getStartTime(element.StopTime, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.getAvrgWeight(element.averageWeightPerTrip, unitFormat);
       element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
       element.convertedAverageDistance = this.getDistance(element.averageDistancePerDay, unitFormat);
@@ -226,10 +226,24 @@ export class ReportMapService {
     return gridData;
   }
 
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any){
+  
+  getDriverDetailsTimeDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
+    gridData.forEach(element => {
+      element.driverName = element.driverName;
+      element.driverId = element.driverId;
+      element.activityDate= this.getStartTime(element.activityDate, dateFormat, timeFormat, timeZone,false);
+      element.driveTime = this.getHhMmTime(element.driveTime);
+      element.workTime = this.getHhMmTime(element.workTime);
+      element.serviceTime = this.getHhMmTime(element.serviceTime);
+      element.restTime = this.getHhMmTime(element.restTime);
+      element.availableTime = this.getHhMmTime(element.availableTime);
+    });
+    return gridData;
+  }
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any,addTime?:boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat,addTime);
     }
     return sTime;
   }
@@ -338,7 +352,7 @@ export class ReportMapService {
     return data;
   }
 
-  formStartEndDate(date: any, dateFormat: any, timeFormat: any){
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any,addTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
@@ -362,23 +376,42 @@ export class ReportMapService {
     }
     switch(dateFormat){
       case 'ddateformat_dd/mm/yyyy': {
+        if(addTime)
         _date = `${_d}/${_m}/${_y} ${_time}`;
+        else
+        _date = `${_d}/${_m}/${_y}`;
+
         break;
       }
       case 'ddateformat_mm/dd/yyyy': {
+        if(addTime)
         _date = `${_m}/${_d}/${_y} ${_time}`;
+        else
+        _date = `${_m}/${_d}/${_y}`;
         break;
       }
       case 'ddateformat_dd-mm-yyyy': {
+        if(addTime)
         _date = `${_d}-${_m}-${_y} ${_time}`;
+        else
+        _date = `${_d}-${_m}-${_y}`;
+
         break;
       }
       case 'ddateformat_mm-dd-yyyy': {
+        if(addTime)
         _date = `${_m}-${_d}-${_y} ${_time}`;
+        else
+        _date = `${_m}-${_d}-${_y}`;
+
         break;
       }
       default:{
+        if(addTime)
         _date = `${_m}/${_d}/${_y} ${_time}`;
+        else
+        _date = `${_m}/${_d}/${_y}`;
+
       }
     }
     return _date;

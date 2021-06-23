@@ -1572,14 +1572,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
                 if (response != null && response.Code == AccountBusinessService.Responcecode.Success)
                 {
-                    if (response.AccountGroupDetail != null && response.AccountGroupDetail.Count > 0)
-                    {
-                        return Ok(response.AccountGroupDetail);
-                    }
-                    else
-                    {
-                        return StatusCode(404, "Account Group details are found.");
-                    }
+                    return Ok(response.AccountGroupDetail);
                 }
                 else
                 {

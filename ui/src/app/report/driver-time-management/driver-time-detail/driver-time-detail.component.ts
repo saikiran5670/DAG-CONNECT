@@ -11,6 +11,8 @@ import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { ReportMapService } from '../../report-map.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { ChartOptions, ChartType, ChartDataSets ,ChartColor} from 'chart.js';
+
 
 @Component({
   selector: 'app-driver-time-detail',
@@ -24,6 +26,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() detailConvertedData : any;
   initData = [];
   searchExpandPanel: boolean = true;
+  chartExpandPanel : boolean = true;
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel : boolean = true;
   generalExpandPanel : boolean = true;
@@ -37,6 +40,25 @@ export class DriverTimeDetailComponent implements OnInit {
   displayedColumns = ['date', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
   @Output() backToMainPage = new EventEmitter<any>();
   
+  barChartOptions: ChartOptions = {
+    responsive: true
+  };
+  barChartType: ChartType = 'horizontalBar';
+  barChartLegend = true;
+  barChartColors: Array<any> = [
+    {
+      backgroundColor :['rgba(255, 165, 0,1)','rgba(0, 0, 255, 1)','rgba(0, 128, 0, 1)','rgba(128, 128, 128, 1)']
+    }
+  ];
+
+  barChartData: ChartDataSets[] = [] ;
+  // [
+  //   { data: [1, 2, 3], label: 'Work', stack: 'a' },
+  //   { data: [1, 2, 3], label: 'Drive', stack: 'a' },
+  //   { data: [1, 2, 3], label: 'Rest', stack: 'a' },
+  //   { data: [1, 2, 3], label: 'Available', stack: 'a' },
+  // ];
+  barChartLabels: string[] = [];
 
   constructor(private reportMapService:ReportMapService) { }
 
@@ -45,11 +67,33 @@ export class DriverTimeDetailComponent implements OnInit {
     //this.setGeneralDriverValue();
     this.setTableInfo();
     this.updateDataSource(this.detailConvertedData);
+    this.setGraphData();
 
   }
+
+  setGraphData(){
+    let dateArray = this.detailConvertedData.map(data=>data.activityDate);
+    let driveTimeArray = this.detailConvertedData.map(data=>data.driveTime);
+    let workTimeArray = this.detailConvertedData.map(data=>data.workTime);
+    let restTimeArray = this.detailConvertedData.map(data=>data.restTime);
+    let availableTimeArray = this.detailConvertedData.map(data=>data.availableTime);
+
+    this.barChartData = [
+        { data: [8.0,6.15], label: 'Work', stack: 'a' },
+        { data: [4.0,6.45], label: 'Drive', stack: 'a' },
+        { data: [8.0,6.15], label: 'Rest', stack: 'a' },
+        { data: [4.0,6.45], label: 'Available', stack: 'a' },
+      ]
+    
+    this.barChartLabels = dateArray;
+
+    
+    
+  }
+
   totalDriveTime =0;
   totalWorkTime =0;
- totalRestTime =0;
+  totalRestTime =0;
   totalAvailableTime =0;
   selectedDriverName = '';
   selectedDriverId = '';
@@ -68,6 +112,14 @@ export class DriverTimeDetailComponent implements OnInit {
     });
   }
 
+  public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
+    console.log(event, active);
+  }
+
+  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
+    console.log(event, active);
+  }
+  
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // dataSource defaults to lowercase matches
@@ -93,7 +145,7 @@ export class DriverTimeDetailComponent implements OnInit {
   let prepare = []
     this.initData.forEach(e=>{
       var tempObj =[];
-      tempObj.push(e.endTime);
+      tempObj.push(e.activityDate);
       tempObj.push(e.driveTime);
       tempObj.push(e.workTime);
       tempObj.push(e.serviceTime);

@@ -104,18 +104,18 @@
             </div>
           </div>
         </mat-expansion-panel>
-      </mat-card>
+      </mat-card> 
     </form>
 
-    <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="tableExpandPanel == true"
-        (closed)="tableExpandPanel == false">
+    <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="isSummaryOpen == true"
+        (closed)="isSummaryOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblSummary || 'Summary' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <div *ngIf='initData.length > 0' [ngClass]="{'reportTable': displayedColumns.length > 7}">
+          <div *ngIf='initData.length > 0'>
             <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
               <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
                 <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
@@ -213,15 +213,16 @@
 
 <!-- Charts view -->
 
-      <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel  class="full-width" fxLayoutGap="10px">
+      <mat-card *ngIf='initData.length > 0' class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel *ngIf = 'tableExpandPanel'  [(expanded)]="isChartsOpen" class="full-width" fxLayoutGap="10px" (opened)="isChartsOpen == true"
+        (closed)="isChartsOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-          <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <div class="areaWidth areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
             <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblDistancePerDay || 'Distance per day' }}</span>
             <div class="chart-wrapper">
               <canvas baseChart 
@@ -251,7 +252,7 @@
 
       </div>
       <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
-        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+        <div *ngIf = 'isChartsOpen' class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblMileageBasedUtilisation || 'Mileage based utilisation' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
@@ -265,9 +266,9 @@
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblTimeBasedUtilisation || 'Time based utilisation' }}</span>
           <div class="chart-wrapper">
             <canvas baseChart 
-            [data]="doughnutChartData"
-            [chartType]="doughnutChartType"
-            [labels]="doughnutChartLabels">
+            [data]="doughnutChartDataForTime"
+            [chartType]="doughnutChartTypeTime"
+            [labels]="doughnutChartLabelsForTime">
           </canvas>
         </div>
         </div>
@@ -277,14 +278,36 @@
 
       <!-- Calendar view -->
 
-      <mat-card  class='mat-elevation-z no-padding margin-bottom-xlg'>
-        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px">
+      <mat-card *ngIf='initData.length > 0'  class='mat-elevation-z no-padding margin-bottom-xlg'>
+        <mat-expansion-panel [(expanded)]="tableExpandPanel" class="full-width" fxLayoutGap="10px" (opened)="isCalendarOpen == true"
+        (closed)="isCalendarOpen == false">
           <mat-expansion-panel-header class="full-width">
             <mat-panel-title>
               <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCalendar || 'Calendar' }}</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
+          <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
+            <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <span>{{ translationData.lblFrom || 'From' }}: </span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.fromDate }}</span>
+              </span>
+            </div>
+            <div *ngIf='showField.vin' class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
+              <span>
+                <span>{{ translationData.lblTo || 'To' }}: </span>
+                <span style='font: 500 14px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ tableInfoObj.endDate }}</span>
+              </span>
+            </div>
+            </div>
+          <div fxLayout="row" fxLayoutAlign="start" class="full-width" fxLayoutGap="10px">
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+              <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
+            </div>
+            <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="right">
+              <!-- <full-calendar [options]="calendarOptions"></full-calendar> -->
+            </div>
+          </div>
           <!-- <mat-calendar>
           </mat-calendar> -->
       </mat-expansion-panel>   

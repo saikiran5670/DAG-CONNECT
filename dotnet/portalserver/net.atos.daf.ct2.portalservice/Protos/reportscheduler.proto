@@ -143,6 +143,12 @@ message ScheduledReportVehicleRefRequest
     int32 CreatedBy =5;
     int64 ModifiedAt =6;
     int32 ModifiedBy =7;
+    int32 VehicleId =8;
+    string Vin =9; 
+    string Regno=10;
+    string VehicleName =11; 
+    string VehicleGroupName =12;
+    string VehicleGroupType =13;
 }
 message VehicleSubscribeandFeatureRequest {
 		 int32 VehicleGroupId =  1;

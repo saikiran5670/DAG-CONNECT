@@ -10,7 +10,7 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public int AlertId { get; set; }
         [StringLength(1, MinimumLength = 0, ErrorMessage = "Alert urgency level type should be 1 character")]
 
-        [UrgencyLevelCheck(ErrorMessage = "Urgency level type is invalid.")]
+        //[UrgencyLevelCheck(ErrorMessage = "Urgency level type is invalid.")]
         public string AlertUrgencyLevelType { get; set; }
         [StringLength(1, MinimumLength = 1, ErrorMessage = "Frequency type should be 1 character")]
         [FrequencyTypeCheck(ErrorMessage = "Frequence type is invalid.")]
@@ -37,7 +37,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         //public int ModifiedBy { get; set; }
         [MaxLength(10, ErrorMessage = "Maximum 10 recipient can be added in notification.")]
         public List<NotificationRecipient> NotificationRecipients { get; set; }
-        public List<NotificationLimit> NotificationLimits { get; set; }
         //[MaxLength(4, ErrorMessage = "Maximum 4 custom period user can add per day.")]
         public List<AlertTimingDetail> AlertTimingDetails { get; set; }
     }
@@ -50,7 +49,6 @@ namespace net.atos.daf.ct2.portalservice.Entity.Alert
         public int ModifiedBy { get; set; }
         [MaxLength(10, ErrorMessage = "Maximum 10 recipient can be added in notification.")]
         public List<NotificationRecipientEdit> NotificationRecipients { get; set; }
-        public List<NotificationLimitEdit> NotificationLimits { get; set; }
         //[MaxLength(4, ErrorMessage = "Maximum 4 custom period user can add per day.")]
         public List<AlertTimingDetailEdit> AlertTimingDetails { get; set; }
     }
