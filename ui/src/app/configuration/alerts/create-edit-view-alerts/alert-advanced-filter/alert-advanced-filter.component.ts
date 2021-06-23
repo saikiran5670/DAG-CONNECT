@@ -114,23 +114,25 @@ export class AlertAdvancedFilterComponent implements OnInit {
       occurences: [''],
       duration: [''],
       widthInput: [''],
-      fullorCustom: [''],
+      fullorCustom: ['A'],
       fromDate: [''],
       fromTimeRange: ['00:00'],
       toDate: [''],
       toTimeRange:['23:59']
     })
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
-    if(this.actionType == 'view'){
+    if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
       this.setDefaultAdvanceAlert();
     }
   }
 
   setDefaultAdvanceAlert(){
-      this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
-      this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
-      this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
-      this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
+      // this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
+      // this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
+      // this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
+      // this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
+      this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+      this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
   }
 
   onChangeDistance(event: any){
@@ -976,7 +978,7 @@ else{
         "alertTimingDetails": this.alertTimingDetail
       }
       if(this.actionType == 'edit'){
-        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.refId;
+        let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].refId;
         obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
         obj["alertId"] = this.selectedRowData.id;
         obj["state"] = 'A';

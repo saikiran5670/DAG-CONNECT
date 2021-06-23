@@ -464,30 +464,37 @@ namespace net.atos.daf.ct2.reports.repository
                 parameters.Add("@FromDate", request.StartDateTime);
                 parameters.Add("@ToDate", request.EndDateTime);
                 parameters.Add("@Vins", request.VINs.ToArray());
+                parameters.Add("@MinTripDistance", request.MinTripDistance > 0 ? request.MinTripDistance : (double?)null);
+                parameters.Add("@MinDriverTotalDistance", request.MinDriverTotalDistance > 0 ? request.MinDriverTotalDistance : (double?)null);
 
                 string query = @"WITH ecoscore AS (
-                                 SELECT 
-                                 dr.first_name || ' ' || dr.last_name AS driverName,
-                                 eco.driver1_id as driverid,
-                                 (
-                                 	(
-                                 	 (SUM(dpa_braking_score)/ SUM(dpa_braking_count)) +
-                                 	 (SUM(dpa_anticipation_score)/ SUM(dpa_anticipation_count))
-                                 	)/2
-                                 )/10 as ecoscoreranking
+                                 SELECT dr.first_name, dr.last_name, eco.driver1_id, eco.etl_trip_distance,
+                                 eco.dpa_braking_score, eco.dpa_braking_count, eco.dpa_anticipation_score, eco.dpa_anticipation_count
                                  FROM tripdetail.ecoscoredata eco
                                  JOIN master.driver dr 
                                  	ON dr.driver_id = eco.driver1_id
                                  WHERE eco.start_time >= @FromDate
                                  	AND eco.end_time <= @ToDate
                                  	AND eco.vin = ANY( @Vins )
-                                 GROUP BY dr.first_name, dr.last_name, eco.driver1_id
+                                 	AND (eco.etl_trip_distance < @MinTripDistance OR @MinTripDistance IS NULL)
+                                 ),
+                                 
+                                 ecoscorealldriver as 
+                                 (
+                                 SELECT first_name || ' ' || last_name AS driverName,driver1_id as driverid, SUM(etl_trip_distance)AS totaldriverdistance,
+                                 (((CAST(SUM(dpa_braking_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_braking_count)AS DOUBLE PRECISION)) +
+                                 (CAST(SUM(dpa_anticipation_score)AS DOUBLE PRECISION) / CAST(SUM(dpa_anticipation_count)AS DOUBLE PRECISION)))/2)/10 as ecoscoreranking
+                                 FROM ecoscore eco
+                                 GROUP BY first_name, last_name, driver1_id
                                  ORDER BY ecoscoreranking DESC
                                  )
+                                 
                                  SELECT ROW_NUMBER () OVER (ORDER BY  ecoscoreranking DESC) as Ranking,
                                  driverName, driverid, ecoscoreranking
-                                 FROM ecoscore
+                                 FROM ecoscorealldriver
+                                 where 1=1 AND (totaldriverdistance < @MinDriverTotalDistance OR @MinDriverTotalDistance IS NULL)
                                  ORDER BY ecoscoreranking DESC, driverName";
+
                 List<EcoScoreReportByAllDrivers> lstByAllDrivers = (List<EcoScoreReportByAllDrivers>)await _dataMartdataAccess.QueryAsync<EcoScoreReportByAllDrivers>(query, parameters);
                 return lstByAllDrivers?.Count > 0 ? lstByAllDrivers : new List<EcoScoreReportByAllDrivers>();
             }
@@ -502,37 +509,28 @@ namespace net.atos.daf.ct2.reports.repository
         /// </summary>
         /// <param name="request">Search Parameters</param>
         /// <returns></returns>
-        public async Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(EcoScoreReportByAllDriversRequest request)
+        public async Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(int targetProfileId)
         {
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@ReportId", request.ReportId);
-                parameters.Add("@OrgId", request.OrgId);
-                parameters.Add("@AccountId", request.AccountId);
-                parameters.Add("@TargetProfileId", request.TargetProfileId);
+                parameters.Add("@TargetProfileId", targetProfileId);
 
                 string query = @"SELECT eco.id as profileid, kpimst.name as kpiname,
                                  kpi.limit_val as minvalue, kpi.target_val as targetvalue
                                  FROM master.ecoscoreprofile eco
-                                 JOIN master.reportpreference rep
-                                 	ON eco.id= rep.ecoscore_profile_id
                                  JOIN master.ecoscoreprofilekpi kpi
                                  	ON eco.id=kpi.profile_id
                                  JOIN master.ecoscorekpi kpimst
                                  	ON kpimst.id = kpi.ecoscore_kpi_id
-                                 WHERE rep.report_id = @ReportId
-                                 AND rep.organization_id = @OrgId
-                                 AND rep.account_id = @AccountId
-                                 AND eco.id = @TargetProfileId
+                                 WHERE eco.id = @TargetProfileId
                                  AND kpimst.name = 'Eco-Score'";
 
-                EcoScoreKPIRanking obkEcoScoreKPI = (EcoScoreKPIRanking)await _dataAccess.QueryAsync<dynamic>(query, parameters);
-                return obkEcoScoreKPI;
+                return await _dataAccess.QueryFirstOrDefaultAsync<EcoScoreKPIRanking>(query, parameters);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

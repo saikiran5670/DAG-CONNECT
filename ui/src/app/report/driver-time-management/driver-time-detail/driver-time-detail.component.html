@@ -15,7 +15,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
-        <div style='padding: 20px; margin-bottom: 10px; background: #e7e7e7;'>
+        <div style='padding: 20px; margin-bottom: 10px; background: #eee9e9;'>
           <div fxLayout="row" fxLayoutAlign="left" class="full-width" fxLayoutGap="10px">
             <div class="areaWidth min-width-30-per" fxLayout="column" fxLayoutAlign="left">
               <span>
@@ -91,13 +91,17 @@
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblCharts || 'Charts' }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
+      <div class="areaWidth min-width-60-per" fxLayout="column" fxLayoutAlign="left">
+        <div class="areaWidth min-width-60-per" fxLayout="row" fxLayoutAlign="left" style="font-weight: bold;"><mat-label> {{ translationData.lblFrom || 'From'}} {{driverDetails.fromDisplayOnlyDate}} {{translationData.lblTo || 'To'}} {{driverDetails.toDisplayOnlyDate}}</mat-label></div>
+        <div class="areaWidth min-width-40-per" fxLayout="row" fxLayoutAlign="flex-end"><mat-label>Drag to zoom in</mat-label></div>     
+      </div>
       <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
         <div style='padding: 20px; margin-bottom: 10px;'>
           <div class="row">
             <div class="col-md-12">
               <div style="display: block">
                 <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-                  [legend]="barChartLegend" [chartType]="barChartType"  [colors]="barChartColors"
+                  [legend]="barChartLegend" [chartType]="barChartType" 
                   (chartHover)="chartHovered($event)"
                   (chartClick)="chartClicked($event)"></canvas>
               </div>
@@ -114,6 +118,7 @@
           <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{ translationData.lblAllDetails || 'All Details' }}</span>
         </mat-panel-title>
       </mat-expansion-panel-header>
+      
       <div [ngClass]="{'reportTable': displayedColumns.length > 7}">
 
         <div fxLayout="row" fxLayoutAlign="space-between" class='margin-bottom-sm' fxLayoutGap="10px">

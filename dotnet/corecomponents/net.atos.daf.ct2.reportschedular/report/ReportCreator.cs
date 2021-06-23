@@ -6,6 +6,8 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using net.atos.daf.ct2.account.report;
 using net.atos.daf.ct2.reports;
+using net.atos.daf.ct2.reportscheduler.entity;
+using net.atos.daf.ct2.reportscheduler.repository;
 
 namespace net.atos.daf.ct2.reportscheduler.report
 {
@@ -13,29 +15,35 @@ namespace net.atos.daf.ct2.reportscheduler.report
     {
         private readonly IConverter _generatePdf;
         private readonly IReportManager _reportManager;
+        private readonly IReportSchedulerRepository _reportSchedularRepository;
 
         public string ReportName { get; private set; }
         public string ReportKey { get; private set; }
         public IReport Report { get; private set; }
+        public ReportCreationScheduler ReportSchedulerData { get; private set; }
 
 
-        public ReportCreator(IConverter generatePdf, IReportManager reportManager)
+
+        public ReportCreator(IConverter generatePdf, IReportManager reportManager,
+                             IReportSchedulerRepository reportSchedularRepository)
         {
             _generatePdf = generatePdf;
             _reportManager = reportManager;
+            _reportSchedularRepository = reportSchedularRepository;
         }
 
-        public void SetParameters(string reportName, string reportKey)
+        public void SetParameters(ReportCreationScheduler reportSchedulerData)
         {
-            ReportName = reportName;
-            ReportKey = reportKey;
-            Report = InitializeReport(reportKey);
+            ReportSchedulerData = reportSchedulerData;
+            ReportName = reportSchedulerData.ReportName;
+            ReportKey = reportSchedulerData.ReportKey;
+            Report = InitializeReport(reportSchedulerData.ReportKey);
         }
 
         private IReport InitializeReport(string reportKey) =>
         reportKey switch
         {
-            "lblTripReport" => new TripReport(_reportManager),
+            "lblTripReport" => new TripReport(_reportManager,_reportSchedularRepository),
             "lblTripTracing" => null,
             _ => throw new ArgumentException(message: "invalid Report Key value", paramName: nameof(reportKey)),
         };

@@ -22,18 +22,20 @@ namespace net.atos.daf.ct2.reports
             return _reportRepository.GetReportDetails();
         }
 
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetUserPreferenceReportDataColumn(int reportId,
-                                                                                                  int accountId,
-                                                                                                  int organizationId)
+        public Task<bool> CheckIfUserPreferencesExist(int reportId, int accountId, int organizationId)
         {
-            return _reportRepository.GetUserPreferenceReportDataColumn(reportId, accountId, organizationId);
+            return _reportRepository.CheckIfUserPreferencesExist(reportId, accountId, organizationId);
         }
 
-        public Task<IEnumerable<UserPrefernceReportDataColumn>> GetRoleBasedDataColumn(int reportId,
-                                                                                                  int accountId,
-                                                                                                  int organizationId)
+        public Task<IEnumerable<UserPreferenceReportDataColumn>> GetReportUserPreference(int reportId, int accountId, int organizationId)
         {
-            return _reportRepository.GetRoleBasedDataColumn(reportId, accountId, organizationId);
+            return _reportRepository.GetReportUserPreference(reportId, accountId, organizationId);
+        }
+
+        public Task<IEnumerable<UserPreferenceReportDataColumn>> GetRoleBasedDataColumn(int reportId, int accountId, int roleId,
+                                                                                       int organizationId, int contextOrgId)
+        {
+            return _reportRepository.GetRoleBasedDataColumn(reportId, accountId, roleId, organizationId, contextOrgId);
         }
         #endregion
 
@@ -218,12 +220,14 @@ namespace net.atos.daf.ct2.reports
         #region Eco Score Report By All Drivers
         public async Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request)
         {
+            //Update Target Profile for User Preferences
+            await _reportRepository.UpdateEcoScoreTargetProfile(request);
+
             List<EcoScoreReportByAllDrivers> lstDriverRanking = await _reportRepository.GetEcoScoreReportByAllDrivers(request);
-            bool isTargetProfileUpdated = await _reportRepository.UpdateEcoScoreTargetProfile(request);
-            if (isTargetProfileUpdated)
+            var lstByAllDrivers = new List<EcoScoreReportByAllDrivers>();
+            var objEcoScoreKPI = await _reportRepository.GetEcoScoreTargetProfileKPIValues(request.TargetProfileId);
+            if (objEcoScoreKPI != null)
             {
-                var lstByAllDrivers = new List<EcoScoreReportByAllDrivers>();
-                EcoScoreKPIRanking objEcoScoreKPI = await _reportRepository.GetEcoScoreTargetProfileKPIValues(request);
                 foreach (var driver in lstDriverRanking)
                 {
                     //< Min = Red
