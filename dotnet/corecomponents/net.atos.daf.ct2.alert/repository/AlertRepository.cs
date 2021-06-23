@@ -1370,18 +1370,45 @@ namespace net.atos.daf.ct2.alert.repository
 		                                                    , ws_password as WsPassword
 		                                                    , notirec.state as State
 		                                                    , notirec.created_at as CreatedAt
-	                                                    FROM master.notificationrecipient notirec
+	                                                    FROM master.notificationrecipientref notiref														
 	                                                    inner join master.notification noti
-	                                                    on notirec.notification_id=noti.id
+	                                                    on notiref.notification_id=noti.id
 	                                                    inner join master.alert alert
-	                                                    on noti.alert_id=alert.id
+	                                                    on notiref.alert_id=alert.id
+														inner join master.notificationrecipient notirec
+														on notiref.recipient_id=notirec.id
 	                                                    where notirec.state=@state
 	                                                    and noti.state=@state
 	                                                    and alert.state=@state
+                                                        and notiref.state=@state
                                                         and alert.organization_id=@organization_id";
                 parameter.Add("@organization_id", organizationId);
-                parameter.Add("@state", AlertState.Active);
+                parameter.Add("@state", Convert.ToChar(AlertState.Active));
                 IEnumerable<NotificationRecipient> notificationRecipientResult = await _dataAccess.QueryAsync<NotificationRecipient>(queryRecipientLabel, parameter);
+
+                foreach (var item in notificationRecipientResult)
+                {
+                    string queryLimit = @"SELECT id as Id
+		                                                    , notification_id as NotificationId
+		                                                    , notification_mode_type as NotificationModeType
+		                                                    , max_limit as MaxLimit
+		                                                    , notification_period_type as NotificationPeriodType
+		                                                    , period_limit as PeriodLimit		                                                    
+		                                                    , state as State
+		                                                    , created_at as CreatedAt
+                                                            , recipient_id as RecipientId
+	                                                    FROM master.notificationlimit 
+	                                                    where state=@state                                                        
+                                                        and recipient_id=@recipient_id";
+                    parameter.Add("@recipient_id", item.Id);
+                    parameter.Add("@state", Convert.ToChar(AlertState.Active));
+                    IEnumerable<NotificationLimit> notificationLimitResult = await _dataAccess.QueryAsync<NotificationLimit>(queryLimit, parameter);
+                    foreach (var limit in notificationLimitResult)
+                    {
+                        item.NotificationLimits = new List<NotificationLimit>();
+                        item.NotificationLimits.Add(limit);
+                    }
+                }
                 return notificationRecipientResult;
             }
             catch (Exception)
