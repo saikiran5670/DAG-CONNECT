@@ -30,7 +30,7 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<FleetUtilizationDetails>> GetFleetUtilizationDetails(FleetUtilizationFilter FleetUtilizationFilters);
         Task<List<Calender_Fleetutilization>> GetCalenderData(FleetUtilizationFilter tripFilters);
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
-        Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(EcoScoreReportByAllDriversRequest request);
+        Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(int targetProfileId);
         Task<bool> UpdateEcoScoreTargetProfile(EcoScoreReportByAllDriversRequest request);
         Task<bool> CreateEcoScoreUserPreference();
         Task<int> GetEcoScoreUserPreference();

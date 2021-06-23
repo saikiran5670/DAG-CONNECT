@@ -7,14 +7,46 @@ namespace net.atos.daf.ct2.reportscheduler.entity
 {
     public class TripReportDetails
     {
-        [DisplayName("VIN")]
+
         public string VIN { get; set; }
 
-        [DisplayName("Start Date")]
         public long StartTimeStamp { get; set; }
-        [DisplayName("End Date")]
+
         public long EndTimeStamp { get; set; }
 
+        public int Distance { get; set; }
+
+        public int IdleDuration { get; set; }
+
+        public int AverageSpeed { get; set; }
+
+        public int AverageWeight { get; set; }
+
+        public long Odometer { get; set; }
+
+        public string StartPosition { get; set; }
+
+        public string EndPosition { get; set; }
+
+        public double FuelConsumed { get; set; }
+
+        public int DrivingTime { get; set; }
+
+        public int Alert { get; set; }
+
+        public int Events { get; set; }
+
+        public double FuelConsumed100km { get; set; }
+    }
+
+    public class TripReportPdfDetails
+    {
+        [DisplayName("VIN")]
+        public string VIN { get; set; }
+        [DisplayName("Start Date")]
+        public string StartDate { get; set; }
+        [DisplayName("End Date")]
+        public string EndDate { get; set; }
         [DisplayName("Distance")]
         public int Distance { get; set; }
         [DisplayName("Idle Duration")]
