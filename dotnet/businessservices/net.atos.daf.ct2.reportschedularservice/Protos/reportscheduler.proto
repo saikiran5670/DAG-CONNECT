@@ -39,8 +39,7 @@ message ReportParameterResponse
     repeated ReportTypeRequest ReportType = 3;
     repeated DriverDetailRequest DriverDetail = 4;
     repeated ReceiptEmailsRequest ReceiptEmails = 5;
-    repeated AssociatedVehicleRequest AssociatedVehicle = 6;
-    repeated VehicleSubscribeandFeatureRequest VehicleSubscribeandFeature =7;
+    repeated AssociatedVehicleRequest AssociatedVehicle = 6;    
 }
 message AssociatedVehicleRequest {
 	int32 VehicleGroupId =  1;
@@ -49,6 +48,7 @@ message AssociatedVehicleRequest {
     string VehicleName =  4;
     string Vin =  5;
     string RegistrationNo =  6;
+    string GroupType = 7;
 }
 message ReportTypeRequest
 {

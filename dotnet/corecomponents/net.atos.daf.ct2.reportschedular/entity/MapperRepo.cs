@@ -48,12 +48,12 @@ namespace net.atos.daf.ct2.reportscheduler.entity
                         reportScheduler.ScheduledReportRecipient.Add(scheduledReportRecipient);
                     }
                 }
-                if (reportSchedulerItem.Vehref_vehicle_group_id > 0 && reportSchedulerItem.Repsch_id == reportSchedulerItem.Vehref_report_schedule_id)
+                if ((reportSchedulerItem.Vehref_vehicle_group_id > 0 || reportSchedulerItem.Vehicleid > 0) && reportSchedulerItem.Repsch_id == reportSchedulerItem.Vehref_report_schedule_id)
                 {
-                    if (!scheduledReportVehicleRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), 0, reportSchedulerItem.Repsch_id), out _))
+                    if (!scheduledReportVehicleRefLookup.TryGetValue(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), reportSchedulerItem.Vehicleid, reportSchedulerItem.Repsch_id), out _))
                     {
                         var scheduledReportVehicle = ToScheduledReportVehicleRefModel(reportSchedulerItem);
-                        scheduledReportVehicleRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), 0, reportSchedulerItem.Repsch_id), scheduledReportVehicle);
+                        scheduledReportVehicleRefLookup.Add(Tuple.Create(Convert.ToInt32(reportSchedulerItem.Vehref_vehicle_group_id), reportSchedulerItem.Vehicleid, reportSchedulerItem.Repsch_id), scheduledReportVehicle);
                         reportScheduler.ScheduledReportVehicleRef.Add(scheduledReportVehicle);
                     }
                 }
