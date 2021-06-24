@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -28,7 +28,7 @@ declare var H: any;
   styleUrls: ['./trip-report.component.less']
 })
 
-export class TripReportComponent implements OnInit {
+export class TripReportComponent implements OnInit, OnDestroy {
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -52,7 +52,6 @@ export class TripReportComponent implements OnInit {
   localStLanguage: any;
   accountOrganizationId: any;
   globalSearchFilterData: any = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-  searchFilterpersistData: any = {};
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
@@ -176,8 +175,12 @@ export class TripReportComponent implements OnInit {
     }    
   }
 
+  ngOnDestroy(){
+    console.log("component destroy...");
+  }
+  
   ngOnInit() {
-    this.searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
+    this.globalSearchFilterData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     // console.log("---global object Search---",this.globalSearchFilterData)
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
@@ -251,12 +254,12 @@ export class TripReportComponent implements OnInit {
   }
 
   setPrefFormatTime(){
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "" && ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
+    if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "" && ((this.globalSearchFilterData.startTimeStamp || this.globalSearchFilterData.endTimeStamp) !== "") ) {
       console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.searchFilterpersistData.startTimeStamp;
-      this.selectedEndTime = this.searchFilterpersistData.endTimeStamp;
-      this.startTimeDisplay = `${this.searchFilterpersistData.startTimeStamp+":00"}`;
-      this.endTimeDisplay = `${this.searchFilterpersistData.endTimeStamp+":59"}`;
+      this.selectedStartTime = this.globalSearchFilterData.startTimeStamp;
+      this.selectedEndTime = this.globalSearchFilterData.endTimeStamp;
+      this.startTimeDisplay = `${this.globalSearchFilterData.startTimeStamp+":00"}`;
+      this.endTimeDisplay = `${this.globalSearchFilterData.endTimeStamp+":59"}`;
     }else {
       if(this.prefTimeFormat == 24){
         this.startTimeDisplay = '00:00:00';
@@ -299,24 +302,24 @@ export class TripReportComponent implements OnInit {
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
-    // if(this.internalSelection && this.searchFilterpersistData.modifiedFrom == ""){
+    // if(this.internalSelection && this.globalSearchFilterData.modifiedFrom == ""){
     //   this.selectedStartTime = "00:00";
     //   this.selectedEndTime = "23:59";
     // }
   }
 
   setDefaultTodayDate(){
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-     // console.log("---if searchFilterpersistData startDateStamp exist")
-      if(this.searchFilterpersistData.timeRangeSelection !== ""){
-        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+    if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
+     // console.log("---if globalSearchFilterData startDateStamp exist")
+      if(this.globalSearchFilterData.timeRangeSelection !== ""){
+        this.selectionTab = this.globalSearchFilterData.timeRangeSelection;
       }else{
         this.selectionTab = 'today';
       }
-      let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-      let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+      let startDateFromSearch = new Date(this.globalSearchFilterData.startDateStamp);
+      let endDateFromSearch = new Date(this.globalSearchFilterData.endDateStamp);
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.globalSearchFilterData.startTimeStamp, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.globalSearchFilterData.endTimeStamp, 'end');
     }else {
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -499,9 +502,9 @@ export class TripReportComponent implements OnInit {
   }
 
   resetTripFormControlValue(){
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== ""){
-      this.tripForm.get('vehicle').setValue(this.searchFilterpersistData.vehicleDropDownValue);
-      this.tripForm.get('vehicleGroup').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
+    if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== ""){
+      this.tripForm.get('vehicle').setValue(this.globalSearchFilterData.vehicleDropDownValue);
+      this.tripForm.get('vehicleGroup').setValue(this.globalSearchFilterData.vehicleGroupDropDownValue);
     }else{
       this.tripForm.get('vehicle').setValue('');
       this.tripForm.get('vehicleGroup').setValue(0);
@@ -537,8 +540,8 @@ export class TripReportComponent implements OnInit {
   }
     else {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
-      this.tripForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
-      this.tripForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
+      this.tripForm.get('vehicleGroup').setValue(parseInt(this.globalSearchFilterData.vehicleGroupDropDownValue));
+      this.tripForm.get('vehicle').setValue(parseInt(this.globalSearchFilterData.vehicleDropDownValue));
     }
   }
 
@@ -935,8 +938,8 @@ export class TripReportComponent implements OnInit {
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
-      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
+    if(!this.internalSelection && this.globalSearchFilterData.modifiedFrom !== "") {
+      this.onVehicleGroupChange(this.globalSearchFilterData.vehicleGroupDropDownValue)
     }
   }
   onAdvanceFilterOpen(){
