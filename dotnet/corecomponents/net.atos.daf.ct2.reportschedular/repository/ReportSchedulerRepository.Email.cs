@@ -9,7 +9,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
-        private async void GetReportEmailDetails()
+        public Task<int> SendReportEmail() => throw new NotImplementedException();
+
+        public async void GetReportEmailDetails()
         {
             string queryAlert = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 
@@ -48,11 +50,18 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         {
             var next_schedule_run_date = _helper.GetNextFrequencyTime(reportEmailFrequency.ReportScheduleRunDate, reportEmailFrequency.FrequencyType);
             var query = @"UPDATE master.reportscheduler 
-                          SET next_schedule_run_date=@next_schedule_run_date 
+                          SET start_date=@start_date ,
+                              next_schedule_run_date=@next_schedule_run_date ,
+                              previous_schedule_run_date=@previous_schedule_run_date 
+                              end_date=@end_date 
                           WHERE id=@id RETURNING id";
             var parameter = new DynamicParameters();
             parameter.Add("@id", reportEmailFrequency.ReportId);
-            parameter.Add("@next_schedule_run_date", UTCHandling.GetUTCFromDateTime(next_schedule_run_date));
+            parameter.Add("@start_date", next_schedule_run_date.StartDate);
+            parameter.Add("@end_date", next_schedule_run_date.EndDate);
+            parameter.Add("@next_schedule_run_date", next_schedule_run_date.ReportNextScheduleRunDate);
+            parameter.Add("@previous_schedule_run_date", next_schedule_run_date.ReportPrevioudScheduleRunDate);
+
             int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
             return rowEffected;
         }
@@ -65,12 +74,17 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 
             var query = @"UPDATE master.reportscheduler 
                           SET start_date=@start_date ,
+                              next_schedule_run_date=@next_schedule_run_date ,
+                              previous_schedule_run_date=@previous_schedule_run_date 
                               end_date=@end_date 
-                          WHERE id=@id RETURNING id";
+                              WHERE id=@id RETURNING id";
             var parameter = new DynamicParameters();
             parameter.Add("@id", reportEmailFrequency.ReportId);
             parameter.Add("@start_date", next_schedule_run_date.StartDate);
             parameter.Add("@end_date", next_schedule_run_date.EndDate);
+            parameter.Add("@next_schedule_run_date", next_schedule_run_date.ReportNextScheduleRunDate);
+            parameter.Add("@previous_schedule_run_date", next_schedule_run_date.ReportPrevioudScheduleRunDate);
+
             int rowEffected = await _dataAccess.ExecuteAsync(query, parameter);
             return rowEffected;
         }
