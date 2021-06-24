@@ -25,7 +25,7 @@ public class FlinkKafkaMileageMsgConsumer implements Serializable{
 
 		Properties properties = new Properties();
 
-		properties.setProperty("client.id", "conti_ct2_ingress_client");
+		properties.setProperty("client.id", "conti_ct2_ingress_mileageclient");
 		// properties.setProperty(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG,"6000");
 		properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, envParams.get(MileageConstants.AUTO_OFFSET_RESET_CONFIG));
 		properties.setProperty(MileageConstants.GROUP_ID, envParams.get(MileageConstants.GROUP_ID));

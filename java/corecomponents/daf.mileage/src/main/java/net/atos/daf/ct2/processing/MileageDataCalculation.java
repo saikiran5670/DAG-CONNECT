@@ -15,11 +15,14 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.atos.daf.common.ct2.utc.TimeFormatter;
 import net.atos.daf.ct2.bo.TripMileage;
 import net.atos.daf.ct2.bo.VehicleMileage;
 import net.atos.daf.ct2.util.MileageConstants;
+import net.atos.daf.ct2.postgre.MileageSink;
 
 /**
  * Class performs mileage calculation based on the VID
@@ -29,6 +32,7 @@ import net.atos.daf.ct2.util.MileageConstants;
  */
 public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage, TripMileage, String, TimeWindow> {
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LogManager.getLogger(MileageDataCalculation.class);
 	ParameterTool envParam = null;
 	private MapState<String, Map<Long, VehicleMileage>> modelState;
 	private MapState<String, List<Long>> vehEvtTimeListState;
@@ -119,7 +123,7 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 			tripMileage.setRealDistance(realMileage);
 
 			for (Long vTimestamp : vehDeleteTripTs) {
-				System.out.println(
+				logger.info(
 						"deleting trip that does not fall under business critera :" + vMileageMap.get(vTimestamp));
 				vMileageMap.remove(vTimestamp);
 			}
@@ -127,7 +131,7 @@ public class MileageDataCalculation extends ProcessWindowFunction<VehicleMileage
 
 			out.collect(tripMileage);
 		} catch (Exception e) {
-			System.out.println("Issue while processing Mileage Data for key : " + key + "  error :: " + e.getMessage());
+			logger.error("Issue while processing Mileage Data for key : " + key + "  error :: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

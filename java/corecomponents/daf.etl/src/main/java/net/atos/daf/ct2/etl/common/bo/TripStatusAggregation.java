@@ -64,5 +64,7 @@ public class TripStatusAggregation implements Serializable {
 	private Integer vTripDPAAnticipationCount;
 	private Integer vSumTripDPABrakingScore;
 	private Integer vSumTripDPAAnticipationScore;
+	private Long vStopFuel;
+	private Long vStartFuel;
 	
 }
