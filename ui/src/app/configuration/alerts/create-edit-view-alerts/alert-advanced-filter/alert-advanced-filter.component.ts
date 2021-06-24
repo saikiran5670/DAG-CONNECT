@@ -85,6 +85,8 @@ export class AlertAdvancedFilterComponent implements OnInit {
   occurenceVal: any =[];
   durationVal :any = [];
   thresholdVal: any;
+  from: any;
+  to: any;
   options: Options = {
     floor: 0,
     ceil: 10000
@@ -138,6 +140,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.loadGeofenceData();
     this.loadGroupData();
     this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+    if(this.selectedApplyOn == 'C'){
+      this.from = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelStartDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.to = Util.convertUtcToDateFormat(this.selectedRowData.alertUrgencyLevelRefs[0].urgencylevelEndDate,'DD/MM/YYYY HH:MM').split(" ");
+      this.alertAdvancedFilterForm.get('fromDate').setValue(this.from[0]);
+      this.alertAdvancedFilterForm.get('toDate').setValue(this.to[0]);
+
+      this.alertAdvancedFilterForm.get('fromTimeRange').setValue(this.from[1]);
+      this.alertAdvancedFilterForm.get('toTimeRange').setValue(this.to[1]);
+    }
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
         if(element.filterType == 'N' && element.thresholdValue !=0)

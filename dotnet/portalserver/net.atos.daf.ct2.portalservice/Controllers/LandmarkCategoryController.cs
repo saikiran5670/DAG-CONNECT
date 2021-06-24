@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Grpc.Core;
 using log4net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -258,7 +259,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         {
             try
             {
-                var response = await _categoryServiceClient.GetCategoryDetailsAsync(request);
+                int orgId = GetContextOrgId();
+                Metadata headers = new Metadata();
+                headers.Add("orgId", Convert.ToString(orgId));
+                var response = await _categoryServiceClient.GetCategoryDetailsAsync(request, headers);
 
 
                 if (response != null)
