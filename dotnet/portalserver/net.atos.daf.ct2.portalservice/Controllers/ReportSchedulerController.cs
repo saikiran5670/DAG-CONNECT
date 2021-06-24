@@ -402,5 +402,68 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
+        #region GetPDFBinaryFormatByToken
+        [HttpGet]
+        [Route("pdfreportbytoken")]
+        public async Task<IActionResult> GetPDFBinaryFormatByToken(ReportPDFByTokenRequest request)
+        {
+            try
+            {
+                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
+                //int roleid = AssignOrgContextByRoleId(0);
+                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
+
+                if (data == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (data.Code == ResponseCode.Success)
+                    return Ok(data);
+                if (data.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetPDFBinaryFormatByToken", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
+        #endregion
+        #region GetPDFBinaryFormatById
+        [HttpGet]
+        [Route("pdfreportbyid")]
+        public async Task<IActionResult> GetPDFBinaryFormatById(ReportPDFByTokenRequest request)
+        {
+            try
+            {
+                request.OrganizationId = GetContextOrgId();
+                if (request.OrganizationId == 0) return BadRequest(ReportSchedulerConstants.REPORTSCHEDULER_ORG_ID_NOT_NULL_MSG);
+                //int roleid = AssignOrgContextByRoleId(0);
+                var data = await _reportschedulerClient.GetPDFBinaryFormatByTokenAsync(request);
+
+                if (data == null)
+                    return StatusCode(500, ReportSchedulerConstants.REPORTSCHEDULER_INTERNEL_SERVER_ISSUE);
+                if (data.Code == ResponseCode.Success)
+                    return Ok(data);
+                if (data.Code == ResponseCode.InternalServerError)
+                    return StatusCode((int)data.Code, String.Format(ReportSchedulerConstants.REPORTSCHEDULER_PARAMETER_NOT_FOUND_MSG, data.Message));
+                return StatusCode((int)data.Code, data.Message);
+            }
+            catch (Exception ex)
+            {
+                await _auditHelper.AddLogs(DateTime.Now, ReportSchedulerConstants.REPORTSCHEDULER_CONTROLLER_NAME,
+                 ReportSchedulerConstants.REPORTSCHEDULER_SERVICE_NAME, Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
+                string.Format(ReportSchedulerConstants.REPORTSCHEDULER_EXCEPTION_LOG_MSG, "GetPDFBinaryFormatById", ex.Message), 1, 2, JsonConvert.SerializeObject(request),
+                  _userDetails);
+                _logger.Error(null, ex);
+                return StatusCode(500, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+            }
+        }
+        #endregion
     }
 }
