@@ -207,7 +207,7 @@ export class ReportMapService {
   getConvertedDataBasedOnPref(gridData: any, dateFormat: any, timeFormat: any, unitFormat: any, timeZone: any){
     gridData.forEach(element => {
       element.convertedStartTime = this.getStartTime(element.startTimeStamp, dateFormat, timeFormat, timeZone,true);
-      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone);
+      element.convertedEndTime = this.getEndTime(element.endTimeStamp, dateFormat, timeFormat, timeZone,true);
       element.convertedAverageWeight = this.getAvrgWeight(element.averageWeight, unitFormat);
       element.convertedAverageSpeed = this.getAvergSpeed(element.averageSpeed, unitFormat);
       element.convertedFuelConsumed100Km = this.getFuelConsumed(element.fuelConsumed100Km, unitFormat);
@@ -261,18 +261,18 @@ export class ReportMapService {
     });
     return gridData;
   }
-  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any,addTime?:boolean){
+  getStartTime(startTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
     let sTime: any = 0;
     if(startTime != 0){
-      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat,addTime);
+      sTime = this.formStartEndDate(Util.convertUtcToDate(startTime, timeZone), dateFormat, timeFormat, addTime);
     }
     return sTime;
   }
 
-  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any){
+  getEndTime(endTime: any, dateFormat: any, timeFormat: any, timeZone: any, addTime?:boolean){
     let eTime: any = 0;
     if(endTime != 0){
-      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat);
+      eTime = this.formStartEndDate(Util.convertUtcToDate(endTime, timeZone), dateFormat, timeFormat, addTime);
     }
     return eTime;
   }
@@ -373,7 +373,7 @@ export class ReportMapService {
     return data;
   }
 
-  formStartEndDate(date: any, dateFormat: any, timeFormat: any,addTime?:boolean){
+  formStartEndDate(date: any, dateFormat: any, timeFormat: any, addTime?:boolean){
     // let h = (date.getHours() < 10) ? ('0'+date.getHours()) : date.getHours(); 
     // let m = (date.getMinutes() < 10) ? ('0'+date.getMinutes()) : date.getMinutes(); 
     // let s = (date.getSeconds() < 10) ? ('0'+date.getSeconds()) : date.getSeconds(); 
