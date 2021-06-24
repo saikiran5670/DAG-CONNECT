@@ -6,7 +6,7 @@ using net.atos.daf.ct2.reportscheduler.entity;
 
 namespace net.atos.daf.ct2.reportscheduler
 {
-    public interface IReportSchedulerManager
+    public partial interface IReportSchedulerManager
     {
         Task<ReportParameter> GetReportParameter(int accountid, int organizationid);
         Task<ReportSchedulerMap> CreateReportScheduler(ReportSchedulerMap report);

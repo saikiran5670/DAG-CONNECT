@@ -51,6 +51,7 @@ namespace net.atos.daf.ct2.applications
                                 return new PgSQLDataMartDataAccess(dataMartconnectionString);
                             });
                             services.AddSingleton<IReportCreationSchedulerManager, ReportCreationSchedulerManager>();
+                            services.AddSingleton<IReportSchedulerManager, ReportSchedulerManager>();
                             services.AddSingleton<IReportSchedulerRepository, ReportSchedulerRepository>();
                             services.AddTransient<IReportCreator, ReportCreator>();
                             services.AddTransient<IReportManager, ReportManager>();

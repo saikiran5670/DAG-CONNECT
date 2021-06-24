@@ -9,7 +9,9 @@ namespace net.atos.daf.ct2.reportscheduler.repository
 {
     public partial class ReportSchedulerRepository : IReportSchedulerRepository
     {
-        private async void GetReportEmailDetails()
+        public Task<int> SendReportEmail() => throw new NotImplementedException();
+
+        public async void GetReportEmailDetails()
         {
             string queryAlert = @"SELECT repsch.id as repsch_id, 
                                             repsch.organization_id as repsch_organization_id, 

@@ -26,5 +26,8 @@ namespace net.atos.daf.ct2.reportscheduler.repository
         Task<ReportLogo> GetReportLogo(int accountId);
         Task<IEnumerable<UserTimeZone>> GetUserTimeZone();
         #endregion
+
+        Task<int> SendReportEmail();
+
     }
 }
