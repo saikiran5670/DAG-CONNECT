@@ -8,26 +8,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Chart.min.js" />
-    <None Remove="Assets\DAFLogo.png" />
+    <None Remove="assets\Chart.min.js" />
+    <None Remove="assets\DAFLogo.png" />
     <None Remove="assets\style.css" />
-    <None Remove="Assets\WallImg2.jpg" />
+    <None Remove="assets\WallImg2.jpg" />
     <None Remove="libwkhtmltox.dll" />
     <None Remove="libwkhtmltox.dylib" />
     <None Remove="libwkhtmltox.so" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Chart.min.js">
+    <Content Include="assets\Chart.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\DAFLogo.png">
+    <Content Include="assets\DAFLogo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\style.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\WallImg2.jpg">
+    <Content Include="assets\WallImg2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="libwkhtmltox.dll">
