@@ -116,9 +116,9 @@ namespace net.atos.daf.ct2.roleservice
             try
             {
 
-                var Assignedrole = await _roleManagement.IsRoleAssigned(request.RoleID);
+                var assignedrole = await _roleManagement.IsRoleAssigned(request.RoleID);
                 DeleteRoleResponce responce = new DeleteRoleResponce();
-                foreach (var item in Assignedrole)
+                foreach (var item in assignedrole)
                 {
                     responce.Role.Add(new AssignedRole
                     {
@@ -163,37 +163,37 @@ namespace net.atos.daf.ct2.roleservice
         {
             try
             {
-                RoleFilter ObjroleFilter = new RoleFilter();
-                RoleListResponce ObjroleList = new RoleListResponce();
+                RoleFilter objroleFilter = new RoleFilter();
+                RoleListResponce objroleList = new RoleListResponce();
 
-                ObjroleFilter.AccountId = request.AccountId;
-                ObjroleFilter.RoleId = request.RoleId;
-                ObjroleFilter.Organization_Id = request.OrganizationId;
-                ObjroleFilter.State = request.Active ? "A" : "I";
-                ObjroleFilter.IsGlobal = request.IsGlobal;
-                ObjroleFilter.LangaugeCode = request.LangaugeCode;
+                objroleFilter.AccountId = request.AccountId;
+                objroleFilter.RoleId = request.RoleId;
+                objroleFilter.Organization_Id = request.OrganizationId;
+                objroleFilter.State = request.Active ? "A" : "I";
+                objroleFilter.IsGlobal = request.IsGlobal;
+                objroleFilter.LangaugeCode = request.LangaugeCode;
 
-                var role = _roleManagement.GetRoles(ObjroleFilter).Result;
+                var role = _roleManagement.GetRoles(objroleFilter).Result;
                 foreach (var item in role)
                 {
-                    RoleRequest ObjResponce = new RoleRequest();
-                    ObjResponce.RoleID = item.Id;
-                    ObjResponce.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id.Value;
-                    ObjResponce.RoleName = item.Name;
-                    ObjResponce.CreatedBy = item.Created_by;
-                    ObjResponce.CreatedAt = item.Created_at;
+                    RoleRequest objResponce = new RoleRequest();
+                    objResponce.RoleID = item.Id;
+                    objResponce.OrganizationId = item.Organization_Id == null ? 0 : item.Organization_Id.Value;
+                    objResponce.RoleName = item.Name;
+                    objResponce.CreatedBy = item.Created_by;
+                    objResponce.CreatedAt = item.Created_at;
                     //ObjResponce.= item.Is_Active;
-                    ObjResponce.Description = item.Description ?? "";
+                    objResponce.Description = item.Description ?? "";
                     //ObjResponce.Roletype= item.Organization_Id == null ? RoleTypes.Global : RoleTypes.Regular;
-                    ObjResponce.FeatureIds.Add(item.FeatureSet.Features.Select(I => I.Id).ToArray());
-                    ObjResponce.Level = item.Level;
-                    ObjResponce.Code = item.Code;
-                    ObjroleList.Roles.Add(ObjResponce);
+                    objResponce.FeatureIds.Add(item.FeatureSet.Features.Select(I => I.Id).ToArray());
+                    objResponce.Level = item.Level;
+                    objResponce.Code = item.Code;
+                    objroleList.Roles.Add(objResponce);
                 }
 
-                ObjroleList.Message = "Roles data retrieved";
-                ObjroleList.Code = Responcecode.Success;
-                return await Task.FromResult(ObjroleList);
+                objroleList.Message = "Roles data retrieved";
+                objroleList.Code = Responcecode.Success;
+                return await Task.FromResult(objroleList);
             }
             catch (Exception ex)
             {
