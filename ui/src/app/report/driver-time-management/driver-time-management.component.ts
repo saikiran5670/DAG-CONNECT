@@ -68,24 +68,13 @@ export class DriverTimeManagementComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
+  displayedColumns = ['detailsdrivername', 'detailsdriverid', 'detailsstarttime', 'detailsendtime', 'detailsdrivetime', 'detailsworktime', 'detailsservicetime', 'detailsresttime', 'detailsavailabletime'];
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
   selectedVehicle : string;
   driverSelected : boolean = false;
   selectedDriverData = [];
-  showField: any = {
-        driverName: true,
-        driverId: true,
-        startTime: true,
-        endTime: true,
-        driveTime: true,
-        workTime: true,
-        serviceTime: true,
-        restTime: true,
-        availableTime: true
-  };
   
   totalDriveTime : Number = 0;
   totalWorkTime : Number = 0;
@@ -96,6 +85,153 @@ export class DriverTimeManagementComponent implements OnInit {
   driverDetails : any= [];
   detailConvertedData : any;
 
+  reportPrefData: any = [];
+  reportId:number = 9;
+  showField: any = {
+    detailsdriverid:true,
+    detailsdrivername:true,
+    detailsendtime:true,
+    detailsstarttime:true,
+    detailsworktime:true,
+    detailsavailabletime:true,
+    detailsservicetime:true,
+    detailsresttime:true,
+    detailsdrivetime:true,
+    specificdetailsendtime:true,
+    specificdetailstarttime:true,
+    specificdetailworktime:true,
+    specificdetailavailabletime:true,
+    specificdetailservicetime:true,
+    specificdetailresttime:true,
+    specificdetaildrivetime:true,
+    specificdetailchart : true,
+
+
+  };
+  
+  prefMapData: any = [
+    {
+      key: 'da_report_alldriver_general_driverscount',
+      value: 'driverscount'
+    },
+    {
+      key: 'da_report_alldriver_general_totaldrivetime',
+      value: 'totaldrivetime'
+    },
+    {
+      key: 'da_report_alldriver_general_totalworktime',
+      value: 'totalworktime'
+    },
+    {
+      key: 'da_report_alldriver_general_totalavailabletime',
+      value: 'totalavailabletime'
+    },
+    {
+      key: 'da_report_alldriver_general_totalresttime',
+      value: 'totalresttime'
+    },
+    {
+      key: 'da_report_alldriver_details_driverid',
+      value: 'detailsdriverid'
+    },
+    {
+      key: 'da_report_alldriver_details_drivername',
+      value: 'detailsdrivername'
+    },
+    {
+      key: 'da_report_alldriver_details_endtime',
+      value: 'detailsendtime'
+    },
+    {
+      key: 'da_report_alldriver_details_starttime',
+      value: 'detailsstarttime'
+    },
+    {
+      key: 'da_report_alldriver_details_worktime',
+      value: 'detailsworktime'
+    },
+    {
+      key: 'da_report_alldriver_details_availabletime',
+      value: 'detailsavailabletime'
+    },
+    {
+      key: 'da_report_alldriver_details_servicetime',
+      value: 'detailsservicetime'
+    },
+    {
+      key: 'da_report_alldriver_details_resttime',
+      value: 'detailsresttime'
+    },
+    {
+      key: 'da_report_alldriver_details_drivetime',
+      value: 'detailsdrivetime'
+    },
+    {
+      key: 'da_report_specificdriver_general_driverid',
+      value: 'gereraldriverid'
+    },
+    {
+      key: 'da_report_specificdriver_general_drivername',
+      value: 'generaldrivername'
+    },
+    {
+      key: 'da_report_specificdriver_general_totaldrivetime',
+      value: 'generaltotaldrivetime'
+    },
+    {
+      key: 'da_report_specificdriver_general_totalworktime',
+      value: 'generaltotalworktime'
+    },
+    {
+      key: 'da_report_specificdriver_general_totalavailabletime',
+      value: 'generaltotalavailabletime'
+    },
+    {
+      key: 'da_report_specificdriver_general_totalresttime',
+      value: 'generaltotalresttime'
+    },
+    {
+      key: 'da_report_specificdriver_details_driverid',
+      value: 'specificdetailsdriverid'
+    },
+    {
+      key: 'da_report_specificdriver_details_drivername',
+      value: 'specificdetailsdrivername'
+    },
+    {
+      key: 'da_report_specificdriver_details_endtime',
+      value: 'specificdetailsendtime'
+    },
+    {
+      key: 'da_report_specificdriver_details_starttime',
+      value: 'specificdetailstarttime'
+    },
+    {
+      key: 'da_report_specificdriver_details_worktime',
+      value: 'specificdetailworktime'
+    },
+    {
+      key: 'da_report_specificdriver_details_availabletime',
+      value: 'specificdetailavailabletime'
+    },
+    {
+      key: 'da_report_specificdriver_details_servicetime',
+      value: 'specificdetailservicetime'
+    },
+    {
+      key: 'da_report_specificdriver_details_resttime',
+      value: 'specificdetailresttime'
+    },
+    {
+      key: 'da_report_specificdriver_details_drivetime',
+      value: 'specificdetaildrivetime'
+    },
+    {
+      key: 'da_report_specificdriver_details_charts',
+      value: 'specificdetailchart'
+    }
+  ];
+  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) { 
     this.defaultTranslation()
@@ -105,7 +241,7 @@ export class DriverTimeManagementComponent implements OnInit {
   ngOnInit(): void {
     
     this.showLoadingIndicator = true;
-
+    
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -137,10 +273,352 @@ export class DriverTimeManagementComponent implements OnInit {
         this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
         this.setDefaultStartEndTime();
         this.setPrefFormatDate();
-        this.getOnLoadData();
-       // this.getReportPreferences();
+        this.getReportPreferences();
       });
     });
+  }
+
+  getReportPreferences(){
+    //this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+      //this.reportPrefData = data["userPreferences"];
+      this.reportPrefData =[
+        {
+          "dataAtrributeId": 55,
+          "name": "Report.AllDriver.General.DriversCount",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_general_driverscount",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 125,
+          "name": "Report.AllDriver.General.TotalDriveTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_general_totaldrivetime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 132,
+          "name": "Report.AllDriver.General.TotalWorkTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_general_totalworktime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 123,
+          "name": "Report.AllDriver.General.TotalAvailableTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_general_totalavailabletime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 130,
+          "name": "Report.AllDriver.General.TotalRestTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_general_totalresttime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 52,
+          "name": "Report.AllDriver.Details.DriverId",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_driverid",
+          "state": "I",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 53,
+          "name": "Report.AllDriver.Details.DriverName",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_drivername",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 63,
+          "name": "Report.AllDriver.Details.EndTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_endtime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 118,
+          "name": "Report.AllDriver.Details.StartTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_starttime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 139,
+          "name": "Report.AllDriver.Details.WorkTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_worktime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 16,
+          "name": "Report.AllDriver.Details.AvailableTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_availabletime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 112,
+          "name": "Report.AllDriver.Details.ServiceTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_servicetime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 109,
+          "name": "Report.AllDriver.Details.RestTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_resttime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 50,
+          "name": "Report.AllDriver.Details.DriveTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_alldriver_details_drivetime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 183,
+          "name": "Report.SpecificDriver.General.DriverId",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_general_driverid",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 184,
+          "name": "Report.SpecificDriver.General.DriverName",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_general_drivername",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 185,
+          "name": "Report.SpecificDriver.General.TotalDriveTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_general_totaldrivetime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 186,
+          "name": "Report.SpecificDriver.General.TotalWorkTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_general_totalworktime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 187,
+          "name": "Report.SpecificDriver.General.TotalAvailableTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_general_totalavailabletime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 188,
+          "name": "Report.SpecificDriver.General.TotalRestTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_general_totalresttime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 189,
+          "name": "Report.SpecificDriver.Details.DriverId",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_driverid",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 190,
+          "name": "Report.SpecificDriver.Details.DriverName",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_drivername",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 191,
+          "name": "Report.SpecificDriver.Details.EndTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_endtime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 192,
+          "name": "Report.SpecificDriver.Details.StartTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_starttime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 193,
+          "name": "Report.SpecificDriver.Details.WorkTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_worktime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 194,
+          "name": "Report.SpecificDriver.Details.AvailableTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_availabletime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 195,
+          "name": "Report.SpecificDriver.Details.ServiceTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_servicetime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 196,
+          "name": "Report.SpecificDriver.Details.RestTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_resttime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 197,
+          "name": "Report.SpecificDriver.Details.DriveTime",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_drivetime",
+          "state": "A",
+          "chartType": ""
+        },
+        {
+          "dataAtrributeId": 198,
+          "name": "Report.SpecificDriver.Details.Charts",
+          "description": "",
+          "type": "A",
+          "reportReferenceType": "",
+          "key": "da_report_specificdriver_details_charts",
+          "state": "A",
+          "chartType": ""
+        }
+      ];
+      this.setDisplayColumnBaseOnPref();
+      
+      this.getOnLoadData();
+      //this.loadWholeTripData();
+    // }, (error) => {
+    //   this.reportPrefData = [];
+    //   this.setDisplayColumnBaseOnPref();
+      
+    //   this.getOnLoadData();
+    //   //this.loadWholeTripData();
+    // });
+  }
+
+  setDisplayColumnBaseOnPref(){
+    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
+    if(filterPref.length > 0){
+      filterPref.forEach(element => {
+        let search = this.prefMapData.filter(i => i.key == element.key);
+        let _value = search[0]['value'];
+        if(search.length > 0){
+          let index = this.displayedColumns.indexOf(search[0].value);
+          if (index > -1) {
+              this.displayedColumns.splice(index, 1);
+          }
+          this.showField[_value] = false;
+        }
+
+      //   if(element.key == 'da_report_details_vehiclename'){
+      //     this.showField[element.key] = false;
+      //   }else if(element.key == 'da_report_details_vin'){
+      //     this.showField.vin = false;
+      //   }else if(element.key == 'da_report_details_registrationnumber'){
+      //     this.showField.regNo = false;
+      //   }
+      });
+    }
   }
 
   
@@ -193,6 +671,8 @@ export class DriverTimeManagementComponent implements OnInit {
     let _driverIds =[];
     if (parseInt(this.driverTimeForm.controls.vehicle.value) === 0) {
       _vehicelIds = this.vehicleListData.map(data => data.vin);
+      _vehicelIds.shift();
+
     }
     else {
       _vehicelIds = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data => data.vin);
@@ -201,6 +681,7 @@ export class DriverTimeManagementComponent implements OnInit {
     if (parseInt(this.driverTimeForm.controls.driver.value) === 0) {
       this.allDriversSelected = true;
       _driverIds = this.vehicleListData.map(data=>data.driverID);
+      _driverIds.shift();
     }
     else {
       this.allDriversSelected = false

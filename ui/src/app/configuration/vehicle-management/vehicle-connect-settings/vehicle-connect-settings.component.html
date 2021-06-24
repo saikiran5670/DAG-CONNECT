@@ -107,7 +107,7 @@
             <mat-cell *matCellDef="let row"  style="min-width: 16%;">
              
               <button *ngIf="row.status != 'T'" class='actionBtn' mat-flat-button (click)="onChangeConnectedStatus(row)" matTooltip="{{ row.optIn == 'I' ? (translationData.lblClicktodeactivate || 'Click to change the status') : translationData.lblClicktoactivate || 'Click to change the status' }}">
-              <mat-slide-toggle color="primary" [checked]='(row.optIn == "I" ? true : false) || ((row.status == "C" && row.optIn == "H") ? true : false) ' >
+              <mat-slide-toggle color="primary" [checked]='(row.optIn == "I" ? true : false) || ((row.status == "C" && row.optIn == "H") ? true : false) || ((row.status == "N" && row.optIn == "H") ? true : false) ' >
              </mat-slide-toggle>&nbsp;        
             </button>
           </mat-cell>            
