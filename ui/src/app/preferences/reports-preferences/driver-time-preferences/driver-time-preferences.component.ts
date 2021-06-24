@@ -13,14 +13,19 @@ export class DriverTimePreferencesComponent implements OnInit {
   @Input() editFlag: any;
   @Input() reportListData: any;
   @Input() translationData: any;
-  @Output() setTripReportFlag = new EventEmitter<any>();
+  @Output() setDriverTimeFlag = new EventEmitter<any>();
   localStLanguage: any;
   accountId: any;
   accountOrganizationId: any;
   roleID: any;
   reportId: any;
   initData: any = [];
-  selectionForTripColumns = new SelectionModel(true, []);
+  allDriverTableData:any=[];
+  chartData:any=[];
+  specificDriverData:any=[];
+  selectionForAllDriver = new SelectionModel(true, []);
+  selectionForDriver = new SelectionModel(true, []);
+  selectionForChart = new SelectionModel(true, []);
   reqField: boolean = false;
 
   constructor(private reportService: ReportService, private router: Router) { }
@@ -37,7 +42,7 @@ export class DriverTimePreferencesComponent implements OnInit {
       this.reportId = 9; //- hard coded for Drive Time Management Report
     }
     this.translationUpdate();
-    this.loadTripReportPreferences();
+    this.loadDriveTimePreferences();
   }
 
   translationUpdate(){
@@ -59,99 +64,179 @@ export class DriverTimePreferencesComponent implements OnInit {
     this.translationData.da_report_details_endposition = 'End Position';
   }
 
-  loadTripReportPreferences(){
+  loadDriveTimePreferences(){
     this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((prefData : any) => {
       this.initData = prefData['userPreferences'];
-      this.initData = this.getTranslatedColumnName(this.initData);
-      this.setColumnCheckbox();
-      this.validateRequiredField();
+      this.preparePrefData(this.initData);
+
+    //  this.initData = this.getTranslatedColumnName(this.initData);
+    //  this.setColumnCheckbox();
+    //  this.validateRequiredField();
     }, (error)=>{
       this.initData = [];
     });
   }
 
-  getTranslatedColumnName(prefData: any){
+  preparePrefData(prefData: any){
     prefData.forEach(element => {
-      if(this.translationData[element.key]){
-        element.translatedName = this.translationData[element.key];  
-      }else{
-        element.translatedName = this.getName(element.name);   
+      let _data: any;
+      if(element.key.includes('da_report_alldriver_details')){
+         _data = element;
+        if(this.translationData[element.key]){
+          _data.translatedName = this.translationData[element.key];  
+        }else{
+          _data.translatedName = this.getName(element.name, 25);   
+        }
+        this.allDriverTableData.push(_data);
+      }else if(element.key.includes('da_report_specificdriver_details_charts')){
+        _data = element;
+        if(this.translationData[element.key]){
+          _data.translatedName = this.translationData[element.key];  
+        }else{
+          _data.translatedName = this.getName(element.name, 30);   
+        }
+        this.chartData.push(_data);
+      }else if(element.key.includes('da_report_specificdriver')){
+        _data = element;
+        if(this.translationData[element.key]){
+          _data.translatedName = this.translationData[element.key];  
+        }else{
+          _data.translatedName = this.getName(element.name, 30);   
+        }
+        this.specificDriverData.push(_data)
       }
     });
-    return prefData;
+    this.setColumnCheckbox();
   }
 
-  getName(name: any) {
-    let updatedName = name.slice(15);
+
+  getName(name: any, index: any) {
+    let updatedName = name.slice(index);
     return updatedName;
   }
 
+  zoomClicked(evt){
+    this.chartData['state']
+  }
+
   setColumnCheckbox(){
-    this.selectionForTripColumns.clear();
-    this.initData.forEach(element => {
+    this.selectionForAllDriver.clear();
+    this.selectionForDriver.clear();
+    
+    this.allDriverTableData.forEach(element => {
       if(element.state == 'A'){
-        this.selectionForTripColumns.select(element);
+        this.selectionForAllDriver.select(element);
       }
     });
+    
+    this.specificDriverData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForDriver.select(element);
+      }
+    });
+    
+    this.chartData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForChart.select(element);
+      }
+    });
+  }
+
+  allDriverCheckboxClicked(_evt,data){
+
   }
 
   validateRequiredField(){
     let _flag = true;
-    if(this.selectionForTripColumns.selected.length > 0){
-      let _search = this.selectionForTripColumns.selected.filter(i => (i.key == 'da_report_details_vehiclename' || i.key == 'da_report_details_vin' || i.key == 'da_report_details_registrationnumber'));
-      if(_search.length){
-        _flag = false;
-      }
-    }
+    // if(this.selectionForDetail.selected.length > 0){
+    //   let _search = this.selectionForDetail.selected.filter(i => (i.key == 'da_report_details_vehiclename' || i.key == 'da_report_details_vin' || i.key == 'da_report_details_registrationnumber'));
+    //   if(_search.length){
+    //     _flag = false;
+    //   }
+    // }
     this.reqField = _flag;
   }
 
-  isAllSelectedForColumns(){
-    const numSelected = this.selectionForTripColumns.selected.length;
-    const numRows = this.initData.length;
-    return numSelected === numRows;
-  }
-
-  masterToggleForColumns(){
-    if(this.isAllSelectedForColumns()){
-      this.selectionForTripColumns.clear();
+  masterToggleForAllDetailsColumns(){
+    if(this.isAllSelectedForAllDetailsColumns()){
+      this.selectionForAllDriver.clear();
       this.validateRequiredField();
     }else{
-      this.initData.forEach(row => { this.selectionForTripColumns.select(row) });
+      this.allDriverTableData.forEach(row => { this.selectionForAllDriver.select(row) });
       this.validateRequiredField();
     }
   }
 
+  isAllSelectedForAllDetailsColumns(){
+    const numSelected = this.selectionForAllDriver.selected.length;
+    const numRows = this.allDriverTableData.length;
+    return numSelected === numRows;
+  }
+
+  masterToggleForSpecificColumns(){
+    if(this.isAllSelectedForAllGeneralColumns()){
+      this.selectionForDriver.clear();
+      this.validateRequiredField();
+    }else{
+      this.specificDriverData.forEach(row => { this.selectionForDriver.select(row) });
+      this.validateRequiredField();
+    }
+  }
+
+  isAllSelectedForAllGeneralColumns(){
+    const numSelected = this.selectionForDriver.selected.length;
+    const numRows = this.specificDriverData.length;
+    return numSelected === numRows;
+  }
+
   checkboxClicked(event: any, rowData: any){
-    this.validateRequiredField();
+    //this.validateRequiredField();
   }
 
-  checkboxLabelForColumns(row?: any): string{
-    if(row)
-      return `${this.isAllSelectedForColumns() ? 'select' : 'deselect'} all`;
-    else  
-      return `${this.selectionForTripColumns.isSelected(row) ? 'deselect' : 'select'} row`;
+  checkboxLabelForColumns(row?: any){
+  
   }
 
+  chartClicked($event, data){
+
+  }
   onCancel(){
-    this.setTripReportFlag.emit({flag: false, msg: ''});
+    this.setDriverTimeFlag.emit({flag: false, msg: ''});
     this.setColumnCheckbox();
     this.validateRequiredField();
   }
 
   onReset(){
     this.setColumnCheckbox();
-    this.validateRequiredField();
   }
 
   onConfirm(){
-    let _dataArr: any = [];
-    this.initData.forEach(element => {
-      let search = this.selectionForTripColumns.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
-      if(search.length > 0){
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+    let _allDriverArr: any = [];
+    let _specificDriverArr: any = [];
+    let _chartArr:any=[];
+    this.allDriverTableData.forEach(element => {
+      let sSearch = this.selectionForAllDriver.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(sSearch.length > 0){
+        _allDriverArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }else{
-        _dataArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+        _allDriverArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+
+    this.chartData.forEach(element => {
+      let sSearch = this.selectionForChart.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(sSearch.length > 0){
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _chartArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }
+    });
+    this.specificDriverData.forEach(element => {
+      let sSearch = this.selectionForDriver.selected.filter(item => item.dataAtrributeId == element.dataAtrributeId);
+      if(sSearch.length > 0){
+        _specificDriverArr.push({ dataAttributeId: element.dataAtrributeId, state: "A", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
+      }else{
+        _specificDriverArr.push({ dataAttributeId: element.dataAtrributeId, state: "I", type: "D", chartType: "", thresholdType: "", thresholdValue: 0 });
       }
     });
 
@@ -161,16 +246,11 @@ export class DriverTimePreferencesComponent implements OnInit {
       organizationId: this.accountOrganizationId,
       createdAt: 0,
       modifiedAt: 0,
-      atributesShowNoShow: _dataArr
+      atributesShowNoShow: [..._allDriverArr,..._chartArr, ..._specificDriverArr] //-- merge data
     }
-    this.reportService.createReportUserPreference(objData).subscribe((tripPrefData: any) => {
-      this.loadTripReportPreferences();
-      this.setTripReportFlag.emit({ flag: false, msg: this.getSuccessMsg() });
-      if((this.router.url).includes("tripreport")){
-        this.reloadCurrentComponent();
-      }
-    }, (error) => {
-      console.log(error);
+    this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
+      this.loadDriveTimePreferences();
+      this.setDriverTimeFlag.emit({ flag: false, msg: this.getSuccessMsg() });
     });
   }
 

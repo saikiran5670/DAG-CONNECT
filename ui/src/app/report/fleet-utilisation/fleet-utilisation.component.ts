@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -24,13 +24,15 @@ import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Router, NavigationExtras } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/angular';
 // import { CalendarOptions } from '@fullcalendar/angular';
+import { OrganizationService } from '../../services/organization.service';
 
 @Component({
   selector: 'app-fleet-utilisation',
   templateUrl: './fleet-utilisation.component.html',
   styleUrls: ['./fleet-utilisation.component.less']
 })
-export class FleetUtilisationComponent implements OnInit {
+
+export class FleetUtilisationComponent implements OnInit, OnDestroy {
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -65,6 +67,7 @@ export class FleetUtilisationComponent implements OnInit {
   tripData: any = [];
   vehicleDD: any = [];
   vehicleGrpDD: any = [];
+  internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
   startDateValue: any = 0;
   endDateValue: any = 0;
@@ -282,7 +285,7 @@ calendarOptions: CalendarOptions = {
   
 };
 
-  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router) {
+  constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router, private organizationService: OrganizationService) {
     this.defaultTranslation();
     const navigation = this.router.getCurrentNavigation();
     const state = navigation.extras.state as {
@@ -329,18 +332,90 @@ calendarOptions: CalendarOptions = {
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
       this.processTranslation(data);
       this.translationService.getPreferences(this.localStLanguage.code).subscribe((prefData: any) => {
-        this.prefTimeFormat = parseInt(prefData.timeformat.filter(i => i.id == this.accountPrefObj.accountPreference.timeFormatId)[0].value.split(" ")[0]);
-        this.prefTimeZone = prefData.timezone.filter(i => i.id == this.accountPrefObj.accountPreference.timezoneId)[0].value;
-        this.prefDateFormat = prefData.dateformat.filter(i => i.id == this.accountPrefObj.accountPreference.dateFormatTypeId)[0].name;
-        this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
-        this.setDefaultStartEndTime();
-        this.setPrefFormatDate();
-        this.setDefaultTodayDate();
-        this.getFleetPreferences();
-
+        if(this.accountPrefObj.accountPreference && this.accountPrefObj.accountPreference != ''){ // account pref
+          this.proceedStep(prefData, this.accountPrefObj.accountPreference);
+        }else{ // org pref
+          this.organizationService.getOrganizationPreference(this.accountOrganizationId).subscribe((orgPref: any)=>{
+            this.proceedStep(prefData, orgPref);
+          }, (error) => { // failed org API
+            let pref: any = {};
+            this.proceedStep(prefData, pref);
+          });
+        }
       });
     });
   }
+
+
+  proceedStep(prefData: any, preference: any){
+    let _search = prefData.timeformat.filter(i => i.id == preference.timeFormatId);
+    if(_search.length > 0){
+      this.prefTimeFormat = parseInt(_search[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone.filter(i => i.id == preference.timezoneId)[0].value;
+      this.prefDateFormat = prefData.dateformat.filter(i => i.id == preference.dateFormatTypeId)[0].name;
+      this.prefUnitFormat = prefData.unit.filter(i => i.id == preference.unitId)[0].name;  
+    }else{
+      this.prefTimeFormat = parseInt(prefData.timeformat[0].value.split(" ")[0]);
+      this.prefTimeZone = prefData.timezone[0].value;
+      this.prefDateFormat = prefData.dateformat[0].name;
+      this.prefUnitFormat = prefData.unit[0].name;
+    }
+    this.setDefaultStartEndTime();
+    this.setPrefFormatDate();
+    this.setDefaultTodayDate();
+    this.getFleetPreferences();
+  }
+
+  ngOnDestroy(){
+    console.log("component destroy...");
+    this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
+    this.fleetUtilizationSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
+    this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    this.fleetUtilizationSearchData["startDateStamp"] = this.startDateValue;
+    this.fleetUtilizationSearchData["endDateStamp"] = this.endDateValue;
+    this.fleetUtilizationSearchData.testDate = this.startDateValue;
+    this.fleetUtilizationSearchData.filterPrefTimeFormat = this.prefTimeFormat;
+    if(this.prefTimeFormat == 24){
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.fleetUtilizationSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.fleetUtilizationSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    }else{
+      this.fleetUtilizationSearchData["startTimeStamp"] = this.startTimeDisplay;  
+      this.fleetUtilizationSearchData["endTimeStamp"] = this.endTimeDisplay;  
+    }
+    this.setGlobalSearchData(this.fleetUtilizationSearchData);
+  }
+
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]}`;
+    }
+    return res;
+  }
+
 
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
@@ -427,9 +502,11 @@ calendarOptions: CalendarOptions = {
           ////console.log("finalVINDataList:: ", finalVINDataList); 
         }
       }else{
-        this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
-        this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-        this.setGlobalSearchData(this.fleetUtilizationSearchData)
+        // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
+        // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+        // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+        this.tripForm.get('vehicle').setValue('');
+        this.tripForm.get('vehicleGroup').setValue('');
       }
     }
     this.vehicleGroupListData = finalVINDataList;
@@ -456,6 +533,7 @@ calendarOptions: CalendarOptions = {
   }
 
   onSearch(){
+    //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
@@ -591,6 +669,7 @@ calendarOptions: CalendarOptions = {
   }
 
   onReset(){
+    this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
@@ -657,13 +736,22 @@ calendarOptions: CalendarOptions = {
   }
 
   resetTripFormControlValue(){
-    this.tripForm.get('vehicle').setValue('');
-    this.tripForm.get('vehicleGroup').setValue(0);
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== ""){
+      this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
+    }else{
+      this.tripForm.get('vehicle').setValue('');
+      this.tripForm.get('vehicleGroup').setValue(0);
+      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = 0;
+      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    }
   }
 
   onVehicleChange(event: any){
-    this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
-    this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    this.internalSelection = true; 
+    // this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
 
 
@@ -685,7 +773,7 @@ calendarOptions: CalendarOptions = {
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue)
     }
@@ -695,30 +783,29 @@ calendarOptions: CalendarOptions = {
   }
   onVehicleGroupChange(event: any){
    if(event.value || event.value == 0){
-     
-     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
-     if(parseInt(event.value) == 0){ //-- all group
-      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-      this.vehicleDD = this.vehicleListData;
-    }else{
+      this.internalSelection = true; 
+      this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+      if(parseInt(event.value) == 0){ //-- all group
+        //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+        this.vehicleDD = this.vehicleListData;
+      }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      
-      if(search.length > 0){
-        this.vehicleDD = [];
-        search.forEach(element => {
-          this.vehicleDD.push(element);  
-        });
+        if(search.length > 0){
+          this.vehicleDD = [];
+          search.forEach(element => {
+            this.vehicleDD.push(element);  
+          });
+        }
       }
+      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
+      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    }else {
+      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+      this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
+      this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
     }
-    this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
-    this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-    this.setGlobalSearchData(this.fleetUtilizationSearchData)
-  }else {
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
-    this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
-    this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
-  }
   }
     
   setTableInfo(){
@@ -803,6 +890,7 @@ calendarOptions: CalendarOptions = {
   }
 
   selectionTimeRange(selection: any){
+    this.internalSelection = true;
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
@@ -840,8 +928,8 @@ calendarOptions: CalendarOptions = {
         break;
       }
     }
-    this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
-    this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData);
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -852,19 +940,36 @@ calendarOptions: CalendarOptions = {
   }
 
   setPrefFormatTime(){
-    if(this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
-      console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
-      this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
-      this.startTimeDisplay = `${this.fleetUtilizationSearchData.startTimeStamp+":00"}`;
-      this.endTimeDisplay = `${this.fleetUtilizationSearchData.endTimeStamp+":59"}`;
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
+      if(this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat){ // same format
+        this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
+        this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
+        this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.startTimeStamp}:00` : this.fleetUtilizationSearchData.startTimeStamp;
+        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.endTimeStamp}:59` : this.fleetUtilizationSearchData.endTimeStamp;  
+      }else{ // different format
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
+          this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
+          this.startTimeDisplay = this.selectedStartTime; 
+          this.endTimeDisplay = this.selectedEndTime;
+        }else{ // 24
+          this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
+          this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
+          this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+          this.endTimeDisplay = `${this.selectedEndTime}:59`;
+        }
+      }
     }else {
       if(this.prefTimeFormat == 24){
         this.startTimeDisplay = '00:00:00';
         this.endTimeDisplay = '23:59:59';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
       } else{
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
       }
     }
   
@@ -895,42 +1000,27 @@ calendarOptions: CalendarOptions = {
   }
 
   setDefaultStartEndTime(){
-
-    console.log("---if fleetUtilizationSearch Data not exist")
     this.setPrefFormatTime();
-    if(this.fleetUtilizationSearchData.modifiedFrom == ""){
-      this.selectedStartTime = "00:00";
-      this.selectedEndTime = "23:59";
-    }
-    
+    // if(this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom == ""){
+    //   this.selectedStartTime = "00:00";
+    //   this.selectedEndTime = "23:59";
+    // }
   }
 
   setDefaultTodayDate(){
-
-    if(this.fleetUtilizationSearchData.startDateStamp !== "") {
-      console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
+      //console.log("---if fleetUtilizationSearchData startDateStamp exist")
       if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
         this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
-
-       
-        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
-        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
-
-        // this.selectionTimeRange(this.selectionTab)
-      }else {
+      }else{
         this.selectionTab = 'today';
-        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
-        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
-        console.log(typeof(startDateFromSearch));
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
       }
-      
+      let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
+      let endDateFromSearch = new Date(this.fleetUtilizationSearchData.endDateStamp);
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
     }else{
     this.selectionTab = 'today';
-
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
@@ -939,7 +1029,7 @@ calendarOptions: CalendarOptions = {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
-    
+    this.internalSelection = true;
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
@@ -948,6 +1038,7 @@ calendarOptions: CalendarOptions = {
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
+    this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -958,16 +1049,16 @@ calendarOptions: CalendarOptions = {
     if(type == "start"){
       console.log("--date type--",date)
       console.log("--date type--",timeObj)
-      this.fleetUtilizationSearchData["startDateStamp"] = date;
-      this.fleetUtilizationSearchData.testDate = date;
-      this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // this.fleetUtilizationSearchData["startDateStamp"] = date;
+      // this.fleetUtilizationSearchData.testDate = date;
+      // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       // console.log("---time after function called--",timeObj)
     }else if(type == "end") {
-      this.fleetUtilizationSearchData["endDateStamp"] = date;
-      this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // this.fleetUtilizationSearchData["endDateStamp"] = date;
+      // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
     }
 
@@ -994,6 +1085,7 @@ calendarOptions: CalendarOptions = {
   }
 
   startTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedStartTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = selectedTime + ':00';
@@ -1007,6 +1099,7 @@ calendarOptions: CalendarOptions = {
   }
 
   endTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedEndTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.endTimeDisplay = selectedTime + ':59';

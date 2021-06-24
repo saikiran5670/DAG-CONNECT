@@ -42,6 +42,7 @@ export class DriverTimeManagementComponent implements OnInit {
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel : boolean = true;
   generalExpandPanel : boolean = true;
+  searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
 
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
@@ -67,24 +68,15 @@ export class DriverTimeManagementComponent implements OnInit {
   prefDateFormat: any = 'ddateformat_mm/dd/yyyy'; //-- coming from pref setting
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
-  displayedColumns = ['driverName', 'driverId', 'startTime', 'endTime', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
+  displayedColumns = ['detailsdrivername', 'detailsdriverid', 'detailsstarttime', 'detailsendtime', 'detailsdrivetime', 'detailsworktime', 'detailsservicetime', 'detailsresttime', 'detailsavailabletime'];
+  detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
+  
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
   selectedVehicle : string;
   driverSelected : boolean = false;
   selectedDriverData = [];
-  showField: any = {
-        driverName: true,
-        driverId: true,
-        startTime: true,
-        endTime: true,
-        driveTime: true,
-        workTime: true,
-        serviceTime: true,
-        restTime: true,
-        availableTime: true
-  };
   
   totalDriveTime : Number = 0;
   totalWorkTime : Number = 0;
@@ -95,6 +87,153 @@ export class DriverTimeManagementComponent implements OnInit {
   driverDetails : any= [];
   detailConvertedData : any;
 
+  reportPrefData: any = [];
+  reportId:number = 9;
+  showField: any = {
+    detailsdriverid:true,
+    detailsdrivername:true,
+    detailsendtime:true,
+    detailsstarttime:true,
+    detailsworktime:true,
+    detailsavailabletime:true,
+    detailsservicetime:true,
+    detailsresttime:true,
+    detailsdrivetime:true,
+    specificdetailsendtime:true,
+    specificdetailstarttime:true,
+    specificdetailworktime:true,
+    specificdetailavailabletime:true,
+    specificdetailservicetime:true,
+    specificdetailresttime:true,
+    specificdetaildrivetime:true,
+    specificdetailchart : true,
+
+
+  };
+  
+  prefMapData: any = [
+    {
+      key: 'da_report_alldriver_general_driverscount',
+      value: 'driverscount'
+    },
+    {
+      key: 'da_report_alldriver_general_totaldrivetime',
+      value: 'totaldrivetime'
+    },
+    {
+      key: 'da_report_alldriver_general_totalworktime',
+      value: 'totalworktime'
+    },
+    {
+      key: 'da_report_alldriver_general_totalavailabletime',
+      value: 'totalavailabletime'
+    },
+    {
+      key: 'da_report_alldriver_general_totalresttime',
+      value: 'totalresttime'
+    },
+    {
+      key: 'da_report_alldriver_details_driverid',
+      value: 'detailsdriverid'
+    },
+    {
+      key: 'da_report_alldriver_details_drivername',
+      value: 'detailsdrivername'
+    },
+    {
+      key: 'da_report_alldriver_details_endtime',
+      value: 'detailsendtime'
+    },
+    {
+      key: 'da_report_alldriver_details_starttime',
+      value: 'detailsstarttime'
+    },
+    {
+      key: 'da_report_alldriver_details_worktime',
+      value: 'detailsworktime'
+    },
+    {
+      key: 'da_report_alldriver_details_availabletime',
+      value: 'detailsavailabletime'
+    },
+    {
+      key: 'da_report_alldriver_details_servicetime',
+      value: 'detailsservicetime'
+    },
+    {
+      key: 'da_report_alldriver_details_resttime',
+      value: 'detailsresttime'
+    },
+    {
+      key: 'da_report_alldriver_details_drivetime',
+      value: 'detailsdrivetime'
+    },
+    {
+      key: 'da_report_specificdriver_general_driverid',
+      value: 'gereraldriverid'
+    },
+    {
+      key: 'da_report_specificdriver_general_drivername',
+      value: 'generaldrivername'
+    },
+    {
+      key: 'da_report_specificdriver_general_totaldrivetime',
+      value: 'generaltotaldrivetime'
+    },
+    {
+      key: 'da_report_specificdriver_general_totalworktime',
+      value: 'generaltotalworktime'
+    },
+    {
+      key: 'da_report_specificdriver_general_totalavailabletime',
+      value: 'generaltotalavailabletime'
+    },
+    {
+      key: 'da_report_specificdriver_general_totalresttime',
+      value: 'generaltotalresttime'
+    },
+    {
+      key: 'da_report_specificdriver_details_driverid',
+      value: 'specificdetailsdriverid'
+    },
+    {
+      key: 'da_report_specificdriver_details_drivername',
+      value: 'specificdetailsdrivername'
+    },
+    {
+      key: 'da_report_specificdriver_details_endtime',
+      value: 'specificdetailsendtime'
+    },
+    {
+      key: 'da_report_specificdriver_details_starttime',
+      value: 'specificdetailstarttime'
+    },
+    {
+      key: 'da_report_specificdriver_details_worktime',
+      value: 'specificdetailworktime'
+    },
+    {
+      key: 'da_report_specificdriver_details_availabletime',
+      value: 'specificdetailavailabletime'
+    },
+    {
+      key: 'da_report_specificdriver_details_servicetime',
+      value: 'specificdetailservicetime'
+    },
+    {
+      key: 'da_report_specificdriver_details_resttime',
+      value: 'specificdetailresttime'
+    },
+    {
+      key: 'da_report_specificdriver_details_drivetime',
+      value: 'specificdetaildrivetime'
+    },
+    {
+      key: 'da_report_specificdriver_details_charts',
+      value: 'specificdetailchart'
+    }
+  ];
+  
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, 
   private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService) { 
     this.defaultTranslation()
@@ -104,7 +243,7 @@ export class DriverTimeManagementComponent implements OnInit {
   ngOnInit(): void {
     
     this.showLoadingIndicator = true;
-
+    
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.accountId = localStorage.getItem('accountId') ? parseInt(localStorage.getItem('accountId')) : 0;
@@ -136,10 +275,58 @@ export class DriverTimeManagementComponent implements OnInit {
         this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
         this.setDefaultStartEndTime();
         this.setPrefFormatDate();
-        this.getOnLoadData();
-       // this.getReportPreferences();
+        this.getReportPreferences();
       });
     });
+  }
+
+  getReportPreferences(){
+    this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
+      this.reportPrefData = data["userPreferences"];
+      
+      this.setDisplayColumnBaseOnPref();
+      
+      this.getOnLoadData();
+    }, (error) => {
+      this.reportPrefData = [];
+      this.setDisplayColumnBaseOnPref();
+      
+      this.getOnLoadData();
+    });
+  }
+
+  setDisplayColumnBaseOnPref(){
+    let filterPref = this.reportPrefData.filter(i => i.state == 'I');
+    if(filterPref.length > 0){
+      filterPref.forEach(element => {
+        let search = this.prefMapData.filter(i => i.key == element.key);
+        if(search.length > 0){
+          let index = this.displayedColumns.indexOf(search[0].value);
+          if (index > -1) {
+              let _value = search[0]['value'];
+
+              this.displayedColumns.splice(index, 1);
+              this.showField[_value] = false;
+
+          }
+          let detailIndex = this.detaildisplayedColumns.indexOf(search[0].value);
+          this.detaildisplayedColumns.indexOf(search[0].value);
+          if (index > -1) {
+              let _detailvalue = search[0]['value'];
+              this.detaildisplayedColumns.splice(detailIndex, 1);
+              this.showField[_detailvalue] = false;
+          }
+        }
+
+      //   if(element.key == 'da_report_details_vehiclename'){
+      //     this.showField[element.key] = false;
+      //   }else if(element.key == 'da_report_details_vin'){
+      //     this.showField.vin = false;
+      //   }else if(element.key == 'da_report_details_registrationnumber'){
+      //     this.showField.regNo = false;
+      //   }
+      });
+    }
   }
 
   
@@ -155,6 +342,8 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   onVehicleGroupChange(event: any){
+    if(event.value || event.value == 0){
+
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     if(parseInt(event.value) == 0){ //-- all group
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
@@ -162,9 +351,19 @@ export class DriverTimeManagementComponent implements OnInit {
     }else{
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
     }
+    this.searchFilterpersistData["vehicleGroupDropDownValue"] = event.value;
+    this.searchFilterpersistData["vehicleDropDownValue"] = '';
+    this.setGlobalSearchData(this.searchFilterpersistData)
+  }else {
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+    this.driverTimeForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
+    this.driverTimeForm.get('vehicle').setValue(parseInt(this.searchFilterpersistData.vehicleDropDownValue));
+  }
   }
 
   onVehicleChange(event: any){
+    this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
+    this.setGlobalSearchData(this.searchFilterpersistData)
   }
 
   onDriverChange(event: any){
@@ -180,6 +379,8 @@ export class DriverTimeManagementComponent implements OnInit {
     let _driverIds =[];
     if (parseInt(this.driverTimeForm.controls.vehicle.value) === 0) {
       _vehicelIds = this.vehicleListData.map(data => data.vin);
+      _vehicelIds.shift();
+
     }
     else {
       _vehicelIds = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data => data.vin);
@@ -188,6 +389,7 @@ export class DriverTimeManagementComponent implements OnInit {
     if (parseInt(this.driverTimeForm.controls.driver.value) === 0) {
       this.allDriversSelected = true;
       _driverIds = this.vehicleListData.map(data=>data.driverID);
+      _driverIds.shift();
     }
     else {
       this.allDriversSelected = false
@@ -457,6 +659,7 @@ export class DriverTimeManagementComponent implements OnInit {
     this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     //this.updateDataSource(this.tripData);
     this.resetdriverTimeFormControlValue();
+    this.filterDateData(); // extra addded as per discuss with Atul
     this.tableInfoObj = {};
     //this.advanceFilterOpen = false;
    // this.selectedPOI.clear();
@@ -466,7 +669,10 @@ export class DriverTimeManagementComponent implements OnInit {
     this.driverTimeForm.get('vehicleGroup').setValue(0);
     this.driverTimeForm.get('vehicle').setValue(0);
     this.driverTimeForm.get('driver').setValue(0);
-
+    this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;
+    this.searchFilterpersistData["vehicleDropDownValue"] = '';
+    this.searchFilterpersistData["driverDropDownValue"] = '';
+    this.setGlobalSearchData(this.searchFilterpersistData);
   }
 
   hideloader() {
@@ -499,6 +705,11 @@ export class DriverTimeManagementComponent implements OnInit {
      // this.wholeTripData.vehicleDetailsWithAccountVisibiltyList = [];
       //this.loadUserPOI();
     });
+
+  }
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.searchFilterpersistData["modifiedFrom"] = "TripReport";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
   }
 
   filterDateData(){
@@ -816,6 +1027,13 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   setPrefFormatTime(){
+    if(this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
+      console.log("---if fleetUtilizationSearchData exist")
+      this.selectedStartTime = this.searchFilterpersistData.startTimeStamp;
+      this.selectedEndTime = this.searchFilterpersistData.endTimeStamp;
+      this.startTimeDisplay = `${this.searchFilterpersistData.startTimeStamp+":00"}`;
+      this.endTimeDisplay = `${this.searchFilterpersistData.endTimeStamp+":59"}`;
+    }else {
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = '00:00:00';
       this.endTimeDisplay = '23:59:59';
@@ -824,19 +1042,51 @@ export class DriverTimeManagementComponent implements OnInit {
       this.endTimeDisplay = '11:59 PM';
     }
   }
+}
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
+    if(this.searchFilterpersistData.modifiedFrom == ""){
+      this.selectedStartTime = "00:00";
+      this.selectedEndTime = "23:59";
+    }
   }
 
   setDefaultTodayDate(){
+    if(this.searchFilterpersistData.modifiedFrom !== "") {
+      console.log("---if searchFilterpersistData startDateStamp exist")
+      if(this.searchFilterpersistData.timeRangeSelection !== ""){
+        this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
+
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+        // this.globalSearchFilterData["timeRangeSelection"] = this.searchFilterpersistData.timeRangeSelection;
+        // this.setGlobalSearchData(this.globalSearchFilterData);
+        // this.selectionTimeRange(this.selectionTab)
+      }else {
+        this.selectionTab = 'today';
+        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
+        console.log(typeof(startDateFromSearch));
+        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
+        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
+      }
+      
+    }else {
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
+  }
+  }
+
+  setVehicleGroupAndVehiclePreSelection() {
+    if(this.searchFilterpersistData.vehicleDropDownValue !== "") {
+      this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
+    }
   }
 
   setDefaultDateToFetch(){
@@ -876,6 +1126,21 @@ export class DriverTimeManagementComponent implements OnInit {
     return date;
   }
   setStartEndDateTime(date: any, timeObj: any, type: any){
+    if(type == "start"){
+      console.log("--date type--",date)
+      console.log("--date type--",timeObj)
+      this.searchFilterpersistData["startDateStamp"] = date;
+      this.searchFilterpersistData.testDate = date;
+      this.searchFilterpersistData["startTimeStamp"] = timeObj;
+      this.setGlobalSearchData(this.searchFilterpersistData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+      // console.log("---time after function called--",timeObj)
+    }else if(type == "end") {
+      this.searchFilterpersistData["endDateStamp"] = date;
+      this.searchFilterpersistData["endTimeStamp"] = timeObj;
+      this.setGlobalSearchData(this.searchFilterpersistData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+    }
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if(this.prefTimeFormat == 12){
@@ -931,7 +1196,10 @@ export class DriverTimeManagementComponent implements OnInit {
         break;
       }
     }
-    this.filterDateData();
+    this.searchFilterpersistData["timeRangeSelection"] = this.selectionTab;
+    this.setGlobalSearchData(this.searchFilterpersistData);
+    this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){

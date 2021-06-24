@@ -125,13 +125,13 @@ export class LandmarkCategoryService {
         .pipe(catchError(this.handleError));
     }
 
-    getSubCategoryGeofences(orgId: any, subCategoryId: any): Observable<any[]> {
+    getSubCategoryGeofences(orgId: any, categoryId: any, subCategoryId: any): Observable<any[]> {
       let headerObj = this.generateHeader();
       const headers = {
         headers: new HttpHeaders({ headerObj }),
       };
       return this.httpClient
-        .get<any[]>(`${this.geofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}&SubCategoryId=${subCategoryId}`, headers)
+        .get<any[]>(`${this.geofenceServiceUrl}/getallgeofences?OrganizationId=${orgId}&CategoryId=${categoryId}&SubCategoryId=${subCategoryId}`, headers)
         .pipe(catchError(this.handleError));
     }
 

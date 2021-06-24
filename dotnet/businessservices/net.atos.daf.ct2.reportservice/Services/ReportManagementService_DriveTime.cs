@@ -131,8 +131,10 @@ namespace net.atos.daf.ct2.reportservice.Services
                     {
                         VehicleFromDriverTimeDetails vehicleFromDriverTimeDetails = new VehicleFromDriverTimeDetails();
                         response.DriverList.Add(vehicleFromDriverTimeDetails);
-                        VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
-                        response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
+                        string lstVehicle = JsonConvert.SerializeObject(vehicleDeatilsWithAccountVisibility);
+                        response.VehicleDetailsWithAccountVisibiltyList.AddRange(JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleDetailsWithAccountVisibilty>>(lstVehicle));
+                        //VehicleDetailsWithAccountVisibilty vehicleDetailsWithAccountVisibilty = new VehicleDetailsWithAccountVisibilty();
+                        //response.VehicleDetailsWithAccountVisibiltyList.Add(vehicleDetailsWithAccountVisibilty);
                         response.Code = Responsecode.NotFound;
                         response.Message = Responsecode.NotFound.ToString();
                     }

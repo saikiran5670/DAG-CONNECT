@@ -29,7 +29,7 @@ public class TripSinkDao implements Serializable {
 				tripInsertQry = fillStatement(tripInsertQry, dataObject);
 				tripInsertQry.addBatch();
 				tripInsertQry.executeBatch();
-				logger.info("after executeBatch ");
+				
 			} else {
 				if (connection == null) {
 					logger.error(" Issue trip connection is null : " + connection);
