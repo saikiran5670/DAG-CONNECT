@@ -87,6 +87,8 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   isChartsOpen: boolean = false;
   isCalendarOpen: boolean = false;
   isSummaryOpen: boolean = false;
+  timebasedThreshold : any = 36000;
+  mileagebasedThreshold : any = 60;
   showField: any = {
     vehicleName: true,
     vin: true,
@@ -164,8 +166,8 @@ export class FleetUtilisationComponent implements OnInit, OnDestroy {
   lineChartVehicleCount: any = [];
   greaterMileageCount :  any = 0;
   greaterTimeCount :  any = 0;
-  calendarSelectedStartDate : any = '';
-  calendarSelectedEndDate : any = '';
+  calendarpreferenceOption : any = 'Distance';
+  calendarValue: any =0;
 
 // Bar chart implementation
 
@@ -267,21 +269,13 @@ fromTripPageBack: boolean = false;
 calendarOptions: CalendarOptions = {
   initialView: 'dayGridMonth',
   timeZone: 'local',
-  validRange: function(nowDate) {
-    return {
-      start:  '2021-03-24' ,
-      end: nowDate
-    };
-  },
-  // validRange: {
-  //   start: `${this.calendarSelectedStartDate}`,
-  //   end: '2021-06-03'
+  // validRange: function(nowDate) {
+  //   return {
+  //     start:  '2021-03-24' ,
+  //     end: nowDate
+  //   };
   // },
-  events: [
-    { title: '2', date: '2021-04-21' },
-    { title: '4', date: '2021-03-28' },
-    { title: '8', date: '2021-06-02' }
-  ],
+  events: [ ],
   
 };
 
@@ -636,10 +630,10 @@ calendarOptions: CalendarOptions = {
       this.isCalendarOpen = true;
       this.isSummaryOpen = true;
       this.tripData.forEach(element => {
-        if((element.distance/1000) > 1000){
+        if((element.distance/1000) > this.mileagebasedThreshold){
           this.greaterMileageCount = this.greaterMileageCount + 1;
         }
-        if(element.drivingTime > 360000){
+        if(element.drivingTime > this.timebasedThreshold){
           this.greaterTimeCount = this.greaterTimeCount + 1;
         }
       });
@@ -657,15 +651,11 @@ calendarOptions: CalendarOptions = {
       });
       this.reportService.getCalendarDetails(searchDataParam).subscribe((calendarData: any) => {
         this.setChartData(calendarData["calenderDetails"]);
+        this.calendarSelectedValues(calendarData["calenderDetails"]);
       })
     }
     this.calendarOptions.initialDate = this.startDateValue
-    let startday = this.startDateValue.getDate();
-    let startmonth = this.startDateValue.getMonth();
-    let startyear = this.startDateValue.getFullYear();
-    this.calendarSelectedStartDate = `${startyear}-${startmonth + 1}-${startday}`
-   //  this.calendarOptions.visibleRange = {start: `'${this.calendarSelectedStartDate}'`, end : '2021-06-03'};
-    console.log(this.calendarSelectedStartDate);
+    this.calendarOptions.validRange = { start: `${new Date(this.startDateValue).getFullYear()}-${(new Date(this.startDateValue).getMonth() + 1).toString().padStart(2, '0')}-${new Date(this.startDateValue).getDate().toString().padStart(2, '0')}`, end : '2021-06-24'};
   }
 
   onReset(){
@@ -733,6 +723,50 @@ calendarOptions: CalendarOptions = {
       this.averageDistanceBarData.push(this.barVarticleData/e.vehiclecount);
       this.lineChartVehicleCount.push(e.vehiclecount);     
     });
+  }
+
+  calendarSelectedValues(e: any){
+    e.forEach(element => {
+      switch(this.calendarpreferenceOption){
+      case 'Average Weight': { 
+        this.calendarOptions.events =[ {title : `${element.averageweight}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        console.log(this.calendarOptions.events);
+        break;
+      }
+      case 'Idle Duration':{
+        this.calendarOptions.events =[ {title : `${element.averageidleduration}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      case 'Distance': {
+        this.calendarOptions.events =[ {title : `${element.averagedistanceperday/1000}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      case 'Active vehicles': {
+        this.calendarOptions.events =[ {title : `${element.vehiclecount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      case 'Driving time ': {
+        this.calendarOptions.events =[ {title : `${element.averagedrivingtime}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      case 'Time based utlisation': {
+        this.calendarOptions.events =[ {title : `${(element.averagedrivingtime/this.timebasedThreshold) * 100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      case 'Mileage based utilisation': {
+        this.calendarOptions.events =[ {title : `${(element.averagedistanceperday/this.mileagebasedThreshold)*100}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      case 'Total Trips': {
+        this.calendarOptions.events =[ {title : `${element.tripcount}`, date: `${new Date(element.calenderDate).getFullYear()}-${(new Date(element.calenderDate).getMonth() + 1).toString().padStart(2, '0')}-${new Date(element.calenderDate).getDate().toString().padStart(2, '0')}`}]; 
+        break;
+      }
+      default: {
+        this.calendarValue = 0;
+      }
+    }
+    return this.calendarOptions.events;
+  });       
   }
 
   resetTripFormControlValue(){

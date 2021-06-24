@@ -15,7 +15,7 @@ export class Util {
     }
 
     public static convertUtcToDate(_utc: any, timeZone: any){
-        let _date: any = moment.utc(_utc).tz(timeZone).format('YYYY/MM/DD HH:MM:SS');
+        let _date: any = moment.utc(_utc).tz(timeZone).format('YYYY/MM/DD hh:mm:ss');
         return (_date);
     }
 

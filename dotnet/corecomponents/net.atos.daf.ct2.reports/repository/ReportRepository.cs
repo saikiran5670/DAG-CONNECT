@@ -97,7 +97,7 @@ namespace net.atos.daf.ct2.reports.repository
                 parameter.Add("@organization_id", organizationId);
                 parameter.Add("@context_org_id", contextOrgId);
                 #region Query RoleBasedDataColumn
-                var query = @"SELECT d.id as DataAtrributeId,d.name as Name, d.type as Type, d.key as Key, 'A' as state
+                var query = @"SELECT DISTINCT d.id as DataAtrributeId,d.name as Name, d.type as Type, d.key as Key, 'A' as state
                               FROM master.reportattribute ra
                               INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 
                               INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = d.id
