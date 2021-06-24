@@ -406,7 +406,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
         #region GetPDFBinaryFormatByToken
         [HttpGet]
         [Route("download")]
-        public async Task<IActionResult> GetPDFBinaryFormatByToken(ReportPDFByTokenRequest request)
+        public async Task<IActionResult> GetPDFBinaryFormatByToken([FromQuery]ReportPDFByTokenRequest request)
         {
             try
             {
@@ -434,10 +434,11 @@ namespace net.atos.daf.ct2.portalservice.Controllers
             }
         }
         #endregion
+
         #region GetPDFBinaryFormatById
         [HttpGet]
         [Route("getpdf")]
-        public async Task<IActionResult> GetPDFBinaryFormatById(ReportPDFByTokenRequest request)
+        public async Task<IActionResult> GetPDFBinaryFormatById([FromQuery]ReportPDFByTokenRequest request)
         {
             try
             {
