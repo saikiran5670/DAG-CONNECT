@@ -32,8 +32,8 @@ public class ETLQueries {
 			+ ", stsData.vCruiseControlFuelConsumed , stsData.vCruiseControlDist, stsData.vIdleFuelConsumed, stsData.kafkaProcessingTS "
 			+ ", (if( 0 <> (stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist) ,(stsData.vUsedFuel - if(0 <> stsData.vCruiseControlDist, (CAST(stsData.vCruiseControlFuelConsumed as Double)/stsData.vCruiseControlDist), stsData.vCruiseControlDist) )/(stsData.tripCalGpsVehDistDiff - stsData.vCruiseControlDist)* 100 , 0)) as tripCalfuelNonActiveCnsmpt"
 			+ ", (CAST(stsData.vSumTripDPABrakingScore as Double) + stsData.vSumTripDPAAnticipationScore)/2 as tripCalDpaScore, stsData.driverId, stsData.tripCalGpsVehTimeDiff as tripCalGpsVehTime"
-			+ ", stsData.tripProcessingTS, stsData.etlProcessingTS,  stsData.numberOfIndexMessage "
-			+ ", stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount, stsData.vSumTripDPABrakingScore, stsData.vSumTripDPAAnticipationScore "
+			+ ", stsData.tripProcessingTS, stsData.etlProcessingTS,  stsData.numberOfIndexMessage, stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount"
+			+ ", stsData.vSumTripDPABrakingScore, stsData.vSumTripDPAAnticipationScore, stsData.vStopFuel, stsData.vStartFuel  "
 			+ " FROM tripStsData stsData";
 
 	public static final String CONSOLIDATED_TRIP_QRY = " select stsData.tripId, stsData.vid, if(stsData.vin IS NOT NULL, stsData.vin, if(stsData.vid IS NOT NULL, stsData.vid, 'UNKNOWN')) as vin, stsData.startDateTime, stsData.endDateTime, stsData.gpsTripDist"
@@ -48,7 +48,7 @@ public class ETLQueries {
 			+ ", stsData.vCruiseControlDist, stsData.vIdleFuelConsumed, stsData.tripCalfuelNonActiveCnsmpt"
 			+ ", stsData.tripCalDpaScore, stsData.driverId, indxData.f2 as driver2Id, stsData.tripCalGpsVehTime"
 			+ ", stsData.tripProcessingTS, stsData.etlProcessingTS, stsData.kafkaProcessingTS, indxData.f6 as vGrossWtSum, indxData.f7 as numberOfIndexMessage "
-			+ ", stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount, stsData.vSumTripDPABrakingScore, stsData.vSumTripDPAAnticipationScore "
+			+ ", stsData.vTripDPABrakingCount, stsData.vTripDPAAnticipationCount, stsData.vSumTripDPABrakingScore, stsData.vSumTripDPAAnticipationScore, stsData.vStopFuel, stsData.vStartFuel "
 			+ " FROM stsAggregatedData stsData LEFT JOIN secondLevelAggrData indxData ON stsData.tripId = indxData.f0 ";
 	
 	public static final String CONSOLIDATED_TRIP_QRY_BACKUP = " select stsData.tripId, stsData.vid "
@@ -91,6 +91,10 @@ public class ETLQueries {
 			+ ", vIdleFuelConsumed ,tripCalfuelNonActiveCnsmpt ,tripCalDpaScore,driverId ,driver2Id ,tripCalGpsVehTime ,tripProcessingTS ,etlProcessingTS "
 			+ ", kafkaProcessingTS ,vGrossWtSum ,numberOfIndexMessage from tripAggrData ";
 	
+	public static final String ECOSCORE_QRY = " select tripId, vin, startDateTime, endDateTime, driverId, driver2Id, tripCalDist "
+			+ ", vTripDPABrakingCount, vTripDPAAnticipationCount, vSumTripDPABrakingScore, vSumTripDPAAnticipationScore ,vGrossWeightCombination "
+			+ ", tripCalUsedFuel, tripCalPtoDuration, vIdleDuration, tripCalHeavyThrottleDuration, vStopFuel, vStartFuel"
+			+ ", tripProcessingTS ,etlProcessingTS, kafkaProcessingTS from tripAggrDataForEcoScore ";
 	
 	public static final String TRIP_INSERT_STATEMENT = "INSERT INTO tripdetail.trip_statistics( trip_id, vin, start_time_stamp, end_time_stamp, veh_message_distance, etl_gps_distance, idle_duration"
 			+ ", average_speed, average_weight, start_odometer, last_odometer, start_position_lattitude, start_position_longitude, end_position_lattitude"
@@ -113,4 +117,13 @@ public class ETLQueries {
 			+ ", fuel_consumption_cc_non_active = ?, idling_consumption = ?, dpa_score = ?, driver1_id = ?, driver2_id = ?, etl_gps_trip_time = ?, is_ongoing_trip = ?"
 			+ ", msg_gross_weight_combinition = ?, no_of_total_index_message =? ";
 
+	public static final String ECOSCORE_INSERT_STATEMENT = "INSERT INTO tripdetail.ecoscoredata( trip_id, vin, start_time, end_time, driver1_id, driver2_id"
+			+ ", etl_trip_distance, dpa_braking_score, dpa_braking_count, dpa_anticipation_score, dpa_anticipation_count, gross_weight_combination, used_fuel"
+			+ ", pto_duration, idle_duration, heavy_throttle_pedal_duration, start_fuel, stop_fuel ) "
+			+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			+ "  ON CONFLICT (trip_id) "
+			+ "  DO UPDATE SET  vin = ?, start_time = ?, end_time = ?, driver1_id = ?, driver2_id = ?, etl_trip_distance = ?, dpa_braking_score = ?"
+			+ ", dpa_braking_count = ?, dpa_anticipation_score = ?, dpa_anticipation_count = ?, gross_weight_combination = ?, used_fuel = ?, pto_duration = ?"
+			+ ", idle_duration = ?, heavy_throttle_pedal_duration = ?, start_fuel = ?"
+			+ ", stop_fuel = ? ";
 }

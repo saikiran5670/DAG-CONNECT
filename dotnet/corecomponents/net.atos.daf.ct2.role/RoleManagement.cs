@@ -30,8 +30,11 @@ namespace net.atos.daf.ct2.role
                 int roleId = 0;
                 int featuresetid = await _featureManager.AddFeatureSet(roleMaster.FeatureSet);
                 //to get minimum features level
-                int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
-                roleMaster.Level = minlevel;
+                if (roleMaster.FeatureSet.Features.Count > 0)
+                {
+                    int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
+                    roleMaster.Level = minlevel;
+                }
                 if (featuresetid > 0)
                 {
                     roleMaster.Feature_set_id = featuresetid;
@@ -100,8 +103,11 @@ namespace net.atos.daf.ct2.role
                 int RoleId = 0;
                 int featuresetid = await _featureManager.AddFeatureSet(roleMaster.FeatureSet);
                 //to get minimum features level
-                int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
-                roleMaster.Level = minlevel;
+                if (roleMaster.FeatureSet.Features.Count > 0)
+                {
+                    int minlevel = await _featureManager.GetMinimumLevel(roleMaster.FeatureSet.Features);
+                    roleMaster.Level = minlevel;
+                }
                 if (featuresetid > 0)
                 {
                     roleMaster.Feature_set_id = featuresetid;

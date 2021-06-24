@@ -84,7 +84,7 @@
       </div>
       </mat-expansion-panel>
   </mat-card>
-  <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
+  <mat-card *ngIf='showField.specificdetailchart' class='mat-elevation-z no-padding margin-bottom-xlg'>
     <mat-expansion-panel [(expanded)]="chartExpandPanel" class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title >

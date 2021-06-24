@@ -25,6 +25,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @Input() driverSelected : boolean;
   @Input() driverDetails : any;
   @Input() detailConvertedData : any;
+  @Input() showField: any;
   initData = [];
   searchExpandPanel: boolean = true;
   chartExpandPanel : boolean = true;
