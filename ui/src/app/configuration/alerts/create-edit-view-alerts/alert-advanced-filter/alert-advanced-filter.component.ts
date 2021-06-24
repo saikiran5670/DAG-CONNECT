@@ -81,6 +81,9 @@ export class AlertAdvancedFilterComponent implements OnInit {
   selectedDuration :any;
   selectedOccurance : any;
   rowData : any;
+  distanceVal: any =[];
+  occurenceVal: any =[];
+  durationVal :any = [];
   thresholdVal: any;
   options: Options = {
     floor: 0,
@@ -131,10 +134,14 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
-      // this.rowData = this.selectedRowData.filter(item=>item.urgencyLevelType === 'F');
-      // this.selectedDistance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'T');
-      // this.selectedDuration = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'D');
-      // this.selectedOccurance = this.selectedRowData.alertFilterRefs.filter(item=>item.filterType === 'N');
+    if(this.actionType == 'view'){
+      let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'N');
+      this.occurenceVal.push(arr1);
+      let arr2 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T');
+      this.distanceVal.push(arr2);
+      let arr3 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D');
+      this.durationVal(arr3);
+    }
       this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
