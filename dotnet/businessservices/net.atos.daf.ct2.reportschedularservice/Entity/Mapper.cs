@@ -201,6 +201,22 @@ namespace net.atos.daf.ct2.reportschedulerservice.Entity
             schedulereportvr.VehicleGroupType = string.IsNullOrEmpty(request.VehicleGroupType) ? string.Empty : request.VehicleGroupType;
             return schedulereportvr;
         }
-
+        internal ReportPDFResponse MapPDFRepoModel(PDFReportScreenModel request)
+        {
+            ReportPDFResponse objReportPDFResponse = new ReportPDFResponse();
+            objReportPDFResponse.Id = request.Id;
+            objReportPDFResponse.ScheduleReportId = request.ScheduleReportId;
+            //objReportPDFResponse.Report = request.Report ?? null;
+            objReportPDFResponse.Token = request.Token ?? null;
+            objReportPDFResponse.DownloadedAt = request.DownloadedAt;
+            objReportPDFResponse.ValidTill = request.ValidTill;
+            objReportPDFResponse.CreatedAt = request.CreatedAt;
+            objReportPDFResponse.ScheduleReportId = request.ScheduleReportId;
+            objReportPDFResponse.StartDate = request.StartDate;
+            objReportPDFResponse.EndDate = request.EndDate;
+            objReportPDFResponse.IsMailSend = request.IsMailSend;
+            objReportPDFResponse.FileName = request.FileName;
+            return objReportPDFResponse;
+        }
     }
 }
