@@ -276,15 +276,17 @@ export class ManageCategoryComponent implements OnInit {
   }
 
   onGeofenceClick(rowData: any){
-    let id: any; 
-    if(rowData.subCategoryId == 0){ // parent-cat
-      id = rowData.parentCategoryId;
-      this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+    //let id: any; 
+    let categoryId: any;
+    let subCategoryId: any;
+    categoryId = rowData.parentCategoryId;
+    subCategoryId = rowData.subCategoryId;
+    if(subCategoryId == 0){ // parent-cat
+      this.landmarkCategoryService.getCategoryGeofences(this.accountOrganizationId, categoryId).subscribe((geofenceData: any) => {
         this.nextStepforGeofence(geofenceData);
       });
     }else{ // sub-cat
-      id = rowData.subCategoryId; 
-      this.landmarkCategoryService.getSubCategoryGeofences(this.accountOrganizationId, id).subscribe((geofenceData: any) => {
+      this.landmarkCategoryService.getSubCategoryGeofences(this.accountOrganizationId, categoryId, subCategoryId).subscribe((geofenceData: any) => {
         this.nextStepforGeofence(geofenceData);
       });
     }
