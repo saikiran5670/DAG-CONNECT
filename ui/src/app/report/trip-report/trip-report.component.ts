@@ -56,6 +56,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
   accountId: any;
   vehicleGroupListData: any = [];
   vehicleListData: any = [];
+  trackType: any = 'snail';
   vehicleDD: any = [];
   vehicleGrpDD: any = [];
   dataSource: any = new MatTableDataSource([]);
@@ -465,6 +466,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   onSearch(){
+    this.tripTraceArray = [];
+    //this.trackType = 'snail';
     //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
@@ -579,6 +582,8 @@ export class TripReportComponent implements OnInit, OnDestroy {
     this.resetTripFormControlValue();
     this.filterDateData(); // extra addded as per discuss with Atul
     this.tableInfoObj = {};
+    this.tripTraceArray = [];
+    this.trackType = 'snail';
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
   }
@@ -723,7 +728,7 @@ export class TripReportComponent implements OnInit, OnDestroy {
       });
       this.showMap = true;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
     }
   }
 
@@ -752,13 +757,13 @@ export class TripReportComponent implements OnInit, OnDestroy {
     if(event.checked){ //-- add new marker
       this.tripTraceArray.push(row);
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
     }
     else{ //-- remove existing marker
       let arr = this.tripTraceArray.filter(item => item.id != row.id);
       this.tripTraceArray = arr;
       let _ui = this.reportMapService.getUI();
-      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui);
+      this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
     }
   }
 
@@ -1043,7 +1048,9 @@ export class TripReportComponent implements OnInit, OnDestroy {
   }
 
   onMapRepresentationChange(event: any){
-
+    this.trackType = event.value;
+    let _ui = this.reportMapService.getUI();
+    this.reportMapService.viewSelectedRoutes(this.tripTraceArray, _ui, this.trackType);
   }
 
   backToFleetUtilReport(){

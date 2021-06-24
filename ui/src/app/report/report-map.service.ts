@@ -80,7 +80,7 @@ export class ReportMapService {
     return this.ui;
   }
 
-  viewSelectedRoutes(_selectedRoutes: any, _ui: any){
+  viewSelectedRoutes(_selectedRoutes: any, _ui: any, trackType?: any){
     this.clearRoutesFromMap();
     if(_selectedRoutes){
       for(var i in _selectedRoutes){
@@ -136,7 +136,7 @@ export class ReportMapService {
           endBubble.close();
         }, false);
 
-        this.calculateAtoB();
+        this.calculateAtoB(trackType);
       }
     }
    }
@@ -161,7 +161,7 @@ export class ReportMapService {
     return endMarker;
   }
 
-  calculateAtoB(){
+  calculateAtoB(trackType?: any){
     let routeRequestParams = {
       'routingMode': 'fast',
       'transportMode': 'truck',
@@ -170,13 +170,13 @@ export class ReportMapService {
       'return': 'polyline'
     };
     this.hereSerive.calculateRoutePoints(routeRequestParams).then((data: any)=>{
-      this.addRouteShapeToMap(data);
+      this.addRouteShapeToMap(data, trackType);
     },(error)=>{
        console.error(error);
     })
   }
 
-  addRouteShapeToMap(result: any){
+  addRouteShapeToMap(result: any, trackType?: any){
     result.routes[0].sections.forEach((section) =>{
       let linestring = H.geo.LineString.fromFlexiblePolyline(section.polyline);
         this.routeOutlineMarker = new H.map.Polyline(linestring, {
@@ -186,13 +186,22 @@ export class ReportMapService {
           }
         });
         // Create a patterned polyline:
-        this.routeCorridorMarker = new H.map.Polyline(linestring, {
-          style: {
-            lineWidth: 3,
-            strokeColor: '#436ddc'
-          }
+        if(trackType && trackType == 'dotted'){
+          this.routeCorridorMarker = new H.map.Polyline(linestring, {
+            style: {
+              lineWidth: 3,
+              strokeColor: '#436ddc',
+              lineDash:[2,2]
+            }
+          });
+        }else{
+          this.routeCorridorMarker = new H.map.Polyline(linestring, {
+            style: {
+              lineWidth: 3,
+              strokeColor: '#436ddc'
+            }
+          });
         }
-        );
         // create a group that represents the route line and contains
         // outline and the pattern
         var routeLine = new H.map.Group();
