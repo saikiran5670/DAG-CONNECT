@@ -451,10 +451,10 @@
   </div>
   <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
   <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-    From : <span style='font-weight: 500!important;'></span>
+    From : <span style='font-weight: 500!important;'>{{ from[0]}} {{ from[1] }}</span>
     </div>
     <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
-      To : <span style='font-weight: 500!important;'></span>
+      To : <span style='font-weight: 500!important;'>{{ to[0]}} {{ to[1] }}</span>
       </div>
   </div>
   <div fxLayout="row" *ngIf="this.selectedRowData.alertUrgencyLevelRefs[0].periodType == 'C'" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
