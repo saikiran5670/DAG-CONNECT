@@ -28,7 +28,7 @@
         <app-trip-report-preference *ngIf='showTripReport' [editFlag]='editTripFlag' [reportListData]='reportListData' [translationData]='translationData' (setTripReportFlag)="updateEditTripReportFlag($event)"></app-trip-report-preference>
       </div>
     </mat-expansion-panel>
-    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showFleetUtilisationReport" (opened)="showFleetUtilisationReport == true"
+    <mat-expansion-panel class="full-width margin-bottom-15" fxLayoutGap="10px" [(expanded)]="showFleetUtilisationReport" (opened)="showFleetUtilisationReport == true"
       (closed)="showFleetUtilisationReport == false">
       <mat-expansion-panel-header class="full-width">
         <mat-panel-title>
@@ -44,6 +44,24 @@
       </mat-expansion-panel-header>
       <div>
         <app-fleet-utilisation-preference *ngIf='showFleetUtilisationReport' [editFlag]='editFleetUtilisationFlag' [reportListData]='reportListData' [translationData]='translationData' (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-fleet-utilisation-preference>
+      </div>
+    </mat-expansion-panel>
+    <mat-expansion-panel class="full-width" fxLayoutGap="10px" [(expanded)]="showDriverTimePerferences" (opened)="showDriverTimePerferences == true"
+      (closed)="showDriverTimePerferences == false">
+      <mat-expansion-panel-header class="full-width">
+        <mat-panel-title>
+          <span>
+            <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+              translationData.lblSriverTimeReportComp || 'Driver Time Management Report Component' }}</span>
+            <span style='margin-left: 10px; vertical-align: middle;'>
+              <mat-icon *ngIf='!editDriverTimePerferencesFlag' (click)="editDriverTimePerferences()" style="cursor: pointer; font-size: 20px;">
+                edit</mat-icon>
+            </span>
+          </span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <app-driver-time-preferences *ngIf='showDriverTimePerferences' [editFlag]='editFleetUtilisationFlag' [reportListData]='reportListData' [translationData]='translationData' (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-driver-time-preferences>
       </div>
     </mat-expansion-panel>
   </div>

@@ -32,7 +32,6 @@ namespace net.atos.daf.ct2.reports.repository
         Task<List<EcoScoreReportByAllDrivers>> GetEcoScoreReportByAllDrivers(EcoScoreReportByAllDriversRequest request);
         Task<EcoScoreKPIRanking> GetEcoScoreTargetProfileKPIValues(int targetProfileId);
         Task<bool> UpdateEcoScoreTargetProfile(EcoScoreReportByAllDriversRequest request);
-        Task<bool> CreateEcoScoreUserPreference();
-        Task<int> GetEcoScoreUserPreference();
+        Task<bool> CreateReportUserPreference(ReportUserPreferenceCreateRequest request);
     }
 }

@@ -14,6 +14,13 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/mat
 import { DriverTimeManagementComponent } from './driver-time-management/driver-time-management.component';
 import { FleetUtilisationComponent } from './fleet-utilisation/fleet-utilisation.component';
 import { DriverTimeDetailComponent } from './driver-time-management/driver-time-detail/driver-time-detail.component';
+import { FullCalendarModule } from '@fullcalendar/angular'; 
+import dayGridPlugin from '@fullcalendar/daygrid';
+// import interactionPlugin from '@fullcalendar/interaction';
+
+FullCalendarModule.registerPlugins([ // register FullCalendar plugins
+  dayGridPlugin
+]);
 
 export const MY_DATE_FORMAT = {
   display: {
@@ -34,7 +41,8 @@ export const MY_DATE_FORMAT = {
     SharedModule,
     ChartsModule,
     NgxMaterialTimepickerModule,
-    MatTableExporterModule
+    MatTableExporterModule,
+    FullCalendarModule
   ],
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT },

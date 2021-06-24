@@ -302,21 +302,21 @@ export class AlertsComponent implements OnInit {
     setTimeout(()=>{
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.dataSource.sortData = (data: String[], sort: MatSort) => {
-        const isAsc = sort.direction === 'asc';
-        return data.sort((a: any, b: any) => {
-          var a1;
-          var b1;
-          if(sort.active && sort.active === 'thresholdValue'){
-            a1 = a.highThresholdValue;
-            b1 = b.highThresholdValue;
-          } else {
-            a1 = a[sort.active];
-            b1 = b[sort.active];
-          }
-          return this.compare(a1, b1, isAsc);
-        });
-       }
+      // this.dataSource.sortData = (data: String[], sort: MatSort) => {
+      //   const isAsc = sort.direction === 'asc';
+      //   return data.sort((a: any, b: any) => {
+      //     var a1;
+      //     var b1;
+      //     if(sort.active && sort.active === 'thresholdValue'){
+      //       a1 = a.highThresholdValue;
+      //       b1 = b.highThresholdValue;
+      //     } else {
+      //       a1 = a[sort.active];
+      //       b1 = b[sort.active];
+      //     }
+      //     return this.compare(a1, b1, isAsc);
+      //   });
+      //  }
     });
   }
 
