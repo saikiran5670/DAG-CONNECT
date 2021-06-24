@@ -33,9 +33,9 @@ namespace net.atos.daf.ct2.poigeofence
             return await _categoryRepository.GetCategoryType(type, organizationId);
         }
 
-        public async Task<IEnumerable<CategoryList>> GetCategoryDetails()
+        public async Task<IEnumerable<CategoryList>> GetCategoryDetails(int orgId)
         {
-            return await _categoryRepository.GetCategoryDetails();
+            return await _categoryRepository.GetCategoryDetails(orgId);
         }
 
         public async Task<Category_SubCategory_ID_Class> BulkDeleteCategory(DeleteCategoryclass deleteCategoryclass)

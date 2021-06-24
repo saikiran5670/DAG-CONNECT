@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -21,7 +21,7 @@ import 'jspdf-autotable';
   templateUrl: './driver-time-management.component.html',
   styleUrls: ['./driver-time-management.component.less']
 })
-export class DriverTimeManagementComponent implements OnInit {
+export class DriverTimeManagementComponent implements OnInit, OnDestroy {
 
   
   @Input() ngxTimepicker: NgxMaterialTimepickerComponent;
@@ -42,8 +42,8 @@ export class DriverTimeManagementComponent implements OnInit {
   tableExpandPanel: boolean = true;
   noDetailsExpandPanel : boolean = true;
   generalExpandPanel : boolean = true;
-  searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
-
+  searchFilterpersistData :any = {};
+  internalSelection: boolean = false;
   dataSource: any = new MatTableDataSource([]);
   @ViewChild(MatTableExporterDirective) matTableExporter: MatTableExporterDirective;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -243,7 +243,7 @@ export class DriverTimeManagementComponent implements OnInit {
 
 
   ngOnInit(): void {
-    
+    this.searchFilterpersistData = JSON.parse(localStorage.getItem("globalSearchFilterData"));
     this.showLoadingIndicator = true;
     
     this.localStLanguage = JSON.parse(localStorage.getItem("language"));
@@ -277,11 +277,47 @@ export class DriverTimeManagementComponent implements OnInit {
         this.prefUnitFormat = prefData.unit.filter(i => i.id == this.accountPrefObj.accountPreference.unitId)[0].name;
         this.setDefaultStartEndTime();
         this.setPrefFormatDate();
+        this.setDefaultTodayDate();
         this.getReportPreferences();
       });
     });
   }
 
+  setPrefFormatTime(){
+    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
+      if(this.prefTimeFormat == this.searchFilterpersistData.filterPrefTimeFormat){ // same format
+        this.selectedStartTime = this.searchFilterpersistData.startTimeStamp;
+        this.selectedEndTime = this.searchFilterpersistData.endTimeStamp;
+        this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.searchFilterpersistData.startTimeStamp}:00` : this.searchFilterpersistData.startTimeStamp;
+        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.searchFilterpersistData.endTimeStamp}:59` : this.searchFilterpersistData.endTimeStamp;  
+      }else{ // different format
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(this.searchFilterpersistData.startTimeStamp);
+          this.selectedEndTime = this._get12Time(this.searchFilterpersistData.endTimeStamp);
+          this.startTimeDisplay = this.selectedStartTime; 
+          this.endTimeDisplay = this.selectedEndTime;
+        }else{ // 24
+          this.selectedStartTime = this.get24Time(this.searchFilterpersistData.startTimeStamp);
+          this.selectedEndTime = this.get24Time(this.searchFilterpersistData.endTimeStamp);
+          this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+          this.endTimeDisplay = `${this.selectedEndTime}:59`;
+        }
+      }
+    }else {
+      if(this.prefTimeFormat == 24){
+        this.startTimeDisplay = '00:00:00';
+        this.endTimeDisplay = '23:59:59';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
+      } else{
+        this.startTimeDisplay = '12:00 AM';
+        this.endTimeDisplay = '11:59 PM';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
+      }
+    }
+  
+  }
   getReportPreferences(){
     this.reportService.getUserPreferenceReport(this.reportId, this.accountId, this.accountOrganizationId).subscribe((data : any) => {
       this.reportPrefData = data["userPreferences"];
@@ -331,7 +367,57 @@ export class DriverTimeManagementComponent implements OnInit {
     }
   }
 
-  
+  ngOnDestroy(){
+    console.log("component destroy...");
+    this.searchFilterpersistData["vehicleGroupDropDownValue"] = this.driverTimeForm.controls.vehicleGroup.value;
+    this.searchFilterpersistData["vehicleDropDownValue"] = this.driverTimeForm.controls.vehicle.value;
+    this.searchFilterpersistData["driverDropDownValue"] = this.driverTimeForm.controls.driver.value;
+    this.searchFilterpersistData["timeRangeSelection"] = this.selectionTab;
+    this.searchFilterpersistData["startDateStamp"] = this.startDateValue;
+    this.searchFilterpersistData["endDateStamp"] = this.endDateValue;
+    this.searchFilterpersistData.testDate = this.startDateValue;
+    this.searchFilterpersistData.filterPrefTimeFormat = this.prefTimeFormat;
+    if(this.prefTimeFormat == 24){
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.searchFilterpersistData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.searchFilterpersistData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    }else{
+      this.searchFilterpersistData["startTimeStamp"] = this.startTimeDisplay;  
+      this.searchFilterpersistData["endTimeStamp"] = this.endTimeDisplay;  
+    }
+    this.setGlobalSearchData(this.searchFilterpersistData);
+  }
+
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]}`;
+    }
+    return res;
+  }
+
   defaultTranslation(){
     this.translationData = {
       lblSearchReportParameters: 'Search Report Parameters'
@@ -345,7 +431,7 @@ export class DriverTimeManagementComponent implements OnInit {
 
   onVehicleGroupChange(event: any){
     if(event.value || event.value == 0){
-
+      this.internalSelection = true; 
     this.driverTimeForm.get('vehicle').setValue(''); //- reset vehicle dropdown
     this.driverTimeForm.get('driver').setValue(''); //- reset vehicle dropdown
     this.driverListData = this.finalDriverList;
@@ -357,10 +443,17 @@ export class DriverTimeManagementComponent implements OnInit {
 
     }else{
       this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      // let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      // if(search.length > 0){
+      //   this.vehicleDD = [];
+      //   search.forEach(element => {
+      //     this.vehicleDD.push(element);  
+      //   });
+      // }
     }
-    this.searchFilterpersistData["vehicleGroupDropDownValue"] = event.value;
-    this.searchFilterpersistData["vehicleDropDownValue"] = '';
-    this.setGlobalSearchData(this.searchFilterpersistData)
+    // this.searchFilterpersistData["vehicleGroupDropDownValue"] = event.value;
+    // this.searchFilterpersistData["vehicleDropDownValue"] = '';
+    // this.setGlobalSearchData(this.searchFilterpersistData)
   }else {
     // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
     this.driverTimeForm.get('vehicleGroup').setValue(parseInt(this.searchFilterpersistData.vehicleGroupDropDownValue));
@@ -374,6 +467,9 @@ export class DriverTimeManagementComponent implements OnInit {
     
     this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
     this.setGlobalSearchData(this.searchFilterpersistData)
+    this.internalSelection = true; 
+    // this.searchFilterpersistData["vehicleDropDownValue"] = event.value;
+    // this.setGlobalSearchData(this.searchFilterpersistData)
   }
 
   onDriverChange(event: any){
@@ -662,6 +758,7 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   onReset(){
+    this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.onSearchData = [];
@@ -676,13 +773,20 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   resetdriverTimeFormControlValue(){
-    this.driverTimeForm.get('vehicleGroup').setValue(0);
-    this.driverTimeForm.get('vehicle').setValue(0);
-    this.driverTimeForm.get('driver').setValue(0);
-    this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;
-    this.searchFilterpersistData["vehicleDropDownValue"] = '';
-    this.searchFilterpersistData["driverDropDownValue"] = '';
-    this.setGlobalSearchData(this.searchFilterpersistData);
+    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== ""){
+      this.driverTimeForm.get('vehicle').setValue(this.searchFilterpersistData.vehicleDropDownValue);
+      this.driverTimeForm.get('vehicleGroup').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
+      this.driverTimeForm.get('driver').setValue(this.searchFilterpersistData.vehicleGroupDropDownValue);
+    }else{
+      this.driverTimeForm.get('vehicleGroup').setValue(0);
+      this.driverTimeForm.get('vehicle').setValue('');
+      this.driverTimeForm.get('driver').setValue('');
+    }
+
+    // this.searchFilterpersistData["vehicleGroupDropDownValue"] = 0;
+    // this.searchFilterpersistData["vehicleDropDownValue"] = '';
+    // this.searchFilterpersistData["driverDropDownValue"] = '';
+    // this.setGlobalSearchData(this.searchFilterpersistData);
   }
 
   hideloader() {
@@ -691,10 +795,11 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   getOnLoadData(){
+    
     let defaultStartValue = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
     let defaultEndValue = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    this.startDateValue = defaultStartValue;
-    this.endDateValue = defaultEndValue;
+    // this.startDateValue = defaultStartValue;
+    // this.endDateValue = defaultEndValue;
     let loadParam = {
       "reportId": 10,
       "accountId": this.accountId,
@@ -708,7 +813,7 @@ export class DriverTimeManagementComponent implements OnInit {
       this.onLoadData = initData;
       this.filterDateData();
      
-      this.setDefaultTodayDate();
+      
     }, (error)=>{
       this.hideloader();
       //this.wholeTripData.vinTripList = [];
@@ -8631,65 +8736,39 @@ export class DriverTimeManagementComponent implements OnInit {
     }
   }
 
-  setPrefFormatTime(){
-    if(this.searchFilterpersistData.modifiedFrom !== "" &&  ((this.searchFilterpersistData.startTimeStamp || this.searchFilterpersistData.endTimeStamp) !== "") ) {
-      console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.searchFilterpersistData.startTimeStamp;
-      this.selectedEndTime = this.searchFilterpersistData.endTimeStamp;
-      this.startTimeDisplay = `${this.searchFilterpersistData.startTimeStamp+":00"}`;
-      this.endTimeDisplay = `${this.searchFilterpersistData.endTimeStamp+":59"}`;
-    }else {
-    if(this.prefTimeFormat == 24){
-      this.startTimeDisplay = '00:00:00';
-      this.endTimeDisplay = '23:59:59';
-    }else{
-      this.startTimeDisplay = '12:00 AM';
-      this.endTimeDisplay = '11:59 PM';
-    }
-  }
-}
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
-    if(this.searchFilterpersistData.modifiedFrom == ""){
-      this.selectedStartTime = "00:00";
-      this.selectedEndTime = "23:59";
-    }
+    // if(this.searchFilterpersistData.modifiedFrom == ""){
+    //   this.selectedStartTime = "00:00";
+    //   this.selectedEndTime = "23:59";
+    // }
   }
 
   setDefaultTodayDate(){
-    if(this.searchFilterpersistData.modifiedFrom !== "") {
-      console.log("---if searchFilterpersistData startDateStamp exist")
+    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
+      //console.log("---if searchFilterpersistData startDateStamp exist")
       if(this.searchFilterpersistData.timeRangeSelection !== ""){
         this.selectionTab = this.searchFilterpersistData.timeRangeSelection;
-
-        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
-        // this.globalSearchFilterData["timeRangeSelection"] = this.searchFilterpersistData.timeRangeSelection;
-        // this.setGlobalSearchData(this.globalSearchFilterData);
-        // this.selectionTimeRange(this.selectionTab)
-      }else {
+      }else{
         this.selectionTab = 'today';
-        let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
-        let endDateFromSearch =new Date(this.searchFilterpersistData.endDateStamp);
-        console.log(typeof(startDateFromSearch));
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.searchFilterpersistData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.searchFilterpersistData.endTimeStamp, 'end');
       }
-      
-    }else {
+      let startDateFromSearch = new Date(this.searchFilterpersistData.startDateStamp);
+      let endDateFromSearch = new Date(this.searchFilterpersistData.endDateStamp);
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
+    }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
     this.todayDate = this.getTodayDate();
-  }
+    }
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(this.searchFilterpersistData.vehicleDropDownValue !== "") {
+    if(!this.internalSelection && this.searchFilterpersistData.modifiedFrom !== "") {
+      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.onVehicleGroupChange(this.searchFilterpersistData.vehicleGroupDropDownValue)
     }
   }
@@ -8731,21 +8810,7 @@ export class DriverTimeManagementComponent implements OnInit {
     return date;
   }
   setStartEndDateTime(date: any, timeObj: any, type: any){
-    if(type == "start"){
-      console.log("--date type--",date)
-      console.log("--date type--",timeObj)
-      this.searchFilterpersistData["startDateStamp"] = date;
-      this.searchFilterpersistData.testDate = date;
-      this.searchFilterpersistData["startTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.searchFilterpersistData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-      // console.log("---time after function called--",timeObj)
-    }else if(type == "end") {
-      this.searchFilterpersistData["endDateStamp"] = date;
-      this.searchFilterpersistData["endTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.searchFilterpersistData)
-      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
-    }
+
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if(this.prefTimeFormat == 12){
@@ -8764,6 +8829,7 @@ export class DriverTimeManagementComponent implements OnInit {
   }
 
   selectionTimeRange(selection: any){
+    this.internalSelection = true;
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
@@ -8801,23 +8867,33 @@ export class DriverTimeManagementComponent implements OnInit {
         break;
       }
     }
-    this.searchFilterpersistData["timeRangeSelection"] = this.selectionTab;
-    this.setGlobalSearchData(this.searchFilterpersistData);
+    // this.searchFilterpersistData["timeRangeSelection"] = this.selectionTab;
+    // this.setGlobalSearchData(this.searchFilterpersistData);
     this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
+    this.internalSelection = true;
+    //this.startDateValue = event.value._d;
+    this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
+
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
+    this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   startTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedStartTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = selectedTime + ':00';
@@ -8826,9 +8902,12 @@ export class DriverTimeManagementComponent implements OnInit {
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData();// extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedEndTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.endTimeDisplay = selectedTime + ':59';
@@ -8837,6 +8916,8 @@ export class DriverTimeManagementComponent implements OnInit {
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetdriverTimeFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData();
   }
 
 
