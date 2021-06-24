@@ -218,7 +218,7 @@
     </mat-expansion-panel>
 
     <!-- Advance filter -->
-    <div *ngIf="actionType != 'view' && (alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
+    <div *ngIf="(alert_category_selected === 'F' && (alert_type_selected === 'A' || alert_type_selected === 'L' ||
     alert_type_selected === 'T' || alert_type_selected === 'P' || alert_type_selected === 'I')
     || (alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected === 'S')) )"
      fxLayout="row" fxLayoutAlign="space-between" class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
