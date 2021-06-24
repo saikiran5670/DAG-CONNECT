@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -30,7 +30,8 @@ import { CalendarOptions } from '@fullcalendar/angular';
   templateUrl: './fleet-utilisation.component.html',
   styleUrls: ['./fleet-utilisation.component.less']
 })
-export class FleetUtilisationComponent implements OnInit {
+
+export class FleetUtilisationComponent implements OnInit, OnDestroy {
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -338,10 +339,60 @@ calendarOptions: CalendarOptions = {
         this.setPrefFormatDate();
         this.setDefaultTodayDate();
         this.getFleetPreferences();
-
       });
     });
   }
+
+  ngOnDestroy(){
+    console.log("component destroy...");
+    this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
+    this.fleetUtilizationSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
+    this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    this.fleetUtilizationSearchData["startDateStamp"] = this.startDateValue;
+    this.fleetUtilizationSearchData["endDateStamp"] = this.endDateValue;
+    this.fleetUtilizationSearchData.testDate = this.startDateValue;
+    this.fleetUtilizationSearchData.filterPrefTimeFormat = this.prefTimeFormat;
+    if(this.prefTimeFormat == 24){
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.fleetUtilizationSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.fleetUtilizationSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    }else{
+      this.fleetUtilizationSearchData["startTimeStamp"] = this.startTimeDisplay;  
+      this.fleetUtilizationSearchData["endTimeStamp"] = this.endTimeDisplay;  
+    }
+    this.setGlobalSearchData(this.fleetUtilizationSearchData);
+  }
+
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]}`;
+    }
+    return res;
+  }
+
 
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
@@ -428,9 +479,11 @@ calendarOptions: CalendarOptions = {
           ////console.log("finalVINDataList:: ", finalVINDataList); 
         }
       }else{
-        this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
-        this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-        this.setGlobalSearchData(this.fleetUtilizationSearchData)
+        // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
+        // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+        // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+        this.tripForm.get('vehicle').setValue('');
+        this.tripForm.get('vehicleGroup').setValue('');
       }
     }
     this.vehicleGroupListData = finalVINDataList;
@@ -666,16 +719,16 @@ calendarOptions: CalendarOptions = {
     }else{
       this.tripForm.get('vehicle').setValue('');
       this.tripForm.get('vehicleGroup').setValue(0);
-      this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = 0;
-      this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-      this.setGlobalSearchData(this.fleetUtilizationSearchData);
+      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = 0;
+      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData);
     }
   }
 
   onVehicleChange(event: any){
     this.internalSelection = true; 
-    this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
-    this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    // this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
 
 
@@ -722,9 +775,9 @@ calendarOptions: CalendarOptions = {
           });
         }
       }
-      this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
-      this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
+      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
     }else {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
       this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
@@ -852,8 +905,8 @@ calendarOptions: CalendarOptions = {
         break;
       }
     }
-    this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
-    this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData);
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
   }
@@ -865,11 +918,24 @@ calendarOptions: CalendarOptions = {
 
   setPrefFormatTime(){
     if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
-      console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
-      this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
-      this.startTimeDisplay = `${this.fleetUtilizationSearchData.startTimeStamp+":00"}`;
-      this.endTimeDisplay = `${this.fleetUtilizationSearchData.endTimeStamp+":59"}`;
+      if(this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat){ // same format
+        this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
+        this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
+        this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.startTimeStamp}:00` : this.fleetUtilizationSearchData.startTimeStamp;
+        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.endTimeStamp}:59` : this.fleetUtilizationSearchData.endTimeStamp;  
+      }else{ // different format
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
+          this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
+          this.startTimeDisplay = this.selectedStartTime; 
+          this.endTimeDisplay = this.selectedEndTime;
+        }else{ // 24
+          this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
+          this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
+          this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+          this.endTimeDisplay = `${this.selectedEndTime}:59`;
+        }
+      }
     }else {
       if(this.prefTimeFormat == 24){
         this.startTimeDisplay = '00:00:00';
@@ -927,9 +993,9 @@ calendarOptions: CalendarOptions = {
         this.selectionTab = 'today';
       }
       let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
-      let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
-      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
-      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
+      let endDateFromSearch = new Date(this.fleetUtilizationSearchData.endDateStamp);
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
     }else{
     this.selectionTab = 'today';
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
@@ -960,16 +1026,16 @@ calendarOptions: CalendarOptions = {
     if(type == "start"){
       console.log("--date type--",date)
       console.log("--date type--",timeObj)
-      this.fleetUtilizationSearchData["startDateStamp"] = date;
-      this.fleetUtilizationSearchData.testDate = date;
-      this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // this.fleetUtilizationSearchData["startDateStamp"] = date;
+      // this.fleetUtilizationSearchData.testDate = date;
+      // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
       // console.log("---time after function called--",timeObj)
     }else if(type == "end") {
-      this.fleetUtilizationSearchData["endDateStamp"] = date;
-      this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
-      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // this.fleetUtilizationSearchData["endDateStamp"] = date;
+      // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
       // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
     }
 
