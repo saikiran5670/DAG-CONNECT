@@ -96,6 +96,7 @@ checkboxChecked: boolean = false;
           "data": []
         }
       ];
+      if(this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.length > 0){
       this.selectedRowData.alertUrgencyLevelRefs[0].alertTimingDetail.forEach((element, index) => {
         element.dayType.forEach((item, index) => {
           if (item == true) {
@@ -108,6 +109,22 @@ checkboxChecked: boolean = false;
         });
 
       })
+    }
+    else if((this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.length > 0 &&
+      this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail.length > 0)){
+        this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].alertTimingDetail.forEach((element, index) => {
+          element.dayType.forEach((item, index) => {
+            if (item == true) {
+              let totalTime = this.convertTimeIntoHours(element.startDate, element.endDate);
+              element.startDate = totalTime[0];
+              element.endDate = totalTime[1];
+              this.timings[index].data.push(element);
+              this.timings[index].Type = element.periodType;
+            }
+          });
+  
+        })
+      }
 
       this.timings = this.timings.filter(itm => itm.data.length > 0);
       console.log(this.timings);

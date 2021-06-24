@@ -101,7 +101,7 @@ namespace net.atos.daf.ct2.reports.repository
                               FROM master.reportattribute ra
                               INNER JOIN master.dataattribute d ON ra.report_id = @report_id and d.id = ra.data_attribute_id 
                               INNER JOIN master.DataAttributeSetAttribute dasa ON dasa.data_attribute_id = d.id
-                              INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' and das.is_exlusive = false
+                              INNER JOIN master.DataAttributeSet das ON das.id = dasa.data_attribute_set_id and das.state = 'A' 
                               INNER JOIN
                               (
                                   --Account Route

@@ -236,7 +236,8 @@ export class AppComponent {
     vehicleDropDownValue : "",
     driverDropDownValue : "",
     modifiedFrom: "",
-    timeRangeSelection: ""
+    timeRangeSelection: "",
+    filterPrefTimeFormat: ""
   };
 
   constructor(private router: Router, private dataInterchangeService: DataInterchangeService, public authService: AuthService, private translationService: TranslationService, private deviceService: DeviceDetectorService, public fb: FormBuilder, @Inject(DOCUMENT) private document: any, private domSanitizer: DomSanitizer, private accountService: AccountService, private dialog: MatDialog, private organizationService: OrganizationService) {

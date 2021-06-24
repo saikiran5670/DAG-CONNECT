@@ -73,9 +73,9 @@ public class DriverTimeManagementSink extends RichSinkFunction<KafkaRecord<Monit
 	public void invoke(KafkaRecord<Monitor> monitor) throws Exception {
 
 		Monitor row = monitor.getValue();
-		
+		Integer value=new Integer(7);
+		if (value.equals(row.getMessageType())) {
 		//if (row.getMessageType().equals(7)) {
-		if ((7).equals(row.getMessageType()) ){
 			queue = new ArrayList<Monitor>();
 			synchronizedCopy = new ArrayList<Monitor>();
 
