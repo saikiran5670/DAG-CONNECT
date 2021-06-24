@@ -30,11 +30,11 @@ export class DriverTimePreferencesComponent implements OnInit {
     this.accountId = parseInt(localStorage.getItem("accountId"));
     this.accountOrganizationId = localStorage.getItem('accountOrganizationId') ? parseInt(localStorage.getItem('accountOrganizationId')) : 0;
     this.roleID = parseInt(localStorage.getItem('accountRoleId'));
-    let repoId: any = this.reportListData.filter(i => i.name == 'Trip Report');
+    let repoId: any = this.reportListData.filter(i => i.name == 'Drive Time Management');
     if(repoId.length > 0){
       this.reportId = repoId[0].id; 
     }else{
-      this.reportId = 1; //- hard coded for trip report
+      this.reportId = 9; //- hard coded for Drive Time Management Report
     }
     this.translationUpdate();
     this.loadTripReportPreferences();
