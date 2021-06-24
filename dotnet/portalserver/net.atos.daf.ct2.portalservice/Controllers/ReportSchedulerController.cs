@@ -92,7 +92,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                                 if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
                                 vehicleGroupRequest.GroupType = "S";
-                                vehicleGroupRequest.RefId = request.ScheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.RefId = scheduledReportVehicleRef[0].VehicleGroupId;
                                 vehicleGroupRequest.FunctionEnum = "N";
                                 vehicleGroupRequest.OrganizationId = GetContextOrgId();
                                 vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
@@ -197,7 +197,7 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                 vehicleGroupRequest.Name = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.OrganizationId.ToString(), request.Id.ToString());
                                 if (vehicleGroupRequest.Name.Length > 50) vehicleGroupRequest.Name = vehicleGroupRequest.Name.Substring(0, 49);
                                 vehicleGroupRequest.GroupType = "S";
-                                vehicleGroupRequest.RefId = request.ScheduledReportVehicleRef[0].VehicleGroupId;
+                                vehicleGroupRequest.RefId = scheduledReportVehicleRef[0].VehicleGroupId;
                                 vehicleGroupRequest.FunctionEnum = "N";
                                 vehicleGroupRequest.OrganizationId = GetContextOrgId();
                                 vehicleGroupRequest.Description = string.Format(ReportSchedulerConstants.VEHICLE_GROUP_NAME, request.Id, request.OrganizationId);
