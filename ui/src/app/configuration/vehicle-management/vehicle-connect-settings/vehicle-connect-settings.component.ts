@@ -68,9 +68,10 @@ export class VehicleConnectSettingsComponent implements OnInit {
       menuId: 21 //-- for vehicle mgnt
     };
     this.translationService.getMenuTranslations(translationObj).subscribe((data: any) => {
-      this.processTranslation(data);
-      this.loadVehicleData();     
-    });    
+      this.processTranslation(data);  
+      this.updateDataSource(data);
+      this.loadVehicleData();   
+    }); 
   }
   processTranslation(transData: any) {
     this.translationData = transData.reduce((acc: any, cur: any) => ({ ...acc, [cur.name]: cur.value }),{});
