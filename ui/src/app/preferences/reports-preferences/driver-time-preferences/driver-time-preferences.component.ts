@@ -93,7 +93,7 @@ export class DriverTimePreferencesComponent implements OnInit {
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
         }else{
-          _data.translatedName = this.getName(element.name, 31);   
+          _data.translatedName = this.getName(element.name, 30);   
         }
         this.chartData.push(_data);
       }else if(element.key.includes('da_report_specificdriver')){
@@ -101,7 +101,7 @@ export class DriverTimePreferencesComponent implements OnInit {
         if(this.translationData[element.key]){
           _data.translatedName = this.translationData[element.key];  
         }else{
-          _data.translatedName = this.getName(element.name, 31);   
+          _data.translatedName = this.getName(element.name, 30);   
         }
         this.specificDriverData.push(_data)
       }
@@ -132,6 +132,12 @@ export class DriverTimePreferencesComponent implements OnInit {
     this.specificDriverData.forEach(element => {
       if(element.state == 'A'){
         this.selectionForDriver.select(element);
+      }
+    });
+    
+    this.chartData.forEach(element => {
+      if(element.state == 'A'){
+        this.selectionForChart.select(element);
       }
     });
   }
@@ -172,7 +178,7 @@ export class DriverTimePreferencesComponent implements OnInit {
       this.selectionForDriver.clear();
       this.validateRequiredField();
     }else{
-      this.allDriverTableData.forEach(row => { this.selectionForDriver.select(row) });
+      this.specificDriverData.forEach(row => { this.selectionForDriver.select(row) });
       this.validateRequiredField();
     }
   }
@@ -202,7 +208,6 @@ export class DriverTimePreferencesComponent implements OnInit {
 
   onReset(){
     this.setColumnCheckbox();
-    this.validateRequiredField();
   }
 
   onConfirm(){
@@ -241,7 +246,7 @@ export class DriverTimePreferencesComponent implements OnInit {
       organizationId: this.accountOrganizationId,
       createdAt: 0,
       modifiedAt: 0,
-      atributesShowNoShow: [..._allDriverArr, ..._specificDriverArr] //-- merge data
+      atributesShowNoShow: [..._allDriverArr,..._chartArr, ..._specificDriverArr] //-- merge data
     }
     this.reportService.createReportUserPreference(objData).subscribe((prefData: any) => {
       this.loadDriveTimePreferences();

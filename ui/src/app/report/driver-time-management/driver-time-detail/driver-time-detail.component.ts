@@ -39,7 +39,7 @@ export class DriverTimeDetailComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   onSearchData: any = [];
   showLoadingIndicator: boolean = false;
-  displayedColumns = ['date', 'driveTime', 'workTime', 'serviceTime', 'restTime', 'availableTime'];
+  @Input() displayedColumns:any;// = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
   @Output() backToMainPage = new EventEmitter<any>();
   
   barChartOptions: ChartOptions = {

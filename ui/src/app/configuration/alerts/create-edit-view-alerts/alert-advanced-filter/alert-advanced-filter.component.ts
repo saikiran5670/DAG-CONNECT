@@ -123,8 +123,11 @@ export class AlertAdvancedFilterComponent implements OnInit {
       toDate: [''],
       toTimeRange:['23:59']
     })
+
+    
+    
     this.alertAdvancedFilterForm.controls.widthInput.setValue(0.1);
-    if(this.actionType == 'view' || this.actionType == 'edit' || this.actionType == 'duplicate'){
+    if(this.actionType == 'edit' || this.actionType == 'duplicate' || this.actionType == 'view'){
       this.setDefaultAdvanceAlert();
     }
   }
@@ -134,15 +137,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
     this.loadPOIData();
     this.loadGeofenceData();
     this.loadGroupData();
-    if(this.actionType == 'view'){
-      let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'N');
-      this.occurenceVal.push(arr1);
-      let arr2 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T');
-      this.distanceVal.push(arr2);
-      let arr3 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D');
-      this.durationVal(arr3);
-    }
-      this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
+    this.selectedApplyOn = this.selectedRowData.alertUrgencyLevelRefs[0].periodType;
       this.alertAdvancedFilterForm.get('fullorCustom').setValue(this.selectedApplyOn);
       let Data = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.forEach(element => {
         if(element.filterType == 'N' && element.thresholdValue !=0)
@@ -160,7 +155,7 @@ export class AlertAdvancedFilterComponent implements OnInit {
           this.isDurationSelected =true;
           this.alertAdvancedFilterForm.get('duration').setValue(element.thresholdValue);
         }
-        if(element.landmarkType == 'P' || element.landmarkType == 'O' || element.landmarkType == 'G')
+        if(element.landmarkType == 'P' || element.landmarkType == 'O' || element.landmarkType == 'C' || element.landmarkType == 'G')
         {
 
             this.isPoiSelected= true;
@@ -170,6 +165,15 @@ export class AlertAdvancedFilterComponent implements OnInit {
             // this.loadGroupData();
           
         }
+        if(this.actionType == 'view'){
+          let arr1 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => (item.filterType == 'N' && item.thresholdValue != 0));
+          this.occurenceVal.push(arr1);
+          let arr2 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'T');
+          this.distanceVal.push(arr2);
+          let arr3 = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs.filter(item => item.filterType == 'D');
+          this.durationVal.push(arr3);
+        }
+        
       });
   }
 
