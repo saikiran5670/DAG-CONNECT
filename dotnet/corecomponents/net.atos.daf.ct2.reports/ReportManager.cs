@@ -251,14 +251,9 @@ namespace net.atos.daf.ct2.reports
 
         #region Eco Score Report - User Preferences
 
-        public async Task<bool> CreateEcoScoreUserPreference()
+        public async Task<bool> CreateReportUserPreference(ReportUserPreferenceCreateRequest request)
         {
-            return await _reportRepository.CreateEcoScoreUserPreference();
-        }
-
-        public async Task<int> GetEcoScoreUserPreference()
-        {
-            return await _reportRepository.GetEcoScoreUserPreference();
+            return await _reportRepository.CreateReportUserPreference(request);
         }
 
         #endregion

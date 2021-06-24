@@ -23,8 +23,8 @@ rpc GetReportSearchParameter (IdRequestForDriverActivity) returns (ReportSearchP
 rpc GetFleetUtilizationDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationDetailsResponse);
 rpc GetFleetCalenderDetails (FleetUtilizationFilterRequest) returns (FleetUtilizationCalenderResponse);
 rpc GetEcoScoreReportByAllDrivers (GetEcoScoreReportByAllDriversRequest) returns (GetEcoScoreReportByAllDriversResponse);
-rpc GetEcoScoreUserPreference (EcoScoreGetUserPreferenceRequest) returns (EcoScoreGetUserPreferenceResponse);
-rpc CreateEcoScoreUserPreference (EcoScoreUserPreferenceCreateRequest) returns (EcoScoreUserPreferenceCreateResponse);
+rpc GetReportUserPreference (GetReportUserPreferenceRequest) returns (GetReportUserPreferenceResponse);
+rpc CreateReportUserPreference (ReportUserPreferenceCreateRequest) returns (ReportUserPreferenceCreateResponse);
 }
 
 enum Responsecode{
@@ -56,7 +56,7 @@ message IdRequest {
   int32 AccountId=2;
   int32 RoleId=3;
   int32 OrganizationId=4;
-  int32 ContextOrgId=5;
+  int32 ContextOrgId=5; 
 }
 
 message UserPreferenceDataColumn{
@@ -87,19 +87,21 @@ message UserPreferenceCreateRequest{
   int64 ModifiedAt =7;  
 }
 
-message EcoScoreGetUserPreferenceRequest {
+message GetReportUserPreferenceRequest {
     int32 ReportId = 1;
     int32 AccountId=2;
-    int32 OrganizationId=3;
+    int32 RoleId=3;
+    int32 OrganizationId=4;
+    int32 ContextOrgId=5; 
 }
 
-message EcoScoreGetUserPreferenceResponse {
+message GetReportUserPreferenceResponse {
     Responsecode Code = 2;
     string Message = 3;
 }
 
-message EcoScoreUserPreferenceCreateRequest{
-    repeated Atribute AtributesShowNoShow =1;
+message ReportUserPreferenceCreateRequest{
+    repeated UserPreferenceAttribute Attributes =1;
     int32 AccountId =2;
     int32 ReportId =3;
     int32 OrganizationId =4;
@@ -107,7 +109,7 @@ message EcoScoreUserPreferenceCreateRequest{
     int64 ModifiedAt =7;  
 }
 
-message EcoScoreUserPreferenceCreateResponse{
+message ReportUserPreferenceCreateResponse{
     Responsecode Code = 1;
     string Message = 2;
 }
@@ -119,6 +121,15 @@ message Atribute{
  string CharType = 4;
   string ThresholdType = 5;
   int64 ThresholdValue = 6;
+}
+
+message UserPreferenceAttribute {
+    int32 DataAttributeId = 1;
+    string State = 2;
+    string Type = 3;
+    string ChartType = 4;
+    string ThresholdType = 5;
+    int64 ThresholdValue = 6;
 }
 
 message UserPreferenceCreateResponse{
@@ -177,7 +188,7 @@ message LiveFleetPosition {
     double GpsHeading=2; 
     double GpsLatitude=3;
     double GpsLongitude=4; 
-     double Fuelconsumtion=6;
+    double Fuelconsumtion=6;
     double Co2emission=7;
     int32 Id=5;
 }
