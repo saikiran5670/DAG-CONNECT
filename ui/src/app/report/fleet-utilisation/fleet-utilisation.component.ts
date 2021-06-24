@@ -65,6 +65,7 @@ export class FleetUtilisationComponent implements OnInit {
   tripData: any = [];
   vehicleDD: any = [];
   vehicleGrpDD: any = [];
+  internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
   startDateValue: any = 0;
   endDateValue: any = 0;
@@ -456,6 +457,7 @@ calendarOptions: CalendarOptions = {
   }
 
   onSearch(){
+    //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
     //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
@@ -591,6 +593,7 @@ calendarOptions: CalendarOptions = {
   }
 
   onReset(){
+    this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
@@ -657,11 +660,20 @@ calendarOptions: CalendarOptions = {
   }
 
   resetTripFormControlValue(){
-    this.tripForm.get('vehicle').setValue('');
-    this.tripForm.get('vehicleGroup').setValue(0);
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== ""){
+      this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
+    }else{
+      this.tripForm.get('vehicle').setValue('');
+      this.tripForm.get('vehicleGroup').setValue(0);
+      this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = 0;
+      this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    }
   }
 
   onVehicleChange(event: any){
+    this.internalSelection = true; 
     this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
     this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
@@ -685,7 +697,7 @@ calendarOptions: CalendarOptions = {
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue)
     }
@@ -695,30 +707,29 @@ calendarOptions: CalendarOptions = {
   }
   onVehicleGroupChange(event: any){
    if(event.value || event.value == 0){
-     
-     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
-     if(parseInt(event.value) == 0){ //-- all group
-      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-      this.vehicleDD = this.vehicleListData;
-    }else{
+      this.internalSelection = true; 
+      this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+      if(parseInt(event.value) == 0){ //-- all group
+        //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+        this.vehicleDD = this.vehicleListData;
+      }else{
       //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
       let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
-      
-      if(search.length > 0){
-        this.vehicleDD = [];
-        search.forEach(element => {
-          this.vehicleDD.push(element);  
-        });
+        if(search.length > 0){
+          this.vehicleDD = [];
+          search.forEach(element => {
+            this.vehicleDD.push(element);  
+          });
+        }
       }
+      this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
+      this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    }else {
+      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+      this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
+      this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
     }
-    this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
-    this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
-    this.setGlobalSearchData(this.fleetUtilizationSearchData)
-  }else {
-    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
-    this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
-    this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
-  }
   }
     
   setTableInfo(){
@@ -803,6 +814,7 @@ calendarOptions: CalendarOptions = {
   }
 
   selectionTimeRange(selection: any){
+    this.internalSelection = true;
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
@@ -852,7 +864,7 @@ calendarOptions: CalendarOptions = {
   }
 
   setPrefFormatTime(){
-    if(this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
       console.log("---if fleetUtilizationSearchData exist")
       this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
       this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
@@ -862,9 +874,13 @@ calendarOptions: CalendarOptions = {
       if(this.prefTimeFormat == 24){
         this.startTimeDisplay = '00:00:00';
         this.endTimeDisplay = '23:59:59';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
       } else{
         this.startTimeDisplay = '12:00 AM';
         this.endTimeDisplay = '11:59 PM';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
       }
     }
   
@@ -895,42 +911,27 @@ calendarOptions: CalendarOptions = {
   }
 
   setDefaultStartEndTime(){
-
-    console.log("---if fleetUtilizationSearch Data not exist")
     this.setPrefFormatTime();
-    if(this.fleetUtilizationSearchData.modifiedFrom == ""){
-      this.selectedStartTime = "00:00";
-      this.selectedEndTime = "23:59";
-    }
-    
+    // if(this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom == ""){
+    //   this.selectedStartTime = "00:00";
+    //   this.selectedEndTime = "23:59";
+    // }
   }
 
   setDefaultTodayDate(){
-
-    if(this.fleetUtilizationSearchData.startDateStamp !== "") {
-      console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
+      //console.log("---if fleetUtilizationSearchData startDateStamp exist")
       if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
         this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
-
-       
-        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
-        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
-
-        // this.selectionTimeRange(this.selectionTab)
-      }else {
+      }else{
         this.selectionTab = 'today';
-        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
-        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
-        console.log(typeof(startDateFromSearch));
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
       }
-      
+      let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
+      let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
     }else{
     this.selectionTab = 'today';
-
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
@@ -939,7 +940,7 @@ calendarOptions: CalendarOptions = {
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
-    
+    this.internalSelection = true;
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
@@ -948,6 +949,7 @@ calendarOptions: CalendarOptions = {
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
+    this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
     this.resetTripFormControlValue(); // extra addded as per discuss with Atul
     this.filterDateData(); // extra addded as per discuss with Atul
@@ -994,6 +996,7 @@ calendarOptions: CalendarOptions = {
   }
 
   startTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedStartTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = selectedTime + ':00';
@@ -1007,6 +1010,7 @@ calendarOptions: CalendarOptions = {
   }
 
   endTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedEndTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.endTimeDisplay = selectedTime + ':59';

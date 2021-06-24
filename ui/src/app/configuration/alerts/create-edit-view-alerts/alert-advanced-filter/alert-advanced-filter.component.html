@@ -2,7 +2,7 @@
 
    <!-- Select Period -->
    <mat-card *ngIf="((alert_category_selected === 'L') && (alert_type_selected === 'N' || this.alert_type_selected == 'X'))
-   || ((alert_category_selected === 'F') && (alert_type_selected === 'I' || alert_type_selected === 'A'))" 
+   || ((alert_category_selected === 'F') && (alert_type_selected === 'I' || alert_type_selected === 'A')) && actionType != 'view'"
   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
@@ -71,8 +71,8 @@
   </mat-card>
   
   <!-- distance option -->
-  <mat-card  *ngIf="(alert_category_selected === 'F' && alert_type_selected === 'A') ||
-  (alert_category_selected === 'L' && alert_type_selected === 'S')"
+  <mat-card  *ngIf="((alert_category_selected === 'F' && alert_type_selected === 'A') ||
+  (alert_category_selected === 'L' && alert_type_selected === 'S'))&& actionType != 'view'"
    class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
@@ -103,8 +103,8 @@
   </mat-card> 
 
   <!-- No of occurences option -->
-  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
-                || (alert_category_selected === 'F' && (alert_type_selected === 'I' || alert_type_selected === 'A'))"
+  <mat-card *ngIf="((alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X'))
+                || (alert_category_selected === 'F' && (alert_type_selected === 'I' || alert_type_selected === 'A'))) && actionType != 'view'"
    class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
@@ -135,8 +135,8 @@
   </mat-card>
 
   <!-- Duration option -->
-  <mat-card *ngIf="(alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected ==='S'))
-                  || (alert_category_selected === 'F' && alert_type_selected === 'A')" 
+  <mat-card *ngIf="((alert_category_selected === 'L' && (alert_type_selected === 'N' || alert_type_selected === 'X' || alert_type_selected ==='S'))
+                  || (alert_category_selected === 'F' && alert_type_selected === 'A')) && actionType != 'view'" 
     class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
@@ -167,10 +167,10 @@
   </mat-card>
 
   <!-- POI condition option -->
-  <mat-card *ngIf="(alert_category_selected === 'F' && 
+  <mat-card *ngIf="((alert_category_selected === 'F' && 
   (alert_type_selected === 'I' || alert_type_selected === 'A' || alert_type_selected === 'L' || 
   alert_type_selected === 'T' || alert_type_selected === 'P')) ||
-  (alert_category_selected === 'L' && alert_type_selected === 'S')"
+  (alert_category_selected === 'L' && alert_type_selected === 'S')) && actionType != 'view'"
   class='mat-elevation-z'>
     <mat-expansion-panel class="full-width" fxLayoutGap="10px">
       <mat-expansion-panel-header class="full-width">
@@ -430,3 +430,39 @@
     </mat-expansion-panel>
   </mat-card>
 </form>
+
+<mat-expansion-panel class="full-width" fxLayoutGap="10px">
+  <mat-expansion-panel-header class="full-width">
+    <mat-panel-title>
+      <span style='font: 500 16px/32px Roboto, "Helvetica Neue", sans-serif;'>{{
+        translationData.lblAdvanceFilterDetails || 'Advance Filter Details' }}</span>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+<div  *ngFor="let item of distanceVal[0]">
+      <div *ngIf="distanceVal[0].filterType == 'T'" fxLayout="row" fxLayoutAlign="space-between"
+        class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+        <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+          <mat-label>{{ translationData.lblDistancelimit || 'Distance Limit(m)' }}</mat-label>
+          <span style='font-weight: 500!important;'>{{ distanceVal[0].thresholdValue }}</span>
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let item of durationVal[0]">
+      <div *ngIf="item.filterType == 'D'" fxLayout="row" fxLayoutAlign="space-between"
+      class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+      <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+        <mat-label>{{ translationData.lblDurationlimit || 'Duration Limit(s)' }}</mat-label>
+        <span style='font-weight: 500!important;'>{{ item.thresholdValue }}</span>
+      </div>
+    </div>
+  </div>
+  <div *ngFor="let item of occurenceVal[0]">
+    <div *ngIf="(item.filterType == 'N') && (occurenceVal.thresholdValue != 0) " fxLayout="row" fxLayoutAlign="space-between"
+    class="full-width filter-direction margin-bottom-sm" fxLayoutGap="10px">
+    <div class="areaWidth half-width" fxLayout="column" fxLayoutAlign="left">
+      <mat-label>{{ translationData.lblOccurences || 'Occurences' }}</mat-label>
+      <span style='font-weight: 500!important;'>{{ item.thresholdValue }}</span>
+    </div>
+  </div>
+</div>
+</mat-expansion-panel>

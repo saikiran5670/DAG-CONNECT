@@ -11,7 +11,8 @@ namespace net.atos.daf.ct2.portalservice.Entity.Role
         public string RoleName { get; set; }
 
         public string Description { get; set; }
-        [Required(ErrorMessage = "Feature Id's are required")]
+        //Commenting for bug 6210
+        //[Required(ErrorMessage = "Feature Id's are required")]
         public int[] FeatureIds { get; set; }
         public int Createdby { get; set; }
         [Required]
