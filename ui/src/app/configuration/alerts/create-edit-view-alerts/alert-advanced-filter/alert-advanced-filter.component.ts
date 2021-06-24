@@ -1502,11 +1502,11 @@ else{
       "alertTimingDetails": this.alertTimingDetail
     }
     if(this.actionType == 'edit'){
-      let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].refId;
-      obj["id"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+      let periodRefArr = this.selectedRowData.alertUrgencyLevelRefs[0].alertFilterRefs[0].id;
+      obj["id"] = periodRefArr;
       obj["alertId"] = this.selectedRowData.id;
       obj["state"] = 'A';
-      obj["alertTimingDetails"]["refId"] = periodRefArr.length > 0 ? periodRefArr[0].id : 0;
+      obj["alertTimingDetails"]["refId"] = periodRefArr;
      }
     this.advancedAlertPayload.push(obj);
   }
