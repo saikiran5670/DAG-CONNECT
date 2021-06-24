@@ -61,7 +61,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
-        <app-driver-time-preferences *ngIf='showDriverTimePerferences' [editFlag]='editFleetUtilisationFlag' [reportListData]='reportListData' [translationData]='translationData' (setFleetUtilFlag)="updateEditFleetUtilFlag($event)"></app-driver-time-preferences>
+      <app-driver-time-preferences *ngIf='showDriverTimePerferences' [editFlag]='editDriverTimePerferencesFlag' [reportListData]='reportListData' [translationData]='translationData' (setDriverTimeFlag)="updateEditDriverTimeFlag($event)"></app-driver-time-preferences>
       </div>
     </mat-expansion-panel>
   </div>

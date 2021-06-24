@@ -86,6 +86,17 @@ export class ReportsPreferencesComponent implements OnInit {
   }
 
   editDriverTimePerferences(){
-    
+    this.editDriverTimePerferencesFlag = true;
+  }
+
+  updateEditDriverTimeFlag(retObj: any){
+    if(retObj){
+      this.editDriverTimePerferencesFlag = retObj.flag;
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }else{
+      this.editDriverTimePerferencesFlag = false; // hard coded
+    }
   }
 }
