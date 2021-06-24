@@ -671,6 +671,8 @@ export class DriverTimeManagementComponent implements OnInit {
     let _driverIds =[];
     if (parseInt(this.driverTimeForm.controls.vehicle.value) === 0) {
       _vehicelIds = this.vehicleListData.map(data => data.vin);
+      _vehicelIds.shift();
+
     }
     else {
       _vehicelIds = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.driverTimeForm.controls.vehicle.value)).map(data => data.vin);
@@ -679,6 +681,7 @@ export class DriverTimeManagementComponent implements OnInit {
     if (parseInt(this.driverTimeForm.controls.driver.value) === 0) {
       this.allDriversSelected = true;
       _driverIds = this.vehicleListData.map(data=>data.driverID);
+      _driverIds.shift();
     }
     else {
       this.allDriversSelected = false
