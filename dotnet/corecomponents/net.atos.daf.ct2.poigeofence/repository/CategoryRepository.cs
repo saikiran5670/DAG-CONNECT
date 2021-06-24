@@ -420,7 +420,7 @@ namespace net.atos.daf.ct2.poigeofence.repository
                 throw;
             }
         }
-        public async Task<IEnumerable<CategoryList>> GetCategoryDetails()
+        public async Task<IEnumerable<CategoryList>> GetCategoryDetails(int orgId)
         {
             try
             {
@@ -448,17 +448,17 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             
 							(select (case r.Subcategory_id when 0
 									then  
-									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') and state ='A') 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('C','O') and state ='A' and (organization_id= @organizationID or organization_id is null)) 
 									else 
-									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('C','O') and state ='A') 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('C','O') and state ='A' and (organization_id=36 or organization_id is null)) 
 									end) ) as No_of_Geofence,
 							
 							
 							(select (case r.Subcategory_id when 0
 									then  
-									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('P') and state ='A') 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and type in ('P') and state ='A' and (organization_id= @organizationID or organization_id is null)) 
 									else 
-									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('P') and state ='A') 
+									(select Count(id) from master.landmark where category_id in(r.parent_id) and (sub_category_id = r.Subcategory_id ) and type in ('P') and state ='A' and (organization_id=36 or organization_id is null)) 
 									end) )  as No_of_POI,
 									
                             r.Parent_category_Icon As IconId,
@@ -467,6 +467,8 @@ namespace net.atos.daf.ct2.poigeofence.repository
                             from result r 
 							
 							 ";
+                parameter.Add("@organizationID", orgId);
+
                 dynamic result = await _dataAccess.QueryAsync<dynamic>(getQuery, parameter);
 
                 IEnumerable<CategoryList> categories = await _dataAccess.QueryAsync<CategoryList>(getQuery, parameter);

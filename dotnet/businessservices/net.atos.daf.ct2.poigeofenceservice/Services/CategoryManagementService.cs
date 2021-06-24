@@ -200,7 +200,8 @@ namespace net.atos.daf.ct2.poigeofenservice
             GetResponse response = new GetResponse();
             try
             {
-                var categoryListDetails = _categoryManager.GetCategoryDetails().Result;
+                int orgId = Convert.ToInt32(context.RequestHeaders.Get("orgid").Value);
+                var categoryListDetails = _categoryManager.GetCategoryDetails(orgId).Result;
 
                 foreach (var item in categoryListDetails)
                 {
