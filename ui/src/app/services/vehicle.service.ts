@@ -166,13 +166,34 @@ export class VehicleService {
     }
   }
 
-  setoptinstatus(id): Observable<any> {
+  setoptinstatus(data: any): Observable<any> {
     let headerObj = this.generateHeader();
     const headers = {
       headers: new HttpHeaders({ headerObj }),
     };
     return this.httpClient
-      .put<any>(`${this.vehicleServiceUrl}/vehicle/setoptinstatus?alertId=${id}`, headers)
+    .put<any>(`${this.vehicleServiceUrl}/setoptinstatus`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+  
+  terminateVehiclestatus(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+    .put<any>(`${this.vehicleServiceUrl}/terminate`, data, headers)
+      .pipe(catchError(this.handleError));
+  }
+
+
+  updatevehicleconnection(data: any): Observable<any> {
+    let headerObj = this.generateHeader();
+    const headers = {
+      headers: new HttpHeaders({ headerObj }),
+    };
+    return this.httpClient
+    .put<any>(`${this.vehicleServiceUrl}/updatevehicleconnection`, data, headers)
       .pipe(catchError(this.handleError));
   }
 
