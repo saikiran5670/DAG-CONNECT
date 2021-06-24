@@ -94,10 +94,10 @@ namespace net.atos.daf.ct2.portalservice.Controllers
                                             new IdRequest
                                             {
                                                 ReportId = reportId,
-                                                AccountId = 336,//_userDetails.AccountId,
-                                                RoleId = 161,//_userDetails.RoleId,
-                                                OrganizationId = 1,//GetUserSelectedOrgId(),
-                                                ContextOrgId = 1,//GetContextOrgId()
+                                                AccountId = _userDetails.AccountId,
+                                                RoleId = _userDetails.RoleId,
+                                                OrganizationId = GetUserSelectedOrgId(),
+                                                ContextOrgId = GetContextOrgId()
                                             });
                 if (response.Code == Responsecode.Success)
                 {
@@ -555,38 +555,84 @@ namespace net.atos.daf.ct2.portalservice.Controllers
 
         #region Eco Score Report - User Preferences
 
+        /// <summary>
+        /// Initially created for Eco Score report. Later can be generalized.
+        /// </summary>
+        /// <param name="objUserPreferenceCreateRequest"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("ecoscoreuserpreference/create")]
-        public async Task<IActionResult> CreateEcoScoreUserPreference(Entity.Report.UserPreferenceCreateRequest objUserPreferenceCreateRequest)
+        public async Task<IActionResult> CreateReportUserPreference(Entity.Report.ReportUserPreferenceCreateRequest objUserPreferenceCreateRequest)
         {
             try
             {
-                return Ok();
+                var request = _mapper.MapCreateReportUserPreferences(objUserPreferenceCreateRequest, _userDetails.AccountId, GetUserSelectedOrgId());
+                var response = await _reportServiceClient.CreateReportUserPreferenceAsync(request);
+
+                if (response.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                            "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS, "Report use preference created successfully", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                _userDetails);
+                    return Ok(response);
+                }
+                else
+                {
+                    return StatusCode((int)response.Code, response.Message);
+                }
             }
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.CREATE, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                                 $"CreateEcoScoreUserPreference method Failed. Error:{ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
+                                 $"{ nameof(CreateReportUserPreference) } method Failed. Error : {ex.Message}", 0, 0, JsonConvert.SerializeObject(objUserPreferenceCreateRequest),
                                   _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, $"{ex.Message} {ex.StackTrace}");
             }
         }
 
+        /// <summary>
+        /// Initially created for Eco Score report. Later can be generalized.
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("ecoscoreuserpreference/get")]
-        public async Task<IActionResult> GetEcoScoreUserPreference()
+        public async Task<IActionResult> GetReportUserPreference(int reportId)
         {
             try
             {
-                return Ok();
+                if (reportId < 1) return BadRequest(ReportConstants.REPORT_REQUIRED_MSG);
+
+                var response = await _reportServiceClient
+                                        .GetReportUserPreferenceAsync(
+                                            new GetReportUserPreferenceRequest
+                                            {
+                                                ReportId = reportId,
+                                                AccountId = _userDetails.AccountId,
+                                                RoleId = _userDetails.RoleId,
+                                                OrganizationId = GetUserSelectedOrgId(),
+                                                ContextOrgId = GetContextOrgId()
+                                            });
+                if (response.Code == Responsecode.Success)
+                {
+                    await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
+                     "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.SUCCESS,
+                     $"{ nameof(GetReportUserPreference) } method", 1, 2, Convert.ToString(reportId),
+                      _userDetails);
+                    return Ok(response);
+                }
+                if (response.Code == Responsecode.InternalServerError)
+                    return StatusCode((int)response.Code, string.Format(ReportConstants.USER_PREFERENCE_FAILURE_MSG, _userDetails.AccountId, reportId, response.Message));
+                else
+                    return StatusCode((int)response.Code, response.Message);
             }
             catch (Exception ex)
             {
                 await _auditHelper.AddLogs(DateTime.Now, "Report Controller",
                  "Report service", Entity.Audit.AuditTrailEnum.Event_type.GET, Entity.Audit.AuditTrailEnum.Event_status.FAILED,
-                 $"GetEcoScoreUserPreference method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
+                 $"{ nameof(GetReportUserPreference) } method Failed. Error:{ex.Message}", 1, 2, Convert.ToString(_userDetails.AccountId),
                   _userDetails);
                 _logger.Error(null, ex);
                 return StatusCode(500, ex.Message + " " + ex.StackTrace);

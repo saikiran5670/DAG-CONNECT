@@ -1,4 +1,11 @@
 <div class="bgtrans">
+  <div *ngIf='showBack' fxLayout="row" fxLayoutAlign="end">
+    <div fxLayout="column" fxLayoutGap="3px" fxLayoutAlign="end" class='margin-right-xxlg'>
+      <span class='custom-font' (click)="backToFleetUtilReport()">
+        <span><&nbsp;</span>
+        <span class='backBtnCss'>{{ translationData.lblBack || 'Back' }}</span></span>
+    </div>
+  </div>
   <form [formGroup]="tripForm">
     <mat-card class='mat-elevation-z no-padding margin-bottom-xlg'>
       <mat-expansion-panel [(expanded)]="searchExpandPanel" class="full-width" fxLayoutGap="10px">
@@ -125,15 +132,15 @@
         </a>  
         <div [ngClass]="{'filterHide': !advanceFilterOpen}" class='advFilterBox'>
           <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblDisplayViews || 'Display View(s)'}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox>{{ translationData.lblAlerts || 'Alerts' }}</mat-checkbox>
               </div>
-              <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
+              <!-- <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-checkbox>{{ translationData.lblEvents || 'Events' }}</mat-checkbox>
-              </div>
+              </div> -->
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                 <mat-radio-group (change)='onDisplayChange($event)' class='radioAlign'>
                   <mat-radio-button class='margin-bottom-5' value="C" [checked]="true">{{ translationData.lblClassic || 'Classic' }}</mat-radio-button>
@@ -142,18 +149,18 @@
                 </mat-radio-group>
               </div>
             </div>
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblUserPOIs || 'User POI(s)'}}</div>
               <div class='scrollArea' *ngIf='userPOIList.length > 0'>
                 <div *ngFor="let userPOI of userPOIList; let i = index" fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
                   <mat-checkbox (click)='$event.stopPropagation()'
-                  (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.poiName }}</mat-checkbox>
+                  (change)='$event ? selectedPOI.toggle(userPOI) : null; changeUserPOISelection($event, userPOI)' [checked]='selectedPOI.isSelected(userPOI)'>{{ userPOI.categoryName }} ({{ userPOI.poiList.length }})</mat-checkbox>
                 </div>
               </div>
               <div *ngIf='userPOIList.length == 0'>{{ translationData.lblNoUserPOIFound || 'No User POI Found!' }}</div>
             </div>
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblHerePOIs || 'Here POI(s)'}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
@@ -169,7 +176,7 @@
                   <mat-checkbox>{{ translationData.lblRailwayStation || 'Railway Station' }}</mat-checkbox>
                 </div>
             </div>
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            <!-- <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
               translationData.lblMapMode || 'Map Mode'}}</div>
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">
@@ -179,8 +186,8 @@
                   <mat-radio-button value="terrain">{{ translationData.lblTerrain || 'Terrain' }}</mat-radio-button>
                 </mat-radio-group>
               </div>
-            </div>
-            <div class="areaWidth min-width-15-per" fxLayout="column" fxLayoutAlign="left">
+            </div> -->
+            <div class="areaWidth min-width-20-per" fxLayout="column" fxLayoutAlign="left">
               <div fxLayout="row" fxLayoutAlign="space-between" class="full-width font-14" fxLayoutGap="10px">{{
                 translationData.lblTripRepresentation || 'Trip Representation'}}</div>
                 <div fxLayout="row" fxLayoutAlign="space-between" class="full-width" fxLayoutGap="10px">

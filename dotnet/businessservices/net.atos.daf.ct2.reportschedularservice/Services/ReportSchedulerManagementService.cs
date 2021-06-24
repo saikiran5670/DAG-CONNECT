@@ -69,16 +69,16 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                     response.AssociatedVehicle.AddRange(
                         JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<AssociatedVehicleRequest>>(res)
                         );
-                    var vehicleByVisibilityAndFeature
-                                                = await _visibilityManager
-                                                    .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
-                                                                                       request.RoleId, vehicleDetailsAccountVisibilty,
-                                                                                       ReportSchedulerConstant.REPORT_SCHEDULER_FEATURE_NAME);
+                    //var vehicleByVisibilityAndFeature
+                    //                            = await _visibilityManager
+                    //                                .GetVehicleByVisibilityAndFeature(request.AccountId, request.OrganizationId,
+                    //                                                                   request.RoleId, vehicleDetailsAccountVisibilty,
+                    //                                                                   ReportSchedulerConstant.REPORT_SCHEDULER_FEATURE_NAME);
 
-                    res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
-                    response.VehicleSubscribeandFeature.AddRange(
-                        JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleSubscribeandFeatureRequest>>(res)
-                        );
+                    //res = JsonConvert.SerializeObject(vehicleByVisibilityAndFeature);
+                    //response.VehicleSubscribeandFeature.AddRange(
+                    //    JsonConvert.DeserializeObject<Google.Protobuf.Collections.RepeatedField<VehicleSubscribeandFeatureRequest>>(res)
+                    //    );
                 }
 
                 response.Message = "Report Parameter retrieved";
@@ -268,6 +268,57 @@ namespace net.atos.daf.ct2.reportschedulerservice.Services
                     Message = $"Exception While Enable/Disable ReportSchedule with Report Id: {request.ReportId}",
                     Code = ResponseCode.InternalServerError,
                     ReportId = request.ReportId
+                });
+            }
+        }
+        #endregion
+
+        #region Get Vehicle Id and Vehicle Group Id
+        public override async Task<VehicleandVehicleGroupIdResponse> GetVehicleandVehicleGroupId(ReportParameterRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var vehicleDetailsAccountVisibilty
+                                              = await _visibilityManager
+                                                 .GetVehicleByAccountVisibility(request.AccountId, request.OrganizationId);
+                VehicleandVehicleGroupIdResponse response = new VehicleandVehicleGroupIdResponse();
+                if (vehicleDetailsAccountVisibilty.Any())
+                {
+                    foreach (var item in vehicleDetailsAccountVisibilty)
+                    {
+                        if (item.GroupType == "S")
+                        {
+                            VehicleIdList objvehicleid = new VehicleIdList();
+                            objvehicleid.VehicleId = item.VehicleId;
+                            if (!response.VehicleIdList.Contains(objvehicleid))
+                            {
+                                response.VehicleIdList.Add(objvehicleid);
+                            }
+                        }
+                        else
+                        {
+                            VehicleGroupIdList objvehiclegrpid = new VehicleGroupIdList();
+                            objvehiclegrpid.VehicleGroupId = item.VehicleGroupId;
+                            if (!response.VehicleGroupIdList.Contains(objvehiclegrpid))
+                            {
+                                response.VehicleGroupIdList.Add(objvehiclegrpid);
+                            }
+                        }
+                    }
+                }
+
+                response.Message = "Vehicle and Vehicle GroupId retrieved";
+                response.Code = ResponseCode.Success;
+                _logger.Info("Get method in Vehicle and Vehicle GroupId called.");
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(null, ex);
+                return await Task.FromResult(new VehicleandVehicleGroupIdResponse
+                {
+                    Code = ResponseCode.Failed,
+                    Message = "Get Vehicle and Vehicle GroupId list fail : " + ex.Message
                 });
             }
         }

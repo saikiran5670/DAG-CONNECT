@@ -239,50 +239,50 @@
             <mat-table matTableExporter [dataSource]="dataSource" class="table-items"
                 matSort #exporter="matTableExporter">
                
-                <ng-container matColumnDef="driverName">
+                <ng-container *ngIf='showField.detailsdrivername' matColumnDef="detailsdrivername">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverName || 'Driver Name' }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (click)="onDriverSelected(row)" class="driverClick">{{ row.driverName != '' ? row.driverName : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="driverId">
+                <ng-container *ngIf='showField.detailsdriverid' matColumnDef="detailsdriverid">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriverId || 'Driver Id' }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.driverId != '' ? row.driverId : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="startTime">
+                <ng-container *ngIf='showField.detailsstarttime' matColumnDef="detailsstarttime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblStartTime || 'Start Time' }} <span style="font-weight: normal;"></span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.startTime != '' ? row.startTime : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="endTime">
+                <ng-container *ngIf='showField.detailsendtime' matColumnDef="detailsendtime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblEndTime || 'End Time' }} <span style="font-weight: normal;"></span>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.endTime != '' ? row.endTime : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="driveTime">
+                <ng-container *ngIf='showField.detailsdrivetime' matColumnDef="detailsdrivetime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblDriveTime || 'Drive Time' }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.driveTime != '' ? row.driveTime : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="workTime">
+                <ng-container *ngIf='showField.detailsworktime' matColumnDef="detailsworktime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblWorkTime || 'Work Time' }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.workTime != '' ? row.workTime : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="serviceTime">
+                <ng-container *ngIf='showField.detailsservicetime' matColumnDef="detailsservicetime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblServiceTime || 'Service Time' }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.serviceTime != '' ? row.serviceTime : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="restTime">
+                <ng-container *ngIf='showField.detailsresttime' matColumnDef="detailsresttime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblRestTime || 'Rest Time' }} (hh:mm)
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ row.restTime != '' ? row.restTime : '-' }}</mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="availableTime">
+                <ng-container *ngIf='showField.detailsavailabletime' matColumnDef="detailsavailabletime">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>{{ translationData.lblAvailableTime || 'Available Time' }} (hh:mm)
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{ row.availableTime != '' ? row.availableTime : '-' }}</mat-cell>
+                  <mat-cell *matCellDef="let row">{{ row.detailsavailabletime != '' ? row.detailsavailabletime : '-' }}</mat-cell>
                 </ng-container>
                
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -299,7 +299,7 @@
     </div>
     <div *ngIf="!allDriversSelected || driverSelected">
       <app-driver-time-detail [translationData]='translationData' [driverDetails]='tableDetailsInfoObj' [detailConvertedData]='detailConvertedData'
-            (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
+        [displayedColumns]='detaildisplayedColumns'  [showField]='showField' (backToMainPage)="backToMainPage()" [driverSelected]='driverSelected'
       ></app-driver-time-detail>
     </div>
     </form>

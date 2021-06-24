@@ -13,10 +13,12 @@ namespace net.atos.daf.ct2.reportscheduler.repository
     {
         private readonly IDataAccess _dataAccess;
         private readonly IDataMartDataAccess _dataMartdataAccess;
+        private readonly Helper _helper;
         public ReportSchedulerRepository(IDataAccess dataAccess, IDataMartDataAccess dataMartdataAccess)
         {
             _dataAccess = dataAccess;
             _dataMartdataAccess = dataMartdataAccess;
+            _helper = new Helper();
         }
 
         #region Activate Report Scheduler
@@ -525,7 +527,7 @@ namespace net.atos.daf.ct2.reportscheduler.repository
                                             receipt.created_at as receipt_created_at, 
                                             receipt.modified_at as receipt_modified_at,
                                             vehref.report_schedule_id as vehref_report_schedule_id, 
-                                            vehref.vehicle_group_id as vehref_vehicle_group_id, 
+                                            (CASE WHEN grp.group_type='S' THEN 0 ELSE vehref.vehicle_group_id END) as vehref_vehicle_group_id, 
                                             vehref.state as vehref_state, 
                                             vehref.created_at vehref_created_at, 
                                             vehref.created_by as vehref_created_by, 

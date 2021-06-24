@@ -13,27 +13,27 @@ import org.slf4j.LoggerFactory;
 
 import net.atos.daf.ct2.etl.common.util.ETLConstants;
 import net.atos.daf.ct2.etl.common.util.ETLQueries;
-import net.atos.daf.postgre.bo.Trip;
+import net.atos.daf.postgre.bo.EcoScore;
 import net.atos.daf.postgre.connection.PostgreDataSourceConnection;
-import net.atos.daf.postgre.dao.TripSinkDao;
+import net.atos.daf.postgre.dao.EcoScoreDao;
 
-public class TripSink extends RichSinkFunction<Trip> implements Serializable {
+public class EcoScoreSink extends RichSinkFunction<EcoScore> implements Serializable {
 
 	/**
 	* 
 	*/
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(TripSink.class);
+	private static final Logger logger = LoggerFactory.getLogger(EcoScoreSink.class);
 
 	private PreparedStatement statement;
 	private Connection connection;
-	private List<Trip> queue;
-	private List<Trip> synchronizedCopy;
-	TripSinkDao tripDao;
-	private PreparedStatement tripStatisticQry;
+	private List<EcoScore> queue;
+	private List<EcoScore> synchronizedCopy;
+	EcoScoreDao ecoScoreDao;
+	private PreparedStatement ecoScoreQry;
 
 	@Override
-	public void invoke(Trip rec) throws Exception {
+	public void invoke(EcoScore rec) throws Exception {
 
 		try {
 			queue.add(rec);
@@ -41,18 +41,16 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 			if (queue.size() >= 1) {
 				logger.info("inside syncronized");
 				synchronized (synchronizedCopy) {
-					synchronizedCopy = new ArrayList<Trip>(queue);
+					synchronizedCopy = new ArrayList<EcoScore>(queue);
 					queue.clear();
-					for (Trip tripData : synchronizedCopy) {
-						logger.info(
-								"tripId :: " + tripData.getTripId() + " co2Emi ::" + tripData.getTripCalC02Emission());
-						tripDao.insert(tripData, tripStatisticQry);
-						logger.info("Trip records inserted to trip table :: "+tripData.getTripId());
+					for (EcoScore tripData : synchronizedCopy) {
+						ecoScoreDao.insert(tripData, ecoScoreQry);
+						logger.info("EcoScore records inserted to ecoscore table :: "+tripData.getTripId());
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Issue while calling invoke() in TripSink :: " + e);
+			logger.error("Issue while calling invoke() in EcoScoreSink :: " + e);
 			e.printStackTrace();
 		}
 
@@ -61,9 +59,9 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 	@Override
 	public void open(org.apache.flink.configuration.Configuration parameters) throws Exception {
 		ParameterTool envParams = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
-		tripDao = new TripSinkDao();
-		queue = new ArrayList<Trip>();
-		synchronizedCopy = new ArrayList<Trip>();
+		ecoScoreDao = new EcoScoreDao();
+		queue = new ArrayList<EcoScore>();
+		synchronizedCopy = new ArrayList<EcoScore>();
 		
 		try {
 			connection = PostgreDataSourceConnection.getInstance().getDataSourceConnection(
@@ -72,12 +70,12 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 					envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_USER),
 					envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
-			logger.info("In trip sink connection done" + connection);
-			tripDao.setConnection(connection);
-			tripStatisticQry = connection.prepareStatement(ETLQueries.TRIP_INSERT_STATEMENT);
+			logger.info("In EcoScore sink connection done" + connection);
+			ecoScoreDao.setConnection(connection);
+			ecoScoreQry = connection.prepareStatement(ETLQueries.ECOSCORE_INSERT_STATEMENT);
 		}catch (Exception e) {
 			// TODO: handle exception both logger and throw is not required
-			logger.error("Issue while establishing Postgre connection in Trip streaming Job :: " + e);
+			logger.error("Issue while establishing Postgre connection in Trip streaming Job EcoScore Sink :: " + e);
 			logger.error("serverNm :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_SERVER_NAME) +" port :: "+Integer.parseInt(envParams.get(ETLConstants.DATAMART_POSTGRE_PORT)));
 			logger.error("databaseNm :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_DATABASE_NAME) +" user :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_USER) + " pwd :: "+envParams.get(ETLConstants.DATAMART_POSTGRE_PASSWORD));
 			logger.error("connection :: " + connection);
@@ -92,10 +90,10 @@ public class TripSink extends RichSinkFunction<Trip> implements Serializable {
 		if (statement != null) {
 			statement.close();
 		}
-		logger.info("In close() of tripSink :: ");
+		logger.info("In close() of EcoScoreSink :: ");
 
 		if (connection != null) {
-			logger.info("Releasing connection from Trip Job");
+			logger.info("Releasing connection from EcoScoreSink ETL Job");
 			connection.close();
 		}
 	}

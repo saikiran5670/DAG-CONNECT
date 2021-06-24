@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -22,6 +22,7 @@ import { MultiDataSet, Label, Color} from 'ng2-charts';
 import html2canvas from 'html2canvas';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Router, NavigationExtras } from '@angular/router';
+import { CalendarOptions } from '@fullcalendar/angular';
 // import { CalendarOptions } from '@fullcalendar/angular';
 
 @Component({
@@ -29,7 +30,8 @@ import { Router, NavigationExtras } from '@angular/router';
   templateUrl: './fleet-utilisation.component.html',
   styleUrls: ['./fleet-utilisation.component.less']
 })
-export class FleetUtilisationComponent implements OnInit {
+
+export class FleetUtilisationComponent implements OnInit, OnDestroy {
   tripReportId: any = 1;
   selectionTab: any;
   reportPrefData: any = [];
@@ -62,6 +64,9 @@ export class FleetUtilisationComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   tripData: any = [];
+  vehicleDD: any = [];
+  vehicleGrpDD: any = [];
+  internalSelection: boolean = false;
   showLoadingIndicator: boolean = false;
   startDateValue: any = 0;
   endDateValue: any = 0;
@@ -158,6 +163,8 @@ export class FleetUtilisationComponent implements OnInit {
   lineChartVehicleCount: any = [];
   greaterMileageCount :  any = 0;
   greaterTimeCount :  any = 0;
+  calendarSelectedStartDate : any = '';
+  calendarSelectedEndDate : any = '';
 
 // Bar chart implementation
 
@@ -252,21 +259,43 @@ lineChartColors: Color[] = [
 lineChartLegend = true;
 lineChartPlugins = [];
 lineChartType = 'line';
+fromTripPageBack: boolean = false;
+
+// Calnedar implementation
+
+calendarOptions: CalendarOptions = {
+  initialView: 'dayGridMonth',
+  timeZone: 'local',
+  validRange: function(nowDate) {
+    return {
+      start:  '2021-03-24' ,
+      end: nowDate
+    };
+  },
+  // validRange: {
+  //   start: `${this.calendarSelectedStartDate}`,
+  //   end: '2021-06-03'
+  // },
+  events: [
+    { title: '2', date: '2021-04-21' },
+    { title: '4', date: '2021-03-28' },
+    { title: '8', date: '2021-06-02' }
+  ],
   
-// calendarOptions: CalendarOptions = {
-//   initialView: 'dayGridMonth',
-//   visibleRange: {
-//     start: '2020-03-22',
-//     end: '2020-03-25'
-//   },
-//   // events: [
-//   //   { title: 'event 1', date: '2021-06-21' },
-//   //   { title: 'event 2', date: '2021-06-20' }
-//   // ]
-// };
+};
 
   constructor(@Inject(MAT_DATE_FORMATS) private dateFormats, private translationService: TranslationService, private _formBuilder: FormBuilder, private reportService: ReportService, private reportMapService: ReportMapService, private router: Router) {
     this.defaultTranslation();
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state as {
+      fromTripReport: boolean
+    };
+    //console.log(state)
+    if(state){
+      this.fromTripPageBack = true;
+    }else{
+      this.fromTripPageBack = false;
+    }
    }
 
   defaultTranslation(){
@@ -310,10 +339,60 @@ lineChartType = 'line';
         this.setPrefFormatDate();
         this.setDefaultTodayDate();
         this.getFleetPreferences();
-
       });
     });
   }
+
+  ngOnDestroy(){
+    console.log("component destroy...");
+    this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = this.tripForm.controls.vehicleGroup.value;
+    this.fleetUtilizationSearchData["vehicleDropDownValue"] = this.tripForm.controls.vehicle.value;
+    this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    this.fleetUtilizationSearchData["startDateStamp"] = this.startDateValue;
+    this.fleetUtilizationSearchData["endDateStamp"] = this.endDateValue;
+    this.fleetUtilizationSearchData.testDate = this.startDateValue;
+    this.fleetUtilizationSearchData.filterPrefTimeFormat = this.prefTimeFormat;
+    if(this.prefTimeFormat == 24){
+      let _splitStartTime = this.startTimeDisplay.split(':');
+      let _splitEndTime = this.endTimeDisplay.split(':');
+      this.fleetUtilizationSearchData["startTimeStamp"] = `${_splitStartTime[0]}:${_splitStartTime[1]}`;
+      this.fleetUtilizationSearchData["endTimeStamp"] = `${_splitEndTime[0]}:${_splitEndTime[1]}`;
+    }else{
+      this.fleetUtilizationSearchData["startTimeStamp"] = this.startTimeDisplay;  
+      this.fleetUtilizationSearchData["endTimeStamp"] = this.endTimeDisplay;  
+    }
+    this.setGlobalSearchData(this.fleetUtilizationSearchData);
+  }
+
+  _get12Time(_sTime: any){
+    let _x = _sTime.split(':');
+    let _yy: any = '';
+    if(_x[0] >= 12){ // 12 or > 12
+      if(_x[0] == 12){ // exact 12
+        _yy = `${_x[0]}:${_x[1]} PM`;
+      }else{ // > 12
+        let _xx = (_x[0] - 12);
+        _yy = `${_xx}:${_x[1]} PM`;
+      }
+    }else{ // < 12
+      _yy = `${_x[0]}:${_x[1]} AM`;
+    }
+    return _yy;
+  }
+
+  get24Time(_time: any){
+    let _x = _time.split(':');
+    let _y = _x[1].split(' ');
+    let res: any = '';
+    if(_y[1] == 'PM'){ // PM
+      let _z: any = parseInt(_x[0]) + 12;
+      res = `${(_x[0] == 12) ? _x[0] : _z}:${_y[0]}`;
+    }else{ // AM
+      res = `${_x[0]}:${_y[0]}`;
+    }
+    return res;
+  }
+
 
   getFleetPreferences(){
     this.reportService.getUserPreferenceReport(5, this.accountId, this.accountOrganizationId).subscribe((data: any) => {
@@ -373,11 +452,15 @@ lineChartType = 'line';
   filterDateData(){
     let distinctVIN: any = [];
     let finalVINDataList: any = [];
-    let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
-    let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
-    let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
-    let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
+    this.vehicleListData = [];
+    this.vehicleGrpDD = [];
+    // let _last3m = this.setStartEndDateTime(this.getLast3MonthDate(), this.selectedStartTime, 'start');
+    // let _yesterday = this.setStartEndDateTime(this.getYesterdaysDate(), this.selectedEndTime, 'end');
+    // let currentStartTime = Util.convertDateToUtc(_last3m); //_last3m.getTime();
+    // let currentEndTime = Util.convertDateToUtc(_yesterday); // _yesterday.getTime();
     //console.log(currentStartTime + "<->" + currentEndTime);
+    let currentStartTime = Util.convertDateToUtc(this.startDateValue);  // extra addded as per discuss with Atul
+    let currentEndTime = Util.convertDateToUtc(this.endDateValue); // extra addded as per discuss with Atul
     if(this.wholeTripData.vinTripList.length > 0){
       let filterVIN: any = this.wholeTripData.vinTripList.filter(item => (item.startTimeStamp >= currentStartTime) && (item.endTimeStamp <= currentEndTime)).map(data => data.vin);
       if(filterVIN.length > 0){
@@ -387,30 +470,55 @@ lineChartType = 'line';
           distinctVIN.forEach(element => {
             let _item = this.wholeTripData.vehicleDetailsWithAccountVisibiltyList.filter(i => i.vin === element); 
             if(_item.length > 0){
-              finalVINDataList.push(_item[0])
+              this.vehicleListData.push(_item[0]); //-- unique VIN data added 
+              _item.forEach(element => {
+                finalVINDataList.push(element);
+              });
             }
           });
           ////console.log("finalVINDataList:: ", finalVINDataList); 
         }
+      }else{
+        // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = '';
+        // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+        // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+        this.tripForm.get('vehicle').setValue('');
+        this.tripForm.get('vehicleGroup').setValue('');
       }
     }
     this.vehicleGroupListData = finalVINDataList;
     if(this.vehicleGroupListData.length > 0){
-      this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      let _s = this.vehicleGroupListData.map(item => item.vehicleGroupId).filter((value, index, self) => self.indexOf(value) === index);
+      if(_s.length > 0){
+        _s.forEach(element => {
+          let count = this.vehicleGroupListData.filter(j => j.vehicleGroupId == element);
+          if(count.length > 0){
+            this.vehicleGrpDD.push(count[0]); //-- unique Veh grp data added
+          }
+        });
+      }
+      //this.vehicleGroupListData.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
+      this.vehicleGrpDD.unshift({ vehicleGroupId: 0, vehicleGroupName: this.translationData.lblAll || 'All' });
       this.resetTripFormControlValue();
     }
-    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    this.vehicleDD = this.vehicleListData;
     this.setVehicleGroupAndVehiclePreSelection();
+    if(this.fromTripPageBack){
+      this.onSearch();
+    }
   }
 
   onSearch(){
+    //this.internalSelection = true;
     let _startTime = Util.convertDateToUtc(this.startDateValue); // this.startDateValue.getTime();
     let _endTime = Util.convertDateToUtc(this.endDateValue); // this.endDateValue.getTime();
-    let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
-    let VINs = [];
-    VINs.push(_vinData[0].vin) ;
+    //let _vinData = this.vehicleListData.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    let _vinData = this.vehicleDD.filter(item => item.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
     
     if(_vinData.length > 0){
+      let VINs = [];
+      VINs.push(_vinData[0].vin);
       this.showLoadingIndicator = true;
       let searchDataParam = {
         "startDateTime":_startTime,
@@ -528,19 +636,29 @@ lineChartType = 'line';
         this.setChartData(calendarData["calenderDetails"]);
       })
     }
+    this.calendarOptions.initialDate = this.startDateValue
+    let startday = this.startDateValue.getDate();
+    let startmonth = this.startDateValue.getMonth();
+    let startyear = this.startDateValue.getFullYear();
+    this.calendarSelectedStartDate = `${startyear}-${startmonth + 1}-${startday}`
+   //  this.calendarOptions.visibleRange = {start: `'${this.calendarSelectedStartDate}'`, end : '2021-06-03'};
+    console.log(this.calendarSelectedStartDate);
   }
 
   onReset(){
+    this.internalSelection = false;
     this.setDefaultStartEndTime();
     this.setDefaultTodayDate();
     this.tripData = [];
-    this.vehicleGroupListData = this.vehicleGroupListData;
-    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+    this.vehicleListData = [];
+    // this.vehicleGroupListData = this.vehicleGroupListData;
+    // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
     this.updateDataSource(this.tripData);
-    this.resetTripFormControlValue();
     this.tableInfoObj = {};
     this.advanceFilterOpen = false;
     this.selectedPOI.clear();
+    this.resetTripFormControlValue();
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   sumOfColumns(columnName : any){
@@ -595,12 +713,22 @@ lineChartType = 'line';
   }
 
   resetTripFormControlValue(){
-    this.tripForm.get('vehicle').setValue('');
-    this.tripForm.get('vehicleGroup').setValue(0);
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== ""){
+      this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+      this.tripForm.get('vehicleGroup').setValue(this.fleetUtilizationSearchData.vehicleGroupDropDownValue);
+    }else{
+      this.tripForm.get('vehicle').setValue('');
+      this.tripForm.get('vehicleGroup').setValue(0);
+      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = 0;
+      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    }
   }
 
   onVehicleChange(event: any){
- 
+    this.internalSelection = true; 
+    // this.fleetUtilizationSearchData["vehicleDropDownValue"] = event.value;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData)
   }
 
 
@@ -622,27 +750,39 @@ lineChartType = 'line';
   }
 
   setVehicleGroupAndVehiclePreSelection() {
-    if(this.fleetUtilizationSearchData.vehicleGroupDropDownValue !== "") {
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
       // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
       this.onVehicleGroupChange(this.fleetUtilizationSearchData.vehicleGroupDropDownValue)
-    }else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
-      // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
     }
+    // else if(this.fleetUtilizationSearchData.vehicleDropDownValue !== "") {
+    //   // this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
+    // }
   }
   onVehicleGroupChange(event: any){
-   if(event.value){
-     
-     this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
-     if(parseInt(event.value) == 0){ //-- all group
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
-    }else{
-      this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+   if(event.value || event.value == 0){
+      this.internalSelection = true; 
+      this.tripForm.get('vehicle').setValue(''); //- reset vehicle dropdown
+      if(parseInt(event.value) == 0){ //-- all group
+        //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId != 0);
+        this.vehicleDD = this.vehicleListData;
+      }else{
+      //this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+      let search = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event.value));
+        if(search.length > 0){
+          this.vehicleDD = [];
+          search.forEach(element => {
+            this.vehicleDD.push(element);  
+          });
+        }
+      }
+      // this.fleetUtilizationSearchData["vehicleGroupDropDownValue"] = event.value;
+      // this.fleetUtilizationSearchData["vehicleDropDownValue"] = '';
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+    }else {
+      // this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
+      this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
+      this.tripForm.get('vehicle').setValue(parseInt(this.fleetUtilizationSearchData.vehicleDropDownValue));
     }
-  }else {
-    this.vehicleListData = this.vehicleGroupListData.filter(i => i.vehicleGroupId == parseInt(event));
-    this.tripForm.get('vehicleGroup').setValue(parseInt(this.fleetUtilizationSearchData.vehicleGroupDropDownValue));
-    this.tripForm.get('vehicle').setValue(this.fleetUtilizationSearchData.vehicleDropDownValue);
-  }
   }
     
   setTableInfo(){
@@ -650,22 +790,34 @@ lineChartType = 'line';
     let vehGrpName: any = '';
     let vin: any = '';
     let plateNo: any = '';
-    this.vehicleGroupListData.forEach(element => {
-      if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
-        vehName = element.vehicleName;
-        vin = element.vin;
-        plateNo = element.registrationNo;
-      }
-      if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
-        if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
-          vehGrpName = element.vehicleGroupName;
-        }
-      }
-    });
+    // this.vehicleGroupListData.forEach(element => {
+    //   if(element.vehicleId == parseInt(this.tripForm.controls.vehicle.value)){
+    //     vehName = element.vehicleName;
+    //     vin = element.vin;
+    //     plateNo = element.registrationNo;
+    //   }
+    //   if(parseInt(this.tripForm.controls.vehicleGroup.value) != 0){
+    //     if(element.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value)){
+    //       vehGrpName = element.vehicleGroupName;
+    //     }
+    //   }
+    // });
 
-    if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
-      vehGrpName = this.translationData.lblAll || 'All';
+    let vehGrpCount = this.vehicleGrpDD.filter(i => i.vehicleGroupId == parseInt(this.tripForm.controls.vehicleGroup.value));
+    if(vehGrpCount.length > 0){
+      vehGrpName = vehGrpCount[0].vehicleGroupName;
     }
+    let vehCount = this.vehicleDD.filter(i => i.vehicleId == parseInt(this.tripForm.controls.vehicle.value));
+    if(vehCount.length > 0){
+      vehName = vehCount[0].vehicleName;
+      vin = vehCount[0].vin;
+      plateNo = vehCount[0].registrationNo;
+    }
+
+    // if(parseInt(this.tripForm.controls.vehicleGroup.value) == 0){
+    //   vehGrpName = this.translationData.lblAll || 'All';
+    // }
+
     this.tableInfoObj = {
       fromDate: this.formStartDate(this.startDateValue),
       endDate: this.formStartDate(this.endDateValue),
@@ -715,6 +867,7 @@ lineChartType = 'line';
   }
 
   selectionTimeRange(selection: any){
+    this.internalSelection = true;
     switch(selection){
       case 'today': {
         this.selectionTab = 'today';
@@ -752,17 +905,51 @@ lineChartType = 'line';
         break;
       }
     }
+    // this.fleetUtilizationSearchData["timeRangeSelection"] = this.selectionTab;
+    // this.setGlobalSearchData(this.fleetUtilizationSearchData);
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
+  setGlobalSearchData(globalSearchFilterData:any) {
+    this.fleetUtilizationSearchData["modifiedFrom"] = "TripReport";
+    localStorage.setItem("globalSearchFilterData", JSON.stringify(globalSearchFilterData));
+  }
 
   setPrefFormatTime(){
-    if(this.prefTimeFormat == 24){
-      this.startTimeDisplay = '00:00:00';
-      this.endTimeDisplay = '23:59:59';
-    }else{
-      this.startTimeDisplay = '12:00 AM';
-      this.endTimeDisplay = '11:59 PM';
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "" &&  ((this.fleetUtilizationSearchData.startTimeStamp || this.fleetUtilizationSearchData.endTimeStamp) !== "") ) {
+      if(this.prefTimeFormat == this.fleetUtilizationSearchData.filterPrefTimeFormat){ // same format
+        this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
+        this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
+        this.startTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.startTimeStamp}:00` : this.fleetUtilizationSearchData.startTimeStamp;
+        this.endTimeDisplay = (this.prefTimeFormat == 24) ? `${this.fleetUtilizationSearchData.endTimeStamp}:59` : this.fleetUtilizationSearchData.endTimeStamp;  
+      }else{ // different format
+        if(this.prefTimeFormat == 12){ // 12
+          this.selectedStartTime = this._get12Time(this.fleetUtilizationSearchData.startTimeStamp);
+          this.selectedEndTime = this._get12Time(this.fleetUtilizationSearchData.endTimeStamp);
+          this.startTimeDisplay = this.selectedStartTime; 
+          this.endTimeDisplay = this.selectedEndTime;
+        }else{ // 24
+          this.selectedStartTime = this.get24Time(this.fleetUtilizationSearchData.startTimeStamp);
+          this.selectedEndTime = this.get24Time(this.fleetUtilizationSearchData.endTimeStamp);
+          this.startTimeDisplay = `${this.selectedStartTime}:00`; 
+          this.endTimeDisplay = `${this.selectedEndTime}:59`;
+        }
+      }
+    }else {
+      if(this.prefTimeFormat == 24){
+        this.startTimeDisplay = '00:00:00';
+        this.endTimeDisplay = '23:59:59';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
+      } else{
+        this.startTimeDisplay = '12:00 AM';
+        this.endTimeDisplay = '11:59 PM';
+        this.selectedStartTime = "00:00";
+        this.selectedEndTime = "23:59";
+      }
     }
+  
   }
 
   setPrefFormatDate(){
@@ -791,36 +978,26 @@ lineChartType = 'line';
 
   setDefaultStartEndTime(){
     this.setPrefFormatTime();
-    if(this.fleetUtilizationSearchData.modifiedFrom !== "") {
-      console.log("---if fleetUtilizationSearchData exist")
-      this.selectedStartTime = this.fleetUtilizationSearchData.startTimeStamp;
-      this.selectedEndTime = this.fleetUtilizationSearchData.endTimeStamp;
-
-    }else{
-      console.log("---if fleetUtilizationSearch Data not exist")
-    this.selectedStartTime = "00:00";
-    this.selectedEndTime = "23:59";
-    }
+    // if(this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom == ""){
+    //   this.selectedStartTime = "00:00";
+    //   this.selectedEndTime = "23:59";
+    // }
   }
 
   setDefaultTodayDate(){
-
-    if(this.fleetUtilizationSearchData.startDateStamp !== "") {
-      console.log("---if fleetUtilizationSearchData startDateStamp exist")
+    if(!this.internalSelection && this.fleetUtilizationSearchData.modifiedFrom !== "") {
+      //console.log("---if fleetUtilizationSearchData startDateStamp exist")
       if(this.fleetUtilizationSearchData.timeRangeSelection !== ""){
         this.selectionTab = this.fleetUtilizationSearchData.timeRangeSelection;
-        this.selectionTimeRange(this.selectionTab)
-      }else {
-        let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
-        let endDateFromSearch =new Date(this.fleetUtilizationSearchData.endDateStamp);
-        console.log(typeof(startDateFromSearch));
-        this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.fleetUtilizationSearchData.startTimeStamp, 'start');
-        this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.fleetUtilizationSearchData.endTimeStamp, 'end');
+      }else{
+        this.selectionTab = 'today';
       }
-      
+      let startDateFromSearch = new Date(this.fleetUtilizationSearchData.startDateStamp);
+      let endDateFromSearch = new Date(this.fleetUtilizationSearchData.endDateStamp);
+      this.startDateValue = this.setStartEndDateTime(startDateFromSearch, this.selectedStartTime, 'start');
+      this.endDateValue = this.setStartEndDateTime(endDateFromSearch, this.selectedEndTime, 'end');
     }else{
     this.selectionTab = 'today';
-
     this.startDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedStartTime, 'start');
     this.endDateValue = this.setStartEndDateTime(this.getTodayDate(), this.selectedEndTime, 'end');
     this.last3MonthDate = this.getLast3MonthDate();
@@ -829,17 +1006,39 @@ lineChartType = 'line';
   }
 
   changeStartDateEvent(event: MatDatepickerInputEvent<any>){
-    
+    this.internalSelection = true;
     //this.startDateValue = event.value._d;
     this.startDateValue = this.setStartEndDateTime(event.value._d, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
 
   changeEndDateEvent(event: MatDatepickerInputEvent<any>){
     //this.endDateValue = event.value._d;
+    this.internalSelection = true;
     this.endDateValue = this.setStartEndDateTime(event.value._d, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData(); // extra addded as per discuss with Atul
   }
   
   setStartEndDateTime(date: any, timeObj: any, type: any){
+
+    if(type == "start"){
+      console.log("--date type--",date)
+      console.log("--date type--",timeObj)
+      // this.fleetUtilizationSearchData["startDateStamp"] = date;
+      // this.fleetUtilizationSearchData.testDate = date;
+      // this.fleetUtilizationSearchData["startTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+      // console.log("---time after function called--",timeObj)
+    }else if(type == "end") {
+      // this.fleetUtilizationSearchData["endDateStamp"] = date;
+      // this.fleetUtilizationSearchData["endTimeStamp"] = timeObj;
+      // this.setGlobalSearchData(this.fleetUtilizationSearchData)
+      // localStorage.setItem("globalSearchFilterData", JSON.stringify(this.globalSearchFilterData));
+    }
+
     let _x = timeObj.split(":")[0];
     let _y = timeObj.split(":")[1];
     if(this.prefTimeFormat == 12){
@@ -863,6 +1062,7 @@ lineChartType = 'line';
   }
 
   startTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedStartTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.startTimeDisplay = selectedTime + ':00';
@@ -871,9 +1071,12 @@ lineChartType = 'line';
       this.startTimeDisplay = selectedTime;
     }
     this.startDateValue = this.setStartEndDateTime(this.startDateValue, this.selectedStartTime, 'start');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData();// extra addded as per discuss with Atul
   }
 
   endTimeChanged(selectedTime: any) {
+    this.internalSelection = true;
     this.selectedEndTime = selectedTime;
     if(this.prefTimeFormat == 24){
       this.endTimeDisplay = selectedTime + ':59';
@@ -882,6 +1085,8 @@ lineChartType = 'line';
       this.endTimeDisplay = selectedTime;
     }
     this.endDateValue = this.setStartEndDateTime(this.endDateValue, this.selectedEndTime, 'end');
+    this.resetTripFormControlValue(); // extra addded as per discuss with Atul
+    this.filterDateData();
   }
 
   getTodayDate(){
@@ -1023,8 +1228,7 @@ lineChartType = 'line';
   gotoTrip(vehData: any){
     const navigationExtras: NavigationExtras = {
       state: {
-        fromFleetUtilReport: true,
-        vehicleData: vehData
+        fromFleetUtilReport: true
       }
     };
     this.router.navigate(['report/tripreport'], navigationExtras);

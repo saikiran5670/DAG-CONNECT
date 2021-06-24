@@ -17,6 +17,8 @@ export class ReportsPreferencesComponent implements OnInit {
   editTripFlag: boolean = false;
   editFleetUtilisationFlag: boolean = false;
   reportListData: any = [];
+  showDriverTimePerferences : boolean = false;
+  editDriverTimePerferencesFlag:boolean = false;
 
   constructor( private reportService: ReportService ) { }
 
@@ -83,4 +85,18 @@ export class ReportsPreferencesComponent implements OnInit {
     }
   }
 
+  editDriverTimePerferences(){
+    this.editDriverTimePerferencesFlag = true;
+  }
+
+  updateEditDriverTimeFlag(retObj: any){
+    if(retObj){
+      this.editDriverTimePerferencesFlag = retObj.flag;
+      if(retObj.msg && retObj.msg != ''){
+        this.successMsgBlink(retObj.msg);
+      }
+    }else{
+      this.editDriverTimePerferencesFlag = false; // hard coded
+    }
+  }
 }

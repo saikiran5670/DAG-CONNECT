@@ -70,5 +70,33 @@ namespace net.atos.daf.ct2.reportservice.entity
             }
             return vinListResult;
         }
+
+        internal reports.entity.ReportUserPreferenceCreateRequest MapCreateReportUserPreferences(ReportUserPreferenceCreateRequest request)
+        {
+            reports.entity.ReportUserPreferenceCreateRequest objRequest
+                   = new reports.entity.ReportUserPreferenceCreateRequest
+                   {
+                       Attributes = new List<reports.entity.UserPreferenceAttribute>(),
+
+                       OrganizationId = request.OrganizationId,
+                       ReportId = request.ReportId,
+                       AccountId = request.AccountId
+                   };
+            objRequest.ReportId = request.ReportId;
+
+            for (int i = 0; i < request.Attributes.Count; i++)
+            {
+                objRequest.Attributes.Add(new reports.entity.UserPreferenceAttribute
+                {
+                    DataAttributeId = request.Attributes[i].DataAttributeId,
+                    State = request.Attributes[i].State == ((char)ReportPreferenceState.Active).ToString() ? Convert.ToChar(ReportPreferenceState.Active) : Convert.ToChar(ReportPreferenceState.InActive),
+                    Type = request.Attributes[i].Type.ToCharArray().FirstOrDefault(),
+                    ChartType = request.Attributes[i].ChartType == "" ? new char() : (char)request.Attributes[i].ChartType[0],
+                    ThresholdType = request.Attributes[i].ThresholdType,
+                    ThresholdValue = request.Attributes[i].ThresholdValue,
+                });
+            }
+            return objRequest;
+        }
     }
 }
