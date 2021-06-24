@@ -69,6 +69,8 @@ export class DriverTimeManagementComponent implements OnInit {
   prefUnitFormat: any = 'dunit_Metric'; //-- coming from pref setting
   accountPrefObj: any;
   displayedColumns = ['detailsdrivername', 'detailsdriverid', 'detailsstarttime', 'detailsendtime', 'detailsdrivetime', 'detailsworktime', 'detailsservicetime', 'detailsresttime', 'detailsavailabletime'];
+  detaildisplayedColumns = ['specificdetailstarttime', 'specificdetaildrivetime', 'specificdetailworktime', 'specificdetailservicetime', 'specificdetailresttime', 'specificdetailavailabletime'];
+  
   fromDisplayDate: any;
   toDisplayDate : any;
   selectedVehicleGroup : string;
@@ -529,7 +531,7 @@ export class DriverTimeManagementComponent implements OnInit {
           "type": "A",
           "reportReferenceType": "",
           "key": "da_report_specificdriver_details_worktime",
-          "state": "A",
+          "state": "I",
           "chartType": ""
         },
         {
@@ -601,13 +603,22 @@ export class DriverTimeManagementComponent implements OnInit {
     if(filterPref.length > 0){
       filterPref.forEach(element => {
         let search = this.prefMapData.filter(i => i.key == element.key);
-        let _value = search[0]['value'];
         if(search.length > 0){
           let index = this.displayedColumns.indexOf(search[0].value);
           if (index > -1) {
+              let _value = search[0]['value'];
+
               this.displayedColumns.splice(index, 1);
+              this.showField[_value] = false;
+
           }
-          this.showField[_value] = false;
+          let detailIndex = this.detaildisplayedColumns.indexOf(search[0].value);
+          this.detaildisplayedColumns.indexOf(search[0].value);
+          if (index > -1) {
+              let _detailvalue = search[0]['value'];
+              this.detaildisplayedColumns.splice(detailIndex, 1);
+              this.showField[_detailvalue] = false;
+          }
         }
 
       //   if(element.key == 'da_report_details_vehiclename'){
